@@ -195,9 +195,9 @@ class TriviaUtils(TriviaUtilsInterface):
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
         suffix = ''
-        if question.getTriviaType() is TriviaQuestionType.MULTIPLE_CHOICE:
+        if question.triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             suffix = 'Please answer using A, B, C, …'
-        elif question.getTriviaType() is TriviaQuestionType.TRUE_FALSE:
+        elif question.triviaType is TriviaQuestionType.TRUE_FALSE:
             suffix = 'Please answer using either true or false.'
         else:
             suffix = 'Please check your answer and try again.'
@@ -222,8 +222,8 @@ class TriviaUtils(TriviaUtilsInterface):
 
         punishmentAmountToUserNames: dict[int, list[str]] = defaultdict(lambda: list())
 
-        for punishment in toxicTriviaPunishmentResult.getToxicTriviaPunishments():
-            punishmentAmountToUserNames[punishment.getPunishedByPoints()].append(punishment.getUserName())
+        for punishment in toxicTriviaPunishmentResult.toxicTriviaPunishments:
+            punishmentAmountToUserNames[punishment.punishedByPoints].append(punishment.userName)
 
         sortedKeys: list[int] = list(punishmentAmountToUserNames.keys())
         sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
@@ -239,7 +239,7 @@ class TriviaUtils(TriviaUtilsInterface):
             punishmentAmountString = locale.format_string("%d", abs(punishmentAmount), grouping = True)
             buckets.append(f'{delimiter.join(userNames)} punished by {punishmentAmountString} cuteness'.strip())
 
-        punishmentTotal = f'{bucketDelimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'.strip()
+        punishmentTotal = f'{bucketDelimiter} for a total of {toxicTriviaPunishmentResult.totalPointsStolenStr} cuteness stolen'.strip()
         return f'{emotePrompt} {bucketDelimiter.join(buckets)}{punishmentTotal}'.strip()
 
     async def getOutOfTimeAnswerReveal(
@@ -291,8 +291,8 @@ class TriviaUtils(TriviaUtilsInterface):
 
         punishmentAmountToUserNames: dict[int, list[str]] = defaultdict(lambda: list())
 
-        for punishment in toxicTriviaPunishmentResult.getToxicTriviaPunishments():
-            punishmentAmountToUserNames[punishment.getPunishedByPoints()].append(punishment.getUserName())
+        for punishment in toxicTriviaPunishmentResult.toxicTriviaPunishments:
+            punishmentAmountToUserNames[punishment.punishedByPoints].append(punishment.userName)
 
         sortedKeys: list[int] = list(punishmentAmountToUserNames.keys())
         sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
@@ -308,7 +308,7 @@ class TriviaUtils(TriviaUtilsInterface):
             else:
                 buckets.append(f'{numberPunished} people lost {punishmentAmountString} cuteness'.strip())
 
-        punishmentTotal = f'{delimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'.strip()
+        punishmentTotal = f'{delimiter} for a total of {toxicTriviaPunishmentResult.totalPointsStolenStr} cuteness stolen'.strip()
         return f'{emotePrompt} {delimiter.join(buckets)}{punishmentTotal}'.strip()
 
     async def getSuperTriviaCorrectAnswerReveal(
@@ -475,7 +475,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        if toxicTriviaPunishmentResult.getNumberOfToxicTriviaPunishments() >= 6:
+        if toxicTriviaPunishmentResult.numberOfToxicTriviaPunishments >= 6:
             return await self.__getShortToxicTriviaPunishmentMessage(
                 emotePrompt = emotePrompt,
                 toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
@@ -653,28 +653,28 @@ class TriviaUtils(TriviaUtilsInterface):
                 superTriviaStr = f'{superTriviaStr} {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
 
         shinyStr = ''
-        if shinyResult.getNewShinyCount() >= 1:
+        if shinyResult.newShinyCount >= 1:
             if needsSemicolon:
                 shinyStr = ';'
             else:
                 needsSemicolon = True
 
-            if shinyResult.getNewShinyCount() == 1:
-                shinyStr = f'{shinyStr} {shinyResult.getNewShinyCountStr()} shiny'
+            if shinyResult.newShinyCount == 1:
+                shinyStr = f'{shinyStr} {shinyResult.newShinyCountStr} shiny'
             else:
-                shinyStr = f'{shinyStr} {shinyResult.getNewShinyCountStr()} shinies'
+                shinyStr = f'{shinyStr} {shinyResult.newShinyCountStr} shinies'
 
         toxicStr = ''
-        if toxicResult.getNewToxicCount() >= 1:
+        if toxicResult.newToxicCount >= 1:
             if needsSemicolon:
                 toxicStr = ';'
             else:
                 needsSemicolon = True
 
-            if toxicResult.getNewToxicCount() == 1:
-                toxicStr = f'{toxicStr} {toxicResult.getNewToxicCountStr()} toxic'
+            if toxicResult.newToxicCount == 1:
+                toxicStr = f'{toxicStr} {toxicResult.newToxicCountStr} toxic'
             else:
-                toxicStr = f'{toxicStr} {toxicResult.getNewToxicCountStr()} toxics'
+                toxicStr = f'{toxicStr} {toxicResult.newToxicCountStr} toxics'
 
         return f'{introStr}{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
 

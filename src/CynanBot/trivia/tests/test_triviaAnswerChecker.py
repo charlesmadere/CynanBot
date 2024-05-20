@@ -82,7 +82,7 @@ class TestTriviaAnswerChecker():
     @pytest.mark.asyncio
     async def test_checkAnswer_withTrueFalseQuestionAndAnswerIsFalse(self):
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = [ False ],
+            correctAnswer = False,
             category = None,
             categoryId = None,
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
@@ -104,7 +104,7 @@ class TestTriviaAnswerChecker():
     @pytest.mark.asyncio
     async def test_checkAnswer_withTrueFalseQuestionAndAnswerIsTrue(self):
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = [ True ],
+            correctAnswer = True,
             category = None,
             categoryId = None,
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
@@ -126,7 +126,7 @@ class TestTriviaAnswerChecker():
     @pytest.mark.asyncio
     async def test_checkAnswer_withTrueFalseQuestionAndAnswerIsTrueAndFalse(self):
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = [ True, False ],
+            correctAnswer = True,
             category = None,
             categoryId = None,
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
@@ -137,10 +137,10 @@ class TestTriviaAnswerChecker():
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('f', question)
-        assert result is TriviaAnswerCheckResult.CORRECT
+        assert result is TriviaAnswerCheckResult.INCORRECT
 
         result = await self.triviaAnswerChecker.checkAnswer('false', question)
-        assert result is TriviaAnswerCheckResult.CORRECT
+        assert result is TriviaAnswerCheckResult.INCORRECT
 
         result = await self.triviaAnswerChecker.checkAnswer('t', question)
         assert result is TriviaAnswerCheckResult.CORRECT
@@ -154,7 +154,7 @@ class TestTriviaAnswerChecker():
     @pytest.mark.asyncio
     async def test_checkAnswer_withTrueFalseQuestion(self):
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = [ True ],
+            correctAnswer = True,
             category = None,
             categoryId = None,
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',

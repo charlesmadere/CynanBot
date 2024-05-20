@@ -1,34 +1,16 @@
+from dataclasses import dataclass
 import locale
 
-import CynanBot.misc.utils as utils
 
-
+@dataclass(frozen = True)
 class ClearQueuedGamesResult():
+    amountRemoved: int
+    oldQueueSize: int
 
-    def __init__(self, amountRemoved: int, oldQueueSize: int):
-        if not utils.isValidInt(amountRemoved):
-            raise TypeError(f'amountRemoved argument is malformed: \"{amountRemoved}\"')
-        elif amountRemoved < 0 or amountRemoved > utils.getIntMaxSafeSize():
-            raise ValueError(f'amountRemoved argument is out of bounds: {amountRemoved}')
-        elif not utils.isValidInt(oldQueueSize):
-            raise TypeError(f'oldQueueSize argument is malformed: \"{oldQueueSize}\"')
-        elif oldQueueSize < 0 or oldQueueSize > utils.getIntMaxSafeSize():
-            raise ValueError(f'oldQueueSize argument is out of bounds: {oldQueueSize}')
+    @property
+    def amountRemovedStr(self) -> str:
+        return locale.format_string("%d", self.amountRemoved, grouping = True)
 
-        self.__amountRemoved: int = amountRemoved
-        self.__oldQueueSize: int = oldQueueSize
-
-    def getAmountRemoved(self) -> int:
-        return self.__amountRemoved
-
-    def getAmountRemovedStr(self) -> str:
-        return locale.format_string("%d", self.__amountRemoved, grouping = True)
-
-    def getOldQueueSize(self) -> int:
-        return self.__oldQueueSize
-
-    def getOldQueueSizeStr(self) -> str:
-        return locale.format_string("%d", self.__oldQueueSize, grouping = True)
-
-    def toStr(self) -> str:
-        return f'amountRemoved={self.__amountRemoved}, oldQueueSize={self.__oldQueueSize}'
+    @property
+    def oldQueueSizeStr(self) -> str:
+        return locale.format_string("%d", self.oldQueueSize, grouping = True)

@@ -250,7 +250,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if len(toxicTriviaPunishments) == 0:
             return None
 
-        toxicTriviaPunishments.sort(key = lambda punishment: (punishment.getPunishedByPoints(), punishment.getUserName().lower()))
+        toxicTriviaPunishments.sort(
+            key = lambda punishment: (punishment.punishedByPoints, punishment.userName.casefold())
+        )
 
         return ToxicTriviaPunishmentResult(
             totalPointsStolen = totalPointsStolen,
@@ -269,7 +271,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannelId = queuedSuperGame.getTwitchChannelId()
             )
 
-            self.__timber.log('TriviaGameMachine', f'Starting new queued super trivia game for \"{queuedSuperGame.getTwitchChannel()}\", with {remainingQueueSize} game(s) remaining in their queue (actionId=\"{queuedSuperGame.getActionId()}\")')
+            self.__timber.log('TriviaGameMachine', f'Starting new queued super trivia game for \"{queuedSuperGame.getTwitchChannel()}\", with {remainingQueueSize} game(s) remaining in their queue ({queuedSuperGame.getActionId()=})')
             await self.__handleActionStartNewSuperTriviaGame(queuedSuperGame)
 
     async def __checkAnswer(
@@ -510,7 +512,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                     userName = action.getUserName()
                 )
 
-                pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.getTotalPointsStolen()
+                pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.totalPointsStolen
 
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
             incrementAmount = pointsForWinning,
@@ -559,11 +561,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannelId = action.getTwitchChannelId()
         )
 
-        self.__timber.log('TriviaGameMachine', f'Cleared Super Trivia game queue for \"{action.getTwitchChannel()}\" (actionId=\"{action.getActionId()}\"): {result.toStr()}')
+        self.__timber.log('TriviaGameMachine', f'Cleared Super Trivia game queue for \"{action.getTwitchChannel()}\" ({action.getActionId()=}): {result}')
 
         await self.__submitEvent(ClearedSuperTriviaQueueTriviaEvent(
-            numberOfGamesRemoved = result.getAmountRemoved(),
-            previousQueueSize = result.getOldQueueSize(),
+            numberOfGamesRemoved = result.amountRemoved,
+            previousQueueSize = result.oldQueueSize,
             actionId = action.getActionId(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
             twitchChannel = action.getTwitchChannel(),
@@ -691,11 +693,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             action = action
         )
 
-        if queueResult.getAmountAdded() >= 1:
-            self.__timber.log('TriviaGameMachine', f'Queued new Super Trivia game(s) for \"{action.getTwitchChannel()}\" (actionId=\"{action.getActionId()}\"): {queueResult}')
+        if queueResult.amountAdded >= 1:
+            self.__timber.log('TriviaGameMachine', f'Queued new Super Trivia game(s) for \"{action.getTwitchChannel()}\" ({action.getActionId()=}): {queueResult}')
 
             await self.__submitEvent(NewQueuedSuperTriviaGameEvent(
-                numberOfGames = queueResult.getAmountAdded(),
+                numberOfGames = queueResult.amountAdded,
                 pointsForWinning = action.getPointsForWinning(),
                 secondsToLive = action.getSecondsToLive(),
                 shinyMultiplier = action.getShinyMultiplier(),
@@ -726,7 +728,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 triviaFetchOptions = action.getTriviaFetchOptions()
             )
         except TooManyTriviaFetchAttemptsException as e:
-            self.__timber.log('TriviaGameMachine', f'Reached limit on trivia fetch attempts without being able to successfully retrieve a super trivia question for \"{action.getTwitchChannel()}\": {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaGameMachine', f'Reached limit on trivia fetch attempts without being able to successfully retrieve a super trivia question for \"{action.getTwitchChannel()}\" ({action.getActionId()=}): {e}', e, traceback.format_exc())
 
         if triviaQuestion is None:
             await self.__submitEvent(FailedToFetchQuestionSuperTriviaEvent(
@@ -801,7 +803,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             elif isinstance(state, SuperTriviaGameState):
                 await self.__removeDeadSuperTriviaGame(state)
             else:
-                raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType (gameId=\"{state.getGameId()}\") (twitchChannel=\"{state.getTwitchChannel()}\") (actionId=\"{state.getActionId()}\"): \"{state.getTriviaGameType()}\"')
+                raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType (gameId=\"{state.getGameId()}\") (twitchChannel=\"{state.getTwitchChannel()}\") ({state.getActionId()=}): \"{state.getTriviaGameType()}\"')
 
     async def __removeDeadNormalTriviaGame(self, state: TriviaGameState):
         if not isinstance(state, TriviaGameState):
@@ -851,7 +853,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             )
 
             if toxicTriviaPunishmentResult is not None:
-                pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.getTotalPointsStolen()
+                pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.totalPointsStolen
 
         remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
             twitchChannelId = state.getTwitchChannelId()

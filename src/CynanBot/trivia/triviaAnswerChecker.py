@@ -103,7 +103,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
             return await self.__checkAnswerTrueFalse(answer, triviaQuestion)
         else:
-            raise UnsupportedTriviaTypeException(f'Unsupported TriviaType: \"{triviaQuestion.getTriviaType()}\"')
+            raise UnsupportedTriviaTypeException(f'Unsupported TriviaType: \"{triviaQuestion.triviaType}\"')
 
     async def __checkAnswerMultipleChoice(
         self,
@@ -112,31 +112,30 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
-            raise RuntimeError(f'TriviaType is not {TriviaQuestionType.MULTIPLE_CHOICE}: \"{triviaQuestion.getTriviaType()}\"')
+        elif triviaQuestion.triviaType is not TriviaQuestionType.MULTIPLE_CHOICE:
+            raise ValueError(f'TriviaType is not {TriviaQuestionType.MULTIPLE_CHOICE}: \"{triviaQuestion.triviaType}\"')
 
-        answerOrdinal: int | None = None
+        answerIndex: int | None = None
+
         try:
-            answerOrdinal = await self.__triviaAnswerCompiler.compileMultipleChoiceAnswer(answer)
+            answerIndex = await self.__triviaAnswerCompiler.compileMultipleChoiceAnswer(answer)
         except BadTriviaAnswerException as e:
             self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: \"{answer}\": {e}', e, traceback.format_exc())
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        if not utils.isValidInt(answerOrdinal):
+        if not utils.isValidInt(answerIndex):
             # this should be impossible, but let's just check anyway
-            self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: (answer=\"{answer}\", answerOrdinal={answerOrdinal})')
+            self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: ({answer=}) ({answerIndex=})')
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        answerOrdinals = triviaQuestion.getAnswerOrdinals()
-
-        if answerOrdinal < 0 or answerOrdinal >= len(answerOrdinals):
+        if answerIndex < 0 or answerIndex >= triviaQuestion.responseCount:
             # Checks for a scenario where the user guessed an answer outside the range
             # of actual responses. For example, the user might have guessed F, but the
             # question only had up to D.
-            self.__timber.log('TriviaAnswerChecker', f'Multiple choice answer ordinal ({answerOrdinal}) is outside the range of actual answer ordinals: {answerOrdinals}')
+            self.__timber.log('TriviaAnswerChecker', f'Multiple choice answer ordinal ({answerIndex}) is outside the range of actual answer ordinals ({triviaQuestion.responseCount=})')
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        if answerOrdinal in triviaQuestion.getCorrectAnswerOrdinals():
+        if answerIndex in triviaQuestion.indexesWithCorrectAnswers.keys():
             return TriviaAnswerCheckResult.CORRECT
         else:
             return TriviaAnswerCheckResult.INCORRECT
@@ -149,8 +148,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
-            raise RuntimeError(f'TriviaType is not {TriviaQuestionType.QUESTION_ANSWER}: \"{triviaQuestion.getTriviaType()}\"')
+        elif triviaQuestion.triviaType is not TriviaQuestionType.QUESTION_ANSWER:
+            raise ValueError(f'TriviaType is not {TriviaQuestionType.QUESTION_ANSWER}: \"{triviaQuestion.triviaType}\"')
 
         # prevent potential for insane answer lengths
         maxPhraseGuessLength = await self.__triviaSettingsRepository.getMaxPhraseGuessLength()
@@ -161,8 +160,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if not all(utils.isValidStr(cleanedAnswer) for cleanedAnswer in cleanedAnswers):
             return TriviaAnswerCheckResult.INCORRECT
 
-        cleanedCorrectAnswers = triviaQuestion.getCleanedCorrectAnswers()
-        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — (answer=\"{answer}\") (cleanedAnswers=\"{cleanedAnswers}\") (correctAnswers=\"{triviaQuestion.getCorrectAnswers()}\") (cleanedCorrectAnswers=\"{cleanedCorrectAnswers}\") (extras=\"{extras}\")')
+        cleanedCorrectAnswers = triviaQuestion.cleanedCorrectAnswers
+        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({cleanedAnswers=}) ({triviaQuestion.correctAnswers=}) ({cleanedCorrectAnswers=}) ({extras=})')
 
         for cleanedCorrectAnswer in cleanedCorrectAnswers:
             for cleanedAnswer in cleanedAnswers:
@@ -197,17 +196,18 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
-            raise RuntimeError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
+        elif triviaQuestion.triviaType is not TriviaQuestionType.TRUE_FALSE:
+            raise ValueError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.triviaType}\"')
 
         answerBool: bool | None = None
+
         try:
             answerBool = await self.__triviaAnswerCompiler.compileBoolAnswer(answer)
         except BadTriviaAnswerException as e:
             self.__timber.log('TriviaAnswerChecker', f'Unable to convert true false answer to bool: \"{answer}\": {e}', e, traceback.format_exc())
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        if answerBool in triviaQuestion.getCorrectAnswerBools():
+        if answerBool is triviaQuestion.correctAnswer:
             return TriviaAnswerCheckResult.CORRECT
         else:
             return TriviaAnswerCheckResult.INCORRECT

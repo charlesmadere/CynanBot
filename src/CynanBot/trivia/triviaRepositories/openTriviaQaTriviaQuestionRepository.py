@@ -95,11 +95,9 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
-            correctAnswerBools: List[bool] = list()
-            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswerBools,
+                correctAnswer = correctAnswer,
                 category = category,
                 categoryId = None,
                 question = question,

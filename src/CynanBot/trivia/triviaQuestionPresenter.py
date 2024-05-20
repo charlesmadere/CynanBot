@@ -12,6 +12,15 @@ from CynanBot.trivia.triviaQuestionPresenterInterface import \
 
 class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
+    async def getCorrectAnswerBool(
+        self,
+        triviaQuestion: TrueFalseTriviaQuestion
+    ) -> bool:
+        if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+
+        return triviaQuestion.correctAnswer
+
     async def getCorrectAnswers(
         self,
         triviaQuestion: AbsTriviaQuestion,
@@ -27,7 +36,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         elif isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
             return await self.__getCorrectAnswersQuestionAnswer(triviaQuestion, delimiter)
         elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            return await self.__getCorrectAnswersTrueFalse(triviaQuestion, delimiter)
+            return await self.__getCorrectAnswersTrueFalse(triviaQuestion)
         else:
             raise RuntimeError(f'Unknown AbsTriviaQuestion type: {triviaQuestion}')
 
@@ -37,10 +46,10 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         delimiter: str
     ) -> str:
         correctAnswers: list[str] = list()
-        rawCorrectAnswers = triviaQuestion.getRawCorrectAnswers()
 
-        for index, correctAnswerChar in enumerate(triviaQuestion.getCorrectAnswerChars()):
-            correctAnswers.append(f'[{correctAnswerChar}] {rawCorrectAnswers[index]}')
+        for index, correctAnswer in triviaQuestion.indexesWithCorrectAnswers.items():
+            correctAnswerOrdinal = chr(ord('A') + index)
+            correctAnswers.append(f'[{correctAnswerOrdinal}] {correctAnswer}')
 
         if len(correctAnswers) == 1:
             return f'The correct answer is: {correctAnswers[0]}'
@@ -53,7 +62,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         triviaQuestion: QuestionAnswerTriviaQuestion,
         delimiter: str
     ) -> str:
-        correctAnswers = triviaQuestion.getCleanedCorrectAnswers()
+        correctAnswers = triviaQuestion.cleanedCorrectAnswers
 
         if len(correctAnswers) == 1:
             return f'The correct answer is: {correctAnswers[0]}'
@@ -63,29 +72,10 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
     async def __getCorrectAnswersTrueFalse(
         self,
-        triviaQuestion: TrueFalseTriviaQuestion,
-        delimiter: str
-    ) -> str:
-        correctAnswers: list[str] = list()
-
-        for correctAnswer in triviaQuestion.getCorrectAnswerBools():
-            correctAnswers.append(str(correctAnswer).lower())
-
-        if len(correctAnswers) == 1:
-            return f'The correct answer is: {correctAnswers[0]}'
-
-        correctAnswersString = delimiter.join(correctAnswers)
-        return f'The correct answers are: {correctAnswersString}'
-
-    async def getCorrectAnswerBools(
-        self,
         triviaQuestion: TrueFalseTriviaQuestion
-    ) -> list[bool]:
-        if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-
-        correctAnswerBools = triviaQuestion.getCorrectAnswerBools()
-        return utils.copyList(correctAnswerBools)
+    ) -> str:
+        correctAnswer = str(triviaQuestion.correctAnswer).lower()
+        return f'The correct answer is: {correctAnswer}'
 
     async def getPrompt(
         self,
@@ -114,32 +104,34 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         responses: list[str] = list()
         ordinalCharacter = 'A'
 
-        for response in triviaQuestion.getMultipleChoiceResponses():
+        for response in triviaQuestion.responses:
             responses.append(f'[{ordinalCharacter}] {response}')
             ordinalCharacter = chr(ord(ordinalCharacter) + 1)
 
         responsesString = delimiter.join(responses)
-        return f'— {triviaQuestion.getQuestion()} {responsesString}'.strip()
+        return f'— {triviaQuestion.question} {responsesString}'.strip()
 
     async def __getPromptQuestionAnswer(
         self,
         triviaQuestion: QuestionAnswerTriviaQuestion
     ) -> str:
-        category = triviaQuestion.getCategory()
-
         categoryPrompt = ''
-        if utils.isValidStr(category):
-            categoryPrompt = f' category is {category} —'
 
-        return f'—{categoryPrompt} {triviaQuestion.getQuestion()}'.strip()
+        if utils.isValidStr(triviaQuestion.category):
+            categoryPrompt = f' category is {triviaQuestion.category} —'
+
+        return f'—{categoryPrompt} {triviaQuestion.question}'.strip()
 
     async def __getPromptTrueFalse(
         self,
         triviaQuestion: TrueFalseTriviaQuestion
     ) -> str:
-        return f'— True or false! {triviaQuestion.getQuestion()}'.strip()
+        return f'— True or false! {triviaQuestion.question}'.strip()
 
-    async def getResponses(self, triviaQuestion: AbsTriviaQuestion) -> list[str]:
+    async def getResponses(
+        self,
+        triviaQuestion: AbsTriviaQuestion
+    ) -> list[str]:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
 
@@ -159,7 +151,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         responses: list[str] = list()
         ordinalCharacter = 'A'
 
-        for response in triviaQuestion.getMultipleChoiceResponses():
+        for response in triviaQuestion.responses:
             responses.append(f'[{ordinalCharacter}] {response}')
             ordinalCharacter = chr(ord(ordinalCharacter) + 1)
 

@@ -15,14 +15,11 @@ class TriviaDifficulty(Enum):
         if not utils.isValidInt(number):
             return TriviaDifficulty.UNKNOWN
 
-        if number == 1:
-            return TriviaDifficulty.EASY
-        elif number == 2:
-            return TriviaDifficulty.MEDIUM
-        elif number == 3:
-            return TriviaDifficulty.HARD
-        else:
-            return TriviaDifficulty.UNKNOWN
+        match number:
+            case 1: return TriviaDifficulty.EASY
+            case 2: return TriviaDifficulty.MEDIUM
+            case 3: return TriviaDifficulty.HARD
+            case _: return TriviaDifficulty.UNKNOWN
 
     @classmethod
     def fromStr(cls, text: str | None):
@@ -31,35 +28,24 @@ class TriviaDifficulty(Enum):
 
         text = text.lower()
 
-        if text == 'easy':
-            return TriviaDifficulty.EASY
-        elif text == 'hard':
-            return TriviaDifficulty.HARD
-        elif text == 'medium':
-            return TriviaDifficulty.MEDIUM
-        else:
-            return TriviaDifficulty.UNKNOWN
+        match text:
+            case 'easy': return TriviaDifficulty.EASY
+            case 'hard': return TriviaDifficulty.HARD
+            case 'medium': return TriviaDifficulty.MEDIUM
+            case _: return TriviaDifficulty.UNKNOWN
 
     def toInt(self) -> int:
-        if self is TriviaDifficulty.EASY:
-            return 1
-        elif self is TriviaDifficulty.MEDIUM:
-            return 2
-        elif self is TriviaDifficulty.HARD:
-            return 3
-        elif self is TriviaDifficulty.UNKNOWN:
-            return 0
-        else:
-            raise RuntimeError(f'unknown TriviaDifficulty: \"{self}\"')
+        match self:
+            case TriviaDifficulty.EASY: return 1
+            case TriviaDifficulty.MEDIUM: return 2
+            case TriviaDifficulty.HARD: return 3
+            case TriviaDifficulty.UNKNOWN: return 0
+            case _: raise RuntimeError(f'unknown TriviaDifficulty: \"{self}\"')
 
     def toStr(self) -> str:
-        if self is TriviaDifficulty.EASY:
-            return 'easy'
-        elif self is TriviaDifficulty.HARD:
-            return 'hard'
-        elif self is TriviaDifficulty.MEDIUM:
-            return 'medium'
-        elif self is TriviaDifficulty.UNKNOWN:
-            return 'unknown'
-        else:
-            raise RuntimeError(f'unknown TriviaDifficulty: \"{self}\"')
+        match self:
+            case TriviaDifficulty.EASY: return 'easy'
+            case TriviaDifficulty.HARD: return 'hard'
+            case TriviaDifficulty.MEDIUM: return 'medium'
+            case TriviaDifficulty.UNKNOWN: return 'unknown'
+            case _: raise RuntimeError(f'unknown TriviaDifficulty: \"{self}\"')

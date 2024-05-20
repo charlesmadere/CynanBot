@@ -1,6 +1,6 @@
 import random
 import traceback
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -61,7 +61,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__maxGeneration: PokepediaGeneration = maxGeneration
 
-    async def __createMoveContestTypeQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
+    async def __createMoveContestTypeQuestion(self, move: PokepediaMove) -> dict[str, Any] | None:
         if not isinstance(move, PokepediaMove):
             raise TypeError(f'move argument is malformed: \"{move}\"')
 
@@ -71,7 +71,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         falseContestTypes = await self.__selectRandomFalseContestTypes(contestType)
 
-        falseContestTypeStrs: List[str] = list()
+        falseContestTypeStrs: list[str] = list()
         for falseContestType in falseContestTypes:
             falseContestTypeStrs.append(falseContestType.toStr())
 
@@ -82,11 +82,11 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
-    async def __createMoveDamageClassQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
+    async def __createMoveDamageClassQuestion(self, move: PokepediaMove) -> dict[str, Any]:
         if not isinstance(move, PokepediaMove):
             raise TypeError(f'move argument is malformed: \"{move}\"')
 
-        damageClassStrs: List[str] = list()
+        damageClassStrs: list[str] = list()
         for damageClass in PokepediaDamageClass:
             damageClassStrs.append(damageClass.toStr())
 
@@ -97,13 +97,13 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
-    async def __createMoveIsAvailableAsMachineQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
+    async def __createMoveIsAvailableAsMachineQuestion(self, move: PokepediaMove) -> dict[str, Any]:
         if not isinstance(move, PokepediaMove):
             raise TypeError(f'move argument is malformed: \"{move}\"')
 
         randomGeneration = await self.__selectRandomGeneration(move.getInitialGeneration())
 
-        machinesStrs: List[str] = list()
+        machinesStrs: list[str] = list()
         for machineType in PokepediaMachineType:
             machinesStrs.append(machineType.toStr())
 
@@ -117,7 +117,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.TRUE_FALSE
         }
 
-    async def __createMoveIsAvailableAsWhichMachineQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
+    async def __createMoveIsAvailableAsWhichMachineQuestion(self, move: PokepediaMove) -> dict[str, Any] | None:
         if not isinstance(move, PokepediaMove):
             raise TypeError(f'move argument is malformed: \"{move}\"')
 
@@ -136,7 +136,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             actualMachineType = machine.getMachineType()
         )
 
-        falseMachineNumbersStrs: List[str] = list()
+        falseMachineNumbersStrs: list[str] = list()
         for falseMachineNumber in falseMachineNumbers:
             falseMachineNumbersStrs.append(f'{machinePrefix}{falseMachineNumber}')
 
@@ -147,14 +147,14 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
-    async def __createMoveQuestion(self) -> Dict[str, Any]:
+    async def __createMoveQuestion(self) -> dict[str, Any]:
         try:
             move = await self.__pokepediaRepository.fetchRandomMove(maxGeneration = self.__maxGeneration)
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        triviaDict: Optional[Dict[str, Any]] = None
+        triviaDict: dict[str, Any] | None = None
 
         while triviaDict is None:
             randomTriviaType = random.randint(0, 3)
@@ -172,14 +172,14 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         return triviaDict
 
-    async def __createNatureQuestion(self) -> Dict[str, Any]:
+    async def __createNatureQuestion(self) -> dict[str, Any]:
         try:
             nature = await self.__pokepediaRepository.fetchRandomNature()
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        triviaDict: Optional[Dict[str, Any]] = None
+        triviaDict: dict[str, Any] | None = None
 
         while triviaDict is None:
             randomTriviaType = random.randint(0, 1)
@@ -204,9 +204,9 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
     async def __createNatureBerryFlavorQuestion(
         self,
         nature: PokepediaNature,
-        berryFlavor: Optional[PokepediaBerryFlavor],
+        berryFlavor: PokepediaBerryFlavor | None,
         likeOrDislikeStr: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         if not isinstance(nature, PokepediaNature):
             raise TypeError(f'nature argument is malformed: \"{nature}\"')
         elif berryFlavor is not None and not isinstance(berryFlavor, PokepediaBerryFlavor):
@@ -216,7 +216,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         randomFlavors = await self.__selectRandomFalseBerryFlavors(berryFlavor)
 
-        flavorsStrs: List[str] = list()
+        flavorsStrs: list[str] = list()
         for randomFlavor in randomFlavors:
             flavorsStrs.append(randomFlavor.toStr())
 
@@ -236,14 +236,14 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
-    async def __createPhysicalOrSpecialDamageClassQuestion(self) -> Dict[str, Any]:
-        applicableDamageClasses: List[PokepediaDamageClass] = [
+    async def __createPhysicalOrSpecialDamageClassQuestion(self) -> dict[str, Any]:
+        applicableDamageClasses: list[PokepediaDamageClass] = [
             PokepediaDamageClass.PHYSICAL, PokepediaDamageClass.SPECIAL
         ]
 
         actualDamageClass = random.choice(applicableDamageClasses)
 
-        applicableElementTypes: List[PokepediaElementType] = [
+        applicableElementTypes: list[PokepediaElementType] = [
             PokepediaElementType.BUG, PokepediaElementType.DARK, PokepediaElementType.DRAGON,
             PokepediaElementType.ELECTRIC, PokepediaElementType.FIGHTING, PokepediaElementType.FIRE,
             PokepediaElementType.FLYING, PokepediaElementType.GHOST, PokepediaElementType.GRASS,
@@ -252,7 +252,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             PokepediaElementType.STEEL, PokepediaElementType.WATER
         ]
 
-        actualElementType: Optional[PokepediaElementType] = None
+        actualElementType: PokepediaElementType | None = None
         while actualElementType is None or PokepediaDamageClass.getTypeBasedDamageClass(actualElementType) is not actualDamageClass:
             actualElementType = random.choice(applicableElementTypes)
 
@@ -261,14 +261,14 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         maxResponses = min(maxResponses, len(PokepediaElementType) - 1)
         responses = random.randint(minResponses, maxResponses)
 
-        falseElementTypes: Set[PokepediaElementType] = set()
+        falseElementTypes: set[PokepediaElementType] = set()
         while len(falseElementTypes) < responses:
             falseElementType = random.choice(applicableElementTypes)
 
             if PokepediaDamageClass.getTypeBasedDamageClass(falseElementType) is not actualDamageClass:
                 falseElementTypes.add(falseElementType)
 
-        falseElementTypesStrs: List[str] = list()
+        falseElementTypesStrs: list[str] = list()
         for falseElementType in falseElementTypes:
             falseElementTypesStrs.append(falseElementType.toStr())
 
@@ -284,7 +284,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
-    async def __createPokemonQuestion(self) -> Dict[str, Any]:
+    async def __createPokemonQuestion(self) -> dict[str, Any]:
         try:
             pokemon = await self.__pokepediaRepository.fetchRandomPokemon(maxGeneration = self.__maxGeneration)
         except GenericNetworkException as e:
@@ -297,7 +297,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         falseTypes = await self.__selectRandomFalseElementTypes(correctTypes)
 
-        falseTypesStrs: List[str] = list()
+        falseTypesStrs: list[str] = list()
         for falseType in falseTypes:
             falseTypesStrs.append(falseType.toStr())
 
@@ -308,7 +308,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
-    async def __createStatOrNatureQuestion(self) -> Dict[str, Any]:
+    async def __createStatOrNatureQuestion(self) -> dict[str, Any]:
         randomTriviaType = random.randint(0, 1)
 
         if randomTriviaType == 0:
@@ -318,14 +318,14 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         else:
             raise RuntimeError(f'PkmnTriviaQuestionRepository\'s randomTriviaType value is out of bounds: \"{randomTriviaType}\"!')
 
-    async def __createStatQuestion(self) -> Dict[str, Any]:
+    async def __createStatQuestion(self) -> dict[str, Any]:
         try:
             stat = await self.__pokepediaRepository.fetchRandomStat()
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        triviaDict: Optional[Dict[str, Any]] = None
+        triviaDict: dict[str, Any] | None = None
 
         while triviaDict is None:
             randomTriviaType = random.randint(0, 1)
@@ -339,7 +339,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         return triviaDict
 
-    async def __createStatDecreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
+    async def __createStatDecreasingNaturesQuestion(self, stat: PokepediaStat) -> dict[str, Any]:
         if not isinstance(stat, PokepediaStat):
             raise TypeError(f'stat argument is malformed: \"{stat}\"')
 
@@ -352,7 +352,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'triviaType': TriviaQuestionType.TRUE_FALSE
         }
 
-    async def __createStatIncreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
+    async def __createStatIncreasingNaturesQuestion(self, stat: PokepediaStat) -> dict[str, Any]:
         if not isinstance(stat, PokepediaStat):
             raise TypeError(f'stat argument is malformed: \"{stat}\"')
 
@@ -372,7 +372,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__timber.log('PkmnTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 
         randomTriviaType = random.randint(0, 6)
-        triviaDict: Optional[Dict[str, Any]] = None
+        triviaDict: dict[str, Any] | None = None
 
         if randomTriviaType <= 2:
             triviaDict = await self.__createPokemonQuestion()
@@ -400,9 +400,9 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         )
 
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings: list[str] = list()
             correctAnswerStrings.append(utils.getStrFromDict(triviaDict, 'correctAnswer'))
-            incorrectAnswers: List[str] = triviaDict['incorrectAnswers']
+            incorrectAnswers: list[str] = triviaDict['incorrectAnswers']
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
                 correctAnswers = correctAnswerStrings,
@@ -418,26 +418,25 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = TriviaSource.POKE_API
+                triviaSource = self.getTriviaSource()
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
-            correctAnswerBools: List[bool] = list()
-            correctAnswerBools.append(utils.getBoolFromDict(triviaDict, 'correctAnswer'))
+            correctAnswer= utils.getBoolFromDict(triviaDict, 'correctAnswer')
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswerBools,
+                correctAnswer = correctAnswer,
                 category = category,
                 categoryId = None,
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = TriviaSource.POKE_API
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Pkmn Trivia: {triviaDict}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
@@ -448,13 +447,13 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __selectRandomFalseBerryFlavors(
         self,
-        actualFlavor: Optional[PokepediaBerryFlavor]
-    ) -> Set[PokepediaBerryFlavor]:
+        actualFlavor: PokepediaBerryFlavor | None
+    ) -> set[PokepediaBerryFlavor]:
         if actualFlavor is not None and not isinstance(actualFlavor, PokepediaBerryFlavor):
             raise ValueError(f'actualFlavor argument is malformed: \"{actualFlavor}\"')
 
-        allFlavors: List[PokepediaBerryFlavor] = list(PokepediaBerryFlavor)
-        falseFlavors: Set[PokepediaBerryFlavor] = set()
+        allFlavors: list[PokepediaBerryFlavor] = list(PokepediaBerryFlavor)
+        falseFlavors: set[PokepediaBerryFlavor] = set()
 
         minResponses = await self._triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
@@ -472,12 +471,12 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
     async def __selectRandomFalseContestTypes(
         self,
         actualType: PokepediaContestType
-    ) -> Set[PokepediaContestType]:
+    ) -> set[PokepediaContestType]:
         if not isinstance(actualType, PokepediaContestType):
             raise TypeError(f'actualType argument is malformed: \"{actualType}\"')
 
-        allTypes: List[PokepediaContestType] = list(PokepediaContestType)
-        falseTypes: Set[PokepediaContestType] = set()
+        allTypes: list[PokepediaContestType] = list(PokepediaContestType)
+        falseTypes: set[PokepediaContestType] = set()
 
         minResponses = await self._triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
@@ -494,13 +493,13 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __selectRandomFalseElementTypes(
         self,
-        actualTypes: List[PokepediaElementType]
-    ) -> Set[PokepediaElementType]:
+        actualTypes: list[PokepediaElementType]
+    ) -> set[PokepediaElementType]:
         if not utils.hasItems(actualTypes):
             raise ValueError(f'actualTypes argument is malformed: \"{actualTypes}\"')
 
-        allTypes: List[PokepediaElementType] = list(PokepediaElementType)
-        falseTypes: Set[PokepediaElementType] = set()
+        allTypes: list[PokepediaElementType] = list(PokepediaElementType)
+        falseTypes: set[PokepediaElementType] = set()
 
         minResponses = await self._triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
@@ -519,7 +518,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         actualMachineNumber: int,
         actualMachineType: PokepediaMachineType
-    ) -> Set[int]:
+    ) -> set[int]:
         if not utils.isValidInt(actualMachineNumber):
             raise ValueError(f'actualMachineNumber argument is malformed: \"{actualMachineNumber}\"')
         elif not isinstance(actualMachineType, PokepediaMachineType):
@@ -530,7 +529,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         responses = random.randint(minResponses, maxResponses)
         maxMachineNumber = actualMachineType.getMaxMachineNumber()
 
-        falseMachineNumbers: Set[int] = set()
+        falseMachineNumbers: set[int] = set()
 
         while len(falseMachineNumbers) < responses:
             randomInt = random.randint(1, maxMachineNumber)
@@ -547,7 +546,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(initialGeneration, PokepediaGeneration):
             raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
 
-        allGenerations: List[PokepediaGeneration] = list(PokepediaGeneration)
+        allGenerations: list[PokepediaGeneration] = list(PokepediaGeneration)
         indexOfMax = allGenerations.index(self.__maxGeneration)
         indexOfMin = allGenerations.index(initialGeneration)
 

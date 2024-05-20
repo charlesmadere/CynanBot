@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -85,7 +85,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: Optional[Dict[str, Any]] = jsonResponse[0]
+        triviaJson: dict[str, Any] | None = jsonResponse[0]
         if not utils.hasItems(triviaJson):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
@@ -105,19 +105,19 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 difficulty = triviaDifficulty.toStr()
             )
 
-        answersJson: Dict[str, str] = triviaJson['answers']
-        answersList: List[Tuple[str, str]] = list(answersJson.items())
+        answersJson: dict[str, str] = triviaJson['answers']
+        answersList: list[Tuple[str, str]] = list(answersJson.items())
         answersList.sort(key = lambda entry: entry[0].lower())
 
-        correctAnswersJson: Dict[str, str] = triviaJson['correct_answers']
-        correctAnswersList: List[Tuple[str, str]] = list(correctAnswersJson.items())
+        correctAnswersJson: dict[str, str] = triviaJson['correct_answers']
+        correctAnswersList: list[Tuple[str, str]] = list(correctAnswersJson.items())
         correctAnswersList.sort(key = lambda entry: entry[0].lower())
 
         if not utils.hasItems(answersList) or not utils.hasItems(correctAnswersList) or len(answersList) != len(correctAnswersList):
             raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s data due to malformed \"answers\" and/or \"correct_answers\" data: {jsonResponse}')
 
-        correctAnswers: List[str] = list()
-        filteredAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
+        filteredAnswers: list[str] = list()
 
         for index, pair in enumerate(answersList):
             if utils.isValidStr(pair[0]) and utils.isValidStr(pair[1]):
@@ -169,7 +169,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Quiz API: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:

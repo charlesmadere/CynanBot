@@ -8,18 +8,18 @@ from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
 class TriviaQuestionPresenterInterface(ABC):
 
     @abstractmethod
+    async def getCorrectAnswerBool(
+        self,
+        triviaQuestion: TrueFalseTriviaQuestion
+    ) -> bool:
+        pass
+
+    @abstractmethod
     async def getCorrectAnswers(
         self,
         triviaQuestion: AbsTriviaQuestion,
         delimiter: str = '; '
     ) -> str:
-        pass
-
-    @abstractmethod
-    async def getCorrectAnswerBools(
-        self,
-        triviaQuestion: TrueFalseTriviaQuestion
-    ) -> list[bool]:
         pass
 
     @abstractmethod
@@ -31,5 +31,8 @@ class TriviaQuestionPresenterInterface(ABC):
         pass
 
     @abstractmethod
-    async def getResponses(self, triviaQuestion: AbsTriviaQuestion) -> list[str]:
+    async def getResponses(
+        self,
+        triviaQuestion: AbsTriviaQuestion
+    ) -> list[str]:
         pass

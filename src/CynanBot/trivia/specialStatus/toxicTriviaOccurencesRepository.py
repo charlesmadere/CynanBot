@@ -91,22 +91,22 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
             userId = userId
         )
 
-        newToxicCount = result.getOldToxicCount() + 1
+        newToxicCount = result.oldToxicCount + 1
 
         newResult = ToxicTriviaResult(
             mostRecent = datetime.now(self.__timeZoneRepository.getDefault()),
             newToxicCount = newToxicCount,
-            oldToxicCount = result.getOldToxicCount(),
-            twitchChannel = result.getTwitchChannel(),
-            twitchChannelId = result.getTwitchChannelId(),
-            userId = result.getUserId()
+            oldToxicCount = result.oldToxicCount,
+            twitchChannel = result.twitchChannel,
+            twitchChannelId = result.twitchChannelId,
+            userId = result.userId
         )
 
         await self.__updateToxicCount(
-            newToxicCount = newResult.getNewToxicCount(),
-            twitchChannel = newResult.getTwitchChannel(),
-            twitchChannelId = newResult.getTwitchChannelId(),
-            userId = newResult.getUserId()
+            newToxicCount = newResult.newToxicCount,
+            twitchChannel = newResult.twitchChannel,
+            twitchChannelId = newResult.twitchChannelId,
+            userId = newResult.userId
         )
 
         return newResult
