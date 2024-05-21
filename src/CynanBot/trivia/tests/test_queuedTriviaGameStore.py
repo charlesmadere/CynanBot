@@ -131,45 +131,45 @@ class TestQueuedTriviaGameStore1():
             isSuperTriviaGameCurrentlyInProgress = False,
             action = self.startNewSuperTriviaGameAction1
         )
-        assert addResult.getAmountAdded() == 2
-        assert addResult.getNewQueueSize() == 2
-        assert addResult.getOldQueueSize() == 0
+        assert addResult.amountAdded == 2
+        assert addResult.newQueueSize == 2
+        assert addResult.oldQueueSize == 0
         assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed() is True
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
             action = self.startNewSuperTriviaGameAction1
         )
-        assert addResult.getAmountAdded() == 0
-        assert addResult.getNewQueueSize() == 2
-        assert addResult.getOldQueueSize() == 2
+        assert addResult.amountAdded == 0
+        assert addResult.newQueueSize == 2
+        assert addResult.oldQueueSize == 2
         assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed() is True
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
             action = self.startNewSuperTriviaGameAction2
         )
-        assert addResult.getAmountAdded() == 1
-        assert addResult.getNewQueueSize() == 3
-        assert addResult.getOldQueueSize() == 2
+        assert addResult.amountAdded == 1
+        assert addResult.newQueueSize == 3
+        assert addResult.oldQueueSize == 2
         assert self.startNewSuperTriviaGameAction2.isQueueActionConsumed() is True
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
             action = self.startNewSuperTriviaGameAction3
         )
-        assert addResult.getAmountAdded() == 0
-        assert addResult.getNewQueueSize() == 3
-        assert addResult.getOldQueueSize() == 3
+        assert addResult.amountAdded == 0
+        assert addResult.newQueueSize == 3
+        assert addResult.oldQueueSize == 3
         assert self.startNewSuperTriviaGameAction3.isQueueActionConsumed() is True
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = False,
             action = self.startNewSuperTriviaGameAction4
         )
-        assert addResult.getAmountAdded() == 4
-        assert addResult.getNewQueueSize() == 4
-        assert addResult.getOldQueueSize() == 0
+        assert addResult.amountAdded == 4
+        assert addResult.newQueueSize == 4
+        assert addResult.oldQueueSize == 0
         assert self.startNewSuperTriviaGameAction4.isQueueActionConsumed() is True
 
     def test_sanity(self):
@@ -222,8 +222,8 @@ class TestQueuedTriviaGameStore3():
     @pytest.mark.asyncio
     async def test_clearQueuedSuperGames_withEmptyTwitchChannel(self):
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('imyt')
-        assert clearResult.getAmountRemoved() == 0
-        assert clearResult.getOldQueueSize() == 0
+        assert clearResult.amountRemoved == 0
+        assert clearResult.oldQueueSize == 0
 
     def test_sanity(self):
         assert self.queuedTriviaGameStore is not None
@@ -277,9 +277,9 @@ class TestQueuedTriviaGameStore4():
             action = self.startNewSuperTriviaGameAction
         )
 
-        assert result.getAmountAdded() == 1
-        assert result.getNewQueueSize() == 1
-        assert result.getOldQueueSize() == 0
+        assert result.amountAdded == 1
+        assert result.newQueueSize == 1
+        assert result.oldQueueSize == 0
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is True
 
     def test_sanity(self):
@@ -334,9 +334,9 @@ class TestQueuedTriviaGameStore5():
             action = self.startNewSuperTriviaGameAction
         )
 
-        assert result.getAmountAdded() == 5
-        assert result.getNewQueueSize() == 5
-        assert result.getOldQueueSize() == 0
+        assert result.amountAdded == 5
+        assert result.newQueueSize == 5
+        assert result.oldQueueSize == 0
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is True
 
     def test_sanity(self):
@@ -389,16 +389,16 @@ class TestQueuedTriviaGameStore6():
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames(
             twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
         )
-        assert clearResult.getAmountRemoved() == 0
-        assert clearResult.getOldQueueSize() == 0
+        assert clearResult.amountRemoved == 0
+        assert clearResult.oldQueueSize == 0
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = False,
             action = self.startNewSuperTriviaGameAction
         )
-        assert addResult.getAmountAdded() == 2
-        assert addResult.getNewQueueSize() == 2
-        assert addResult.getOldQueueSize() == 0
+        assert addResult.amountAdded == 2
+        assert addResult.newQueueSize == 2
+        assert addResult.oldQueueSize == 0
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed()
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize(
@@ -409,8 +409,8 @@ class TestQueuedTriviaGameStore6():
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames(
             twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
         )
-        assert clearResult.getAmountRemoved() == 2
-        assert clearResult.getOldQueueSize() == 2
+        assert clearResult.amountRemoved == 2
+        assert clearResult.oldQueueSize == 2
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize(
             twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
@@ -465,16 +465,16 @@ class TestQueuedTriviaGameStore7():
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
 
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('c')
-        assert clearResult.getAmountRemoved() == 0
-        assert clearResult.getOldQueueSize() == 0
+        assert clearResult.amountRemoved == 0
+        assert clearResult.oldQueueSize == 0
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
             action = self.startNewSuperTriviaGameAction
         )
-        assert addResult.getAmountAdded() == 1
-        assert addResult.getNewQueueSize() == 1
-        assert addResult.getOldQueueSize() == 0
+        assert addResult.amountAdded == 1
+        assert addResult.newQueueSize == 1
+        assert addResult.oldQueueSize == 0
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('c')
         assert queueSize == 1
@@ -483,8 +483,8 @@ class TestQueuedTriviaGameStore7():
         assert queueSize == 1
 
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('c')
-        assert clearResult.getAmountRemoved() == 1
-        assert clearResult.getOldQueueSize() == 1
+        assert clearResult.amountRemoved == 1
+        assert clearResult.oldQueueSize == 1
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('c')
         assert queueSize == 0

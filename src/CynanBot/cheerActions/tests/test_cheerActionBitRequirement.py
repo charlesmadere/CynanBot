@@ -9,7 +9,7 @@ class TestCheerBitActionRequirement():
     def test_fromStr_withEmptyString(self):
         result: CheerActionBitRequirement | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = CheerActionBitRequirement.fromStr('')
 
         assert result is None
@@ -17,7 +17,7 @@ class TestCheerBitActionRequirement():
     def test_fromStr_withNone(self):
         result: CheerActionBitRequirement | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = CheerActionBitRequirement.fromStr(None)  # type: ignore
 
         assert result is None
@@ -33,7 +33,7 @@ class TestCheerBitActionRequirement():
     def test_fromStr_withWhitespaceString(self):
         result: CheerActionBitRequirement | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = CheerActionBitRequirement.fromStr(' ')
 
         assert result is None

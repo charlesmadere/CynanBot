@@ -8,7 +8,7 @@ class TestCheerActionType():
     def test_fromStr_withEmptyString(self):
         result: CheerActionType | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = CheerActionType.fromStr('')
 
         assert result is None
@@ -16,7 +16,7 @@ class TestCheerActionType():
     def test_fromStr_withNone(self):
         result: CheerActionType | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = CheerActionType.fromStr(None)  # type: ignore
 
         assert result is None
@@ -28,7 +28,7 @@ class TestCheerActionType():
     def test_fromStr_withWhitespaceString(self):
         result: CheerActionType | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = CheerActionType.fromStr(' ')
 
         assert result is None

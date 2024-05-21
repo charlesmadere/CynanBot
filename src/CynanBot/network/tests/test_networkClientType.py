@@ -8,7 +8,7 @@ class TestNetworkClientType():
     def test_fromStr_withEmptyString(self):
         result: NetworkClientType | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = NetworkClientType.fromStr('')
 
         assert result is None
@@ -24,7 +24,7 @@ class TestNetworkClientType():
     def test_fromStr_withNone(self):
         result: NetworkClientType | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = NetworkClientType.fromStr(None)  # type: ignore
 
         assert result is None
@@ -32,7 +32,7 @@ class TestNetworkClientType():
     def test_fromStr_withWhitespaceString(self):
         result: NetworkClientType | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = NetworkClientType.fromStr(' ')
 
         assert result is None
