@@ -690,7 +690,7 @@ class GlacialTriviaQuestionRepository(
         elif question.triviaType is not TriviaQuestionType.QUESTION_ANSWER:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.triviaType=})')
 
-        for answer in question.correctAnswers:
+        for answer in question.originalCorrectAnswers:
             await connection.execute_insert(
                 '''
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
