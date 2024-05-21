@@ -62,7 +62,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         triviaQuestion: QuestionAnswerTriviaQuestion,
         delimiter: str
     ) -> str:
-        correctAnswers = triviaQuestion.cleanedCorrectAnswers
+        correctAnswers = triviaQuestion.correctAnswers
 
         if len(correctAnswers) == 1:
             return f'The correct answer is: {correctAnswers[0]}'

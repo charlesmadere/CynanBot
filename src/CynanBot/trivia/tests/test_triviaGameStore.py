@@ -31,7 +31,7 @@ class TriviaGameStoreTests():
     )
 
     normalQuestion2: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-        correctAnswers = [ True ],
+        correctAnswer = True,
         category = None,
         categoryId = None,
         question = 'Is stashiocat a member of the Chicago Bullies?',
@@ -54,6 +54,7 @@ class TriviaGameStoreTests():
     )
 
     superQuestion1: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        additionalCorrectAnswers = None,
         correctAnswers = [ 'Chicago Bullies' ],
         cleanedCorrectAnswers = [ 'chicago bullies' ],
         category = None,
@@ -66,6 +67,7 @@ class TriviaGameStoreTests():
     )
 
     superQuestion2: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        additionalCorrectAnswers = None,
         correctAnswers = [ 'stashiocat' ],
         cleanedCorrectAnswers = [ 'stashiocat' ],
         category = None,

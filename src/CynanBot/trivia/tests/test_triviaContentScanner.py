@@ -60,11 +60,8 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withGnarlyTriviaQuestion1(self):
-        correctAnswers: list[bool] = list()
-        correctAnswers.append(False)
-
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = correctAnswers,
+            correctAnswer = False,
             category = None,
             categoryId = None,
             question = 'QAnon is Trump fighting the deep state and it\'s real.',
@@ -114,6 +111,7 @@ class TestTriviaContentScanner():
         cleanedCorrectAnswers.append('trumpet')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            additionalCorrectAnswers = None,
             correctAnswers = correctAnswers,
             cleanedCorrectAnswers = cleanedCorrectAnswers,
             category = 'Politics',
@@ -135,11 +133,8 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withSimpleTriviaQuestion1(self):
-        correctAnswers: list[bool] = list()
-        correctAnswers.append(True)
-
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = correctAnswers,
+            correctAnswer = True,
             category = None,
             categoryId = None,
             question = 'What is?',
@@ -158,7 +153,7 @@ class TestTriviaContentScanner():
         correctAnswers.append(False)
 
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-            correctAnswers = correctAnswers,
+            correctAnswer = False,
             category = None,
             categoryId = None,
             question = 'Blah blah question here?',
@@ -205,6 +200,7 @@ class TestTriviaContentScanner():
         cleanedCorrectAnswers.append('(King) James')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            additionalCorrectAnswers = None,
             correctAnswers = correctAnswers,
             cleanedCorrectAnswers = cleanedCorrectAnswers,
             category = 'The Dark Ages',

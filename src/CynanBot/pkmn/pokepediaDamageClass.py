@@ -1,6 +1,5 @@
 from __future__ import annotations
 from enum import auto
-from typing import Set
 from typing_extensions import override
 
 from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
@@ -19,13 +18,13 @@ class PokepediaDamageClass(EnumWithToFromStr):
         if not isinstance(elementType, PokepediaElementType):
             raise ValueError(f'elementType argument is malformed: \"{elementType}\"')
 
-        physicalElementTypes: Set[PokepediaElementType] = {
+        physicalElementTypes: set[PokepediaElementType] = {
             PokepediaElementType.BUG, PokepediaElementType.FIGHTING, PokepediaElementType.FLYING,
             PokepediaElementType.GHOST, PokepediaElementType.GROUND, PokepediaElementType.NORMAL,
             PokepediaElementType.POISON, PokepediaElementType.ROCK, PokepediaElementType.STEEL
         }
 
-        specialElementTypes: Set[PokepediaElementType] = {
+        specialElementTypes: set[PokepediaElementType] = {
             PokepediaElementType.DARK, PokepediaElementType.DRAGON, PokepediaElementType.ELECTRIC,
             PokepediaElementType.FIRE, PokepediaElementType.GRASS, PokepediaElementType.ICE,
             PokepediaElementType.PSYCHIC, PokepediaElementType.WATER

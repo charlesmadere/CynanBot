@@ -232,6 +232,7 @@ class GlacialTriviaQuestionRepository(
             cleanedCorrectAnswers = await self.__buildCleanedCorrectAnswersForQuestionAnswerTrivia(correctAnswers)
 
             return QuestionAnswerTriviaQuestion(
+                additionalCorrectAnswers = None,
                 correctAnswers = correctAnswers,
                 cleanedCorrectAnswers = cleanedCorrectAnswers,
                 category = category,

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -46,7 +46,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
-        self.__hasQuestionSetAvailable: Optional[bool] = None
+        self.__hasQuestionSetAvailable: bool | None = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -72,7 +72,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
             correctAnswer = utils.getStrFromDict(triviaDict, 'correctAnswer')
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(correctAnswer)
 
-            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings: list[str] = list()
             correctAnswerStrings.append(correctAnswer)
 
             responses = await self.__triviaQuestionCompiler.compileResponses(triviaDict['responses'])
@@ -109,7 +109,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for OpenTriviaQaTriviaQuestionRepository: {triviaDict}')
 
-    async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:
+    async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
             raise FileNotFoundError(f'Open Trivia QA trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
@@ -126,7 +126,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.hasItems(row) or len(row) != 9:
             raise RuntimeError(f'Received malformed data from OpenTriviaQaTriviaQuestion database: {row}')
 
-        triviaQuestionDict: Dict[str, Any] = {
+        triviaQuestionDict: dict[str, Any] = {
             'category': row[1],
             'correctAnswer': row[0],
             'question': row[2],
@@ -139,7 +139,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:

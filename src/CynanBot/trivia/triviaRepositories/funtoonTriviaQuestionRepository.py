@@ -127,6 +127,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         # `format_type`). These will assist in providing computer-readable answer logic.
 
         return QuestionAnswerTriviaQuestion(
+            additionalCorrectAnswers = None,
             correctAnswers = correctAnswers,
             cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
             category = category,
@@ -135,7 +136,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.FUNTOON
+            triviaSource = self.getTriviaSource()
         )
 
     def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:

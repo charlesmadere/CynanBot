@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -43,7 +43,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
-        self.__hasQuestionSetAvailable: Optional[bool] = None
+        self.__hasQuestionSetAvailable: bool | None = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -61,7 +61,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         question = utils.getStrFromDict(triviaDict, 'question')
         question = await self.__triviaQuestionCompiler.compileQuestion(question)
 
-        responses: List[str] = list()
+        responses: list[str] = list()
         responses.append(utils.getStrFromDict(triviaDict, 'responseA'))
         responses.append(utils.getStrFromDict(triviaDict, 'responseB'))
         responses.append(utils.getStrFromDict(triviaDict, 'responseC'))
@@ -69,7 +69,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswerIndex = utils.getStrFromDict(triviaDict, 'correctAnswer', clean = True)
 
-        correctAnswer: Optional[str] = None
+        correctAnswer: str | None = None
         if correctAnswerIndex.lower() == 'a':
             correctAnswer = responses[0]
         elif correctAnswerIndex.lower() == 'b':
@@ -82,7 +82,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.isValidStr(correctAnswer):
             raise RuntimeError(f'Unknown correctAnswerIndex: \"{correctAnswerIndex}\"')
 
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append(correctAnswer)
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
@@ -105,7 +105,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaSource = self.getTriviaSource()
         )
 
-    async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:
+    async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
             raise FileNotFoundError(f'WWTBAM trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
@@ -122,7 +122,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.hasItems(row) or len(row) != 7:
             raise RuntimeError(f'Received malformed data from WWTBAM database: {row}')
 
-        triviaQuestionDict: Dict[str, Any] = {
+        triviaQuestionDict: dict[str, Any] = {
             'correctAnswer': row[0],
             'question': row[1],
             'responseA': row[2],
@@ -136,7 +136,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE }
 
     def getTriviaSource(self) -> TriviaSource:

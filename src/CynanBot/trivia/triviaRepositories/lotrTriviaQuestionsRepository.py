@@ -94,6 +94,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             expandedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
         return QuestionAnswerTriviaQuestion(
+            additionalCorrectAnswers = None,
             correctAnswers = correctAnswers,
             cleanedCorrectAnswers = list(expandedCorrectAnswers),
             category = 'Lord of the Rings',
