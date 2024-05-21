@@ -31,7 +31,7 @@ class TriviaGameStoreTests():
     )
 
     normalQuestion2: AbsTriviaQuestion = TrueFalseTriviaQuestion(
-        correctAnswers = [ True ],
+        correctAnswer = True,
         category = None,
         categoryId = None,
         question = 'Is stashiocat a member of the Chicago Bullies?',
@@ -58,6 +58,7 @@ class TriviaGameStoreTests():
         cleanedCorrectAnswers = [ 'chicago bullies' ],
         category = None,
         categoryId = None,
+        originalCorrectAnswers = [ 'Chicago Bullies' ],
         question = 'One of this team\'s members is stashiocat.',
         triviaId = 'ghi789',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
@@ -70,6 +71,7 @@ class TriviaGameStoreTests():
         cleanedCorrectAnswers = [ 'stashiocat' ],
         category = None,
         categoryId = None,
+        originalCorrectAnswers = [ 'stashiocat' ],
         question = 'This player forgot to fight Phantoon in a randomizer match.',
         triviaId = 'jkl012',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,

@@ -1,35 +1,18 @@
+from dataclasses import dataclass
 import locale
-from typing import List
 
-import CynanBot.misc.utils as utils
 from CynanBot.trivia.specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
 
 
+@dataclass(frozen = True)
 class ToxicTriviaPunishmentResult():
+    totalPointsStolen: int
+    toxicTriviaPunishments: list[ToxicTriviaPunishment]
 
-    def __init__(
-        self,
-        totalPointsStolen: int,
-        toxicTriviaPunishments: List[ToxicTriviaPunishment]
-    ):
-        if not utils.isValidInt(totalPointsStolen):
-            raise ValueError(f'totalPointsStolen argument is malformed: \"{totalPointsStolen}\"')
-        elif totalPointsStolen < 1 or totalPointsStolen > utils.getIntMaxSafeSize():
-            raise ValueError(f'totalPointsStolen argument is out of bounds: {totalPointsStolen}')
-        elif not utils.hasItems(toxicTriviaPunishments):
-            raise ValueError(f'toxicTriviaPunishments argument is malformed: \"{toxicTriviaPunishments}\"')
+    @property
+    def numberOfToxicTriviaPunishments(self) -> int:
+        return len(self.toxicTriviaPunishments)
 
-        self.__totalPointsStolen: int = totalPointsStolen
-        self.__toxicTriviaPunishments: List[ToxicTriviaPunishment] = toxicTriviaPunishments
-
-    def getNumberOfToxicTriviaPunishments(self) -> int:
-        return len(self.__toxicTriviaPunishments)
-
-    def getTotalPointsStolen(self) -> int:
-        return self.__totalPointsStolen
-
-    def getTotalPointsStolenStr(self) -> str:
-        return locale.format_string("%d", self.__totalPointsStolen, grouping = True)
-
-    def getToxicTriviaPunishments(self) -> List[ToxicTriviaPunishment]:
-        return self.__toxicTriviaPunishments
+    @property
+    def totalPointsStolenStr(self) -> str:
+        return locale.format_string("%d", self.totalPointsStolen, grouping = True)

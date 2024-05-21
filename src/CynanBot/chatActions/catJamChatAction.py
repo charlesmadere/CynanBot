@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
@@ -41,7 +40,7 @@ class CatJamChatAction(AbsChatAction):
 
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ):

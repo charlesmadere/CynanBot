@@ -151,10 +151,6 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        triviaId = question.getTriviaId()
-        triviaSource = question.getTriviaSource().toStr()
-        triviaType = question.getTriviaType().toStr()
-
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
@@ -162,13 +158,13 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3 AND twitchchannelid = $4
                 LIMIT 1
             ''',
-            triviaId, triviaSource, triviaType, twitchChannelId
+            question.triviaId, question.triviaSource.toStr(), question.triviaType.toStr(), twitchChannelId
         )
 
         nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
         nowDateTimeStr = nowDateTime.isoformat()
 
-        originalTriviaSource = question.getOriginalTriviaSource()
+        originalTriviaSource = question.originalTriviaSource
         originalTriviaSourceStr: str | None = None
 
         if originalTriviaSource is not None:
@@ -180,7 +176,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                     INSERT INTO triviahistory (datetime, emote, originaltriviasource, triviaid, triviasource, triviatype, twitchchannelid)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)
                 ''',
-                nowDateTimeStr, emote, originalTriviaSourceStr, triviaId, triviaSource, triviaType, twitchChannelId
+                nowDateTimeStr, emote, originalTriviaSourceStr, question.triviaId, question.triviaSource.toStr(), question.triviaType.toStr(), twitchChannelId
             )
 
             await connection.close()
@@ -192,7 +188,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
 
         if questionDateTime + minimumTimeDelta >= nowDateTime:
             await connection.close()
-            self.__timber.log('TriviaHistoryRepository', f'Encountered duplicate triviaHistory entry that is within the window of being a repeat ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({originalTriviaSource=}) ({triviaId=}) ({triviaSource=}) ({triviaType=}) ({twitchChannel=}) ({twitchChannelId=})')
+            self.__timber.log('TriviaHistoryRepository', f'Encountered duplicate triviaHistory entry that is within the window of being a repeat ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({originalTriviaSource=}) ({question.triviaId=}) ({question.triviaSource=}) ({question.triviaType=}) ({twitchChannel=}) ({twitchChannelId=})')
             return TriviaContentCode.REPEAT
 
         await connection.execute(
@@ -201,9 +197,9 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 SET datetime = $1, emote = $2
                 WHERE triviaid = $3 AND triviasource = $4 AND triviatype = $5 AND twitchchannelid = $6
             ''',
-            nowDateTimeStr, emote, triviaId, triviaSource, triviaType, twitchChannelId
+            nowDateTimeStr, emote, question.triviaId, question.triviaSource.toStr(), question.triviaType.toStr(), twitchChannelId
         )
 
         await connection.close()
-        self.__timber.log('TriviaHistoryRepository', f'Updated triviaHistory entry ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({originalTriviaSource=}) ({triviaId=}) ({triviaSource=}) ({triviaType=}) ({twitchChannel=}) ({twitchChannelId=})')
+        self.__timber.log('TriviaHistoryRepository', f'Updated triviaHistory entry ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({originalTriviaSource=}) ({question.triviaId=}) ({question.triviaSource=}) ({question.triviaType=}) ({twitchChannel=}) ({twitchChannelId=})')
         return TriviaContentCode.OK

@@ -46,15 +46,15 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
-            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+            raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
@@ -202,11 +202,9 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
-            correctAnswerBools: list[bool] = list()
-            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswerBools,
+                correctAnswer = correctAnswer,
                 category = category,
                 categoryId = None,
                 question = question,

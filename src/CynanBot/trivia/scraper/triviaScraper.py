@@ -35,4 +35,4 @@ class TriviaScraper(TriviaScraperInterface):
             return
 
         if await self.__glacialTriviaQuestionRepository.store(question):
-            self.__timber.log('TriviaScraper', f'Stored a trivia question from {question.getTriviaSource()} into glacial storage')
+            self.__timber.log('TriviaScraper', f'Stored a trivia question from {question.triviaSource} into glacial storage')

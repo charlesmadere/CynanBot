@@ -55,9 +55,9 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('WillFryTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('WillFryTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -128,7 +128,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = TriviaDifficulty.UNKNOWN,
                     originalTriviaSource = None,
-                    triviaSource = TriviaSource.WILL_FRY_TRIVIA
+                    triviaSource = self.getTriviaSource()
                 )
             else:
                 self.__timber.log('WillFryTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -140,14 +140,14 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswerBools,
+                correctAnswer = correctAnswer,
                 category = category,
                 categoryId = None,
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = TriviaDifficulty.UNKNOWN,
                 originalTriviaSource = None,
-                triviaSource = TriviaSource.WILL_FRY_TRIVIA
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Will Fry Trivia: {jsonResponse}')

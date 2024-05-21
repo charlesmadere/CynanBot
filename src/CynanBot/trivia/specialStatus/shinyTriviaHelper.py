@@ -122,13 +122,13 @@ class ShinyTriviaHelper():
             userId = userId
         )
 
-        mostRecent = details.getMostRecent()
+        mostRecent = details.mostRecent
 
         if mostRecent is not None:
             now = datetime.now(self.__timeZone)
 
             if now - mostRecent < self.__cooldown:
-                self.__timber.log('ShinyTriviaHelper', f'{userName}:{details.getUserId()} in {details.getTwitchChannel()} would have encountered a shiny, but it was rejected, as their most recent shiny ({details.getMostRecent()}) is within the cooldown time')
+                self.__timber.log('ShinyTriviaHelper', f'{userName}:{details.userId} in {details.twitchChannel} would have encountered a shiny, but it was rejected, as their most recent shiny ({details.mostRecent}) is within the cooldown time')
                 return False
 
         result = await self.__shinyTriviaOccurencesRepository.incrementShinyCount(
@@ -137,7 +137,7 @@ class ShinyTriviaHelper():
             userId = userId
         )
 
-        self.__timber.log('ShinyTriviaHelper', f'In {twitchChannel}, {userName}:{result.getUserId()} has encountered a shiny trivia question!')
+        self.__timber.log('ShinyTriviaHelper', f'In {twitchChannel}, {userName}:{result.userId} has encountered a shiny trivia question!')
 
         return True
 
@@ -179,4 +179,4 @@ class ShinyTriviaHelper():
             userId = userId
         )
 
-        self.__timber.log('ShinyTriviaHelper', f'In {twitchChannel}, {userName}:{result.getUserId()} won a shiny trivia! (they have won {result.getNewShinyCountStr()} total)')
+        self.__timber.log('ShinyTriviaHelper', f'In {twitchChannel}, {userName}:{result.userId} won a shiny trivia! (they have won {result.newShinyCountStr} total)')

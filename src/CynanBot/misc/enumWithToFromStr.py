@@ -14,7 +14,7 @@ class EnumWithToFromStr(Enum):
     @classmethod
     def fromStr(cls, text: str) -> Self:
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: "{text}"')
+            raise TypeError(f'text argument is malformed: "{text}"')
 
         try:
             return cls[text.upper()]

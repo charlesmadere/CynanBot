@@ -65,4 +65,4 @@ class ToxicTriviaHelper():
             userId = userId
         )
 
-        self.__timber.log('ToxicTriviaHelper', f'In {twitchChannel}, {userName}:{result.getUserId()} won a toxic trivia question!')
+        self.__timber.log('ToxicTriviaHelper', f'In {twitchChannel}, {userName}:{result.userId} won a toxic trivia question!')

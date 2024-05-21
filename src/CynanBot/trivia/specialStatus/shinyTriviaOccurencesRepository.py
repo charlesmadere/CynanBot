@@ -91,22 +91,22 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
             userId = userId
         )
 
-        newShinyCount = result.getOldShinyCount() + 1
+        newShinyCount = result.oldShinyCount + 1
 
         newResult = ShinyTriviaResult(
             mostRecent = datetime.now(self.__timeZoneRepository.getDefault()),
             newShinyCount = newShinyCount,
-            oldShinyCount = result.getOldShinyCount(),
-            twitchChannel = result.getTwitchChannel(),
-            twitchChannelId = result.getTwitchChannelId(),
-            userId = result.getUserId()
+            oldShinyCount = result.oldShinyCount,
+            twitchChannel = result.twitchChannel,
+            twitchChannelId = result.twitchChannelId,
+            userId = result.userId
         )
 
         await self.__updateShinyCount(
-            newShinyCount = newResult.getNewShinyCount(),
-            twitchChannel = newResult.getTwitchChannel(),
-            twitchChannelId = newResult.getTwitchChannelId(),
-            userId = newResult.getUserId()
+            newShinyCount = newResult.newShinyCount,
+            twitchChannel = newResult.twitchChannel,
+            twitchChannelId = newResult.twitchChannelId,
+            userId = newResult.userId
         )
 
         return newResult

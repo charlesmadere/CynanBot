@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Set
 
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
@@ -14,7 +13,7 @@ class TriviaQuestionRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         pass
 
     @abstractmethod

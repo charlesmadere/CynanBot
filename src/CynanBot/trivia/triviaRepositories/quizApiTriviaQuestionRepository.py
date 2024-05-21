@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -39,13 +39,13 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not utils.isValidStr(quizApiKey):
-            raise ValueError(f'quizApiKey argument is malformed: \"{quizApiKey}\"')
+            raise TypeError(f'quizApiKey argument is malformed: \"{quizApiKey}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__quizApiKey: str = quizApiKey
@@ -54,9 +54,9 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('QuizApiTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('QuizApiTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -85,7 +85,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: Optional[Dict[str, Any]] = jsonResponse[0]
+        triviaJson: dict[str, Any] | None = jsonResponse[0]
         if not utils.hasItems(triviaJson):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
@@ -105,19 +105,19 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 difficulty = triviaDifficulty.toStr()
             )
 
-        answersJson: Dict[str, str] = triviaJson['answers']
-        answersList: List[Tuple[str, str]] = list(answersJson.items())
+        answersJson: dict[str, str] = triviaJson['answers']
+        answersList: list[Tuple[str, str]] = list(answersJson.items())
         answersList.sort(key = lambda entry: entry[0].lower())
 
-        correctAnswersJson: Dict[str, str] = triviaJson['correct_answers']
-        correctAnswersList: List[Tuple[str, str]] = list(correctAnswersJson.items())
+        correctAnswersJson: dict[str, str] = triviaJson['correct_answers']
+        correctAnswersList: list[Tuple[str, str]] = list(correctAnswersJson.items())
         correctAnswersList.sort(key = lambda entry: entry[0].lower())
 
         if not utils.hasItems(answersList) or not utils.hasItems(correctAnswersList) or len(answersList) != len(correctAnswersList):
             raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s data due to malformed \"answers\" and/or \"correct_answers\" data: {jsonResponse}')
 
-        correctAnswers: List[str] = list()
-        filteredAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
+        filteredAnswers: list[str] = list()
 
         for index, pair in enumerate(answersList):
             if utils.isValidStr(pair[0]) and utils.isValidStr(pair[1]):
@@ -149,7 +149,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = None,
-                    triviaSource = TriviaSource.QUIZ_API
+                    triviaSource = self.getTriviaSource()
                 )
             else:
                 self.__timber.log('QuizApiTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -157,19 +157,19 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             return TrueFalseTriviaQuestion(
-                correctAnswers = utils.strsToBools(correctAnswers),
+                correctAnswer = utils.strictStrToBool(correctAnswers[0]),
                 category = category,
                 categoryId = None,
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = TriviaSource.QUIZ_API
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Quiz API: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:

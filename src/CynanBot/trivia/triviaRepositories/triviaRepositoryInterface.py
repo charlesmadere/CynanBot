@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
@@ -12,7 +11,7 @@ class TriviaRepositoryInterface(ABC):
         self,
         emote: str,
         triviaFetchOptions: TriviaFetchOptions
-    ) -> Optional[AbsTriviaQuestion]:
+    ) -> AbsTriviaQuestion | None:
         pass
 
     @abstractmethod

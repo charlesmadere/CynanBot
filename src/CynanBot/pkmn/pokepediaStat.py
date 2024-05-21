@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import Optional, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.pkmn.pokepediaNature import PokepediaNature
@@ -27,7 +26,7 @@ class PokepediaStat(Enum):
 
         raise ValueError(f'number argument does not match any PokepediaStat: {number}')
 
-    def getDecreasingNatures(self) -> Optional[Set[PokepediaNature]]:
+    def getDecreasingNatures(self) -> set[PokepediaNature] | None:
         if self is PokepediaStat.HP:
             return None
         elif self is PokepediaStat.ATTACK:
@@ -47,7 +46,7 @@ class PokepediaStat(Enum):
         else:
             raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
 
-    def getIncreasingNatures(self) -> Optional[Set[PokepediaNature]]:
+    def getIncreasingNatures(self) -> set[PokepediaNature] | None:
         if self is PokepediaStat.HP:
             return None
         elif self is PokepediaStat.ATTACK:

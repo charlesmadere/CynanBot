@@ -60,7 +60,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('FuntoonTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('FuntoonTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -94,8 +94,11 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         triviaId = utils.getStrFromDict(jsonResponse, 'id')
 
+        originalCorrectAnswers: list[str] = list()
+        originalCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
+
         correctAnswers: list[str] = list()
-        correctAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
+        correctAnswers.extend(originalCorrectAnswers)
 
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
             currentAnswers = correctAnswers,
@@ -131,11 +134,12 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
             category = category,
             categoryId = categoryId,
+            originalCorrectAnswers = originalCorrectAnswers,
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.FUNTOON
+            triviaSource = self.getTriviaSource()
         )
 
     def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:

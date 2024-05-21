@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -33,23 +33,23 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
-            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+            raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
         elif not utils.isValidStr(triviaDatabaseFile):
-            raise ValueError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
+            raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
         self.__timber: TimberInterface = timber
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
-        self.__hasQuestionSetAvailable: Optional[bool] = None
+        self.__hasQuestionSetAvailable: bool | None = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('MillionaireTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('MillionaireTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         triviaDict = await self.__fetchTriviaQuestionDict()
 
@@ -64,7 +64,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         question = utils.getStrFromDict(triviaDict, 'question')
         question = await self.__triviaQuestionCompiler.compileResponse(question)
 
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append(correctAnswer)
 
         multipleChoiceResponses = await self.__triviaQuestionCompiler.compileResponses(triviaDict['responses'])
@@ -85,7 +85,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaSource = self.getTriviaSource()
         )
 
-    async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:
+    async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
             raise FileNotFoundError(f'Millionaire trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
@@ -102,7 +102,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.hasItems(row) or len(row) != 7:
             raise RuntimeError(f'Received malformed data from Millionaire database: {row}')
 
-        triviaQuestionDict: Dict[str, Any] = {
+        triviaQuestionDict: dict[str, Any] = {
             'answer': row[0],
             'question': row[1],
             'responses': [ row[2], row[3], row[4], row[5] ],
@@ -113,7 +113,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE }
 
     def getTriviaSource(self) -> TriviaSource:

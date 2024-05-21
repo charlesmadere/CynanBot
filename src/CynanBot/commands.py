@@ -1,9 +1,7 @@
-import random
 import traceback
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -20,11 +18,7 @@ from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.language.jishoHelperInterface import JishoHelperInterface
-from CynanBot.location.locationsRepositoryInterface import \
-    LocationsRepositoryInterface
 from CynanBot.misc.timedDict import TimedDict
-from CynanBot.openWeather.exceptions import \
-    OpenWeatherApiKeyUnavailableException
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -325,8 +319,7 @@ class AddUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
-
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddUserCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
@@ -724,7 +717,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to delete additional trivia answers as not enough arguments were given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: Optional[str] = splits[1]
+        emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -828,14 +821,14 @@ class GetCheerActionsCommand(AbsCommand):
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__delimiter: str = delimiter
 
-    async def __actionsToStr(self, actions: List[CheerAction]) -> str:
-        if not isinstance(actions, List):
+    async def __actionsToStr(self, actions: list[CheerAction]) -> str:
+        if not isinstance(actions, list):
             raise ValueError(f'actions argument is malformed: \"{actions}\"')
 
         if len(actions) == 0:
             return f'ⓘ You have no cheer actions'
 
-        cheerActionStrings: List[str] = list()
+        cheerActionStrings: list[str] = list()
 
         for action in actions:
             cheerActionStrings.append(f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}')
@@ -967,7 +960,7 @@ class GetTriviaAnswersCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get additional trivia answers as not enough arguments were given. Example: !gettriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: Optional[str] = splits[1]
+        emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -1106,7 +1099,7 @@ class JishoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
-        query: Optional[str] = splits[1]
+        query: str | None = splits[1]
         self.__lastMessageTimes.update(user.getHandle())
 
         try:
@@ -1544,7 +1537,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
@@ -1619,7 +1612,7 @@ class RemoveUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveUserCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !removeuser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
@@ -2013,11 +2006,6 @@ class TtsCommand(AbsCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
-    async def __chooseRandomSoundAlert(self) -> Optional[SoundAlert]:
-        soundAlerts: List[Optional[SoundAlert]] = list(SoundAlert)
-        soundAlerts.append(None)
-        return random.choice(soundAlerts)
-
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
@@ -2041,7 +2029,7 @@ class TtsCommand(AbsCommand):
             return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = await self.__chooseRandomSoundAlert(),
+            soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId(),
             ttsEvent = TtsEvent(
@@ -2119,13 +2107,13 @@ class TwitchInfoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.getHandle()}')
             return
 
-        userName: Optional[str] = splits[1]
+        userName: str | None = splits[1]
         if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
             self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.getHandle()}')
             return
 
-        userInfo: Optional[TwitchUserDetails] = None
+        userInfo: TwitchUserDetails | None = None
         try:
             userInfo = await self.__twitchApiService.fetchUserDetailsWithUserName(
                 twitchAccessToken = twitchAccessToken,

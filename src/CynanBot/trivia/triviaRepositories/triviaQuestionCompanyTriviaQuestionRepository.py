@@ -50,7 +50,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('TriviaQuestionCompanyTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('TriviaQuestionCompanyTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         triviaDict = await self.__fetchTriviaQuestionDict()
 

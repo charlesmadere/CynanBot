@@ -1,6 +1,5 @@
 import random
 import traceback
-from typing import List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.language.exceptions import (
@@ -43,13 +42,13 @@ class TranslationHelper(TranslationHelperInterface):
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
 
-    async def __getAvailableTranslationApis(self) -> List[TranslationApi]:
-        translationApis: List[TranslationApi] = [
+    async def __getAvailableTranslationApis(self) -> list[TranslationApi]:
+        translationApis: list[TranslationApi] = [
             self.__deepLTranslationApi,
             self.__googleTranslationApi
         ]
 
-        translationApisToRemove: List[TranslationApi] = list()
+        translationApisToRemove: list[TranslationApi] = list()
 
         for translationApi in translationApis:
             if not await translationApi.isAvailable():
@@ -64,7 +63,7 @@ class TranslationHelper(TranslationHelperInterface):
     async def translate(
         self,
         text: str,
-        targetLanguage: Optional[LanguageEntry] = None
+        targetLanguage: LanguageEntry | None = None
     ) -> TranslationResponse:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
@@ -91,8 +90,8 @@ class TranslationHelper(TranslationHelperInterface):
             raise NoTranslationEnginesAvailableException(f'No translation engines are available! ({text=}) ({targetLanguage=})')
 
         attempt = 0
-        translationApi: Optional[TranslationApi] = None
-        translationResponse: Optional[TranslationResponse] = None
+        translationApi: TranslationApi | None = None
+        translationResponse: TranslationResponse | None = None
 
         while translationResponse is None and len(translationApis) >= 1:
             # In order to help keep us from running beyond the free usage tiers for the Google

@@ -1,5 +1,5 @@
 {
-    "scraper_enabled": false,
+    "scraper_enabled": true,
     "trivia_sources": {
         "bongo": {
             "is_enabled": true,
@@ -10,7 +10,7 @@
             "weight": 1000
         },
         "glacial": {
-            "is_enabled": false,
+            "is_enabled": true,
             "weight": 5
         },
         "j_service": {

@@ -145,11 +145,9 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
-            correctAnswerBools: list[bool] = list()
-            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswerBools,
+                correctAnswer = correctAnswer,
                 category = category,
                 categoryId = None,
                 question = question,
