@@ -11,6 +11,10 @@ from CynanBot.storage.linesReaderInterface import LinesReaderInterface
 from CynanBot.storage.linesStaticReader import LinesStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.content.triviaContentScannerInterface import \
+    TriviaContentScannerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
@@ -19,10 +23,6 @@ from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
-from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
-from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
-from CynanBot.trivia.content.triviaContentScannerInterface import \
-    TriviaContentScannerInterface
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
@@ -111,11 +111,11 @@ class TestTriviaContentScanner():
         cleanedCorrectAnswers.append('trumpet')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            additionalCorrectAnswers = None,
             correctAnswers = correctAnswers,
             cleanedCorrectAnswers = cleanedCorrectAnswers,
             category = 'Politics',
             categoryId = None,
+            originalCorrectAnswers = correctAnswers,
             question = 'This instrument is made from brass.', 
             triviaId = 'asdfasdfasdf',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
@@ -200,11 +200,11 @@ class TestTriviaContentScanner():
         cleanedCorrectAnswers.append('(King) James')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            additionalCorrectAnswers = None,
             correctAnswers = correctAnswers,
             cleanedCorrectAnswers = cleanedCorrectAnswers,
             category = 'The Dark Ages',
             categoryId = None,
+            originalCorrectAnswers = correctAnswers,
             question = 'Who was a king from way back?',
             triviaId = 'azerty',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,

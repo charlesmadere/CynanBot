@@ -39,13 +39,13 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not utils.isValidStr(quizApiKey):
-            raise ValueError(f'quizApiKey argument is malformed: \"{quizApiKey}\"')
+            raise TypeError(f'quizApiKey argument is malformed: \"{quizApiKey}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__quizApiKey: str = quizApiKey
@@ -54,9 +54,9 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('QuizApiTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('QuizApiTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         clientSession = await self.__networkClientProvider.get()
 

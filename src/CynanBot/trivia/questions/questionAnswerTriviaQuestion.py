@@ -3,7 +3,8 @@ from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
-from CynanBot.trivia.triviaExceptions import BadTriviaOriginalCorrectAnswersException, NoTriviaCorrectAnswersException
+from CynanBot.trivia.triviaExceptions import (
+    BadTriviaOriginalCorrectAnswersException, NoTriviaCorrectAnswersException)
 
 
 class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):

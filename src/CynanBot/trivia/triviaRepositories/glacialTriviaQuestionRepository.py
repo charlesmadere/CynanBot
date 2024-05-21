@@ -25,9 +25,10 @@ from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
-from CynanBot.trivia.triviaExceptions import (NoTriviaQuestionException,
+from CynanBot.trivia.triviaExceptions import (
     BadTriviaTypeException, NoTriviaCorrectAnswersException,
-    NoTriviaMultipleChoiceResponsesException, UnsupportedTriviaTypeException)
+    NoTriviaMultipleChoiceResponsesException, NoTriviaQuestionException,
+    UnsupportedTriviaTypeException)
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
@@ -232,11 +233,11 @@ class GlacialTriviaQuestionRepository(
             cleanedCorrectAnswers = await self.__buildCleanedCorrectAnswersForQuestionAnswerTrivia(correctAnswers)
 
             return QuestionAnswerTriviaQuestion(
-                additionalCorrectAnswers = None,
                 correctAnswers = correctAnswers,
                 cleanedCorrectAnswers = cleanedCorrectAnswers,
                 category = category,
                 categoryId = categoryId,
+                originalCorrectAnswers = correctAnswers,
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
@@ -389,6 +390,7 @@ class GlacialTriviaQuestionRepository(
             cleanedCorrectAnswers = cleanedCorrectAnswers,
             category = category,
             categoryId = categoryId,
+            originalCorrectAnswers = correctAnswers,
             question = question,
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,

@@ -33,11 +33,11 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
-            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+            raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
         elif not utils.isValidStr(triviaDatabaseFile):
-            raise ValueError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
+            raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
         self.__timber: TimberInterface = timber
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
@@ -47,9 +47,9 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('MillionaireTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('MillionaireTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
         triviaDict = await self.__fetchTriviaQuestionDict()
 
