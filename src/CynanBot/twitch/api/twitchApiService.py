@@ -344,8 +344,8 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return TwitchBannedUsersResponse(
             users = allUsers,
-            broadcasterId = bannedUserRequest.getBroadcasterId(),
-            requestedUserId = bannedUserRequest.getRequestedUserId()
+            broadcasterId = bannedUserRequest.broadcasterId,
+            requestedUserId = bannedUserRequest.requestedUserId
         )
 
     async def __fetchBannedUsers(
@@ -367,10 +367,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif currentPagination is not None and not isinstance(currentPagination, TwitchPaginationResponse):
             raise TypeError(f'currentPagination argument is malformed: \"{currentPagination}\"')
 
-        url = f'https://api.twitch.tv/helix/moderation/banned?broadcaster_id={bannedUserRequest.getBroadcasterId()}&first=100'
+        url = f'https://api.twitch.tv/helix/moderation/banned?broadcaster_id={bannedUserRequest.broadcasterId}&first=100'
 
-        if utils.isValidStr(bannedUserRequest.getRequestedUserId()):
-            url = f'{url}&user_id={bannedUserRequest.getRequestedUserId()}'
+        if utils.isValidStr(bannedUserRequest.requestedUserId):
+            url = f'{url}&user_id={bannedUserRequest.requestedUserId}'
 
         if currentPagination is not None:
             url = f'{url}&first={currentPagination.cursor}'

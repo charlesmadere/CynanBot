@@ -83,7 +83,6 @@ openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
 weatherReportPresenter: WeatherReportPresenterInterface = WeatherReportPresenter()
 
 weatherRepository: WeatherRepositoryInterface = WeatherRepository(
-    networkClientProvider = networkClientProvider,
     openWeatherApiKeyProvider = openWeatherApiKeyProvider,
     openWeatherApiService = openWeatherApiService,
     timber = timber

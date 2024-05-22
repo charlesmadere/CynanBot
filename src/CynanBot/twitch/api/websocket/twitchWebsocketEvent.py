@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -12,8 +12,8 @@ from CynanBot.twitch.api.twitchRewardRedemptionStatus import \
     TwitchRewardRedemptionStatus
 from CynanBot.twitch.api.twitchSubGift import TwitchSubGift
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
-from CynanBot.twitch.api.twitchWebsocketChannelPointsVoting import \
-    TwitchChannelPointsVoting
+from CynanBot.twitch.api.websocket.twitchWebsocketChannelPointsVoting import \
+    TwitchWebsocketChannelPointsVoting
 from CynanBot.twitch.api.websocket.twitchWebsocketNoticeType import \
     TwitchWebsocketNoticeType
 
@@ -57,13 +57,13 @@ class TwitchWebsocketEvent():
         userName: Optional[str] = None,
         winningOutcomeId: Optional[str] = None,
         tier: Optional[TwitchSubscriberTier] = None,
-        channelPointsVoting: Optional[TwitchChannelPointsVoting] = None,
-        choices: Optional[List[TwitchPollChoice]] = None,
+        channelPointsVoting: Optional[TwitchWebsocketChannelPointsVoting] = None,
+        choices: Optional[list[TwitchPollChoice]] = None,
         pollStatus: Optional[TwitchPollStatus] = None,
         rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = None,
         communitySubGift: Optional[TwitchCommunitySubGift] = None,
         noticeType: Optional[TwitchWebsocketNoticeType] = None,
-        outcomes: Optional[List[TwitchOutcome]] = None,
+        outcomes: Optional[list[TwitchOutcome]] = None,
         reward: Optional[TwitchReward] = None,
         subGift: Optional[TwitchSubGift] = None
     ):
@@ -137,9 +137,9 @@ class TwitchWebsocketEvent():
             raise ValueError(f'winningOutcomeId argument is malformed: \"{winningOutcomeId}\"')
         elif tier is not None and not isinstance(tier, TwitchSubscriberTier):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
-        elif channelPointsVoting is not None and not isinstance(channelPointsVoting, TwitchChannelPointsVoting):
+        elif channelPointsVoting is not None and not isinstance(channelPointsVoting, TwitchWebsocketChannelPointsVoting):
             raise ValueError(f'channelPointsVoting argument is malformed: \"{channelPointsVoting}\"')
-        elif choices is not None and not isinstance(choices, List):
+        elif choices is not None and not isinstance(choices, list):
             raise ValueError(f'choices argument is malformed: \"{choices}\"')
         elif pollStatus is not None and not isinstance(pollStatus, TwitchPollStatus):
             raise ValueError(f'pollStatus argument is malformed: \"{pollStatus}\"')
@@ -149,7 +149,7 @@ class TwitchWebsocketEvent():
             raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
         elif noticeType is not None and not isinstance(noticeType, TwitchWebsocketNoticeType):
             raise ValueError(f'noticeType argument is malformed: \"{noticeType}\"')
-        elif outcomes is not None and not isinstance(outcomes, List):
+        elif outcomes is not None and not isinstance(outcomes, list):
             raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
         elif reward is not None and not isinstance(reward, TwitchReward):
             raise ValueError(f'reward argument is malformed: \"{reward}\"')
@@ -191,13 +191,13 @@ class TwitchWebsocketEvent():
         self.__userName: Optional[str] = userName
         self.__winningOutcomeId: Optional[str] = winningOutcomeId
         self.__tier: Optional[TwitchSubscriberTier] = tier
-        self.__channelPointsVoting: Optional[TwitchChannelPointsVoting] = channelPointsVoting
-        self.__choices: Optional[List[TwitchPollChoice]] = choices
+        self.__channelPointsVoting: Optional[TwitchWebsocketChannelPointsVoting] = channelPointsVoting
+        self.__choices: Optional[list[TwitchPollChoice]] = choices
         self.__pollStatus: Optional[TwitchPollStatus] = pollStatus
         self.__rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = rewardRedemptionStatus
         self.__communitySubGift: Optional[TwitchCommunitySubGift] = communitySubGift
         self.__noticeType: Optional[TwitchWebsocketNoticeType] = noticeType
-        self.__outcomes: Optional[List[TwitchOutcome]] = outcomes
+        self.__outcomes: Optional[list[TwitchOutcome]] = outcomes
         self.__reward: Optional[TwitchReward] = reward
         self.__subGift: Optional[TwitchSubGift] = subGift
 
@@ -219,10 +219,10 @@ class TwitchWebsocketEvent():
     def getCategoryName(self) -> Optional[str]:
         return self.__categoryName
 
-    def getChannelPointsVoting(self) -> Optional[TwitchChannelPointsVoting]:
+    def getChannelPointsVoting(self) -> Optional[TwitchWebsocketChannelPointsVoting]:
         return self.__channelPointsVoting
 
-    def getChoices(self) -> Optional[List[TwitchPollChoice]]:
+    def getChoices(self) -> Optional[list[TwitchPollChoice]]:
         return self.__choices
 
     def getCommunitySubGift(self) -> Optional[TwitchCommunitySubGift]:
@@ -264,7 +264,7 @@ class TwitchWebsocketEvent():
     def getNoticeType(self) -> Optional[TwitchWebsocketNoticeType]:
         return self.__noticeType
 
-    def getOutcomes(self) -> Optional[List[TwitchOutcome]]:
+    def getOutcomes(self) -> Optional[list[TwitchOutcome]]:
         return self.__outcomes
 
     def getPollStatus(self) -> Optional[TwitchPollStatus]:
@@ -337,7 +337,7 @@ class TwitchWebsocketEvent():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'broadcasterUserId': self.__broadcasterUserId,

@@ -7,8 +7,8 @@ from CynanBot.twitch.api.twitchOutcomePredictor import TwitchOutcomePredictor
 from CynanBot.twitch.api.twitchPollChoice import TwitchPollChoice
 from CynanBot.twitch.api.twitchReward import TwitchReward
 from CynanBot.twitch.api.twitchSubGift import TwitchSubGift
-from CynanBot.twitch.api.twitchWebsocketChannelPointsVoting import \
-    TwitchChannelPointsVoting
+from CynanBot.twitch.api.websocket.twitchWebsocketChannelPointsVoting import \
+    TwitchWebsocketChannelPointsVoting
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
@@ -27,7 +27,7 @@ class TwitchWebsocketJsonMapperInterface(ABC):
     async def parseWebsocketChannelPointsVoting(
         self,
         channelPointsVotingJson: dict[str, Any] | None
-    ) -> TwitchChannelPointsVoting | None:
+    ) -> TwitchWebsocketChannelPointsVoting | None:
         pass
 
     @abstractmethod

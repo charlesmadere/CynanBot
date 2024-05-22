@@ -79,7 +79,7 @@ class TwitchWebsocketSubscriptionType(Enum):
             case TwitchWebsocketSubscriptionType.SUBSCRIBE: return '1'
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT: return '1'
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE: return '1'
-            case _: raise RuntimeError(f'unknown WebsocketSubscriptionType: \"{self}\"')
+            case _: raise RuntimeError(f'unknown TwitchWebsocketSubscriptionType: \"{self}\"')
 
     def toStr(self) -> str:
         match self:

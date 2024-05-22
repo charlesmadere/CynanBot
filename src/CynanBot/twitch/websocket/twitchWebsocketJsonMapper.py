@@ -15,8 +15,8 @@ from CynanBot.twitch.api.twitchRewardRedemptionStatus import \
     TwitchRewardRedemptionStatus
 from CynanBot.twitch.api.twitchSubGift import TwitchSubGift
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
-from CynanBot.twitch.api.twitchWebsocketChannelPointsVoting import \
-    TwitchChannelPointsVoting
+from CynanBot.twitch.api.websocket.twitchWebsocketChannelPointsVoting import \
+    TwitchWebsocketChannelPointsVoting
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
@@ -58,14 +58,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
     async def parseWebsocketChannelPointsVoting(
         self,
         channelPointsVotingJson: dict[str, Any] | None
-    ) -> TwitchChannelPointsVoting | None:
+    ) -> TwitchWebsocketChannelPointsVoting | None:
         if not isinstance(channelPointsVotingJson, dict) or len(channelPointsVotingJson) == 0:
             return None
 
         isEnabled = utils.getBoolFromDict(channelPointsVotingJson, 'is_enabled')
         amountPerVote = utils.getIntFromDict(channelPointsVotingJson, 'amount_per_vote')
 
-        return TwitchChannelPointsVoting(
+        return TwitchWebsocketChannelPointsVoting(
             isEnabled = isEnabled,
             amountPerVote = amountPerVote
         )
@@ -455,7 +455,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(eventJson, 'tier'))
 
-        channelPointsVoting: TwitchChannelPointsVoting | None = None
+        channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 

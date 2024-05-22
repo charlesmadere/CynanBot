@@ -1,18 +1,9 @@
 from abc import ABC, abstractmethod
 
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
-    TrueFalseTriviaQuestion
 
 
 class TriviaQuestionPresenterInterface(ABC):
-
-    @abstractmethod
-    async def getCorrectAnswerBool(
-        self,
-        triviaQuestion: TrueFalseTriviaQuestion
-    ) -> bool:
-        pass
 
     @abstractmethod
     async def getCorrectAnswers(

@@ -12,15 +12,6 @@ from CynanBot.trivia.triviaQuestionPresenterInterface import \
 
 class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
-    async def getCorrectAnswerBool(
-        self,
-        triviaQuestion: TrueFalseTriviaQuestion
-    ) -> bool:
-        if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-
-        return triviaQuestion.correctAnswer
-
     async def getCorrectAnswers(
         self,
         triviaQuestion: AbsTriviaQuestion,

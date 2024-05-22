@@ -1,5 +1,3 @@
-from typing import Dict, Optional
-
 import CynanBot.misc.utils as utils
 
 
@@ -11,26 +9,26 @@ class LinkedNode():
 
     def __init__(self, key: str):
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
         self.key: str = key
-        self.next: Optional[LinkedNode] = None
-        self.prev: Optional[LinkedNode] = None
+        self.next: LinkedNode | None = None
+        self.prev: LinkedNode | None = None
 
 
 class LruCache():
 
     def __init__(self, capacity: int):
         if not utils.isValidInt(capacity):
-            raise ValueError(f'capacity argument is malformed: \"{capacity}\"')
+            raise TypeError(f'capacity argument is malformed: \"{capacity}\"')
         elif capacity < 2 or capacity > utils.getIntMaxSafeSize():
             raise ValueError(f'capacity argument is out of bounds: {capacity}')
 
         self.__capacity: int = capacity
-        self.__lookup: Dict[str, Optional[LinkedNode]] = dict()
+        self.__lookup: dict[str, LinkedNode | None] = dict()
         self.__stub: LinkedNode = LinkedNode("stub")
-        self.__head: Optional[LinkedNode] = self.__stub.next
-        self.__tail: Optional[LinkedNode] = self.__stub.next
+        self.__head: LinkedNode | None = self.__stub.next
+        self.__tail: LinkedNode | None = self.__stub.next
 
     def __append_new_node(self, newNode: LinkedNode):
         """  add the new node to the tail end
