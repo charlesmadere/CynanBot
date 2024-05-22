@@ -3,6 +3,8 @@ import pytest
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.openWeather.openWeatherAirPollutionIndex import \
+    OpenWeatherAirPollutionIndex
 from CynanBot.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
 from CynanBot.openWeather.openWeatherJsonMapperInterface import \
     OpenWeatherJsonMapperInterface
@@ -22,9 +24,39 @@ class TestOpenWeatherJsonMapper():
     )
 
     @pytest.mark.asyncio
+    async def test_parseAirPollutionIndex_withFive(self):
+        result = await self.jsonMapper.parseAirPollutionIndex(5)
+        assert result is OpenWeatherAirPollutionIndex.VERY_POOR
+
+    @pytest.mark.asyncio
+    async def test_parseAirPollutionIndex_withFour(self):
+        result = await self.jsonMapper.parseAirPollutionIndex(4)
+        assert result is OpenWeatherAirPollutionIndex.POOR
+
+    @pytest.mark.asyncio
     async def test_parseAirPollutionIndex_withNone(self):
         result = await self.jsonMapper.parseAirPollutionIndex(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseAirPollutionIndex_withOne(self):
+        result = await self.jsonMapper.parseAirPollutionIndex(1)
+        assert result is OpenWeatherAirPollutionIndex.GOOD
+
+    @pytest.mark.asyncio
+    async def test_parseAirPollutionIndex_withThree(self):
+        result = await self.jsonMapper.parseAirPollutionIndex(3)
+        assert result is OpenWeatherAirPollutionIndex.MODERATE
+
+    @pytest.mark.asyncio
+    async def test_parseAirPollutionIndex_withTwo(self):
+        result = await self.jsonMapper.parseAirPollutionIndex(2)
+        assert result is OpenWeatherAirPollutionIndex.FAIR
+
+    @pytest.mark.asyncio
+    async def test_parseAirPollutionIndex_withZero(self):
+        result = await self.jsonMapper.parseAirPollutionIndex(0)
+        assert result is OpenWeatherAirPollutionIndex.GOOD
 
     @pytest.mark.asyncio
     async def test_parseAirPollutionReport_withNone(self):
