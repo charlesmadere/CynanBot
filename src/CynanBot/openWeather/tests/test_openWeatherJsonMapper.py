@@ -1,9 +1,11 @@
 import pytest
 
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from CynanBot.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from CynanBot.openWeather.openWeatherJsonMapperInterface import \
+    OpenWeatherJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 
