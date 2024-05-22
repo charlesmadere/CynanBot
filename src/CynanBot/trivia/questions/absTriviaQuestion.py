@@ -7,7 +7,6 @@ from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (BadTriviaDifficultyException,
                                               BadTriviaIdException,
                                               BadTriviaSourceException,
-                                              BadTriviaTypeException,
                                               NoTriviaQuestionException)
 
 
