@@ -338,13 +338,13 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'viewers' in eventJson and utils.isValidInt(eventJson.get('viewers')):
             viewers = utils.getIntFromDict(eventJson, 'viewers')
 
-        endedAt: SimpleDateTime | None = None
+        endedAt: datetime | None = None
         if 'ended_at' in eventJson and utils.isValidStr(eventJson.get('ended_at')):
-            endedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ended_at')))
+            endedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'ended_at'))
 
-        endsAt: SimpleDateTime | None = None
+        endsAt: datetime | None = None
         if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
-            endsAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ends_at')))
+            endsAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'ends_at'))
 
         lockedAt: SimpleDateTime | None = None
         if 'locked_at' in eventJson and utils.isValidStr(eventJson.get('locked_at')):
@@ -516,13 +516,13 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
             isGift = isGift,
+            endedAt = endedAt,
+            endsAt = endsAt,
             followedAt = followedAt,
             bits = bits,
             cumulativeMonths = cumulativeMonths,
             total = total,
             viewers = viewers,
-            endedAt = endedAt,
-            endsAt = endsAt,
             lockedAt = lockedAt,
             locksAt = locksAt,
             redeemedAt = redeemedAt,
