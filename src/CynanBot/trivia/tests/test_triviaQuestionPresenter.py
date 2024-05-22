@@ -47,6 +47,16 @@ class TestTriviaQuestionPresenter():
         assert correctAnswer == 'The correct answer is: false'
 
     @pytest.mark.asyncio
+    async def test_getPrompt_withTrueFalseQuestion1(self):
+        prompt = await self.presenter.getPrompt(self.trueFalseQuestion1)
+        assert prompt == '— True or false! The earth is a globe.'
+
+    @pytest.mark.asyncio
+    async def test_getPrompt_withTrueFalseQuestion2(self):
+        prompt = await self.presenter.getPrompt(self.trueFalseQuestion2)
+        assert prompt == '— True or false! The earth is flat.'
+
+    @pytest.mark.asyncio
     async def test_getResponses_withTrueFalseQuestion1(self):
         responses = await self.presenter.getResponses(self.trueFalseQuestion1)
         assert isinstance(responses, list)
