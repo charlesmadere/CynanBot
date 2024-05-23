@@ -30,8 +30,18 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         if await self.__twitchTokensRepository.hasAccessToken(twitchChannel):
             return await self.__twitchTokensRepository.getAccessToken(twitchChannel)
         else:
-            administratorUserName = await self.__administratorProvider.getAdministratorUserName()
-            return await self.__twitchTokensRepository.getAccessToken(administratorUserName)
+            administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+            return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
+
+    async def getAccessTokenByIdOrFallback(self, twitchChannelId: str) -> str | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if await self.__twitchTokensRepository.hasAccessTokenById(twitchChannelId):
+            return await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
+        else:
+            administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+            return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
 
     async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
@@ -41,5 +51,16 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
 
         if not utils.isValidStr(accessToken):
             raise TwitchAccessTokenMissingException(f'Unable to find Twitch access token for \"{twitchChannel}\"')
+
+        return accessToken
+
+    async def requireAccessTokenByIdOrFallback(self, twitchChannelId: str) -> str:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        accessToken = await self.getAccessTokenByIdOrFallback(twitchChannelId)
+
+        if not utils.isValidStr(accessToken):
+            raise TwitchAccessTokenMissingException(f'Unable to find Twitch access token for \"{twitchChannelId}\"')
 
         return accessToken

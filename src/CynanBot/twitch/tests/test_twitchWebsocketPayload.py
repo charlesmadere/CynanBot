@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
@@ -20,11 +22,13 @@ from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
 
 class TestTwitchWebsocketPayload():
 
+    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
     def __createEvent(self) -> TwitchWebsocketEvent:
         return TwitchWebsocketEvent()
 
     def __createSession(self) -> TwitchWebsocketSession:
-        connectedAt = datetime.now(timezone.utc)
+        connectedAt = datetime.now(self.timeZoneRepository.getDefault())
 
         return TwitchWebsocketSession(
             keepAliveTimeoutSeconds = 100,
@@ -35,7 +39,7 @@ class TestTwitchWebsocketPayload():
         )
 
     def __createSubscription(self) -> TwitchWebsocketSubscription:
-        createdAt = datetime.now(timezone.utc)
+        createdAt = datetime.now(self.timeZoneRepository.getDefault())
 
         return TwitchWebsocketSubscription(
             cost = 100,

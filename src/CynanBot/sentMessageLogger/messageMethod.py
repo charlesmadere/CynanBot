@@ -7,9 +7,7 @@ class MessageMethod(Enum):
     TWITCH_API = auto()
 
     def toStr(self) -> str:
-        if self is MessageMethod.IRC:
-            return 'IRC'
-        elif self is MessageMethod.TWITCH_API:
-            return 'Twitch API'
-        else:
-            raise RuntimeError(f'unknown MessageMethod: \"{self}\"')
+        match self:
+            case MessageMethod.IRC: return 'IRC'
+            case MessageMethod.TWITCH_API: return 'Twitch API'
+            case _: raise RuntimeError(f'unknown MessageMethod: \"{self}\"')

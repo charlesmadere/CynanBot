@@ -69,6 +69,8 @@ from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
 from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
+from CynanBot.funtoon.funtoonJsonMapper import FuntoonJsonMapper
+from CynanBot.funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from CynanBot.funtoon.funtoonRepository import FuntoonRepository
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
@@ -481,6 +483,7 @@ twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJ
 twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
     twitchCredentialsProvider = authRepository
 )
@@ -569,17 +572,23 @@ emojiRepository: EmojiRepositoryInterface = EmojiRepository(
 emojiHelper: EmojiHelperInterface = EmojiHelper(
     emojiRepository = emojiRepository
 )
+
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader('funtoonTokensRepositorySeedFile.json')
 )
+
+funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
+
 funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
+    funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
     networkClientProvider = networkClientProvider,
     timber = timber
 )
+
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
@@ -617,12 +626,14 @@ twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
 
 sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
     backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface = TwitchTimeoutRemodRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemodHelper(
@@ -686,16 +697,19 @@ deepLTranslationApi: TranslationApi = DeepLTranslationApi(
 )
 
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
     googleCloudCredentialsProvider = authRepository,
-    googleJsonMapper = googleJsonMapper
+    googleJsonMapper = googleJsonMapper,
+    timeZoneRepository = timeZoneRepository
 )
 
 googleApiService: GoogleApiServiceInterface = GoogleApiService(
@@ -803,6 +817,7 @@ shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     triviaSettingsRepository = triviaSettingsRepository
 )
 toxicTriviaHelper = ToxicTriviaHelper(
@@ -1014,6 +1029,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     ),
     shinyTriviaHelper = shinyTriviaHelper,
     superTriviaCooldownHelper = SuperTriviaCooldownHelper(
+        timeZoneRepository = timeZoneRepository,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     timber = timber,
@@ -1152,7 +1168,8 @@ ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
 )
 
 ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
 )
 
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(

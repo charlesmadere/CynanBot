@@ -3,6 +3,8 @@ from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.funtoon.exceptions import NoFuntoonTokenException
+from CynanBot.funtoon.funtoonJsonMapperInterface import \
+    FuntoonJsonMapperInterface
 from CynanBot.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
@@ -17,11 +19,14 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
     def __init__(
         self,
+        funtoonJsonMapper: FuntoonJsonMapperInterface,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
         funtoonApiUrl: str = 'https://funtoon.party/api'
     ):
+        if not isinstance(funtoonJsonMapper, FuntoonJsonMapperInterface):
+            raise TypeError(f'funtoonJsonMapper argument is malformed: \"{funtoonJsonMapper}\"')
         if not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(networkClientProvider, NetworkClientProvider):
@@ -31,6 +36,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         elif not utils.isValidUrl(funtoonApiUrl):
             raise TypeError(f'funtoonApiUrl argument is malformed: \"{funtoonApiUrl}\"')
 
+        self.__funtoonJsonMapper: FuntoonJsonMapperInterface = funtoonJsonMapper
         self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
@@ -62,7 +68,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         funtoonToken: str,
         twitchChannel: str,
         twitchChannelId: str,
-        data: Any | None = None
+        data: dict[str, Any] | str | None = None
     ) -> bool:
         if not utils.isValidStr(event):
             raise TypeError(f'event argument is malformed: \"{event}\"')
@@ -168,13 +174,16 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnCatch as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
             return False
 
-        data = None
+        data: dict[str, Any] | str | None = None
+
         if funtoonPkmnCatchType is None:
             data = userThatRedeemed
         else:
+            catchType = await self.__funtoonJsonMapper.serializePkmnCatchType(funtoonPkmnCatchType)
+
             data = {
                 'who': userThatRedeemed,
-                'catchType': funtoonPkmnCatchType.toStr()
+                'catchType': catchType
             }
 
         return await self.__hitFuntoon(

@@ -217,7 +217,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             remodDateTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = durationSeconds)
 
             await self.__twitchTimeoutRemodHelper.submitRemodData(TwitchTimeoutRemodData(
-                remodDateTime = SimpleDateTime(remodDateTime),
+                remodDateTime = remodDateTime,
                 broadcasterUserId = twitchChannelId,
                 broadcasterUserName = user.getHandle(),
                 userId = userIdToTimeout

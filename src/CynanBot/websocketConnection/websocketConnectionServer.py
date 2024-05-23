@@ -2,13 +2,15 @@ import asyncio
 import json
 import queue
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from queue import SimpleQueue
 from typing import Any
 
 import websockets
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
@@ -25,45 +27,45 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         settingsJsonReader: JsonReaderInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 5,
         port: int = 8765,
         host: str = '0.0.0.0',
         websocketSettingsFile: str = 'websocketSettings.json',
-        eventTimeToLive: timedelta = timedelta(seconds = 30),
-        timeZone: timezone = timezone.utc
+        eventTimeToLive: timedelta = timedelta(seconds = 30)
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
-            raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 3 or sleepTimeSeconds > 10:
-            raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
+            raise TypeError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(port):
-            raise ValueError(f'port argument is malformed: \"{port}\"')
+            raise TypeError(f'port argument is malformed: \"{port}\"')
         elif port <= 1000 or port > utils.getIntMaxSafeSize():
-            raise ValueError(f'port argument is out of bounds: {port}')
+            raise TypeError(f'port argument is out of bounds: {port}')
         elif not utils.isValidStr(host):
-            raise ValueError(f'host argument is malformed: \"{host}\"')
+            raise TypeError(f'host argument is malformed: \"{host}\"')
         elif not utils.isValidStr(websocketSettingsFile):
-            raise ValueError(f'websocketSettingsFile argument is malformed: \"{websocketSettingsFile}\"')
+            raise TypeError(f'websocketSettingsFile argument is malformed: \"{websocketSettingsFile}\"')
         elif not isinstance(eventTimeToLive, timedelta):
-            raise ValueError(f'eventTimeToLive argument is malformed: \"{eventTimeToLive}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'eventTimeToLive argument is malformed: \"{eventTimeToLive}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__port: int = port
         self.__host: str = host
         self.__websocketSettingsFile: str = websocketSettingsFile
         self.__eventTimeToLive: timedelta = eventTimeToLive
-        self.__timeZone: timezone = timeZone
 
         self.__isStarted: bool = False
         self.__cache: dict[str, Any] | None = None
@@ -118,8 +120,8 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             self.__timber.log('WebsocketConnectionServer', f'Adding event to queue (current qsize is {currentSize}): {event}')
 
         self.__eventQueue.put(WebsocketEvent(
-            eventData = event,
-            timeZone = self.__timeZone
+            eventTime = datetime.now(self.__timeZoneRepository.getDefault()), 
+            eventData = event
         ))
 
     def start(self):
@@ -168,17 +170,17 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                 try:
                     event = self.__eventQueue.get_nowait()
 
-                    if event.getEventTime() + self.__eventTimeToLive >= datetime.now(self.__timeZone):
-                        eventJson = json.dumps(event.getEventData(), sort_keys = True)
+                    if event.eventTime + self.__eventTimeToLive >= datetime.now(self.__timeZoneRepository.getDefault()):
+                        eventJson = json.dumps(event.eventData, sort_keys = True)
                         await websocket.send(eventJson)
 
                         if isDebugLoggingEnabled:
-                            self.__timber.log('WebsocketConnectionServer', f'Sent event to \"{path}\": {event.getEventData()}')
+                            self.__timber.log('WebsocketConnectionServer', f'Sent event to \"{path}\": {event.eventData}')
                         else:
                             self.__timber.log('WebsocketConnectionServer', f'Sent event to \"{path}\"')
                     else:
                         if isDebugLoggingEnabled:
-                            self.__timber.log('WebsocketConnectionServer', f'Discarded an event meant for \"{path}\": {event.getEventData()}')
+                            self.__timber.log('WebsocketConnectionServer', f'Discarded an event meant for \"{path}\": {event.eventData}')
                         else:
                             self.__timber.log('WebsocketConnectionServer', f'Discarded an event meant for \"{path}\"')
                 except queue.Empty as e:

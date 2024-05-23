@@ -61,8 +61,8 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'remodAction argument is malformed: \"{remodAction}\"')
 
         await self.__twitchTimeoutRemodRepository.delete(
-            broadcasterUserId = remodAction.getBroadcasterUserId(),
-            userId = remodAction.getUserId()
+            broadcasterUserId = remodAction.broadcasterUserId,
+            userId = remodAction.userId
         )
 
     async def __refresh(self):
@@ -75,41 +75,41 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         broadcastersWithoutTokens: set[str] = set()
 
         for remodAction in remodActions:
-            if remodAction.getBroadcasterUserId() in broadcastersWithoutTokens:
+            if remodAction.broadcasterUserId in broadcastersWithoutTokens:
                 continue
 
-            twitchAccessToken = twitchAccessTokens.get(remodAction.getBroadcasterUserId(), None)
+            twitchAccessToken = twitchAccessTokens.get(remodAction.broadcasterUserId, None)
 
             if not utils.isValidStr(twitchAccessToken):
-                if not await self.__twitchTokensRepository.hasAccessToken(
-                    twitchChannel = remodAction.getBroadcasterUserName()
+                if not await self.__twitchTokensRepository.hasAccessTokenById(
+                    twitchChannelId = remodAction.broadcasterUserId
                 ):
-                    self.__timber.log('TwitchTimeoutRemodHelper', f'There is no Twitch access token available for {remodAction.getBroadcasterUserName()}:{remodAction.getBroadcasterUserId()}')
-                    broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
+                    self.__timber.log('TwitchTimeoutRemodHelper', f'There is no Twitch access token available for {remodAction.broadcasterUserName}:{remodAction.broadcasterUserId}')
+                    broadcastersWithoutTokens.add(remodAction.broadcasterUserId)
                     await self.__deleteFromRepository(remodAction)
                     continue
 
-                twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
-                    twitchChannel = remodAction.getBroadcasterUserName()
+                twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+                    twitchChannelId = remodAction.broadcasterUserId
                 )
 
                 if not utils.isValidStr(twitchAccessToken):
-                    self.__timber.log('TwitchTimeoutRemodHelper', f'Unable to retrieve Twitch access token for {remodAction.getBroadcasterUserName()}:{remodAction.getBroadcasterUserId()}')
-                    broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
+                    self.__timber.log('TwitchTimeoutRemodHelper', f'Unable to retrieve Twitch access token for {remodAction.broadcasterUserName}:{remodAction.broadcasterUserId}')
+                    broadcastersWithoutTokens.add(remodAction.broadcasterUserId)
                     await self.__deleteFromRepository(remodAction)
                     continue
 
-                twitchAccessTokens[remodAction.getBroadcasterUserId()] = twitchAccessToken
+                twitchAccessTokens[remodAction.broadcasterUserId] = twitchAccessToken
 
             userName = await self.__userIdsRepository.requireUserName(
-                userId = remodAction.getUserId(),
+                userId = remodAction.userId,
                 twitchAccessToken = twitchAccessToken
             )
 
             if await self.__twitchApiService.addModerator(
-                broadcasterId = remodAction.getBroadcasterUserId(),
+                broadcasterId = remodAction.broadcasterUserId,
                 twitchAccessToken = twitchAccessToken,
-                userId = remodAction.getUserId()
+                userId = remodAction.userId
             ):
                 self.__timber.log('TwitchTimeoutRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userName=})')
                 await self.__deleteFromRepository(remodAction)

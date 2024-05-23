@@ -703,7 +703,7 @@ class TriviaUtils(TriviaUtilsInterface):
             if userId == bannedGameController.userId:
                 return False
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchUser.getHandle())
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
 
         twitchUserId = await self.__userIdsRepository.fetchUserId(
             userName = twitchUser.getHandle(),

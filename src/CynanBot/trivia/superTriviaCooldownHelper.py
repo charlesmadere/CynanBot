@@ -1,7 +1,9 @@
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelperInterface import \
     SuperTriviaCooldownHelperInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
@@ -12,22 +14,24 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
 
     def __init__(
         self,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface,
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+        if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__timeZone: tzinfo = timeZone
 
-        self.__values: dict[str, datetime] = defaultdict(lambda: datetime.now(timeZone) - timedelta(days = 1))
+        self.__values: dict[str, datetime] = defaultdict(
+            lambda: datetime.now(timeZoneRepository.getDefault()) - timedelta(weeks = 1)
+        )
 
     async def getTwitchChannelIdsInCooldown(self) -> set[str]:
         twitchChannelIds: set[str] = set()
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         for twitchChannelId, cooldown in self.__values.items():
             if cooldown > now:
@@ -39,7 +43,7 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         return now <= self.__values[twitchChannelId]
 
     async def update(self, twitchChannelId: str):
@@ -48,6 +52,6 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
 
         cooldownSeconds = await self.__triviaSettingsRepository.getSuperTriviaCooldownSeconds()
         cooldown = timedelta(seconds = cooldownSeconds)
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         self.__values[twitchChannelId] = now + cooldown

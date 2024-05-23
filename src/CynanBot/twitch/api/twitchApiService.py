@@ -1,7 +1,8 @@
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from typing import Any
 
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.network.exceptions import GenericNetworkException
@@ -70,26 +71,26 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchCredentialsProvider: TwitchCredentialsProviderInterface,
-        twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
-        timeZone: tzinfo = timezone.utc
+        twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchCredentialsProvider, TwitchCredentialsProviderInterface):
             raise TypeError(f'twitchCredentialsProvider argument is malformed: \"{twitchCredentialsProvider}\"')
         elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
             raise TypeError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchCredentialsProvider: TwitchCredentialsProviderInterface = twitchCredentialsProvider
         self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
-        self.__timeZone: tzinfo = timeZone
 
     async def addModerator(
         self,
@@ -196,7 +197,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         )
 
     async def __calculateExpirationTime(self, expiresInSeconds: int | None) -> datetime:
-        nowDateTime = datetime.now(self.__timeZone)
+        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         if utils.isValidInt(expiresInSeconds) and expiresInSeconds > 0:
             return nowDateTime + timedelta(seconds = expiresInSeconds)
@@ -1166,7 +1167,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if responseStatusCode != 200 or not utils.isValidStr(clientId) or not utils.isValidInt(expiresInSeconds):
             return None
 
-        nowDateTime = datetime.now(self.__timeZone)
+        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
         expiresInTimeDelta = timedelta(seconds = expiresInSeconds)
         expirationTime = nowDateTime + expiresInTimeDelta
 

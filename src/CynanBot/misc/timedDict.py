@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Dict, Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 import CynanBot.misc.utils as utils
 
@@ -20,8 +20,8 @@ class TimedDict(Generic[T]):
         self.__cacheTimeToLive: timedelta = cacheTimeToLive
         self.__timeZone: tzinfo = timeZone
 
-        self.__times: Dict[str, Optional[datetime]] = dict()
-        self.__values: Dict[str, Optional[T]] = dict()
+        self.__times: dict[str, datetime | None] = dict()
+        self.__values: dict[str, T | None] = dict()
 
     def clear(self):
         self.__times.clear()
@@ -34,7 +34,7 @@ class TimedDict(Generic[T]):
         self.__times.pop(key, None)
         self.__values.pop(key, None)
 
-    def __getitem__(self, key: str) -> Optional[T]:
+    def __getitem__(self, key: str) -> T | None:
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')
 
@@ -65,7 +65,7 @@ class TimedDict(Generic[T]):
         else:
             return False
 
-    def __setitem__(self, key: str, value: Optional[T]):
+    def __setitem__(self, key: str, value: T | None):
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')
 

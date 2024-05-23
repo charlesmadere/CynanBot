@@ -1,7 +1,8 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.simpleDateTime import SimpleDateTime
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
@@ -17,17 +18,21 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         remodTimeBuffer: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(remodTimeBuffer, timedelta):
             raise TypeError(f'remodTimeBuffer argument is malformed: \"{remodTimeBuffer}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__remodTimeBuffer: timedelta = remodTimeBuffer
 
         self.__isDatabaseReady: bool = False
@@ -43,7 +48,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (broadcasteruserid, userid) DO UPDATE SET remoddatetime = EXCLUDED.remoddatetime
             ''',
-            data.getBroadcasterUserId(), data.getRemodDateTime().getIsoFormatStr(), data.getUserId()
+            data.broadcasterUserId, data.remodDateTime.isoformat(), data.userId
         )
 
         await connection.close()
@@ -79,11 +84,11 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
 
         await connection.close()
         data: list[TwitchTimeoutRemodData] = list()
-        now = SimpleDateTime()
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if records is not None and len(records) >= 1:
             for record in records:
-                remodDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[1]))
+                remodDateTime = datetime.fromisoformat(record[1])
 
                 if remodDateTime >= (now + self.__remodTimeBuffer):
                     break

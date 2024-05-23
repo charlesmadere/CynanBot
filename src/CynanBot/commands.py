@@ -332,7 +332,9 @@ class AddUserCommand(AbsCommand):
 
         userId = await self.__userIdsRepository.fetchUserId(
             userName = userName,
-            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(ctx.getTwitchChannelName())
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+                twitchChannelId = await ctx.getTwitchChannelId()
+            )
         )
 
         if not utils.isValidStr(userId):
@@ -2090,7 +2092,9 @@ class TwitchInfoCommand(AbsCommand):
             self.__timber.log('TwitchInfoCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = await ctx.getTwitchChannelId()
+        )
 
         if not utils.isValidStr(twitchAccessToken):
             twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()

@@ -8,5 +8,13 @@ class TwitchTokensUtilsInterface(ABC):
         pass
 
     @abstractmethod
+    async def getAccessTokenByIdOrFallback(self, twitchChannelId: str) -> str | None:
+        pass
+
+    @abstractmethod
     async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
+        pass
+
+    @abstractmethod
+    async def requireAccessTokenByIdOrFallback(self, twitchChannelId: str) -> str:
         pass

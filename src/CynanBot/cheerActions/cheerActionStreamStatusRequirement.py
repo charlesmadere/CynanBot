@@ -16,21 +16,15 @@ class CheerActionStreamStatusRequirement(Enum):
 
         text = text.lower()
 
-        if text == 'any':
-            return CheerActionStreamStatusRequirement.ANY
-        elif text == 'offline':
-            return CheerActionStreamStatusRequirement.OFFLINE
-        elif text == 'online':
-            return CheerActionStreamStatusRequirement.ONLINE
-        else:
-            raise ValueError(f'unknown CheerActionStreamStatusRequirement: \"{text}\"')
+        match text:
+            case 'any': return CheerActionStreamStatusRequirement.ANY
+            case 'offline': return CheerActionStreamStatusRequirement.OFFLINE
+            case 'online': return CheerActionStreamStatusRequirement.ONLINE
+            case _: raise ValueError(f'unknown CheerActionStreamStatusRequirement: \"{text}\"')
 
     def getDatabaseString(self) -> str:
-        if self is CheerActionStreamStatusRequirement.ANY:
-            return 'any'
-        elif self is CheerActionStreamStatusRequirement.OFFLINE:
-            return 'offline'
-        elif self is CheerActionStreamStatusRequirement.ONLINE:
-            return 'online'
-        else:
-            raise RuntimeError(f'unknown CheerActionStreamStatusRequirement: \"{self}\"')
+        match self:
+            case CheerActionStreamStatusRequirement.ANY: return 'any'
+            case CheerActionStreamStatusRequirement.OFFLINE: return 'offline'
+            case CheerActionStreamStatusRequirement.ONLINE: return 'online'
+            case _: raise RuntimeError(f'unknown CheerActionStreamStatusRequirement: \"{self}\"')

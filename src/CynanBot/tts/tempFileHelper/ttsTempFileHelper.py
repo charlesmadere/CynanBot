@@ -1,10 +1,12 @@
 import os
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.tempFileHelper.ttsTempFile import TtsTempFile
 from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
@@ -16,25 +18,25 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
     def __init__(
         self,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         maxDeletionAttempts: int = 3,
-        timeToLive: timedelta = timedelta(minutes = 15),
-        timeZone: tzinfo = timezone.utc
+        timeToLive: timedelta = timedelta(minutes = 15)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidInt(maxDeletionAttempts):
             raise TypeError(f'maxDeletionAttempts argument is malformed: \"{maxDeletionAttempts}\"')
         elif maxDeletionAttempts < 1 or maxDeletionAttempts > utils.getIntMaxSafeSize():
             raise ValueError(f'maxDeletionAttempts argument is out of bounds: {maxDeletionAttempts}')
         elif not isinstance(timeToLive, timedelta):
             raise TypeError(f'timeToLive argument is malformed: \"{timeToLive}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__maxDeletionAttempts: int = maxDeletionAttempts
         self.__timeToLive: timedelta = timeToLive
-        self.__timeZone: tzinfo = timeZone
 
         self.__tempFiles: list[TtsTempFile] = list()
 
@@ -67,7 +69,7 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
     async def __getTempFilesToDelete(self) -> list[TtsTempFile]:
         tempFilesToDrop: list[TtsTempFile] = list()
         tempFilesToDelete: list[TtsTempFile] = list()
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         for tempFile in self.__tempFiles:
             if tempFile.getDeletionAttempts() > self.__maxDeletionAttempts:
@@ -93,7 +95,7 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
             self.__timber.log('TtsTempFileHelper', f'Attempted to register temporary file \"{fileName}\" but it doesn\'t exist')
             return
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         self.__tempFiles.append(TtsTempFile(
             creationDateTime = now,

@@ -1,8 +1,10 @@
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
 from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
     GoogleApiAccessTokenStorageInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -11,19 +13,19 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        expireTimeBuffer: timedelta = timedelta(minutes = 3),
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface,
+        expireTimeBuffer: timedelta = timedelta(minutes = 3)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(expireTimeBuffer, timedelta):
             raise TypeError(f'expireTimeBuffer argument is malformed: \"{expireTimeBuffer}\"')
-        elif not isinstance(timeZone, timezone):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__expireTimeBuffer: timedelta = expireTimeBuffer
-        self.__timeZone: tzinfo = timeZone
 
         self.__accessToken: GoogleAccessToken | None = None
 
@@ -33,7 +35,7 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         if accessToken is None:
             return None
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         expireTime = accessToken.expireTime
 
         if (now + self.__expireTimeBuffer) < expireTime:

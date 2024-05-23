@@ -7,9 +7,12 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 import CynanBot.misc.utils as utils
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.sentMessageLogger.messageMethod import MessageMethod
 from CynanBot.sentMessageLogger.sentMessage import SentMessage
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
@@ -23,6 +26,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/sentMessageLogger'
     ):
@@ -30,6 +34,8 @@ class SentMessageLogger(SentMessageLoggerInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
@@ -39,6 +45,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__logRootDirectory: str = logRootDirectory
 
@@ -49,17 +56,15 @@ class SentMessageLogger(SentMessageLoggerInterface):
         if not isinstance(message, SentMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        prefix = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} — {message.getMessageMethod().toStr()} — '
+        prefix = f'{message.sendTime.getDateAndTimeStr(True)} — {message.messageMethod.toStr()} — '
 
         error = ''
-        if not message.wasSuccessfullySent():
-            error = f'message failed to send after {message.getNumberOfRetries()} attempt(s) — '
-        elif message.getNumberOfRetries() >= 1:
-            error = f'message was sent, but it required {message.getNumberOfRetries()} attempt(s) — '
+        if not message.successfullySent:
+            error = f'message failed to send after {message.numberOfRetries} attempt(s) — '
+        elif message.numberOfRetries >= 1:
+            error = f'message was sent, but it required {message.numberOfRetries} attempt(s) — '
 
-        suffix = f'{message.getMsg()}'
-
-        logStatement = f'{prefix}{error}{suffix}'.strip()
+        logStatement = f'{prefix}{error}{message.msg}'.strip()
         return f'{logStatement}\n'
 
     def log(
@@ -86,11 +91,16 @@ class SentMessageLogger(SentMessageLoggerInterface):
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
+        sendTime = SimpleDateTime(
+            timeZone = self.__timeZoneRepository.getDefault()
+        )
+
         sentMessage = SentMessage(
             successfullySent = successfullySent,
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
             messageMethod = messageMethod,
+            sendTime = sendTime,
             msg = msg,
             twitchChannel = twitchChannel
         )
@@ -130,10 +140,10 @@ class SentMessageLogger(SentMessageLoggerInterface):
         structure: dict[str, dict[str, list[SentMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for message in messages:
-            twitchChannel = message.getTwitchChannel().lower()
-            simpleDateTime = message.getSimpleDateTime()
-            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{simpleDateTime.getYearStr()}/{simpleDateTime.getMonthStr()}'
-            messageFile = f'{messageDirectory}/{simpleDateTime.getDayStr()}.log'
+            twitchChannel = message.twitchChannel.lower()
+            sendTime = message.sendTime
+            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{sendTime.getYearStr()}/{sendTime.getMonthStr()}'
+            messageFile = f'{messageDirectory}/{sendTime.getDayStr()}.log'
             structure[messageDirectory][messageFile].append(message)
 
         for messageDirectory, messageFileToMessagesDict in structure.items():

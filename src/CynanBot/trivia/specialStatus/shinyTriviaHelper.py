@@ -1,9 +1,11 @@
 import random
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
@@ -18,9 +20,9 @@ class ShinyTriviaHelper():
         cutenessRepository: CutenessRepositoryInterface,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        cooldown: timedelta = timedelta(hours = 3),
-        timeZone: tzinfo = timezone.utc
+        cooldown: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -28,19 +30,19 @@ class ShinyTriviaHelper():
             raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__cooldown: timedelta = cooldown
-        self.__timeZone: tzinfo = timeZone
 
         self.__rankToProbabilityDict: dict[int, float] = {
             1: 0.500,
@@ -125,7 +127,7 @@ class ShinyTriviaHelper():
         mostRecent = details.mostRecent
 
         if mostRecent is not None:
-            now = datetime.now(self.__timeZone)
+            now = datetime.now(self.__timeZoneRepository.getDefault())
 
             if now - mostRecent < self.__cooldown:
                 self.__timber.log('ShinyTriviaHelper', f'{userName}:{details.userId} in {details.twitchChannel} would have encountered a shiny, but it was rejected, as their most recent shiny ({details.mostRecent}) is within the cooldown time')

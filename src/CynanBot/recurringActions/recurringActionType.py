@@ -26,44 +26,32 @@ class RecurringActionType(Enum):
             raise ValueError(f'unknown RecurringActionType: \"{text}\"')
 
     def getDefaultRecurringActionTimingMinutes(self) -> int:
-        if self is RecurringActionType.SUPER_TRIVIA:
-            return 60
-        elif self is RecurringActionType.WEATHER:
-            return 150
-        elif self is RecurringActionType.WORD_OF_THE_DAY:
-            return 90
-        else:
-            raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
+        match self:
+            case RecurringActionType.SUPER_TRIVIA: return 60
+            case RecurringActionType.WEATHER: return 150
+            case RecurringActionType.WORD_OF_THE_DAY: return 90
+            case _: raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
 
     def getMinimumRecurringActionTimingMinutes(self) -> int:
-        if self is RecurringActionType.SUPER_TRIVIA:
-            return 5
-        elif self is RecurringActionType.WEATHER:
-            return 30
-        elif self is RecurringActionType.WORD_OF_THE_DAY:
-            return 30
-        else:
-            raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
+        match self:
+            case RecurringActionType.SUPER_TRIVIA: return 5
+            case RecurringActionType.WEATHER: return 30
+            case RecurringActionType.WORD_OF_THE_DAY: return 30
+            case _: raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
 
     def __repr__(self) -> str:
         return self.toStr()
 
     def toReadableStr(self) -> str:
-        if self is RecurringActionType.SUPER_TRIVIA:
-            return 'Super Trivia'
-        elif self is RecurringActionType.WEATHER:
-            return 'Weather'
-        elif self is RecurringActionType.WORD_OF_THE_DAY:
-            return 'Word of the Day'
-        else:
-            raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
+        match self:
+            case RecurringActionType.SUPER_TRIVIA: return 'Super Trivia'
+            case RecurringActionType.WEATHER: return 'Weather'
+            case RecurringActionType.WORD_OF_THE_DAY: return 'Word of the Day'
+            case _: raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
 
     def toStr(self) -> str:
-        if self is RecurringActionType.SUPER_TRIVIA:
-            return 'super_trivia'
-        elif self is RecurringActionType.WEATHER:
-            return 'weather'
-        elif self is RecurringActionType.WORD_OF_THE_DAY:
-            return 'word_of_the_day'
-        else:
-            raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
+        match self:
+            case RecurringActionType.SUPER_TRIVIA: return 'super_trivia'
+            case RecurringActionType.WEATHER: return 'weather'
+            case RecurringActionType.WORD_OF_THE_DAY: return 'word_of_the_day'
+            case _: raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')

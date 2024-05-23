@@ -113,12 +113,11 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
-
         if not utils.isValidStr(twitchAccessToken):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
             return False
 
-        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
         if not utils.isValidStr(twitchChannelAccessToken):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch channel access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
             return False

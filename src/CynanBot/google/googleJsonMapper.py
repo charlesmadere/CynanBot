@@ -1,5 +1,5 @@
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from typing import Any
 
 import CynanBot.misc.utils as utils
@@ -24,6 +24,8 @@ from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.google.googleVoiceGender import GoogleVoiceGender
 from CynanBot.google.googleVoiceSelectionParams import \
     GoogleVoiceSelectionParams
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -32,15 +34,15 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__timeZone: tzinfo = timeZone
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
     async def parseAccessToken(
         self,
@@ -49,7 +51,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if jsonContents is None or len(jsonContents) == 0:
             return None
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         expiresIn = utils.getIntFromDict(jsonContents, 'expires_in')
         expireTime = now + timedelta(seconds = expiresIn)
 
