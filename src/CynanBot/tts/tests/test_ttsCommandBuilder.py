@@ -13,6 +13,9 @@ from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
 from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.storage.linesStaticReader import LinesStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
@@ -35,6 +38,8 @@ class TestTtsCommandBuilder():
         ),
         timber = timber
     )
+
+    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
     contentScanner: ContentScannerInterface = ContentScanner(
         bannedWordsRepository = bannedWordsRepository,
@@ -84,7 +89,8 @@ class TestTtsCommandBuilder():
     )
 
     googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-        timber = timber
+        timber = timber,
+        timeZoneRepository = timeZoneRepository
     )
 
     ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(

@@ -17,6 +17,9 @@ from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
@@ -62,14 +65,18 @@ backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
 
 timber: TimberInterface = TimberStub()
 
+timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = GoogleCloudProjectCredentialsProvider()
 
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
@@ -79,7 +86,8 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
 
 googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
     googleCloudCredentialsProvider = googleCloudProjectCredentialsProvider,
-    googleJsonMapper = googleJsonMapper
+    googleJsonMapper = googleJsonMapper,
+    timeZoneRepository = timeZoneRepository
 )
 
 googleApiService: GoogleApiServiceInterface = GoogleApiService(

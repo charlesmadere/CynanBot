@@ -54,7 +54,8 @@ from CynanBot.emojiHelper.emojiRepository import EmojiRepository
 from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
 from CynanBot.funtoon.funtoonJsonMapper import FuntoonJsonMapper
-from CynanBot.funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from CynanBot.funtoon.funtoonJsonMapperInterface import \
+    FuntoonJsonMapperInterface
 from CynanBot.funtoon.funtoonRepository import FuntoonRepository
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface

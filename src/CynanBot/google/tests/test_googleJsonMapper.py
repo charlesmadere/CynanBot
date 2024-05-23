@@ -5,6 +5,9 @@ from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.google.googleScope import GoogleScope
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.google.googleVoiceGender import GoogleVoiceGender
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 
@@ -13,8 +16,11 @@ class TestGoogleJsonMapper():
 
     timber: TimberInterface = TimberStub()
 
+    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
     jsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-        timber = timber
+        timber = timber,
+        timeZoneRepository = timeZoneRepository
     )
 
     @pytest.mark.asyncio
