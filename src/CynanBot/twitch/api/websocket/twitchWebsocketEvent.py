@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
@@ -30,41 +30,41 @@ class TwitchWebsocketEvent():
         locksAt: datetime | None = None,
         redeemedAt: datetime | None = None,
         startedAt: datetime | None = None,
-        bits: Optional[int] = None,
-        cumulativeMonths: Optional[int] = None,
-        total: Optional[int] = None,
-        viewers: Optional[int] = None,
-        broadcasterUserId: Optional[str] = None,
-        broadcasterUserLogin: Optional[str] = None,
-        broadcasterUserName: Optional[str] = None,
-        categoryId: Optional[str] = None,
-        categoryName: Optional[str] = None,
+        bits: int | None = None,
+        cumulativeMonths: int | None = None,
+        total: int | None = None,
+        viewers: int | None = None,
+        broadcasterUserId: str | None = None,
+        broadcasterUserLogin: str | None = None,
+        broadcasterUserName: str | None = None,
+        categoryId: str | None = None,
+        categoryName: str | None = None,
         eventId: str | None = None,
-        fromBroadcasterUserId: Optional[str] = None,
-        fromBroadcasterUserLogin: Optional[str] = None,
-        fromBroadcasterUserName: Optional[str] = None,
-        message: Optional[str] = None,
-        rewardId: Optional[str] = None,
-        text: Optional[str] = None,
-        title: Optional[str] = None,
-        toBroadcasterUserId: Optional[str] = None,
-        toBroadcasterUserLogin: Optional[str] = None,
-        toBroadcasterUserName: Optional[str] = None,
-        userId: Optional[str] = None,
-        userInput: Optional[str] = None,
-        userLogin: Optional[str] = None,
-        userName: Optional[str] = None,
-        winningOutcomeId: Optional[str] = None,
-        tier: Optional[TwitchSubscriberTier] = None,
-        channelPointsVoting: Optional[TwitchWebsocketChannelPointsVoting] = None,
-        choices: Optional[list[TwitchPollChoice]] = None,
-        pollStatus: Optional[TwitchPollStatus] = None,
-        rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = None,
+        fromBroadcasterUserId: str | None = None,
+        fromBroadcasterUserLogin: str | None = None,
+        fromBroadcasterUserName: str | None = None,
+        message: str | None = None,
+        rewardId: str | None = None,
+        text: str | None = None,
+        title: str | None = None,
+        toBroadcasterUserId: str | None = None,
+        toBroadcasterUserLogin: str | None = None,
+        toBroadcasterUserName: str | None = None,
+        userId: str | None = None,
+        userInput: str | None = None,
+        userLogin: str | None = None,
+        userName: str | None = None,
+        winningOutcomeId: str | None = None,
+        tier: TwitchSubscriberTier | None = None,
+        channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None,
+        choices: list[TwitchPollChoice] | None = None,
+        pollStatus: TwitchPollStatus | None = None,
+        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None,
         communitySubGift: TwitchCommunitySubGift | None = None,
-        noticeType: Optional[TwitchWebsocketNoticeType] = None,
-        outcomes: Optional[list[TwitchOutcome]] = None,
+        noticeType: TwitchWebsocketNoticeType | None = None,
+        outcomes: list[TwitchOutcome] | None = None,
         reward: TwitchReward | None = None,
-        subGift: Optional[TwitchSubGift] = None
+        subGift: TwitchSubGift | None = None
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
             raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
@@ -164,70 +164,70 @@ class TwitchWebsocketEvent():
         self.__locksAt: datetime | None = locksAt
         self.__redeemedAt: datetime | None = redeemedAt
         self.__startedAt: datetime | None = startedAt
-        self.__bits: Optional[int] = bits
-        self.__cumulativeMonths: Optional[int] = cumulativeMonths
-        self.__total: Optional[int] = total
-        self.__viewers: Optional[int] = viewers
-        self.__broadcasterUserId: Optional[str] = broadcasterUserId
-        self.__broadcasterUserLogin: Optional[str] = broadcasterUserLogin
-        self.__broadcasterUserName: Optional[str] = broadcasterUserName
-        self.__categoryId: Optional[str] = categoryId
-        self.__categoryName: Optional[str] = categoryName
+        self.__bits: int | None = bits
+        self.__cumulativeMonths: int | None = cumulativeMonths
+        self.__total: int | None = total
+        self.__viewers: int | None = viewers
+        self.__broadcasterUserId: str | None = broadcasterUserId
+        self.__broadcasterUserLogin: str | None = broadcasterUserLogin
+        self.__broadcasterUserName: str | None = broadcasterUserName
+        self.__categoryId: str | None = categoryId
+        self.__categoryName: str | None = categoryName
         self.__eventId: str | None = eventId
-        self.__fromBroadcasterUserId: Optional[str] = fromBroadcasterUserId
-        self.__fromBroadcasterUserLogin: Optional[str] = fromBroadcasterUserLogin
-        self.__fromBroadcasterUserName: Optional[str] = fromBroadcasterUserName
-        self.__message: Optional[str] = message
-        self.__rewardId: Optional[str] = rewardId
-        self.__text: Optional[str] = text
-        self.__title: Optional[str] = title
-        self.__toBroadcasterUserId: Optional[str] = toBroadcasterUserId
-        self.__toBroadcasterUserLogin: Optional[str] = toBroadcasterUserLogin
-        self.__toBroadcasterUserName: Optional[str] = toBroadcasterUserName
-        self.__userId: Optional[str] = userId
-        self.__userInput: Optional[str] = userInput
-        self.__userLogin: Optional[str] = userLogin
-        self.__userName: Optional[str] = userName
-        self.__winningOutcomeId: Optional[str] = winningOutcomeId
-        self.__tier: Optional[TwitchSubscriberTier] = tier
-        self.__channelPointsVoting: Optional[TwitchWebsocketChannelPointsVoting] = channelPointsVoting
-        self.__choices: Optional[list[TwitchPollChoice]] = choices
-        self.__pollStatus: Optional[TwitchPollStatus] = pollStatus
-        self.__rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = rewardRedemptionStatus
+        self.__fromBroadcasterUserId: str | None = fromBroadcasterUserId
+        self.__fromBroadcasterUserLogin: str | None = fromBroadcasterUserLogin
+        self.__fromBroadcasterUserName: str | None = fromBroadcasterUserName
+        self.__message: str | None = message
+        self.__rewardId: str | None = rewardId
+        self.__text: str | None = text
+        self.__title: str | None = title
+        self.__toBroadcasterUserId: str | None = toBroadcasterUserId
+        self.__toBroadcasterUserLogin: str | None = toBroadcasterUserLogin
+        self.__toBroadcasterUserName: str | None = toBroadcasterUserName
+        self.__userId: str | None = userId
+        self.__userInput: str | None = userInput
+        self.__userLogin: str | None = userLogin
+        self.__userName: str | None = userName
+        self.__winningOutcomeId: str | None = winningOutcomeId
+        self.__tier: TwitchSubscriberTier | None = tier
+        self.__channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = channelPointsVoting
+        self.__choices: list[TwitchPollChoice] | None = choices
+        self.__pollStatus: TwitchPollStatus | None = pollStatus
+        self.__rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = rewardRedemptionStatus
         self.__communitySubGift: TwitchCommunitySubGift | None = communitySubGift
-        self.__noticeType: Optional[TwitchWebsocketNoticeType] = noticeType
-        self.__outcomes: Optional[list[TwitchOutcome]] = outcomes
+        self.__noticeType: TwitchWebsocketNoticeType | None = noticeType
+        self.__outcomes: list[TwitchOutcome] | None = outcomes
         self.__reward: TwitchReward | None = reward
-        self.__subGift: Optional[TwitchSubGift] = subGift
+        self.__subGift: TwitchSubGift | None = subGift
 
-    def getBits(self) -> Optional[int]:
+    def getBits(self) -> int | None:
         return self.__bits
 
-    def getBroadcasterUserId(self) -> Optional[str]:
+    def getBroadcasterUserId(self) -> str | None:
         return self.__broadcasterUserId
 
-    def getBroadcasterUserLogin(self) -> Optional[str]:
+    def getBroadcasterUserLogin(self) -> str | None:
         return self.__broadcasterUserLogin
 
-    def getBroadcasterUserName(self) -> Optional[str]:
+    def getBroadcasterUserName(self) -> str | None:
         return self.__broadcasterUserName
 
-    def getCategoryId(self) -> Optional[str]:
+    def getCategoryId(self) -> str | None:
         return self.__categoryId
 
-    def getCategoryName(self) -> Optional[str]:
+    def getCategoryName(self) -> str | None:
         return self.__categoryName
 
-    def getChannelPointsVoting(self) -> Optional[TwitchWebsocketChannelPointsVoting]:
+    def getChannelPointsVoting(self) -> TwitchWebsocketChannelPointsVoting | None:
         return self.__channelPointsVoting
 
-    def getChoices(self) -> Optional[list[TwitchPollChoice]]:
+    def getChoices(self) -> list[TwitchPollChoice] | None:
         return self.__choices
 
     def getCommunitySubGift(self) -> TwitchCommunitySubGift | None:
         return self.__communitySubGift
 
-    def getCumulativeMonths(self) -> Optional[int]:
+    def getCumulativeMonths(self) -> int | None:
         return self.__cumulativeMonths
 
     def getEndedAt(self) -> datetime | None:
@@ -239,16 +239,16 @@ class TwitchWebsocketEvent():
     def getEventId(self) -> str | None:
         return self.__eventId
 
-    def getFollowedAt(self) -> Optional[datetime]:
+    def getFollowedAt(self) -> datetime | None:
         return self.__followedAt
 
-    def getFromBroadcasterUserId(self) -> Optional[str]:
+    def getFromBroadcasterUserId(self) -> str | None:
         return self.__fromBroadcasterUserId
 
-    def getFromBroadcasterUserLogin(self) -> Optional[str]:
+    def getFromBroadcasterUserLogin(self) -> str | None:
         return self.__fromBroadcasterUserLogin
 
-    def getFromBroadcasterUserName(self) -> Optional[str]:
+    def getFromBroadcasterUserName(self) -> str | None:
         return self.__fromBroadcasterUserName
 
     def getLockedAt(self) -> datetime | None:
@@ -260,13 +260,13 @@ class TwitchWebsocketEvent():
     def getMessage(self) -> str | None:
         return self.__message
 
-    def getNoticeType(self) -> Optional[TwitchWebsocketNoticeType]:
+    def getNoticeType(self) -> TwitchWebsocketNoticeType | None:
         return self.__noticeType
 
-    def getOutcomes(self) -> Optional[list[TwitchOutcome]]:
+    def getOutcomes(self) -> list[TwitchOutcome] | None:
         return self.__outcomes
 
-    def getPollStatus(self) -> Optional[TwitchPollStatus]:
+    def getPollStatus(self) -> TwitchPollStatus | None:
         return self.__pollStatus
 
     def getRedeemedAt(self) -> datetime | None:
@@ -275,55 +275,55 @@ class TwitchWebsocketEvent():
     def getReward(self) -> TwitchReward | None:
         return self.__reward
 
-    def getRewardId(self) -> Optional[str]:
+    def getRewardId(self) -> str | None:
         return self.__rewardId
 
-    def getRewardRedemptionStatus(self) -> Optional[TwitchRewardRedemptionStatus]:
+    def getRewardRedemptionStatus(self) -> TwitchRewardRedemptionStatus | None:
         return self.__rewardRedemptionStatus
 
     def getStartedAt(self) -> datetime | None:
         return self.__startedAt
 
-    def getSubGift(self) -> Optional[TwitchSubGift]:
+    def getSubGift(self) -> TwitchSubGift | None:
         return self.__subGift
 
-    def getText(self) -> Optional[str]:
+    def getText(self) -> str | None:
         return self.__text
 
-    def getTier(self) -> Optional[TwitchSubscriberTier]:
+    def getTier(self) -> TwitchSubscriberTier | None:
         return self.__tier
 
-    def getTitle(self) -> Optional[str]:
+    def getTitle(self) -> str | None:
         return self.__title
 
-    def getToBroadcasterUserId(self) -> Optional[str]:
+    def getToBroadcasterUserId(self) -> str | None:
         return self.__toBroadcasterUserId
 
-    def getToBroadcasterUserLogin(self) -> Optional[str]:
+    def getToBroadcasterUserLogin(self) -> str | None:
         return self.__toBroadcasterUserLogin
 
-    def getToBroadcasterUserName(self) -> Optional[str]:
+    def getToBroadcasterUserName(self) -> str | None:
         return self.__toBroadcasterUserName
 
-    def getTotal(self) -> Optional[int]:
+    def getTotal(self) -> int | None:
         return self.__total
 
-    def getUserId(self) -> Optional[str]:
+    def getUserId(self) -> str | None:
         return self.__userId
 
-    def getUserInput(self) -> Optional[str]:
+    def getUserInput(self) -> str | None:
         return self.__userInput
 
-    def getUserLogin(self) -> Optional[str]:
+    def getUserLogin(self) -> str | None:
         return self.__userLogin
 
-    def getUserName(self) -> Optional[str]:
+    def getUserName(self) -> str | None:
         return self.__userName
 
-    def getViewers(self) -> Optional[int]:
+    def getViewers(self) -> int | None:
         return self.__viewers
 
-    def getWinningOutcomeId(self) -> Optional[str]:
+    def getWinningOutcomeId(self) -> str | None:
         return self.__winningOutcomeId
 
     def isAnonymous(self) -> bool | None:
