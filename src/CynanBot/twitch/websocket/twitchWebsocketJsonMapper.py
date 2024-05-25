@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Any
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
@@ -346,21 +345,21 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
             endsAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'ends_at'))
 
-        lockedAt: SimpleDateTime | None = None
+        lockedAt: datetime | None = None
         if 'locked_at' in eventJson and utils.isValidStr(eventJson.get('locked_at')):
-            lockedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'locked_at')))
+            lockedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'locked_at'))
 
-        locksAt: SimpleDateTime | None = None
+        locksAt: datetime | None = None
         if 'locks_at' in eventJson and utils.isValidStr(eventJson.get('locks_at')):
-            locksAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'locks_at')))
+            locksAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'locks_at'))
 
-        redeemedAt: SimpleDateTime | None = None
+        redeemedAt: datetime | None = None
         if 'redeemed_at' in eventJson and utils.isValidStr(eventJson.get('redeemed_at')):
-            redeemedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'redeemed_at')))
+            redeemedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'redeemed_at'))
 
-        startedAt: SimpleDateTime | None = None
+        startedAt: datetime | None = None
         if 'started_at' in eventJson and utils.isValidStr(eventJson.get('started_at')):
-            startedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'started_at')))
+            startedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'started_at'))
 
         broadcasterUserId: str | None = None
         if 'broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('broadcaster_user_id')):
@@ -519,14 +518,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             endedAt = endedAt,
             endsAt = endsAt,
             followedAt = followedAt,
-            bits = bits,
-            cumulativeMonths = cumulativeMonths,
-            total = total,
-            viewers = viewers,
             lockedAt = lockedAt,
             locksAt = locksAt,
             redeemedAt = redeemedAt,
             startedAt = startedAt,
+            bits = bits,
+            cumulativeMonths = cumulativeMonths,
+            total = total,
+            viewers = viewers,
             broadcasterUserId = broadcasterUserId,
             broadcasterUserLogin = broadcasterUserLogin,
             broadcasterUserName = broadcasterUserName,

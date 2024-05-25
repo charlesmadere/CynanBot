@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Any, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
 from CynanBot.twitch.api.twitchPollChoice import TwitchPollChoice
@@ -22,19 +21,19 @@ class TwitchWebsocketEvent():
 
     def __init__(
         self,
-        isAnonymous: Optional[bool] = None,
-        isGift: Optional[bool] = None,
+        isAnonymous: bool | None = None,
+        isGift: bool | None = None,
         endedAt: datetime | None = None,
         endsAt: datetime | None = None,
         followedAt: datetime | None = None,
+        lockedAt: datetime | None = None,
+        locksAt: datetime | None = None,
+        redeemedAt: datetime | None = None,
+        startedAt: datetime | None = None,
         bits: Optional[int] = None,
         cumulativeMonths: Optional[int] = None,
         total: Optional[int] = None,
         viewers: Optional[int] = None,
-        lockedAt: Optional[SimpleDateTime] = None,
-        locksAt: Optional[SimpleDateTime] = None,
-        redeemedAt: Optional[SimpleDateTime] = None,
-        startedAt: Optional[SimpleDateTime] = None,
         broadcasterUserId: Optional[str] = None,
         broadcasterUserLogin: Optional[str] = None,
         broadcasterUserName: Optional[str] = None,
@@ -77,6 +76,14 @@ class TwitchWebsocketEvent():
             raise TypeError(f'endsAt argument is malformed: \"{endsAt}\"')
         elif followedAt is not None and not isinstance(followedAt, datetime):
             raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
+        elif lockedAt is not None and not isinstance(lockedAt, datetime):
+            raise TypeError(f'lockedAt argument is malformed: \"{lockedAt}\"')
+        elif locksAt is not None and not isinstance(locksAt, datetime):
+            raise TypeError(f'locksAt argument is malformed: \"{locksAt}\"')
+        elif redeemedAt is not None and not isinstance(redeemedAt, datetime):
+            raise TypeError(f'redeemedAt argument is malformed: \"{redeemedAt}\"')
+        elif startedAt is not None and not isinstance(startedAt, datetime):
+            raise TypeError(f'startedAt argument is malformed: \"{startedAt}\"')
         elif bits is not None and not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif cumulativeMonths is not None and not utils.isValidInt(cumulativeMonths):
@@ -85,14 +92,6 @@ class TwitchWebsocketEvent():
             raise TypeError(f'total argument is malformed: \"{total}\"')
         elif viewers is not None and not utils.isValidInt(viewers):
             raise TypeError(f'viewers argument is malformed: \"{viewers}\"')
-        elif lockedAt is not None and not isinstance(lockedAt, SimpleDateTime):
-            raise TypeError(f'lockedAt argument is malformed: \"{lockedAt}\"')
-        elif locksAt is not None and not isinstance(locksAt, SimpleDateTime):
-            raise TypeError(f'locksAt argument is malformed: \"{locksAt}\"')
-        elif redeemedAt is not None and not isinstance(redeemedAt, SimpleDateTime):
-            raise TypeError(f'redeemedAt argument is malformed: \"{redeemedAt}\"')
-        elif startedAt is not None and not isinstance(startedAt, SimpleDateTime):
-            raise TypeError(f'startedAt argument is malformed: \"{startedAt}\"')
         elif broadcasterUserId is not None and not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif broadcasterUserLogin is not None and not utils.isValidStr(broadcasterUserLogin):
@@ -156,19 +155,19 @@ class TwitchWebsocketEvent():
         elif subGift is not None and not isinstance(subGift, TwitchSubGift):
             raise TypeError(f'subGift argument is malformed: \"{subGift}\"')
 
-        self.__isAnonymous: Optional[bool] = isAnonymous
-        self.__isGift: Optional[bool] = isGift
+        self.__isAnonymous: bool | None = isAnonymous
+        self.__isGift: bool | None = isGift
         self.__endedAt: datetime | None = endedAt
         self.__endsAt: datetime | None = endsAt
         self.__followedAt: datetime | None = followedAt
+        self.__lockedAt: datetime | None = lockedAt
+        self.__locksAt: datetime | None = locksAt
+        self.__redeemedAt: datetime | None = redeemedAt
+        self.__startedAt: datetime | None = startedAt
         self.__bits: Optional[int] = bits
         self.__cumulativeMonths: Optional[int] = cumulativeMonths
         self.__total: Optional[int] = total
         self.__viewers: Optional[int] = viewers
-        self.__lockedAt: Optional[SimpleDateTime] = lockedAt
-        self.__locksAt: Optional[SimpleDateTime] = locksAt
-        self.__redeemedAt: Optional[SimpleDateTime] = redeemedAt
-        self.__startedAt: Optional[SimpleDateTime] = startedAt
         self.__broadcasterUserId: Optional[str] = broadcasterUserId
         self.__broadcasterUserLogin: Optional[str] = broadcasterUserLogin
         self.__broadcasterUserName: Optional[str] = broadcasterUserName
@@ -252,10 +251,10 @@ class TwitchWebsocketEvent():
     def getFromBroadcasterUserName(self) -> Optional[str]:
         return self.__fromBroadcasterUserName
 
-    def getLockedAt(self) -> Optional[SimpleDateTime]:
+    def getLockedAt(self) -> datetime | None:
         return self.__lockedAt
 
-    def getLocksAt(self) -> Optional[SimpleDateTime]:
+    def getLocksAt(self) -> datetime | None:
         return self.__locksAt
 
     def getMessage(self) -> str | None:
@@ -270,7 +269,7 @@ class TwitchWebsocketEvent():
     def getPollStatus(self) -> Optional[TwitchPollStatus]:
         return self.__pollStatus
 
-    def getRedeemedAt(self) -> Optional[SimpleDateTime]:
+    def getRedeemedAt(self) -> datetime | None:
         return self.__redeemedAt
 
     def getReward(self) -> Optional[TwitchReward]:
@@ -282,7 +281,7 @@ class TwitchWebsocketEvent():
     def getRewardRedemptionStatus(self) -> Optional[TwitchRewardRedemptionStatus]:
         return self.__rewardRedemptionStatus
 
-    def getStartedAt(self) -> Optional[SimpleDateTime]:
+    def getStartedAt(self) -> datetime | None:
         return self.__startedAt
 
     def getSubGift(self) -> Optional[TwitchSubGift]:
@@ -327,10 +326,10 @@ class TwitchWebsocketEvent():
     def getWinningOutcomeId(self) -> Optional[str]:
         return self.__winningOutcomeId
 
-    def isAnonymous(self) -> Optional[bool]:
+    def isAnonymous(self) -> bool | None:
         return self.__isAnonymous
 
-    def isGift(self) -> Optional[bool]:
+    def isGift(self) -> bool | None:
         return self.__isGift
 
     def __repr__(self) -> str:
