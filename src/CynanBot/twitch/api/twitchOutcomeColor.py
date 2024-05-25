@@ -15,9 +15,7 @@ class TwitchOutcomeColor(Enum):
 
         text = text.lower()
 
-        if text == 'blue':
-            return TwitchOutcomeColor.BLUE
-        elif text == 'pink':
-            return TwitchOutcomeColor.PINK
-        else:
-            raise ValueError(f'unknown TwitchOutcomeColor: \"{text}\"')
+        match text:
+            case 'blue': return TwitchOutcomeColor.BLUE
+            case 'pink': return TwitchOutcomeColor.PINK
+            case _: raise ValueError(f'unknown TwitchOutcomeColor: \"{text}\"')
