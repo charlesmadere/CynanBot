@@ -256,12 +256,12 @@ from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface im
     TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.timeout.twitchTimeoutRemodHelperInterface import \
+    TwitchTimeoutRemodHelperInterface
 from CynanBot.twitch.twitchChannelJoinHelperInterface import \
     TwitchChannelJoinHelperInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
-from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
-    TwitchTimeoutRemodHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchTokensUtilsInterface import \
