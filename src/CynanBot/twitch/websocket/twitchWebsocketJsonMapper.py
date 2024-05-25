@@ -717,7 +717,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             status = status
         )
 
-    async def parseTwitchWebsocketSubGift(
+    async def parseWebsocketSubGift(
         self,
         giftJson: dict[str, Any] | None
     ) -> TwitchSubGift | None:
