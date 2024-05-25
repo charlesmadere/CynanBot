@@ -20,7 +20,6 @@ from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.misc.timedDict import TimedDict
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -31,6 +30,8 @@ from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterfac
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
@@ -39,8 +40,6 @@ from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface imp
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaExceptions import (
     AdditionalTriviaAnswerAlreadyExistsException,
     AdditionalTriviaAnswerIsMalformedException,
