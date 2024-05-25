@@ -19,6 +19,7 @@ from CynanBot.tts.ttsSubscriptionDonationGiftType import \
 from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
+from CynanBot.twitch.api.twitchSubGift import TwitchSubGift
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
     TwitchWebsocketDataBundle
@@ -112,6 +113,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         message = event.getMessage()
         broadcasterUserId = event.getBroadcasterUserId()
         eventId = event.getEventId()
+        subGift = event.getSubGift()
         eventUserId = event.getUserId()
         eventUserInput = event.getUserInput()
         eventUserLogin = event.getUserLogin()
@@ -145,6 +147,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 userLogin = eventUserLogin,
                 userName = eventUserName,
                 communitySubGift = communitySubGift,
+                subGift = subGift,
                 tier = tier,
                 subscriptionType = subscriptionType,
                 user = user
@@ -212,6 +215,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         userLogin: str | None,
         userName: str | None,
         communitySubGift: TwitchCommunitySubGift | None,
+        subGift: TwitchSubGift | None,
         tier: TwitchSubscriberTier,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface,
@@ -236,6 +240,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
             raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+        elif subGift is not None and not isinstance(subGift, TwitchSubGift):
+            raise TypeError(f'subGift argument is malformed: \"{subGift}\"')
         elif not isinstance(tier, TwitchSubscriberTier):
             raise TypeError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):

@@ -72,8 +72,8 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         broadcasterUserId: str,
         title: str,
         userId: str,
-        user: UserInterface,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        user: UserInterface
     ):
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
@@ -81,18 +81,18 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise TypeError(f'title argument is malformed: \"{title}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         streamAlertsManager = self.__streamAlertsManager
 
-        if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
-            return
-        elif streamAlertsManager is None:
+        if streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
+            return
+        if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
 
         streamAlertsManager.submitAlert(StreamAlert(
