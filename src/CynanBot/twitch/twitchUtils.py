@@ -260,7 +260,7 @@ class TwitchUtils(TwitchUtilsInterface):
             except Exception as e:
                 exception = e
 
-            successfullySent = response is not None and response.isSent() and exception is None
+            successfullySent = response is not None and response.isSent and exception is None
 
             if not successfullySent:
                 self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({numberOfRetries=}): {exception}', exception, traceback.format_exc())
