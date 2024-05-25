@@ -2,9 +2,8 @@ from enum import auto
 
 from typing_extensions import override
 
-from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
-
 import CynanBot.misc.utils as utils
+from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 
 
 class DatabaseType(EnumWithToFromStr):
@@ -20,7 +19,6 @@ class DatabaseType(EnumWithToFromStr):
 
         text = text.lower()
 
-        if text == 'postgres':
-            return DatabaseType.POSTGRESQL
-
-        return super().fromStr(text)
+        match text:
+            case 'postgres': return DatabaseType.POSTGRESQL
+            case _: return super().fromStr(text)
