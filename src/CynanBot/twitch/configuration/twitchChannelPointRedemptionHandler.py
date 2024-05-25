@@ -131,7 +131,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         channelPointsMessage = TwitchChannelPointsMessage(
             eventId = eventId,
             redemptionMessage = redemptionUserInput,
-            rewardId = reward.getRewardId(),
+            rewardId = reward.rewardId,
             twitchUser = user,
             userId = redemptionUserId,
             userName = redemptionUserLogin

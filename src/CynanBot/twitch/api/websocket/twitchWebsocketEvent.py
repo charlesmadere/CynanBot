@@ -63,7 +63,7 @@ class TwitchWebsocketEvent():
         communitySubGift: Optional[TwitchCommunitySubGift] = None,
         noticeType: Optional[TwitchWebsocketNoticeType] = None,
         outcomes: Optional[list[TwitchOutcome]] = None,
-        reward: Optional[TwitchReward] = None,
+        reward: TwitchReward | None = None,
         subGift: Optional[TwitchSubGift] = None
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
@@ -197,7 +197,7 @@ class TwitchWebsocketEvent():
         self.__communitySubGift: Optional[TwitchCommunitySubGift] = communitySubGift
         self.__noticeType: Optional[TwitchWebsocketNoticeType] = noticeType
         self.__outcomes: Optional[list[TwitchOutcome]] = outcomes
-        self.__reward: Optional[TwitchReward] = reward
+        self.__reward: TwitchReward | None = reward
         self.__subGift: Optional[TwitchSubGift] = subGift
 
     def getBits(self) -> Optional[int]:
@@ -272,7 +272,7 @@ class TwitchWebsocketEvent():
     def getRedeemedAt(self) -> datetime | None:
         return self.__redeemedAt
 
-    def getReward(self) -> Optional[TwitchReward]:
+    def getReward(self) -> TwitchReward | None:
         return self.__reward
 
     def getRewardId(self) -> Optional[str]:
