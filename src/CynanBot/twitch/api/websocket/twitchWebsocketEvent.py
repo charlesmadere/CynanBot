@@ -60,7 +60,7 @@ class TwitchWebsocketEvent():
         choices: Optional[list[TwitchPollChoice]] = None,
         pollStatus: Optional[TwitchPollStatus] = None,
         rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = None,
-        communitySubGift: Optional[TwitchCommunitySubGift] = None,
+        communitySubGift: TwitchCommunitySubGift | None = None,
         noticeType: Optional[TwitchWebsocketNoticeType] = None,
         outcomes: Optional[list[TwitchOutcome]] = None,
         reward: TwitchReward | None = None,
@@ -194,7 +194,7 @@ class TwitchWebsocketEvent():
         self.__choices: Optional[list[TwitchPollChoice]] = choices
         self.__pollStatus: Optional[TwitchPollStatus] = pollStatus
         self.__rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = rewardRedemptionStatus
-        self.__communitySubGift: Optional[TwitchCommunitySubGift] = communitySubGift
+        self.__communitySubGift: TwitchCommunitySubGift | None = communitySubGift
         self.__noticeType: Optional[TwitchWebsocketNoticeType] = noticeType
         self.__outcomes: Optional[list[TwitchOutcome]] = outcomes
         self.__reward: TwitchReward | None = reward
@@ -224,7 +224,7 @@ class TwitchWebsocketEvent():
     def getChoices(self) -> Optional[list[TwitchPollChoice]]:
         return self.__choices
 
-    def getCommunitySubGift(self) -> Optional[TwitchCommunitySubGift]:
+    def getCommunitySubGift(self) -> TwitchCommunitySubGift | None:
         return self.__communitySubGift
 
     def getCumulativeMonths(self) -> Optional[int]:

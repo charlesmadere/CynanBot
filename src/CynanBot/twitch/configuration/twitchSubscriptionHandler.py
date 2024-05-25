@@ -185,7 +185,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         numberOfSubs = 1
         if communitySubGift is not None:
-            numberOfSubs = communitySubGift.getTotal()
+            numberOfSubs = communitySubGift.total
 
         numberOfGames = int(math.floor(numberOfSubs / superTriviaSubscribeTriggerAmount))
         if numberOfGames < 1:
