@@ -535,7 +535,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 typing-extensions aiofiles polyleven pytest pytest-asyncio roman num2words mock asyncpg aiosqlite
+          pip install flake8 typing-extensions aiofiles polyleven pytest pytest-asyncio pytz roman num2words mock asyncpg aiosqlite
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint trivia with flake8
         run: |
