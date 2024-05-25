@@ -46,7 +46,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         if soundAlertRedemption is None:
             return None
 
-        return soundAlertRedemption.getSoundAlert()
+        return soundAlertRedemption.soundAlert
 
     async def handlePointRedemption(
         self,
