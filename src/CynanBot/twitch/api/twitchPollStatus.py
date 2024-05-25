@@ -19,17 +19,11 @@ class TwitchPollStatus(Enum):
 
         text = text.lower()
 
-        if text == 'active':
-            return TwitchPollStatus.ACTIVE
-        elif text == 'archived':
-            return TwitchPollStatus.ARCHIVED
-        elif text == 'completed':
-            return TwitchPollStatus.COMPLETED
-        elif text == 'invalid':
-            return TwitchPollStatus.INVALID
-        elif text == 'moderated':
-            return TwitchPollStatus.MODERATED
-        elif text == 'terminated':
-            return TwitchPollStatus.TERMINATED
-        else:
-            return None
+        match text:
+            case 'active': return TwitchPollStatus.ACTIVE
+            case 'archived': return TwitchPollStatus.ARCHIVED
+            case 'completed': return TwitchPollStatus.COMPLETED
+            case 'invalid': return TwitchPollStatus.INVALID
+            case 'moderated': return TwitchPollStatus.MODERATED
+            case 'terminated': return TwitchPollStatus.TERMINATED
+            case _: return None
