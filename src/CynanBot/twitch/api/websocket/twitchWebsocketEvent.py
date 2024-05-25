@@ -39,7 +39,7 @@ class TwitchWebsocketEvent():
         broadcasterUserName: Optional[str] = None,
         categoryId: Optional[str] = None,
         categoryName: Optional[str] = None,
-        eventId: Optional[str] = None,
+        eventId: str | None = None,
         fromBroadcasterUserId: Optional[str] = None,
         fromBroadcasterUserLogin: Optional[str] = None,
         fromBroadcasterUserName: Optional[str] = None,
@@ -173,7 +173,7 @@ class TwitchWebsocketEvent():
         self.__broadcasterUserName: Optional[str] = broadcasterUserName
         self.__categoryId: Optional[str] = categoryId
         self.__categoryName: Optional[str] = categoryName
-        self.__eventId: Optional[str] = eventId
+        self.__eventId: str | None = eventId
         self.__fromBroadcasterUserId: Optional[str] = fromBroadcasterUserId
         self.__fromBroadcasterUserLogin: Optional[str] = fromBroadcasterUserLogin
         self.__fromBroadcasterUserName: Optional[str] = fromBroadcasterUserName
@@ -236,7 +236,7 @@ class TwitchWebsocketEvent():
     def getEndsAt(self) -> datetime | None:
         return self.__endsAt
 
-    def getEventId(self) -> Optional[str]:
+    def getEventId(self) -> str | None:
         return self.__eventId
 
     def getFollowedAt(self) -> Optional[datetime]:

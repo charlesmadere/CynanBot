@@ -68,6 +68,22 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
+    async def __isRedundantSubscriptionAlert(
+        self,
+        isGift: bool | None,
+        subscriptionType: TwitchWebsocketSubscriptionType
+    ) -> bool:
+        # This method intends to prevent an annoying situation where some subscription events end
+        # up causing two distinct subscription event alerts to come from Twitch, where both are
+        # just subtly different yet each inform of the same new subscriber/subscription event.
+
+        if isGift is False and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
+                isGift is None and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
+                isGift is None and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
+            return True
+
+        return False
+
     async def onNewSubscription(
         self,
         userId: str,
@@ -95,17 +111,18 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         communitySubGift = event.getCommunitySubGift()
         message = event.getMessage()
         broadcasterUserId = event.getBroadcasterUserId()
+        eventId = event.getEventId()
         eventUserId = event.getUserId()
         eventUserInput = event.getUserInput()
         eventUserLogin = event.getUserLogin()
         eventUserName = event.getUserName()
         tier = event.getTier()
 
-        if not utils.isValidStr(broadcasterUserId) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(eventId) or tier is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
@@ -121,6 +138,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 isAnonymous = isAnonymous,
                 isGift = isGift,
                 broadcasterUserId = broadcasterUserId,
+                eventId = eventId,
                 message = message,
                 userId = eventUserId,
                 userInput = eventUserInput,
@@ -187,6 +205,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         isAnonymous: bool | None,
         isGift: bool | None,
         broadcasterUserId: str,
+        eventId: str,
         message: str | None,
         userId: str | None,
         userInput: str | None,
@@ -203,6 +222,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'isGift argument is malformed: \"{isGift}\"')
         elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        elif not utils.isValidStr(eventId):
+            raise TypeError(f'eventId argument is malformed: \"{eventId}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif userId is not None and not utils.isValidStr(userId):
@@ -228,13 +249,12 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
         elif not user.isTtsEnabled():
             return
-        elif isGift is None:
-            if subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
-                subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
-                # prevents an annoying situation where some subscription events end up causing
-                # two distinct events to come from Twitch, where each are subtly different but
-                # both inform of the same new subscriber
-                return
+        elif await self.__isRedundantSubscriptionAlert(
+            isGift = isGift,
+            subscriptionType = subscriptionType
+        ):
+            self.__timber.log('TwitchSubscriptionHandler', f'Encountered redundant subscription alert event ({isGift=}) ({eventId=}) ({subscriptionType=}) ({user=})')
+            return
 
         actualMessage = message
         if not utils.isValidStr(actualMessage):
