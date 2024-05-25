@@ -76,7 +76,8 @@ class StartNewTriviaGameAction(AbsTriviaAction):
     def getShinyMultiplierStr(self) -> str:
         return locale.format_string("%d", self.__shinyMultiplier, grouping = True)
 
-    def getTriviaActionType(self) -> TriviaActionType:
+    @property
+    def triviaActionType(self) -> TriviaActionType:
         return TriviaActionType.START_NEW_GAME
 
     def getTriviaFetchOptions(self) -> TriviaFetchOptions:

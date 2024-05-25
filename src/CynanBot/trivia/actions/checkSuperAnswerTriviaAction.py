@@ -36,7 +36,8 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
     def getAnswer(self) -> str | None:
         return self.__answer
 
-    def getTriviaActionType(self) -> TriviaActionType:
+    @property
+    def triviaActionType(self) -> TriviaActionType:
         return TriviaActionType.CHECK_SUPER_ANSWER
 
     def getTwitchChannel(self) -> str:

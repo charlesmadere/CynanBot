@@ -142,7 +142,8 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def getToxicTriviaPunishmentMultiplierStr(self) -> str:
         return locale.format_string("%d", self.__toxicTriviaPunishmentMultiplier, grouping = True)
 
-    def getTriviaActionType(self) -> TriviaActionType:
+    @property
+    def triviaActionType(self) -> TriviaActionType:
         return TriviaActionType.START_NEW_SUPER_GAME
 
     def getTriviaFetchOptions(self) -> TriviaFetchOptions:

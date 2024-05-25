@@ -65,7 +65,8 @@ class AbsTriviaGameState(ABC):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
-    def getActionId(self) -> str:
+    @property
+    def actionId(self) -> str:
         return self.__actionId
 
     def getBasePointsForWinning(self) -> int:
