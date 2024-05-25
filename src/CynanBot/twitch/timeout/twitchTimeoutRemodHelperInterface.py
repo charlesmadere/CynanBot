@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData
+from CynanBot.twitch.timeout.twitchTimeoutRemodData import \
+    TwitchTimeoutRemodData
 
 
 class TwitchTimeoutRemodHelperInterface(ABC):

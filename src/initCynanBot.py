@@ -359,6 +359,17 @@ from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface im
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
+from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
+from CynanBot.twitch.timeout.twitchTimeoutRemodHelper import \
+    TwitchTimeoutRemodHelper
+from CynanBot.twitch.timeout.twitchTimeoutRemodHelperInterface import \
+    TwitchTimeoutRemodHelperInterface
+from CynanBot.twitch.timeout.twitchTimeoutRemodRepository import \
+    TwitchTimeoutRemodRepository
+from CynanBot.twitch.timeout.twitchTimeoutRemodRepositoryInterface import \
+    TwitchTimeoutRemodRepositoryInterface
 from CynanBot.twitch.timeoutImmuneUserIdsRepository import \
     TimeoutImmuneUserIdsRepository
 from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import \
@@ -371,16 +382,6 @@ from CynanBot.twitch.twitchChannelJoinHelperInterface import \
     TwitchChannelJoinHelperInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
-from CynanBot.twitch.twitchTimeoutHelper import TwitchTimeoutHelper
-from CynanBot.twitch.twitchTimeoutHelperInterface import \
-    TwitchTimeoutHelperInterface
-from CynanBot.twitch.twitchTimeoutRemodHelper import TwitchTimeoutRemodHelper
-from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
-    TwitchTimeoutRemodHelperInterface
-from CynanBot.twitch.twitchTimeoutRemodRepository import \
-    TwitchTimeoutRemodRepository
-from CynanBot.twitch.twitchTimeoutRemodRepositoryInterface import \
-    TwitchTimeoutRemodRepositoryInterface
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

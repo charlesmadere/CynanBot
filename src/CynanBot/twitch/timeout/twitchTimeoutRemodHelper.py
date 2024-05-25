@@ -6,10 +6,11 @@ from CynanBot.misc.backgroundTaskHelperInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData
-from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
+from CynanBot.twitch.timeout.twitchTimeoutRemodData import \
+    TwitchTimeoutRemodData
+from CynanBot.twitch.timeout.twitchTimeoutRemodHelperInterface import \
     TwitchTimeoutRemodHelperInterface
-from CynanBot.twitch.twitchTimeoutRemodRepositoryInterface import \
+from CynanBot.twitch.timeout.twitchTimeoutRemodRepositoryInterface import \
     TwitchTimeoutRemodRepositoryInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

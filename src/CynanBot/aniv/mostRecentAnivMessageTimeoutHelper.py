@@ -15,10 +15,10 @@ from CynanBot.location.timeZoneRepositoryInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
+from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.twitch.twitchTimeoutHelperInterface import \
-    TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface

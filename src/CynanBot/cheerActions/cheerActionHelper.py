@@ -27,10 +27,10 @@ from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface im
     TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.twitch.twitchTimeoutHelperInterface import \
-    TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
