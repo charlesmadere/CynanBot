@@ -17,13 +17,9 @@ class TwitchRewardRedemptionStatus(Enum):
 
         text = text.lower()
 
-        if text == 'canceled':
-            return TwitchRewardRedemptionStatus.CANCELED
-        elif text == 'fulfilled':
-            return TwitchRewardRedemptionStatus.FULFILLED
-        elif text == 'unfulfilled':
-            return TwitchRewardRedemptionStatus.UNFULFILLED
-        elif text == 'unknown':
-            return TwitchRewardRedemptionStatus.UNKNOWN
-        else:
-            return None
+        match text:
+            case 'canceled': return TwitchRewardRedemptionStatus.CANCELED
+            case 'fulfilled': return TwitchRewardRedemptionStatus.FULFILLED
+            case 'unfulfilled': return TwitchRewardRedemptionStatus.UNFULFILLED
+            case 'unknown': return TwitchRewardRedemptionStatus.UNKNOWN
+            case _: return None
