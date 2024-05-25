@@ -38,112 +38,112 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
             case SoundAlert.POINT_REDEMPTION_01:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption01FilePath',
                     fallback = 'Point Redemption 01.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_02:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption02FilePath',
                     fallback = 'Point Redemption 02.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_03:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption03FilePath',
                     fallback = 'Point Redemption 03.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_04:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption04FilePath',
                     fallback = 'Point Redemption 04.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_05:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption05FilePath',
                     fallback = 'Point Redemption 05.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_06:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption06FilePath',
                     fallback = 'Point Redemption 06.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_07:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption07FilePath',
                     fallback = 'Point Redemption 07.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_08:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption08FilePath',
                     fallback = 'Point Redemption 08.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_09:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption09FilePath',
                     fallback = 'Point Redemption 09.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_10:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption10FilePath',
                     fallback = 'Point Redemption 10.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_11:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption11FilePath',
                     fallback = 'Point Redemption 11.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_12:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption12FilePath',
                     fallback = 'Point Redemption 12.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_13:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption13FilePath',
                     fallback = 'Point Redemption 13.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_14:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption14FilePath',
                     fallback = 'Point Redemption 14.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_15:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption15FilePath',
                     fallback = 'Point Redemption 15.mp3'
                 )
 
             case SoundAlert.POINT_REDEMPTION_16:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
-                    key = 'pointRedemptionFilePath',
+                    key = 'pointRedemption16FilePath',
                     fallback = 'Point Redemption 16.mp3'
                 )
 
