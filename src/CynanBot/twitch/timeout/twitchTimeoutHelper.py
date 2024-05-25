@@ -12,14 +12,14 @@ from CynanBot.twitch.api.twitchBannedUsersResponse import \
     TwitchBannedUsersResponse
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import \
+    TimeoutImmuneUserIdsRepositoryInterface
 from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
     TwitchTimeoutHelperInterface
 from CynanBot.twitch.timeout.twitchTimeoutRemodData import \
     TwitchTimeoutRemodData
 from CynanBot.twitch.timeout.twitchTimeoutRemodHelperInterface import \
     TwitchTimeoutRemodHelperInterface
-from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import \
-    TimeoutImmuneUserIdsRepositoryInterface
 from CynanBot.twitch.twitchConstantsInterface import TwitchConstantsInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface

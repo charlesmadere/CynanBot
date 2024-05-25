@@ -182,6 +182,10 @@ from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface im
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.timeout.timeoutImmuneUserIdsRepository import \
+    TimeoutImmuneUserIdsRepository
+from CynanBot.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import \
+    TimeoutImmuneUserIdsRepositoryInterface
 from CynanBot.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
 from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
     TwitchTimeoutHelperInterface
@@ -193,10 +197,6 @@ from CynanBot.twitch.timeout.twitchTimeoutRemodRepository import \
     TwitchTimeoutRemodRepository
 from CynanBot.twitch.timeout.twitchTimeoutRemodRepositoryInterface import \
     TwitchTimeoutRemodRepositoryInterface
-from CynanBot.twitch.timeoutImmuneUserIdsRepository import \
-    TimeoutImmuneUserIdsRepository
-from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import \
-    TimeoutImmuneUserIdsRepositoryInterface
 from CynanBot.twitch.twitchAnonymousUserIdProvider import \
     TwitchAnonymousUserIdProvider
 from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \

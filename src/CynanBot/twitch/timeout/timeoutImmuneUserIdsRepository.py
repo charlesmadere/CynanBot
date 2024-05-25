@@ -1,4 +1,4 @@
-from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import \
+from CynanBot.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import \
     TimeoutImmuneUserIdsRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
