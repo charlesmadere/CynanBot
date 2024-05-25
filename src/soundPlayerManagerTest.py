@@ -1,11 +1,6 @@
 import asyncio
-import re
 from asyncio import AbstractEventLoop
-from typing import Any, Optional, Pattern
 
-from CynanBot.aniv.anivContentCode import AnivContentCode
-from CynanBot.vlcHelper.vlcHelper import VlcHelper
-from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivContentScannerInterface import \
     AnivContentScannerInterface
@@ -15,15 +10,18 @@ from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
 from CynanBot.contentScanner.contentScanner import ContentScanner
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
+from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerHelper.soundAlertHelper import SoundPlayerHelper
-from CynanBot.soundPlayerHelper.soundAlertHelperInterface import \
-    SoundPlayerHelperInterface
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+    SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
+from CynanBot.soundPlayerManager.vlc.vlcSoundPlayerManager import \
+    VlcSoundPlayerManager
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.storage.linesStaticReader import LinesStaticReader
 from CynanBot.systemCommandHelper.systemCommandHelper import \
@@ -37,9 +35,11 @@ from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
     TriviaAnswerCompilerInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
-backgroundTaskHelper = BackgroundTaskHelper(
+
+backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
+
 timber: TimberInterface = TimberStub()
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
@@ -71,30 +71,16 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
     timber = timber
 )
 
-vlcHelper: VlcHelperInterface = VlcHelper(
+soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
-soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber,
-    vlcHelper = vlcHelper
-)
-
-eventLoop = asyncio.get_event_loop()
-
 async def main():
     pass
-    # result = await triviaAnswerCompiler.compileTextAnswersList([ 'Garfield the cat' ])
-    # print(f'result=\"{result}\"')
-    pass
-    # result = await anivContentScanner.scan('(insanefirebat)')
-    # print(f'{result=}')
-    pass
-    await soundPlayerHelper.play(SoundAlert.SUBSCRIBE)
+    await soundPlayerManager.playSoundAlert(SoundAlert.SUBSCRIBE)
     print('sleep')
-    await asyncio.sleep(10000)
+    await asyncio.sleep(10)
     pass
 
 eventLoop.run_until_complete(main())
