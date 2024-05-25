@@ -9,6 +9,7 @@ from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from CynanBot.twitch.api.twitchOutcomePredictor import TwitchOutcomePredictor
 from CynanBot.twitch.api.twitchPollChoice import TwitchPollChoice
 from CynanBot.twitch.api.twitchPollStatus import TwitchPollStatus
+from CynanBot.twitch.api.twitchResub import TwitchResub
 from CynanBot.twitch.api.twitchReward import TwitchReward
 from CynanBot.twitch.api.twitchRewardRedemptionStatus import \
     TwitchRewardRedemptionStatus
@@ -504,6 +505,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 if len(outcomes) == 0:
                     outcomes = None
 
+        resub: TwitchResub | None = None
+        if 'resub' in eventJson:
+            resub = await self.parseWebsocketResub(eventJson.get('resub'))
+
         reward: TwitchReward | None = None
         if 'reward' in eventJson:
             reward = await self.parseWebsocketReward(eventJson.get('reward'))
@@ -551,6 +556,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             choices = choices,
             tier = tier,
             pollStatus = pollStatus,
+            resub = resub,
             rewardRedemptionStatus = rewardRedemptionStatus,
             communitySubGift = communitySubGift,
             noticeType = noticeType,
@@ -622,6 +628,48 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userName = userName
         )
 
+    async def parseWebsocketResub(
+        self,
+        resubJson: dict[str, Any] | None
+    ) -> TwitchResub | None:
+        if not isinstance(resubJson, dict) or len(resubJson) == 0:
+            return None
+
+        gifterIsAnonymous: bool | None = None
+        if 'gifter_is_anonymous' in resubJson and utils.isValidBool(resubJson.get('gifter_is_anonymous')):
+            gifterIsAnonymous = utils.getBoolFromDict(resubJson, 'gifter_is_anonymous')
+
+        isGift = utils.getBoolFromDict(resubJson, 'is_gift', fallback = False)
+        cumulativeMonths = utils.getIntFromDict(resubJson, 'cumulative_months')
+        durationMonths = utils.getIntFromDict(resubJson, 'duration_months')
+        streakMonths = utils.getIntFromDict(resubJson, 'streak_months')
+
+        gifterUserId: str | None = None
+        if 'gifter_user_id' in resubJson and utils.isValidStr(resubJson.get('gifter_user_id')):
+            gifterUserId = utils.getStrFromDict(resubJson, 'gifter_user_id')
+
+        gifterUserLogin: str | None = None
+        if 'gifter_user_login' in resubJson and utils.isValidStr(resubJson.get('gifter_user_login')):
+            gifterUserLogin = utils.getStrFromDict(resubJson, 'gifter_user_login')
+
+        gifterUserName: str | None = None
+        if 'gifter_user_name' in resubJson and utils.isValidStr(resubJson.get('gifter_user_name')):
+            gifterUserName = utils.getStrFromDict(resubJson, 'gifter_user_name')
+
+        subTier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(resubJson, 'sub_tier'))
+
+        return TwitchResub(
+            gifterIsAnonymous = gifterIsAnonymous,
+            isGift = isGift,
+            cumulativeMonths = cumulativeMonths,
+            durationMonths = durationMonths,
+            streakMonths = streakMonths,
+            gifterUserId = gifterUserId,
+            gifterUserLogin = gifterUserLogin,
+            gifterUserName = gifterUserName,
+            subTier = subTier
+        )
+
     async def parseWebsocketReward(
         self,
         rewardJson: dict[str, Any] | None
@@ -669,7 +717,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             status = status
         )
 
-    async def parseWebsocketSubGift(
+    async def parseTwitchWebsocketSubGift(
         self,
         giftJson: dict[str, Any] | None
     ) -> TwitchSubGift | None:

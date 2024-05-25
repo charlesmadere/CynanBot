@@ -5,6 +5,7 @@ from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
 from CynanBot.twitch.api.twitchOutcomePredictor import TwitchOutcomePredictor
 from CynanBot.twitch.api.twitchPollChoice import TwitchPollChoice
+from CynanBot.twitch.api.twitchResub import TwitchResub
 from CynanBot.twitch.api.twitchReward import TwitchReward
 from CynanBot.twitch.api.twitchSubGift import TwitchSubGift
 from CynanBot.twitch.api.websocket.twitchWebsocketChannelPointsVoting import \
@@ -77,6 +78,13 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         predictorJson: dict[str, Any] | None
     ) -> TwitchOutcomePredictor | None:
+        pass
+
+    @abstractmethod
+    async def parseWebsocketResub(
+        self,
+        resubJson: dict[str, Any] | None
+    ) -> TwitchResub | None:
         pass
 
     @abstractmethod

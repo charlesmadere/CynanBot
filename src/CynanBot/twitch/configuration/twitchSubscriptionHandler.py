@@ -19,6 +19,7 @@ from CynanBot.tts.ttsSubscriptionDonationGiftType import \
 from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
+from CynanBot.twitch.api.twitchResub import TwitchResub
 from CynanBot.twitch.api.twitchSubGift import TwitchSubGift
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
@@ -113,6 +114,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         message = event.getMessage()
         broadcasterUserId = event.getBroadcasterUserId()
         eventId = event.getEventId()
+        resub = event.getResub()
         subGift = event.getSubGift()
         eventUserId = event.getUserId()
         eventUserInput = event.getUserInput()
@@ -121,10 +123,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         tier = event.getTier()
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(eventId) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
@@ -147,6 +149,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 userLogin = eventUserLogin,
                 userName = eventUserName,
                 communitySubGift = communitySubGift,
+                resub = resub,
                 subGift = subGift,
                 tier = tier,
                 subscriptionType = subscriptionType,
@@ -215,6 +218,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         userLogin: str | None,
         userName: str | None,
         communitySubGift: TwitchCommunitySubGift | None,
+        resub: TwitchResub | None,
         subGift: TwitchSubGift | None,
         tier: TwitchSubscriberTier,
         subscriptionType: TwitchWebsocketSubscriptionType,
@@ -240,6 +244,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
             raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+        elif resub is not None and not isinstance(resub, TwitchResub):
+            raise TypeError(f'resub argument is malformed: \"{resub}\"')
         elif subGift is not None and not isinstance(subGift, TwitchSubGift):
             raise TypeError(f'subGift argument is malformed: \"{subGift}\"')
         elif not isinstance(tier, TwitchSubscriberTier):
@@ -259,7 +265,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             isGift = isGift,
             subscriptionType = subscriptionType
         ):
-            self.__timber.log('TwitchSubscriptionHandler', f'Encountered redundant subscription alert event ({isGift=}) ({eventId=}) ({subscriptionType=}) ({user=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Encountered redundant subscription alert event ({isGift=}) ({eventId=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({subscriptionType=}) ({user=})')
             return
 
         actualMessage = message

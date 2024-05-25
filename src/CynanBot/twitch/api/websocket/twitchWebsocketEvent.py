@@ -6,6 +6,7 @@ from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
 from CynanBot.twitch.api.twitchPollChoice import TwitchPollChoice
 from CynanBot.twitch.api.twitchPollStatus import TwitchPollStatus
+from CynanBot.twitch.api.twitchResub import TwitchResub
 from CynanBot.twitch.api.twitchReward import TwitchReward
 from CynanBot.twitch.api.twitchRewardRedemptionStatus import \
     TwitchRewardRedemptionStatus
@@ -59,6 +60,7 @@ class TwitchWebsocketEvent():
         channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None,
         choices: list[TwitchPollChoice] | None = None,
         pollStatus: TwitchPollStatus | None = None,
+        resub: TwitchResub | None = None,
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None,
         communitySubGift: TwitchCommunitySubGift | None = None,
         noticeType: TwitchWebsocketNoticeType | None = None,
@@ -142,6 +144,8 @@ class TwitchWebsocketEvent():
             raise TypeError(f'choices argument is malformed: \"{choices}\"')
         elif pollStatus is not None and not isinstance(pollStatus, TwitchPollStatus):
             raise TypeError(f'pollStatus argument is malformed: \"{pollStatus}\"')
+        elif resub is not None and not isinstance(resub, TwitchResub):
+            raise TypeError(f'resub argument is malformed: \"{resub}\"')
         elif rewardRedemptionStatus is not None and not isinstance(rewardRedemptionStatus, TwitchRewardRedemptionStatus):
             raise TypeError(f'rewardRedemptionStatus argument is malformed: \"{rewardRedemptionStatus}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
@@ -189,6 +193,7 @@ class TwitchWebsocketEvent():
         self.__userLogin: str | None = userLogin
         self.__userName: str | None = userName
         self.__winningOutcomeId: str | None = winningOutcomeId
+        self.__outcomes: list[TwitchOutcome] | None = outcomes
         self.__tier: TwitchSubscriberTier | None = tier
         self.__channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = channelPointsVoting
         self.__choices: list[TwitchPollChoice] | None = choices
@@ -196,7 +201,7 @@ class TwitchWebsocketEvent():
         self.__rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = rewardRedemptionStatus
         self.__communitySubGift: TwitchCommunitySubGift | None = communitySubGift
         self.__noticeType: TwitchWebsocketNoticeType | None = noticeType
-        self.__outcomes: list[TwitchOutcome] | None = outcomes
+        self.__resub: TwitchResub | None = resub
         self.__reward: TwitchReward | None = reward
         self.__subGift: TwitchSubGift | None = subGift
 
@@ -271,6 +276,9 @@ class TwitchWebsocketEvent():
 
     def getRedeemedAt(self) -> datetime | None:
         return self.__redeemedAt
+
+    def getResub(self) -> TwitchResub | None:
+        return self.__resub
 
     def getReward(self) -> TwitchReward | None:
         return self.__reward
@@ -362,6 +370,7 @@ class TwitchWebsocketEvent():
             'outcomes': self.__outcomes,
             'pollStatus': self.__pollStatus,
             'redeemedAt': self.__redeemedAt,
+            'resub': self.__resub,
             'reward': self.__reward,
             'rewardId': self.__rewardId,
             'rewardRedemptionStatus': self.__rewardRedemptionStatus,
