@@ -632,8 +632,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
             pointsForWinning = pointsForWinning * action.getShinyMultiplier()
 
+        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.getSecondsToLive())
+
         state = TriviaGameState(
             triviaQuestion = triviaQuestion,
+            endTime = endTime,
             basePointsForWinning = action.getPointsForWinning(),
             pointsForWinning = pointsForWinning,
             secondsToLive = action.getSecondsToLive(),
@@ -753,8 +756,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC
             pointsForWinning = pointsForWinning * action.getToxicMultiplier()
 
+        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.getSecondsToLive())
+
         state = SuperTriviaGameState(
             triviaQuestion = triviaQuestion,
+            endTime = endTime,
             basePointsForWinning = action.getPointsForWinning(),
             perUserAttempts = action.getPerUserAttempts(),
             pointsForWinning = pointsForWinning,

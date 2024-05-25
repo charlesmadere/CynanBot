@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 
 
 class AbsTriviaGameState(ABC):
@@ -12,6 +13,7 @@ class AbsTriviaGameState(ABC):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
+        endTime: datetime,
         basePointsForWinning: int,
         pointsForWinning: int,
         secondsToLive: int,
@@ -24,6 +26,8 @@ class AbsTriviaGameState(ABC):
     ):
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+        elif not isinstance(endTime, datetime):
+            raise TypeError(f'endTime argument is malformed: \"{endTime}\"')
         elif not utils.isValidInt(basePointsForWinning):
             raise TypeError(f'basePointsForWinning argument is malformed: \"{basePointsForWinning}\"')
         elif basePointsForWinning < 1 or basePointsForWinning > utils.getIntMaxSafeSize():
@@ -50,6 +54,7 @@ class AbsTriviaGameState(ABC):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
+        self.__endTime: datetime = endTime
         self.__basePointsForWinning: int = basePointsForWinning
         self.__pointsForWinning: int = pointsForWinning
         self.__secondsToLive: int = secondsToLive
@@ -59,8 +64,6 @@ class AbsTriviaGameState(ABC):
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
-
-        self.__endTime: datetime = datetime.now(timezone.utc) + timedelta(seconds = secondsToLive)
 
     def getActionId(self) -> str:
         return self.__actionId

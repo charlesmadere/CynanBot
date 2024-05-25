@@ -1,5 +1,10 @@
+from datetime import datetime
+
 import pytest
 
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.trivia.games.superTriviaGameState import SuperTriviaGameState
 from CynanBot.trivia.games.triviaGameState import TriviaGameState
 from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
@@ -17,6 +22,8 @@ from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 
 
 class TriviaGameStoreTests():
+
+    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
     normalQuestion1: AbsTriviaQuestion = MultipleChoiceTriviaQuestion(
         correctAnswers = [ 'Chicago Bullies' ],
@@ -81,6 +88,7 @@ class TriviaGameStoreTests():
 
     game1 = TriviaGameState(
         triviaQuestion = normalQuestion1,
+        endTime = datetime.now(timeZoneRepository.getDefault()),
         basePointsForWinning = 5,
         pointsForWinning = 5,
         secondsToLive = 60,
@@ -96,6 +104,7 @@ class TriviaGameStoreTests():
 
     game2 = TriviaGameState(
         triviaQuestion = normalQuestion2,
+        endTime = datetime.now(timeZoneRepository.getDefault()),
         basePointsForWinning = 5,
         pointsForWinning = 5,
         secondsToLive = 60,
@@ -111,6 +120,7 @@ class TriviaGameStoreTests():
 
     game3 = TriviaGameState(
         triviaQuestion = normalQuestion3,
+        endTime = datetime.now(timeZoneRepository.getDefault()),
         basePointsForWinning = 5,
         pointsForWinning = 5,
         secondsToLive = 60,
@@ -126,6 +136,7 @@ class TriviaGameStoreTests():
 
     game4 = SuperTriviaGameState(
         triviaQuestion = superQuestion1,
+        endTime = datetime.now(timeZoneRepository.getDefault()),
         basePointsForWinning = 25,
         perUserAttempts = 2,
         pointsForWinning = 25,
@@ -142,6 +153,7 @@ class TriviaGameStoreTests():
 
     game5 = SuperTriviaGameState(
         triviaQuestion = superQuestion2,
+        endTime = datetime.now(timeZoneRepository.getDefault()),
         basePointsForWinning = 25,
         perUserAttempts = 2,
         pointsForWinning = 25,

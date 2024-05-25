@@ -1,8 +1,11 @@
+from datetime import datetime
+
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.games.absTriviaGameState import AbsTriviaGameState
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 
 
 class TriviaGameState(AbsTriviaGameState):
@@ -10,6 +13,7 @@ class TriviaGameState(AbsTriviaGameState):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
+        endTime: datetime,
         basePointsForWinning: int,
         pointsForWinning: int,
         secondsToLive: int,
@@ -24,6 +28,7 @@ class TriviaGameState(AbsTriviaGameState):
     ):
         super().__init__(
             triviaQuestion = triviaQuestion,
+            endTime = endTime,
             basePointsForWinning = basePointsForWinning,
             pointsForWinning = pointsForWinning,
             secondsToLive = secondsToLive,
