@@ -96,7 +96,6 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         await self.__triviaBanHelper.ban(
             triviaId = reference.triviaId,
             userId = ctx.getAuthorId(),
-            originalTriviaSource = reference.originalTriviaSource,
             triviaSource = reference.triviaSource
         )
 

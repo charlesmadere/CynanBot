@@ -10,6 +10,5 @@ class TriviaQuestionReference():
     triviaId: str
     twitchChannel: str
     twitchChannelId: str
-    originalTriviaSource: TriviaSource | None
     triviaSource: TriviaSource
     triviaType: TriviaQuestionType

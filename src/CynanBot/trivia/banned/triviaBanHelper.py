@@ -41,38 +41,28 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         self,
         triviaId: str,
         userId: str,
-        originalTriviaSource: TriviaSource | None,
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif originalTriviaSource is not None and not isinstance(originalTriviaSource, TriviaSource):
-            raise TypeError(f'originalTriviaSource argument is malformed: \"{originalTriviaSource}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
-        if originalTriviaSource is not None:
-            await self.__glacialTriviaQuestionRepository.remove(
-                triviaId = triviaId,
-                originalTriviaSource = originalTriviaSource
-            )
+        await self.__glacialTriviaQuestionRepository.remove(
+            triviaId = triviaId,
+            originalTriviaSource = triviaSource
+        )
 
-        workingTriviaSource: TriviaSource
-        if originalTriviaSource is None:
-            workingTriviaSource = triviaSource
-        else:
-            workingTriviaSource = originalTriviaSource
-
-        if workingTriviaSource is TriviaSource.FUNTOON:
+        if triviaSource is TriviaSource.FUNTOON:
             await self.__funtoonRepository.banTriviaQuestion(triviaId)
             return BanTriviaQuestionResult.BANNED
         else:
             return await self.__bannedTriviaIdsRepository.ban(
                 triviaId = triviaId,
                 userId = userId,
-                triviaSource = workingTriviaSource
+                triviaSource = triviaSource
             )
 
     async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
