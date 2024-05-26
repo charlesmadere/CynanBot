@@ -26,11 +26,14 @@ class ChatLoggerChatAction(AbsChatAction):
         if not user.isChatLoggingEnabled():
             return False
 
+        msg = utils.cleanStr(message.getContent())
+
         self.__chatLogger.logMessage(
+            msg = msg,
             twitchChannel = user.getHandle(),
+            twitchChannelId = await message.getTwitchChannelId(),
             userId = message.getAuthorId(),
-            userName = message.getAuthorName(),
-            msg = utils.cleanStr(message.getContent())
+            userName = message.getAuthorName()
         )
 
         return True

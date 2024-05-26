@@ -1,20 +1,24 @@
 import CynanBot.misc.utils as utils
 from CynanBot.chatLogger.absChatMessage import AbsChatMessage
 from CynanBot.chatLogger.chatEventType import ChatEventType
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
 class ChatMessage(AbsChatMessage):
 
     def __init__(
         self,
+        dateTime: SimpleDateTime,
         msg: str,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
         super().__init__(
-            chatEventType = ChatEventType.MESSAGE,
-            twitchChannel = twitchChannel
+            dateTime = dateTime,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
         if not utils.isValidStr(msg):
@@ -28,11 +32,18 @@ class ChatMessage(AbsChatMessage):
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getMsg(self) -> str:
+    @property
+    def chatEventType(self) -> ChatEventType:
+        return ChatEventType.MESSAGE
+
+    @property
+    def msg(self) -> str:
         return self.__msg
 
-    def getUserId(self) -> str:
+    @property
+    def userId(self) -> str:
         return self.__userId
 
-    def getUserName(self) -> str:
+    @property
+    def userName(self) -> str:
         return self.__userName

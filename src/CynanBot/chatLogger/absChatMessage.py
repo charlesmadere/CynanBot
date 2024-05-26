@@ -1,31 +1,17 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
-import CynanBot.misc.utils as utils
 from CynanBot.chatLogger.chatEventType import ChatEventType
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
+@dataclass(frozen = True)
 class AbsChatMessage(ABC):
+    dateTime: SimpleDateTime
+    twitchChannel: str
+    twitchChannelId: str
 
-    def __init__(
-        self,
-        chatEventType: ChatEventType,
-        twitchChannel: str
-    ):
-        if not isinstance(chatEventType, ChatEventType):
-            raise TypeError(f'chatEventType argument is malformed: \"{chatEventType}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        self.__chatEventType: ChatEventType = chatEventType
-        self.__twitchChannel: str = twitchChannel
-        self.__sdt: SimpleDateTime = SimpleDateTime()
-
-    def getChatEventType(self) -> ChatEventType:
-        return self.__chatEventType
-
-    def getSimpleDateTime(self) -> SimpleDateTime:
-        return self.__sdt
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
+    @property
+    @abstractmethod
+    def chatEventType(self) -> ChatEventType:
+        pass

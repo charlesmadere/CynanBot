@@ -12,8 +12,11 @@ from CynanBot.chatLogger.absChatMessage import AbsChatMessage
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.chatLogger.chatMessage import ChatMessage
 from CynanBot.chatLogger.raidMessage import RaidMessage
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -23,6 +26,7 @@ class ChatLogger(ChatLoggerInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/chatLogger'
     ):
@@ -39,6 +43,7 @@ class ChatLogger(ChatLoggerInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__logRootDirectory: str = logRootDirectory
 
@@ -49,37 +54,54 @@ class ChatLogger(ChatLoggerInterface):
         if not isinstance(message, AbsChatMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        logStatement = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} —'
+        logStatement = f'{message.dateTime.getDateAndTimeStr(True)} —'
 
         if isinstance(message, ChatMessage):
-            logStatement = f'{logStatement} {message.getUserName()} ({message.getUserId()}) — {message.getMsg()}'
+            logStatement = f'{logStatement} {message.userName} ({message.userId}) — {message.msg}'
         elif isinstance(message, RaidMessage):
-            logStatement = f'{logStatement} Received raid from {message.getFromWho()} of {message.getRaidSizeStr()}!'
+            logStatement = f'{logStatement} Received raid from {message.fromWho} of {message.raidSizeStr}!'
         else:
             raise RuntimeError(f'AbsChatMessage has unknown type: \"{type(message)=}\"')
 
         return f'{logStatement.strip()}\n'
 
-    def logMessage(self, msg: str, twitchChannel: str, userId: str, userName: str):
+    def logMessage(
+        self,
+        msg: str,
+        twitchChannel: str,
+        twitchChannelId: str,
+        userId: str,
+        userName: str
+    ):
         if not utils.isValidStr(msg):
             raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         chatMessage: AbsChatMessage = ChatMessage(
+            dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
             msg = msg,
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId,
             userName = userName
         )
 
         self.__messageQueue.put(chatMessage)
 
-    def logRaid(self, raidSize: int, fromWho: str, twitchChannel: str):
+    def logRaid(
+        self,
+        raidSize: int,
+        fromWho: str,
+        twitchChannel: str,
+        twitchChannelId: str
+    ):
         if not utils.isValidInt(raidSize):
             raise TypeError(f'raidSize argument is malformed: \"{raidSize}\"')
         elif raidSize < 0 or raidSize > utils.getIntMaxSafeSize():
@@ -88,11 +110,15 @@ class ChatLogger(ChatLoggerInterface):
             raise TypeError(f'fromWho argument is malformed: \"{fromWho}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         raidMessage: AbsChatMessage = RaidMessage(
             raidSize = raidSize,
+            dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
             fromWho = fromWho,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
         self.__messageQueue.put(raidMessage)
@@ -104,7 +130,6 @@ class ChatLogger(ChatLoggerInterface):
 
         self.__isStarted = True
         self.__timber.log('ChatLogger', 'Starting ChatLogger...')
-
         self.__backgroundTaskHelper.createTask(self.__startMessageLoop())
 
     async def __startMessageLoop(self):
@@ -131,10 +156,10 @@ class ChatLogger(ChatLoggerInterface):
         structure: dict[str, dict[str, list[AbsChatMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for message in messages:
-            twitchChannel = message.getTwitchChannel().lower()
-            simpleDateTime = message.getSimpleDateTime()
-            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{simpleDateTime.getYearStr()}/{simpleDateTime.getMonthStr()}'
-            messageFile = f'{messageDirectory}/{simpleDateTime.getDayStr()}.log'
+            twitchChannel = message.twitchChannel.lower()
+            dateTime = message.dateTime
+            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{dateTime.getYearStr()}/{dateTime.getMonthStr()}'
+            messageFile = f'{messageDirectory}/{dateTime.getDayStr()}.log'
             structure[messageDirectory][messageFile].append(message)
 
         for messageDirectory, messageFileToMessagesDict in structure.items():

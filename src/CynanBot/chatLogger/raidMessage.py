@@ -3,6 +3,7 @@ import locale
 import CynanBot.misc.utils as utils
 from CynanBot.chatLogger.absChatMessage import AbsChatMessage
 from CynanBot.chatLogger.chatEventType import ChatEventType
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
 class RaidMessage(AbsChatMessage):
@@ -10,12 +11,15 @@ class RaidMessage(AbsChatMessage):
     def __init__(
         self,
         raidSize: int,
+        dateTime: SimpleDateTime,
         fromWho: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ):
         super().__init__(
-            chatEventType = ChatEventType.RAID,
-            twitchChannel = twitchChannel
+            dateTime = dateTime,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
         if not utils.isValidInt(raidSize):
@@ -28,11 +32,18 @@ class RaidMessage(AbsChatMessage):
         self.__raidSize: int = raidSize
         self.__fromWho: str = fromWho
 
-    def getFromWho(self) -> str:
+    @property
+    def chatEventType(self) -> ChatEventType:
+        return ChatEventType.RAID
+
+    @property
+    def fromWho(self) -> str:
         return self.__fromWho
 
-    def getRaidSize(self) -> int:
+    @property
+    def raidSize(self) -> int:
         return self.__raidSize
 
-    def getRaidSizeStr(self) -> str:
+    @property
+    def raidSizeStr(self) -> str:
         return locale.format_string("%d", self.__raidSize, grouping = True)

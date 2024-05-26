@@ -388,7 +388,8 @@ modifyUserDataHelper: ModifyUserDataHelper = ModifyUserDataHelper(
 
 chatLogger: ChatLoggerInterface = ChatLogger(
     backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(

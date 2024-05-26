@@ -1,4 +1,5 @@
 import CynanBot.misc.utils as utils
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
@@ -17,14 +18,18 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
     def __init__(
         self,
+        chatLogger: ChatLoggerInterface,
         streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(chatLogger, ChatLoggerInterface):
+            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
 
@@ -60,6 +65,14 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
             return
 
         self.__timber.log('TwitchRaidHandler', f'\"{user.getHandle()}\" received raid of {viewers} from \"{fromUserLogin}\"')
+
+        if user.isChatLoggingEnabled():
+            self.__chatLogger.logRaid(
+                raidSize = viewers,
+                fromWho = fromUserName,
+                twitchChannel = user.getHandle(),
+                twitchChannelId = toUserId
+            )
 
         await self.__processTtsEvent(
             viewers = viewers,
