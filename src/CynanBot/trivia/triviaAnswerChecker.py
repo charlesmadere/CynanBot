@@ -760,7 +760,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'binary'
         if word == 'bps':
             yield 'bits per second'
-        if word == 'c':
+        if word in ('c', 'centigrade'):
             yield 'celsius'
         if word == 'cg':
             yield 'centigram'
@@ -921,6 +921,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'achieve'
         if word == 'aquire':
             yield 'acquire'
+        if word == 'aquit':
+            yield 'acquit'
         if word == 'basicly':
             yield 'basically'
         if word in ('brocolli', 'broccolli'):
@@ -936,6 +938,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('definate', 'definately'):
             yield 'definite'
             yield 'definitely'
+        if word in ('enterpreneur', 'entrepeneur', 'entreperneur', 'entreprenur'):
+            yield 'entrepreneur'
         if word in ('gage', 'guage'):
             yield 'gauge'
         if word in ('itinary', 'itinery'):
@@ -959,7 +963,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'separate'
         if word in ('temperture', 'tempreture', 'temprature', 'temparature'):
             yield 'temperature'
-        if word == 'tommorrow':
+        if word in ('tommorow', 'tommorrow'):
             yield 'tomorrow'
         if word == 'untill':
             yield 'until'
