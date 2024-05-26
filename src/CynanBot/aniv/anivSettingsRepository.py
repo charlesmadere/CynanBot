@@ -21,7 +21,7 @@ class AnivSettingsRepository(AnivSettingsRepositoryInterface):
 
     async def getCopyMessageMaxAgeSeconds(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'copyMessageMaxAgeSeconds', fallback = 60)
+        return utils.getIntFromDict(jsonContents, 'copyMessageMaxAgeSeconds', fallback = 30)
 
     async def getCopyMessageTimeoutProbability(self) -> float:
         jsonContents = await self.__readJson()
