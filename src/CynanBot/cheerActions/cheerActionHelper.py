@@ -29,6 +29,7 @@ from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
     TwitchTimeoutHelperInterface
+from CynanBot.twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -317,6 +318,9 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
+        streamAlertsManager = self.__streamAlertsManager
+        twitchChannelProvider = self.__twitchChannelProvider
+
         userNameToTimeout = await self.__userIdsRepository.requireUserName(
             userId = userIdToTimeout,
             twitchAccessToken = userTwitchAccessToken
@@ -336,7 +340,8 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             self.__timber.log('CheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but this user is a new follower ({action=})')
             return False
-        elif not await self.__twitchTimeoutHelper.timeout(
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = action.getDurationSeconds(),
             reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {action.getDurationSeconds()} second(s), action ID \"{action.getActionId()}\"',
             twitchAccessToken = moderatorTwitchAccessToken,
@@ -344,13 +349,29 @@ class CheerActionHelper(CheerActionHelperInterface):
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
             user = user
-        ):
-            self.__timber.log('CheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but an error occurred ({action=})')
+        )
+
+        if timeoutResult is TwitchTimeoutResult.FOLLOW_SHIELD:
+            self.__timber.log('CheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but they have the follow shield ({timeoutResult=}) ({action=})')
+
+            if twitchChannelProvider is not None:
+                twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+                await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ Sorry @{cheerUserName}, but @{userNameToTimeout} has the follow shield')
+
+            return False
+        elif timeoutResult is TwitchTimeoutResult.IMMUNE_USER:
+            self.__timber.log('CheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but they are immune ({timeoutResult=}) ({action=})')
+
+            if twitchChannelProvider is not None:
+                twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+                await self.__twitchUtils.safeSend(twitchChannel, f'⚠️ Sorry @{cheerUserName}, but @{userNameToTimeout} is immune')
+
+            return False
+        elif timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            self.__timber.log('CheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but an error occurred ({timeoutResult=}) ({action=})')
             return False
 
         self.__timber.log('CheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" for {action.getDurationSeconds()} second(s)')
-
-        streamAlertsManager = self.__streamAlertsManager
 
         if user.isTtsEnabled() and streamAlertsManager is not None:
             message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds! rip bozo!'
@@ -370,8 +391,6 @@ class CheerActionHelper(CheerActionHelperInterface):
                     raidInfo = None
                 )
             ))
-
-        twitchChannelProvider = self.__twitchChannelProvider
 
         if twitchChannelProvider is not None:
             twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())

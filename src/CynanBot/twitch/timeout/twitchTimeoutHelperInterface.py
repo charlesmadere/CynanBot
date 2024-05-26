@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from CynanBot.twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -15,5 +16,5 @@ class TwitchTimeoutHelperInterface(ABC):
         twitchChannelId: str,
         userIdToTimeout: str,
         user: UserInterface
-    ) -> bool:
+    ) -> TwitchTimeoutResult:
         pass

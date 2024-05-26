@@ -17,6 +17,7 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
 from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
     TwitchTimeoutHelperInterface
+from CynanBot.twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -122,7 +123,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch channel access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
             return False
 
-        if not await self.__twitchTimeoutHelper.timeout(
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = durationSeconds,
             reason = None,
             twitchAccessToken = twitchAccessToken,
@@ -130,8 +131,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             twitchChannelId = twitchChannelId,
             userIdToTimeout = chatterUserId,
             user = user
-        ):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to timeout user {chatterUserName}:{chatterUserId} after they copied a message from aniv')
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to timeout user {chatterUserName}:{chatterUserId} after they copied a message from aniv ({timeoutResult=})')
             return False
 
         self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')

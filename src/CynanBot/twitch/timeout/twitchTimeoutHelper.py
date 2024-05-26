@@ -20,6 +20,7 @@ from CynanBot.twitch.timeout.twitchTimeoutRemodData import \
     TwitchTimeoutRemodData
 from CynanBot.twitch.timeout.twitchTimeoutRemodHelperInterface import \
     TwitchTimeoutRemodHelperInterface
+from CynanBot.twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from CynanBot.twitch.twitchConstantsInterface import TwitchConstantsInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
@@ -149,7 +150,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchChannelId: str,
         userIdToTimeout: str,
         user: UserInterface
-    ) -> bool:
+    ) -> TwitchTimeoutResult:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
         elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.getMaxTimeoutSeconds():
@@ -174,20 +175,20 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
         if not utils.isValidStr(userNameToTimeout):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({user=})')
-            return False
+            return TwitchTimeoutResult.INVALID_USER_NAME
         elif userIdToTimeout == twitchChannelId:
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
-            return False
+            return TwitchTimeoutResult.IS_STREAMER
         elif await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
-            return False
+            return TwitchTimeoutResult.IMMUNE_USER
         elif await self.__isAlreadyCurrentlyBannedOrTimedOut(
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout
         ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already either banned or timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
-            return False
+            return TwitchTimeoutResult.ALREADY_BANNED_OR_TIMED_OUT
 
         cynanBotUserId = await self.__userIdsRepository.requireUserId(
             userName = await self.__twitchHandleProvider.getTwitchHandle(),
@@ -211,7 +212,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             user = user
         ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
-            return False
+            return TwitchTimeoutResult.API_CALL_FAILED
 
         if mustRemod:
             remodDateTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = durationSeconds)
@@ -224,7 +225,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             ))
 
         self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
-        return True
+        return TwitchTimeoutResult.SUCCESS
 
     async def __timeout(
         self,
