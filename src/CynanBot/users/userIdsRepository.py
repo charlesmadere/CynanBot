@@ -28,7 +28,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         timber: TimberInterface,
         twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface,
         twitchApiService: TwitchApiServiceInterface,
-        cacheSize: int = 128
+        cacheSize: int = 256
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -40,7 +40,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
-        elif cacheSize < 32 or cacheSize > utils.getIntMaxSafeSize():
+        elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
