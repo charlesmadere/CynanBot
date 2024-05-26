@@ -75,13 +75,12 @@ class ShinyTriviaHelper():
             twitchChannelId = twitchChannelId
         )
 
-        entries = cutenessLeaderboard.getEntries()
-        if entries is None or len(entries) == 0:
+        if cutenessLeaderboard.entries is None or len(cutenessLeaderboard.entries) == 0:
             return None
 
-        for entry in entries:
-            if entry.getUserId() == userId:
-                return entry.getRank()
+        for entry in cutenessLeaderboard.entries:
+            if entry.userId == userId:
+                return entry.rank
 
         return None
 
