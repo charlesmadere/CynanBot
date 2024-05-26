@@ -2,6 +2,10 @@ import random
 from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
+from CynanBot.aniv.anivCopyMessageTimeoutScore import \
+    AnivCopyMessageTimeoutScore
+from CynanBot.aniv.anivCopyMessageTimeoutScoreRepositoryInterface import \
+    AnivCopyMessageTimeoutScoreRepositoryInterface
 from CynanBot.aniv.anivSettingsRepositoryInterface import \
     AnivSettingsRepositoryInterface
 from CynanBot.aniv.anivUserIdProviderInterface import \
@@ -30,6 +34,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
     def __init__(
         self,
+        anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
         anivSettingsRepository: AnivSettingsRepositoryInterface,
         anivUserIdProvider: AnivUserIdProviderInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
@@ -40,7 +45,9 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
+        if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
+            raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
+        elif not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
         elif not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
             raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
@@ -59,6 +66,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = anivCopyMessageTimeoutScoreRepository
         self.__anivSettingsRepository: AnivSettingsRepositoryInterface = anivSettingsRepository
         self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
@@ -100,23 +108,30 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidStr(anivMessageText) or chatterMessage.casefold() != anivMessageText.casefold() or expirationTime < now:
             return False
 
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
+            return False
+
         timeoutProbability = user.getAnivMessageCopyTimeoutChance()
         if not utils.isValidNum(timeoutProbability):
             timeoutProbability = await self.__anivSettingsRepository.getCopyMessageTimeoutProbability()
 
         if random.random() > timeoutProbability:
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv! ({timeoutProbability=})')
+
+            await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
+                chatterUserId = chatterUserId,
+                twitchAccessToken = twitchAccessToken,
+                twitchChannelId = twitchChannelId
+            )
+
             return False
 
         durationSeconds = user.getAnivMessageCopyTimeoutSeconds()
         if not utils.isValidInt(durationSeconds):
             durationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
-
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
-        if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
-            return False
 
         twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
         if not utils.isValidStr(twitchChannelAccessToken):
@@ -137,12 +152,19 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to timeout user {chatterUserName}:{chatterUserId} after they copied a message from aniv ({timeoutResult=})')
             return False
 
+        timeoutScore = await self.__anivCopyMessageTimeoutScoreRepository.incrementTimeoutScore(
+            chatterUserId = chatterUserId,
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId
+        )
+
         self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')
 
         twitchChannelProvider = self.__twitchChannelProvider
         if twitchChannelProvider is not None:
             twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-            await self.__twitchUtils.safeSend(twitchChannel, f'@{chatterUserName} RIPBOZO')
+            timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
+            await self.__twitchUtils.safeSend(twitchChannel, f'@{chatterUserName} RIPBOZO {timeoutScoreString}')
 
         return True
 
@@ -151,3 +173,24 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         self.__twitchChannelProvider = provider
+
+    async def __timeoutScoreToString(self, timeoutScore: AnivCopyMessageTimeoutScore) -> str:
+        statsString: str
+        if timeoutScore.dodgeScore == 1 and timeoutScore.timeoutScore == 1:
+            statsString = f'{timeoutScore.dodgeScoreStr} dodge and {timeoutScore.timeoutScore} timeout'
+        elif timeoutScore.dodgeScore == 1:
+            statsString = f'{timeoutScore.dodgeScoreStr} dodge and {timeoutScore.timeoutScoreStr} timeouts'
+        elif timeoutScore.timeoutScore == 1:
+            statsString = f'{timeoutScore.dodgeScoreStr} dodges and {timeoutScore.timeoutScoreStr} timeout'
+
+        dodgePercentString: str
+        if timeoutScore.dodgeScore == 0:
+            dodgePercentString = f'that\'s a 0% dodge rate'
+        elif timeoutScore.timeoutScore == 0:
+            dodgePercentString = f'that\'s a 100% dodge rate'
+        else:
+            totalDodgesAndTimeouts = timeoutScore.dodgeScore + timeoutScore.timeoutScore
+            dodgePercent = round(float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts), 2)
+            dodgePercentString = f'that\'s a {dodgePercent}% dodge rate'
+
+        return f'({statsString}, {dodgePercentString})'

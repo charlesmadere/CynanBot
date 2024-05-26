@@ -9,6 +9,10 @@ from CynanBot.administratorProviderInterface import \
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivContentScannerInterface import \
     AnivContentScannerInterface
+from CynanBot.aniv.anivCopyMessageTimeoutScoreRepository import \
+    AnivCopyMessageTimeoutScoreRepository
+from CynanBot.aniv.anivCopyMessageTimeoutScoreRepositoryInterface import \
+    AnivCopyMessageTimeoutScoreRepositoryInterface
 from CynanBot.aniv.anivSettingsRepository import AnivSettingsRepository
 from CynanBot.aniv.anivSettingsRepositoryInterface import \
     AnivSettingsRepositoryInterface
@@ -1058,7 +1062,11 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
 ## Aniv initialization section ##
 #################################
 
-anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
+anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
+    backingDatabase = backingDatabase,
+    timeZoneRepository = timeZoneRepository,
+    userIdsRepository = userIdsRepository
+)
 
 anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(
     settingsJsonReader = JsonFileReader('anivSettingsRepository.json')
@@ -1069,6 +1077,8 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     timber = timber
 )
 
+anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
+
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -1078,6 +1088,7 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
 if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+        anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
         anivSettingsRepository = anivSettingsRepository,
         anivUserIdProvider = anivUserIdProvider,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
