@@ -917,6 +917,7 @@ class CynanBot(
             )
 
             raidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
+                chatLogger = self.__chatLogger,
                 streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber
             )
