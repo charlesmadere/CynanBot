@@ -201,7 +201,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             ))
 
         # sort entries into newest to oldest order
-        entries.sort(key = lambda entry: entry.getCutenessDate(), reverse = True)
+        entries.sort(key = lambda entry: entry.cutenessDate, reverse = True)
 
         record = await connection.fetchRow(
             '''

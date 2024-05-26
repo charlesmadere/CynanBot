@@ -51,28 +51,26 @@ class CutenessUtils(CutenessUtilsInterface):
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        entries = result.getEntries()
-
-        if entries is None or len(entries) == 0:
-            return f'{result.getUserName()} has no cuteness history 😿'
+        if result.entries is None or len(result.entries) == 0:
+            return f'{result.userName} has no cuteness history 😿'
 
         historyStrs: list[str] = list()
 
-        for entry in entries:
-            historyStrs.append(f'{entry.getCutenessDate().getHumanString()} ({entry.cutenessStr})')
+        for entry in result.entries:
+            historyStrs.append(f'{entry.cutenessDate.getHumanString()} ({entry.cutenessStr})')
 
         historyStr = delimiter.join(historyStrs)
-        bestCuteness = result.getBestCuteness()
-        totalCuteness = result.getTotalCuteness()
+        bestCuteness = result.bestCuteness
+        totalCuteness = result.totalCuteness
 
         if bestCuteness is not None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
-            return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {bestCuteness.cutenessStr} in {bestCuteness.getCutenessDate().getHumanString()}. And here is their recent cuteness history: {historyStr} ✨'
+            return f'@{result.userName} has a total cuteness of {result.totalCutenessStr} with their best ever cuteness being {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}. And here is their recent cuteness history: {historyStr} ✨'
         elif bestCuteness is not None and (not utils.isValidInt(totalCuteness) or totalCuteness == 0):
-            return f'@{result.getUserName()}\'s best ever cuteness was {bestCuteness.cutenessStr} in {bestCuteness.getCutenessDate().getHumanString()}, with a recent cuteness history of {historyStr} ✨'
+            return f'@{result.userName}\'s best ever cuteness was {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}, with a recent cuteness history of {historyStr} ✨'
         elif bestCuteness is None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
-            return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a recent cuteness history of {historyStr} ✨'
+            return f'@{result.userName} has a total cuteness of {result.totalCutenessStr}, with a recent cuteness history of {historyStr} ✨'
         else:
-            return f'@{result.getUserName()}\'s recent cuteness history: {historyStr} ✨'
+            return f'@{result.userName}\'s recent cuteness history: {historyStr} ✨'
 
     def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not isinstance(entries, list) or len(entries) == 0:
@@ -108,15 +106,14 @@ class CutenessUtils(CutenessUtilsInterface):
         leaderboardStrings: list[str] = list()
 
         for leaderboard in leaderboards:
-            entries = leaderboard.getEntries()
-            if entries is None or len(entries) == 0:
+            if leaderboard.entries is None or len(leaderboard.entries) == 0:
                 continue
 
             entryStrings: list[str] = list()
-            for entry in entries:
+            for entry in leaderboard.entries:
                 entryStrings.append(self.__getLeaderboardPlacementString(entry))
 
-            leaderboardStrings.append(f'{leaderboard.getCutenessDate().getHumanString()} {entryDelimiter.join(entryStrings)}')
+            leaderboardStrings.append(f'{leaderboard.cutenessDate.getHumanString()} {entryDelimiter.join(entryStrings)}')
 
         return f'Cuteness Leaderboard History — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
 

@@ -399,7 +399,7 @@ class UsersRepository(UsersRepositoryInterface):
                 rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
             ))
 
-        cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
+        cutenessBoosterPacks.sort(key = lambda pack: pack.amount)
         return cutenessBoosterPacks
 
     def __parsePkmnCatchBoosterPacksFromJson(
@@ -418,12 +418,12 @@ class UsersRepository(UsersRepositoryInterface):
                 fallback = ''
             )
 
-            pkmnCatchType: PkmnCatchType | None = None
+            catchType: PkmnCatchType | None = None
             if utils.isValidStr(pkmnCatchTypeStr):
-                pkmnCatchType = PkmnCatchType.fromStr(pkmnCatchTypeStr)
+                catchType = PkmnCatchType.fromStr(pkmnCatchTypeStr)
 
             pkmnCatchBoosterPacks.append(PkmnCatchBoosterPack(
-                pkmnCatchType = pkmnCatchType,
+                catchType = catchType,
                 rewardId = utils.getStrFromDict(pkmnCatchBoosterPackJson, 'rewardId')
             ))
 

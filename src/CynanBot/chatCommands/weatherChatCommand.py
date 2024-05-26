@@ -1,12 +1,14 @@
-from datetime import timedelta
 import traceback
+from datetime import timedelta
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.timedDict import TimedDict
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
-from CynanBot.location.locationsRepositoryInterface import LocationsRepositoryInterface
-from CynanBot.openWeather.exceptions import OpenWeatherApiKeyUnavailableException
+from CynanBot.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
+from CynanBot.misc.timedDict import TimedDict
+from CynanBot.openWeather.exceptions import \
+    OpenWeatherApiKeyUnavailableException
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface

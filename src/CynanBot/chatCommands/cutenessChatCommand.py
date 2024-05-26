@@ -60,28 +60,25 @@ class CutenessChatCommand(AbsChatCommand):
         if not isinstance(result, CutenessLeaderboardResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
 
-        entries = result.getEntries()
-
-        if entries is None or len(entries) == 0:
-            return f'{result.getCutenessDate().getHumanString()} Leaderboard is empty 😿'
+        if result.entries is None or len(result.entries) == 0:
+            return f'{result.cutenessDate.getHumanString()} Leaderboard is empty 😿'
 
         specificLookupText: str | None = None
-        specificLookupCutenessResult = result.getSpecificLookupCutenessResult()
 
-        if specificLookupCutenessResult is not None:
-            userName = specificLookupCutenessResult.userName
-            cutenessStr = specificLookupCutenessResult.cutenessStr
+        if result.specificLookupCutenessResult is not None:
+            userName = result.specificLookupCutenessResult.userName
+            cutenessStr = result.specificLookupCutenessResult.cutenessStr
             specificLookupText = f'@{userName} your cuteness is {cutenessStr}'
 
         leaderboard = self.__cutenessUtils.getLeaderboard(
-            entries = entries,
+            entries = result.entries,
             delimiter = self.__delimiter
         )
 
         if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the {result.getCutenessDate().getHumanString()} Leaderboard is: {leaderboard} ✨'
+            return f'{specificLookupText}, and the {result.cutenessDate.getHumanString()} Leaderboard is: {leaderboard} ✨'
         else:
-            return f'{result.getCutenessDate().getHumanString()} Leaderboard {leaderboard} ✨'
+            return f'{result.cutenessDate.getHumanString()} Leaderboard {leaderboard} ✨'
 
     def __cutenessResultToStr(self, result: CutenessResult) -> str:
         if not isinstance(result, CutenessResult):

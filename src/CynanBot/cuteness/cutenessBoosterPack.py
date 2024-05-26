@@ -1,28 +1,12 @@
 import locale
+from dataclasses import dataclass
 
-import CynanBot.misc.utils as utils
 
-
+@dataclass(frozen = True)
 class CutenessBoosterPack():
+    amount: int
+    rewardId: str
 
-    def __init__(
-        self,
-        amount: int,
-        rewardId: str
-    ):
-        if not utils.isValidInt(amount):
-            raise TypeError(f'amount argument is malformed: \"{amount}\"')
-        elif not utils.isValidStr(rewardId):
-            raise TypeError(f'rewardId argument is malformed: \"{rewardId}\"')
-
-        self.__amount: int = amount
-        self.__rewardId: str = rewardId
-
-    def getAmount(self) -> int:
-        return self.__amount
-
-    def getAmountStr(self) -> str:
-        return locale.format_string("%d", self.__amount, grouping = True)
-
-    def getRewardId(self) -> str:
-        return self.__rewardId
+    @property
+    def amountStr(self) -> str:
+        return locale.format_string("%d", self.amount, grouping = True)

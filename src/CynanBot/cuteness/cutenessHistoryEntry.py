@@ -22,5 +22,6 @@ class CutenessHistoryEntry(CutenessEntry):
 
         self.__cutenessDate: CutenessDate = cutenessDate
 
-    def getCutenessDate(self) -> CutenessDate:
+    @property
+    def cutenessDate(self) -> CutenessDate:
         return self.__cutenessDate

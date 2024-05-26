@@ -48,14 +48,14 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         cutenessBoosterPack: CutenessBoosterPack | None = None
 
         for cbp in cutenessBoosterPacks:
-            if twitchChannelPointsMessage.getRewardId() == cbp.getRewardId():
+            if twitchChannelPointsMessage.getRewardId() == cbp.rewardId:
                 cutenessBoosterPack = cbp
                 break
 
         if cutenessBoosterPack is None:
             return False
 
-        incrementAmount = cutenessBoosterPack.getAmount()
+        incrementAmount = cutenessBoosterPack.amount
 
         try:
             await self.__cutenessRepository.fetchCutenessIncrementedBy(

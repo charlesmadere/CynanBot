@@ -60,7 +60,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         pkmnCatchBoosterPack: PkmnCatchBoosterPack | None = None
 
         for pkbp in pkmnCatchBoosterPacks:
-            if twitchChannelPointsMessage.getRewardId() == pkbp.getRewardId():
+            if twitchChannelPointsMessage.getRewardId() == pkbp.rewardId:
                 pkmnCatchBoosterPack = pkbp
                 break
 
@@ -68,7 +68,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
             return False
 
         funtoonPkmnCatchType: FuntoonPkmnCatchType | None = None
-        if pkmnCatchBoosterPack.hasCatchType():
+        if pkmnCatchBoosterPack.catchType is not None:
             funtoonPkmnCatchType = self.__toFuntoonPkmnCatchType(pkmnCatchBoosterPack)
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -86,7 +86,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
             await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.getUserName()}')
             actionCompleted = True
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} (catch type: {pkmnCatchBoosterPack.getCatchType()}) in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} (catch type: {pkmnCatchBoosterPack.catchType}) in {twitchUser.getHandle()}')
         return actionCompleted
 
     def __toFuntoonPkmnCatchType(
@@ -94,13 +94,13 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         pkmnCatchBoosterPack: PkmnCatchBoosterPack
     ) -> FuntoonPkmnCatchType:
         if not isinstance(pkmnCatchBoosterPack, PkmnCatchBoosterPack):
-            raise ValueError(f'pkmnCatchBoosterPack argument is malformed: \"{pkmnCatchBoosterPack}\"')
+            raise TypeError(f'pkmnCatchBoosterPack argument is malformed: \"{pkmnCatchBoosterPack}\"')
 
-        if pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.NORMAL:
+        if pkmnCatchBoosterPack.catchType is PkmnCatchType.NORMAL:
             return FuntoonPkmnCatchType.NORMAL
-        elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.GREAT:
+        elif pkmnCatchBoosterPack.catchType is PkmnCatchType.GREAT:
             return FuntoonPkmnCatchType.GREAT
-        elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.ULTRA:
+        elif pkmnCatchBoosterPack.catchType is PkmnCatchType.ULTRA:
             return FuntoonPkmnCatchType.ULTRA
         else:
-            raise ValueError(f'unknown PkmnCatchType: \"{pkmnCatchBoosterPack.getCatchType()}\"')
+            raise ValueError(f'unknown PkmnCatchType: \"{pkmnCatchBoosterPack.catchType}\"')
