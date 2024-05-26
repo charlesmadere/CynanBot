@@ -82,8 +82,8 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
             currentAnswers = correctAnswers,
             triviaId = triviaId,
-            triviaSource = self.getTriviaSource(),
-            triviaType = TriviaQuestionType.QUESTION_ANSWER
+            triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
+            triviaSource = self.getTriviaSource()
         ):
             self.__timber.log('LotrTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 

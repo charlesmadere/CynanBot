@@ -103,8 +103,8 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
             currentAnswers = correctAnswers,
             triviaId = triviaId,
-            triviaSource = self.getTriviaSource(),
-            triviaType = TriviaQuestionType.QUESTION_ANSWER
+            triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
+            triviaSource = self.getTriviaSource()
         ):
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
@@ -116,8 +116,8 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
             currentAnswers = cleanedCorrectAnswers,
             triviaId = triviaId,
-            triviaSource = self.getTriviaSource(),
-            triviaType = TriviaQuestionType.QUESTION_ANSWER
+            triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
+            triviaSource = self.getTriviaSource()
         )
 
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)

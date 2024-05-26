@@ -14,8 +14,8 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         additionalAnswer: str,
         triviaId: str,
         userId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> AdditionalTriviaAnswers:
         pass
 
@@ -24,8 +24,8 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         self,
         currentAnswers: list[str],
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> bool:
         pass
 
@@ -33,8 +33,8 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
     async def deleteAdditionalTriviaAnswers(
         self,
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> AdditionalTriviaAnswers | None:
         pass
 
@@ -42,7 +42,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
     async def getAdditionalTriviaAnswers(
         self,
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> AdditionalTriviaAnswers | None:
         pass

@@ -453,8 +453,8 @@ class GlacialTriviaQuestionRepository(
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
             currentAnswers = correctAnswers,
             triviaId = triviaId,
-            triviaSource = originalTriviaSource,
-            triviaType = triviaType
+            triviaQuestionType = triviaType,
+            triviaSource = originalTriviaSource
         ):
             self.__timber.log('GlacialTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 

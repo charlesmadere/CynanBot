@@ -8,10 +8,10 @@ class AdditionalTriviaAnswerAlreadyExistsException(Exception):
         self,
         message: str,
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ):
-        super().__init__(message, triviaId, triviaSource, triviaType)
+        super().__init__(message, triviaId, triviaQuestionType, triviaSource)
 
 
 class AdditionalTriviaAnswerIsMalformedException(Exception):
@@ -22,8 +22,13 @@ class AdditionalTriviaAnswerIsMalformedException(Exception):
 
 class AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(Exception):
 
-    def __init__(self, message: str, triviaType: TriviaQuestionType, triviaSource: TriviaSource):
-        super().__init__(message, triviaType, triviaSource)
+    def __init__(
+        self,
+        message: str,
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
+    ):
+        super().__init__(message, triviaQuestionType, triviaSource)
 
 
 class BadTriviaAnswerException(Exception):
@@ -108,10 +113,10 @@ class TooManyAdditionalTriviaAnswersException(Exception):
         self,
         answerCount: int,
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ):
-        super().__init__(answerCount, triviaId, triviaSource, triviaType)
+        super().__init__(answerCount, triviaId, triviaQuestionType, triviaSource)
 
 
 class TooManyTriviaFetchAttemptsException(Exception):

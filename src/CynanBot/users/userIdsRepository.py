@@ -118,11 +118,11 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             return None
 
         await self.setUser(
-            userId = userDetails.getUserId(),
-            userName = userDetails.getLogin()
+            userId = userDetails.userId,
+            userName = userDetails.login
         )
 
-        return userDetails.getUserId()
+        return userDetails.userId
 
     async def fetchUserIdAsInt(
         self,
@@ -176,7 +176,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             userId
         )
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             userName = record[0]
 
         await connection.close()
@@ -204,14 +204,14 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch username for user ID \"{userId}\" ({twitchAccessToken=})')
             return None
 
-        self.__cache[userId] = userDetails.getLogin()
+        self.__cache[userId] = userDetails.login
 
         await self.setUser(
             userId = userId,
-            userName = userDetails.getLogin()
+            userName = userDetails.login
         )
 
-        return userDetails.getLogin()
+        return userDetails.login
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()

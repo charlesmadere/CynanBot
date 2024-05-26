@@ -68,8 +68,8 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         additionalAnswer: str,
         triviaId: str,
         userId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> AdditionalTriviaAnswers:
         if not utils.isValidStr(additionalAnswer):
             raise AdditionalTriviaAnswerIsMalformedException(f'additionalAnswer argument is malformed: \"{additionalAnswer}\"')
@@ -77,53 +77,53 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not isinstance(triviaQuestionType, TriviaQuestionType):
+            raise TypeError(f'triviaQuestionType argument is malformed: \"{triviaQuestionType}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         additionalAnswerLength = len(additionalAnswer)
         maxAdditionalTriviaAnswerLength = await self.__triviaSettingsRepository.getMaxAdditionalTriviaAnswerLength()
 
         if additionalAnswerLength > maxAdditionalTriviaAnswerLength:
             raise AdditionalTriviaAnswerIsMalformedException(f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is too long (len is {additionalAnswerLength}, max len is {maxAdditionalTriviaAnswerLength})')
-
-        if triviaType is not TriviaQuestionType.QUESTION_ANSWER:
+        elif triviaQuestionType is not TriviaQuestionType.QUESTION_ANSWER:
             raise AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(
-                message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is an unsupported type ({triviaType.toStr})',
-                triviaSource = triviaSource,
-                triviaType = triviaType
+                message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is an unsupported type ({triviaQuestionType=})',
+                triviaQuestionType = triviaQuestionType,
+                triviaSource = triviaSource
             )
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
-            triviaSource = triviaSource,
-            triviaType = triviaType
+            triviaQuestionType = triviaQuestionType,
+            triviaSource = triviaSource
         )
 
         additionalAnswersList: list[AdditionalTriviaAnswer] = list()
 
         if reference is not None:
-            additionalAnswersList.extend(reference.getAdditionalAnswers())
+            additionalAnswersList.extend(reference.answers)
 
-            for existingAdditionalAnswer in reference.getAdditionalAnswersStrs():
-                if existingAdditionalAnswer.lower() == additionalAnswer.lower():
+            for existingAdditionalAnswer in reference.answerStrings:
+                if existingAdditionalAnswer.casefold() == additionalAnswer.casefold():
                     raise AdditionalTriviaAnswerAlreadyExistsException(
-                        message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it already exists',
+                        message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it already exists ({triviaQuestionType=}) ({reference=})',
                         triviaId = triviaId,
-                        triviaSource = triviaSource,
-                        triviaType = triviaType
+                        triviaQuestionType = triviaQuestionType,
+                        triviaSource = triviaSource
                     )
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
+
         userName = await self.__userIdsRepository.requireUserName(
             userId = userId,
             twitchAccessToken = twitchAccessToken
         )
 
         additionalAnswersList.append(AdditionalTriviaAnswer(
-            additionalAnswer = additionalAnswer,
+            answer = additionalAnswer,
             userId = userId,
             userName = userName
         ))
@@ -132,8 +132,8 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise TooManyAdditionalTriviaAnswersException(
                 answerCount = len(additionalAnswersList),
                 triviaId = triviaId,
-                triviaSource = triviaSource,
-                triviaType = triviaType
+                triviaQuestionType = triviaQuestionType,
+                triviaSource = triviaSource
             )
 
         connection = await self.__getDatabaseConnection()
@@ -142,62 +142,64 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 INSERT INTO additionaltriviaanswers (additionalanswer, triviaid, triviasource, triviatype, userid)
                 VALUES ($1, $2, $3, $4, $5)
             ''',
-            additionalAnswer, triviaId, triviaSource.toStr(), triviaType.toStr(), userId
+            additionalAnswer, triviaId, triviaSource.toStr(), triviaQuestionType.toStr(), userId
         )
 
         await connection.close()
         self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer (\"{additionalAnswer}\") for {triviaSource.toStr()}:{triviaId}, all answers: {additionalAnswersList}')
 
         return AdditionalTriviaAnswers(
-            additionalAnswers = additionalAnswersList,
+            answers = additionalAnswersList,
             triviaId = triviaId,
-            triviaSource = triviaSource,
-            triviaType = triviaType
+            triviaQuestionType = triviaQuestionType,
+            triviaSource = triviaSource
         )
 
     async def addAdditionalTriviaAnswers(
         self,
         currentAnswers: list[str],
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> bool:
         if not isinstance(currentAnswers, list):
             raise TypeError(f'currentAnswers argument is malformed: \"{currentAnswers}\"')
         elif not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
+        elif not isinstance(triviaQuestionType, TriviaQuestionType):
+            raise TypeError(f'triviaQuestionType argument is malformed: \"{triviaQuestionType}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
-            triviaSource = triviaSource,
-            triviaType = triviaType
+            triviaQuestionType = triviaQuestionType,
+            triviaSource = triviaSource
         )
 
         if reference is None:
             return False
 
-        currentAnswers.extend(reference.getAdditionalAnswersStrs())
+        currentAnswers.extend(reference.answerStrings)
         return True
 
     async def deleteAdditionalTriviaAnswers(
         self,
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> AdditionalTriviaAnswers | None:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
+        elif not isinstance(triviaQuestionType, TriviaQuestionType):
+            raise TypeError(f'triviaQuestionType argument is malformed: \"{triviaQuestionType}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
-            triviaSource = triviaSource,
-            triviaType = triviaType
+            triviaQuestionType = triviaQuestionType,
+            triviaSource = triviaSource
         )
 
         if reference is None:
@@ -210,26 +212,26 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 DELETE FROM additionaltriviaanswers
                 WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3
             ''',
-            triviaId, triviaSource.toStr(), triviaType.toStr()
+            triviaId, triviaSource.toStr(), triviaQuestionType.toStr()
         )
 
         await connection.close()
-        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers for {triviaSource.toStr()}:{triviaId} (existing additional answers were {reference.getAdditionalAnswers()})')
+        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers for {triviaSource.toStr()}:{triviaId} (existing additional answers were {reference.answers})')
 
         return reference
 
     async def getAdditionalTriviaAnswers(
         self,
         triviaId: str,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
+        triviaSource: TriviaSource
     ) -> AdditionalTriviaAnswers | None:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
+        elif not isinstance(triviaQuestionType, TriviaQuestionType):
+            raise TypeError(f'triviaQuestionType argument is malformed: \"{triviaQuestionType}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         if not await self.__triviaSettingsRepository.areAdditionalTriviaAnswersEnabled():
             return None
@@ -245,10 +247,10 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                     WHERE additionaltriviaanswers.triviaid = $1 AND additionaltriviaanswers.triviasource = $2 AND additionaltriviaanswers.triviatype = $3
                     ORDER BY additionaltriviaanswers.additionalanswer ASC
                 ''',
-                triviaId, triviaSource.toStr(), triviaType.toStr()
+                triviaId, triviaSource.toStr(), triviaQuestionType.toStr()
             )
         except DatabaseOperationalError as e:
-            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaType=}): {e}', e, traceback.format_exc())
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=}): {e}', e, traceback.format_exc())
 
         await connection.close()
 
@@ -259,18 +261,18 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
 
         for record in records:
             additionalAnswers.append(AdditionalTriviaAnswer(
-                additionalAnswer = record[0],
+                answer = record[0],
                 userId = record[1],
                 userName = record[2]
             ))
 
-        additionalAnswers.sort(key = lambda additionalAnswer: (additionalAnswer.getAdditionalAnswer().lower(), additionalAnswer.getUserId().lower()))
+        additionalAnswers.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
 
         return AdditionalTriviaAnswers(
-            additionalAnswers = additionalAnswers,
+            answers = additionalAnswers,
             triviaId = triviaId,
-            triviaSource = triviaSource,
-            triviaType = triviaType
+            triviaQuestionType = triviaQuestionType,
+            triviaSource = triviaSource
         )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -284,31 +286,34 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
-                        additionalanswer text NOT NULL,
-                        triviaid public.citext NOT NULL,
-                        triviasource public.citext NOT NULL,
-                        triviatype public.citext NOT NULL,
-                        userid text NOT NULL
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
-                        additionalanswer TEXT NOT NULL,
-                        triviaid TEXT NOT NULL COLLATE NOCASE,
-                        triviasource TEXT NOT NULL COLLATE NOCASE,
-                        triviatype TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
+                            additionalanswer text NOT NULL,
+                            triviaid text NOT NULL,
+                            triviasource text NOT NULL,
+                            triviatype text NOT NULL,
+                            userid text NOT NULL
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
+                            additionalanswer TEXT NOT NULL,
+                            triviaid TEXT NOT NULL COLLATE NOCASE,
+                            triviasource TEXT NOT NULL COLLATE NOCASE,
+                            triviatype TEXT NOT NULL COLLATE NOCASE,
+                            userid TEXT NOT NULL
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
