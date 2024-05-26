@@ -9,6 +9,7 @@ from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
     TwitchChannelPointsMessage
+from CynanBot.users.userInterface import UserInterface
 
 
 class SoundAlertPointRedemption(AbsChannelPointRedemption):
@@ -28,12 +29,13 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     async def __determineSoundAlert(
         self,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        user: UserInterface
     ) -> SoundAlert | None:
         if not isinstance(twitchChannelPointsMessage, TwitchChannelPointsMessage):
             raise TypeError(f'twitchChannelPointsMessage argument is malformed: \"{twitchChannelPointsMessage}\"')
-
-        user = twitchChannelPointsMessage.getTwitchUser()
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if twitchChannelPointsMessage.getRewardId() == user.getRandomSoundAlertRewardId():
             return await self.__channelPointSoundHelper.chooseRandomSoundAlert()
@@ -58,7 +60,8 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             return False
 
         soundAlert = await self.__determineSoundAlert(
-            twitchChannelPointsMessage = twitchChannelPointsMessage
+            twitchChannelPointsMessage = twitchChannelPointsMessage,
+            user = user
         )
 
         if soundAlert is None:

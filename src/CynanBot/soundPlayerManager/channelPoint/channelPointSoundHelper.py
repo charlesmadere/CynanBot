@@ -67,6 +67,8 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
                 continue
             elif not await aiofiles.ospath.exists(filePath):
                 continue
+            elif not await aiofiles.ospath.isfile(filePath):
+                continue
 
             availableSoundAlerts.append(soundAlert)
 
