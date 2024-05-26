@@ -137,15 +137,31 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             )
 
         connection = await self.__getDatabaseConnection()
-        await connection.execute(
-            '''
-                INSERT INTO additionaltriviaanswers (additionalanswer, triviaid, triviasource, triviatype, userid)
-                VALUES ($1, $2, $3, $4, $5)
-            ''',
-            additionalAnswer, triviaId, triviaSource.toStr(), triviaQuestionType.toStr(), userId
-        )
+        exception: DatabaseOperationalError | None = None
+
+        try:
+            await connection.execute(
+                '''
+                    INSERT INTO additionaltriviaanswers (additionalanswer, triviaid, triviasource, triviatype, userid)
+                    VALUES ($1, $2, $3, $4, $5)
+                ''',
+                additionalAnswer, triviaId, triviaSource.toStr(), triviaQuestionType.toStr(), userId
+            )
+        except DatabaseOperationalError as e:
+            exception = e
 
         await connection.close()
+
+        if exception is not None:
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to insert additional trivia answer ({additionalAnswer=}) ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=}): {exception}', exception, traceback.format_exc())
+
+            raise AdditionalTriviaAnswerAlreadyExistsException(
+                message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it already exists ({triviaQuestionType=}) ({reference=})',
+                triviaId = triviaId,
+                triviaQuestionType = triviaQuestionType,
+                triviaSource = triviaSource
+            )
+
         self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer (\"{additionalAnswer}\") for {triviaSource.toStr()}:{triviaId}, all answers: {additionalAnswersList}')
 
         return AdditionalTriviaAnswers(
@@ -291,11 +307,12 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 await connection.createTableIfNotExists(
                     '''
                         CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
-                            additionalanswer text NOT NULL,
+                            additionalanswer public.citext NOT NULL,
                             triviaid text NOT NULL,
                             triviasource text NOT NULL,
                             triviatype text NOT NULL,
                             userid text NOT NULL
+                            PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
                         )
                     '''
                 )
@@ -304,11 +321,12 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 await connection.createTableIfNotExists(
                     '''
                         CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
-                            additionalanswer TEXT NOT NULL,
-                            triviaid TEXT NOT NULL COLLATE NOCASE,
-                            triviasource TEXT NOT NULL COLLATE NOCASE,
-                            triviatype TEXT NOT NULL COLLATE NOCASE,
+                            additionalanswer TEXT NOT NULL COLLATE NOCASE,
+                            triviaid TEXT NOT NULL,
+                            triviasource TEXT NOT NULL,
+                            triviatype TEXT NOT NULL,
                             userid TEXT NOT NULL
+                            PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
                         )
                     '''
                 )
