@@ -58,7 +58,7 @@ class CutenessChatCommand(AbsChatCommand):
 
     def __cutenessLeaderboardResultToStr(self, result: CutenessLeaderboardResult) -> str:
         if not isinstance(result, CutenessLeaderboardResult):
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+            raise TypeError(f'result argument is malformed: \"{result}\"')
 
         entries = result.getEntries()
 
@@ -69,8 +69,8 @@ class CutenessChatCommand(AbsChatCommand):
         specificLookupCutenessResult = result.getSpecificLookupCutenessResult()
 
         if specificLookupCutenessResult is not None:
-            userName = specificLookupCutenessResult.getUserName()
-            cutenessStr = specificLookupCutenessResult.getCutenessStr()
+            userName = specificLookupCutenessResult.userName
+            cutenessStr = specificLookupCutenessResult.cutenessStr
             specificLookupText = f'@{userName} your cuteness is {cutenessStr}'
 
         leaderboard = self.__cutenessUtils.getLeaderboard(
@@ -85,14 +85,14 @@ class CutenessChatCommand(AbsChatCommand):
 
     def __cutenessResultToStr(self, result: CutenessResult) -> str:
         if not isinstance(result, CutenessResult):
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+            raise TypeError(f'result argument is malformed: \"{result}\"')
 
-        cuteness = result.getCuteness()
+        cuteness = result.cuteness
 
         if utils.isValidInt(cuteness) and cuteness >= 1:
-            return f'{result.getUserName()}\'s {result.getCutenessDate().getHumanString()} cuteness is {result.getCutenessStr()} ✨'
+            return f'{result.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr} ✨'
         else:
-            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().getHumanString()}'
+            return f'{result.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

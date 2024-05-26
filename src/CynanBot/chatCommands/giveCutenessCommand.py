@@ -97,7 +97,7 @@ class GiveCutenessCommand(AbsChatCommand):
                 userName = userName
             )
 
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Cuteness for {userName} is now {result.cutenessStr} ✨')
         except (OverflowError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')

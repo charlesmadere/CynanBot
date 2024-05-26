@@ -26,8 +26,10 @@ class CutenessLeaderboardEntry(CutenessEntry):
 
         self.__rank: int = rank
 
-    def getRank(self) -> int:
+    @property
+    def rank(self) -> int:
         return self.__rank
 
-    def getRankStr(self) -> str:
+    @property
+    def rankStr(self) -> str:
         return locale.format_string("%d", self.__rank, grouping = True)

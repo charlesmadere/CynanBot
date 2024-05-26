@@ -127,7 +127,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         infix = ''
         if twitchUser.isCutenessEnabled():
-            infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
+            infix = f'Your new cuteness is {newCuteness.cutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
@@ -350,7 +350,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         infix = ''
         if twitchUser.isCutenessEnabled():
-            infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.getCutenessStr()}.'
+            infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.cutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
