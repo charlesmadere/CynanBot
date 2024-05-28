@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import locale
+from dataclasses import dataclass
 from typing import Any
 
 from CynanBot.cheerActions.cheerActionBitRequirement import \
