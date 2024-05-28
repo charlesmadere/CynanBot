@@ -343,7 +343,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(stat, PokepediaStat):
             raise TypeError(f'stat argument is malformed: \"{stat}\"')
 
-        decreasingNatures = stat.getDecreasingNatures()
+        decreasingNatures = stat.decreasingNatures
         randomNature = random.choice(list(PokepediaNature))
 
         return {
@@ -356,7 +356,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(stat, PokepediaStat):
             raise TypeError(f'stat argument is malformed: \"{stat}\"')
 
-        increasingNatures = stat.getIncreasingNatures()
+        increasingNatures = stat.increasingNatures
         randomNature = random.choice(list(PokepediaNature))
 
         return {

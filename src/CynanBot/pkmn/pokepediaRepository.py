@@ -263,11 +263,11 @@ class PokepediaRepository():
     async def fetchRandomStat(self) -> PokepediaStat:
         allStats = list(PokepediaStat)
         randomStat = random.choice(allStats)
-        return await self.fetchStat(randomStat.getStatId())
+        return await self.fetchStat(randomStat.statId)
 
     async def fetchStat(self, statId: int) -> PokepediaStat:
         if not utils.isValidInt(statId):
-            raise ValueError(f'statId argument is malformed: \"{statId}\"')
+            raise TypeError(f'statId argument is malformed: \"{statId}\"')
 
         return PokepediaStat.fromInt(statId)
 

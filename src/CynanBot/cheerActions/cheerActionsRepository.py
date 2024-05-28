@@ -80,7 +80,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TooManyCheerActionsException(f'Attempted to add new cheer action for {userId=} but they already have the maximum number of cheer actions (actions len: {len(actions)}) ({self.__maximumPerUser=})')
 
         for action in actions:
-            if action.getAmount() == amount:
+            if action.amount == amount:
                 raise CheerActionAlreadyExistsException(f'Attempted to add new cheer action for {userId=} but they already have a cheer action that requires the given amount ({amount}): {action=}')
 
         actionId: str | None = None
@@ -145,7 +145,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         )
 
         await connection.close()
-        self.__cache.pop(action.getUserId(), None)
+        self.__cache.pop(action.userId, None)
         self.__timber.log('CheerActionsRepository', f'Deleted cheer action ({actionId=}) ({userId=}) ({action=})')
 
         return action
@@ -162,7 +162,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             return None
 
         for action in actions:
-            if action.getActionId() == actionId:
+            if action.actionId == actionId:
                 return action
 
         return None
@@ -171,7 +171,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        actions = self.__cache.get(userId, None)
+        actions: list[CheerAction] | None = self.__cache.get(userId, None)
 
         if actions is not None:
             return actions
@@ -217,37 +217,40 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS cheeractions (
-                        actionid public.citext NOT NULL,
-                        bitrequirement text NOT NULL,
-                        streamstatusrequirement text NOT NULL,
-                        actiontype text NOT NULL,
-                        amount integer NOT NULL,
-                        durationseconds integer NOT NULL,
-                        userid text NOT NULL,
-                        PRIMARY KEY (actionid, userid)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS cheeractions (
-                        actionid TEXT NOT NULL COLLATE NOCASE,
-                        bitrequirement TEXT NOT NULL,
-                        streamstatusrequirement TEXT NOT NULL,
-                        actiontype TEXT NOT NULL,
-                        amount INTEGER NOT NULL,
-                        durationseconds INTEGER NOT NULL,
-                        userid TEXT NOT NULL,
-                        PRIMARY KEY (actionid, userid)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS cheeractions (
+                            actionid public.citext NOT NULL,
+                            bitrequirement text NOT NULL,
+                            streamstatusrequirement text NOT NULL,
+                            actiontype text NOT NULL,
+                            amount integer NOT NULL,
+                            durationseconds integer NOT NULL,
+                            userid text NOT NULL,
+                            PRIMARY KEY (actionid, userid)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS cheeractions (
+                            actionid TEXT NOT NULL COLLATE NOCASE,
+                            bitrequirement TEXT NOT NULL,
+                            streamstatusrequirement TEXT NOT NULL,
+                            actiontype TEXT NOT NULL,
+                            amount INTEGER NOT NULL,
+                            durationseconds INTEGER NOT NULL,
+                            userid TEXT NOT NULL,
+                            PRIMARY KEY (actionid, userid)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()

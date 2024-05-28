@@ -3,6 +3,8 @@ import locale
 import logging
 from asyncio import AbstractEventLoop
 
+from CynanBot.cheerActions.timeoutCheerActionHelper import TimeoutCheerActionHelper
+from CynanBot.cheerActions.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -755,17 +757,23 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    cheerActionsRepository = cheerActionsRepository,
+timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchHandleProvider = authRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository
+)
+
+cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    cheerActionsRepository = cheerActionsRepository,
+    timber = timber,
+    timeoutCheerActionHelper = timeoutCheerActionHelper,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 
@@ -818,6 +826,7 @@ cynanBot = CynanBot(
     streamAlertsManager = streamAlertsManager,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
+    timeoutCheerActionHelper = timeoutCheerActionHelper,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,
     triviaBanHelper = None,

@@ -6,6 +6,8 @@ from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 
+from CynanBot.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
+from CynanBot.cheerActions.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -340,6 +342,7 @@ class CynanBot(
         streamAlertsManager: StreamAlertsManagerInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
+        timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelper | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
@@ -461,6 +464,8 @@ class CynanBot(
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
+            raise TypeError(f'timeoutCheerActionHelper argument is malformed: \"{timeoutCheerActionHelper}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
@@ -526,8 +531,8 @@ class CynanBot(
 
         self.__authRepository: AuthRepository = authRepository
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
-        self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
@@ -535,6 +540,7 @@ class CynanBot(
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
+        self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
@@ -571,7 +577,7 @@ class CynanBot(
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
-        if cheerActionHelper is None or cheerActionIdGenerator is None or cheerActionsRepository is None:
+        if cheerActionIdGenerator is None or cheerActionsRepository is None:
             self.__addCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsCommand = StubCommand()
             self.__getCheerActionsCommand: AbsCommand = StubCommand()
@@ -850,8 +856,8 @@ class CynanBot(
         if self.__streamAlertsManager is not None:
             self.__streamAlertsManager.start()
 
-        if self.__cheerActionHelper is not None:
-            self.__cheerActionHelper.setTwitchChannelProvider(self)
+        if self.__timeoutCheerActionHelper is not None:
+            self.__timeoutCheerActionHelper.setTwitchChannelProvider(self)
 
         if self.__mostRecentAnivMessageTimeoutHelper is not None:
             self.__mostRecentAnivMessageTimeoutHelper.setTwitchChannelProvider(self)

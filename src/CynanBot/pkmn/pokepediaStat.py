@@ -18,15 +18,16 @@ class PokepediaStat(Enum):
     @classmethod
     def fromInt(cls, number: int):
         if not utils.isValidInt(number):
-            raise ValueError(f'number argument is malformed: \"{number}\"')
+            raise TypeError(f'number argument is malformed: \"{number}\"')
 
         for stat in PokepediaStat:
-            if stat.getStatId() == number:
+            if stat.statId == number:
                 return stat
 
         raise ValueError(f'number argument does not match any PokepediaStat: {number}')
 
-    def getDecreasingNatures(self) -> set[PokepediaNature] | None:
+    @property
+    def decreasingNatures(self) -> set[PokepediaNature] | None:
         if self is PokepediaStat.HP:
             return None
         elif self is PokepediaStat.ATTACK:
@@ -46,7 +47,8 @@ class PokepediaStat(Enum):
         else:
             raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
 
-    def getIncreasingNatures(self) -> set[PokepediaNature] | None:
+    @property
+    def increasingNatures(self) -> set[PokepediaNature] | None:
         if self is PokepediaStat.HP:
             return None
         elif self is PokepediaStat.ATTACK:
@@ -66,42 +68,27 @@ class PokepediaStat(Enum):
         else:
             raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
 
-    def getStatId(self) -> int:
-        if self is PokepediaStat.HP:
-            return 1
-        elif self is PokepediaStat.ATTACK:
-            return 2
-        elif self is PokepediaStat.DEFENSE:
-            return 3
-        elif self is PokepediaStat.SPECIAL_ATTACK:
-            return 4
-        elif self is PokepediaStat.SPECIAL_DEFENSE:
-            return 5
-        elif self is PokepediaStat.SPEED:
-            return 6
-        elif self is PokepediaStat.ACCURACY:
-            return 7
-        elif self is PokepediaStat.EVASION:
-            return 8
-        else:
-            raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
+    @property
+    def statId(self) -> int:
+        match self:
+            case PokepediaStat.HP: return 1
+            case PokepediaStat.ATTACK: return 2
+            case PokepediaStat.DEFENSE: return 3
+            case PokepediaStat.SPECIAL_ATTACK: return 4
+            case PokepediaStat.SPECIAL_DEFENSE: return 5
+            case PokepediaStat.SPEED: return 6
+            case PokepediaStat.ACCURACY: return 7
+            case PokepediaStat.EVASION: return 8
+            case _: raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
 
     def toStr(self) -> str:
-        if self is PokepediaStat.HP:
-            return 'HP'
-        elif self is PokepediaStat.ATTACK:
-            return 'Attack'
-        elif self is PokepediaStat.DEFENSE:
-            return 'Defense'
-        elif self is PokepediaStat.SPECIAL_ATTACK:
-            return 'Special Attack'
-        elif self is PokepediaStat.SPECIAL_DEFENSE:
-            return 'Special Defense'
-        elif self is PokepediaStat.SPEED:
-            return 'Speed'
-        elif self is PokepediaStat.ACCURACY:
-            return 'Accuracy'
-        elif self is PokepediaStat.EVASION:
-            return 'Evasion'
-        else:
-            raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
+        match self:
+            case PokepediaStat.HP: return 'HP'
+            case PokepediaStat.ATTACK: return 'Attack'
+            case PokepediaStat.DEFENSE: return 'Defense'
+            case PokepediaStat.SPECIAL_ATTACK: return 'Special Attack'
+            case PokepediaStat.SPECIAL_DEFENSE: return 'Special Defense'
+            case PokepediaStat.SPEED: return 'Speed'
+            case PokepediaStat.ACCURACY: return 'Accuracy'
+            case PokepediaStat.EVASION: return 'Evasion'
+            case _: raise RuntimeError(f'unknown PokepediaStat: \"{self}\"')
