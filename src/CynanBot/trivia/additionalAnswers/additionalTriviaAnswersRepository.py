@@ -311,7 +311,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                             triviaid text NOT NULL,
                             triviasource text NOT NULL,
                             triviatype text NOT NULL,
-                            userid text NOT NULL
+                            userid text NOT NULL,
                             PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
                         )
                     '''
@@ -325,7 +325,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                             triviaid TEXT NOT NULL,
                             triviasource TEXT NOT NULL,
                             triviatype TEXT NOT NULL,
-                            userid TEXT NOT NULL
+                            userid TEXT NOT NULL,
                             PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
                         )
                     '''

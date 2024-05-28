@@ -219,7 +219,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                             dodgescore int DEFAULT 0 NOT NULL,
                             timeoutscore int DEFAULT 0 NOT NULL,
                             chatteruserid text NOT NULL,
-                            twitchchannelid text NOT NULL
+                            twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
                     '''
@@ -234,7 +234,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                             dodgescore INTEGER NOT NULL DEFAULT 0,
                             timeoutscore INTEGER NOT NULL DEFAULT 0,
                             chatteruserid TEXT NOT NULL,
-                            twitchchannelid TEXT NOT NULL
+                            twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
                     '''
