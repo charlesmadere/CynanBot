@@ -224,26 +224,29 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS userids (
-                        userid text NOT NULL PRIMARY KEY,
-                        username public.citext NOT NULL
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS userids (
-                        userid TEXT NOT NULL PRIMARY KEY,
-                        username TEXT NOT NULL COLLATE NOCASE
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS userids (
+                            userid text NOT NULL PRIMARY KEY,
+                            username public.citext NOT NULL
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS userids (
+                            userid TEXT NOT NULL PRIMARY KEY,
+                            username TEXT NOT NULL COLLATE NOCASE
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
 
