@@ -1,11 +1,17 @@
 import CynanBot.misc.utils as utils
-from CynanBot.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
-from CynanBot.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
+from CynanBot.cheerActions.cheerActionHelperInterface import \
+    CheerActionHelperInterface
+from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
+    CheerActionsRepositoryInterface
+from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+    TimeoutCheerActionHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from CynanBot.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
 
 

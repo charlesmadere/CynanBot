@@ -3,8 +3,6 @@ import locale
 import logging
 from asyncio import AbstractEventLoop
 
-from CynanBot.cheerActions.timeoutCheerActionHelper import TimeoutCheerActionHelper
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -55,6 +53,10 @@ from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.timeoutCheerActionHelper import \
+    TimeoutCheerActionHelper
+from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+    TimeoutCheerActionHelperInterface
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface

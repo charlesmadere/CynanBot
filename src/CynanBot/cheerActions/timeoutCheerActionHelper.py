@@ -1,28 +1,37 @@
 import re
-from typing import Pattern
 from datetime import datetime, timedelta
+from typing import Pattern
 
-from CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
-from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from CynanBot.tts.ttsProvider import TtsProvider
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerAction import CheerAction
-from CynanBot.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from CynanBot.streamAlertsManager.streamAlert import  StreamAlert
-from CynanBot.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
-from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.cheerActions.cheerActionBitRequirement import \
+    CheerActionBitRequirement
+from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
+    CheerActionStreamStatusRequirement
+from CynanBot.cheerActions.cheerActionType import CheerActionType
+from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+    TimeoutCheerActionHelperInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
-from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
-from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
-from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsProvider import TtsProvider
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
+    TwitchFollowingStatusRepositoryInterface
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
+    IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.timeout.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
+from CynanBot.twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
 
 

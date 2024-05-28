@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
 from CynanBot.cheerActions.cheerAction import CheerAction
-from CynanBot.twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.users.userInterface import UserInterface
 
 

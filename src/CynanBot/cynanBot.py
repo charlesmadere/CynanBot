@@ -6,8 +6,6 @@ from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 
-from CynanBot.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -54,6 +52,10 @@ from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
     AddRecurringWeatherActionChatCommand
 from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
     AddRecurringWordOfTheDayActionChatCommand
+from CynanBot.chatCommands.addTriviaAnswerChatCommand import \
+    AddTriviaAnswerChatCommand
+from CynanBot.chatCommands.addTriviaControllerChatCommand import \
+    AddTriviaControllerChatCommand
 from CynanBot.chatCommands.answerChatCommand import AnswerChatCommand
 from CynanBot.chatCommands.banTriviaQuestionChatCommand import \
     BanTriviaQuestionChatCommand
@@ -89,11 +91,10 @@ from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
-from CynanBot.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
-from CynanBot.commands import (AbsCommand,
-                               AddUserCommand,
-                               ConfirmCommand, CutenessChampionsCommand,
+from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+    TimeoutCheerActionHelperInterface
+from CynanBot.commands import (AbsCommand, AddUserCommand, ConfirmCommand,
+                               CutenessChampionsCommand,
                                CutenessHistoryCommand, CynanSourceCommand,
                                DeleteCheerActionCommand,
                                DeleteTriviaAnswersCommand, DiscordCommand,
