@@ -17,12 +17,9 @@ class DecTalkVoiceChooser(DecTalkVoiceChooserInterface):
         decTalkVoiceMapper: DecTalkVoiceMapperInterface,
         probabilityOfDefaultVoice: float = 0.8,
         voices: set[DecTalkVoice] = {
-            DecTalkVoice.BETTY,
             DecTalkVoice.DENNIS,
             DecTalkVoice.FRANK,
-            DecTalkVoice.HARRY,
-            DecTalkVoice.RITA,
-            DecTalkVoice.URSULA
+            DecTalkVoice.HARRY
         }
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
