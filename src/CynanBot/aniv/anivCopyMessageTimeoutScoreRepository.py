@@ -89,7 +89,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT FROM anivcopymessagetimeoutscores.mostrecentdodge, anivcopymessagetimeoutscores.mostrecenttimeout, anivcopymessagetimeoutscores.dodgescore, anivcopymessagetimeoutscores.timeoutscore, userids.username FROM anivcopymessagetimeoutscores
+                SELECT anivcopymessagetimeoutscores.mostrecentdodge, anivcopymessagetimeoutscores.mostrecenttimeout, anivcopymessagetimeoutscores.dodgescore, anivcopymessagetimeoutscores.timeoutscore, userids.username FROM anivcopymessagetimeoutscores
                 INNER JOIN userids ON anivcopymessagetimeoutscores.twitchchannelid = userids.userid
                 WHERE anivcopymessagetimeoutscores.chatteruserid = $1 AND anivcopymessagetimeoutscores.twitchchannelid = $2
                 LIMIT 1
