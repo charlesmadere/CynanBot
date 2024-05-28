@@ -175,22 +175,16 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__twitchChannelProvider = provider
 
     async def __timeoutScoreToString(self, timeoutScore: AnivCopyMessageTimeoutScore) -> str:
-        statsString: str
-        if timeoutScore.dodgeScore == 1 and timeoutScore.timeoutScore == 1:
-            statsString = f'{timeoutScore.dodgeScoreStr} dodge and {timeoutScore.timeoutScore} timeout'
-        elif timeoutScore.dodgeScore == 1:
-            statsString = f'{timeoutScore.dodgeScoreStr} dodge and {timeoutScore.timeoutScoreStr} timeouts'
-        elif timeoutScore.timeoutScore == 1:
-            statsString = f'{timeoutScore.dodgeScoreStr} dodges and {timeoutScore.timeoutScoreStr} timeout'
+        statsString = f'{timeoutScore.dodgeScoreStr}-{timeoutScore.timeoutScoreStr}'
 
         dodgePercentString: str
         if timeoutScore.dodgeScore == 0:
-            dodgePercentString = f'that\'s a 0% dodge rate'
+            dodgePercentString = f'0% dodge rate'
         elif timeoutScore.timeoutScore == 0:
-            dodgePercentString = f'that\'s a 100% dodge rate'
+            dodgePercentString = f'100% dodge rate'
         else:
             totalDodgesAndTimeouts = timeoutScore.dodgeScore + timeoutScore.timeoutScore
-            dodgePercent = round(float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts), 2)
-            dodgePercentString = f'that\'s a {dodgePercent}% dodge rate'
+            dodgePercent = round((float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
+            dodgePercentString = f'{dodgePercent}% dodge rate'
 
-        return f'({statsString}, {dodgePercentString})'
+        return f' — {statsString}, {dodgePercentString}'

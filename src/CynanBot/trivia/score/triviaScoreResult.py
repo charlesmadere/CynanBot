@@ -105,5 +105,5 @@ class TriviaScoreResult():
             return winPercent
 
     def getWinPercentStr(self) -> str:
-        winPercent = round(self.getWinPercent() * 100, 2)
+        winPercent = round(self.getWinPercent() * float(100), 2)
         return f'{winPercent}%'
