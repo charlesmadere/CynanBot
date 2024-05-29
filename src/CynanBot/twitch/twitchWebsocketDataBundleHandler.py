@@ -248,8 +248,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subGift = event.getSubGift()
         if subGift is not None:
             await self.__userIdsRepository.setUser(
-                userId = subGift.getRecipientUserId(),
-                userName = subGift.getRecipientUserLogin()
+                userId = subGift.recipientUserId,
+                userName = subGift.recipientUserLogin
             )
 
         outcomes = event.getOutcomes()
@@ -260,6 +260,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 if topPredictors is not None and len(topPredictors) >= 1:
                     for topPredictor in topPredictors:
                         await self.__userIdsRepository.setUser(
-                            userId = topPredictor.getUserId(),
-                            userName = topPredictor.getUserLogin()
+                            userId = topPredictor.userId,
+                            userName = topPredictor.userLogin
                         )
