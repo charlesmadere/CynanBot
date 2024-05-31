@@ -1,12 +1,14 @@
 import pytest
 
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from CynanBot.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
 
 
 class TestTwitchJsonMapper():
@@ -29,6 +31,16 @@ class TestTwitchJsonMapper():
     async def test_parseApiScope_withChannelBotString(self):
         result = await self.jsonMapper.parseApiScope('channel:bot')
         assert result is TwitchApiScope.CHANNEL_BOT
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelEditorString(self):
+        result = await self.jsonMapper.parseApiScope('channel_editor')
+        assert result is TwitchApiScope.CHANNEL_EDITOR
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelManageModeratorsString(self):
+        result = await self.jsonMapper.parseApiScope('channel:manage:moderators')
+        assert result is TwitchApiScope.CHANNEL_MANAGE_MODERATORS
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withChannelManagePollsString(self):
@@ -131,6 +143,11 @@ class TestTwitchJsonMapper():
         assert result is TwitchApiScope.USER_READ_BROADCAST
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withUserReadChatString(self):
+        result = await self.jsonMapper.parseApiScope('user:read:chat')
+        assert result is TwitchApiScope.USER_READ_CHAT
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withUserReadEmotesString(self):
         result = await self.jsonMapper.parseApiScope('user:read:emotes')
         assert result is TwitchApiScope.USER_READ_EMOTES
@@ -144,6 +161,21 @@ class TestTwitchJsonMapper():
     async def test_parseApiScope_withUserReadSubscriptionsString(self):
         result = await self.jsonMapper.parseApiScope('user:read:subscriptions')
         assert result is TwitchApiScope.USER_READ_SUBSCRIPTIONS
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withUserWriteChatString(self):
+        result = await self.jsonMapper.parseApiScope('user:write:chat')
+        assert result is TwitchApiScope.USER_WRITE_CHAT
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withWhispersEditString(self):
+        result = await self.jsonMapper.parseApiScope('whispers:edit')
+        assert result is TwitchApiScope.WHISPERS_EDIT
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withWhispersReadString(self):
+        result = await self.jsonMapper.parseApiScope('whispers:read')
+        assert result is TwitchApiScope.WHISPERS_READ
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withWhitespaceString(self):

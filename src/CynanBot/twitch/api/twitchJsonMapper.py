@@ -39,6 +39,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match apiScope:
             case 'bits:read': return TwitchApiScope.BITS_READ
             case 'channel:bot': return TwitchApiScope.CHANNEL_BOT
+            case 'channel:manage:moderators': return TwitchApiScope.CHANNEL_MANAGE_MODERATORS
             case 'channel:manage:polls': return TwitchApiScope.CHANNEL_MANAGE_POLLS
             case 'channel:manage:predictions': return TwitchApiScope.CHANNEL_MANAGE_PREDICTIONS
             case 'channel:manage:redemptions': return TwitchApiScope.CHANNEL_MANAGE_REDEMPTIONS
@@ -47,6 +48,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:read:predictions': return TwitchApiScope.CHANNEL_READ_PREDICTIONS
             case 'channel:read:redemptions': return TwitchApiScope.CHANNEL_READ_REDEMPTIONS
             case 'channel:read:subscriptions': return TwitchApiScope.CHANNEL_READ_SUBSCRIPTIONS
+            case 'channel_editor': return TwitchApiScope.CHANNEL_EDITOR
             case 'chat:edit': return TwitchApiScope.CHAT_EDIT
             case 'chat:read': return TwitchApiScope.CHAT_READ
             case 'moderation:read': return TwitchApiScope.MODERATION_READ
@@ -57,9 +59,13 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'moderator:read:followers': return TwitchApiScope.MODERATOR_READ_FOLLOWERS
             case 'user:bot': return TwitchApiScope.USER_BOT
             case 'user:read:broadcast': return TwitchApiScope.USER_READ_BROADCAST
+            case 'user:read:chat': return TwitchApiScope.USER_READ_CHAT
             case 'user:read:emotes': return TwitchApiScope.USER_READ_EMOTES
             case 'user:read:follows': return TwitchApiScope.USER_READ_FOLLOWS
             case 'user:read:subscriptions': return TwitchApiScope.USER_READ_SUBSCRIPTIONS
+            case 'user:write:chat': return TwitchApiScope.USER_WRITE_CHAT
+            case 'whispers:edit': return TwitchApiScope.WHISPERS_EDIT
+            case 'whispers:read': return TwitchApiScope.WHISPERS_READ
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
