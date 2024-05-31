@@ -17,6 +17,8 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
+from CynanBot.twitch.api.twitchValidationResponse import \
+    TwitchValidationResponse
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchPasswordChangedException,
                                         TwitchStatusCodeException)
@@ -510,6 +512,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber.log('TwitchTokensRepository', f'Validating Twitch tokens for \"{twitchChannelId}\"...')
         self.__twitchChannelIdToValidationTime.pop(twitchChannelId, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
+        validationResponse: TwitchValidationResponse | None = None
 
         try:
             validationResponse = await self.__twitchApiService.validate(
@@ -522,9 +525,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             # this is an expected error
             pass
 
-        self.__twitchChannelIdToValidationTime[twitchChannelId] = now
+        if validationResponse is not None:
+            self.__twitchChannelIdToValidationTime[twitchChannelId] = now
 
-        if validationResponse.expiresAt + self.__tokensExpirationBuffer > nowDateTime:
+        if validationResponse is None or validationResponse.expiresAt + self.__tokensExpirationBuffer > nowDateTime:
             try:
                 newTokensDetails = await self.__twitchApiService.refreshTokens(
                     twitchRefreshToken = tokensDetails.refreshToken
