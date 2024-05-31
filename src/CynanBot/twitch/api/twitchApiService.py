@@ -519,7 +519,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             emoteId = utils.getStrFromDict(emoteJson, 'id')
             emoteName = utils.getStrFromDict(emoteJson, 'name')
             emoteType = TwitchEmoteType.fromStr(utils.getStrFromDict(emoteJson, 'emote_type'))
-            subscriberTier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(emoteJson, 'tier'))
+            subscriberTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(emoteJson, 'tier'))
 
             emoteDetailsList.append(TwitchEmoteDetails(
                 emoteImages = emoteImages,
@@ -959,11 +959,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Couldn\'t find entry with matching \"user_id\" field in JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
             return None
 
+        subscriberTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(entry, 'tier'))
+
         return TwitchUserSubscriptionDetails(
             isGift = utils.getBoolFromDict(entry, 'is_gift', fallback = False),
             userId = utils.getStrFromDict(entry, 'user_id'),
             userName = utils.getStrFromDict(entry, 'user_name'),
-            subscriberTier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(entry, 'tier'))
+            subscriberTier = subscriberTier
         )
 
     async def refreshTokens(self, twitchRefreshToken: str) -> TwitchTokensDetails:

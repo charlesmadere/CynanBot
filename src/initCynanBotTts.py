@@ -319,7 +319,8 @@ twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
 )
 
 twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
-    timber = timber
+    timber = timber,
+    twitchJsonMapper = twitchJsonMapper
 )
 
 twitchApiService: TwitchApiServiceInterface = TwitchApiService(

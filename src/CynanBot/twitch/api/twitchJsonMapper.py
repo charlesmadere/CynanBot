@@ -8,6 +8,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.twitchValidationResponse import \
     TwitchValidationResponse
 
@@ -70,6 +71,24 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
 
+    async def parseSubscriberTier(
+        self,
+        subscriberTier: str | None
+    ) -> TwitchSubscriberTier | None:
+        if not utils.isValidStr(subscriberTier):
+            return None
+
+        subscriberTier = subscriberTier.lower()
+
+        match subscriberTier:
+            case 'prime': return TwitchSubscriberTier.PRIME
+            case '1000': return TwitchSubscriberTier.TIER_ONE
+            case '2000': return TwitchSubscriberTier.TIER_TWO
+            case '3000': return TwitchSubscriberTier.TIER_THREE
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchSubscriberTier value: \"{subscriberTier}\"')
+                return None
+
     async def parseValidationResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -105,3 +124,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             login = login,
             userId = userId
         )
+
+    async def requireSubscriberTier(
+        self,
+        subscriberTier: str | None
+    ) -> TwitchSubscriberTier:
+        result = await self.parseSubscriberTier(subscriberTier)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{subscriberTier}\" into TwitchSubscriberTier value!')
+
+        return result

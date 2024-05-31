@@ -4,6 +4,8 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
 from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from CynanBot.twitch.api.twitchOutcomePredictor import TwitchOutcomePredictor
@@ -49,11 +51,18 @@ from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
 
 class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+        twitchJsonMapper: TwitchJsonMapperInterface
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchJsonMapper, TwitchJsonMapperInterface):
+            raise TypeError(f'twitchJsonMapper argument is malformed: \"{twitchJsonMapper}\"')
 
         self.__timber: TimberInterface = timber
+        self.__twitchJsonMapper: TwitchJsonMapperInterface = twitchJsonMapper
 
     async def parseWebsocketChannelPointsVoting(
         self,
@@ -102,7 +111,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         total = utils.getIntFromDict(giftJson, 'total', fallback = 0)
         communitySubGiftId = utils.getStrFromDict(giftJson, 'id')
-        subTier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(giftJson, 'sub_tier'))
+        subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(giftJson, 'sub_tier'))
 
         return TwitchCommunitySubGift(
             cumulativeTotal = cumulativeTotal,
@@ -453,7 +462,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         tier: TwitchSubscriberTier | None = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
-            tier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(eventJson, 'tier'))
+            tier = await self.__twitchJsonMapper.parseSubscriberTier(utils.getStrFromDict(eventJson, 'tier'))
 
         channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
         if 'channel_points_voting' in eventJson:
@@ -656,7 +665,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'gifter_user_name' in resubJson and utils.isValidStr(resubJson.get('gifter_user_name')):
             gifterUserName = utils.getStrFromDict(resubJson, 'gifter_user_name')
 
-        subTier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(resubJson, 'sub_tier'))
+        subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(resubJson, 'sub_tier'))
 
         return TwitchResub(
             gifterIsAnonymous = gifterIsAnonymous,
@@ -733,7 +742,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         recipientUserId = utils.getStrFromDict(giftJson, 'recipient_user_id')
         recipientUserLogin = utils.getStrFromDict(giftJson, 'recipient_user_login')
         recipientUserName = utils.getStrFromDict(giftJson, 'recipient_user_name')
-        subTier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(giftJson, 'sub_tier'))
+        subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(giftJson, 'sub_tier'))
 
         return TwitchSubGift(
             cumulativeTotal = cumulativeTotal,

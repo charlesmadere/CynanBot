@@ -9,6 +9,7 @@ from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
 class TestTwitchJsonMapper():
@@ -180,6 +181,88 @@ class TestTwitchJsonMapper():
     @pytest.mark.asyncio
     async def test_parseApiScope_withWhitespaceString(self):
         result = await self.jsonMapper.parseApiScope(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withPrimeString(self):
+        result = await self.jsonMapper.parseSubscriberTier('prime')
+        assert result is TwitchSubscriberTier.PRIME
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_with1000String(self):
+        result = await self.jsonMapper.parseSubscriberTier('1000')
+        assert result is TwitchSubscriberTier.TIER_ONE
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_with2000String(self):
+        result = await self.jsonMapper.parseSubscriberTier('2000')
+        assert result is TwitchSubscriberTier.TIER_TWO
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_with3000String(self):
+        result = await self.jsonMapper.parseSubscriberTier('3000')
+        assert result is TwitchSubscriberTier.TIER_THREE
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withEmptyString(self):
+        result = await self.jsonMapper.parseSubscriberTier('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withNone(self):
+        result = await self.jsonMapper.parseSubscriberTier(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withWhitespaceString(self):
+        result = await self.jsonMapper.parseSubscriberTier(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withPrimeString(self):
+        result = await self.jsonMapper.requireSubscriberTier('prime')
+        assert result is TwitchSubscriberTier.PRIME
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_with1000String(self):
+        result = await self.jsonMapper.requireSubscriberTier('1000')
+        assert result is TwitchSubscriberTier.TIER_ONE
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_with2000String(self):
+        result = await self.jsonMapper.requireSubscriberTier('2000')
+        assert result is TwitchSubscriberTier.TIER_TWO
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_with3000String(self):
+        result = await self.jsonMapper.requireSubscriberTier('3000')
+        assert result is TwitchSubscriberTier.TIER_THREE
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withEmptyString(self):
+        result: TwitchSubscriberTier | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireSubscriberTier('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withNone(self):
+        result: TwitchSubscriberTier | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireSubscriberTier(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withWhitespaceString(self):
+        result: TwitchSubscriberTier | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireSubscriberTier(' ')
+
         assert result is None
 
     @pytest.mark.asyncio
