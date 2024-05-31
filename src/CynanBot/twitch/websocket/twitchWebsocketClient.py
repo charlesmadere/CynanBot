@@ -148,7 +148,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             method = TwitchWebsocketTransportMethod.WEBSOCKET
         )
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(user.userId)
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
         results: dict[TwitchWebsocketSubscriptionType, Exception | None] = OrderedDict()
 
         for subscriptionType in self.__subscriptionTypes:
