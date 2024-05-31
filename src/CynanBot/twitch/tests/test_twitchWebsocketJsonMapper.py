@@ -1,7 +1,13 @@
 import pytest
 
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
@@ -14,8 +20,16 @@ class TestTwitchWebsocketJsonMapper():
 
     timber: TimberInterface = TimberStub()
 
+    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
+    twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+        timber = timber,
+        timeZoneRepository = timeZoneRepository
+    )
+
     jsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
-        timber = timber
+        timber = timber,
+        twitchJsonMapper = twitchJsonMapper
     )
 
     @pytest.mark.asyncio
