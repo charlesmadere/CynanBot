@@ -30,7 +30,8 @@ from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
 from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
 from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
-from CynanBot.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
 from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
 from CynanBot.twitch.api.twitchSendChatMessageRequest import \
@@ -45,7 +46,8 @@ from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 from CynanBot.twitch.api.twitchUserType import TwitchUserType
-from CynanBot.twitch.api.twitchValidationResponse import TwitchValidationResponse
+from CynanBot.twitch.api.twitchValidationResponse import \
+    TwitchValidationResponse
 from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
     TwitchWebsocketConnectionStatus
 from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
@@ -1141,7 +1143,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
     async def validate(self, twitchAccessToken: str) -> TwitchValidationResponse:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         self.__timber.log('TwitchApiService', f'Validating token... ({twitchAccessToken=})')
         clientSession = await self.__networkClientProvider.get()

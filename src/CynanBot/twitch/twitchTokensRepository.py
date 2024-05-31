@@ -18,7 +18,8 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
-                                        TwitchPasswordChangedException)
+                                        TwitchPasswordChangedException,
+                                        TwitchStatusCodeException)
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
@@ -517,6 +518,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         except GenericNetworkException as e:
             self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}')
+        except TwitchStatusCodeException as e:
+            # this is an expected error
+            pass
 
         self.__twitchChannelIdToValidationTime[twitchChannelId] = now
 
