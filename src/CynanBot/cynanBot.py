@@ -551,6 +551,7 @@ class CynanBot(
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None = twitchFollowingStatusRepository
         self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__twitchWebsocketClient: TwitchWebsocketClientInterface | None = twitchWebsocketClient
@@ -850,6 +851,7 @@ class CynanBot(
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
         self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
 
+        self.__twitchTokensRepository.start()
         self.__sentMessageLogger.start()
         self.__chatLogger.start()
         self.__twitchUtils.start()

@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
@@ -11,29 +11,21 @@ class TestTwitchWebsocketCondition():
             broadcasterUserId = ''
         )
 
-        broadcasterUserId: Optional[str] = None
-        exception: Optional[Exception] = None
+        broadcasterUserId: str | None = None
 
-        try:
+        with pytest.raises(Exception):
             broadcasterUserId = condition.requireBroadcasterUserId()
-        except Exception as e:
-            exception = e
 
         assert broadcasterUserId is None
-        assert isinstance(exception, Exception)
 
     def test_requireBroadcasterUserId_withNone(self):
         condition = TwitchWebsocketCondition()
-        broadcasterUserId: Optional[str] = None
-        exception: Optional[Exception] = None
+        broadcasterUserId: str | None = None
 
-        try:
+        with pytest.raises(Exception):
             broadcasterUserId = condition.requireBroadcasterUserId()
-        except Exception as e:
-            exception = e
 
         assert broadcasterUserId is None
-        assert isinstance(exception, Exception)
 
     def test_requireBroadcasterUserId_withValidString(self):
         condition = TwitchWebsocketCondition(
@@ -47,13 +39,9 @@ class TestTwitchWebsocketCondition():
             broadcasterUserId = ' '
         )
 
-        broadcasterUserId: Optional[str] = None
-        exception: Optional[Exception] = None
+        broadcasterUserId: str | None = None
 
-        try:
+        with pytest.raises(Exception):
             broadcasterUserId = condition.requireBroadcasterUserId()
-        except Exception as e:
-            exception = e
 
         assert broadcasterUserId is None
-        assert isinstance(exception, Exception)

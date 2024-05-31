@@ -52,23 +52,23 @@ class TestTwitchWebsocketJsonMapper():
     async def test_parseWebsocketCondition_withEmptyDictionary(self):
         result = await self.jsonMapper.parseWebsocketCondition(dict())
         assert isinstance(result, TwitchWebsocketCondition)
-        assert result.getBroadcasterUserId() is None
-        assert result.getBroadcasterUserLogin() is None
-        assert result.getBroadcasterUserName() is None
-        assert result.getClientId() is None
-        assert result.getFromBroadcasterUserId() is None
-        assert result.getFromBroadcasterUserLogin() is None
-        assert result.getFromBroadcasterUserName() is None
-        assert result.getModeratorUserId() is None
-        assert result.getModeratorUserLogin() is None
-        assert result.getModeratorUserName() is None
-        assert result.getRewardId() is None
-        assert result.getToBroadcasterUserId() is None
-        assert result.getToBroadcasterUserLogin() is None
-        assert result.getToBroadcasterUserName() is None
-        assert result.getUserId() is None
-        assert result.getUserLogin() is None
-        assert result.getUserName() is None
+        assert result.broadcasterUserId is None
+        assert result.broadcasterUserLogin is None
+        assert result.broadcasterUserName is None
+        assert result.clientId is None
+        assert result.fromBroadcasterUserId is None
+        assert result.fromBroadcasterUserLogin is None
+        assert result.fromBroadcasterUserName is None
+        assert result.moderatorUserId is None
+        assert result.moderatorUserLogin is None
+        assert result.moderatorUserName is None
+        assert result.rewardId is None
+        assert result.toBroadcasterUserId is None
+        assert result.toBroadcasterUserLogin is None
+        assert result.toBroadcasterUserName is None
+        assert result.userId is None
+        assert result.userLogin is None
+        assert result.userName is None
 
         broadcasterUserId: str | None = None
 

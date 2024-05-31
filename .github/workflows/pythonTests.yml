@@ -614,3 +614,4 @@ jobs:
       - name: Test twitch with pytest
         run: |
           pytest CynanBot/twitch/tests
+          pytest CynanBot/twitch/api/tests

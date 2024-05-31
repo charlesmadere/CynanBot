@@ -17,15 +17,6 @@ class TwitchWebsocketTransport():
 
     def requireSessionId(self) -> str:
         if not utils.isValidStr(self.sessionId):
-            raise RuntimeError(f'this TwitchWebsocketTransport has no sessionId ({self})')
+            raise ValueError(f'sessionId has not been set: \"{self}\"')
 
         return self.sessionId
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'connectedAt': self.connectedAt,
-            'disconnectedAt': self.disconnectedAt,
-            'method': self.method,
-            'secret': self.secret,
-            'sessionId': self.sessionId
-        }

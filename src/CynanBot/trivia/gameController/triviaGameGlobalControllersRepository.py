@@ -54,8 +54,8 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         if not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        administrator = await self.__administratorProvider.getAdministratorUserName()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(administrator)
+        administratorId = await self.__administratorProvider.getAdministratorUserId()
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(administratorId)
 
         try:
             userId = await self.__userIdsRepository.requireUserId(

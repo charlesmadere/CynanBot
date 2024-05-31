@@ -40,3 +40,7 @@ class TwitchTokensRepositoryInterface(Clearable):
     @abstractmethod
     async def requireAccessTokenById(self, twitchChannelId: str) -> str:
         pass
+
+    @abstractmethod
+    def start(self):
+        pass

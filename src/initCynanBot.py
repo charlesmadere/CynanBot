@@ -354,6 +354,10 @@ from CynanBot.tts.ttsSettingsRepositoryInterface import \
 from CynanBot.twitch.api.twitchApiService import TwitchApiService
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchJsonMapper import \
+    TwitchJsonMapper
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
 from CynanBot.twitch.configuration.twitchChannelJoinHelper import \
     TwitchChannelJoinHelper
 from CynanBot.twitch.configuration.twitchConfiguration import \
@@ -486,6 +490,11 @@ authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
 
+twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
     timber = timber
 )
@@ -494,8 +503,9 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
+    twitchCredentialsProvider = authRepository,
+    twitchJsonMapper = twitchJsonMapper,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
-    twitchCredentialsProvider = authRepository
 )
 
 twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
@@ -508,6 +518,7 @@ userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
 )
 
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,

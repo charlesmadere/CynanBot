@@ -7,6 +7,11 @@ from CynanBot.users.soundAlertRedemption import SoundAlertRedemption
 
 class UserInterface(ABC):
 
+    @property
+    @abstractmethod
+    def anivMessageCopyMaxAgeSeconds(self) -> int | None:
+        pass
+
     @abstractmethod
     def areCheerActionsEnabled(self) -> bool:
         pass

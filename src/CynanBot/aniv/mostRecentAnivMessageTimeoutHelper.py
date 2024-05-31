@@ -10,6 +10,7 @@ from CynanBot.aniv.anivSettingsRepositoryInterface import \
     AnivSettingsRepositoryInterface
 from CynanBot.aniv.anivUserIdProviderInterface import \
     AnivUserIdProviderInterface
+from CynanBot.aniv.mostRecentAnivMessage import MostRecentAnivMessage
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
@@ -98,14 +99,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         chatterMessage = utils.cleanStr(chatterMessage)
         anivMessage = await self.__mostRecentAnivMessageRepository.get(twitchChannelId)
 
-        if not utils.isValidStr(chatterMessage) or anivMessage is None:
+        if not utils.isValidStr(chatterMessage) or anivMessage is None or not utils.isValidStr(anivMessage.message):
             return False
 
-        anivMessageText = anivMessage.message
         now = datetime.now(self.__timeZoneRepository.getDefault())
-        expirationTime = anivMessage.dateTime + timedelta(seconds = await self.__anivSettingsRepository.getCopyMessageMaxAgeSeconds())
+        expirationTime = await self.__determineExpirationTime(anivMessage, user)
 
-        if not utils.isValidStr(anivMessageText) or chatterMessage.casefold() != anivMessageText.casefold() or expirationTime < now:
+        if chatterMessage != anivMessage.message or expirationTime < now:
             return False
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
@@ -140,7 +140,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = durationSeconds,
-            reason = None,
+            reason = f'{durationSeconds}s timeout for copying an aniv message',
             twitchAccessToken = twitchAccessToken,
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
@@ -168,6 +168,17 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         return True
 
+    async def __determineExpirationTime(
+        self,
+        anivMessage: MostRecentAnivMessage,
+        user: UserInterface
+    ) -> datetime:
+        maxAgeSeconds = user.anivMessageCopyMaxAgeSeconds
+        if not utils.isValidInt(maxAgeSeconds):
+            maxAgeSeconds = await self.__anivSettingsRepository.getCopyMessageMaxAgeSeconds()
+
+        return anivMessage.dateTime + timedelta(seconds = maxAgeSeconds)
+
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
@@ -187,4 +198,4 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             dodgePercent = round((float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
             dodgePercentString = f'{dodgePercent}% dodge rate'
 
-        return f' — {statsString}, {dodgePercentString}'
+        return f' ({statsString}, {dodgePercentString})'

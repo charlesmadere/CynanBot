@@ -154,9 +154,13 @@ class UsersRepository(UsersRepositoryInterface):
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
+        anivMessageCopyMaxAgeSeconds: int | None = None
         anivMessageCopyTimeoutChance: float | None = None
         anivMessageCopyTimeoutSeconds: int | None = None
         if isAnivMessageCopyTimeoutEnabled:
+            if 'anivMessageCopyMaxAgeSeconds' in userJson and utils.isValidInt(userJson.get('anivCopyMessageMaxAgeSeconds')):
+                anivMessageCopyMaxAgeSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyMaxAgeSeconds')
+
             if 'anivMessageCopyTimeoutChance' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutChance')):
                 anivMessageCopyTimeoutChance = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutChance')
 
@@ -288,9 +292,10 @@ class UsersRepository(UsersRepositoryInterface):
             isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             anivMessageCopyTimeoutChance = anivMessageCopyTimeoutChance,
-            anivMessageCopyTimeoutSeconds = anivMessageCopyTimeoutSeconds,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
+            anivMessageCopyMaxAgeSeconds = anivMessageCopyMaxAgeSeconds,
+            anivMessageCopyTimeoutSeconds = anivMessageCopyTimeoutSeconds,
             maximumTtsCheerAmount = maximumTtsCheerAmount,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
             superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,

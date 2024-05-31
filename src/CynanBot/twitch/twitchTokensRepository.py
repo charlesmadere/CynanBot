@@ -1,7 +1,9 @@
+import asyncio
 import traceback
 from datetime import datetime, timedelta
 from typing import Any
 
+from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
@@ -26,15 +28,20 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
-        tokensExpirationBuffer: timedelta = timedelta(minutes = 10)
+        sleepTimeSeconds: float = 600,
+        tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
+        validationExpirationBuffer: timedelta = timedelta(minutes = 5)
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -46,19 +53,30 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
+        elif not utils.isValidNum(sleepTimeSeconds):
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+        elif sleepTimeSeconds < 300 or sleepTimeSeconds > 3600:
+            raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not isinstance(tokensExpirationBuffer, timedelta):
             raise TypeError(f'tokensExpirationBuffer argument is malformed: \"{tokensExpirationBuffer}\"')
+        elif not isinstance(validationExpirationBuffer, timedelta):
+            raise TypeError(f'validationExpirationBuffer argument is malformed: \"{validationExpirationBuffer}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
+        self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__tokensExpirationBuffer: timedelta = tokensExpirationBuffer
+        self.__validationExpirationBuffer: timedelta = validationExpirationBuffer
 
         self.__isDatabaseReady: bool = False
+        self.__isStarted: bool = False
         self.__cache: dict[str, TwitchTokensDetails | None] = dict()
+        self.__twitchChannelIdToValidationTime: dict[str, datetime | None] = dict()
 
     async def addUser(
         self,
@@ -87,6 +105,61 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             twitchChannelId = twitchChannelId,
             tokensDetails = tokensDetails
         )
+
+    async def __areTokensDetailsCurrentlyValid(
+        self,
+        twitchChannelId: str,
+        tokensDetails: TwitchTokensDetails | None
+    ) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
+            raise TypeError(f'tokensDetails argument is malformed: \"{tokensDetails}\"')
+
+        if tokensDetails is None:
+            return False
+
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        if now + self.__tokensExpirationBuffer > tokensDetails.expirationTime:
+            return False
+
+        validationTime = self.__twitchChannelIdToValidationTime.get(twitchChannelId, None)
+        if validationTime is None:
+            return False
+
+        return now + self.__validationExpirationBuffer <= validationTime
+
+    async def __checkAndValidateTokensAsNecessary(self):
+        self.__timber.log('TwitchTokensRepository', f'Checking if any Twitch tokens require validation...')
+
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        twitchChannelIds = set(self.__twitchChannelIdToValidationTime.keys())
+        twitchChannelIdsToValidate: set[str] = set()
+
+        for twitchChannelId in twitchChannelIds:
+            validationTime = self.__twitchChannelIdToValidationTime.get(twitchChannelId, None)
+
+            if validationTime is None or now + self.__validationExpirationBuffer > validationTime:
+                twitchChannelIdsToValidate.add(twitchChannelId)
+
+        if len(twitchChannelIdsToValidate) == 0:
+            return
+
+        self.__timber.log('TwitchTokensRepository', f'Discovered {len(twitchChannelIdsToValidate)} Twitch token(s) that require validation...')
+
+        for twitchChannelId in twitchChannelIds:
+            tokensDetails = await self.getTokensDetailsById(twitchChannelId)
+
+            if tokensDetails is None:
+                self.__timber.log('TwitchTokensRepository', f'Twitch tokens details for \"{twitchChannelId}\" require validation, but unable to find any existing tokens details')
+                continue
+
+            await self.__validateAndRefreshAccessToken(
+                twitchChannelId = twitchChannelId,
+                tokensDetails = tokensDetails
+            )
+
+        self.__timber.log('TwitchTokensRepository', f'Finished validation of {len(twitchChannelIdsToValidate)} Twitch token(s)')
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -400,6 +473,20 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await connection.close()
 
+    def start(self):
+        if self.__isStarted:
+            self.__timber.log('TwitchTokensRepository', 'Not starting TwitchTokensRepository as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('TwitchTokensRepository', 'Starting TwitchTokensRepository...')
+        self.__backgroundTaskHelper.createTask(self.__startValidationLoop())
+
+    async def __startValidationLoop(self):
+        while True:
+            await self.__checkAndValidateTokensAsNecessary()
+            await asyncio.sleep(self.__sleepTimeSeconds)
+
     async def __validateAndRefreshAccessToken(
         self,
         twitchChannelId: str,
@@ -412,21 +499,27 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if nowDateTime + self.__tokensExpirationBuffer <= tokensDetails.expirationTime:
+        if await self.__areTokensDetailsCurrentlyValid(
+            twitchChannelId = twitchChannelId,
+            tokensDetails = tokensDetails
+        ):
             return tokensDetails
 
         self.__timber.log('TwitchTokensRepository', f'Validating Twitch tokens for \"{twitchChannelId}\"...')
-        expirationTime: datetime | None = None
+        self.__twitchChannelIdToValidationTime.pop(twitchChannelId, None)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         try:
-            expirationTime = await self.__twitchApiService.validateTokens(
+            validationResponse = await self.__twitchApiService.validate(
                 twitchAccessToken = tokensDetails.accessToken
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}')
 
-        if expirationTime is None or expirationTime + self.__tokensExpirationBuffer > nowDateTime:
+        self.__twitchChannelIdToValidationTime[twitchChannelId] = now
+
+        if validationResponse.expiresAt + self.__tokensExpirationBuffer > nowDateTime:
             try:
                 newTokensDetails = await self.__twitchApiService.refreshTokens(
                     twitchRefreshToken = tokensDetails.refreshToken
@@ -447,12 +540,12 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             return newTokensDetails
 
         await self.__setExpirationTime(
-            expirationTime = expirationTime,
+            expirationTime = validationResponse.expiresAt,
             twitchChannelId = twitchChannelId
         )
 
         return TwitchTokensDetails(
-            expirationTime = expirationTime,
+            expirationTime = validationResponse.expiresAt,
             accessToken = tokensDetails.accessToken,
             refreshToken = tokensDetails.refreshToken
         )

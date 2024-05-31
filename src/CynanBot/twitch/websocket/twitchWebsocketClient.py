@@ -148,7 +148,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             method = TwitchWebsocketTransportMethod.WEBSOCKET
         )
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(user.getUserName())
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(user.userId)
         results: dict[TwitchWebsocketSubscriptionType, Exception | None] = OrderedDict()
 
         for subscriptionType in self.__subscriptionTypes:
@@ -197,43 +197,43 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId()
+                broadcasterUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId()
+                broadcasterUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId()
+                broadcasterUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId()
+                broadcasterUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHEER:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId()
+                broadcasterUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId(),
-                moderatorUserId = user.getUserId()
+                broadcasterUserId = user.userId,
+                moderatorUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.RAID:
             return TwitchWebsocketCondition(
-                toBroadcasterUserId = user.getUserId()
+                toBroadcasterUserId = user.userId
             )
         elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
                 subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT or \
                 subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
             return TwitchWebsocketCondition(
-                broadcasterUserId = user.getUserId()
+                broadcasterUserId = user.userId
             )
         else:
             raise RuntimeError(f'can\'t create a WebsocketCondition for the given unsupported WebsocketSubscriptionType: \"{subscriptionType}\"')

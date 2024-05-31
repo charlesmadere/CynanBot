@@ -57,6 +57,7 @@ class User(UserInterface):
         anivMessageCopyTimeoutChance: float | None,
         superTriviaCheerTriggerAmount: float | None,
         superTriviaSubscribeTriggerAmount: float | None,
+        anivMessageCopyMaxAgeSeconds: int | None,
         anivMessageCopyTimeoutSeconds: int | None,
         maximumTtsCheerAmount: int | None,
         minimumTtsCheerAmount: int | None,
@@ -185,6 +186,8 @@ class User(UserInterface):
             raise TypeError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
             raise TypeError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
+        elif anivMessageCopyMaxAgeSeconds is not None and not utils.isValidInt(anivMessageCopyMaxAgeSeconds):
+            raise TypeError(f'anivMessageCopyMaxAgeSeconds argument is malformed: \"{anivMessageCopyMaxAgeSeconds}\"')
         elif anivMessageCopyTimeoutSeconds is not None and not utils.isValidInt(anivMessageCopyTimeoutSeconds):
             raise TypeError(f'anivMessageCopyTimeoutSeconds argument is malformed: \"{anivMessageCopyTimeoutSeconds}\"')
         elif maximumTtsCheerAmount is not None and not utils.isValidInt(maximumTtsCheerAmount):
@@ -298,6 +301,7 @@ class User(UserInterface):
         self.__anivMessageCopyTimeoutChance: float | None = anivMessageCopyTimeoutChance
         self.__superTriviaCheerTriggerAmount: float | None = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: float | None = superTriviaSubscribeTriggerAmount
+        self.__anivMessageCopyMaxAgeSeconds: int | None = anivMessageCopyMaxAgeSeconds
         self.__anivMessageCopyTimeoutSeconds: int | None = anivMessageCopyTimeoutSeconds
         self.__maximumTtsCheerAmount: int | None = maximumTtsCheerAmount
         self.__minimumTtsCheerAmount: int | None = minimumTtsCheerAmount
@@ -333,6 +337,10 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: list[CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__timeZones: list[tzinfo] | None = timeZones
+
+    @property
+    def anivMessageCopyMaxAgeSeconds(self) -> int | None:
+        return self.__anivMessageCopyMaxAgeSeconds
 
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled

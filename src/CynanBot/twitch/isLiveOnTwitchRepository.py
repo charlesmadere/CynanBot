@@ -83,8 +83,8 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         if len(twitchChannelIdsToFetch) == 0:
             return
 
-        userName = await self.__administratorProvider.getAdministratorUserName()
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(userName)
+        userId = await self.__administratorProvider.getAdministratorUserId()
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(userId)
 
         liveUserDetails = await self.__twitchApiService.fetchLiveUserDetails(
             twitchAccessToken = twitchAccessToken,

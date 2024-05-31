@@ -122,8 +122,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        queueTimeoutSeconds: int = 3,
-        sleepTimeSeconds: float = 0.5
+        sleepTimeSeconds: float = 0.5,
+        queueTimeoutSeconds: int = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -159,14 +159,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not utils.isValidNum(queueTimeoutSeconds):
-            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
-            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
+        elif not utils.isValidInt(queueTimeoutSeconds):
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
@@ -185,8 +185,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
+        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
         self.__isStarted: bool = False
         self.__eventListener: TriviaEventListener | None = None

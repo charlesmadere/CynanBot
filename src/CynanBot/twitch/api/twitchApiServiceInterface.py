@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBannedUsersResponse import \
@@ -21,6 +20,7 @@ from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
+from CynanBot.twitch.api.twitchValidationResponse import TwitchValidationResponse
 
 
 class TwitchApiServiceInterface(ABC):
@@ -142,5 +142,5 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def validateTokens(self, twitchAccessToken: str) -> datetime | None:
+    async def validate(self, twitchAccessToken: str) -> TwitchValidationResponse:
         pass
