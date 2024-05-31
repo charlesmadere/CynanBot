@@ -4,7 +4,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.aniv.mostRecentAnivMessage import MostRecentAnivMessage
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
