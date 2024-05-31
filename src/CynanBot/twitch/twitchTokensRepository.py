@@ -3,10 +3,11 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Any
 
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection

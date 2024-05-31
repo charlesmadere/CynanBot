@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
-from CynanBot.twitch.api.twitchValidationResponse import TwitchValidationResponse
+from CynanBot.twitch.api.twitchValidationResponse import \
+    TwitchValidationResponse
 
 
 class TwitchJsonMapperInterface(ABC):

@@ -2,11 +2,14 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import CynanBot.misc.utils as utils
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
-from CynanBot.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
-from CynanBot.twitch.api.twitchValidationResponse import TwitchValidationResponse
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchValidationResponse import \
+    TwitchValidationResponse
 
 
 class TwitchJsonMapper(TwitchJsonMapperInterface):

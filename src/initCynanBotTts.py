@@ -180,6 +180,9 @@ from CynanBot.tts.ttsSettingsRepositoryInterface import \
 from CynanBot.twitch.api.twitchApiService import TwitchApiService
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
+from CynanBot.twitch.api.twitchJsonMapperInterface import \
+    TwitchJsonMapperInterface
 from CynanBot.twitch.configuration.twitchChannelJoinHelper import \
     TwitchChannelJoinHelper
 from CynanBot.twitch.configuration.twitchConfiguration import \
@@ -230,9 +233,6 @@ from CynanBot.twitch.websocket.twitchWebsocketClient import \
     TwitchWebsocketClient
 from CynanBot.twitch.websocket.twitchWebsocketClientInterface import \
     TwitchWebsocketClientInterface
-from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from CynanBot.twitch.api.twitchJsonMapperInterface import \
-    TwitchJsonMapperInterface
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
     TwitchWebsocketJsonMapper
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
