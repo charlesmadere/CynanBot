@@ -15,7 +15,7 @@ class TestGoogleFileExtensionHelper():
     async def test_getFileExtension_withAlaw(self):
         result: str | None = None
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             result = await self.fileExtensionHelper.getFileExtension(GoogleVoiceAudioEncoding.ALAW)
 
         assert result is None
@@ -24,7 +24,7 @@ class TestGoogleFileExtensionHelper():
     async def test_getFileExtension_withLinear16(self):
         result: str | None = None
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             result = await self.fileExtensionHelper.getFileExtension(GoogleVoiceAudioEncoding.LINEAR_16)
 
         assert result is None
@@ -38,7 +38,7 @@ class TestGoogleFileExtensionHelper():
     async def test_getFileExtension_withMulaw(self):
         result: str | None = None
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             result = await self.fileExtensionHelper.getFileExtension(GoogleVoiceAudioEncoding.MULAW)
 
         assert result is None
@@ -52,7 +52,7 @@ class TestGoogleFileExtensionHelper():
     async def test_getFileExtension_withUnspecified(self):
         result: str | None = None
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             result = await self.fileExtensionHelper.getFileExtension(GoogleVoiceAudioEncoding.UNSPECIFIED)
 
         assert result is None

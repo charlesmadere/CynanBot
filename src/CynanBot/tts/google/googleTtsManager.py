@@ -120,8 +120,8 @@ class GoogleTtsManager(TtsManagerInterface):
             input = GoogleTextSynthesisInput(
                 text = message
             ),
-            voice = ttsChoice.getSelectionParams(),
-            audioConfig = ttsChoice.getAudioConfig()
+            voice = ttsChoice.selectionParams,
+            audioConfig = ttsChoice.audioConfig
         )
 
         response: GoogleTextSynthesisResponse | None = None

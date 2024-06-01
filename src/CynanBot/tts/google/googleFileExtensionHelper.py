@@ -13,4 +13,4 @@ class GoogleFileExtensionHelper(GoogleFileExtensionHelperInterface):
             case GoogleVoiceAudioEncoding.MP3: return 'mp3'
             case GoogleVoiceAudioEncoding.OGG_OPUS: return 'ogg'
             case _:
-                raise RuntimeError(f'The given audio encoding (\"{audioEncoding}\") does not have a corresponding file extension!')
+                raise ValueError(f'The given audio encoding (\"{audioEncoding}\") does not have a corresponding file extension!')

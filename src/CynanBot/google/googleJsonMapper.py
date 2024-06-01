@@ -252,12 +252,13 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(scope, GoogleScope):
             raise TypeError(f'scope argument is malformed: \"{scope}\"')
 
-        if scope is GoogleScope.CLOUD_TEXT_TO_SPEECH:
-            return 'https://www.googleapis.com/auth/cloud-platform'
-        elif scope is GoogleScope.CLOUD_TRANSLATION:
-            return 'https://www.googleapis.com/auth/cloud-translation'
-        else:
-            raise ValueError(f'The given GoogleScope value is unknown: \"{scope}\"')
+        match scope:
+            case GoogleScope.CLOUD_TEXT_TO_SPEECH:
+                return 'https://www.googleapis.com/auth/cloud-platform'
+            case GoogleScope.CLOUD_TRANSLATION:
+                return 'https://www.googleapis.com/auth/cloud-translation'
+            case _:
+                raise ValueError(f'The given GoogleScope value is unknown: \"{scope}\"')
 
     async def serializeScopes(
         self,
@@ -296,7 +297,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'textSynthesisInput argument is malformed: \"{textSynthesisInput}\"')
 
         return {
-            'text': textSynthesisInput.getText()
+            'text': textSynthesisInput.text
         }
 
     async def serializeTranslationRequest(
@@ -347,20 +348,20 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'voiceAudioConfig argument is malformed: \"{voiceAudioConfig}\"')
 
         dictionary: dict[str, Any] = {
-            'audioEncoding': await self.serializeVoiceAudioEncoding(voiceAudioConfig.getAudioEncoding())
+            'audioEncoding': await self.serializeVoiceAudioEncoding(voiceAudioConfig.audioEncoding)
         }
 
-        if utils.isValidNum(voiceAudioConfig.getPitch()):
-            dictionary['pitch'] = voiceAudioConfig.getPitch()
+        if utils.isValidNum(voiceAudioConfig.pitch):
+            dictionary['pitch'] = voiceAudioConfig.pitch
 
-        if utils.isValidInt(voiceAudioConfig.getSampleRateHertz()):
-            dictionary['sampleRateHertz'] = voiceAudioConfig.getSampleRateHertz()
+        if utils.isValidInt(voiceAudioConfig.sampleRateHertz):
+            dictionary['sampleRateHertz'] = voiceAudioConfig.sampleRateHertz
 
-        if utils.isValidNum(voiceAudioConfig.getSpeakingRate()):
-            dictionary['speakingRate'] = voiceAudioConfig.getSpeakingRate()
+        if utils.isValidNum(voiceAudioConfig.speakingRate):
+            dictionary['speakingRate'] = voiceAudioConfig.speakingRate
 
-        if utils.isValidNum(voiceAudioConfig.getVolumeGainDb()):
-            dictionary['volumeGainDb'] = voiceAudioConfig.getVolumeGainDb()
+        if utils.isValidNum(voiceAudioConfig.volumeGainDb):
+            dictionary['volumeGainDb'] = voiceAudioConfig.volumeGainDb
 
         return dictionary
 
@@ -408,15 +409,13 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'voiceSelectionParams argument is malformed: \"{voiceSelectionParams}\"')
 
         result: dict[str, Any] = {
-            'languageCode': voiceSelectionParams.getLanguageCode()
+            'languageCode': voiceSelectionParams.languageCode
         }
 
-        name = voiceSelectionParams.getName()
-        if utils.isValidStr(name):
-            result['name'] = name
+        if utils.isValidStr(voiceSelectionParams.name):
+            result['name'] = voiceSelectionParams.name
 
-        gender = voiceSelectionParams.getGender()
-        if gender is not None:
-            result['ssmlGender'] = await self.serializeVoiceGender(gender)
+        if voiceSelectionParams.gender is not None:
+            result['ssmlGender'] = await self.serializeVoiceGender(voiceSelectionParams.gender)
 
         return result
