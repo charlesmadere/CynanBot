@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum, auto
 
 import CynanBot.misc.utils as utils
@@ -11,7 +13,7 @@ class TriviaDifficulty(Enum):
     UNKNOWN = auto()
 
     @classmethod
-    def fromInt(cls, number: int | None):
+    def fromInt(cls, number: int | None) -> TriviaDifficulty:
         if not utils.isValidInt(number):
             return TriviaDifficulty.UNKNOWN
 

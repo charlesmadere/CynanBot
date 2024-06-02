@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum, auto
 
 import CynanBot.misc.utils as utils
@@ -16,7 +18,7 @@ class PokepediaStat(Enum):
     SPEED = auto()
 
     @classmethod
-    def fromInt(cls, number: int):
+    def fromInt(cls, number: int) -> PokepediaStat:
         if not utils.isValidInt(number):
             raise TypeError(f'number argument is malformed: \"{number}\"')
 
