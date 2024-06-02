@@ -1,6 +1,6 @@
 from __future__ import annotations
+
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 
@@ -14,7 +14,7 @@ class PokepediaContestType(Enum):
     TOUGH = auto()
 
     @classmethod
-    def fromStr(cls, text: Optional[str]) -> Optional[PokepediaContestType]:
+    def fromStr(cls, text: str | None) -> PokepediaContestType | None:
         if not utils.isValidStr(text):
             return None
 
@@ -27,15 +27,10 @@ class PokepediaContestType(Enum):
         raise ValueError(f'unknown PokepediaContestType: \"{text}\"')
 
     def toStr(self) -> str:
-        if self is PokepediaContestType.BEAUTY:
-            return 'Beauty'
-        elif self is PokepediaContestType.COOL:
-            return 'Cool'
-        elif self is PokepediaContestType.CUTE:
-            return 'Cute'
-        elif self is PokepediaContestType.SMART:
-            return 'Smart'
-        elif self is PokepediaContestType.TOUGH:
-            return 'Tough'
-        else:
-            raise RuntimeError(f'unknown PokepediaContestType: \"{self}\"')
+        match self:
+            case PokepediaContestType.BEAUTY: return 'Beauty'
+            case PokepediaContestType.COOL: return 'Cool'
+            case PokepediaContestType.CUTE: return 'Cute'
+            case PokepediaContestType.SMART: return 'Smart'
+            case PokepediaContestType.TOUGH: return 'Tough'
+            case _: raise RuntimeError(f'unknown PokepediaContestType: \"{self}\"')

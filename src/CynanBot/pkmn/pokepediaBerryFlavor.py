@@ -9,7 +9,7 @@ class PokepediaBerryFlavor(Enum):
     SPICY = auto()
     SWEET = auto()
 
-    def getId(self) -> int:
+    def getBerryFlavorId(self) -> int:
         match self:
             case PokepediaBerryFlavor.BITTER: return 4
             case PokepediaBerryFlavor.DRY: return 2

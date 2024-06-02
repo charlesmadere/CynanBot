@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
@@ -34,7 +35,7 @@ class PokepediaNature(Enum):
     TIMID = auto()
 
     @classmethod
-    def fromInt(cls, number: int):
+    def fromInt(cls, number: int) -> PokepediaNature:
         if not utils.isValidInt(number):
             raise ValueError(f'number argument is malformed: \"{number}\"')
 
@@ -44,218 +45,118 @@ class PokepediaNature(Enum):
 
         raise ValueError(f'number argument does not match any PokepediaNature: {number}')
 
-    def getHatesFlavor(self) -> Optional[PokepediaBerryFlavor]:
-        if self is PokepediaNature.HARDY:
-            return None
-        elif self is PokepediaNature.LONELY:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.BRAVE:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.ADAMANT:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.NAUGHTY:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.BOLD:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.DOCILE:
-            return None
-        elif self is PokepediaNature.RELAXED:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.IMPISH:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.LAX:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.TIMID:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.HASTY:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.SERIOUS:
-            return None
-        elif self is PokepediaNature.JOLLY:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.NAIVE:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.MODEST:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.MILD:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.QUIET:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.BASHFUL:
-            return None
-        elif self is PokepediaNature.RASH:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.CALM:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.GENTLE:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.SASSY:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.CAREFUL:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.QUIRKY:
-            return None
-        else:
-            raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
+    def getHatesFlavor(self) -> PokepediaBerryFlavor | None:
+        match self:
+            case PokepediaNature.HARDY: return None
+            case PokepediaNature.LONELY: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.BRAVE: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.ADAMANT: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.NAUGHTY: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.BOLD: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.DOCILE: return None
+            case PokepediaNature.RELAXED: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.IMPISH: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.LAX: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.TIMID: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.HASTY: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.SERIOUS: return None
+            case PokepediaNature.JOLLY: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.NAIVE: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.MODEST: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.MILD: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.QUIET: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.BASHFUL: return None
+            case PokepediaNature.RASH: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.CALM: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.GENTLE: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.SASSY: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.CAREFUL: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.QUIRKY: return None
+            case _: raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
 
-    def getLikesFlavor(self) -> Optional[PokepediaBerryFlavor]:
-        if self is PokepediaNature.HARDY:
-            return None
-        elif self is PokepediaNature.LONELY:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.BRAVE:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.ADAMANT:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.NAUGHTY:
-            return PokepediaBerryFlavor.SPICY
-        elif self is PokepediaNature.BOLD:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.DOCILE:
-            return None
-        elif self is PokepediaNature.RELAXED:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.IMPISH:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.LAX:
-            return PokepediaBerryFlavor.SOUR
-        elif self is PokepediaNature.TIMID:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.HASTY:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.SERIOUS:
-            return None
-        elif self is PokepediaNature.JOLLY:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.NAIVE:
-            return PokepediaBerryFlavor.SWEET
-        elif self is PokepediaNature.MODEST:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.MILD:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.QUIET:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.BASHFUL:
-            return None
-        elif self is PokepediaNature.RASH:
-            return PokepediaBerryFlavor.DRY
-        elif self is PokepediaNature.CALM:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.GENTLE:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.SASSY:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.CAREFUL:
-            return PokepediaBerryFlavor.BITTER
-        elif self is PokepediaNature.QUIRKY:
-            return None
-        else:
-            raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
+    def getLikesFlavor(self) -> PokepediaBerryFlavor | None:
+        match self:
+            case PokepediaNature.HARDY: return None
+            case PokepediaNature.LONELY: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.BRAVE: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.ADAMANT: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.NAUGHTY: return PokepediaBerryFlavor.SPICY
+            case PokepediaNature.BOLD: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.DOCILE: return None
+            case PokepediaNature.RELAXED: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.IMPISH: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.LAX: return PokepediaBerryFlavor.SOUR
+            case PokepediaNature.TIMID: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.HASTY: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.SERIOUS: return None
+            case PokepediaNature.JOLLY: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.NAIVE: return PokepediaBerryFlavor.SWEET
+            case PokepediaNature.MODEST: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.MILD: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.QUIET: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.BASHFUL: return None
+            case PokepediaNature.RASH: return PokepediaBerryFlavor.DRY
+            case PokepediaNature.CALM: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.GENTLE: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.SASSY: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.CAREFUL: return PokepediaBerryFlavor.BITTER
+            case PokepediaNature.QUIRKY: return None
+            case _: raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
 
     def getNatureId(self) -> int:
-        if self is PokepediaNature.HARDY:
-            return 1
-        elif self is PokepediaNature.LONELY:
-            return 2
-        elif self is PokepediaNature.BRAVE:
-            return 3
-        elif self is PokepediaNature.ADAMANT:
-            return 4
-        elif self is PokepediaNature.NAUGHTY:
-            return 5
-        elif self is PokepediaNature.BOLD:
-            return 6
-        elif self is PokepediaNature.DOCILE:
-            return 7
-        elif self is PokepediaNature.RELAXED:
-            return 8
-        elif self is PokepediaNature.IMPISH:
-            return 9
-        elif self is PokepediaNature.LAX:
-            return 10
-        elif self is PokepediaNature.TIMID:
-            return 11
-        elif self is PokepediaNature.HASTY:
-            return 12
-        elif self is PokepediaNature.SERIOUS:
-            return 13
-        elif self is PokepediaNature.JOLLY:
-            return 14
-        elif self is PokepediaNature.NAIVE:
-            return 15
-        elif self is PokepediaNature.MODEST:
-            return 16
-        elif self is PokepediaNature.MILD:
-            return 17
-        elif self is PokepediaNature.QUIET:
-            return 18
-        elif self is PokepediaNature.BASHFUL:
-            return 19
-        elif self is PokepediaNature.RASH:
-            return 20
-        elif self is PokepediaNature.CALM:
-            return 21
-        elif self is PokepediaNature.GENTLE:
-            return 22
-        elif self is PokepediaNature.SASSY:
-            return 23
-        elif self is PokepediaNature.CAREFUL:
-            return 24
-        elif self is PokepediaNature.QUIRKY:
-            return 25
-        else:
-            raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
+        match self:
+            case PokepediaNature.HARDY: return 1
+            case PokepediaNature.LONELY: return 2
+            case PokepediaNature.BRAVE: return 3
+            case PokepediaNature.ADAMANT: return 4
+            case PokepediaNature.NAUGHTY: return 5
+            case PokepediaNature.BOLD: return 6
+            case PokepediaNature.DOCILE: return 7
+            case PokepediaNature.RELAXED: return 8
+            case PokepediaNature.IMPISH: return 9
+            case PokepediaNature.LAX: return 10
+            case PokepediaNature.TIMID: return 11
+            case PokepediaNature.HASTY: return 12
+            case PokepediaNature.SERIOUS: return 13
+            case PokepediaNature.JOLLY: return 14
+            case PokepediaNature.NAIVE: return 15
+            case PokepediaNature.MODEST: return 16
+            case PokepediaNature.MILD: return 17
+            case PokepediaNature.QUIET: return 18
+            case PokepediaNature.BASHFUL: return 19
+            case PokepediaNature.RASH: return 20
+            case PokepediaNature.CALM: return 21
+            case PokepediaNature.GENTLE: return 22
+            case PokepediaNature.SASSY: return 23
+            case PokepediaNature.CAREFUL: return 24
+            case PokepediaNature.QUIRKY: return 25
+            case _: raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
 
     def toStr(self) -> str:
-        if self is PokepediaNature.HARDY:
-            return 'Hardy'
-        elif self is PokepediaNature.LONELY:
-            return 'Lonely'
-        elif self is PokepediaNature.BRAVE:
-            return 'Brave'
-        elif self is PokepediaNature.ADAMANT:
-            return 'Adamant'
-        elif self is PokepediaNature.NAUGHTY:
-            return 'Naughty'
-        elif self is PokepediaNature.BOLD:
-            return 'Bold'
-        elif self is PokepediaNature.DOCILE:
-            return 'Docile'
-        elif self is PokepediaNature.RELAXED:
-            return 'Relaxed'
-        elif self is PokepediaNature.IMPISH:
-            return 'Impish'
-        elif self is PokepediaNature.LAX:
-            return 'Lax'
-        elif self is PokepediaNature.TIMID:
-            return 'Timid'
-        elif self is PokepediaNature.HASTY:
-            return 'Hasty'
-        elif self is PokepediaNature.SERIOUS:
-            return 'Serious'
-        elif self is PokepediaNature.JOLLY:
-            return 'Jolly'
-        elif self is PokepediaNature.NAIVE:
-            return 'Naive'
-        elif self is PokepediaNature.MODEST:
-            return 'Modest'
-        elif self is PokepediaNature.MILD:
-            return 'Mild'
-        elif self is PokepediaNature.QUIET:
-            return 'Quiet'
-        elif self is PokepediaNature.BASHFUL:
-            return 'Bashful'
-        elif self is PokepediaNature.RASH:
-            return 'Rash'
-        elif self is PokepediaNature.CALM:
-            return 'Calm'
-        elif self is PokepediaNature.GENTLE:
-            return 'Gentle'
-        elif self is PokepediaNature.SASSY:
-            return 'Sassy'
-        elif self is PokepediaNature.CAREFUL:
-            return 'Careful'
-        elif self is PokepediaNature.QUIRKY:
-            return 'Quirky'
-        else:
-            raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
+        match self:
+            case PokepediaNature.HARDY: return 'Hardy'
+            case PokepediaNature.LONELY: return 'Lonely'
+            case PokepediaNature.BRAVE: return 'Brave'
+            case PokepediaNature.ADAMANT: return 'Adamant'
+            case PokepediaNature.NAUGHTY: return 'Naughty'
+            case PokepediaNature.BOLD: return 'Bold'
+            case PokepediaNature.DOCILE: return 'Docile'
+            case PokepediaNature.RELAXED: return 'Relaxed'
+            case PokepediaNature.IMPISH: return 'Impish'
+            case PokepediaNature.LAX: return 'Lax'
+            case PokepediaNature.TIMID: return 'Timid'
+            case PokepediaNature.HASTY: return 'Hasty'
+            case PokepediaNature.SERIOUS: return 'Serious'
+            case PokepediaNature.JOLLY: return 'Jolly'
+            case PokepediaNature.NAIVE: return 'Naive'
+            case PokepediaNature.MODEST: return 'Modest'
+            case PokepediaNature.MILD: return 'Mild'
+            case PokepediaNature.QUIET: return 'Quiet'
+            case PokepediaNature.BASHFUL: return 'Bashful'
+            case PokepediaNature.RASH: return 'Rash'
+            case PokepediaNature.CALM: return 'Calm'
+            case PokepediaNature.GENTLE: return 'Gentle'
+            case PokepediaNature.SASSY: return 'Sassy'
+            case PokepediaNature.CAREFUL: return 'Careful'
+            case PokepediaNature.QUIRKY: return 'Quirky'
+            case _: raise RuntimeError(f'unknown PokepediaNature: \"{self}\"')
