@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import auto
 
 from typing_extensions import override
@@ -13,7 +15,7 @@ class DatabaseType(EnumWithToFromStr):
 
     @override
     @classmethod
-    def fromStr(cls, text: str):
+    def fromStr(cls, text: str) -> DatabaseType:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
 
