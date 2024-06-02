@@ -3,22 +3,17 @@ from CynanBot.pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
 
 class TestPokepediaBerryFlavor():
 
-    def test_fromStr_withOne(self):
-        result = PokepediaBerryFlavor.fromInt(1)
-        assert result is PokepediaBerryFlavor.SPICY
+    def test_getId_withBitter(self):
+        assert PokepediaBerryFlavor.BITTER.getId() == 4
 
-    def test_fromStr_withTwo(self):
-        result = PokepediaBerryFlavor.fromInt(2)
-        assert result is PokepediaBerryFlavor.DRY
+    def test_getId_withDry(self):
+        assert PokepediaBerryFlavor.DRY.getId() == 2
 
-    def test_fromStr_withThree(self):
-        result = PokepediaBerryFlavor.fromInt(3)
-        assert result is PokepediaBerryFlavor.SWEET
+    def test_getId_withSpicy(self):
+        assert PokepediaBerryFlavor.SPICY.getId() == 1
 
-    def test_fromStr_withFour(self):
-        result = PokepediaBerryFlavor.fromInt(4)
-        assert result is PokepediaBerryFlavor.BITTER
+    def test_getId_withSour(self):
+        assert PokepediaBerryFlavor.SOUR.getId() == 5
 
-    def test_fromStr_withFive(self):
-        result = PokepediaBerryFlavor.fromInt(5)
-        assert result is PokepediaBerryFlavor.SOUR
+    def test_getId_withSweet(self):
+        assert PokepediaBerryFlavor.SWEET.getId() == 3
