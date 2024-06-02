@@ -39,9 +39,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         twitchApiService: TwitchApiServiceInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
-        sleepTimeSeconds: float = 600,
+        sleepTimeSeconds: float = 3300,
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
-        validationExpirationBuffer: timedelta = timedelta(minutes = 5)
+        validationExpirationBuffer: timedelta = timedelta(minutes = 10)
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
