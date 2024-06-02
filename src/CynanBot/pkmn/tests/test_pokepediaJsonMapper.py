@@ -27,6 +27,11 @@ class TestPokepediaJsonMapper():
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseBerryFlavor_with0(self):
+        result = await self.jsonMapper.parseBerryFlavor(0)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseBerryFlavor_with1(self):
         result = await self.jsonMapper.parseBerryFlavor(1)
         assert result is PokepediaBerryFlavor.SPICY
@@ -49,4 +54,56 @@ class TestPokepediaJsonMapper():
     @pytest.mark.asyncio
     async def test_parseBerryFlavor_with5(self):
         result = await self.jsonMapper.parseBerryFlavor(5)
+        assert result is PokepediaBerryFlavor.SOUR
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_withNegative1(self):
+        result: PokepediaBerryFlavor | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireBerryFlavor(-1)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_withNone(self):
+        result: PokepediaBerryFlavor | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireBerryFlavor(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_with0(self):
+        result: PokepediaBerryFlavor | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireBerryFlavor(0)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_with1(self):
+        result = await self.jsonMapper.requireBerryFlavor(1)
+        assert result is PokepediaBerryFlavor.SPICY
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_with2(self):
+        result = await self.jsonMapper.requireBerryFlavor(2)
+        assert result is PokepediaBerryFlavor.DRY
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_with3(self):
+        result = await self.jsonMapper.requireBerryFlavor(3)
+        assert result is PokepediaBerryFlavor.SWEET
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_with4(self):
+        result = await self.jsonMapper.requireBerryFlavor(4)
+        assert result is PokepediaBerryFlavor.BITTER
+
+    @pytest.mark.asyncio
+    async def test_requireBerryFlavor_with5(self):
+        result = await self.jsonMapper.requireBerryFlavor(5)
         assert result is PokepediaBerryFlavor.SOUR
