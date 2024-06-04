@@ -268,11 +268,12 @@ backgroundTaskHelper: BackgroundTaskHelper = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
 
-timber: TimberInterface = Timber(
-    backgroundTaskHelper = backgroundTaskHelper
-)
-
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
+timber: TimberInterface = Timber(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timeZoneRepository = timeZoneRepository
+)
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('generalSettingsRepository.json')

@@ -496,6 +496,13 @@ class TestTriviaAnswerCompiler():
         assert 'pacific ocean' in result
 
     @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withSparrballong(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'Spärrballong' ])
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert 'sparrballong' in result
+
+    @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheirHouse(self):
         result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'their house' ])
         assert result is not None

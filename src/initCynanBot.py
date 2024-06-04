@@ -3,6 +3,10 @@ import locale
 import logging
 from asyncio import AbstractEventLoop
 
+from CynanBot.transparent.transparentApiService import TransparentApiService
+from CynanBot.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
+from CynanBot.transparent.transparentXmlMapper import TransparentXmlMapper
+from CynanBot.transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -444,11 +448,12 @@ backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
 
-timber: TimberInterface = Timber(
-    backgroundTaskHelper = backgroundTaskHelper
-)
-
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
+timber: TimberInterface = Timber(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timeZoneRepository = timeZoneRepository
+)
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('generalSettingsRepository.json')
@@ -695,9 +700,20 @@ twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     userIdsRepository = userIdsRepository
 )
 
+transparentXmlMapper: TransparentXmlMapperInterface = TransparentXmlMapper(
+    timeZoneRepository = timeZoneRepository
+)
+
+transparentApiService: TransparentApiServiceInterface = TransparentApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber,
+    transparentXmlMapper = transparentXmlMapper
+)
+
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
+    transparentApiService = transparentApiService
 )
 
 deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(

@@ -2,6 +2,7 @@ from json import JSONDecodeError
 from typing import Any
 
 from requests.models import Response
+import xmltodict
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import NetworkResponseIsClosedException
@@ -51,7 +52,7 @@ class RequestsResponse(NetworkResponse):
     def isClosed(self) -> bool:
         return self.__isClosed
 
-    async def json(self) -> dict[str, Any] | None:
+    async def json(self) -> dict[str, Any] | list[Any] | None:
         self.__requireNotClosed()
 
         try:
@@ -71,6 +72,16 @@ class RequestsResponse(NetworkResponse):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'isClosed': self.__isClosed,
+            'networkClientType': self.getNetworkClientType(),
             'response': self.__response,
             'url': self.__url
         }
+
+    async def xml(self) -> dict[str, Any] | list[Any] | None:
+        self.__requireNotClosed()
+
+        try:
+            return xmltodict.parse(await self.read())
+        except Exception as e:
+            self.__timber.log('RequestsResponse', f'Unable to decode response into XML for url \"{self.__url}\"', e)
+            return None

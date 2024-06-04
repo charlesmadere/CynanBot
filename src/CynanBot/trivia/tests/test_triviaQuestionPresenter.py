@@ -12,6 +12,31 @@ from CynanBot.trivia.triviaQuestionPresenterInterface import TriviaQuestionPrese
 
 class TestTriviaQuestionPresenter():
 
+    multipleChoiceQuestion1: AbsTriviaQuestion = MultipleChoiceTriviaQuestion(
+        correctAnswers = [ 'Saturn' ],
+        multipleChoiceResponses = [ 'Earth', 'Mars', 'Saturn', 'Venus' ],
+        category = None,
+        categoryId = None,
+        question = 'Which of these planets has a ring?',
+        triviaId = 'abc123',
+        triviaDifficulty = TriviaDifficulty.EASY,
+        originalTriviaSource = None,
+        triviaSource = TriviaSource.TRIVIA_DATABASE
+    )
+
+    questionAnswerQuestion1: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        correctAnswers = [ 'Mercury' ],
+        cleanedCorrectAnswers = [ 'mercury' ],
+        category = None,
+        categoryId = None,
+        question = 'This planet is the closest to the sun.',
+        originalCorrectAnswers = [ 'Mercury' ],
+        triviaId = 'abc123',
+        triviaDifficulty = TriviaDifficulty.UNKNOWN,
+        originalTriviaSource = None,
+        triviaSource = TriviaSource.FUNTOON
+    )
+
     trueFalseQuestion1: AbsTriviaQuestion = TrueFalseTriviaQuestion(
         correctAnswer = True,
         category = None,
@@ -37,14 +62,24 @@ class TestTriviaQuestionPresenter():
     presenter: TriviaQuestionPresenterInterface = TriviaQuestionPresenter()
 
     @pytest.mark.asyncio
+    async def test_getCorrectAnswers_withMultipleChoiceQuestion1(self):
+        correctAnswers = await self.presenter.getCorrectAnswers(self.multipleChoiceQuestion1)
+        assert correctAnswers == 'The correct answer is: [C] Saturn'
+
+    @pytest.mark.asyncio
+    async def test_getCorrectAnswers_withQuestionAnswerQuestion1(self):
+        correctAnswers = await self.presenter.getCorrectAnswers(self.questionAnswerQuestion1)
+        assert correctAnswers == 'The correct answer is: Mercury'
+
+    @pytest.mark.asyncio
     async def test_getCorrectAnswers_withTrueFalseQuestion1(self):
-        correctAnswer = await self.presenter.getCorrectAnswers(self.trueFalseQuestion1)
-        assert correctAnswer == 'The correct answer is: true'
+        correctAnswers = await self.presenter.getCorrectAnswers(self.trueFalseQuestion1)
+        assert correctAnswers == 'The correct answer is: true'
 
     @pytest.mark.asyncio
     async def test_getCorrectAnswers_withTrueFalseQuestion2(self):
-        correctAnswer = await self.presenter.getCorrectAnswers(self.trueFalseQuestion2)
-        assert correctAnswer == 'The correct answer is: false'
+        correctAnswers = await self.presenter.getCorrectAnswers(self.trueFalseQuestion2)
+        assert correctAnswers == 'The correct answer is: false'
 
     @pytest.mark.asyncio
     async def test_getPrompt_withTrueFalseQuestion1(self):

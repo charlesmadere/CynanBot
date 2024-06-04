@@ -7,9 +7,12 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 import CynanBot.misc.utils as utils
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberEntry import TimberEntry
 from CynanBot.timber.timberInterface import TimberInterface
 
@@ -19,11 +22,14 @@ class Timber(TimberInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
         timberRootDirectory: str = 'logs/timber'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
@@ -31,6 +37,7 @@ class Timber(TimberInterface):
         elif not utils.isValidStr(timberRootDirectory):
             raise TypeError(f'timberRootDirectory argument is malformed: \"{timberRootDirectory}\"')
 
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__timberRootDirectory: str = timberRootDirectory
 
@@ -43,15 +50,13 @@ class Timber(TimberInterface):
         elif not isinstance(timberEntry, TimberEntry):
             raise TypeError(f'timberEntry argument is malformed: \"{timberEntry}\"')
 
-        exception = timberEntry.getException()
-        if exception is None:
+        if timberEntry.exception is None:
             return None
 
-        errorStatement = str(exception)
+        errorStatement = str(timberEntry.exception)
 
-        traceback = timberEntry.getTraceback()
-        if utils.isValidStr(traceback):
-            errorStatement = f'{errorStatement}\n{traceback}'.strip()
+        if utils.isValidStr(timberEntry.traceback):
+            errorStatement = f'{errorStatement}\n{timberEntry.traceback}'.strip()
 
         if ensureNewLine:
             errorStatement = f'{errorStatement}\n'
@@ -64,11 +69,10 @@ class Timber(TimberInterface):
         elif not isinstance(timberEntry, TimberEntry):
             raise TypeError(f'timberEntry argument is malformed: \"{timberEntry}\"')
 
-        logStatement = f'{timberEntry.getSimpleDateTime().getDateAndTimeStr(True)} — {timberEntry.getTag()} — {timberEntry.getMsg()}'.strip()
+        logStatement = f'{timberEntry.logTime.getDateAndTimeStr(True)} — {timberEntry.tag} — {timberEntry.msg}'.strip()
 
-        traceback = timberEntry.getTraceback()
-        if utils.isValidStr(traceback):
-            logStatement = f'{logStatement}\n{traceback}'.strip()
+        if utils.isValidStr(timberEntry.traceback):
+            logStatement = f'{logStatement}\n{timberEntry.traceback}'.strip()
 
         if ensureNewLine:
             logStatement = f'{logStatement}\n'
@@ -91,10 +95,15 @@ class Timber(TimberInterface):
         elif traceback is not None and not isinstance(traceback, str):
             raise TypeError(f'traceback argument is malformed: \"{traceback}\"')
 
+        logTime = SimpleDateTime(
+            timeZone = self.__timeZoneRepository.getDefault()
+        )
+
         timberEntry = TimberEntry(
-            tag = tag,
-            msg = msg,
             exception = exception,
+            logTime = logTime,
+            msg = msg,
+            tag = tag,
             traceback = traceback
         )
 
@@ -134,15 +143,14 @@ class Timber(TimberInterface):
         errorStructure: dict[str, dict[str, list[TimberEntry]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for entry in entries:
-            simpleDateTime = entry.getSimpleDateTime()
-            timberDirectory = f'{self.__timberRootDirectory}/{simpleDateTime.getYearStr()}/{simpleDateTime.getMonthStr()}'
-            timberFile = f'{timberDirectory}/{simpleDateTime.getDayStr()}.log'
+            logTime = entry.logTime
+            timberDirectory = f'{self.__timberRootDirectory}/{logTime.getYearStr()}/{logTime.getMonthStr()}'
+            timberFile = f'{timberDirectory}/{logTime.getDayStr()}.log'
             structure[timberDirectory][timberFile].append(entry)
 
-            exception = entry.getException()
-            if exception is not None:
+            if entry.exception is not None:
                 timberErrorDirectory = f'{timberDirectory}/errors'
-                timberErrorFile = f'{timberErrorDirectory}/{simpleDateTime.getDayStr()}.log'
+                timberErrorFile = f'{timberErrorDirectory}/{logTime.getDayStr()}.log'
                 errorStructure[timberErrorDirectory][timberErrorFile].append(entry)
 
         for timberDirectory, timberFileToEntriesDict in structure.items():

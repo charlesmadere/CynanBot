@@ -41,3 +41,7 @@ class NetworkResponse(ABC):
     @abstractmethod
     def toDictionary(self) -> dict[str, Any]:
         pass
+
+    @abstractmethod
+    async def xml(self) -> dict[str, Any] | list[Any] | None:
+        pass

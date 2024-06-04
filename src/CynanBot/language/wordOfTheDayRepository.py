@@ -13,6 +13,8 @@ from CynanBot.misc.timedDict import TimedDict
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.transparent.transparentApiServiceInterface import \
+    TransparentApiServiceInterface
 
 
 class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
@@ -21,17 +23,21 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         self,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
+        transparentApiService: TransparentApiServiceInterface,
         cacheTimeDelta: timedelta = timedelta(hours = 1)
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(transparentApiService, TransparentApiServiceInterface):
+            raise TypeError(f'transparentApiService argument is malformed: \"{transparentApiService}\"')
         elif not isinstance(cacheTimeDelta, timedelta):
-            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+            raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
+        self.__transparentApiService: TransparentApiServiceInterface = transparentApiService
         self.__cache: TimedDict = TimedDict(cacheTimeDelta)
 
     async def clearCaches(self):

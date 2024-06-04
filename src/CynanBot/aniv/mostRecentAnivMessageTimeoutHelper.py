@@ -186,7 +186,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__twitchChannelProvider = provider
 
     async def __timeoutScoreToString(self, timeoutScore: AnivCopyMessageTimeoutScore) -> str:
-        statsString = f'{timeoutScore.dodgeScoreStr}-{timeoutScore.timeoutScoreStr}'
+        statsString = f'{timeoutScore.dodgeScoreStr}D-{timeoutScore.timeoutScoreStr}T'
 
         dodgePercentString: str
         if timeoutScore.dodgeScore == 0:
@@ -198,4 +198,4 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             dodgePercent = round((float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
             dodgePercentString = f'{dodgePercent}% dodge rate'
 
-        return f' ({statsString}, {dodgePercentString})'
+        return f'({statsString}, {dodgePercentString})'

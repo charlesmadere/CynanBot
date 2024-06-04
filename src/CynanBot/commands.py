@@ -414,7 +414,7 @@ class DeleteCheerActionCommand(AbsCommand):
         if not isinstance(action, CheerAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        return f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}'
+        return f'id={action.actionId}, amount={action.amount}, duration={action.durationSeconds}'
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -629,7 +629,7 @@ class GetCheerActionsCommand(AbsCommand):
         cheerActionStrings: list[str] = list()
 
         for action in actions:
-            cheerActionStrings.append(f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}')
+            cheerActionStrings.append(f'id={action.actionId}, amount={action.amount}, duration={action.durationSeconds}')
 
         cheerActionsString = self.__delimiter.join(cheerActionStrings)
         return f'ⓘ Your cheer actions — {cheerActionsString}'
