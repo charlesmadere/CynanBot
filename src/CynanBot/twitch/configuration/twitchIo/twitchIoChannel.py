@@ -21,8 +21,9 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__channel: Channel = channel
-        self.__twitchChannelId: str | None = None
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+        self.__twitchChannelId: str | None = None
 
     async def getTwitchChannelId(self) -> str:
         twitchChannelId = self.__twitchChannelId

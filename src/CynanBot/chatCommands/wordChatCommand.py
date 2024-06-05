@@ -7,6 +7,8 @@ from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
+from CynanBot.language.wordOfTheDayPresenterInterface import \
+    WordOfTheDayPresenterInterface
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.misc.timedDict import TimedDict
@@ -25,6 +27,7 @@ class WordChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
+        wordOfTheDayPresenter: WordOfTheDayPresenterInterface,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
         cooldown: timedelta = timedelta(seconds = 3)
     ):
@@ -38,6 +41,8 @@ class WordChatCommand(AbsChatCommand):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(wordOfTheDayPresenter, WordOfTheDayPresenterInterface):
+            raise TypeError(f'wordOfTheDayPresenter argument is malformed: \"{wordOfTheDayPresenter}\"')
         elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
         elif not isinstance(cooldown, timedelta):
@@ -48,6 +53,7 @@ class WordChatCommand(AbsChatCommand):
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__wordOfTheDayPresenter: WordOfTheDayPresenterInterface = wordOfTheDayPresenter
         self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -83,7 +89,8 @@ class WordChatCommand(AbsChatCommand):
 
         try:
             wotd = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-            await self.__twitchUtils.safeSend(ctx, wotd.toStr())
+            wordOfTheDayString = await self.__wordOfTheDayPresenter.toString(wotd)
+            await self.__twitchUtils.safeSend(ctx, wordOfTheDayString)
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')

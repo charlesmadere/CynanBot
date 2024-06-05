@@ -29,6 +29,14 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
         enPhrase = utils.getStrFromDict(xmlContents, 'enphrase', clean = True)
         fnPhrase = utils.getStrFromDict(xmlContents, 'fnphrase', clean = True)
 
+        langName: str | None = None
+        if 'langname' in xmlContents and utils.isValidStr(xmlContents.get('langname')):
+            langName = utils.getStrFromDict(
+                d = xmlContents,
+                key = 'langname',
+                clean = True
+            )
+
         notes: str | None = None
         if 'notes' in xmlContents and utils.isValidStr(xmlContents.get('notes')):
             notes = utils.getStrFromDict(
@@ -71,6 +79,7 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
             date = date,
             enPhrase = enPhrase,
             fnPhrase = fnPhrase,
+            langName = langName,
             notes = notes,
             phraseSoundUrl = phraseSoundUrl,
             translation = translation,

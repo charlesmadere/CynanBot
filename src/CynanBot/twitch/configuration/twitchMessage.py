@@ -43,3 +43,7 @@ class TwitchMessage(ABC):
     @abstractmethod
     def isEcho(self) -> bool:
         pass
+
+    @abstractmethod
+    def isReply(self) -> bool:
+        pass

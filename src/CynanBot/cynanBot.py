@@ -290,6 +290,7 @@ from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
+from CynanBot.language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 
 
 class CynanBot(
@@ -374,6 +375,7 @@ class CynanBot(
         weatherReportPresenter: WeatherReportPresenterInterface | None,
         weatherRepository: WeatherRepositoryInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
+        wordOfTheDayPresenter: WordOfTheDayPresenterInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
     ):
         super().__init__(
@@ -527,6 +529,8 @@ class CynanBot(
             raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
+        elif wordOfTheDayPresenter is not None and not isinstance(wordOfTheDayPresenter, WordOfTheDayPresenterInterface):
+            raise TypeError(f'wordOfTheDayPresenter argument is malformed: \"{wordOfTheDayPresenter}\"')
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
@@ -559,6 +563,7 @@ class CynanBot(
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__weatherReportPresenter: WeatherReportPresenterInterface | None = weatherReportPresenter
         self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
+        self.__wordOfTheDayPresenter: WordOfTheDayPresenterInterface | None = wordOfTheDayPresenter
 
         #######################################
         ## Initialization of command objects ##
@@ -701,10 +706,10 @@ class CynanBot(
         else:
             self.__weatherCommand: AbsChatCommand = WeatherChatCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
-        if wordOfTheDayRepository is None:
+        if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__wordCommand: AbsChatCommand = WordChatCommand(generalSettingsRepository, languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayRepository)
+            self.__wordCommand: AbsChatCommand = WordChatCommand(generalSettingsRepository, languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
 
         ########################################################
         ## Initialization of point redemption handler objects ##
@@ -998,8 +1003,14 @@ class CynanBot(
         if not isinstance(event, WordOfTheDayRecurringEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
+        wordOfTheDayPresenter = self.__wordOfTheDayPresenter
+
+        if wordOfTheDayPresenter is None:
+            return
+
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        await self.__twitchUtils.safeSend(twitchChannel, event.getWordOfTheDayResponse().toStr())
+        wordOfTheDayString = await wordOfTheDayPresenter.toString(event.getWordOfTheDayResponse())
+        await self.__twitchUtils.safeSend(twitchChannel, wordOfTheDayString)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         await self.wait_for_ready()

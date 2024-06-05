@@ -113,6 +113,8 @@ from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationHelper import TranslationHelper
 from CynanBot.language.translationHelperInterface import \
     TranslationHelperInterface
+from CynanBot.language.wordOfTheDayPresenter import WordOfTheDayPresenter
+from CynanBot.language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from CynanBot.language.wordOfTheDayRepository import WordOfTheDayRepository
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
@@ -711,10 +713,11 @@ transparentApiService: TransparentApiServiceInterface = TransparentApiService(
 )
 
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
-    networkClientProvider = networkClientProvider,
     timber = timber,
     transparentApiService = transparentApiService
 )
+
+wordOfTheDayPresenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
 
 deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
     languagesRepository = languagesRepository,
@@ -1468,6 +1471,7 @@ cynanBot = CynanBot(
     weatherReportPresenter = weatherReportPresenter,
     weatherRepository = weatherRepository,
     websocketConnectionServer = None,
+    wordOfTheDayPresenter = wordOfTheDayPresenter,
     wordOfTheDayRepository = wordOfTheDayRepository
 )
 

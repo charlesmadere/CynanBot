@@ -1,5 +1,8 @@
+from typing import Any
+
 from twitchio import Message
 
+import CynanBot.misc.utils as utils
 from CynanBot.twitch.configuration.twitchAuthor import TwitchAuthor
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.configuration.twitchConfigurationType import \
@@ -27,11 +30,12 @@ class TwitchIoMessage(TwitchMessage):
 
         self.__message: Message = message
         self.__author: TwitchAuthor = TwitchIoAuthor(message.author)
-
         self.__channel: TwitchChannel = TwitchIoChannel(
             channel = message.channel,
             userIdsRepository = userIdsRepository
         )
+
+        self.__isReply: bool | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -59,3 +63,26 @@ class TwitchIoMessage(TwitchMessage):
 
     def isEcho(self) -> bool:
         return self.__message.echo
+
+    def isReply(self) -> bool:
+        isReply = self.__isReply
+
+        if isReply is not None:
+            return isReply
+
+        isReply = False
+        tags: dict[Any, Any] | Any | None = self.__message.tags
+
+        if isinstance(tags, dict) and len(tags) >= 1:
+            replyParentMsgBody: str | Any | None = tags.get('reply-parent-msg-body')
+            replyParentMsgId: str | Any | None = tags.get('reply-parent-msg-id')
+            replyParentUserId: str | Any | None = tags.get('reply-parent-user-id')
+            replyParentUserLogin: str | Any | None = tags.get('reply-parent-user-login')
+
+            isReply = utils.isValidStr(replyParentMsgBody) and \
+                utils.isValidStr(replyParentMsgId) and \
+                utils.isValidStr(replyParentUserId) and \
+                utils.isValidStr(replyParentUserLogin)
+
+        self.__isReply = isReply
+        return isReply

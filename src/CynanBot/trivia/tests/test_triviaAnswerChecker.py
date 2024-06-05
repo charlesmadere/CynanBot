@@ -471,6 +471,39 @@ class TestTriviaAnswerChecker():
         assert result is TriviaAnswerCheckResult.INCORRECT
 
     @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withFraulein(self):
+        answer = 'fräulein'
+
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses([ answer ])
+        cleanedCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList([ answer ])
+
+        expandedCleanedCorrectAnswers: set[str] = set()
+        for cleanedCorrectAnswer in cleanedCorrectAnswers:
+            expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = None,
+            categoryId = None,
+            question = 'Something about words',
+            originalCorrectAnswers = correctAnswers,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('fraulein', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('fräulein', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('flamingo', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withSpaces(self):
         answer = 'Beach Ball'
 

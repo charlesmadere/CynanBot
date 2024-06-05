@@ -871,6 +871,7 @@ cynanBot = CynanBot(
     weatherReportPresenter = None,
     weatherRepository = None,
     websocketConnectionServer = websocketConnectionServer,
+    wordOfTheDayPresenter = None,
     wordOfTheDayRepository = None
 )
 

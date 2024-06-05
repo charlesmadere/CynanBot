@@ -120,7 +120,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         try:
             answerIndex = await self.__triviaAnswerCompiler.compileMultipleChoiceAnswer(answer)
         except BadTriviaAnswerException as e:
-            self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: \"{answer}\": {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: ({answer=}): {e}', e, traceback.format_exc())
             return TriviaAnswerCheckResult.INVALID_INPUT
 
         if not utils.isValidInt(answerIndex):
@@ -204,7 +204,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         try:
             answerBool = await self.__triviaAnswerCompiler.compileBoolAnswer(answer)
         except BadTriviaAnswerException as e:
-            self.__timber.log('TriviaAnswerChecker', f'Unable to convert true false answer to bool: \"{answer}\": {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaAnswerChecker', f'Unable to convert true false answer to bool: ({answer=}): {e}', e, traceback.format_exc())
             return TriviaAnswerCheckResult.INVALID_INPUT
 
         if answerBool is triviaQuestion.correctAnswer:
