@@ -108,19 +108,19 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
 
         subscriptionType = subscription.subscriptionType
-        isAnonymous = event.isAnonymous()
-        isGift = event.isGift()
-        communitySubGift = event.getCommunitySubGift()
-        message = event.getMessage()
-        broadcasterUserId = event.getBroadcasterUserId()
-        eventId = event.getEventId()
-        resub = event.getResub()
-        subGift = event.getSubGift()
-        eventUserId = event.getUserId()
-        eventUserInput = event.getUserInput()
-        eventUserLogin = event.getUserLogin()
-        eventUserName = event.getUserName()
-        tier = event.getTier()
+        isAnonymous = event.isAnonymous
+        isGift = event.isGift
+        communitySubGift = event.communitySubGift
+        message = event.message
+        broadcasterUserId = event.broadcasterUserId
+        eventId = event.eventId
+        resub = event.resub
+        subGift = event.subGift
+        eventUserId = event.userId
+        eventUserInput = event.userInput
+        eventUserLogin = event.userLogin
+        eventUserName = event.userName
+        tier = event.tier
 
         if not utils.isValidStr(broadcasterUserId) or tier is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')

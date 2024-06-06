@@ -1,5 +1,4 @@
 from enum import auto
-from typing import Optional
 
 from typing_extensions import override
 
@@ -36,33 +35,21 @@ class PokepediaElementType(EnumWithToFromStr):
             return PokepediaElementType.UNKNOWN
         return super().fromStr(text)
 
-    def getEmoji(self) -> Optional[str]:
-        if self is PokepediaElementType.BUG:
-            return '🐛'
-        elif self is PokepediaElementType.DRAGON:
-            return '🐲'
-        elif self is PokepediaElementType.ELECTRIC:
-            return '⚡'
-        elif self is PokepediaElementType.FIGHTING:
-            return '🥊'
-        elif self is PokepediaElementType.FIRE:
-            return '🔥'
-        elif self is PokepediaElementType.FLYING:
-            return '🐦'
-        elif self is PokepediaElementType.GHOST:
-            return '👻'
-        elif self is PokepediaElementType.GRASS:
-            return '🍃'
-        elif self is PokepediaElementType.ICE:
-            return '❄'
-        elif self is PokepediaElementType.POISON:
-            return '🧪'
-        elif self is PokepediaElementType.PSYCHIC:
-            return '🧠'
-        elif self is PokepediaElementType.WATER:
-            return '🌊'
-        else:
-            return None
+    def getEmoji(self) -> str | None:
+        match self:
+            case PokepediaElementType.BUG: return '🐛'
+            case PokepediaElementType.DRAGON: return '🐲'
+            case PokepediaElementType.ELECTRIC: return '⚡'
+            case PokepediaElementType.FIGHTING: return '🥊'
+            case PokepediaElementType.FIRE: return '🔥'
+            case PokepediaElementType.FLYING: return '🐦'
+            case PokepediaElementType.GHOST: return '👻'
+            case PokepediaElementType.GRASS: return '🍃'
+            case PokepediaElementType.ICE: return '❄'
+            case PokepediaElementType.POISON: return '🧪'
+            case PokepediaElementType.PSYCHIC: return '🧠'
+            case PokepediaElementType.WATER: return '🌊'
+            case _: return None
 
     def getEmojiOrStr(self) -> str:
         emoji = self.getEmoji()

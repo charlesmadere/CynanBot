@@ -23,17 +23,11 @@ class PokepediaDamageMultiplier(Enum):
             raise RuntimeError(f'unknown PokepediaDamageMultiplier: \"{self}\"')
 
     def toStr(self) -> str:
-        if self is PokepediaDamageMultiplier.ZERO:
-            return '0x'
-        elif self is PokepediaDamageMultiplier.ZERO_POINT_TWO_FIVE:
-            return '0.25x'
-        elif self is PokepediaDamageMultiplier.ZERO_POINT_FIVE:
-            return '0.5x'
-        elif self is PokepediaDamageMultiplier.ONE:
-            return '1x'
-        elif self is PokepediaDamageMultiplier.TWO:
-            return '2x'
-        elif self is PokepediaDamageMultiplier.FOUR:
-            return '4x'
-        else:
-            raise RuntimeError(f'unknown PokepediaDamageMultiplier: \"{self}\"')
+        match self:
+            case PokepediaDamageMultiplier.ZERO: return '0x'
+            case PokepediaDamageMultiplier.ZERO_POINT_TWO_FIVE: return '0.25x'
+            case PokepediaDamageMultiplier.ZERO_POINT_FIVE: return '0.5x'
+            case PokepediaDamageMultiplier.ONE: return '1x'
+            case PokepediaDamageMultiplier.TWO: return '2x'
+            case PokepediaDamageMultiplier.FOUR: return '4x'
+            case _: raise RuntimeError(f'unknown PokepediaDamageMultiplier: \"{self}\"')

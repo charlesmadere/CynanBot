@@ -123,31 +123,32 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.payload
-        if payload is None:
+        if dataBundle.payload is None:
             return
 
-        event = payload.event
+        event = dataBundle.payload.event
         if event is None:
             return
 
-        userId = event.getBroadcasterUserId()
+        userId: str | None = None
 
-        if not utils.isValidStr(userId):
-            userId = event.getToBroadcasterUserId()
+        if utils.isValidStr(event.broadcasterUserId):
+            userId = event.broadcasterUserId
+        elif utils.isValidStr(event.toBroadcasterUserId):
+            userId = event.toBroadcasterUserId
+        else:
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user ID for data bundle ({userId=}) ({event.broadcasterUserId=}) ({event.toBroadcasterUserId=}): \"{dataBundle}\"')
+            return
 
-            if not utils.isValidStr(userId):
-                self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user ID (\"{userId}\") for data bundle: \"{dataBundle}\"')
-                return
+        userLogin: str | None = None
 
-        userLogin = event.getBroadcasterUserLogin()
-
-        if not utils.isValidStr(userLogin):
-            userLogin = event.getToBroadcasterUserLogin()
-
-            if not utils.isValidStr(userLogin):
-                self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user login (\"{userLogin}\") for data bundle: \"{dataBundle}\"')
-                return
+        if utils.isValidStr(event.broadcasterUserLogin):
+            userLogin = event.broadcasterUserLogin
+        elif utils.isValidStr(event.toBroadcasterUserLogin):
+            userLogin = event.toBroadcasterUserLogin
+        else:
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user login for data bundle ({userLogin=}) ({event.broadcasterUserLogin=}) ({event.toBroadcasterUserLogin=}): \"{dataBundle}\"')
+            return
 
         await self.__persistUserInfo(event)
         user = await self.__usersRepository.getUserAsync(userLogin)
@@ -226,35 +227,33 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         await self.__userIdsRepository.optionallySetUser(
-            userId = event.getBroadcasterUserId(),
-            userName = event.getBroadcasterUserLogin()
+            userId = event.broadcasterUserId,
+            userName = event.broadcasterUserLogin
         )
 
         await self.__userIdsRepository.optionallySetUser(
-            userId = event.getFromBroadcasterUserId(),
-            userName = event.getFromBroadcasterUserLogin()
+            userId = event.fromBroadcasterUserId,
+            userName = event.fromBroadcasterUserLogin
         )
 
         await self.__userIdsRepository.optionallySetUser(
-            userId = event.getToBroadcasterUserId(),
-            userName = event.getToBroadcasterUserLogin()
+            userId = event.toBroadcasterUserId,
+            userName = event.toBroadcasterUserLogin
         )
 
         await self.__userIdsRepository.optionallySetUser(
-            userId = event.getUserId(),
-            userName = event.getUserLogin()
+            userId = event.userId,
+            userName = event.userLogin
         )
 
-        subGift = event.getSubGift()
-        if subGift is not None:
+        if event.subGift is not None:
             await self.__userIdsRepository.setUser(
-                userId = subGift.recipientUserId,
-                userName = subGift.recipientUserLogin
+                userId = event.subGift.recipientUserId,
+                userName = event.subGift.recipientUserLogin
             )
 
-        outcomes = event.getOutcomes()
-        if outcomes is not None and len(outcomes) >= 1:
-            for outcome in outcomes:
+        if event.outcomes is not None and len(event.outcomes) >= 1:
+            for outcome in event.outcomes:
                 topPredictors = outcome.topPredictors
 
                 if topPredictors is not None and len(topPredictors) >= 1:

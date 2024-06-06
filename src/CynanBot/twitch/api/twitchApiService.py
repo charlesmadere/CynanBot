@@ -65,7 +65,7 @@ from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchTokenIsExpiredException)
 from CynanBot.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
-from CynanBot.twitch.twitchPaginationResponse import TwitchPaginationResponse
+from CynanBot.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 
@@ -164,7 +164,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId
                 },
-                json = banRequest.toJson()
+                json = await self.__twitchJsonMapper.serializeBanRequest(banRequest)
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when banning user ({banRequest=}): {e}', e, traceback.format_exc())

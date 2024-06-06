@@ -6,6 +6,7 @@ from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
@@ -135,3 +136,24 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             raise ValueError(f'Unable to parse \"{subscriberTier}\" into TwitchSubscriberTier value!')
 
         return result
+
+    async def serializeBanRequest(
+        self,
+        banRequest: TwitchBanRequest
+    ) -> dict[str, Any]:
+        if not isinstance(banRequest, TwitchBanRequest):
+            raise TypeError(f'banRequest argument is malformed: \"{banRequest}\"')
+
+        data: dict[str, Any] = {
+            'user_id': banRequest.userIdToBan
+        }
+
+        if utils.isValidInt(banRequest.duration):
+            data['duration'] = banRequest.duration
+
+        if utils.isValidStr(banRequest.reason):
+            data['reason'] = banRequest.reason
+
+        return {
+            'data': data
+        }

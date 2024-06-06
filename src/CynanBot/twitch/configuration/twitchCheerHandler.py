@@ -74,12 +74,12 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        bits = event.getBits()
-        message = event.getMessage()
-        broadcasterUserId = event.getBroadcasterUserId()
-        cheerUserId = event.getUserId()
-        cheerUserLogin = event.getUserLogin()
-        cheerUserName = event.getUserName()
+        bits = event.bits
+        message = event.message
+        broadcasterUserId = event.broadcasterUserId
+        cheerUserId = event.userId
+        cheerUserLogin = event.userLogin
+        cheerUserName = event.userName
 
         if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
             self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')

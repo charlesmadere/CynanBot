@@ -110,10 +110,10 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             return
 
         eventId = dataBundle.metadata.messageId
-        reward = event.getReward()
-        redemptionUserId = event.getUserId()
-        redemptionUserInput = event.getUserInput()
-        redemptionUserLogin = event.getUserLogin()
+        reward = event.reward
+        redemptionUserId = event.userId
+        redemptionUserInput = event.userInput
+        redemptionUserLogin = event.userLogin
 
         if not utils.isValidStr(eventId) or reward is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
             self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: ({eventId=}) ({reward=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=})')

@@ -19,5 +19,10 @@ class CheerActionIdGenerator(CheerActionIdGeneratorInterface):
         self.__actionIdRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def generateActionId(self) -> str:
-        actionId = str(uuid.uuid4())
-        return self.__actionIdRegEx.sub('', actionId)[:self.__maxLength]
+        newUuid = str(uuid.uuid4())
+        cleanedUuid = self.__actionIdRegEx.sub('', newUuid)
+
+        if len(cleanedUuid) > self.__maxLength:
+            cleanedUuid = cleanedUuid[:self.__maxLength]
+
+        return cleanedUuid

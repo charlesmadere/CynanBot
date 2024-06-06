@@ -68,11 +68,11 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        broadcasterUserId = event.getBroadcasterUserId()
-        title = event.getTitle()
-        outcomes = event.getOutcomes()
+        broadcasterUserId = event.broadcasterUserId
+        title = event.title
+        outcomes = event.outcomes
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(outcomes, list):
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(outcomes, list) or len(outcomes) == 0:
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 

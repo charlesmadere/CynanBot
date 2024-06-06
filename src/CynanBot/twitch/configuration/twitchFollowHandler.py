@@ -50,8 +50,8 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
             self.__timber.log('TwitchFollowHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        followedAt = event.getFollowedAt()
-        followerUserId = event.getUserId()
+        followedAt = event.followedAt
+        followerUserId = event.userId
 
         await self.__persistFollowingStatus(
             followedAt = followedAt,

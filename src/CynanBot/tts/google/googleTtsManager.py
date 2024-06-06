@@ -137,7 +137,7 @@ class GoogleTtsManager(TtsManagerInterface):
             return None
 
         return await self.__googleTtsFileManager.writeBase64CommandToNewFile(
-            base64Command = response.getAudioContent()
+            base64Command = response.audioContent
         )
 
     async def __randomlyChooseTts(self) -> GoogleTtsChoice:

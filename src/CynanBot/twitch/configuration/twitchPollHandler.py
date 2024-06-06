@@ -48,11 +48,11 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        broadcasterUserId = event.getBroadcasterUserId()
-        title = event.getTitle()
-        choices = event.getChoices()
+        broadcasterUserId = event.broadcasterUserId
+        title = event.title
+        choices = event.choices
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(choices, list):
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(choices, list) or len(choices) == 0:
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 

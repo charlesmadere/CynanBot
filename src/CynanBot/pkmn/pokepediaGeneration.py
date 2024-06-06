@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum, auto
 from typing import Any
 
@@ -22,9 +24,9 @@ class PokepediaGeneration(Enum):
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
     @classmethod
-    def fromMoveId(cls, moveId: int):
+    def fromMoveId(cls, moveId: int) -> PokepediaGeneration:
         if not utils.isValidInt(moveId):
-            raise ValueError(f'moveId argument is malformed: \"{moveId}\"')
+            raise TypeError(f'moveId argument is malformed: \"{moveId}\"')
         elif moveId < 0 or moveId > utils.getIntMaxSafeSize():
             raise ValueError(f'moveId argument is out of bounds: {moveId}')
 
@@ -46,9 +48,9 @@ class PokepediaGeneration(Enum):
             return PokepediaGeneration.GENERATION_8
 
     @classmethod
-    def fromPokedexId(cls, pokedexId: int):
+    def fromPokedexId(cls, pokedexId: int) -> PokepediaGeneration:
         if not utils.isValidInt(pokedexId):
-            raise ValueError(f'pokedexId argument is malformed: \"{pokedexId}\"')
+            raise TypeError(f'pokedexId argument is malformed: \"{pokedexId}\"')
         elif pokedexId < 0 or pokedexId > utils.getIntMaxSafeSize():
             raise ValueError(f'pokedexId argument is out of bounds: {pokedexId}')
 
@@ -72,7 +74,7 @@ class PokepediaGeneration(Enum):
     @classmethod
     def fromStr(cls, text: str):
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         text = text.lower()
 

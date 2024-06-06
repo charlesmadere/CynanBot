@@ -52,13 +52,13 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
             self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        fromUserId = event.getFromBroadcasterUserId()
-        fromUserLogin = event.getFromBroadcasterUserLogin()
-        fromUserName = event.getFromBroadcasterUserName()
-        toUserId = event.getToBroadcasterUserId()
-        toUserLogin = event.getToBroadcasterUserLogin()
-        toUserName = event.getToBroadcasterUserName()
-        viewers = event.getViewers()
+        fromUserId = event.fromBroadcasterUserId
+        fromUserLogin = event.fromBroadcasterUserLogin
+        fromUserName = event.fromBroadcasterUserName
+        toUserId = event.toBroadcasterUserId
+        toUserLogin = event.toBroadcasterUserLogin
+        toUserName = event.toBroadcasterUserName
+        viewers = event.viewers
 
         if not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName) or not utils.isValidStr(toUserId) or not utils.isValidStr(toUserLogin) or not utils.isValidStr(toUserName) or not utils.isValidInt(viewers):
             self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')

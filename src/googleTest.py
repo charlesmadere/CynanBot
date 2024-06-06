@@ -153,7 +153,7 @@ async def main():
     textToSpeechResult = await googleApiService.textToSpeech(request)
     print(f'text to speech result: {textToSpeechResult=}')
 
-    fileName = await googleTtsFileManager.writeBase64CommandToNewFile(textToSpeechResult.getAudioContent())
+    fileName = await googleTtsFileManager.writeBase64CommandToNewFile(textToSpeechResult.audioContent)
     print(f'{fileName=}')
 
     pass

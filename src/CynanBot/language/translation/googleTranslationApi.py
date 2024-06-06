@@ -100,7 +100,7 @@ class GoogleTranslationApi(TranslationApi):
                 translationApiSource = self.getTranslationApiSource()
             )
 
-        translations = response.getTranslations()
+        translations = response.translations
         if translations is None or len(translations) == 0:
             self.__timber.log('GoogleTranslationApi', f'\"translations\" field is null/empty ({translations=}) ({text=}) ({targetLanguage=}) ({response=})')
 
@@ -110,7 +110,7 @@ class GoogleTranslationApi(TranslationApi):
             )
 
         translation = translations[0]
-        translatedText = translation.getTranslatedText()
+        translatedText = translation.translatedText
 
         if not utils.isValidStr(translatedText):
             self.__timber.log('GoogleTranslationApi', f'\"translatedText\" field is null/empty ({translatedText=}) ({text=}) ({targetLanguage=}) ({response=})')
@@ -120,7 +120,7 @@ class GoogleTranslationApi(TranslationApi):
                 translationApiSource = self.getTranslationApiSource()
             )
 
-        detectedLanguageCode = translation.getDetectedLanguageCode()
+        detectedLanguageCode = translation.detectedLanguageCode
         originalLanguage: LanguageEntry | None = None
 
         if utils.isValidStr(detectedLanguageCode):
@@ -130,7 +130,7 @@ class GoogleTranslationApi(TranslationApi):
             )
 
         if originalLanguage is None:
-            self.__timber.log('GoogleTranslationApi', f'Unable to find corresponding language entry for the given detected language code \"{translation.getDetectedLanguageCode}\" ({text=}) ({targetLanguage=}) ({response=})')
+            self.__timber.log('GoogleTranslationApi', f'Unable to find corresponding language entry for the given detected language code \"{translation.detectedLanguageCode}\" ({text=}) ({targetLanguage=}) ({response=})')
 
         return TranslationResponse(
             originalLanguage = originalLanguage,

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.twitchValidationResponse import \
     TwitchValidationResponse
@@ -35,4 +36,11 @@ class TwitchJsonMapperInterface(ABC):
         self,
         subscriberTier: str | None
     ) -> TwitchSubscriberTier:
+        pass
+
+    @abstractmethod
+    async def serializeBanRequest(
+        self,
+        banRequest: TwitchBanRequest
+    ) -> dict[str, Any]:
         pass

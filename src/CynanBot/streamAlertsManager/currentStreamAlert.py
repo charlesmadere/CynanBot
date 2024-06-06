@@ -30,6 +30,9 @@ class CurrentStreamAlert():
     def getTwitchChannel(self) -> str:
         return self.__streamAlert.twitchChannel
 
+    def getTwitchChannelId(self) -> str:
+        return self.__streamAlert.twitchChannelId
+
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)

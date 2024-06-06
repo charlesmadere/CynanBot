@@ -284,9 +284,9 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'synthesizeRequest argument is malformed: \"{synthesizeRequest}\"')
 
         return {
-            'audioConfig': await self.serializeVoiceAudioConfig(synthesizeRequest.getAudioConfig()),
-            'input': await self.serializeTextSynthesisInput(synthesizeRequest.getInput()),
-            'voice': await self.serializeVoiceSelectionParams(synthesizeRequest.getVoice())
+            'audioConfig': await self.serializeVoiceAudioConfig(synthesizeRequest.audioConfig),
+            'input': await self.serializeTextSynthesisInput(synthesizeRequest.input),
+            'voice': await self.serializeVoiceSelectionParams(synthesizeRequest.voice)
         }
 
     async def serializeTextSynthesisInput(
@@ -308,22 +308,22 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'translationRequest argument is malformed: \"{translationRequest}\"')
 
         dictionary: dict[str, Any] = {
-            'contents': translationRequest.getContents(),
-            'mimeType': translationRequest.getMimeType(),
-            'targetLanguageCode': translationRequest.getTargetLanguageCode()
+            'contents': translationRequest.contents,
+            'mimeType': translationRequest.mimeType,
+            'targetLanguageCode': translationRequest.targetLanguageCode
         }
 
-        glossaryConfig = translationRequest.getGlossaryConfig()
+        glossaryConfig = translationRequest.glossaryConfig
         if glossaryConfig is not None:
             dictionary['glossaryConfig'] = await self.serializeGlossaryConfig(glossaryConfig)
 
-        if utils.isValidStr(translationRequest.getModel()):
-            dictionary['model'] = translationRequest.getModel()
+        if utils.isValidStr(translationRequest.model):
+            dictionary['model'] = translationRequest.model
 
-        if utils.isValidStr(translationRequest.getSourceLanguageCode()):
-            dictionary['sourceLanguageCode'] = translationRequest.getSourceLanguageCode()
+        if utils.isValidStr(translationRequest.sourceLanguageCode):
+            dictionary['sourceLanguageCode'] = translationRequest.sourceLanguageCode
 
-        transliterationConfig = translationRequest.getTransliterationConfig()
+        transliterationConfig = translationRequest.transliterationConfig
         if transliterationConfig is not None:
             dictionary['transliterationConfig'] = await self.serializeTransliterationConfig(transliterationConfig)
 

@@ -23,26 +23,23 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        eventId = event.getEventId()
-        if not utils.isValidStr(eventId):
+        if not utils.isValidStr(event.eventId):
             return None
 
-        title = event.getTitle()
-        if not utils.isValidStr(title):
+        if not utils.isValidStr(event.title):
             return None
 
-        outcomes = event.getOutcomes()
-        if outcomes is None or len(outcomes) == 0:
+        if event.outcomes is None or len(event.outcomes) == 0:
             return None
 
-        outcomesArray = await self.outcomesToEventDataArray(outcomes)
+        outcomesArray = await self.outcomesToEventDataArray(event.outcomes)
         predictionTypeString = await self.websocketSubscriptionTypeToString(subscriptionType)
 
         return {
-            'eventId': eventId,
+            'eventId': event.eventId,
             'outcomes': outcomesArray,
             'predictionType': predictionTypeString,
-            'title': title
+            'title': event.title
         }
 
     async def websocketOutcomesToColorsArray(
