@@ -126,6 +126,8 @@ from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
 from CynanBot.language.translationHelper import TranslationHelper
+from CynanBot.language.wordOfTheDayPresenterInterface import \
+    WordOfTheDayPresenterInterface
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.location.locationsRepositoryInterface import \
@@ -290,7 +292,6 @@ from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
-from CynanBot.language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 
 
 class CynanBot(

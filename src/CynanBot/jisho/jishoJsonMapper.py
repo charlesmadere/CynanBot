@@ -1,14 +1,14 @@
 from typing import Any
 
+import CynanBot.misc.utils as utils
 from CynanBot.jisho.jishoAttribution import JishoAttribution
+from CynanBot.jisho.jishoData import JishoData
 from CynanBot.jisho.jishoJapaneseWord import JishoJapaneseWord
+from CynanBot.jisho.jishoJlptLevel import JishoJlptLevel
+from CynanBot.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
 from CynanBot.jisho.jishoMeta import JishoMeta
 from CynanBot.jisho.jishoResponse import JishoResponse
 from CynanBot.jisho.jishoSense import JishoSense
-import CynanBot.misc.utils as utils
-from CynanBot.jisho.jishoData import JishoData
-from CynanBot.jisho.jishoJlptLevel import JishoJlptLevel
-from CynanBot.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 

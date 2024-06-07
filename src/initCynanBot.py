@@ -3,10 +3,6 @@ import locale
 import logging
 from asyncio import AbstractEventLoop
 
-from CynanBot.transparent.transparentApiService import TransparentApiService
-from CynanBot.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
-from CynanBot.transparent.transparentXmlMapper import TransparentXmlMapper
-from CynanBot.transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -101,7 +97,11 @@ from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
 from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from CynanBot.jisho.jishoApiServiceInterface import JishoApiServiceInterface
+from CynanBot.jisho.jishoJsonMapper import JishoJsonMapper
+from CynanBot.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
 from CynanBot.language.jishoHelper import JishoHelper
+from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
@@ -114,7 +114,8 @@ from CynanBot.language.translationHelper import TranslationHelper
 from CynanBot.language.translationHelperInterface import \
     TranslationHelperInterface
 from CynanBot.language.wordOfTheDayPresenter import WordOfTheDayPresenter
-from CynanBot.language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
+from CynanBot.language.wordOfTheDayPresenterInterface import \
+    WordOfTheDayPresenterInterface
 from CynanBot.language.wordOfTheDayRepository import WordOfTheDayRepository
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
@@ -209,6 +210,12 @@ from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.transparent.transparentApiService import TransparentApiService
+from CynanBot.transparent.transparentApiServiceInterface import \
+    TransparentApiServiceInterface
+from CynanBot.transparent.transparentXmlMapper import TransparentXmlMapper
+from CynanBot.transparent.transparentXmlMapperInterface import \
+    TransparentXmlMapperInterface
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
@@ -1390,6 +1397,20 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
+##################################
+## Jisho initialization section ##
+##################################
+
+jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+    timber = timber
+)
+
+jishoHelper: JishoHelperInterface = JishoHelper(
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -1414,10 +1435,7 @@ cynanBot = CynanBot(
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
-    jishoHelper = JishoHelper(
-        networkClientProvider = networkClientProvider,
-        timber = timber
-    ),
+    jishoHelper = jishoHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
