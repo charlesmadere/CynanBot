@@ -34,6 +34,8 @@ from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
 from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.api.twitchPaginationResponse import \
+    TwitchPaginationResponse
 from CynanBot.twitch.api.twitchSendChatMessageRequest import \
     TwitchSendChatMessageRequest
 from CynanBot.twitch.api.twitchSendChatMessageResponse import \
@@ -65,7 +67,6 @@ from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchTokenIsExpiredException)
 from CynanBot.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
-from CynanBot.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 

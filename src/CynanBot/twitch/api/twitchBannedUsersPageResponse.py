@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
 from CynanBot.twitch.api.twitchBannedUser import TwitchBannedUser
-from CynanBot.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
+from CynanBot.twitch.api.twitchPaginationResponse import \
+    TwitchPaginationResponse
 
 
 @dataclass(frozen = True)

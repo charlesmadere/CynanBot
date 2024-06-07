@@ -20,7 +20,8 @@ from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
-from CynanBot.twitch.api.twitchValidationResponse import TwitchValidationResponse
+from CynanBot.twitch.api.twitchValidationResponse import \
+    TwitchValidationResponse
 
 
 class TwitchApiServiceInterface(ABC):

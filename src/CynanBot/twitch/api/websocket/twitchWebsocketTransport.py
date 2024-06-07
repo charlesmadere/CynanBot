@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.websocket.twitchWebsocketTransportMethod import \

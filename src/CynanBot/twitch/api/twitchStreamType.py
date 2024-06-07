@@ -15,7 +15,6 @@ class TwitchStreamType(Enum):
 
         text = text.lower()
 
-        if text == 'live':
-            return TwitchStreamType.LIVE
-        else:
-            return TwitchStreamType.UNKNOWN
+        match text:
+            case 'live': return TwitchStreamType.LIVE
+            case _: return TwitchStreamType.UNKNOWN
