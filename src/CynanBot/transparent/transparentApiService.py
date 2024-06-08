@@ -1,12 +1,16 @@
+from typing import Any
+
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
-from CynanBot.transparent.transparentResponse import TransparentResponse
-from CynanBot.transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 from CynanBot.transparent.exceptions import WotdApiCodeUnavailableException
+from CynanBot.transparent.transparentApiServiceInterface import \
+    TransparentApiServiceInterface
+from CynanBot.transparent.transparentResponse import TransparentResponse
+from CynanBot.transparent.transparentXmlMapperInterface import \
+    TransparentXmlMapperInterface
 
 
 class TransparentApiService(TransparentApiServiceInterface):
@@ -61,9 +65,17 @@ class TransparentApiService(TransparentApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TransparentApiService', f'Encountered non-200 HTTP status code when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
-            raise GenericNetworkException(f'TransparentApiService encountered non-200 HTTP status code when fetching translation ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+            raise GenericNetworkException(f'TransparentApiService encountered non-200 HTTP status code when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+        elif not isinstance(xmlResponse, dict) or len(xmlResponse) == 0:
+            self.__timber.log('TransparentApiService', f'Encountered missing/invalid XML data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+            raise GenericNetworkException(f'TransparentApiService encountered missing/invalid XML data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
 
-        transparentResponse = await self.__transparentXmlMapper.parseTransparentResponse(xmlResponse)
+        xmlRoot: dict[str, Any] | None = xmlResponse.get('xml')
+        if not isinstance(xmlRoot, dict) or len(xmlRoot) == 0:
+            self.__timber.log('TransparentApiService', f'Encountered missing/invalid \"xml\" data in XML when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+            raise GenericNetworkException(f'TransparentApiService encountered missing/invalid \"xml\" data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+
+        transparentResponse = await self.__transparentXmlMapper.parseTransparentResponse(xmlRoot.get('words'))
 
         if transparentResponse is None:
             self.__timber.log('TransparentApiService', f'Failed to parse JSON response into TransparentResponse instance ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({transparentResponse=})')

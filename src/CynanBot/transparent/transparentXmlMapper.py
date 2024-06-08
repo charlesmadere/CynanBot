@@ -2,9 +2,11 @@ from datetime import datetime
 from typing import Any
 
 import CynanBot.misc.utils as utils
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.transparent.transparentResponse import TransparentResponse
-from CynanBot.transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
+from CynanBot.transparent.transparentXmlMapperInterface import \
+    TransparentXmlMapperInterface
 
 
 class TransparentXmlMapper(TransparentXmlMapperInterface):

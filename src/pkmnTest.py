@@ -1,6 +1,9 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
@@ -26,8 +29,11 @@ backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
 
+timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
 timber: TimberInterface = Timber(
-    backgroundTaskHelper = backgroundTaskHelper
+    backgroundTaskHelper = backgroundTaskHelper,
+    timeZoneRepository = timeZoneRepository
 )
 
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(

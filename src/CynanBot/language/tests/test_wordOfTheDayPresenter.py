@@ -27,17 +27,17 @@ class TestWordOfTheDayPresenter():
 
         transparentResponse = TransparentResponse(
             date = datetime.now(self.timeZoneRepository.getDefault()),
-            enPhrase = 'to eat',
-            fnPhrase = 'comer',
-            langName = None,
+            enPhrase = 'I like my steak medium rare.',
+            fnPhrase = 'Me gusta el bistec medio cocido.',
+            langName = 'Spanish',
             notes = None,
             phraseSoundUrl = None,
-            translation = 'comer',
+            translation = 'medium rare',
             transliteratedSentence = None,
             transliteratedWord = None,
-            word = 'eat',
+            word = 'medio cocido',
             wordSoundUrl = None,
-            wordType = 'verb'
+            wordType = 'adjective'
         )
 
         wordOfTheDay = WordOfTheDayResponse(
@@ -51,7 +51,7 @@ class TestWordOfTheDayPresenter():
             wordOfTheDay = wordOfTheDay
         )
 
-        assert isinstance(string, str)
+        assert string == 'Spanish — medio cocido — medium rare. Example: Me gusta el bistec medio cocido. I like my steak medium rare.'
 
     def test_sanity(self):
         assert self.presenter is not None
