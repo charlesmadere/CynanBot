@@ -74,3 +74,18 @@ class TestJishoJsonMapper():
     async def test_parseMeta_withNone(self):
         result = await self.jsonMapper.parseMeta(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseResponse_withNone(self):
+        result = await self.jsonMapper.parseResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseResponse(dict())
+        assert result is None
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, JishoJsonMapper)
+        assert isinstance(self.jsonMapper, JishoJsonMapperInterface)

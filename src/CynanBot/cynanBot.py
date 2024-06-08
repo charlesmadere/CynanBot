@@ -69,6 +69,7 @@ from CynanBot.chatCommands.getBannedTriviaControllersChatCommand import \
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
+from CynanBot.chatCommands.jishoChatCommand import JishoChatCommand
 from CynanBot.chatCommands.removeBannedTriviaControllerChatCommand import \
     RemoveBannedTriviaControllerChatCommand
 from CynanBot.chatCommands.removeRecurringSuperTriviaActionCommand import \
@@ -101,10 +102,9 @@ from CynanBot.commands import (AbsCommand, AddUserCommand, ConfirmCommand,
                                GetCheerActionsCommand,
                                GetGlobalTriviaControllersCommand,
                                GetTriviaAnswersCommand,
-                               GetTriviaControllersCommand, JishoCommand,
-                               LoremIpsumCommand, MyCutenessHistoryCommand,
-                               PbsCommand, PkMonCommand, PkMoveCommand,
-                               RaceCommand,
+                               GetTriviaControllersCommand, LoremIpsumCommand,
+                               MyCutenessHistoryCommand, PbsCommand,
+                               PkMonCommand, PkMoveCommand, RaceCommand,
                                RemoveGlobalTriviaControllerCommand,
                                RemoveTriviaControllerCommand,
                                SetFuntoonTokenCommand, SetTwitchCodeCommand,
@@ -676,9 +676,9 @@ class CynanBot(
             self.__setFuntoonTokenCommand: AbsCommand = SetFuntoonTokenCommand(administratorProvider, funtoonTokensRepository, timber, twitchUtils, usersRepository)
 
         if jishoHelper is None:
-            self.__jishoCommand: AbsCommand = StubCommand()
+            self.__jishoCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__jishoCommand: AbsCommand = JishoCommand(generalSettingsRepository, jishoHelper, timber, twitchUtils, usersRepository)
+            self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchUtils, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsCommand = StubCommand()
@@ -1330,7 +1330,7 @@ class CynanBot(
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__jishoCommand.handleCommand(context)
+        await self.__jishoCommand.handleChatCommand(context)
 
     @commands.command(name = 'lorem')
     async def command_lorem(self, ctx: Context):

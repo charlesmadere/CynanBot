@@ -84,7 +84,6 @@ from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
 from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
@@ -816,10 +815,7 @@ cynanBot = CynanBot(
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
-    jishoHelper = JishoHelper(
-        networkClientProvider = networkClientProvider,
-        timber = timber
-    ),
+    jishoHelper = None,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,

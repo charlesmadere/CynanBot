@@ -46,6 +46,38 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
         isCommon = utils.getBoolFromDict(jsonContents, 'is_common')
 
+        japaneseArray: list[dict[str, Any]] | None = jsonContents.get('japanese')
+        japaneseWords: list[JishoJapaneseWord] = list()
+
+        if isinstance(japaneseArray, dict) and len(japaneseArray) >= 1:
+            for index, japaneseWordEntry in enumerate(japaneseArray):
+                japaneseWord = await self.parseJapaneseWord(japaneseWordEntry)
+
+                if japaneseWord is None:
+                    self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"japanese\" data: ({jsonContents=})')
+                else:
+                    japaneseWords.append(japaneseWord)
+
+        if len(japaneseWords) == 0:
+            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"japanese\" field in JSON data: ({jsonContents=})')
+            return None
+
+        jlptArray: list[str | None] | None = jsonContents.get('jlpt')
+        jlptLevels: list[JishoJlptLevel] | None = None
+
+        if isinstance(jlptArray, list) and len(jlptArray) >= 1:
+            jlptLevels = list()
+
+            for index, jlptEntryString in enumerate(jlptArray):
+                jlptLevel = await self.parseJlptLevel(jlptEntryString)
+
+                if jlptLevel is None:
+                    self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"jlpt\" data: ({jsonContents=})')
+                else:
+                    jlptLevels.append(jlptLevel)
+
+            jlptLevels.sort(key = lambda jlptLevel: jlptLevel.value)
+
         sensesArray: list[dict[str, Any] | None] | None = jsonContents.get('senses')
         senses: list[JishoSense] = list()
 
@@ -62,26 +94,13 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"senses\" field in JSON data: ({jsonContents=})')
             return None
 
-        jlptArray: list[str | None] | None = jsonContents.get('jlpt')
-        jlpt: set[JishoJlptLevel] | None = None
-
-        if isinstance(jlptArray, list) and len(jlptArray) >= 1:
-            jlpt = set()
-
-            for index, jlptEntryString in enumerate(jlptArray):
-                jlptLevel = await self.parseJlptLevel(jlptEntryString)
-
-                if jlptLevel is None:
-                    self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"jlpt\" data: ({jsonContents=})')
-                else:
-                    jlpt.add(jlptLevel)
-
         slug = utils.getStrFromDict(jsonContents, 'slug')
 
         return JishoData(
             isCommon = isCommon,
+            japanese = japaneseWords,
+            jlptLevels = jlptLevels,
             senses = senses,
-            jlpt = jlpt,
             slug = slug
         )
 
@@ -158,6 +177,10 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     data.append(dataEntry)
 
+        if data is None or len(data) == 0:
+            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"data\" field in JSON data: ({jsonContents=})')
+            return None
+
         return JishoResponse(
             data = data,
             meta = meta
@@ -215,6 +238,6 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
         return JishoSense(
             englishDefinitions = englishDefinitions,
-            partsOfSpech = partsOfSpeech,
+            partsOfSpeech = partsOfSpeech,
             tags = tags
         )

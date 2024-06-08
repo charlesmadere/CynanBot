@@ -6,5 +6,5 @@ from CynanBot.jisho.jishoMeta import JishoMeta
 
 @dataclass(frozen = True)
 class JishoResponse():
-    data: list[JishoData] | None
+    data: list[JishoData]
     meta: JishoMeta

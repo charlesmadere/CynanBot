@@ -97,6 +97,7 @@ from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
 from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from CynanBot.jisho.jishoApiService import JishoApiService
 from CynanBot.jisho.jishoApiServiceInterface import JishoApiServiceInterface
 from CynanBot.jisho.jishoJsonMapper import JishoJsonMapper
 from CynanBot.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
@@ -1405,7 +1406,14 @@ jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
     timber = timber
 )
 
+jishoApiService: JishoApiServiceInterface = JishoApiService(
+    jishoJsonMapper = jishoJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
 jishoHelper: JishoHelperInterface = JishoHelper(
+    jishoApiService = jishoApiService,
     networkClientProvider = networkClientProvider,
     timber = timber
 )
