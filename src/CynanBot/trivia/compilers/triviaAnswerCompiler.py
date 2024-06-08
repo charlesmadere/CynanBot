@@ -1,5 +1,6 @@
 import re
 import traceback
+import unicodedata
 from typing import Collection, Pattern
 
 import roman
@@ -393,6 +394,8 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     async def __fancyToLatin(self, text: str) -> str:
         if not isinstance(text, str):
             raise TypeError(f'text argument is malformed: \"{text}\"')
+
+        text = unicodedata.normalize("NFKD", text)
 
         text = ''.join(
             self.__specialCharsRegEx.sub(
