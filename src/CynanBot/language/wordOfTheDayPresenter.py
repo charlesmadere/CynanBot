@@ -1,5 +1,6 @@
 import CynanBot.misc.utils as utils
-from CynanBot.language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
+from CynanBot.language.wordOfTheDayPresenterInterface import \
+    WordOfTheDayPresenterInterface
 from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
 
 
@@ -7,9 +8,12 @@ class WordOfTheDayPresenter(WordOfTheDayPresenterInterface):
 
     async def toString(
         self,
+        includeRomaji: bool,
         wordOfTheDay: WordOfTheDayResponse
     ) -> str:
-        if not isinstance(wordOfTheDay, WordOfTheDayResponse):
+        if not utils.isValidBool(includeRomaji):
+            raise TypeError(f'includeRomaji argument is malformed: \"{includeRomaji}\"')
+        elif not isinstance(wordOfTheDay, WordOfTheDayResponse):
             raise TypeError(f'wordOfTheDayResponse argument is malformed: \"{wordOfTheDay}\"')
 
         languageNameAndFlag: str
@@ -18,7 +22,7 @@ class WordOfTheDayPresenter(WordOfTheDayPresenterInterface):
         else:
             languageNameAndFlag = wordOfTheDay.languageEntry.getName()
 
-        transliteration: str | None = None
+        transliteration: str = ''
         hasTransliteratedWord = utils.isValidStr(wordOfTheDay.transparentResponse.transliteratedWord)
 
         if hasTransliteratedWord:

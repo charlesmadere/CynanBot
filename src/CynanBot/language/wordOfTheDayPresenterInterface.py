@@ -8,6 +8,7 @@ class WordOfTheDayPresenterInterface(ABC):
     @abstractmethod
     async def toString(
         self,
-        wordOfTheDayResponse: WordOfTheDayResponse
+        includeRomaji: bool,
+        wordOfTheDay: WordOfTheDayResponse
     ) -> str:
         pass

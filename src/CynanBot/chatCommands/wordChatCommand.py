@@ -89,7 +89,12 @@ class WordChatCommand(AbsChatCommand):
 
         try:
             wotd = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-            wordOfTheDayString = await self.__wordOfTheDayPresenter.toString(wotd)
+
+            wordOfTheDayString = await self.__wordOfTheDayPresenter.toString(
+                includeRomaji = False,
+                wordOfTheDay = wotd
+            )
+
             await self.__twitchUtils.safeSend(ctx, wordOfTheDayString)
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}', e, traceback.format_exc())

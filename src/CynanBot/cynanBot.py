@@ -1010,7 +1010,12 @@ class CynanBot(
             return
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        wordOfTheDayString = await wordOfTheDayPresenter.toString(event.getWordOfTheDayResponse())
+
+        wordOfTheDayString = await wordOfTheDayPresenter.toString(
+            includeRomaji = False,
+            wordOfTheDay = event.getWordOfTheDayResponse()
+        )
+
         await self.__twitchUtils.safeSend(twitchChannel, wordOfTheDayString)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
