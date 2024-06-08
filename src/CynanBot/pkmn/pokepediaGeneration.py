@@ -16,7 +16,7 @@ class PokepediaGeneration(Enum):
     GENERATION_6 = auto()
     GENERATION_7 = auto()
     GENERATION_8 = auto()
-    
+
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, PokepediaGeneration):
             return self is other
