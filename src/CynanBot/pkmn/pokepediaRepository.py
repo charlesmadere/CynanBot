@@ -1,7 +1,7 @@
 import random
 import re
 import traceback
-from typing import Any, Dict, List, Optional, Pattern
+from typing import Any, Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -10,8 +10,9 @@ from CynanBot.pkmn.pokepediaContestType import PokepediaContestType
 from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
 from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
 from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaJsonMapperInterface import \
+    PokepediaJsonMapperInterface
 from CynanBot.pkmn.pokepediaMachine import PokepediaMachine
-from CynanBot.pkmn.pokepediaMachineType import PokepediaMachineType
 from CynanBot.pkmn.pokepediaMove import PokepediaMove
 from CynanBot.pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
 from CynanBot.pkmn.pokepediaNature import PokepediaNature
@@ -26,29 +27,33 @@ class PokepediaRepository():
     def __init__(
         self,
         networkClientProvider: NetworkClientProvider,
+        pokepediaJsonMapper: PokepediaJsonMapperInterface,
         pokepediaUtils: PokepediaUtilsInterface,
         timber: TimberInterface
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+        elif not isinstance(pokepediaJsonMapper, PokepediaJsonMapperInterface):
+            raise TypeError(f'pokepediaJsonMapper argument is malformed: \"{pokepediaJsonMapper}\"')
         elif not isinstance(pokepediaUtils, PokepediaUtilsInterface):
-            raise ValueError(f'pokepediaUtils argument is malformed: \"{pokepediaUtils}\"')
+            raise TypeError(f'pokepediaUtils argument is malformed: \"{pokepediaUtils}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
+        self.__pokepediaJsonMapper: PokepediaJsonMapperInterface = pokepediaJsonMapper
         self.__pokepediaUtils: PokepediaUtilsInterface = pokepediaUtils
         self.__timber: TimberInterface = timber
 
         self.__pokeApiIdRegEx: Pattern = re.compile(r'^.+\/(\d+)\/$', re.IGNORECASE)
 
-    async def __buildMachineFromJsonResponse(self, jsonResponse: Dict[str, Any]) -> PokepediaMachine:
+    async def __buildMachineFromJsonResponse(self, jsonResponse: dict[str, Any]) -> PokepediaMachine:
         if not utils.hasItems(jsonResponse):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
         generation = PokepediaGeneration.fromStr(utils.getStrFromDict(jsonResponse['version_group'], 'name'))
-        machineName = utils.getStrFromDict(jsonResponse['item'], 'name').upper()
-        machineType = PokepediaMachineType.fromStr(machineName)
+        machineName = utils.getStrFromDict(jsonResponse['item'], 'name')
+        machineType = await self.__pokepediaJsonMapper.requireMachineType(machineName)
         machineNumber = await self.__pokepediaUtils.getMachineNumber(machineName)
 
         return PokepediaMachine(
@@ -60,17 +65,17 @@ class PokepediaRepository():
             moveName = utils.getStrFromDict(jsonResponse['move'], 'name')
         )
 
-    async def __buildMoveFromJsonResponse(self, jsonResponse: Dict[str, Any]) -> PokepediaMove:
+    async def __buildMoveFromJsonResponse(self, jsonResponse: dict[str, Any]) -> PokepediaMove:
         if not utils.hasItems(jsonResponse):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
-        contestType: Optional[PokepediaContestType] = None
+        contestType: PokepediaContestType | None = None
         if utils.hasItems(jsonResponse.get('contest_type')):
             contestType = PokepediaContestType.fromStr(utils.getStrFromDict(jsonResponse['contest_type'], 'name', fallback = ''))
 
         damageClass = PokepediaDamageClass.fromStr(jsonResponse['damage_class']['name'])
 
-        generationMachines: Optional[Dict[PokepediaGeneration, List[PokepediaMachine]]] = None
+        generationMachines: dict[PokepediaGeneration, list[PokepediaMachine]] | None = None
         if utils.hasItems(jsonResponse.get('machines')):
             generationMachines = await self.__fetchMoveMachines(jsonResponse['machines'])
 
@@ -101,7 +106,7 @@ class PokepediaRepository():
             rawName = utils.getStrFromDict(jsonResponse, 'name')
         )
 
-    async def __buildPokemonFromJsonResponse(self, jsonResponse: Dict[str, Any]) -> PokepediaPokemon:
+    async def __buildPokemonFromJsonResponse(self, jsonResponse: dict[str, Any]) -> PokepediaPokemon:
         if not utils.hasItems(jsonResponse):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
@@ -174,12 +179,12 @@ class PokepediaRepository():
 
     async def __fetchMoveMachines(
         self,
-        machinesJson: Optional[List[Dict[str, Any]]]
-    ) -> Optional[Dict[PokepediaGeneration, List[PokepediaMachine]]]:
+        machinesJson: list[dict[str, Any]] | None
+    ) -> dict[PokepediaGeneration, list[PokepediaMachine]] | None:
         if not utils.hasItems(machinesJson):
             return None
 
-        generationMachines: Dict[PokepediaGeneration, List[PokepediaMachine]] = dict()
+        generationMachines: dict[PokepediaGeneration, list[PokepediaMachine]] = dict()
 
         for machineJson in machinesJson:
             machineUrl = utils.getStrFromDict(machineJson['machine'], 'url', fallback = '')
@@ -194,7 +199,7 @@ class PokepediaRepository():
             if not utils.isValidStr(machineIdStr):
                 continue
 
-            machineIdInt: Optional[int] = None
+            machineIdInt: int | None = None
 
             try:
                 machineIdInt = int(machineIdStr)
@@ -273,28 +278,28 @@ class PokepediaRepository():
 
     async def __getElementTypeGenerationDictionary(
         self,
-        jsonResponse: Dict[str, Any],
+        jsonResponse: dict[str, Any],
         initialGeneration: PokepediaGeneration
-    ) -> Dict[PokepediaGeneration, List[PokepediaElementType]]:
+    ) -> dict[PokepediaGeneration, list[PokepediaElementType]]:
         if jsonResponse is None:
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
         elif not isinstance(initialGeneration, PokepediaGeneration):
             raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
 
-        currentTypesJson: Optional[List[Dict[str, Any]]] = jsonResponse.get('types')
+        currentTypesJson: list[dict[str, Any]] | None = jsonResponse.get('types')
         if not utils.hasItems(currentTypesJson):
             raise ValueError(f'\"types\" field in JSON response is null or empty: {jsonResponse}')
 
         # begin with current generation types
-        currentTypesList: List[PokepediaElementType] = list()
+        currentTypesList: list[PokepediaElementType] = list()
         for currentTypeJson in currentTypesJson:
             currentTypesList.append(PokepediaElementType.fromStr(currentTypeJson['type']['name']))
 
-        pastTypesJson: Optional[List[Dict[str, Any]]] = jsonResponse.get('past_types')
+        pastTypesJson: list[dict[str, Any]] | None = jsonResponse.get('past_types')
         if pastTypesJson is None:
             raise ValueError(f'\"past_types\" field in JSON response is null: {jsonResponse}')
 
-        elementTypeGenerationDictionary: Dict[PokepediaGeneration, List[PokepediaElementType]] = dict()
+        elementTypeGenerationDictionary: dict[PokepediaGeneration, list[PokepediaElementType]] = dict()
 
         # iterate backwards and insert into dictionary once a generation is found.
         # then 'un-patch' for previous generations.
@@ -320,7 +325,7 @@ class PokepediaRepository():
                 del elementTypeGenerationDictionary[pokepediaGeneration]
 
         # remove duplicates
-        removeDuplicatesTypesList: Optional[List[PokepediaElementType]] = None
+        removeDuplicatesTypesList: list[PokepediaElementType] | None = None
         for pokepediaGeneration in PokepediaGeneration:
             if pokepediaGeneration in elementTypeGenerationDictionary:
                 if removeDuplicatesTypesList is None:
@@ -332,7 +337,7 @@ class PokepediaRepository():
 
         return elementTypeGenerationDictionary
 
-    async def __getEnDescription(self, jsonResponse: Dict[str, Any]) -> str:
+    async def __getEnDescription(self, jsonResponse: dict[str, Any]) -> str:
         if not utils.hasItems(jsonResponse):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
@@ -346,7 +351,7 @@ class PokepediaRepository():
 
         raise RuntimeError(f'can\'t find \"en\" language name in \"flavor_text_entries\" field: {jsonResponse}')
 
-    async def __getEnName(self, jsonResponse: Dict[str, Any]) -> str:
+    async def __getEnName(self, jsonResponse: dict[str, Any]) -> str:
         if not utils.hasItems(jsonResponse):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
@@ -362,24 +367,24 @@ class PokepediaRepository():
 
     async def __getMoveGenerationDictionary(
         self,
-        jsonResponse: Dict[str, Any]
-    ) -> Dict[PokepediaGeneration, PokepediaMoveGeneration]:
+        jsonResponse: dict[str, Any]
+    ) -> dict[PokepediaGeneration, PokepediaMoveGeneration]:
         if not utils.hasItems(jsonResponse):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
         # begin with current generation stats
-        accuracy: Optional[int] = jsonResponse.get('accuracy')
-        power: Optional[int] = jsonResponse.get('power')
+        accuracy: int | None = jsonResponse.get('accuracy')
+        power: int | None = jsonResponse.get('power')
         pp = utils.getIntFromDict(jsonResponse, 'pp')
         damageClass = PokepediaDamageClass.fromStr(jsonResponse['damage_class']['name'])
         elementType = PokepediaElementType.fromStr(jsonResponse['type']['name'])
-        move: Optional[PokepediaMoveGeneration] = None
+        move: PokepediaMoveGeneration | None = None
 
         pastValuesJson = jsonResponse.get('past_values')
         if pastValuesJson is None:
             raise ValueError(f'\"past_values\" field in JSON response is null: {jsonResponse}')
 
-        moveGenerationDictionary: Dict[PokepediaGeneration, PokepediaMoveGeneration] = dict()
+        moveGenerationDictionary: dict[PokepediaGeneration, PokepediaMoveGeneration] = dict()
 
         # iterate backwards and insert into dictionary once a generation is found.
         # then 'un-patch' for previous generations.

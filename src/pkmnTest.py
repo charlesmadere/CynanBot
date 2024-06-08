@@ -11,6 +11,9 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
 from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
+from CynanBot.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
+from CynanBot.pkmn.pokepediaJsonMapperInterface import \
+    PokepediaJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.pkmn.pokepediaUtilsInterface import PokepediaUtilsInterface
@@ -19,6 +22,8 @@ from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
@@ -40,17 +45,23 @@ networkClientProvider: NetworkClientProvider = RequestsClientProvider(
     timber = timber
 )
 
+pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
+    timber = timber
+)
+
 pokepediaUtils: PokepediaUtilsInterface = PokepediaUtils(
     timber = timber
 )
 
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
+    pokepediaJsonMapper = pokepediaJsonMapper,
     pokepediaUtils = pokepediaUtils,
     timber = timber
 )
 
-triviaIdGenerator = TriviaIdGenerator()
+triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
 triviaSettingsRepository = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
@@ -68,11 +79,11 @@ async def main():
     # mon = await pokepediaRepository.searchPokemon('silvally')
     # print(mon)
 
-    # move = await pokepediaRepository.searchMoves('multi-attack')
-    # print(move)
+    move = await pokepediaRepository.searchMoves('thunderbolt')
+    print(move)
 
-    blah = PokepediaDamageClass.getTypeBasedDamageClass(PokepediaElementType.BUG)
-    print(blah)
+    # blah = PokepediaDamageClass.getTypeBasedDamageClass(PokepediaElementType.BUG)
+    # print(blah)
 
     fetchOptions = TriviaFetchOptions(
         twitchChannel = 'smCharles',

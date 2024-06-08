@@ -143,6 +143,9 @@ from CynanBot.openWeather.openWeatherApiServiceInterface import \
 from CynanBot.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
 from CynanBot.openWeather.openWeatherJsonMapperInterface import \
     OpenWeatherJsonMapperInterface
+from CynanBot.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
+from CynanBot.pkmn.pokepediaJsonMapperInterface import \
+    PokepediaJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
@@ -645,8 +648,13 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
     timeZoneRepository = timeZoneRepository
 )
 
+pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
+    timber = timber
+)
+
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
+    pokepediaJsonMapper = pokepediaJsonMapper,
     pokepediaUtils = PokepediaUtils(
         timber = timber
     ),
