@@ -65,9 +65,7 @@ class GoogleTranslationApi(TranslationApi):
         elif not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
 
-        iso6391Code = targetLanguage.getIso6391Code()
-
-        if not utils.isValidStr(iso6391Code):
+        if not utils.isValidStr(targetLanguage.iso6391Code):
             raise TranslationLanguageHasNoIso6391Code(
                 languageEntry = targetLanguage,
                 message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'
@@ -79,7 +77,7 @@ class GoogleTranslationApi(TranslationApi):
             mimeType = self.__mimeType,
             model = None,
             sourceLanguageCode = None,
-            targetLanguageCode = iso6391Code,
+            targetLanguageCode = targetLanguage.iso6391Code,
             transliterationConfig = None
         )
 

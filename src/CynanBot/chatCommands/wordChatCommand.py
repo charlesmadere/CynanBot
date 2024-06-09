@@ -12,6 +12,7 @@ from CynanBot.language.wordOfTheDayPresenterInterface import \
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.misc.timedDict import TimedDict
+from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -81,7 +82,7 @@ class WordChatCommand(AbsChatCommand):
                 command = language,
                 hasWotdApiCode = True
             )
-        except (RuntimeError, ValueError) as e:
+        except (RuntimeError, TypeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}', e, traceback.format_exc())
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
             await self.__twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
@@ -96,8 +97,8 @@ class WordChatCommand(AbsChatCommand):
             )
 
             await self.__twitchUtils.safeSend(ctx, wordOfTheDayString)
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
+        except (GenericNetworkException, RuntimeError, ValueError) as e:
+            self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\": {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\"')
 
         self.__timber.log('WordCommand', f'Handled !word command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

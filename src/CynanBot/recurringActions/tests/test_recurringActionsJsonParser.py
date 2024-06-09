@@ -209,7 +209,7 @@ class TestRecurringActionsJsonParser():
 
         languageEntry = action.getLanguageEntry()
         assert languageEntry is not None
-        assert languageEntry.getWotdApiCode() == 'ja'
+        assert languageEntry.wotdApiCode == 'ja'
 
     @pytest.mark.asyncio
     async def test_parseWordOfTheDay_withJsonStringEmpty(self):
@@ -309,7 +309,7 @@ class TestRecurringActionsJsonParser():
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 1
-        assert jsonObject.get('languageEntry') == languageEntry.getWotdApiCode()
+        assert jsonObject.get('languageEntry') == languageEntry.wotdApiCode
 
     @pytest.mark.asyncio
     async def test_toJson_withWordOfTheDayRecurringAction_languageEntryNone(self):

@@ -149,14 +149,10 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         languageEntry = action.getLanguageEntry()
-        wotdApiCode: str | None = None
-
-        if languageEntry is not None:
-            wotdApiCode = languageEntry.getWotdApiCode()
 
         jsonContents: dict[str, Any] = dict()
 
-        if utils.isValidStr(wotdApiCode):
-            jsonContents['languageEntry'] = wotdApiCode
+        if languageEntry is not None and utils.isValidStr(languageEntry.wotdApiCode):
+            jsonContents['languageEntry'] = languageEntry.wotdApiCode
 
         return json.dumps(jsonContents)

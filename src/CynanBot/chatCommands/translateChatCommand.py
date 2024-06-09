@@ -85,7 +85,11 @@ class TranslateChatCommand(AbsChatCommand):
         text = ' '.join(splits[startSplitIndex:])
 
         try:
-            response = await self.__translationHelper.translate(text, targetLanguageEntry)
+            response = await self.__translationHelper.translate(
+                text = text,
+                targetLanguage = targetLanguageEntry
+            )
+
             await self.__twitchUtils.safeSend(ctx, response.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}', e, traceback.format_exc())

@@ -1,11 +1,11 @@
 import traceback
 
-from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
-from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
-from CynanBot.deepL.exceptions import DeepLAuthKeyUnavailableException
 import CynanBot.misc.utils as utils
+from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
 from CynanBot.deepL.deepLAuthKeyProviderInterface import \
     DeepLAuthKeyProviderInterface
+from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
+from CynanBot.deepL.exceptions import DeepLAuthKeyUnavailableException
 from CynanBot.language.exceptions import (
     TranslationEngineUnavailableException, TranslationException,
     TranslationLanguageHasNoIso6391Code)
@@ -49,8 +49,7 @@ class DeepLTranslationApi(TranslationApi):
         elif not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
 
-        iso6391Code = targetLanguage.getIso6391Code()
-        if not utils.isValidStr(iso6391Code):
+        if not utils.isValidStr(targetLanguage.iso6391Code):
             raise TranslationLanguageHasNoIso6391Code(
                 languageEntry = targetLanguage,
                 message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'

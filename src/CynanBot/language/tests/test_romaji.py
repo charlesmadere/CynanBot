@@ -13,11 +13,9 @@ def test_hiragana_block() -> None:
             continue  # combined with previous symbol? don't know how these work
         assert chr(unicode_point) in kana2ascii, f"{unicode_point=} {hex(unicode_point)=} {chr(unicode_point)}"
 
-
 def test_katakana_block() -> None:
     for unicode_point in range(0x30a0, 0x30ff+1):
         assert chr(unicode_point) in kana2ascii, f"{unicode_point=} {hex(unicode_point)=} {chr(unicode_point)}"
-
 
 def test_is_kana() -> None:
     assert not is_kana("abc")
@@ -25,7 +23,6 @@ def test_is_kana() -> None:
     assert not is_kana("")
     assert not is_kana(None)
     assert is_kana(white_day), f"{[c in kana2ascii for c in white_day]}"
-
 
 def test_to_romaji() -> None:
     assert to_romaji(shinkiitten) == "shinkiitten"

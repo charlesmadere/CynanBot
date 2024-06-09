@@ -17,10 +17,10 @@ class WordOfTheDayPresenter(WordOfTheDayPresenterInterface):
             raise TypeError(f'wordOfTheDayResponse argument is malformed: \"{wordOfTheDay}\"')
 
         languageNameAndFlag: str
-        if wordOfTheDay.languageEntry.hasFlag():
-            languageNameAndFlag = f'{wordOfTheDay.languageEntry.getFlag()} {wordOfTheDay.languageEntry.getName()}'
+        if utils.isValidStr(wordOfTheDay.languageEntry.flag):
+            languageNameAndFlag = f'{wordOfTheDay.languageEntry.flag} {wordOfTheDay.languageEntry.name}'
         else:
-            languageNameAndFlag = wordOfTheDay.languageEntry.getName()
+            languageNameAndFlag = wordOfTheDay.languageEntry.name
 
         transliteration: str = ''
         hasTransliteratedWord = utils.isValidStr(wordOfTheDay.transparentResponse.transliteratedWord)

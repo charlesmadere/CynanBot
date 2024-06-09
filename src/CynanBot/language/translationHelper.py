@@ -70,7 +70,7 @@ class TranslationHelper(TranslationHelperInterface):
         elif targetLanguage is not None and not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguageEntry argument is malformed: \"{targetLanguage}\"')
 
-        if targetLanguage is not None and not targetLanguage.hasIso6391Code():
+        if targetLanguage is not None and not utils.isValidStr(targetLanguage.iso6391Code):
             raise TranslationLanguageHasNoIso6391Code(
                 languageEntry = targetLanguage,
                 message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'

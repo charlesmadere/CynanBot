@@ -1,8 +1,8 @@
 import traceback
 
 import CynanBot.misc.utils as utils
-from CynanBot.jisho.jishoJlptLevel import JishoJlptLevel
 from CynanBot.jisho.jishoApiServiceInterface import JishoApiServiceInterface
+from CynanBot.jisho.jishoJlptLevel import JishoJlptLevel
 from CynanBot.jisho.jishoResponse import JishoResponse
 from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.network.exceptions import GenericNetworkException
@@ -17,8 +17,7 @@ class JishoHelper(JishoHelperInterface):
         jishoApiService: JishoApiServiceInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        definitionsMaxSize: int = 3,
-        variantsMaxSize: int = 3
+        definitionsMaxSize: int = 3
     ):
         if not isinstance(jishoApiService, JishoApiServiceInterface):
             raise TypeError(f'jishoApiService argument is malformed: \"{jishoApiService}\"')
@@ -30,10 +29,6 @@ class JishoHelper(JishoHelperInterface):
             raise TypeError(f'definitionsMaxSize argument is malformed: \"{definitionsMaxSize}\"')
         elif definitionsMaxSize < 1 or definitionsMaxSize > 5:
             raise ValueError(f'definitionsMaxSize argument is out of bounds: \"{definitionsMaxSize}\"')
-        elif not utils.isValidInt(variantsMaxSize):
-            raise TypeError(f'variantsMaxSize argument is malformed: \"{variantsMaxSize}\"')
-        elif variantsMaxSize < 1 or variantsMaxSize > 5:
-            raise ValueError(f'variantsMaxSize argument is out of bounds: \"{variantsMaxSize}\"')
 
         self.__jishoApiService: JishoApiServiceInterface = jishoApiService
         self.__timber: TimberInterface = timber

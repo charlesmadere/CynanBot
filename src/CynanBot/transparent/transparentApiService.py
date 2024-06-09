@@ -42,16 +42,16 @@ class TransparentApiService(TransparentApiServiceInterface):
         self.__timber.log('TransparentApiService', f'Fetching Word of the Day from Transparent... ({targetLanguage=})')
         clientSession = await self.__networkClientProvider.get()
 
-        wotdApiCode = targetLanguage.getWotdApiCode()
+        wotdApiCode = targetLanguage.wotdApiCode
         if not utils.isValidStr(wotdApiCode):
             raise WotdApiCodeUnavailableException(
                 languageEntry = targetLanguage,
                 message = f'No WOTD API code is available for the given targetLanguage ({wotdApiCode=}) ({targetLanguage=})'
             )
 
-        ##############################################################################
-        # retrieve word of the day from https://www.transparent.com/word-of-the-day/ #
-        ##############################################################################
+        ################################################################################
+        ## retrieve word of the day from https://www.transparent.com/word-of-the-day/ ##
+        ################################################################################
 
         try:
             response = await clientSession.get(f'https://wotd.transparent.com/rss/{wotdApiCode}-widget.xml?t=0')
