@@ -214,3 +214,59 @@ class TestPokepediaJsonMapper():
     async def test_requireBerryFlavor_with5(self):
         result = await self.jsonMapper.requireBerryFlavor(5)
         assert result is PokepediaBerryFlavor.SOUR
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withEmptyString(self):
+        result: PokepediaMachineType | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireMachineType('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withHmString(self):
+        result = await self.jsonMapper.requireMachineType('hm')
+        assert result is PokepediaMachineType.HM
+
+        result = await self.jsonMapper.requireMachineType('HM')
+        assert result is PokepediaMachineType.HM
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withTmString(self):
+        result = await self.jsonMapper.requireMachineType('tm')
+        assert result is PokepediaMachineType.TM
+
+        result = await self.jsonMapper.requireMachineType('TM')
+        assert result is PokepediaMachineType.TM
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withTrString(self):
+        result = await self.jsonMapper.requireMachineType('tr')
+        assert result is PokepediaMachineType.TR
+
+        result = await self.jsonMapper.requireMachineType('TR')
+        assert result is PokepediaMachineType.TR
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withTr500String(self):
+        result = await self.jsonMapper.requireMachineType('tr500')
+        assert result is PokepediaMachineType.TR
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withNone(self):
+        result: PokepediaMachineType | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireMachineType(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireMachineType_withWhitespaceString(self):
+        result: PokepediaMachineType | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireMachineType(' ')
+
+        assert result is None
