@@ -1,5 +1,4 @@
 import locale
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
@@ -16,7 +15,7 @@ class NewTriviaGameEvent(AbsTriviaEvent):
         triviaQuestion: AbsTriviaQuestion,
         pointsForWinning: int,
         secondsToLive: int,
-        specialTriviaStatus: Optional[SpecialTriviaStatus],
+        specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
         emote: str,
         eventId: str,
@@ -31,32 +30,32 @@ class NewTriviaGameEvent(AbsTriviaEvent):
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif not utils.isValidInt(pointsForWinning):
-            raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
+            raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
         elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
         elif not utils.isValidInt(secondsToLive):
-            raise ValueError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
+            raise TypeError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
         elif secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
             raise ValueError(f'secondsToLive argument is out of bounds: {secondsToLive}')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+            raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
-            raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
+            raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
         self.__pointsForWinning: int = pointsForWinning
         self.__secondsToLive: int = secondsToLive
-        self.__specialTriviaStatus: Optional[SpecialTriviaStatus] = specialTriviaStatus
+        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
@@ -81,7 +80,7 @@ class NewTriviaGameEvent(AbsTriviaEvent):
     def getSecondsToLiveStr(self) -> str:
         return locale.format_string("%d", self.__secondsToLive, grouping = True)
 
-    def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
+    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
     def getTriviaEventType(self) -> TriviaEventType:

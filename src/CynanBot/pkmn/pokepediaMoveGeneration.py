@@ -1,5 +1,4 @@
 import locale
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
@@ -11,30 +10,30 @@ class PokepediaMoveGeneration():
 
     def __init__(
         self,
-        accuracy: Optional[int],
-        power: Optional[int],
+        accuracy: int | None,
+        power: int | None,
         pp: int,
         damageClass: PokepediaDamageClass,
         elementType: PokepediaElementType,
         generation: PokepediaGeneration
     ):
         if not utils.isValidInt(pp):
-            raise ValueError(f'pp argument is malformed: \"{pp}\"')
+            raise TypeError(f'pp argument is malformed: \"{pp}\"')
         elif not isinstance(damageClass, PokepediaDamageClass):
-            raise ValueError(f'damageClass argument is malformed: \"{damageClass}\"')
+            raise TypeError(f'damageClass argument is malformed: \"{damageClass}\"')
         elif not isinstance(elementType, PokepediaElementType):
-            raise ValueError(f'elementType argument is malformed: \"{elementType}\"')
+            raise TypeError(f'elementType argument is malformed: \"{elementType}\"')
         elif not isinstance(generation, PokepediaGeneration):
-            raise ValueError(f'generation argument is malformed: \"{generation}\"')
+            raise TypeError(f'generation argument is malformed: \"{generation}\"')
 
-        self.__accuracy: Optional[int] = accuracy
-        self.__power: Optional[int] = power
+        self.__accuracy: int | None = accuracy
+        self.__power: int | None = power
         self.__pp: int = pp
         self.__damageClass: PokepediaDamageClass = damageClass
         self.__elementType: PokepediaElementType = elementType
         self.__generation: PokepediaGeneration = generation
 
-    def getAccuracy(self) -> Optional[int]:
+    def getAccuracy(self) -> int | None:
         return self.__accuracy
 
     def getAccuracyStr(self) -> str:
@@ -53,7 +52,7 @@ class PokepediaMoveGeneration():
     def getGeneration(self) -> PokepediaGeneration:
         return self.__generation
 
-    def getPower(self) -> Optional[int]:
+    def getPower(self) -> int | None:
         return self.__power
 
     def getPowerStr(self) -> str:

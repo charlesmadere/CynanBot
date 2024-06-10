@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.pkmn.pokepediaContestType import PokepediaContestType
 from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
@@ -12,10 +10,10 @@ class PokepediaMove():
 
     def __init__(
         self,
-        contestType: Optional[PokepediaContestType],
+        contestType: PokepediaContestType | None,
         damageClass: PokepediaDamageClass,
-        generationMachines: Optional[Dict[PokepediaGeneration, List[PokepediaMachine]]],
-        generationMoves: Dict[PokepediaGeneration, PokepediaMoveGeneration],
+        generationMachines: dict[PokepediaGeneration, list[PokepediaMachine]] | None,
+        generationMoves: dict[PokepediaGeneration, PokepediaMoveGeneration],
         critRate: int,
         drain: int,
         flinchChance: int,
@@ -26,32 +24,32 @@ class PokepediaMove():
         rawName: str
     ):
         if contestType is not None and not isinstance(contestType, PokepediaContestType):
-            raise ValueError(f'contestType argument is malformed: \"{contestType}\"')
+            raise TypeError(f'contestType argument is malformed: \"{contestType}\"')
         elif not isinstance(damageClass, PokepediaDamageClass):
-            raise ValueError(f'damageClass argument is malformed: \"{damageClass}\"')
+            raise TypeError(f'damageClass argument is malformed: \"{damageClass}\"')
         elif not utils.hasItems(generationMoves):
-            raise ValueError(f'generationMoves argument is malformed: \"{generationMoves}\"')
+            raise TypeError(f'generationMoves argument is malformed: \"{generationMoves}\"')
         elif not utils.isValidInt(critRate):
-            raise ValueError(f'critRate argument is malformed: \"{critRate}\"')
+            raise TypeError(f'critRate argument is malformed: \"{critRate}\"')
         elif not utils.isValidInt(drain):
-            raise ValueError(f'drain argument is malformed: \"{drain}\"')
+            raise TypeError(f'drain argument is malformed: \"{drain}\"')
         elif not utils.isValidInt(flinchChance):
-            raise ValueError(f'flinchChance argument is malformed: \"{flinchChance}\"')
+            raise TypeError(f'flinchChance argument is malformed: \"{flinchChance}\"')
         elif not utils.isValidInt(moveId):
-            raise ValueError(f'moveId argument is malformed: \"{moveId}\"')
+            raise TypeError(f'moveId argument is malformed: \"{moveId}\"')
         elif not isinstance(initialGeneration, PokepediaGeneration):
-            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
+            raise TypeError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
         elif not utils.isValidStr(description):
-            raise ValueError(f'description argument is malformed: \"{description}\"')
+            raise TypeError(f'description argument is malformed: \"{description}\"')
         elif not utils.isValidStr(name):
-            raise ValueError(f'name argument is malformed: \"{name}\"')
+            raise TypeError(f'name argument is malformed: \"{name}\"')
         elif not utils.isValidStr(rawName):
-            raise ValueError(f'rawName argument is malformed: \"{rawName}\"')
+            raise TypeError(f'rawName argument is malformed: \"{rawName}\"')
 
-        self.__contestType: Optional[PokepediaContestType] = contestType
+        self.__contestType: PokepediaContestType | None = contestType
         self.__damageClass: PokepediaDamageClass = damageClass
-        self.__generationMachines: Optional[Dict[PokepediaGeneration, List[PokepediaMachine]]] = generationMachines
-        self.__generationMoves: Dict[PokepediaGeneration, PokepediaMoveGeneration] = generationMoves
+        self.__generationMachines: dict[PokepediaGeneration, list[PokepediaMachine]] | None = generationMachines
+        self.__generationMoves: dict[PokepediaGeneration, PokepediaMoveGeneration] = generationMoves
         self.__critRate: int = critRate
         self.__drain: int = drain
         self.__flinchChance: int = flinchChance
@@ -61,7 +59,7 @@ class PokepediaMove():
         self.__name: str = name
         self.__rawName: str = rawName
 
-    def getContestType(self) -> Optional[PokepediaContestType]:
+    def getContestType(self) -> PokepediaContestType | None:
         return self.__contestType
 
     def getCritRate(self) -> int:
@@ -79,10 +77,10 @@ class PokepediaMove():
     def getFlinchChance(self) -> int:
         return self.__flinchChance
 
-    def getGenerationMachines(self) -> Optional[Dict[PokepediaGeneration, List[PokepediaMachine]]]:
+    def getGenerationMachines(self) -> dict[PokepediaGeneration, list[PokepediaMachine]] | None:
         return self.__generationMachines
 
-    def getGenerationMoves(self) -> Dict[PokepediaGeneration, PokepediaMoveGeneration]:
+    def getGenerationMoves(self) -> dict[PokepediaGeneration, PokepediaMoveGeneration]:
         return self.__generationMoves
 
     def getInitialGeneration(self) -> PokepediaGeneration:
@@ -103,8 +101,8 @@ class PokepediaMove():
     def hasMachines(self) -> bool:
         return utils.hasItems(self.__generationMachines)
 
-    def toStrList(self) -> List[str]:
-        strings: List[str] = list()
+    def toStrList(self) -> list[str]:
+        strings: list[str] = list()
         strings.append(f'{self.getName()} — {self.getDescription()}')
 
         for gen in PokepediaGeneration:

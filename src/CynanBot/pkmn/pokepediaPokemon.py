@@ -1,5 +1,4 @@
 import locale
-from typing import Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.pkmn.pokepediaDamageMultiplier import PokepediaDamageMultiplier
@@ -12,27 +11,27 @@ class PokepediaPokemon():
 
     def __init__(
         self,
-        generationElementTypes: Dict[PokepediaGeneration, List[PokepediaElementType]],
+        generationElementTypes: dict[PokepediaGeneration, list[PokepediaElementType]],
         initialGeneration: PokepediaGeneration,
         height: int,
         pokedexId: int,
         weight: int,
         name: str
     ):
-        if not utils.hasItems(generationElementTypes):
-            raise ValueError(f'generationElementTypes argument is malformed: \"{generationElementTypes}\"')
+        if not isinstance(generationElementTypes, dict):
+            raise TypeError(f'generationElementTypes argument is malformed: \"{generationElementTypes}\"')
         elif not isinstance(initialGeneration, PokepediaGeneration):
-            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
+            raise TypeError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
         elif not utils.isValidInt(height):
-            raise ValueError(f'height argument is malformed: \"{height}\"')
+            raise TypeError(f'height argument is malformed: \"{height}\"')
         elif not utils.isValidInt(pokedexId):
-            raise ValueError(f'pokedexId argument is malformed: \"{pokedexId}\"')
+            raise TypeError(f'pokedexId argument is malformed: \"{pokedexId}\"')
         elif not utils.isValidInt(weight):
-            raise ValueError(f'weight argument is malformed: \"{weight}\"')
+            raise TypeError(f'weight argument is malformed: \"{weight}\"')
         elif not utils.isValidStr(name):
-            raise ValueError(f'name argument is malformed: \"{name}\"')
+            raise TypeError(f'name argument is malformed: \"{name}\"')
 
-        self.__generationElementTypes: Dict[PokepediaGeneration, List[PokepediaElementType]] = generationElementTypes
+        self.__generationElementTypes: dict[PokepediaGeneration, list[PokepediaElementType]] = generationElementTypes
         self.__initialGeneration: PokepediaGeneration = initialGeneration
         self.__height: int = height
         self.__pokedexId: int = pokedexId
@@ -41,21 +40,21 @@ class PokepediaPokemon():
 
     def __buildGenerationElementTypesWeaknessesAndResistancesStr(
         self,
-        weaknessesAndResistances: Dict[PokepediaDamageMultiplier, List[PokepediaElementType]],
+        weaknessesAndResistances: dict[PokepediaDamageMultiplier, list[PokepediaElementType]],
         damageMultiplier: PokepediaDamageMultiplier,
         delimiter: str
-    ) -> Optional[str]:
-        if not utils.hasItems(weaknessesAndResistances):
-            raise ValueError(f'weaknessesAndResistances argument is malformed: \"{weaknessesAndResistances}\"')
+    ) -> str | None:
+        if not isinstance(weaknessesAndResistances, dict):
+            raise TypeError(f'weaknessesAndResistances argument is malformed: \"{weaknessesAndResistances}\"')
         elif not isinstance(damageMultiplier, PokepediaDamageMultiplier):
-            raise ValueError(f'damageMultiplier argument is malformed: \"{damageMultiplier}\"')
+            raise TypeError(f'damageMultiplier argument is malformed: \"{damageMultiplier}\"')
         elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if damageMultiplier not in weaknessesAndResistances or not utils.hasItems(weaknessesAndResistances[damageMultiplier]):
             return None
 
-        elementTypesStrings: List[str] = list()
+        elementTypesStrings: list[str] = list()
         for elementType in weaknessesAndResistances[damageMultiplier]:
             elementTypesStrings.append(elementType.getEmojiOrStr().lower())
 
@@ -65,9 +64,9 @@ class PokepediaPokemon():
     def getCorrespondingGenerationElementTypes(
         self,
         generation: PokepediaGeneration
-    ) -> List[PokepediaElementType]:
+    ) -> list[PokepediaElementType]:
         if not isinstance(generation, PokepediaGeneration):
-            raise ValueError(f'generation argument is malformed: \"{generation}\"')
+            raise TypeError(f'generation argument is malformed: \"{generation}\"')
 
         allGenerations = list(PokepediaGeneration)
         index = allGenerations.index(generation)
@@ -80,7 +79,7 @@ class PokepediaPokemon():
 
         raise KeyError(f'No corresponding generation element types for \"{generation}\"!')
 
-    def getGenerationElementTypes(self) -> Dict[PokepediaGeneration, List[PokepediaElementType]]:
+    def getGenerationElementTypes(self) -> dict[PokepediaGeneration, list[PokepediaElementType]]:
         return self.__generationElementTypes
 
     def getHeight(self) -> int:
@@ -107,18 +106,18 @@ class PokepediaPokemon():
     def getWeightStr(self) -> str:
         return locale.format_string("%d", self.__weight, grouping = True)
 
-    def toStrList(self, delimiter: str = ', ') -> List[str]:
+    def toStrList(self, delimiter: str = ', ') -> list[str]:
         if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        strings: List[str] = list()
+        strings: list[str] = list()
         strings.append(f'{self.__name} (#{self.getPokedexIdStr()}) — introduced in {self.__initialGeneration.toShortStr()}, weight is {self.getWeightStr()} and height is {self.getHeightStr()}.')
 
         for gen in PokepediaGeneration:
             if gen in self.__generationElementTypes:
                 genElementTypes = self.__generationElementTypes[gen]
 
-                genElementTypesStrings: List[str] = list()
+                genElementTypesStrings: list[str] = list()
                 for genElementType in genElementTypes:
                     genElementTypesStrings.append(genElementType.toStr().lower())
 
