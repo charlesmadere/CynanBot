@@ -61,7 +61,6 @@ class JishoChatCommand(AbsChatCommand):
             return
 
         query: str | None = splits[1]
-
         if not utils.isValidStr(query):
             await self.__twitchUtils.safeSend(ctx, f'⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return

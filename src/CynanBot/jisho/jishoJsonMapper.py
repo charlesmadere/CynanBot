@@ -27,14 +27,37 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        dbpedia = utils.getBoolFromDict(jsonContents, 'dbpedia')
-        jmdict = utils.getBoolFromDict(jsonContents, 'jmdict')
-        jmnedict = utils.getBoolFromDict(jsonContents, 'jmnedict')
+        dbpedia: bool | None = None
+        dbpediaUrl: str | None = None
+        if 'dbpedia' in jsonContents:
+            if utils.isValidBool(jsonContents.get('dbpedia')):
+                dbpedia = utils.getBoolFromDict(jsonContents, 'dbpedia')
+            elif utils.isValidUrl(jsonContents.get('dbpedia')):
+                dbpediaUrl = utils.getStrFromDict(jsonContents, 'dbpedia')
+
+        jmdict: bool | None = None
+        jmdictUrl: str | None = None
+        if 'jmdict' in jsonContents:
+            if utils.isValidBool(jsonContents.get('jmdict')):
+                jmdict = utils.getBoolFromDict(jsonContents, 'jmdict')
+            elif utils.isValidUrl(jsonContents.get('jmdict')):
+                jmdictUrl = utils.getStrFromDict(jsonContents, 'jmdict')
+
+        jmnedict: bool | None = None
+        jmnedictUrl: str | None = None
+        if 'jmnedict' in jsonContents:
+            if utils.isValidBool(jsonContents.get('jmnedict')):
+                jmnedict = utils.getBoolFromDict(jsonContents, 'jmnedict')
+            elif utils.isValidUrl(jsonContents.get('jmnedict')):
+                jmnedictUrl = utils.getStrFromDict(jsonContents, 'jmnedict')
 
         return JishoAttribution(
             dbpedia = dbpedia,
             jmdict = jmdict,
-            jmnedict = jmnedict
+            jmnedict = jmnedict,
+            dbpediaUrl = dbpediaUrl,
+            jmdictUrl = jmdictUrl,
+            jmnedictUrl = jmnedictUrl
         )
 
     async def parseData(
@@ -46,10 +69,15 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
         isCommon = utils.getBoolFromDict(jsonContents, 'is_common')
 
+        attribution = await self.parseAttribution(jsonContents.get('attribution'))
+        if attribution is None:
+            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"attribution\" field in JSON data: ({jsonContents=})')
+            return None
+
         japaneseArray: list[dict[str, Any]] | None = jsonContents.get('japanese')
         japaneseWords: list[JishoJapaneseWord] = list()
 
-        if isinstance(japaneseArray, dict) and len(japaneseArray) >= 1:
+        if isinstance(japaneseArray, list) and len(japaneseArray) >= 1:
             for index, japaneseWordEntry in enumerate(japaneseArray):
                 japaneseWord = await self.parseJapaneseWord(japaneseWordEntry)
 
@@ -76,7 +104,10 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     jlptLevels.append(jlptLevel)
 
-            jlptLevels.sort(key = lambda jlptLevel: jlptLevel.value)
+            if len(jlptLevels) == 0:
+                jlptLevels = None
+            else:
+                jlptLevels.sort(key = lambda jlptLevel: jlptLevel.value)
 
         sensesArray: list[dict[str, Any] | None] | None = jsonContents.get('senses')
         senses: list[JishoSense] = list()
@@ -98,6 +129,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
         return JishoData(
             isCommon = isCommon,
+            attribution = attribution,
             japanese = japaneseWords,
             jlptLevels = jlptLevels,
             senses = senses,
@@ -164,11 +196,9 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             return None
 
         dataArray: list[dict[str, Any] | None] | None = jsonContents.get('data')
-        data: list[JishoData] | None = None
+        data: list[JishoData] = list()
 
         if isinstance(dataArray, list) and len(dataArray) >= 1:
-            data = list()
-
             for index, dataEntryJson in enumerate(dataArray):
                 dataEntry = await self.parseData(dataEntryJson)
 
@@ -177,7 +207,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     data.append(dataEntry)
 
-        if data is None or len(data) == 0:
+        if len(data) == 0:
             self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"data\" field in JSON data: ({jsonContents=})')
             return None
 

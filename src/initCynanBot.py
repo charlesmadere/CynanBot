@@ -101,6 +101,8 @@ from CynanBot.jisho.jishoApiService import JishoApiService
 from CynanBot.jisho.jishoApiServiceInterface import JishoApiServiceInterface
 from CynanBot.jisho.jishoJsonMapper import JishoJsonMapper
 from CynanBot.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
+from CynanBot.jisho.jishoPresenter import JishoPresenter
+from CynanBot.jisho.jishoPresenterInterface import JishoPresenterInterface
 from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.language.languagesRepository import LanguagesRepository
@@ -1420,9 +1422,10 @@ jishoApiService: JishoApiServiceInterface = JishoApiService(
     timber = timber
 )
 
+jishoPresenter: JishoPresenterInterface = JishoPresenter()
+
 jishoHelper: JishoHelperInterface = JishoHelper(
     jishoApiService = jishoApiService,
-    networkClientProvider = networkClientProvider,
     timber = timber
 )
 
