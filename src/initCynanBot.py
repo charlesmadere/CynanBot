@@ -1426,6 +1426,7 @@ jishoPresenter: JishoPresenterInterface = JishoPresenter()
 
 jishoHelper: JishoHelperInterface = JishoHelper(
     jishoApiService = jishoApiService,
+    jishoPresenter = jishoPresenter,
     timber = timber
 )
 
