@@ -1,7 +1,7 @@
 import CynanBot.misc.utils as utils
 from CynanBot.jisho.jishoJlptLevel import JishoJlptLevel
 from CynanBot.jisho.jishoPresenterInterface import JishoPresenterInterface
-from CynanBot.src.CynanBot.jisho.jishoResponse import JishoResponse
+from CynanBot.jisho.jishoResponse import JishoResponse
 
 
 class JishoPresenter(JishoPresenterInterface):
