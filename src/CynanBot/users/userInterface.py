@@ -272,6 +272,11 @@ class UserInterface(ABC):
     def isStarWarsQuotesEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isSubGiftThankingEnabled(self) -> bool:
+        pass
+
     @abstractmethod
     def isSuperTriviaGameEnabled(self) -> bool:
         pass

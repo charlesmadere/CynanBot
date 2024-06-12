@@ -135,7 +135,6 @@ class UsersRepository(UsersRepositoryInterface):
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isSupStreamerEnabled = utils.getBoolFromDict(userJson, 'supStreamerEnabled', False)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
-        isTriviaEnabled = utils.getBoolFromDict(userJson, 'triviaEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
         isTtsEnabled = utils.getBoolFromDict(userJson, 'ttsEnabled', False)
@@ -206,7 +205,7 @@ class UsersRepository(UsersRepositoryInterface):
         triviaGameRewardId: str | None = None
         waitForSuperTriviaAnswerDelay: int | None = None
         waitForTriviaAnswerDelay: int | None = None
-        if isTriviaGameEnabled:
+        if isTriviaGameEnabled or isSuperTriviaGameEnabled:
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
@@ -284,7 +283,6 @@ class UsersRepository(UsersRepositoryInterface):
             isSupStreamerEnabled = isSupStreamerEnabled,
             isToxicTriviaEnabled = isToxicTriviaEnabled,
             isTranslateEnabled = isTranslateEnabled,
-            isTriviaEnabled = isTriviaEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isTriviaScoreEnabled = isTriviaScoreEnabled,
             isTtsEnabled = isTtsEnabled,
