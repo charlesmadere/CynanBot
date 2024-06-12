@@ -33,6 +33,7 @@ from CynanBot.twitch.twitchTokensUtilsInterface import \
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
+from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 
 
 class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
@@ -44,6 +45,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
         twitchChannelProvider: TwitchChannelProvider,
+        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
@@ -57,6 +59,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -67,6 +71,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
@@ -155,6 +160,23 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 user = user
             )
 
+    async def __processCynanBotAsGiftRecipient(
+        self,
+        subGift: TwitchSubGift | None,
+        user: UserInterface
+    ):
+        if subGift is None or not user.isSubGiftThankingEnabled:
+            return
+
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
+
+        if not utils.isValidStr(twitchId) or twitchId != subGift.recipientUserId:
+            return
+
+        # TODO
+        pass
+
     async def __processSuperTriviaEvent(
         self,
         broadcasterUserId: str,
@@ -185,6 +207,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
 
         superTriviaSubscribeTriggerAmount = user.getSuperTriviaSubscribeTriggerAmount()
+        superTriviaSubscribeTriggerMaximum = user.getSuperTriviaSubscribeTriggerMaximum()
+
         if not utils.isValidNum(superTriviaSubscribeTriggerAmount) or superTriviaSubscribeTriggerAmount <= 0:
             return
 
@@ -193,8 +217,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             numberOfSubs = communitySubGift.total
 
         numberOfGames = int(math.floor(numberOfSubs / superTriviaSubscribeTriggerAmount))
+
         if numberOfGames < 1:
             return
+        elif utils.isValidInt(superTriviaSubscribeTriggerMaximum) and numberOfGames > superTriviaSubscribeTriggerMaximum:
+            numberOfGames = superTriviaSubscribeTriggerMaximum
 
         action = await triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
@@ -319,3 +346,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             twitchChannelId = broadcasterUserId,
             ttsEvent = ttsEvent
         ))
+
+        await self.__processCynanBotAsGiftRecipient(
+            subGift = subGift,
+            user = user
+        )

@@ -946,6 +946,7 @@ class CynanBot(
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,
                 twitchChannelProvider = self,
+                twitchHandleProvider = self.__authRepository,
                 twitchTokensUtils = self.__twitchTokensUtils,
                 userIdsRepository = self.__userIdsRepository
             )
