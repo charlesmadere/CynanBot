@@ -135,9 +135,6 @@ class GeneralSettingsRepositorySnapshot():
     def isTranslateEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'translateEnabled', True)
 
-    def isTriviaEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'triviaEnabled', True)
-
     def isTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'triviaGameEnabled', True)
 
