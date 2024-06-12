@@ -14,3 +14,6 @@ class TimberStub(TimberInterface):
         traceback: str | None = None
     ):
         print(f'{tag} — {msg}')
+
+    def start(self):
+        pass

@@ -12,3 +12,7 @@ class TimberInterface(ABC):
         traceback: str | None = None
     ):
         pass
+
+    @abstractmethod
+    def start(self):
+        pass

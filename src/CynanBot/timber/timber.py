@@ -37,12 +37,13 @@ class Timber(TimberInterface):
         elif not utils.isValidStr(timberRootDirectory):
             raise TypeError(f'timberRootDirectory argument is malformed: \"{timberRootDirectory}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__timberRootDirectory: str = timberRootDirectory
 
+        self.__isStarted: bool = False
         self.__entryQueue: SimpleQueue[TimberEntry] = SimpleQueue()
-        backgroundTaskHelper.createTask(self.__startEventLoop())
 
     def __getErrorStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> str | None:
         if not utils.isValidBool(ensureNewLine):
@@ -109,6 +110,14 @@ class Timber(TimberInterface):
 
         self.__entryQueue.put(timberEntry)
         print(self.__getLogStatement(False, timberEntry))
+
+    def start(self):
+        if self.__isStarted:
+            self.log('Timber', 'Not starting Timber as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 
     async def __startEventLoop(self):
         while True:

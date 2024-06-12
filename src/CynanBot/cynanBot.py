@@ -857,6 +857,7 @@ class CynanBot(
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
         self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
 
+        self.__timber.start()
         self.__twitchTokensRepository.start()
         self.__sentMessageLogger.start()
         self.__chatLogger.start()
