@@ -14,6 +14,13 @@ class PokepediaJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseMachineNumber(
+        self,
+        machineNumberString: str | None
+    ) -> int | None:
+        pass
+
+    @abstractmethod
     async def parseMachineType(
         self,
         machineTypeString: str | None
@@ -25,6 +32,13 @@ class PokepediaJsonMapperInterface(ABC):
         self,
         jsonNumber: int | None
     ) -> PokepediaBerryFlavor:
+        pass
+
+    @abstractmethod
+    async def requireMachineNumber(
+        self,
+        machineNumberString: str | None
+    ) -> int:
         pass
 
     @abstractmethod

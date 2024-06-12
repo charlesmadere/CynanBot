@@ -58,6 +58,41 @@ class TestPokepediaJsonMapper():
         assert result is PokepediaBerryFlavor.SOUR
 
     @pytest.mark.asyncio
+    async def test_parseMachineNumber_withEmptyString(self):
+        result = await self.jsonMapper.parseMachineNumber('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseMachineNumber_withHm01String(self):
+        result = await self.jsonMapper.parseMachineNumber('HM01')
+        assert result == 1
+
+    @pytest.mark.asyncio
+    async def test_parseMachineNumber_withNone(self):
+        result = await self.jsonMapper.parseMachineNumber(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseMachineNumber_withTm21String(self):
+        result = await self.jsonMapper.parseMachineNumber('tm21')
+        assert result == 21
+
+    @pytest.mark.asyncio
+    async def test_parseMachineNumber_withTr98765String(self):
+        result = await self.jsonMapper.parseMachineNumber('TR98765')
+        assert result == 98765
+
+    @pytest.mark.asyncio
+    async def test_parseMachineNumber_withWhitespaceString(self):
+        result = await self.jsonMapper.parseMachineNumber(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseMachineNumber_with21String(self):
+        result = await self.jsonMapper.parseMachineNumber('21')
+        assert result == 21
+
+    @pytest.mark.asyncio
     async def test_parseMachineType_withEmptyString(self):
         result = await self.jsonMapper.parseMachineType('')
         assert result is None

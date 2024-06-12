@@ -1,4 +1,5 @@
 import re
+import traceback
 from typing import Pattern
 
 import CynanBot.misc.utils as utils
@@ -17,6 +18,7 @@ class PokepediaJsonMapper(PokepediaJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
 
+        self.__machineNumberRegEx: Pattern = re.compile(r'^(HM|TM|TR)?(\d+)$', re.IGNORECASE)
         self.__machineTypeRegEx: Pattern = re.compile(r'^(HM|TM|TR)\d*$', re.IGNORECASE)
 
     async def parseBerryFlavor(
@@ -35,6 +37,33 @@ class PokepediaJsonMapper(PokepediaJsonMapperInterface):
             case _:
                 self.__timber.log('PokepediaJsonMapper', f'Encountered unknown PokepediaBerryFlavor value: \"{jsonNumber}\"')
                 return None
+
+    async def parseMachineNumber(
+        self,
+        machineNumberString: str | None
+    ) -> int | None:
+        if not utils.isValidStr(machineNumberString):
+            return None
+
+        machineNumberMatch = self.__machineNumberRegEx.fullmatch(machineNumberString)
+
+        if machineNumberMatch is None:
+            return None
+
+        machineNumberSuffix = machineNumberMatch.group(2)
+        machineNumber: int | None = None
+        exception: Exception | None = None
+
+        try:
+            machineNumber = int(machineNumberSuffix)
+        except Exception as e:
+            exception = e
+
+        if utils.isValidInt(machineNumber) and exception is None:
+            return machineNumber
+        else:
+            self.__timber.log('PokepediaJsonMapper', f'Unable to parse Pokepedia machine number from a string into an int ({machineNumberString=}) ({machineNumber=}): {exception}', exception, traceback.format_exc())
+            return None
 
     async def parseMachineType(
         self,
@@ -68,6 +97,17 @@ class PokepediaJsonMapper(PokepediaJsonMapperInterface):
             raise ValueError(f'Unable to parse \"{jsonNumber}\" into PokepediaBerryFlavor value!')
 
         return berryFlavor
+
+    async def requireMachineNumber(
+        self,
+        machineNumberString: str | None
+    ) -> int:
+        machineNumber = await self.parseMachineNumber(machineNumberString)
+
+        if not utils.isValidInt(machineNumber):
+            raise ValueError(f'Unable to parse \"{machineNumberString}\" into Pokepedia machine number value!')
+
+        return machineNumber
 
     async def requireMachineType(
         self,

@@ -1,8 +1,6 @@
 from collections import Counter
 from enum import Enum, auto
-from typing import Dict, List
 
-import CynanBot.misc.utils as utils
 from CynanBot.pkmn.pokepediaDamageMultiplier import PokepediaDamageMultiplier
 from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
 from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
@@ -16,16 +14,16 @@ class PokepediaTypeChart(Enum):
 
     def __buildDictionaryFromWeaknessesAndResistances(
         self,
-        noEffect: List[PokepediaElementType],
-        resistances: List[PokepediaElementType],
-        weaknesses: List[PokepediaElementType]
-    ) -> Dict[PokepediaDamageMultiplier, List[PokepediaElementType]]:
-        if noEffect is None:
-            raise ValueError(f'noEffect argument is malformed: \"{noEffect}\"')
-        elif resistances is None:
-            raise ValueError(f'resistances argument is malformed: \"{resistances}\"')
-        if weaknesses is None:
-            raise ValueError(f'noEffect argument is malformed: \"{weaknesses}\"')
+        noEffect: list[PokepediaElementType],
+        resistances: list[PokepediaElementType],
+        weaknesses: list[PokepediaElementType]
+    ) -> dict[PokepediaDamageMultiplier, list[PokepediaElementType]]:
+        if not isinstance(noEffect, list):
+            raise TypeError(f'noEffect argument is malformed: \"{noEffect}\"')
+        elif not isinstance(resistances, list):
+            raise TypeError(f'resistances argument is malformed: \"{resistances}\"')
+        elif not isinstance(weaknesses, list):
+            raise TypeError(f'noEffect argument is malformed: \"{weaknesses}\"')
 
         for elementType in noEffect:
             while elementType in resistances:
@@ -36,7 +34,7 @@ class PokepediaTypeChart(Enum):
 
         noEffect.sort(key = lambda elementType: elementType.value)
 
-        elementsToFullyRemove: List[PokepediaElementType] = list()
+        elementsToFullyRemove: list[PokepediaElementType] = list()
         for elementType in resistances:
             if elementType in weaknesses:
                 elementsToFullyRemove.append(elementType)
@@ -51,15 +49,15 @@ class PokepediaTypeChart(Enum):
         resistances.sort(key = lambda elementType: elementType.value)
         weaknesses.sort(key = lambda elementType: elementType.value)
 
-        dictionary: Dict[PokepediaDamageMultiplier, List[PokepediaElementType]] = dict()
+        dictionary: dict[PokepediaDamageMultiplier, list[PokepediaElementType]] = dict()
 
-        if utils.hasItems(noEffect):
+        if len(noEffect) == 0:
             dictionary[PokepediaDamageMultiplier.ZERO] = noEffect
 
-        if utils.hasItems(resistances):
+        if len(resistances) >= 1:
             counter = Counter(resistances)
-            regularResistances: List[PokepediaElementType] = list()
-            doubleResistances: List[PokepediaElementType] = list()
+            regularResistances: list[PokepediaElementType] = list()
+            doubleResistances: list[PokepediaElementType] = list()
 
             for elementType in PokepediaElementType:
                 if elementType in counter:
@@ -70,16 +68,16 @@ class PokepediaTypeChart(Enum):
                     else:
                         raise RuntimeError(f'illegal counter value ({counter[elementType]}) for {elementType}')
 
-            if utils.hasItems(regularResistances):
+            if len(regularResistances) >= 1:
                 dictionary[PokepediaDamageMultiplier.ZERO_POINT_FIVE] = regularResistances
 
-            if utils.hasItems(doubleResistances):
+            if len(doubleResistances) >= 1:
                 dictionary[PokepediaDamageMultiplier.ZERO_POINT_TWO_FIVE] = doubleResistances
 
-        if utils.hasItems(weaknesses):
+        if len(weaknesses) >= 1:
             counter = Counter(weaknesses)
-            regularWeaknesses: List[PokepediaElementType] = list()
-            doubleWeaknesses: List[PokepediaElementType] = list()
+            regularWeaknesses: list[PokepediaElementType] = list()
+            doubleWeaknesses: list[PokepediaElementType] = list()
 
             for elementType in PokepediaElementType:
                 if elementType in counter:
@@ -90,10 +88,10 @@ class PokepediaTypeChart(Enum):
                     else:
                         raise RuntimeError(f'illegal counter value ({counter[elementType]}) for {elementType}')
 
-            if utils.hasItems(regularWeaknesses):
+            if len(regularWeaknesses) >= 1:
                 dictionary[PokepediaDamageMultiplier.TWO] = regularWeaknesses
 
-            if utils.hasItems(doubleWeaknesses):
+            if len(doubleWeaknesses) >= 1:
                 dictionary[PokepediaDamageMultiplier.FOUR] = doubleWeaknesses
 
         return dictionary
@@ -101,7 +99,7 @@ class PokepediaTypeChart(Enum):
     @classmethod
     def fromPokepediaGeneration(cls, pokepediaGeneration: PokepediaGeneration):
         if not isinstance(pokepediaGeneration, PokepediaGeneration):
-            raise ValueError(f'pokepediaGeneration argument is malformed: \"{pokepediaGeneration}\"')
+            raise TypeError(f'pokepediaGeneration argument is malformed: \"{pokepediaGeneration}\"')
 
         if pokepediaGeneration is PokepediaGeneration.GENERATION_1:
             return PokepediaTypeChart.GENERATION_1
@@ -112,14 +110,16 @@ class PokepediaTypeChart(Enum):
 
     def __getGenerationOneWeaknessesAndResistancesFor(
         self,
-        types: List[PokepediaElementType]
-    ) -> Dict[PokepediaDamageMultiplier, List[PokepediaElementType]]:
-        if not utils.hasItems(types):
-            raise ValueError(f'types argument is malformed: \"{types}\"')
+        types: list[PokepediaElementType]
+    ) -> dict[PokepediaDamageMultiplier, list[PokepediaElementType]]:
+        if not isinstance(types, list):
+            raise TypeError(f'types argument is malformed: \"{types}\"')
+        elif len(types) == 0:
+            raise ValueError(f'types argument can\'t be empty: \"{types}\"')
 
-        noEffect: List[PokepediaElementType] = list()
-        resistances: List[PokepediaElementType] = list()
-        weaknesses: List[PokepediaElementType] = list()
+        noEffect: list[PokepediaElementType] = list()
+        resistances: list[PokepediaElementType] = list()
+        weaknesses: list[PokepediaElementType] = list()
 
         for elementType in types:
             if elementType is PokepediaElementType.BUG:
@@ -236,14 +236,16 @@ class PokepediaTypeChart(Enum):
 
     def __getGenerationTwoThruFiveWeaknessesAndResistancesFor(
         self,
-        types: List[PokepediaElementType]
-    ) -> Dict[PokepediaDamageMultiplier, List[PokepediaElementType]]:
-        if not utils.hasItems(types):
-            raise ValueError(f'types argument is malformed: \"{types}\"')
+        types: list[PokepediaElementType]
+    ) -> dict[PokepediaDamageMultiplier, list[PokepediaElementType]]:
+        if not isinstance(types, list):
+            raise TypeError(f'types argument is malformed: \"{types}\"')
+        elif len(types) == 0:
+            raise ValueError(f'types argument can\'t be empty: \"{types}\"')
 
-        noEffect: List[PokepediaElementType] = list()
-        resistances: List[PokepediaElementType] = list()
-        weaknesses: List[PokepediaElementType] = list()
+        noEffect: list[PokepediaElementType] = list()
+        resistances: list[PokepediaElementType] = list()
+        weaknesses: list[PokepediaElementType] = list()
 
         for elementType in types:
             if elementType is PokepediaElementType.BUG:
@@ -382,13 +384,18 @@ class PokepediaTypeChart(Enum):
             weaknesses = weaknesses
         )
 
-    def __getGenerationSixAndOnWeaknessesAndResistancesFor(self, types: List[PokepediaElementType]) -> Dict[PokepediaDamageMultiplier, List[PokepediaElementType]]:
-        if not utils.hasItems(types):
-            raise ValueError(f'types argument is malformed: \"{types}\"')
+    def __getGenerationSixAndOnWeaknessesAndResistancesFor(
+        self,
+        types: list[PokepediaElementType]
+    ) -> dict[PokepediaDamageMultiplier, list[PokepediaElementType]]:
+        if not isinstance(types, list):
+            raise TypeError(f'types argument is malformed: \"{types}\"')
+        elif len(types) == 0:
+            raise ValueError(f'types argument can\'t be empty: \"{types}\"')
 
-        noEffect: List[PokepediaElementType] = list()
-        resistances: List[PokepediaElementType] = list()
-        weaknesses: List[PokepediaElementType] = list()
+        noEffect: list[PokepediaElementType] = list()
+        resistances: list[PokepediaElementType] = list()
+        weaknesses: list[PokepediaElementType] = list()
 
         for elementType in types:
             if elementType is PokepediaElementType.BUG:
@@ -529,15 +536,21 @@ class PokepediaTypeChart(Enum):
             weaknesses = weaknesses
         )
 
-    def getWeaknessesAndResistancesFor(self, types: List[PokepediaElementType]) -> Dict[PokepediaDamageMultiplier, List[PokepediaElementType]]:
-        if not utils.hasItems(types):
-            raise ValueError(f'types argument is malformed: \"{types}\"')
+    def getWeaknessesAndResistancesFor(
+        self,
+        types: list[PokepediaElementType]
+    ) -> dict[PokepediaDamageMultiplier, list[PokepediaElementType]]:
+        if not isinstance(types, list):
+            raise TypeError(f'types argument is malformed: \"{types}\"')
+        elif len(types) == 0:
+            raise ValueError(f'types argument can\'t be empty: \"{types}\"')
 
-        if self is PokepediaTypeChart.GENERATION_1:
-            return self.__getGenerationOneWeaknessesAndResistancesFor(types)
-        elif self is PokepediaTypeChart.GENERATION_2_THRU_5:
-            return self.__getGenerationTwoThruFiveWeaknessesAndResistancesFor(types)
-        elif self is PokepediaTypeChart.GENERATION_6_AND_ON:
-            return self.__getGenerationSixAndOnWeaknessesAndResistancesFor(types)
-        else:
-            raise RuntimeError(f'unknown PokepediaTypeChart: \"{self}\"')
+        match self:
+            case PokepediaTypeChart.GENERATION_1:
+                return self.__getGenerationOneWeaknessesAndResistancesFor(types)
+            case PokepediaTypeChart.GENERATION_2_THRU_5:
+                return self.__getGenerationTwoThruFiveWeaknessesAndResistancesFor(types)
+            case PokepediaTypeChart.GENERATION_6_AND_ON:
+                return self.__getGenerationSixAndOnWeaknessesAndResistancesFor(types)
+            case _:
+                raise RuntimeError(f'unknown PokepediaTypeChart: \"{self}\"')

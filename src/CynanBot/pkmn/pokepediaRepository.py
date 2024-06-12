@@ -18,7 +18,6 @@ from CynanBot.pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
 from CynanBot.pkmn.pokepediaNature import PokepediaNature
 from CynanBot.pkmn.pokepediaPokemon import PokepediaPokemon
 from CynanBot.pkmn.pokepediaStat import PokepediaStat
-from CynanBot.pkmn.pokepediaUtilsInterface import PokepediaUtilsInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -28,21 +27,17 @@ class PokepediaRepository():
         self,
         networkClientProvider: NetworkClientProvider,
         pokepediaJsonMapper: PokepediaJsonMapperInterface,
-        pokepediaUtils: PokepediaUtilsInterface,
         timber: TimberInterface
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(pokepediaJsonMapper, PokepediaJsonMapperInterface):
             raise TypeError(f'pokepediaJsonMapper argument is malformed: \"{pokepediaJsonMapper}\"')
-        elif not isinstance(pokepediaUtils, PokepediaUtilsInterface):
-            raise TypeError(f'pokepediaUtils argument is malformed: \"{pokepediaUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__pokepediaJsonMapper: PokepediaJsonMapperInterface = pokepediaJsonMapper
-        self.__pokepediaUtils: PokepediaUtilsInterface = pokepediaUtils
         self.__timber: TimberInterface = timber
 
         self.__pokeApiIdRegEx: Pattern = re.compile(r'^.+\/(\d+)\/$', re.IGNORECASE)
@@ -54,7 +49,7 @@ class PokepediaRepository():
         generation = PokepediaGeneration.fromStr(utils.getStrFromDict(jsonResponse['version_group'], 'name'))
         machineName = utils.getStrFromDict(jsonResponse['item'], 'name')
         machineType = await self.__pokepediaJsonMapper.requireMachineType(machineName)
-        machineNumber = await self.__pokepediaUtils.getMachineNumber(machineName)
+        machineNumber = await self.__pokepediaJsonMapper.requireMachineNumber(machineName)
 
         return PokepediaMachine(
             machineId = utils.getIntFromDict(jsonResponse, 'id'),
