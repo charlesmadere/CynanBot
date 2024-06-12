@@ -15,8 +15,6 @@ from CynanBot.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from CynanBot.pkmn.pokepediaJsonMapperInterface import \
     PokepediaJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
-from CynanBot.pkmn.pokepediaUtilsInterface import PokepediaUtilsInterface
 from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
@@ -49,14 +47,9 @@ pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
     timber = timber
 )
 
-pokepediaUtils: PokepediaUtilsInterface = PokepediaUtils(
-    timber = timber
-)
-
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     pokepediaJsonMapper = pokepediaJsonMapper,
-    pokepediaUtils = pokepediaUtils,
     timber = timber
 )
 

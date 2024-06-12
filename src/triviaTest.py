@@ -15,7 +15,6 @@ from CynanBot.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepos
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBot.storage.jsonFileReader import JsonFileReader
@@ -331,9 +330,6 @@ triviaGameMachine = TriviaGameMachine(
         pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
             pokepediaRepository = PokepediaRepository(
                 networkClientProvider = networkClientProvider,
-                pokepediaUtils = PokepediaUtils(
-                    timber = timber
-                ),
                 timber = timber
             ),
             timber = timber,
