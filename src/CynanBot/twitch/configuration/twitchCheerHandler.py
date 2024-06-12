@@ -179,7 +179,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         if not utils.isValidNum(superTriviaCheerTriggerAmount) or bits < superTriviaCheerTriggerAmount:
             return
 
-        numberOfGames = math.floor(bits / superTriviaCheerTriggerAmount)
+        numberOfGames = int(math.floor(bits / superTriviaCheerTriggerAmount))
 
         if numberOfGames < 1:
             return

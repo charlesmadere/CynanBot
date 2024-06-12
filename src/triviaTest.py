@@ -2,7 +2,8 @@ import asyncio
 from asyncio import AbstractEventLoop
 
 from CynanBot.authRepository import AuthRepository
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
