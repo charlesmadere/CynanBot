@@ -26,8 +26,14 @@ class JishoPresenter(JishoPresenterInterface):
             case JishoJlptLevel.N5: return '(JLPT N5)'
             case _: raise ValueError(f'unknown JishoJlptLevel value: \"{jlptLevel}\"')
 
-    async def toStrings(self, jishoResponse: JishoResponse) -> list[str]:
-        if not isinstance(jishoResponse, JishoResponse):
+    async def toStrings(
+        self,
+        includeRomaji: bool,
+        jishoResponse: JishoResponse
+    ) -> list[str]:
+        if not utils.isValidBool(includeRomaji):
+            raise TypeError(f'includeRomaji argument is malformed: \"{includeRomaji}\"')
+        elif not isinstance(jishoResponse, JishoResponse):
             raise TypeError(f'jishoResponse argument is malformed: \"{jishoResponse}\"')
 
         definitions: list[str] = list()

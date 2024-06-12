@@ -6,5 +6,9 @@ from CynanBot.jisho.jishoResponse import JishoResponse
 class JishoPresenterInterface(ABC):
 
     @abstractmethod
-    async def toStrings(self, jishoResponse: JishoResponse) -> list[str]:
+    async def toStrings(
+        self,
+        includeRomaji: bool,
+        jishoResponse: JishoResponse
+    ) -> list[str]:
         pass

@@ -37,4 +37,7 @@ class JishoHelper(JishoHelperInterface):
             self.__timber.log('JishoHelper', f'Encountered network error when searching Jisho ({query=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'JishoHelper encountered network error when searching Jisho ({query=}): {e}')
 
-        return await self.__jishoPresenter.toStrings(response)
+        return await self.__jishoPresenter.toStrings(
+            includeRomaji = False,
+            jishoResponse = response
+        )
