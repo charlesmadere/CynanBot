@@ -9,7 +9,7 @@ from CynanBot.jisho.jishoSense import JishoSense
 @dataclass(frozen = True)
 class JishoData():
     isCommon: bool
-    attribution: JishoAttribution
+    attribution: JishoAttribution | None
     japanese: list[JishoJapaneseWord]
     jlptLevels: list[JishoJlptLevel] | None
     senses: list[JishoSense]

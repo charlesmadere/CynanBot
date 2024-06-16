@@ -35,6 +35,8 @@ class JishoApiService(JishoApiServiceInterface):
 
         keyword = utils.cleanStr(keyword)
         encodedQuery = quote(keyword)
+        self.__timber.log('JishoApiService', f'Performing Jisho lookup for \"{keyword}\"... ({encodedQuery=})')
+
         clientSession = await self.__networkClientProvider.get()
 
         try:

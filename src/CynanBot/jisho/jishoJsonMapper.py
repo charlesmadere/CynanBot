@@ -51,6 +51,11 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             elif utils.isValidUrl(jsonContents.get('jmnedict')):
                 jmnedictUrl = utils.getStrFromDict(jsonContents, 'jmnedict')
 
+        if dbpedia is None and dbpediaUrl is None and \
+            jmdict is None and jmdictUrl is None and \
+            jmnedict is None and jmnedictUrl is None:
+            return None
+
         return JishoAttribution(
             dbpedia = dbpedia,
             jmdict = jmdict,
@@ -68,11 +73,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             return None
 
         isCommon = utils.getBoolFromDict(jsonContents, 'is_common')
-
         attribution = await self.parseAttribution(jsonContents.get('attribution'))
-        if attribution is None:
-            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"attribution\" field in JSON data: ({jsonContents=})')
-            return None
 
         japaneseArray: list[dict[str, Any]] | None = jsonContents.get('japanese')
         japaneseWords: list[JishoJapaneseWord] = list()
@@ -238,18 +239,19 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             return None
 
         partsOfSpeechArray: list[str | None] | None = jsonContents.get('parts_of_speech')
-        partsOfSpeech: list[str] = list()
+        partsOfSpeech: list[str] | None = None
 
         if isinstance(partsOfSpeechArray, list) and len(partsOfSpeechArray) >= 1:
+            partsOfSpeech = list()
+
             for index, partOfSpeech in enumerate(partsOfSpeechArray):
                 if utils.isValidStr(partOfSpeech):
                     partsOfSpeech.append(partOfSpeech)
                 else:
                     self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"parts_of_speech\" data: ({jsonContents=})')
 
-        if len(partsOfSpeech) == 0:
-            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"parts_of_speech\" field in JSON data: ({jsonContents=})')
-            return None
+            if len(partsOfSpeech) == 0:
+                partsOfSpeech = None
 
         tagsArray: list[str | None] | None = jsonContents.get('tags')
         tags: list[str] | None = None
