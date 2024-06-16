@@ -39,7 +39,7 @@ class JishoPresenter(JishoPresenterInterface):
         definitions: list[str] = list()
         index = 0
 
-        while index < len(jishoResponse.data) and len(definitions) <= self.__definitionsMaxSize:
+        while index < len(jishoResponse.data) and len(definitions) < self.__definitionsMaxSize:
             jishoData = jishoResponse.data[index]
             jishoJapanese = jishoData.japanese[0]
             jishoSense = jishoData.senses[0]
