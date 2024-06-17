@@ -32,8 +32,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
-        triviaGameMachine: TriviaGameMachineInterface | None,
-        twitchChannelProvider: TwitchChannelProvider
+        triviaGameMachine: TriviaGameMachineInterface | None
     ):
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
@@ -45,15 +44,14 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
 
         self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
-        self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def onNewCheer(
         self,
@@ -255,3 +253,9 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 raidInfo = None
             )
         ))
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__twitchChannelProvider = provider

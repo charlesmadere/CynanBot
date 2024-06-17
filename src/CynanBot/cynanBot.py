@@ -92,7 +92,7 @@ from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
 from CynanBot.commands import (AbsCommand, AddUserCommand, ConfirmCommand,
                                CutenessChampionsCommand,
@@ -248,7 +248,6 @@ from CynanBot.twitch.configuration.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
-from CynanBot.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
 from CynanBot.twitch.configuration.twitchFollowHandler import \
@@ -256,7 +255,6 @@ from CynanBot.twitch.configuration.twitchFollowHandler import \
 from CynanBot.twitch.configuration.twitchPollHandler import TwitchPollHandler
 from CynanBot.twitch.configuration.twitchPredictionHandler import \
     TwitchPredictionHandler
-from CynanBot.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.configuration.twitchSubscriptionHandler import \
     TwitchSubscriptionHandler
 from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
@@ -306,6 +304,8 @@ class CynanBot(
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        twitchCheerHandler: AbsTwitchCheerHandler | None,
+        twitchRaidHandler: AbsTwitchRaidHandler | None,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
         administratorProvider: AdministratorProviderInterface,
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
@@ -392,6 +392,10 @@ class CynanBot(
 
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif twitchCheerHandler is not None and not isinstance(twitchCheerHandler, AbsTwitchCheerHandler):
+            raise TypeError(f'twitchCheerHandler argument is malformed: \"{twitchCheerHandler}\"')
+        elif twitchRaidHandler is not None and not isinstance(twitchRaidHandler, AbsTwitchRaidHandler):
+            raise TypeError(f'twitchRaidHandler argument is malformed: \"{twitchRaidHandler}\"')
         elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -535,6 +539,8 @@ class CynanBot(
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
+        self.__twitchCheerHandler: AbsTwitchCheerHandler | None = twitchCheerHandler
+        self.__twitchRaidHandler: AbsTwitchRaidHandler | None = twitchRaidHandler
         self.__authRepository: AuthRepository = authRepository
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
@@ -903,18 +909,13 @@ class CynanBot(
                 superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
                 triviaGamePointRedemption = self.__triviaGamePointRedemption,
                 timber = self.__timber,
-                twitchChannelProvider = self,
                 userIdsRepository = self.__userIdsRepository
             )
 
-            cheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
-                cheerActionHelper = self.__cheerActionHelper,
-                streamAlertsManager = self.__streamAlertsManager,
-                timber = self.__timber,
-                triviaGameBuilder = self.__triviaGameBuilder,
-                triviaGameMachine = self.__triviaGameMachine,
-                twitchChannelProvider = self
-            )
+            channelPointRedemptionHandler.setTwitchChannelProvider(self)
+
+            if self.__twitchCheerHandler is not None:
+                self.__twitchCheerHandler.setTwitchChannelProvider(self)
 
             followHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
                 timber = self.__timber,
@@ -934,11 +935,8 @@ class CynanBot(
                 websocketConnectionServer = self.__websocketConnectionServer
             )
 
-            raidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
-                chatLogger = self.__chatLogger,
-                streamAlertsManager = self.__streamAlertsManager,
-                timber = self.__timber
-            )
+            if self.__twitchRaidHandler is not None:
+                self.__twitchRaidHandler.setTwitchChannelProvider(self)
 
             subscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
                 streamAlertsManager = self.__streamAlertsManager,
@@ -953,11 +951,11 @@ class CynanBot(
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = channelPointRedemptionHandler,
-                cheerHandler = cheerHandler,
+                cheerHandler = self.__twitchCheerHandler,
                 followHandler = followHandler,
                 pollHandler = pollHandler,
                 predictionHandler = predictionHandler,
-                raidHandler = raidHandler,
+                raidHandler = self.__twitchRaidHandler,
                 subscriptionHandler = subscriptionHandler,
                 timber = self.__timber,
                 userIdsRepository = self.__userIdsRepository,

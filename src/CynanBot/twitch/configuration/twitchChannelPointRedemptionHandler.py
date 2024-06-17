@@ -49,7 +49,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         superTriviaGamePointRedemption: AbsChannelPointRedemption,
         triviaGamePointRedemption: AbsChannelPointRedemption,
         timber: TimberInterface,
-        twitchChannelProvider: TwitchChannelProvider,
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption) and not isinstance(casualGamePollPointRedemption, StubPointRedemption):
@@ -72,8 +71,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
@@ -87,8 +84,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
-        self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def onNewChannelPointRedemption(
         self,
@@ -126,8 +124,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             userName = redemptionUserLogin
         )
 
-        twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
-
         channelPointsMessage = TwitchChannelPointsMessage(
             eventId = eventId,
             redemptionMessage = redemptionUserInput,
@@ -136,6 +132,14 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             userId = redemptionUserId,
             userName = redemptionUserLogin
         )
+
+        twitchChannelProvider = self.__twitchChannelProvider
+
+        if twitchChannelProvider is None:
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Abandoning handling of this channel point redemption as no TwitchChannelProvider has been set: \"{twitchChannelProvider}\"')
+            return
+
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
 
         if user.isCasualGamePollEnabled() and channelPointsMessage.getRewardId() == user.getCasualGamePollRewardId():
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
@@ -200,3 +204,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__twitchChannelProvider = provider

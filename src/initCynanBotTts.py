@@ -48,9 +48,9 @@ from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.cheerActions.timeoutCheerActionHelper import \
+from CynanBot.cheerActions.timeout.timeoutCheerActionHelper import \
     TimeoutCheerActionHelper
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
@@ -182,6 +182,12 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
 from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
+from CynanBot.twitch.configuration.twitchCheerHandler import \
+    TwitchCheerHandler
+from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+from CynanBot.twitch.configuration.twitchRaidHandler import \
+    TwitchRaidHandler
 from CynanBot.twitch.configuration.twitchChannelJoinHelper import \
     TwitchChannelJoinHelper
 from CynanBot.twitch.configuration.twitchConfiguration import \
@@ -791,12 +797,33 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
+##########################################
+## Twitch events initialization section ##
+##########################################
+
+twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
+    cheerActionHelper = cheerActionHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    triviaGameBuilder = None,
+    triviaGameMachine = None
+)
+
+twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
+    chatLogger = chatLogger,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber
+)
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
 
 cynanBot = CynanBot(
     eventLoop = eventLoop,
+    twitchCheerHandler = twitchCheerHandler,
+    twitchRaidHandler = twitchRaidHandler,
     additionalTriviaAnswersRepository = None,
     administratorProvider = administratorProvider,
     anivSettingsRepository = anivSettingsRepository,

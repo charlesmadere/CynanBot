@@ -9,7 +9,7 @@ from CynanBot.cheerActions.cheerActionBitRequirement import \
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
     CheerActionStreamStatusRequirement
 from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface

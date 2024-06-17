@@ -3,7 +3,7 @@ from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.cheerActions.timeoutCheerActionHelperInterface import \
+from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \

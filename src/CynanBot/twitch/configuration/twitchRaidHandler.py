@@ -11,6 +11,8 @@ from CynanBot.tts.ttsRaidInfo import TtsRaidInfo
 from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
     TwitchWebsocketDataBundle
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -32,6 +34,8 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def onNewRaid(
         self,
@@ -129,3 +133,9 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
                 raidInfo = raidInfo
             )
         ))
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__provider = provider
