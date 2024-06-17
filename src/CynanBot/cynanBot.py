@@ -1327,7 +1327,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getTriviaControllersCommand.handleCommand(context)
 
-    @commands.command(name = 'givecuteness')
+    @commands.command(name = 'givecuteness', aliases = [ 'addcuteness' ])
     async def command_givecuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__giveCutenessCommand.handleChatCommand(context)
@@ -1362,7 +1362,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMonCommand.handleCommand(context)
 
-    @commands.command(name = 'pkmove')
+    @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
     async def command_pkmove(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMoveCommand.handleCommand(context)
