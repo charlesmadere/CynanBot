@@ -467,31 +467,34 @@ class CutenessRepository(CutenessRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS cuteness (
-                        cuteness bigint DEFAULT 0 NOT NULL,
-                        twitchchannelid text NOT NULL,
-                        userid text NOT NULL,
-                        utcyearandmonth text NOT NULL,
-                        PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS cuteness (
-                        cuteness INTEGER NOT NULL DEFAULT 0,
-                        twitchchannelid TEXT NOT NULL,
-                        userid TEXT NOT NULL,
-                        utcyearandmonth TEXT NOT NULL,
-                        PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS cuteness (
+                            cuteness bigint DEFAULT 0 NOT NULL,
+                            twitchchannelid text NOT NULL,
+                            userid text NOT NULL,
+                            utcyearandmonth text NOT NULL,
+                            PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS cuteness (
+                            cuteness INTEGER NOT NULL DEFAULT 0,
+                            twitchchannelid TEXT NOT NULL,
+                            userid TEXT NOT NULL,
+                            utcyearandmonth TEXT NOT NULL,
+                            PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
