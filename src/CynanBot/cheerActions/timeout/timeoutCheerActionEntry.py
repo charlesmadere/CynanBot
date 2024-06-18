@@ -9,7 +9,6 @@ class TimeoutCheerActionEntry():
     bitAmount: int
     durationSeconds: int
     timedOutByUserId: str
-    timedOutByUserName: str
 
     @property
     def bitAmountStr(self) -> str:

@@ -8,6 +8,13 @@ from CynanBot.cheerActions.timeout.timeoutCheerActionEntry import \
 class TimeoutCheerActionJsonMapperInterface(ABC):
 
     @abstractmethod
+    async def parseTimeoutCheerActionEntriesString(
+        self,
+        jsonString: str | Any | None
+    ) -> list[TimeoutCheerActionEntry] | None:
+        pass
+
+    @abstractmethod
     async def parseTimeoutCheerActionEntry(
         self,
         jsonContents: dict[str, Any] | Any | None
@@ -15,8 +22,15 @@ class TimeoutCheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseTimeoutCheerActionEntriesString(
+    async def serializeTimeoutCheerActionEntriesToJsonString(
         self,
-        string: str | Any | None
-    ) -> list[TimeoutCheerActionEntry] | None:
+        entries: list[TimeoutCheerActionEntry] | None
+    ) -> str | None:
+        pass
+
+    @abstractmethod
+    async def serializeTimeoutCheerActionEntry(
+        self,
+        entry: TimeoutCheerActionEntry | None
+    ) -> dict[str, Any] | None:
         pass

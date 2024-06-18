@@ -70,6 +70,7 @@ jobs:
       - name: Test cheer actions with pytest
         run: |
           pytest CynanBot/cheerActions/tests
+          pytest CynanBot/cheerActions/timeout/tests
 
 
   content-scanner-tests:

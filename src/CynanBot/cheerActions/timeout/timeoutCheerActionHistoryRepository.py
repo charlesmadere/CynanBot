@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime
 
 from lru import LRU
 
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.timeout.timeoutCheerActionHistory import \
     TimeoutCheerActionHistory
+from CynanBot.cheerActions.timeout.timeoutCheerActionEntry import \
+    TimeoutCheerActionEntry
 from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
 from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import \
@@ -14,6 +17,7 @@ from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import 
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -25,8 +29,10 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        cacheSize: int = 32
+        cacheSize: int = 32,
+        maximumHistoryEntriesSize: int = 5
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -34,16 +40,100 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutCheerActionJsonMapper, TimeoutCheerActionJsonMapperInterface):
             raise TypeError(f'timeoutCheerActionJsonMapper argument is malformed: \"{timeoutCheerActionJsonMapper}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidInt(cacheSize):
+            raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+        elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
+        elif not utils.isValidInt(maximumHistoryEntriesSize):
+            raise TypeError(f'maximumHistoryEntriesSize argument is malformed: \"{maximumHistoryEntriesSize}\"')
+        elif maximumHistoryEntriesSize < 3 or maximumHistoryEntriesSize > 8:
+            raise ValueError(f'maximumHistoryEntriesSize argument is out of bounds: {maximumHistoryEntriesSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = timeoutCheerActionJsonMapper
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__cacheSize: int = cacheSize
+        self.__maximumHistoryEntriesSize: int = maximumHistoryEntriesSize
 
         self.__isDatabaseReady: bool = False
         self.__caches: dict[str, LRU[str, TimeoutCheerActionHistory | None]] = defaultdict(lambda: LRU(cacheSize))
+
+    async def add(
+        self,
+        bitAmount: int,
+        durationSeconds: int,
+        chatterUserId: str,
+        timedOutByUserId: str,
+        twitchAccessToken: str | None,
+        twitchChannelId: str
+    ):
+        if not utils.isValidInt(bitAmount):
+            raise TypeError(f'bitAmount argument is malformed: \"{bitAmount}\"')
+        elif bitAmount < 1 or bitAmount > utils.getIntMaxSafeSize():
+            raise TypeError(f'bitAmount argument is out of bounds: {bitAmount}')
+        elif not utils.isValidInt(durationSeconds):
+            raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
+        elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
+            raise TypeError(f'durationSeconds argument is out of bounds: {durationSeconds}')
+        elif not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(timedOutByUserId):
+            raise TypeError(f'timedOutByUserId argument is malformed: \"{timedOutByUserId}\"')
+        elif twitchAccessToken is not None and not isinstance(twitchAccessToken, str):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        history = await self.get(
+            chatterUserId = chatterUserId,
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId
+        )
+
+        totalTimeouts: int
+        if history is None:
+            totalTimeouts = 1
+        else:
+            totalTimeouts = history.totalTimeouts + 1
+
+        historyEntries: list[TimeoutCheerActionEntry] = list()
+        if history is not None and history.entries is not None and len(historyEntries) >= 1:
+            for entry in history.entries:
+                historyEntries.append(entry)
+
+        historyEntries.append(TimeoutCheerActionEntry(
+            timedOutAtDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
+            bitAmount = bitAmount,
+            durationSeconds = durationSeconds,
+            timedOutByUserId = timedOutByUserId
+        ))
+
+        historyEntries.sort(key = lambda entry: entry.timedOutAtDateTime, reverse = True)
+
+        while len(historyEntries) > self.__maximumHistoryEntriesSize:
+            del historyEntries[len(historyEntries) - 1]
+
+        historyEntriesString = await self.__timeoutCheerActionJsonMapper.serializeTimeoutCheerActionEntriesToJsonString(
+            entries = historyEntries
+        )
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                INSERT INTO timeoutcheeractionhistory (totaltimeouts, chatteruserid, entries, twitchchannelid)
+                VALUES ($1, $2, $3, $4)
+                ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET totaltimeouts = EXCLUDED.totaltimeouts, entries = EXCLUDED.entries
+            ''',
+            totalTimeouts, chatterUserId, historyEntriesString, twitchChannelId
+        )
+
+        await connection.close()
 
     async def clearCaches(self):
         self.__caches.clear()
@@ -88,7 +178,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
 
         if utils.isValidStr(chatterUserName) and record is not None and len(record) >= 1:
             entries = await self.__timeoutCheerActionJsonMapper.parseTimeoutCheerActionEntriesString(
-                string = record[1]
+                jsonString = record[1]
             )
 
             timeoutCheerActionHistory = TimeoutCheerActionHistory(
