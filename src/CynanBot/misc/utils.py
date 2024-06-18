@@ -357,15 +357,15 @@ def getStrFromDict(
     removeCarrots: bool = False
 ) -> str:
     if not isValidStr(key):
-        raise ValueError(f'key argument is malformed: \"{key}\"')
+        raise TypeError(f'key argument is malformed: \"{key}\"')
     elif fallback is not None and not isinstance(fallback, str):
-        raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
+        raise TypeError(f'fallback argument is malformed: \"{fallback}\"')
     elif not isValidBool(clean):
-        raise ValueError(f'clean argument is malformed: \"{clean}\"')
+        raise TypeError(f'clean argument is malformed: \"{clean}\"')
     elif not isValidBool(htmlUnescape):
-        raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
+        raise TypeError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
     elif not isValidBool(removeCarrots):
-        raise ValueError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
+        raise TypeError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
 
     value: str | None = None
 
