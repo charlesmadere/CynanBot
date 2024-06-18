@@ -72,7 +72,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        isCommon = utils.getBoolFromDict(jsonContents, 'is_common')
+        isCommon = utils.getBoolFromDict(jsonContents, 'is_common', fallback = False)
         attribution = await self.parseAttribution(jsonContents.get('attribution'))
 
         japaneseArray: list[dict[str, Any]] | None = jsonContents.get('japanese')
@@ -144,8 +144,16 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        reading = utils.getStrFromDict(jsonContents, 'reading')
-        word = utils.getStrFromDict(jsonContents, 'word')
+        reading: str | None = None
+        if 'reading' in jsonContents and utils.isValidStr(jsonContents.get('reading')):
+            reading = utils.getStrFromDict(jsonContents, 'reading')
+
+        word: str | None = None
+        if 'word' in jsonContents and utils.isValidStr(jsonContents.get('word')):
+            word = utils.getStrFromDict(jsonContents, 'word')
+
+        if reading is None and word is None:
+            return None
 
         return JishoJapaneseWord(
             reading = reading,

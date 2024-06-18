@@ -12,7 +12,7 @@ class JishoPresenter(JishoPresenterInterface):
     ):
         if not utils.isValidInt(definitionsMaxSize):
             raise TypeError(f'definitionsMaxSize argument is malformed: \"{definitionsMaxSize}\"')
-        elif definitionsMaxSize < 1 or definitionsMaxSize > 5:
+        elif definitionsMaxSize < 1 or definitionsMaxSize > utils.getIntMaxSafeSize():
             raise ValueError(f'definitionsMaxSize argument is out of bounds: \"{definitionsMaxSize}\"')
 
         self.__definitionsMaxSize: int = definitionsMaxSize
@@ -48,7 +48,17 @@ class JishoPresenter(JishoPresenterInterface):
             if jishoData.jlptLevels is not None and len(jishoData.jlptLevels) >= 1:
                 jlptLevel = await self.__jlptToString(jishoData.jlptLevels[0])
 
-            definition = f'{jishoJapanese.word} ({jishoJapanese.reading}) — {jishoSense.englishDefinitions[0]} {jlptLevel}'.strip()
+            wordAndReading: str
+            if utils.isValidStr(jishoJapanese.word) and utils.isValidStr(jishoJapanese.reading):
+                wordAndReading = f'{jishoJapanese.word} ({jishoJapanese.reading})'
+            elif utils.isValidStr(jishoJapanese.word):
+                wordAndReading = jishoJapanese.word
+            elif utils.isValidStr(jishoJapanese.reading):
+                wordAndReading = jishoJapanese.reading
+            else:
+                raise ValueError(f'Illegal/impossible Jisho value: \"{jishoJapanese}\"')
+
+            definition = f'{wordAndReading} — {jishoSense.englishDefinitions[0]} {jlptLevel}'.strip()
             definitions.append(definition)
             index = index + 1
 
