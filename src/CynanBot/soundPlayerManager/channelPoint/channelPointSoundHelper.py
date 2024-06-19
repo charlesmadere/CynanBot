@@ -1,5 +1,8 @@
 import random
+import re
+from typing import Pattern
 
+import aiofiles.os
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
@@ -53,10 +56,59 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
         self.__pointRedemptionSoundAlerts: set[SoundAlert] | None = pointRedemptionSoundAlerts
 
         self.__cache: dict[SoundAlert, str | None] | None = None
+        self.__soundFileRegEx: Pattern = re.compile(r'^[^.].+\.(mp3|ogg|wav)$', re.IGNORECASE)
 
     async def clearCaches(self):
         self.__cache = None
         self.__timber.log('ChannelPointSoundHelper', 'Caches cleared')
+
+    async def chooseRandomFromDirectorySoundAlert(
+        self,
+        directoryPath: str | None
+    ) -> str | None:
+        if not utils.isValidStr(directoryPath):
+            return None
+
+        if not await aiofiles.ospath.exists(
+            path = directoryPath,
+            loop = self.__backgroundTaskHelper.getEventLoop()
+        ):
+            self.__timber.log('ChannelPointSoundHelper', f'The given directory path does not exist: \"{directoryPath}\"')
+            return None
+        elif not await aiofiles.ospath.isdir(
+            s = directoryPath,
+            loop = self.__backgroundTaskHelper.getEventLoop()
+        ):
+            self.__timber.log('ChannelPointSoundHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
+            return None
+
+        directoryContents = await aiofiles.os.scandir(
+            path = directoryPath,
+            loop = self.__backgroundTaskHelper.getEventLoop()
+        )
+
+        if directoryContents is None:
+            self.__timber.log('ChannelPointsSoundHelper', f'Failed to scan the given directory path: \"{directoryPath}\"')
+            return None
+
+        soundFiles: list[str] = list()
+
+        for entry in directoryContents:
+            if not entry.is_file():
+                continue
+            elif self.__soundFileRegEx.fullmatch(entry.name) is None:
+                continue
+
+            cleanedPath = utils.cleanPath(entry.name)
+            soundFiles.append(cleanedPath)
+
+        directoryContents.close()
+
+        if len(soundFiles) == 0:
+            self.__timber.log('ChannelPointsSoundHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
+            return None
+
+        return random.choice(soundFiles)
 
     async def chooseRandomSoundAlert(self) -> SoundAlert | None:
         cache = self.__cache

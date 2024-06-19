@@ -95,6 +95,10 @@ class TestSoundAlertJsonMapper():
         result = self.jsonMapper.parseSoundAlert('raid')
         assert result is SoundAlert.RAID
 
+    def test_parseSoundAlert_withRandomFromDirectory(self):
+        result = self.jsonMapper.parseSoundAlert('random_from_directory')
+        assert result is SoundAlert.RANDOM_FROM_DIRECTORY
+
     def test_parseSoundAlert_withSubscribeString(self):
         result = self.jsonMapper.parseSoundAlert('subscribe')
         assert result is SoundAlert.SUBSCRIBE

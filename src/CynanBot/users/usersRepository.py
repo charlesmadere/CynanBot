@@ -449,10 +449,17 @@ class UsersRepository(UsersRepositoryInterface):
                 self.__timber.log('UsersRepository', f'Unable to read string into a valid SoundAlert value ({soundAlertJson=}) ({soundAlertString=}) ({soundAlert=})')
                 continue
 
+            isImmediate = utils.getBoolFromDict(soundAlertJson, 'isImmediate', False)
             rewardId = utils.getStrFromDict(soundAlertJson, 'rewardId')
 
+            directoryPath: str | None = None
+            if 'directoryPath' in soundAlertJson and utils.isValidStr(soundAlertJson.get('directoryPath')):
+                directoryPath = utils.getStrFromDict(soundAlertJson, 'directoryPath')
+
             redemptions[rewardId] = SoundAlertRedemption(
+                isImmediate = isImmediate,
                 soundAlert = soundAlert,
+                directoryPath = directoryPath,
                 rewardId = rewardId
             )
 
