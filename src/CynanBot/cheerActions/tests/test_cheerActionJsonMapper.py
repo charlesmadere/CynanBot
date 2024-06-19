@@ -54,9 +54,9 @@ class TestCheerActionJsonMapper():
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withSoundAlert(self):
         result = await self.jsonMapper.serializeCheerActionType(CheerActionType.SOUND_ALERT)
-        assert result is 'sound_alert'
+        assert result == 'sound_alert'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withTimeout(self):
         result = await self.jsonMapper.serializeCheerActionType(CheerActionType.TIMEOUT)
-        assert result is 'timeout'
+        assert result == 'timeout'
