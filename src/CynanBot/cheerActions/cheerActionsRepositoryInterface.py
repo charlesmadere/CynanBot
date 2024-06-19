@@ -19,6 +19,7 @@ class CheerActionsRepositoryInterface(Clearable):
         actionType: CheerActionType,
         amount: int,
         durationSeconds: int,
+        tag: str | None,
         userId: str
     ) -> CheerAction:
         pass

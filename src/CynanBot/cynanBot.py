@@ -51,6 +51,8 @@ from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
     AddRecurringWeatherActionChatCommand
 from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
     AddRecurringWordOfTheDayActionChatCommand
+from CynanBot.chatCommands.addSoundAlertCheerActionCommand import \
+    AddSoundAlertCheerActionCommand
 from CynanBot.chatCommands.addTimeoutCheerActionCommand import \
     AddTimeoutCheerActionCommand
 from CynanBot.chatCommands.addTriviaAnswerChatCommand import \
@@ -598,10 +600,12 @@ class CynanBot(
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
         if cheerActionIdGenerator is None or cheerActionsRepository is None:
+            self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsCommand = StubCommand()
             self.__getCheerActionsCommand: AbsCommand = StubCommand()
         else:
+            self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsCommand = DeleteCheerActionCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
@@ -1217,6 +1221,11 @@ class CynanBot(
     async def command_addrecurringwordofthedayaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'addsoundcheeraction', aliases = [ 'addsoundcheeraction' ])
+    async def command_addsoundalertcheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addSoundAlertCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtimeoutcheeraction')
     async def command_addtimeoutcheeraction(self, ctx: Context):

@@ -28,7 +28,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         cheerActionIdGenerator: CheerActionIdGeneratorInterface,
         cheerActionJsonMapper: CheerActionJsonMapperInterface,
         timber: TimberInterface,
-        maximumPerUser: int = 5
+        maximumPerUser: int = 32
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -40,7 +40,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(maximumPerUser):
             raise TypeError(f'maximumPerUser argument is malformed: \"{maximumPerUser}\"')
-        elif maximumPerUser < 1 or maximumPerUser > 16:
+        elif maximumPerUser < 1 or maximumPerUser > utils.getIntMaxSafeSize():
             raise ValueError(f'maximumPerUser argument is out of bounds: {maximumPerUser}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -59,6 +59,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         actionType: CheerActionType,
         amount: int,
         durationSeconds: int,
+        tag: str | None,
         userId: str
     ) -> CheerAction:
         if not isinstance(bitRequirement, CheerActionBitRequirement):
@@ -73,10 +74,12 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise ValueError(f'amount argument is out of bounds: {amount}')
         elif not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1:
+        elif durationSeconds < 0:
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
         elif durationSeconds > 1209600:
             raise TimeoutDurationSecondsTooLongException(f'durationSeconds argument is out of bounds: {durationSeconds}')
+        elif tag is not None and not isinstance(tag, str):
+            raise TypeError(f'tag argument is malformed: \"{tag}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
@@ -104,10 +107,10 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO cheeractions (actionid, bitrequirement, streamstatusrequirement, actiontype, amount, durationseconds, userid)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                INSERT INTO cheeractions (actionid, bitrequirement, streamstatusrequirement, actiontype, amount, durationseconds, tag, userid)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             ''',
-            actionId, bitRequirement.toStr(), streamStatusRequirement.getDatabaseString(), actionTypeString, amount, durationSeconds, userId
+            actionId, bitRequirement.toStr(), streamStatusRequirement.getDatabaseString(), actionTypeString, amount, durationSeconds, tag, userId
         )
 
         await connection.close()
@@ -187,7 +190,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT cheeractions.actionid, cheeractions.bitrequirement, cheeractions.streamstatusrequirement, cheeractions.actiontype, cheeractions.amount, cheeractions.durationseconds, cheeractions.userid, userids.username FROM cheeractions
+                SELECT cheeractions.actionid, cheeractions.bitrequirement, cheeractions.streamstatusrequirement, cheeractions.actiontype, cheeractions.amount, cheeractions.durationseconds, cheeractions.tag, cheeractions.userid, userids.username FROM cheeractions
                 INNER JOIN userids ON cheeractions.userid = userids.userid
                 WHERE cheeractions.userid = $1
                 ORDER BY cheeractions.amount DESC
@@ -201,17 +204,20 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         if records is not None and len(records) >= 1:
 
             for record in records:
+                bitRequirement = CheerActionBitRequirement.fromStr(record[1])
+                streamStatusRequirement = CheerActionStreamStatusRequirement.fromStr(record[2])
                 actionType = await self.__cheerActionJsonMapper.requireCheerActionType(record[3])
 
                 actions.append(CheerAction(
-                    actionId = record[0],
-                    bitRequirement = CheerActionBitRequirement.fromStr(record[1]),
-                    streamStatusRequirement = CheerActionStreamStatusRequirement.fromStr(record[2]),
+                    bitRequirement = bitRequirement,
+                    streamStatusRequirement = streamStatusRequirement,
                     actionType = actionType,
                     amount = record[4],
                     durationSeconds = record[5],
-                    userId = record[6],
-                    userName = record[7]
+                    actionId = record[0],
+                    tag = record[6],
+                    userId = record[7],
+                    userName = record[8]
                 ))
 
         self.__cache[userId] = actions
@@ -237,6 +243,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                             bitrequirement text NOT NULL,
                             streamstatusrequirement text NOT NULL,
                             actiontype text NOT NULL,
+                            tag text DEFAULT NULL,
                             amount integer NOT NULL,
                             durationseconds integer NOT NULL,
                             userid text NOT NULL,
@@ -253,6 +260,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                             bitrequirement TEXT NOT NULL,
                             streamstatusrequirement TEXT NOT NULL,
                             actiontype TEXT NOT NULL,
+                            tag TEXT DEFAULT NULL,
                             amount INTEGER NOT NULL,
                             durationseconds INTEGER NOT NULL,
                             userid TEXT NOT NULL,

@@ -17,6 +17,7 @@ class CheerAction():
     amount: int
     durationSeconds: int
     actionId: str
+    tag: str | None
     userId: str
     userName: str
 

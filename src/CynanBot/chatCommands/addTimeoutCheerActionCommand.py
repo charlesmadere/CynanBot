@@ -114,6 +114,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
                 actionType = CheerActionType.TIMEOUT,
                 amount = bits,
                 durationSeconds = durationSeconds,
+                tag = None,
                 userId = userId
             )
         except CheerActionAlreadyExistsException as e:
