@@ -43,7 +43,6 @@ from CynanBot.chatActions.chatActionsManagerInterface import \
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.chatCommands.addBannedTriviaControllerChatCommand import \
     AddBannedTriviaControllerChatCommand
-from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
 from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
 from CynanBot.chatCommands.addRecurringSuperTriviaActionChatCommand import \
@@ -52,6 +51,8 @@ from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
     AddRecurringWeatherActionChatCommand
 from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
     AddRecurringWordOfTheDayActionChatCommand
+from CynanBot.chatCommands.addTimeoutCheerActionCommand import \
+    AddTimeoutCheerActionCommand
 from CynanBot.chatCommands.addTriviaAnswerChatCommand import \
     AddTriviaAnswerChatCommand
 from CynanBot.chatCommands.addTriviaControllerChatCommand import \
@@ -592,11 +593,11 @@ class CynanBot(
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
         if cheerActionIdGenerator is None or cheerActionsRepository is None:
-            self.__addCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsCommand = StubCommand()
             self.__getCheerActionsCommand: AbsCommand = StubCommand()
         else:
-            self.__addCheerActionCommand: AbsChatCommand = AddCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
+            self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsCommand = DeleteCheerActionCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
@@ -1192,11 +1193,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addBannedTriviaControllerCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addcheeraction')
-    async def command_addcheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addCheerActionCommand.handleChatCommand(context)
-
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1216,6 +1212,11 @@ class CynanBot(
     async def command_addrecurringwordofthedayaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'addtimeoutcheeraction')
+    async def command_addtimeoutcheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addTimeoutCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtriviaanswer')
     async def command_addtriviaanswer(self, ctx: Context):
