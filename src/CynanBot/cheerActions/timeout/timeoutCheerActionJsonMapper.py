@@ -1,10 +1,11 @@
 import json
-from json import JSONDecodeError
 import traceback
+from json import JSONDecodeError
 from typing import Any
 
 import CynanBot.misc.utils as utils
-from CynanBot.cheerActions.timeout.timeoutCheerActionEntry import TimeoutCheerActionEntry
+from CynanBot.cheerActions.timeout.timeoutCheerActionEntry import \
+    TimeoutCheerActionEntry
 from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import \
     TimeoutCheerActionJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface

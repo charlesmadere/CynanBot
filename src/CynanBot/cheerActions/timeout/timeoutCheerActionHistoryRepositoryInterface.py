@@ -1,8 +1,8 @@
 from abc import abstractmethod
-from CynanBot.misc.clearable import Clearable
 
 from CynanBot.cheerActions.timeout.timeoutCheerActionHistory import \
     TimeoutCheerActionHistory
+from CynanBot.misc.clearable import Clearable
 
 
 class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
