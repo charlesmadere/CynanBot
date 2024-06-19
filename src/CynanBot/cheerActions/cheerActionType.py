@@ -1,9 +1,7 @@
-from enum import auto
-
-from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
+from enum import Enum, auto
 
 
-class CheerActionType(EnumWithToFromStr):
+class CheerActionType(Enum):
 
     SOUND_ALERT = auto()
     TIMEOUT = auto()
