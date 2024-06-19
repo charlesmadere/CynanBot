@@ -3,6 +3,7 @@ import random
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
+from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
     ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
@@ -15,6 +16,7 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         pointRedemptionSoundAlerts: set[SoundAlert] | None = {
@@ -36,13 +38,16 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
             SoundAlert.POINT_REDEMPTION_16
         }
     ):
-        if not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif pointRedemptionSoundAlerts is not None and not isinstance(pointRedemptionSoundAlerts, set):
             raise TypeError(f'pointRedemptionSoundAlerts argument is malformed: \"{pointRedemptionSoundAlerts}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
         self.__pointRedemptionSoundAlerts: set[SoundAlert] | None = pointRedemptionSoundAlerts
@@ -65,9 +70,15 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
         for soundAlert, filePath in cache.items():
             if not utils.isValidStr(filePath):
                 continue
-            elif not await aiofiles.ospath.exists(filePath):
+            elif not await aiofiles.ospath.exists(
+                path = filePath,
+                loop = self.__backgroundTaskHelper.getEventLoop()
+            ):
                 continue
-            elif not await aiofiles.ospath.isfile(filePath):
+            elif not await aiofiles.ospath.isfile(
+                path = filePath,
+                loop = self.__backgroundTaskHelper.getEventLoop()
+            ):
                 continue
 
             availableSoundAlerts.append(soundAlert)
