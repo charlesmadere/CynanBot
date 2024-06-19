@@ -9,7 +9,7 @@ from CynanBot.soundPlayerManager.vlc.vlcSoundPlayerManager import \
 from CynanBot.timber.timberInterface import TimberInterface
 
 
-class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
+class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
     def __init__(
         self,

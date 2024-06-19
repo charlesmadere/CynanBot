@@ -163,6 +163,8 @@ from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
+from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
+    ImmediateStreamAlertsManagerInterface
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.supStreamer.supStreamerRepositoryInterface import \
@@ -325,6 +327,7 @@ class CynanBot(
         funtoonRepository: FuntoonRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
+        immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         jishoHelper: JishoHelperInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
@@ -431,6 +434,8 @@ class CynanBot(
             raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif immediateStreamAlertsManager is not None and not isinstance(immediateStreamAlertsManager, ImmediateStreamAlertsManagerInterface):
+            raise TypeError(f'immediateStreamAlertsManager argument is malformed: \"{immediateStreamAlertsManager}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
@@ -741,10 +746,10 @@ class CynanBot(
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
-        if channelPointSoundHelper is None or streamAlertsManager is None:
+        if channelPointSoundHelper is None or immediateStreamAlertsManager is None or streamAlertsManager is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(channelPointSoundHelper, streamAlertsManager)
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(channelPointSoundHelper, immediateStreamAlertsManager, streamAlertsManager)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
