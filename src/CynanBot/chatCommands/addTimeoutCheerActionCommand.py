@@ -52,7 +52,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
         if not isinstance(action, CheerAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        cheerActionString = f'id={action.actionId}, amount={action.amount}, duration={action.durationSeconds}, streamStatus={action.streamStatusRequirement}'
+        cheerActionString = f'id={action.actionId}, actionType={action.actionType}, amount={action.amount}, bitRequirement={action.bitRequirement}, duration={action.durationSeconds}, streamStatus={action.streamStatusRequirement}'
         return f'ⓘ Your new timeout cheer action — {cheerActionString}'
 
     async def handleChatCommand(self, ctx: TwitchContext):
