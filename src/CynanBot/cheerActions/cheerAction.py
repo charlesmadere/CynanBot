@@ -20,15 +20,15 @@ class CheerAction():
     userId: str
     userName: str
 
+    @property
+    def amountStr(self) -> str:
+        return locale.format_string("%d", self.amount, grouping = True)
+
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, CheerAction):
             return False
 
         return self.actionId == other.actionId and self.userId == other.userId
-
-    @property
-    def amountStr(self) -> str:
-        return locale.format_string("%d", self.amount, grouping = True)
 
     def __hash__(self) -> int:
         return hash((self.actionId, self.userId))
