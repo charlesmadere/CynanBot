@@ -1437,7 +1437,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__translateCommand.handleChatCommand(context)
 
-    @commands.command(name = 'triviainfo')
+    @commands.command(name = 'triviainfo', aliases = [ 'gettriviainfo' ])
     async def command_triviainfo(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__triviaInfoCommand.handleCommand(context)
