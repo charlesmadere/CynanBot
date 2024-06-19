@@ -369,6 +369,8 @@ from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
+from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from CynanBot.twitch.api.twitchApiService import TwitchApiService
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
@@ -377,16 +379,12 @@ from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
 from CynanBot.twitch.configuration.twitchChannelJoinHelper import \
     TwitchChannelJoinHelper
-from CynanBot.twitch.configuration.twitchCheerHandler import \
-    TwitchCheerHandler
-from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
-from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
-from CynanBot.twitch.configuration.twitchRaidHandler import \
-    TwitchRaidHandler
+from CynanBot.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
 from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
     TwitchIoConfiguration
+from CynanBot.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.followingStatus.twitchFollowingStatusRepository import \
     TwitchFollowingStatusRepository
 from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
@@ -1209,6 +1207,7 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 )
 
 channelPointSoundHelper: ChannelPointSoundHelperInterface | None = ChannelPointSoundHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )

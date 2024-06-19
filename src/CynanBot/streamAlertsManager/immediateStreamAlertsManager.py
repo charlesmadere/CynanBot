@@ -1,7 +1,9 @@
 import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import ImmediateStreamAlertsManagerInterface
+from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import \
+    SoundPlayerManagerProviderInterface
+from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
+    ImmediateStreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 

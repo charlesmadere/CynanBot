@@ -6,7 +6,8 @@ import aiofiles.os
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
     ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert

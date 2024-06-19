@@ -1,6 +1,9 @@
-from CynanBot.soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
-from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+    SoundPlayerManagerInterface
+from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import \
+    SoundPlayerManagerProviderInterface
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.soundPlayerManager.vlc.vlcSoundPlayerManager import \
     VlcSoundPlayerManager
 from CynanBot.timber.timberInterface import TimberInterface
