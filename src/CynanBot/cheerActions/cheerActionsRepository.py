@@ -4,6 +4,8 @@ from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
+from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
+    CheerActionJsonMapperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
@@ -24,6 +26,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         cheerActionIdGenerator: CheerActionIdGeneratorInterface,
+        cheerActionJsonMapper: CheerActionJsonMapperInterface,
         timber: TimberInterface,
         maximumPerUser: int = 5
     ):
@@ -31,6 +34,8 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
             raise TypeError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
+        elif not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
+            raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(maximumPerUser):
@@ -40,6 +45,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__cheerActionIdGenerator: CheerActionIdGeneratorInterface = cheerActionIdGenerator
+        self.__cheerActionJsonMapper: CheerActionJsonMapperInterface = cheerActionJsonMapper
         self.__timber: TimberInterface = timber
         self.__maximumPerUser: int = maximumPerUser
 
@@ -93,13 +99,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 userId = userId
             )
 
+        actionTypeString = await self.__cheerActionJsonMapper.serializeCheerActionType(actionType)
+
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
                 INSERT INTO cheeractions (actionid, bitrequirement, streamstatusrequirement, actiontype, amount, durationseconds, userid)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
             ''',
-            actionId, bitRequirement.toStr(), streamStatusRequirement.getDatabaseString(), actionType.toStr(), amount, durationSeconds, userId
+            actionId, bitRequirement.toStr(), streamStatusRequirement.getDatabaseString(), actionTypeString, amount, durationSeconds, userId
         )
 
         await connection.close()
@@ -191,12 +199,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         actions = list()
 
         if records is not None and len(records) >= 1:
+
             for record in records:
+                actionType = await self.__cheerActionJsonMapper.requireCheerActionType(record[3])
+
                 actions.append(CheerAction(
                     actionId = record[0],
                     bitRequirement = CheerActionBitRequirement.fromStr(record[1]),
                     streamStatusRequirement = CheerActionStreamStatusRequirement.fromStr(record[2]),
-                    actionType = CheerActionType.fromStr(record[3]),
+                    actionType = actionType,
                     amount = record[4],
                     durationSeconds = record[5],
                     userId = record[6],

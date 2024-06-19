@@ -50,6 +50,9 @@ from CynanBot.cheerActions.cheerActionHelperInterface import \
 from CynanBot.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
+from CynanBot.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
+from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
+    CheerActionJsonMapperInterface
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
@@ -1382,9 +1385,14 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 
 cheerActionIdGenerator: CheerActionIdGeneratorInterface = CheerActionIdGenerator()
 
+cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
+    timber = timber
+)
+
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
     backingDatabase = backingDatabase,
     cheerActionIdGenerator = cheerActionIdGenerator,
+    cheerActionJsonMapper = cheerActionJsonMapper,
     timber = timber
 )
 
