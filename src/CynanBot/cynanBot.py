@@ -1229,7 +1229,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addsoundcheeraction', aliases = [ 'addsoundcheeraction' ])
+    @commands.command(name = 'addsoundalertcheeraction', aliases = [ 'addsoundcheeraction' ])
     async def command_addsoundalertcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addSoundAlertCheerActionCommand.handleChatCommand(context)
