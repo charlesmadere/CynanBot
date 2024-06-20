@@ -8,9 +8,9 @@ import aiofiles.ospath
 import CynanBot.misc.utils as utils
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
-from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface

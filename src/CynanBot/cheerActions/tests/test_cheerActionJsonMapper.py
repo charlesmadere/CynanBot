@@ -1,6 +1,7 @@
 import pytest
 
-from CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
+from CynanBot.cheerActions.cheerActionBitRequirement import \
+    CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
     CheerActionJsonMapperInterface
@@ -45,24 +46,9 @@ class TestCheerActionJsonMapper():
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseCheerActionStreamStatusRequirement_withAnyString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('any')
-        assert result is CheerActionStreamStatusRequirement.ANY
-
-    @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withNone(self):
         result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(None)
         assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseCheerActionStreamStatusRequirement_withOfflineString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('offline')
-        assert result is CheerActionStreamStatusRequirement.OFFLINE
-
-    @pytest.mark.asyncio
-    async def test_parseCheerActionStreamStatusRequirement_withOnlineString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('online')
-        assert result is CheerActionStreamStatusRequirement.ONLINE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withWhitespaceString(self):

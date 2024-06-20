@@ -67,8 +67,12 @@ from CynanBot.chatCommands.clearSuperTriviaQueueChatCommand import \
     ClearSuperTriviaQueueChatCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
 from CynanBot.chatCommands.cutenessChatCommand import CutenessChatCommand
+from CynanBot.chatCommands.deleteCheerActionChatCommand import \
+    DeleteCheerActionChatCommand
 from CynanBot.chatCommands.getBannedTriviaControllersChatCommand import \
     GetBannedTriviaControllersChatCommand
+from CynanBot.chatCommands.getCheerActionsChatCommand import \
+    GetCheerActionsChatCommand
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
@@ -83,13 +87,11 @@ from CynanBot.chatCommands.removeRecurringWordOfTheDayAction import \
     RemoveRecurringWordOfTheDayActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
-from CynanBot.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from CynanBot.chatCommands.translateChatCommand import TranslateChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from CynanBot.chatCommands.weatherChatCommand import WeatherChatCommand
 from CynanBot.chatCommands.wordChatCommand import WordChatCommand
-from CynanBot.chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface

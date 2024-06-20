@@ -56,6 +56,10 @@ from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelper import \
+    SoundAlertCheerActionHelper
+from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import \
+    SoundAlertCheerActionHelperInterface
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelper import \
     TimeoutCheerActionHelper
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
@@ -177,10 +181,6 @@ from CynanBot.recurringActions.recurringActionsWizardInterface import \
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.src.CynanBot.soundPlayerManager.soundPlayerRandomizerHelper import \
-    SoundPlayerRandomizerHelper
-from CynanBot.src.CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
-    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundAlertJsonMapper import \
     SoundAlertJsonMapper
 from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
@@ -189,6 +189,10 @@ from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import \
     SoundPlayerManagerProviderInterface
+from CynanBot.soundPlayerManager.soundPlayerRandomizerHelper import \
+    SoundPlayerRandomizerHelper
+from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
@@ -196,7 +200,8 @@ from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
 from CynanBot.soundPlayerManager.vlc.vlcSoundPlayerManagerProvider import \
     VlcSoundPlayerManagerProvider
 from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
-from CynanBot.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
+from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
+    StarWarsQuotesRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
@@ -455,8 +460,6 @@ from CynanBot.weather.weatherReportPresenterInterface import \
 from CynanBot.weather.weatherRepository import WeatherRepository
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
-from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
-from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
@@ -1423,7 +1426,9 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
+    immediateStreamAlertsManager = immediateStreamAlertsManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     timeZoneRepository = timeZoneRepository,

@@ -1,12 +1,20 @@
 import traceback
+
 import CynanBot.misc.utils as utils
-from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
-from CynanBot.trivia.triviaExceptions import AdditionalTriviaAnswerAlreadyExistsException, AdditionalTriviaAnswerIsMalformedException, AdditionalTriviaAnswerIsUnsupportedTriviaTypeException, TooManyAdditionalTriviaAnswersException
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
-from CynanBot.trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
+from CynanBot.trivia.triviaExceptions import (
+    AdditionalTriviaAnswerAlreadyExistsException,
+    AdditionalTriviaAnswerIsMalformedException,
+    AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
+    TooManyAdditionalTriviaAnswersException)
+from CynanBot.trivia.triviaHistoryRepositoryInterface import \
+    TriviaHistoryRepositoryInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface

@@ -1,10 +1,13 @@
 import CynanBot.misc.utils as utils
+from CynanBot.administratorProviderInterface import \
+    AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
-from CynanBot.administratorProviderInterface import AdministratorProviderInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.gameController.addTriviaGameControllerResult import AddTriviaGameControllerResult
-from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
+    AddTriviaGameControllerResult
+from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
+    TriviaGameControllersRepositoryInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerAction import CheerAction
@@ -6,16 +6,16 @@ from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
     CheerActionStreamStatusRequirement
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
-    ImmediateStreamAlertsManagerInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
 from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import \
     SoundAlertCheerActionHelperInterface
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
+from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
+    ImmediateStreamAlertsManagerInterface
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -186,7 +186,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             return False
 
         return await self.__immediateStreamAlertsManager.playSoundFile(
-            file = soundAlertPath
+            filePath = soundAlertPath
         )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

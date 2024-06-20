@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
-from CynanBot.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
+from CynanBot.cheerActions.cheerActionBitRequirement import \
+    CheerActionBitRequirement
+from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
+    CheerActionStreamStatusRequirement
 from CynanBot.cheerActions.cheerActionType import CheerActionType
 
 

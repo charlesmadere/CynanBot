@@ -1,4 +1,5 @@
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import \

@@ -1,9 +1,11 @@
 import CynanBot.misc.utils as utils
+from CynanBot.cheerActions.cheerActionBitRequirement import \
+    CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
     CheerActionJsonMapperInterface
+from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
+    CheerActionStreamStatusRequirement
 from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
-from CynanBot.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -79,7 +81,12 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         self,
         jsonString: str | None
     ) -> CheerActionStreamStatusRequirement:
-        return await super().requireCheerActionStreamStatusRequirement(jsonString)
+        streamStatusRequirement = await self.parseCheerActionStreamStatusRequirement(jsonString)
+
+        if streamStatusRequirement is None:
+            raise ValueError(f'Unable to parse \"{jsonString}\" into CheerActionStreamStatusRequirement value!')
+
+        return streamStatusRequirement
 
     async def requireCheerActionType(
         self,

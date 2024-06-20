@@ -5,7 +5,8 @@ import aiofiles.ospath
 import vlc
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface

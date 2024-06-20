@@ -7,9 +7,9 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
+import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-import CynanBot.misc.utils as utils
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.misc.simpleDateTime import SimpleDateTime
