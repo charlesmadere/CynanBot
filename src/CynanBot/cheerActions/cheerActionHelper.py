@@ -107,7 +107,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             user = user
         ):
             return True
-        elif self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
+
+        if self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
             bits = bits,
             actions = actions,
             broadcasterUserId = broadcasterUserId,
