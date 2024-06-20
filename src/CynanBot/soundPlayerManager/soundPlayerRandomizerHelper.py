@@ -8,15 +8,15 @@ import aiofiles.ospath
 import CynanBot.misc.utils as utils
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
-    ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
-class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
+class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
     def __init__(
         self,
@@ -61,7 +61,7 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
 
     async def clearCaches(self):
         self.__cache = None
-        self.__timber.log('ChannelPointSoundHelper', 'Caches cleared')
+        self.__timber.log('SoundPlayerRandomizerHelper', 'Caches cleared')
 
     async def chooseRandomFromDirectorySoundAlert(
         self,
@@ -70,17 +70,19 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
         if not utils.isValidStr(directoryPath):
             return None
 
+        directoryPath = utils.cleanPath(directoryPath)
+
         if not await aiofiles.ospath.exists(
             path = directoryPath,
             loop = self.__backgroundTaskHelper.getEventLoop()
         ):
-            self.__timber.log('ChannelPointSoundHelper', f'The given directory path does not exist: \"{directoryPath}\"')
+            self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path does not exist: \"{directoryPath}\"')
             return None
         elif not await aiofiles.ospath.isdir(
             s = directoryPath,
             loop = self.__backgroundTaskHelper.getEventLoop()
         ):
-            self.__timber.log('ChannelPointSoundHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
+            self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
             return None
 
         directoryContents = await aiofiles.os.scandir(
@@ -89,7 +91,7 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
         )
 
         if directoryContents is None:
-            self.__timber.log('ChannelPointsSoundHelper', f'Failed to scan the given directory path: \"{directoryPath}\"')
+            self.__timber.log('SoundPlayerRandomizerHelper', f'Failed to scan the given directory path: \"{directoryPath}\"')
             return None
 
         soundFiles: list[str] = list()
@@ -106,7 +108,7 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
         directoryContents.close()
 
         if len(soundFiles) == 0:
-            self.__timber.log('ChannelPointsSoundHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
+            self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
             return None
 
         return random.choice(soundFiles)
@@ -149,5 +151,5 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
                 filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
                 cache[soundAlert] = filePath
 
-        self.__timber.log('ChannelPointSoundHelper', f'Finished loading in ({len(cache)}) sound alert(s)')
+        self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in ({len(cache)}) sound alert(s)')
         return cache

@@ -5,6 +5,7 @@ import aiofiles.ospath
 import vlc
 
 import CynanBot.misc.utils as utils
+from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
@@ -17,14 +18,18 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface
     ):
-        if not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
@@ -61,10 +66,19 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         elif await self.isPlaying():
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
             return False
-        elif not await aiofiles.ospath.exists(filePath):
+
+        filePath = utils.cleanPath(filePath)
+
+        if not await aiofiles.ospath.exists(
+            path = filePath,
+            loop = self.__backgroundTaskHelper.getEventLoop()
+        ):
             self.__timber.log('VlcSoundPlayerManager', f'The given file path does not exist ({filePath=})')
             return False
-        elif not await aiofiles.ospath.isfile(filePath):
+        elif not await aiofiles.ospath.isfile(
+            path = filePath,
+            loop = self.__backgroundTaskHelper.getEventLoop()
+        ):
             self.__timber.log('VlcSoundPlayerManager', f'The given file path is not a file ({filePath=})')
             return False
 

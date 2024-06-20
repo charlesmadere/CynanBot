@@ -1,9 +1,7 @@
-from enum import auto
-
-from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
+from enum import Enum, auto
 
 
-class CheerActionBitRequirement(EnumWithToFromStr):
+class CheerActionBitRequirement(Enum):
 
     EXACT = auto()
     GREATER_THAN_OR_EQUAL_TO = auto()

@@ -1,8 +1,8 @@
 import CynanBot.misc.utils as utils
 from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
-    ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
     ImmediateStreamAlertsManagerInterface
@@ -21,19 +21,19 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
-        channelPointSoundHelper: ChannelPointSoundHelperInterface,
         immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface,
+        soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface
     ):
-        if not isinstance(channelPointSoundHelper, ChannelPointSoundHelperInterface):
-            raise TypeError(f'channelPointSoundHelper argument is malformed: \"{channelPointSoundHelper}\"')
-        elif not isinstance(immediateStreamAlertsManager, ImmediateStreamAlertsManagerInterface):
+        if not isinstance(immediateStreamAlertsManager, ImmediateStreamAlertsManagerInterface):
             raise TypeError(f'immediateStreamAlertsManager argument is malformed: \"{immediateStreamAlertsManager}\"')
+        elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
+            raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
 
-        self.__channelPointSoundHelper: ChannelPointSoundHelperInterface = channelPointSoundHelper
         self.__immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface = immediateStreamAlertsManager
+        self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
 
     async def __findSoundAlertRedemption(
@@ -69,7 +69,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         filePath: str | None = None
 
         if twitchChannelPointsMessage.getRewardId() == user.getRandomSoundAlertRewardId():
-            soundAlert = await self.__channelPointSoundHelper.chooseRandomSoundAlert()
+            soundAlert = await self.__soundPlayerRandomizerHelper.chooseRandomSoundAlert()
 
         if soundAlert is None:
             soundAlertRedemption = await self.__findSoundAlertRedemption(
@@ -81,7 +81,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             isImmediate = soundAlertRedemption.isImmediate
 
             if soundAlertRedemption.soundAlert is SoundAlert.RANDOM_FROM_DIRECTORY:
-                filePath = await self.__channelPointSoundHelper.chooseRandomFromDirectorySoundAlert(
+                filePath = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(
                     directoryPath = soundAlertRedemption.directoryPath
                 )
             else:

@@ -78,7 +78,8 @@ class AddSoundAlertCheerActionCommand(AbsChatCommand):
         except Exception as e:
             self.__timber.log('AddSoundAlertCheerActionCommand', f'Failed to parse bitsString (\"{bitsString}\") into bits int: {e}', e, traceback.format_exc())
 
-        tag: str | None = splits[2]
+        # we use the tag as a path, so let's clean it before using it further
+        tag: str | None = utils.cleanPath(splits[2])
 
         if not utils.isValidInt(bits):
             self.__timber.log('AddSoundAlertCheerActionCommand', f'The bitsString value (\"{bitsString}\") or tag value (\"{tag}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} failed to parse into an int')
@@ -99,7 +100,7 @@ class AddSoundAlertCheerActionCommand(AbsChatCommand):
                 streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                 actionType = CheerActionType.SOUND_ALERT,
                 amount = bits,
-                durationSeconds = 0,
+                durationSeconds = None,
                 tag = tag,
                 userId = userId
             )

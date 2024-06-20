@@ -4,7 +4,7 @@ from CynanBot.misc.clearable import Clearable
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 
 
-class ChannelPointSoundHelperInterface(Clearable):
+class SoundPlayerRandomizerHelperInterface(Clearable):
 
     @abstractmethod
     async def chooseRandomFromDirectorySoundAlert(

@@ -83,11 +83,13 @@ from CynanBot.chatCommands.removeRecurringWordOfTheDayAction import \
     RemoveRecurringWordOfTheDayActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
+from CynanBot.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from CynanBot.chatCommands.translateChatCommand import TranslateChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from CynanBot.chatCommands.weatherChatCommand import WeatherChatCommand
 from CynanBot.chatCommands.wordChatCommand import WordChatCommand
+from CynanBot.chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -100,9 +102,7 @@ from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
 from CynanBot.commands import (AbsCommand, AddUserCommand, ConfirmCommand,
                                CutenessChampionsCommand,
                                CutenessHistoryCommand, CynanSourceCommand,
-                               DeleteCheerActionCommand,
                                DeleteTriviaAnswersCommand, DiscordCommand,
-                               GetCheerActionsCommand,
                                GetGlobalTriviaControllersCommand,
                                GetTriviaAnswersCommand,
                                GetTriviaControllersCommand, LoremIpsumCommand,
@@ -159,8 +159,8 @@ from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
-    ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerRandomizerHelper import \
+    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -318,7 +318,6 @@ class CynanBot(
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
-        channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
         chatActionsManager: ChatActionsManagerInterface | None,
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
@@ -346,6 +345,7 @@ class CynanBot(
         recurringActionsWizard: RecurringActionsWizardInterface | None,
         sentMessageLogger: SentMessageLoggerInterface,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface | None,
+        soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         starWarsQuotesRepository: StarWarsQuotesRepositoryInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface | None,
@@ -416,8 +416,6 @@ class CynanBot(
             raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif channelPointSoundHelper is not None and not isinstance(channelPointSoundHelper, ChannelPointSoundHelperInterface):
-            raise TypeError(f'channelPointSoundHelper argument is malformed: \"{channelPointSoundHelper}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
             raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
@@ -470,6 +468,8 @@ class CynanBot(
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
+        elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
+            raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface):
@@ -585,7 +585,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, channelPointSoundHelper, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, supStreamerRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -602,13 +602,13 @@ class CynanBot(
         if cheerActionIdGenerator is None or cheerActionsRepository is None:
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
-            self.__deleteCheerActionCommand: AbsCommand = StubCommand()
-            self.__getCheerActionsCommand: AbsCommand = StubCommand()
+            self.__deleteCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
-            self.__deleteCheerActionCommand: AbsCommand = DeleteCheerActionCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
-            self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
@@ -750,10 +750,10 @@ class CynanBot(
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
-        if channelPointSoundHelper is None or immediateStreamAlertsManager is None or streamAlertsManager is None:
+        if immediateStreamAlertsManager is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(channelPointSoundHelper, immediateStreamAlertsManager, streamAlertsManager)
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(immediateStreamAlertsManager, soundPlayerRandomizerHelper, streamAlertsManager)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -1297,10 +1297,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__cynanSourceCommand.handleCommand(context)
 
-    @commands.command(name = 'deletecheeraction')
+    @commands.command(name = 'deletecheeraction', aliases = [ 'removecheeraction' ])
     async def command_deletecheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__deleteCheerActionCommand.handleCommand(context)
+        await self.__deleteCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'deletetriviaanswers')
     async def command_deletetriviaanswers(self, ctx: Context):
@@ -1320,7 +1320,7 @@ class CynanBot(
     @commands.command(name = 'getcheeractions')
     async def command_getcheeractions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getCheerActionsCommand.handleCommand(context)
+        await self.__getCheerActionsCommand.handleChatCommand(context)
 
     @commands.command(name = 'getglobaltriviacontrollers')
     async def command_getglobaltriviacontrollers(self, ctx: Context):

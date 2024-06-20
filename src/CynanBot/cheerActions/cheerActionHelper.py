@@ -3,6 +3,8 @@ from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import \
+    SoundAlertCheerActionHelperInterface
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -20,6 +22,7 @@ class CheerActionHelper(CheerActionHelperInterface):
     def __init__(
         self,
         cheerActionsRepository: CheerActionsRepositoryInterface,
+        soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timber: TimberInterface,
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -28,6 +31,8 @@ class CheerActionHelper(CheerActionHelperInterface):
     ):
         if not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif soundAlertCheerActionHelper is not None and not isinstance(soundAlertCheerActionHelper, SoundAlertCheerActionHelperInterface):
+            raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
@@ -40,6 +45,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = soundAlertCheerActionHelper
         self.__timber: TimberInterface = timber
         self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
@@ -88,7 +94,20 @@ class CheerActionHelper(CheerActionHelperInterface):
         if actions is None or len(actions) == 0:
             return False
 
-        if self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
+        if self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
+            bits = bits,
+            actions = actions,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user
+        ):
+            return True
+        elif self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
             bits = bits,
             actions = actions,
             broadcasterUserId = broadcasterUserId,

@@ -58,7 +58,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         actionType: CheerActionType,
         amount: int,
-        durationSeconds: int,
+        durationSeconds: int | None,
         tag: str | None,
         userId: str
     ) -> CheerAction:
@@ -72,11 +72,11 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'amount argument is malformed: \"{amount}\"')
         elif amount < 1 or amount > utils.getIntMaxSafeSize():
             raise ValueError(f'amount argument is out of bounds: {amount}')
-        elif not utils.isValidInt(durationSeconds):
+        elif durationSeconds is not None and not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 0:
+        elif durationSeconds is not None and durationSeconds < 0:
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
-        elif durationSeconds > 1209600:
+        elif durationSeconds is not None and durationSeconds > 1209600:
             raise TimeoutDurationSecondsTooLongException(f'durationSeconds argument is out of bounds: {durationSeconds}')
         elif tag is not None and not isinstance(tag, str):
             raise TypeError(f'tag argument is malformed: \"{tag}\"')
@@ -102,7 +102,9 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 userId = userId
             )
 
+        bitRequirementString = await self.__cheerActionJsonMapper.serializeCheerActionBitRequirement(bitRequirement)
         actionTypeString = await self.__cheerActionJsonMapper.serializeCheerActionType(actionType)
+        streamStatusRequirementString = await self.__cheerActionJsonMapper.serializeCheerActionStreamStatusRequirement(streamStatusRequirement)
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -110,7 +112,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 INSERT INTO cheeractions (actionid, bitrequirement, streamstatusrequirement, actiontype, amount, durationseconds, tag, userid)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             ''',
-            actionId, bitRequirement.toStr(), streamStatusRequirement.getDatabaseString(), actionTypeString, amount, durationSeconds, tag, userId
+            actionId, bitRequirementString, streamStatusRequirementString, actionTypeString, amount, durationSeconds, tag, userId
         )
 
         await connection.close()
@@ -204,8 +206,8 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         if records is not None and len(records) >= 1:
 
             for record in records:
-                bitRequirement = CheerActionBitRequirement.fromStr(record[1])
-                streamStatusRequirement = CheerActionStreamStatusRequirement.fromStr(record[2])
+                bitRequirement = await self.__cheerActionJsonMapper.requireCheerActionBitRequirement(record[1])
+                streamStatusRequirement = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(record[2])
                 actionType = await self.__cheerActionJsonMapper.requireCheerActionType(record[3])
 
                 actions.append(CheerAction(
@@ -245,7 +247,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                             actiontype text NOT NULL,
                             tag text DEFAULT NULL,
                             amount integer NOT NULL,
-                            durationseconds integer NOT NULL,
+                            durationseconds integer DEFAULT NULL,
                             userid text NOT NULL,
                             PRIMARY KEY (actionid, userid)
                         )
@@ -262,7 +264,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                             actiontype TEXT NOT NULL,
                             tag TEXT DEFAULT NULL,
                             amount INTEGER NOT NULL,
-                            durationseconds INTEGER NOT NULL,
+                            durationseconds INTEGER DEFAULT NULL,
                             userid TEXT NOT NULL,
                             PRIMARY KEY (actionid, userid)
                         )

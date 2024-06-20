@@ -72,6 +72,7 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
 )
 
 soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )

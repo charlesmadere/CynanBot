@@ -7,6 +7,8 @@ from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
+from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
+    CheerActionJsonMapperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
@@ -26,6 +28,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        cheerActionJsonMapper: CheerActionJsonMapperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -33,6 +36,8 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
+            raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -43,6 +48,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__cheerActionJsonMapper: CheerActionJsonMapperInterface = cheerActionJsonMapper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -103,7 +109,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
         if len(splits) >= 4:
             streamStatusString = splits[3]
             try:
-                streamStatus = CheerActionStreamStatusRequirement.fromStr(streamStatusString)
+                streamStatus = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(streamStatusString)
             except Exception as e:
                 self.__timber.log('AddTimeoutCheerActionCommand', f'The streamStatus value (\"{streamStatusString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed/invalid: {e}', e, traceback.format_exc())
 

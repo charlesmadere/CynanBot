@@ -6,11 +6,6 @@ from datetime import datetime, timedelta
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBot.cheerActions.cheerAction import CheerAction
-from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
-    CheerActionIdGeneratorInterface
-from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
@@ -374,82 +369,6 @@ class CynanSourceCommand(AbsCommand):
         self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
-class DeleteCheerActionCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        cheerActionIdGenerator: CheerActionIdGeneratorInterface,
-        cheerActionsRepository: CheerActionsRepositoryInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
-            raise ValueError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
-        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__cheerActionIdGenerator: CheerActionIdGeneratorInterface = cheerActionIdGenerator
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-    async def __actionToStr(self, action: CheerAction) -> str:
-        if not isinstance(action, CheerAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
-
-        return f'id={action.actionId}, amount={action.amount}, duration={action.durationSeconds}'
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-        elif not user.areCheerActionsEnabled():
-            return
-
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 2 or not utils.strContainsAlphanumericCharacters(splits[1]):
-            self.__timber.log('DeleteCheerActionCommand', f'Incorrect arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            actionId = await self.__cheerActionIdGenerator.generateActionId()
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Action ID is necessary for the !deletecheeraction command. Example: !deletecheeraction {actionId}')
-            return
-
-        actionId = splits[1]
-
-        action = await self.__cheerActionsRepository.deleteAction(
-            actionId = splits[1],
-            userId = userId
-        )
-
-        if action is None:
-            self.__timber.log('DeleteCheerActionCommand', f'Cheer action ID {actionId} was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no corresponding cheer action was found')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Could not find any corresponding cheer action with ID \"{actionId}\"')
-            return
-
-        actionString = await self.__actionToStr(action)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted cheer action — {actionString}')
-        self.__timber.log('DeleteCheerActionCommand', f'Handled !deletecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
 class DeleteTriviaAnswersCommand(AbsCommand):
 
     def __init__(
@@ -581,72 +500,6 @@ class DiscordCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {user.getDiscordUrl()}')
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
-class GetCheerActionsCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        cheerActionsRepository: CheerActionsRepositoryInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = '; '
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
-
-    async def __actionsToStr(self, actions: list[CheerAction]) -> str:
-        if not isinstance(actions, list):
-            raise ValueError(f'actions argument is malformed: \"{actions}\"')
-
-        if len(actions) == 0:
-            return f'ⓘ You have no cheer actions'
-
-        cheerActionStrings: list[str] = list()
-
-        for action in actions:
-            cheerActionStrings.append(f'id={action.actionId}, amount={action.amount}, duration={action.durationSeconds}')
-
-        cheerActionsString = self.__delimiter.join(cheerActionStrings)
-        return f'ⓘ Your cheer actions — {cheerActionsString}'
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('GetCheerActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-        elif not user.areCheerActionsEnabled():
-            return
-
-        actions = await self.__cheerActionsRepository.getActions(userId)
-        await self.__twitchUtils.safeSend(ctx, await self.__actionsToStr(actions))
-        self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetGlobalTriviaControllersCommand(AbsCommand):

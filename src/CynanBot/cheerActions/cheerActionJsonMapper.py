@@ -1,9 +1,9 @@
-from typing import Any
-
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
     CheerActionJsonMapperInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
+from CynanBot.src.CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
+from CynanBot.src.CynanBot.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -14,6 +14,39 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
+
+    async def parseCheerActionBitRequirement(
+        self,
+        jsonString: str | None
+    ) -> CheerActionBitRequirement | None:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        jsonString = jsonString.lower()
+
+        match jsonString:
+            case 'exact': return CheerActionBitRequirement.EXACT
+            case 'greater_than_or_equal_to': return CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO
+            case _:
+                self.__timber.log('CheerActionJsonMapper', f'Encountered unknown CheerActionBitRequirement value: \"{jsonString}\"')
+                return None
+
+    async def parseCheerActionStreamStatusRequirement(
+        self,
+        jsonString: str | None
+    ) -> CheerActionStreamStatusRequirement | None:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        jsonString = jsonString.lower()
+
+        match jsonString:
+            case 'any': return CheerActionStreamStatusRequirement.ANY
+            case 'offline': return CheerActionStreamStatusRequirement.OFFLINE
+            case 'online': return CheerActionStreamStatusRequirement.ONLINE
+            case _:
+                self.__timber.log('CheerActionJsonMapper', f'Encountered unknown CheerActionStreamStatusRequirement value: \"{jsonString}\"')
+                return None
 
     async def parseCheerActionType(
         self,
@@ -31,6 +64,23 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
                 self.__timber.log('CheerActionJsonMapper', f'Encountered unknown CheerActionType value: \"{jsonString}\"')
                 return None
 
+    async def requireCheerActionBitRequirement(
+        self,
+        jsonString: str | None
+    ) -> CheerActionBitRequirement:
+        bitRequirement = await self.parseCheerActionBitRequirement(jsonString)
+
+        if bitRequirement is None:
+            raise ValueError(f'Unable to parse \"{jsonString}\" into CheerActionBitRequirement value!')
+
+        return bitRequirement
+
+    async def requireCheerActionStreamStatusRequirement(
+        self,
+        jsonString: str | None
+    ) -> CheerActionStreamStatusRequirement:
+        return await super().requireCheerActionStreamStatusRequirement(jsonString)
+
     async def requireCheerActionType(
         self,
         jsonString: str | None
@@ -41,6 +91,31 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise ValueError(f'Unable to parse \"{jsonString}\" into CheerActionType value!')
 
         return actionType
+
+    async def serializeCheerActionBitRequirement(
+        self,
+        bitRequirement: CheerActionBitRequirement
+    ) -> str:
+        if not isinstance(bitRequirement, CheerActionBitRequirement):
+            raise TypeError(f'bitRequirement argument is malformed: \"{bitRequirement}\"')
+
+        match bitRequirement:
+            case CheerActionBitRequirement.EXACT: return 'exact'
+            case CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO: return 'greater_than_or_equal_to'
+            case _: raise ValueError(f'The given CheerActionBitRequirement value is unknown: \"{bitRequirement}\"')
+
+    async def serializeCheerActionStreamStatusRequirement(
+        self,
+        streamStatusRequirement: CheerActionStreamStatusRequirement
+    ) -> str:
+        if not isinstance(streamStatusRequirement, CheerActionStreamStatusRequirement):
+            raise TypeError(f'streamStatusRequirement argument is malformed: \"{streamStatusRequirement}\"')
+
+        match streamStatusRequirement:
+            case CheerActionStreamStatusRequirement.ANY: return 'any'
+            case CheerActionStreamStatusRequirement.OFFLINE: return 'offline'
+            case CheerActionStreamStatusRequirement.ONLINE: return 'online'
+            case _: raise ValueError(f'The given CheerActionStreamStatusRequirement value is unknown: \"{streamStatusRequirement}\"')
 
     async def serializeCheerActionType(
         self,

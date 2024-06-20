@@ -141,6 +141,9 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         if timeoutAction is None:
             return False
+        elif not utils.isValidInt(action.durationSeconds):
+            self.__timber.log('TimeoutCheerActionHelper', f'Encountered a valid timeout CheerAction instance but it has no durationSeconds value, this should be impossible: {timeoutAction}')
+            return False
 
         userNameToTimeoutMatch = self.__userNameRegEx.fullmatch(message)
         if userNameToTimeoutMatch is None or not utils.isValidStr(userNameToTimeoutMatch.group(2)):
@@ -245,7 +248,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        streamAlertsManager = self.__streamAlertsManager
         twitchChannelProvider = self.__twitchChannelProvider
         twitchChannel: TwitchMessageable | None = None
 
@@ -272,9 +274,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but this user is a new follower ({action=})')
             return False
 
+        durationSeconds = action.requireDurationSeconds()
+
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
-            durationSeconds = action.durationSeconds,
-            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {action.durationSeconds} second(s), action ID \"{action.actionId}\"',
+            durationSeconds = durationSeconds,
+            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {durationSeconds} second(s), action ID \"{action.actionId}\"',
             twitchAccessToken = moderatorTwitchAccessToken,
             twitchChannelAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,
@@ -300,12 +304,12 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but an error occurred ({timeoutResult=}) ({action=})')
             return False
 
-        self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" for {action.durationSeconds} second(s)')
+        self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" for {durationSeconds} second(s)')
 
-        if user.isTtsEnabled() and streamAlertsManager is not None:
-            message = f'{cheerUserName} timed out {userNameToTimeout} for {action.durationSeconds} seconds! rip bozo!'
+        if user.isTtsEnabled():
+            message = f'{cheerUserName} timed out {userNameToTimeout} for {durationSeconds} seconds! rip bozo!'
 
-            streamAlertsManager.submitAlert(StreamAlert(
+            self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = None,
                 twitchChannel = user.getHandle(),
                 twitchChannelId = twitchChannelId,

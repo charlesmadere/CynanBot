@@ -20,8 +20,8 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.misc.clearable import Clearable
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
-    ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.supStreamer.supStreamerRepositoryInterface import \
@@ -59,7 +59,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
-        channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -69,6 +68,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
+        soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
@@ -91,8 +91,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif channelPointSoundHelper is not None and not isinstance(channelPointSoundHelper, ChannelPointSoundHelperInterface):
-            raise TypeError(f'channelPointSoundHelper argument is malformed: \"{channelPointSoundHelper}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
@@ -111,6 +109,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
             raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
+        elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
+            raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
@@ -157,6 +157,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(mostRecentAnivMessageRepository)
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
+        self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(supStreamerRepository)
         self.__clearables.append(triviaSettingsRepository)

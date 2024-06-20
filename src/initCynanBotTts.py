@@ -108,10 +108,10 @@ from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelper import \
-    ChannelPointSoundHelper
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
-    ChannelPointSoundHelperInterface
+from CynanBot.src.CynanBot.soundPlayerManager.soundPlayerRandomizerHelper import \
+    SoundPlayerRandomizerHelper
+from CynanBot.src.CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundAlertJsonMapper import \
     SoundAlertJsonMapper
 from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
@@ -259,6 +259,8 @@ from CynanBot.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
+from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
+from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
@@ -578,13 +580,14 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
 
-channelPointSoundHelper: ChannelPointSoundHelperInterface | None = ChannelPointSoundHelper(
+soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -796,6 +799,15 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber
 )
 
+soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository
+)
+
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
@@ -809,6 +821,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     cheerActionsRepository = cheerActionsRepository,
+    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     twitchHandleProvider = authRepository,
@@ -851,7 +864,6 @@ cynanBot = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = None,
     bannedWordsRepository = bannedWordsRepository,
-    channelPointSoundHelper = channelPointSoundHelper,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
@@ -879,6 +891,7 @@ cynanBot = CynanBot(
     recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
+    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,
     streamAlertsManager = streamAlertsManager,
