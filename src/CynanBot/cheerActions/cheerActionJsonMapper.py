@@ -2,8 +2,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
     CheerActionJsonMapperInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.src.CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
-from CynanBot.src.CynanBot.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
+from CynanBot.cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
+from CynanBot.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from CynanBot.timber.timberInterface import TimberInterface
 
 
