@@ -11,6 +11,8 @@ from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
 from CynanBot.cheerActions.cheerActionType import CheerActionType
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
+    TimeoutCheerActionHistoryRepositoryInterface
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -33,8 +35,6 @@ from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
-from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
-    TimeoutCheerActionHistoryRepositoryInterface
 
 
 class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
@@ -316,6 +316,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             bitAmount = bits,
             durationSeconds = durationSeconds,
             chatterUserId = userIdToTimeout,
+            timedOutByUserId = cheerUserId,
             twitchAccessToken = userTwitchAccessToken,
             twitchChannel = user.getHandle(),
             twitchChannelId = twitchChannelId
