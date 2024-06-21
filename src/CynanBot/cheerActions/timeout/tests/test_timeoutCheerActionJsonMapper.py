@@ -1,17 +1,19 @@
-from datetime import datetime
 import json
+from datetime import datetime
 from typing import Any
 
 import pytest
 
+from CynanBot.cheerActions.timeout.timeoutCheerActionEntry import \
+    TimeoutCheerActionEntry
 from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapper import \
     TimeoutCheerActionJsonMapper
 from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import \
     TimeoutCheerActionJsonMapperInterface
-from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from CynanBot.cheerActions.timeout.timeoutCheerActionEntry import TimeoutCheerActionEntry
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
+from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 
 
@@ -73,7 +75,7 @@ class TestTimeoutCheerActionJsonMapper():
 
         jsonEntry = jsonList[0]
         assert isinstance(jsonEntry, dict)
-        assert len(jsonEntry, 4)
+        assert len(jsonEntry) == 4
         assert jsonEntry['bitAmount'] == entry.bitAmount
         assert jsonEntry['durationSeconds'] == entry.durationSeconds
         assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()

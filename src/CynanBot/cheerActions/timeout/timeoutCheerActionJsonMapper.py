@@ -80,7 +80,20 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
         if entries is None or len(entries) == 0:
             return None
 
-        return await super().serializeTimeoutCheerActionEntriesToJsonString(entries)
+        entryDictionaries: list[dict[str, Any]] = list()
+
+        for index, entry in enumerate(entries):
+            entryDictionary = await self.serializeTimeoutCheerActionEntry(entry)
+
+            if entryDictionary is None:
+                self.__timber.log('TimeoutCheerActionJsonMapper', f'Unable to serialize timeout cheer action entry value at index {index}: ({entry=})')
+            else:
+                entryDictionaries.append(entryDictionary)
+
+        if len(entryDictionaries) == 0:
+            return None
+
+        return json.dumps(entryDictionaries)
 
     async def serializeTimeoutCheerActionEntry(
         self,
