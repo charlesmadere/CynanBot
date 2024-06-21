@@ -33,6 +33,8 @@ from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
+    TimeoutCheerActionHistoryRepositoryInterface
 
 
 class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
@@ -42,6 +44,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
+        timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
@@ -55,6 +58,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutCheerActionHistoryRepository, TimeoutCheerActionHistoryRepositoryInterface):
+            raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
@@ -71,6 +76,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
+        self.__timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface = timeoutCheerActionHistoryRepository
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
@@ -305,6 +311,15 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             return False
 
         self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" for {durationSeconds} second(s)')
+
+        await self.__timeoutCheerActionHistoryRepository.add(
+            bitAmount = bits,
+            durationSeconds = durationSeconds,
+            chatterUserId = userIdToTimeout,
+            twitchAccessToken = userTwitchAccessToken,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
+        )
 
         if user.isTtsEnabled():
             message = f'{cheerUserName} timed out {userNameToTimeout} for {durationSeconds} seconds! rip bozo!'

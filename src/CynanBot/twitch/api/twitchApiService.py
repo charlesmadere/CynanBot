@@ -109,11 +109,11 @@ class TwitchApiService(TwitchApiServiceInterface):
         userId: str
     ) -> bool:
         if not utils.isValidStr(broadcasterId):
-            raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__timber.log('TwitchApiService', f'Adding moderator... ({broadcasterId=}) ({twitchAccessToken=}) ({userId=})')
         clientSession = await self.__networkClientProvider.get()
@@ -182,24 +182,26 @@ class TwitchApiService(TwitchApiServiceInterface):
         if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise GenericNetworkException(f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
-        elif not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when banning user ({banRequest=}) ({jsonResponse=})')
             raise TwitchJsonException(f'Recieved a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
 
         data: list[dict[str, Any]] | None = jsonResponse.get('data')
-
-        if not utils.hasItems(data) or not utils.hasItems(data[0]):
-            self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
+        if not isinstance(data, list) or len(data) == 0:
+            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed \"data\" field in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
             raise TwitchJsonException(f'Received a null/empty \"data\" field in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
 
-        entry = data[0]
+        entry: dict[str, Any] = data[0]
+        if not isinstance(entry, dict) or len(entry) == 0:
+            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
 
-        endTime: SimpleDateTime | None = None
+        endTime: datetime | None = None
         if 'end_time' in entry and utils.isValidStr(entry.get('end_time')):
-            endTime = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(entry, 'end_time')))
+            endTime = datetime.fromisoformat(utils.getStrFromDict(entry, 'end_time'))
 
         return TwitchBanResponse(
-            createdAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(entry, 'created_at'))),
+            createdAt = datetime.fromisoformat(utils.getStrFromDict(entry, 'created_at')),
             endTime = endTime,
             broadcasterUserId = utils.getStrFromDict(entry, 'broadcaster_id'),
             moderatorUserId = utils.getStrFromDict(entry, 'moderator_id'),

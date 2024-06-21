@@ -4,6 +4,7 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.src.CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
@@ -71,6 +72,20 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
+
+    async def parseBroadcasterType(
+        self,
+        broadcasterType: str | None
+    ) -> TwitchBroadcasterType | None:
+        if not utils.isValidStr(broadcasterType):
+            return None
+
+        broadcasterType = broadcasterType.lower()
+
+        match broadcasterType:
+            case 'affiliate': return TwitchBroadcasterType.AFFILIATE
+            case 'partner': return TwitchBroadcasterType.PARTNER
+            case _: return TwitchBroadcasterType.NORMAL
 
     async def parseSubscriberTier(
         self,

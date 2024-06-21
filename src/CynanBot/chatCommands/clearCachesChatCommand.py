@@ -49,6 +49,8 @@ from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
+    TimeoutCheerActionHistoryRepositoryInterface
 
 
 class ClearCachesChatCommand(AbsChatCommand):
@@ -72,6 +74,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
+        timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
@@ -117,6 +120,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif timeoutCheerActionHistoryRepository is not None and not isinstance(timeoutCheerActionHistoryRepository, TimeoutCheerActionHistoryRepositoryInterface):
+            raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
@@ -160,6 +165,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(supStreamerRepository)
+        self.__clearables.append(timeoutCheerActionHistoryRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchFollowingStatusRepository)

@@ -1,4 +1,6 @@
 from datetime import datetime
+import json
+from typing import Any
 
 import pytest
 
@@ -49,6 +51,35 @@ class TestTimeoutCheerActionJsonMapper():
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_serializeTimeoutCheerActionEntriesToJsonString(self):
+        entry = TimeoutCheerActionEntry(
+            timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
+            bitAmount = 100,
+            durationSeconds = 60,
+            timedOutByUserId = 'abc123'
+        )
+
+        entries: list[TimeoutCheerActionEntry] = list()
+        entries.append(entry)
+
+        jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
+        assert isinstance(jsonString, str)
+        assert len(jsonString) != 0
+        assert jsonString.isspace() is False
+
+        jsonList: list[dict[str, Any]] = json.loads(jsonString)
+        assert isinstance(jsonList, list)
+        assert len(jsonList) == 1
+
+        jsonEntry = jsonList[0]
+        assert isinstance(jsonEntry, dict)
+        assert len(jsonEntry, 4)
+        assert jsonEntry['bitAmount'] == entry.bitAmount
+        assert jsonEntry['durationSeconds'] == entry.durationSeconds
+        assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
+        assert jsonEntry['timedOutByUserId'] == entry.timedOutByUserId
+
+    @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntriesToJsonString_withEmptyList(self):
         result = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(list())
         assert result is None
@@ -81,3 +112,8 @@ class TestTimeoutCheerActionJsonMapper():
     async def test_serializeTimeoutCheerActionEntry_withNone(self):
         result = await self.jsonMapper.serializeTimeoutCheerActionEntry(None)
         assert result is None
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, TimeoutCheerActionJsonMapperInterface)
+        assert isinstance(self.jsonMapper, TimeoutCheerActionJsonMapper)

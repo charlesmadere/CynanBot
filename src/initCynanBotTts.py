@@ -263,6 +263,10 @@ from CynanBot.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
+from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepository import TimeoutCheerActionHistoryRepository
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
@@ -812,10 +816,23 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = Sound
     userIdsRepository = userIdsRepository
 )
 
+timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutCheerActionJsonMapper(
+    timber = timber
+)
+
+timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface = TimeoutCheerActionHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeoutCheerActionJsonMapper = timeoutCheerActionJsonMapper,
+    timeZoneRepository = timeZoneRepository,
+    userIdsRepository = userIdsRepository
+)
+
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
@@ -903,6 +920,7 @@ cynanBot = CynanBot(
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
+    timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,
     triviaBanHelper = None,

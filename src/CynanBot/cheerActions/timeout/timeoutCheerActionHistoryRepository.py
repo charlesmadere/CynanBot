@@ -60,7 +60,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         self.__timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = timeoutCheerActionJsonMapper
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__cacheSize: int = cacheSize
         self.__maximumHistoryEntriesSize: int = maximumHistoryEntriesSize
 
         self.__isDatabaseReady: bool = False
@@ -73,6 +72,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         chatterUserId: str,
         timedOutByUserId: str,
         twitchAccessToken: str | None,
+        twitchChannel: str,
         twitchChannelId: str
     ):
         if not utils.isValidInt(bitAmount):
@@ -89,12 +89,15 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             raise TypeError(f'timedOutByUserId argument is malformed: \"{timedOutByUserId}\"')
         elif twitchAccessToken is not None and not isinstance(twitchAccessToken, str):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         history = await self.get(
             chatterUserId = chatterUserId,
             twitchAccessToken = twitchAccessToken,
+            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -121,6 +124,15 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         while len(historyEntries) > self.__maximumHistoryEntriesSize:
             del historyEntries[len(historyEntries) - 1]
 
+        self.__caches[twitchChannelId][chatterUserId] = TimeoutCheerActionHistory(
+            totalTimeouts = totalTimeouts,
+            entries = historyEntries,
+            chatterUserId = history.chatterUserId,
+            chatterUserName = history.chatterUserName,
+            twitchChannel = history.twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
         historyEntriesString = await self.__timeoutCheerActionJsonMapper.serializeTimeoutCheerActionEntriesToJsonString(
             entries = historyEntries
         )
@@ -145,12 +157,15 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         self,
         chatterUserId: str,
         twitchAccessToken: str | None,
+        twitchChannel: str,
         twitchChannelId: str
-    ) -> TimeoutCheerActionHistory | None:
+    ) -> TimeoutCheerActionHistory:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif twitchAccessToken is not None and not isinstance(twitchAccessToken, str):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -162,34 +177,43 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT timeoutcheeractionhistory.totaltimeouts, timeoutcheeractionhistory.entries, userids.username FROM timeoutcheeractionhistory
-                INNER JOIN userids ON timeoutcheeractionhistory.userid = userids.userid
-                WHERE timeoutcheeractionhistory.chatteruserid = $1 AND timeoutcheeractionhistory.twitchchannelid = $2
+                SELECT totaltimeouts, chatteruserid, entries FROM timeoutcheeractionhistory
+                WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
             chatterUserId, twitchChannelId
         )
 
         await connection.close()
-        timeoutCheerActionHistory: TimeoutCheerActionHistory | None = None
 
-        chatterUserName = await self.__userIdsRepository.fetchUserName(
+        chatterUserName = await self.__userIdsRepository.requireUserName(
             userId = chatterUserId,
             twitchAccessToken = twitchAccessToken
         )
 
-        if utils.isValidStr(chatterUserName) and record is not None and len(record) >= 1:
+        timeoutCheerActionHistory: TimeoutCheerActionHistory
+
+        if record is None or len(record) == 0:
+            timeoutCheerActionHistory = TimeoutCheerActionHistory(
+                totalTimeouts = 0,
+                entries = None,
+                chatterUserId = chatterUserId,
+                chatterUserName = chatterUserName,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+        else:
             entries = await self.__timeoutCheerActionJsonMapper.parseTimeoutCheerActionEntriesString(
-                jsonString = record[1]
+                jsonString = record[2]
             )
 
             timeoutCheerActionHistory = TimeoutCheerActionHistory(
                 totalTimeouts = record[0],
                 entries = entries,
-                chatterUserId = record[2],
+                chatterUserId = record[1],
                 chatterUserName = chatterUserName,
-                twitchChannel = record[3],
-                twitchChannelId = record[4]
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
             )
 
         cache[chatterUserId] = timeoutCheerActionHistory

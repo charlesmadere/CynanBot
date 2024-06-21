@@ -15,6 +15,7 @@ class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
         chatterUserId: str,
         timedOutByUserId: str,
         twitchAccessToken: str | None,
+        twitchChannel: str,
         twitchChannelId: str
     ):
         pass
@@ -24,6 +25,7 @@ class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
         self,
         chatterUserId: str,
         twitchAccessToken: str | None,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> TimeoutCheerActionHistory | None:
         pass

@@ -6,6 +6,7 @@ from CynanBot.location.timeZoneRepositoryInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
+from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
@@ -181,6 +182,31 @@ class TestTwitchJsonMapper():
     @pytest.mark.asyncio
     async def test_parseApiScope_withWhitespaceString(self):
         result = await self.jsonMapper.parseApiScope(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterType_withAffiliateString(self):
+        result = await self.jsonMapper.parseBroadcasterType('affiliate')
+        assert result is TwitchBroadcasterType.AFFILIATE
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterType_withEmptyString(self):
+        result = await self.jsonMapper.parseBroadcasterType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterType_withNone(self):
+        result = await self.jsonMapper.parseBroadcasterType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterType_withPartnerString(self):
+        result = await self.jsonMapper.parseBroadcasterType('partner')
+        assert result is TwitchBroadcasterType.PARTNER
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseBroadcasterType(' ')
         assert result is None
 
     @pytest.mark.asyncio

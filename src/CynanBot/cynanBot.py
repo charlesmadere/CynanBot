@@ -299,6 +299,8 @@ from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
+    TimeoutCheerActionHistoryRepositoryInterface
 
 
 class CynanBot(
@@ -357,6 +359,7 @@ class CynanBot(
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
+        timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelper | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
@@ -489,6 +492,8 @@ class CynanBot(
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
             raise TypeError(f'timeoutCheerActionHelper argument is malformed: \"{timeoutCheerActionHelper}\"')
+        elif timeoutCheerActionHistoryRepository is not None and not isinstance(timeoutCheerActionHistoryRepository, TimeoutCheerActionHistoryRepositoryInterface):
+            raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
@@ -592,7 +597,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
