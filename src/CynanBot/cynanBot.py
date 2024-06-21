@@ -103,6 +103,8 @@ from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
+    TimeoutCheerActionHistoryRepositoryInterface
 from CynanBot.commands import (AbsCommand, AddUserCommand, ConfirmCommand,
                                CutenessChampionsCommand,
                                CutenessHistoryCommand, CynanSourceCommand,
@@ -299,8 +301,6 @@ from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
-from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
-    TimeoutCheerActionHistoryRepositoryInterface
 
 
 class CynanBot(

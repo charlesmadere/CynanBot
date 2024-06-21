@@ -5,7 +5,6 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkHandle import NetworkHandle

@@ -59,6 +59,14 @@ from CynanBot.cheerActions.timeout.timeoutCheerActionHelper import \
     TimeoutCheerActionHelper
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepository import \
+    TimeoutCheerActionHistoryRepository
+from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
+    TimeoutCheerActionHistoryRepositoryInterface
+from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapper import \
+    TimeoutCheerActionJsonMapper
+from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import \
+    TimeoutCheerActionJsonMapperInterface
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
@@ -263,10 +271,6 @@ from CynanBot.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
-from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
-from CynanBot.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
-from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepository import TimeoutCheerActionHistoryRepository
-from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(

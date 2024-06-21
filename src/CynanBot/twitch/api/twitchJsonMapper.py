@@ -4,10 +4,10 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-from CynanBot.src.CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
+from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
