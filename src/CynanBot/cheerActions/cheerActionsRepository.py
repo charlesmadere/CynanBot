@@ -204,7 +204,6 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         actions = list()
 
         if records is not None and len(records) >= 1:
-
             for record in records:
                 bitRequirement = await self.__cheerActionJsonMapper.requireCheerActionBitRequirement(record[1])
                 streamStatusRequirement = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(record[2])
