@@ -144,7 +144,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     wizard.setBits(bits)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard encountered an error, please try again')
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
@@ -154,7 +154,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     wizard.setDurationSeconds(durationSeconds)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set durationSeconds value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard encountered an error, please try again')
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
@@ -164,7 +164,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     wizard.setStreamStatus(streamStatus)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set stream status value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard encountered an error, please try again')
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
@@ -221,7 +221,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
             case _:
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard is in an invalid state, please try again')
                 return True
 
     async def handleChat(
