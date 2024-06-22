@@ -316,3 +316,8 @@ class UserInterface(ABC):
     @abstractmethod
     def isWordOfTheDayEnabled(self) -> bool:
         pass
+
+    @property
+    @abstractmethod
+    def timeoutCheerActionFollowShieldDays(self) -> int | None:
+        pass

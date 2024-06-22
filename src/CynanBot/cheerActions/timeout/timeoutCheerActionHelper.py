@@ -49,8 +49,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        minimumFollowDuration: timedelta = timedelta(weeks = 1)
+        userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
@@ -70,8 +69,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(minimumFollowDuration, timedelta):
-            raise TypeError(f'minimumFollowDuration argument is malformed: \"{minimumFollowDuration}\"')
 
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
@@ -82,7 +79,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__minimumFollowDuration: timedelta = minimumFollowDuration
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -185,10 +181,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __isNewFollower(
         self,
+        followShieldDays: int | None,
         twitchAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str
     ) -> bool:
+        if followShieldDays is not None and not utils.isValidInt(followShieldDays):
+            raise TypeError(f'followShieldDays argument is malformed: \"{followShieldDays}\"')
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -196,20 +195,26 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
+        if followShieldDays is None:
+            # this user doesn't use a follow shield
+            return False
+
         followingStatus = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userId = userIdToTimeout
         )
 
+        minimumFollowDuration = timedelta(days = followShieldDays)
+
         if followingStatus is None:
-            self.__timber.log('TimeoutCheerActionHelper', f'The given user ID will not be timed out as this user is not following the channel ({followingStatus=}) ({self.__minimumFollowDuration=}) ({twitchChannelId=}) ({userIdToTimeout=})')
+            self.__timber.log('TimeoutCheerActionHelper', f'The given user ID will not be timed out as this user is not following the channel ({followingStatus=}) ({minimumFollowDuration=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if followingStatus.followedAt + self.__minimumFollowDuration >= now:
-            self.__timber.log('TimeoutCheerActionHelper', f'The given user ID will not be timed out as this user started following the channel within the minimum follow duration window: ({followingStatus=}) ({self.__minimumFollowDuration=}) ({twitchChannelId=}) ({userIdToTimeout=})')
+        if followingStatus.followedAt + minimumFollowDuration >= now:
+            self.__timber.log('TimeoutCheerActionHelper', f'The given user ID will not be timed out as this user started following the channel within the minimum follow duration window: ({followingStatus=}) ({minimumFollowDuration=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
 
         return False
@@ -273,6 +278,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but the current stream status is invalid ({action=})')
             return False
         elif await self.__isNewFollower(
+            followShieldDays = user.timeoutCheerActionFollowShieldDays,
             twitchAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout

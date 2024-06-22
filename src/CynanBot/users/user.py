@@ -68,6 +68,7 @@ class User(UserInterface):
         superTriviaGameToxicPunishmentMultiplier: int | None,
         superTriviaPerUserAttempts: int | None,
         superTriviaSubscribeTriggerMaximum: int | None,
+        timeoutCheerActionFollowShieldDays: int | None,
         triviaGamePoints: int | None,
         triviaGameShinyMultiplier: int | None,
         waitForSuperTriviaAnswerDelay: int | None,
@@ -205,6 +206,8 @@ class User(UserInterface):
             raise TypeError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif superTriviaSubscribeTriggerMaximum is not None and not utils.isValidInt(superTriviaSubscribeTriggerMaximum):
             raise TypeError(f'superTriviaSubscribeTriggerMaximum argument is malformed: \"{superTriviaSubscribeTriggerMaximum}\"')
+        elif timeoutCheerActionFollowShieldDays is not None and not utils.isValidInt(timeoutCheerActionFollowShieldDays):
+            raise TypeError(f'timeoutCheerActionFollowShieldDays argument is malformed: \"{timeoutCheerActionFollowShieldDays}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise TypeError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif triviaGameShinyMultiplier is not None and not utils.isValidInt(triviaGameShinyMultiplier):
@@ -309,6 +312,7 @@ class User(UserInterface):
         self.__superTriviaGameToxicPunishmentMultiplier: int | None = superTriviaGameToxicPunishmentMultiplier
         self.__superTriviaPerUserAttempts: int | None = superTriviaPerUserAttempts
         self.__superTriviaSubscribeTriggerMaximum: int | None = superTriviaSubscribeTriggerMaximum
+        self.__timeoutCheerActionFollowShieldDays: int | None = timeoutCheerActionFollowShieldDays
         self.__triviaGamePoints: int | None = triviaGamePoints
         self.__triviaGameShinyMultiplier: int | None = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
@@ -611,3 +615,7 @@ class User(UserInterface):
 
     def __repr__(self) -> str:
         return self.__handle
+
+    @property
+    def timeoutCheerActionFollowShieldDays(self) -> int | None:
+        return self.__timeoutCheerActionFollowShieldDays

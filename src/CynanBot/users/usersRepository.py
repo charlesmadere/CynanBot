@@ -103,6 +103,12 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', False)
+
+        timeoutCheerActionFollowShieldDays: int | None = None
+        if areCheerActionsEnabled:
+            if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
+                timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
+
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
@@ -304,6 +310,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             superTriviaSubscribeTriggerMaximum = superTriviaSubscribeTriggerMaximum,
+            timeoutCheerActionFollowShieldDays = timeoutCheerActionFollowShieldDays,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
