@@ -6,6 +6,8 @@ from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
+from CynanBot.chatActions.cheerActionsWizardChatAction import \
+    CheerActionsWizardChatAction
 from CynanBot.chatActions.deerForceChatAction import DeerForceChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
@@ -35,6 +37,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         anivCheckChatAction: AnivCheckChatAction | None,
         catJamChatAction: CatJamChatAction | None,
         chatLoggerChatAction: ChatLoggerChatAction | None,
+        cheerActionsWizardChatAction: CheerActionsWizardChatAction | None,
         deerForceChatAction: DeerForceChatAction | None,
         generalSettingsRepository: GeneralSettingsRepository,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
@@ -55,6 +58,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
         elif chatLoggerChatAction is not None and not isinstance(chatLoggerChatAction, ChatLoggerChatAction):
             raise TypeError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
+        elif cheerActionsWizardChatAction is not None and not isinstance(cheerActionsWizardChatAction, CheerActionsWizardChatAction):
+            raise TypeError(f'cheerActionsWizardChatAction argument is malformed: \"{cheerActionsWizardChatAction}\"')
         elif deerForceChatAction is not None and not isinstance(deerForceChatAction, DeerForceChatAction):
             raise TypeError(f'deerForceChatAction argument is malformed: \"{deerForceChatAction}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -85,6 +90,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__anivCheckChatAction: AbsChatAction | None = anivCheckChatAction
         self.__catJamChatAction: AbsChatAction | None = catJamChatAction
         self.__chatLoggerChatAction: AbsChatAction | None = chatLoggerChatAction
+        self.__cheerActionsWizardChatAction: CheerActionsWizardChatAction | None = cheerActionsWizardChatAction
         self.__deerForceChatAction: AbsChatAction | None = deerForceChatAction
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
@@ -157,6 +163,13 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         if self.__chatLoggerChatAction is not None:
             await self.__chatLoggerChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
+
+        if self.__cheerActionsWizardChatAction is not None:
+            await self.__cheerActionsWizardChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
                 user = user

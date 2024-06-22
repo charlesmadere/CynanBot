@@ -28,12 +28,15 @@ from CynanBot.aniv.mostRecentAnivMessageTimeoutHelper import \
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
+from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
 from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
+from CynanBot.chatActions.cheerActionsWizardChatAction import \
+    CheerActionsWizardChatAction
 from CynanBot.chatActions.deerForceChatAction import DeerForceChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
@@ -56,6 +59,9 @@ from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.cheerActionsWizard import CheerActionsWizard
+from CynanBot.cheerActions.cheerActionsWizardInterface import \
+    CheerActionsWizardInterface
 from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelper import \
     SoundAlertCheerActionHelper
 from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import \
@@ -1341,80 +1347,35 @@ streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
 )
 
 
-#########################################
-## Chat Actions initialization section ##
-#########################################
-
-saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
-if mostRecentAnivMessageRepository is not None:
-    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-        anivUserIdProvider = anivUserIdProvider,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
-    )
-
-supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
-)
-
-chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
-    anivCheckChatAction = AnivCheckChatAction(
-        anivContentScanner = anivContentScanner,
-        anivUserIdProvider = anivUserIdProvider,
-        timber = timber,
-        twitchApiService = twitchApiService,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils,
-        userIdsRepository = userIdsRepository
-    ),
-    catJamChatAction = CatJamChatAction(
-        generalSettingsRepository = generalSettingsRepository,
-        timber = timber,
-        twitchUtils = twitchUtils
-    ),
-    chatLoggerChatAction = ChatLoggerChatAction(
-        chatLogger = chatLogger
-    ),
-    deerForceChatAction = DeerForceChatAction(
-        generalSettingsRepository = generalSettingsRepository,
-        timber = timber,
-        twitchUtils = twitchUtils
-    ),
-    generalSettingsRepository = generalSettingsRepository,
-    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
-    mostRecentChatsRepository = mostRecentChatsRepository,
-    persistAllUsersChatAction = PersistAllUsersChatAction(
-        generalSettingsRepository = generalSettingsRepository,
-        userIdsRepository = userIdsRepository
-    ),
-    recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
-        recurringActionsRepository = recurringActionsRepository,
-        recurringActionsWizard = recurringActionsWizard,
-        timber = timber,
-        twitchUtils = twitchUtils
-    ),
-    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
-    schubertWalkChatAction = SchubertWalkChatAction(
-        generalSettingsRepository = generalSettingsRepository,
-        timber = timber,
-        twitchUtils = twitchUtils
-    ),
-    supStreamerChatAction = None,
-    timber = timber,
-    twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
-)
-
-
 #############################################
 ## Star Wars Quotes initialization section ##
 #############################################
 
 starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
     quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
+)
+
+
+##################################
+## Jisho initialization section ##
+##################################
+
+jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+    timber = timber
+)
+
+jishoApiService: JishoApiServiceInterface = JishoApiService(
+    jishoJsonMapper = jishoJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+jishoPresenter: JishoPresenterInterface = JishoPresenter()
+
+jishoHelper: JishoHelperInterface = JishoHelper(
+    jishoApiService = jishoApiService,
+    jishoPresenter = jishoPresenter,
+    timber = timber
 )
 
 
@@ -1481,26 +1442,91 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
-##################################
-## Jisho initialization section ##
-##################################
+#########################################
+## Chat Actions initialization section ##
+#########################################
 
-jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+catJamChatAction = CatJamChatAction(
+    generalSettingsRepository = generalSettingsRepository,
+    timber = timber,
+    twitchUtils = twitchUtils
+)
+
+chatLoggerChatAction = ChatLoggerChatAction(
+    chatLogger = chatLogger
+)
+
+cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
     timber = timber
 )
 
-jishoApiService: JishoApiServiceInterface = JishoApiService(
-    jishoJsonMapper = jishoJsonMapper,
-    networkClientProvider = networkClientProvider,
-    timber = timber
+cheerActionsWizardChatAction = CheerActionsWizardChatAction(
+    cheerActionsRepository = cheerActionsRepository,
+    cheerActionsWizard = cheerActionsWizard,
+    timber = timber,
+    twitchUtils = twitchUtils
 )
 
-jishoPresenter: JishoPresenterInterface = JishoPresenter()
+persistAllUsersChatAction = PersistAllUsersChatAction(
+    generalSettingsRepository = generalSettingsRepository,
+    userIdsRepository = userIdsRepository
+)
 
-jishoHelper: JishoHelperInterface = JishoHelper(
-    jishoApiService = jishoApiService,
-    jishoPresenter = jishoPresenter,
-    timber = timber
+recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
+    recurringActionsRepository = recurringActionsRepository,
+    recurringActionsWizard = recurringActionsWizard,
+    timber = timber,
+    twitchUtils = twitchUtils
+)
+
+saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
+if mostRecentAnivMessageRepository is not None:
+    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+        anivUserIdProvider = anivUserIdProvider,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+    )
+
+supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    anivCheckChatAction = AnivCheckChatAction(
+        anivContentScanner = anivContentScanner,
+        anivUserIdProvider = anivUserIdProvider,
+        timber = timber,
+        twitchApiService = twitchApiService,
+        twitchHandleProvider = authRepository,
+        twitchTokensRepository = twitchTokensRepository,
+        twitchUtils = twitchUtils,
+        userIdsRepository = userIdsRepository
+    ),
+    catJamChatAction = catJamChatAction,
+    chatLoggerChatAction = chatLoggerChatAction,
+    cheerActionsWizardChatAction = cheerActionsWizardChatAction,
+    deerForceChatAction = DeerForceChatAction(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchUtils = twitchUtils
+    ),
+    generalSettingsRepository = generalSettingsRepository,
+    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
+    mostRecentChatsRepository = mostRecentChatsRepository,
+    persistAllUsersChatAction = persistAllUsersChatAction,
+    recurringActionsWizardChatAction = recurringActionsWizardChatAction,
+    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
+    schubertWalkChatAction = SchubertWalkChatAction(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchUtils = twitchUtils
+    ),
+    supStreamerChatAction = None,
+    timber = timber,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository
 )
 
 

@@ -12,7 +12,11 @@ class SuperTriviaSteps(AbsSteps):
         return self.__step
 
     def stepForward(self) -> StepResult:
-        if self.__step is SuperTriviaStep.MINUTES_BETWEEN:
-            return StepResult.DONE
-        else:
-            raise RuntimeError(f'unknown SuperTriviaStep: \"{self.__step}\"')
+        currentStep = self.__step
+
+        match currentStep:
+            case SuperTriviaStep.MINUTES_BETWEEN:
+                return StepResult.DONE
+
+            case _:
+                raise RuntimeError(f'unknown next SuperTriviaStep: \"{currentStep}\"')

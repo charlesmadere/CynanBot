@@ -12,7 +12,11 @@ class WordOfTheDaySteps(AbsSteps):
         return self.__step
 
     def stepForward(self) -> StepResult:
-        if self.__step is WordOfTheDayStep.MINUTES_BETWEEN:
-            return StepResult.DONE
-        else:
-            raise RuntimeError(f'unknown WordOfTheDayStep: \"{self.__step}\"')
+        currentStep = self.__step
+
+        match currentStep:
+            case WordOfTheDayStep.MINUTES_BETWEEN:
+                return StepResult.DONE
+
+            case _:
+                raise RuntimeError(f'unknown next WordOfTheDayStep: \"{currentStep}\"')

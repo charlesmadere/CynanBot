@@ -12,10 +12,15 @@ class WeatherSteps(AbsSteps):
         return self.__step
 
     def stepForward(self) -> StepResult:
-        if self.__step is WeatherStep.MINUTES_BETWEEN:
-            self.__step = WeatherStep.ALERTS_ONLY
-            return StepResult.NEXT
-        elif self.__step is WeatherStep.ALERTS_ONLY:
-            return StepResult.DONE
-        else:
-            raise RuntimeError(f'unknown WeatherStep: \"{self.__step}\"')
+        currentStep = self.__step
+
+        match currentStep:
+            case WeatherStep.MINUTES_BETWEEN:
+                self.__step = WeatherStep.ALERTS_ONLY
+                return StepResult.NEXT
+
+            case WeatherStep.ALERTS_ONLY:
+                return StepResult.DONE
+
+            case _:
+                raise RuntimeError(f'unknown next WeatherStep: \"{currentStep}\"')

@@ -1,20 +1,17 @@
 from datetime import timedelta
 
 import CynanBot.misc.utils as utils
+from CynanBot.cheerActions.cheerActionsWizardInterface import \
+    CheerActionsWizardInterface
+from CynanBot.cheerActions.cheerActionType import CheerActionType
+from CynanBot.cheerActions.wizards.absWizard import AbsWizard
+from CynanBot.cheerActions.wizards.soundAlertWizard import SoundAlertWizard
+from CynanBot.cheerActions.wizards.timeoutWizard import TimeoutWizard
 from CynanBot.misc.timedDict import TimedDict
-from CynanBot.recurringActions.recurringActionsWizardInterface import \
-    RecurringActionsWizardInterface
-from CynanBot.recurringActions.recurringActionType import RecurringActionType
-from CynanBot.recurringActions.wizards.absWizard import AbsWizard
-from CynanBot.recurringActions.wizards.superTriviaWizard import \
-    SuperTriviaWizard
-from CynanBot.recurringActions.wizards.weatherWizard import WeatherWizard
-from CynanBot.recurringActions.wizards.wordOfTheDayWizard import \
-    WordOfTheDayWizard
 from CynanBot.timber.timberInterface import TimberInterface
 
 
-class RecurringActionsWizard(RecurringActionsWizardInterface):
+class CheerActionsWizard(CheerActionsWizardInterface):
 
     def __init__(
         self,
@@ -43,12 +40,12 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
     async def start(
         self,
-        recurringActionType: RecurringActionType,
+        cheerActionType: CheerActionType,
         twitchChannel: str,
         twitchChannelId: str
     ) -> AbsWizard:
-        if not isinstance(recurringActionType, RecurringActionType):
-            raise TypeError(f'recurringActionType argument is malformed: \"{recurringActionType}\"')
+        if not isinstance(cheerActionType, CheerActionType):
+            raise TypeError(f'cheerActionType argument is malformed: \"{cheerActionType}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -57,86 +54,60 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         existingWizard = self.__wizards[twitchChannelId]
 
         if existingWizard is not None:
-            self.__timber.log('RecurringActionsWizard', f'Starting a new \"{recurringActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
+            self.__timber.log('CheerActionsWizard', f'Starting a new \"{cheerActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
 
-        match recurringActionType:
-            case RecurringActionType.SUPER_TRIVIA:
-                return await self.__startNewSuperTriviaWizard(
+        match cheerActionType:
+            case CheerActionType.SOUND_ALERT:
+                return await self.__startNewSoundAlertWizard(
                     twitchChannel = twitchChannel,
                     twitchChannelId = twitchChannelId
                 )
 
-            case RecurringActionType.WEATHER:
-                return await self.__startNewWeatherWizard(
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
-                )
-
-            case RecurringActionType.WORD_OF_THE_DAY:
-                return await self.__startNewWordOfTheDayWizard(
+            case CheerActionType.TIMEOUT:
+                return await self.__startNewTimeoutWizard(
                     twitchChannel = twitchChannel,
                     twitchChannelId = twitchChannelId
                 )
 
             case _:
-                raise RuntimeError(f'unknown RecurringActionType: \"{recurringActionType}\"')
+                raise RuntimeError(f'unknown CheerActionType: \"{cheerActionType}\"')
 
-    async def __startNewSuperTriviaWizard(
+    async def __startNewSoundAlertWizard(
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> SuperTriviaWizard:
+    ) -> SoundAlertWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        wizard = SuperTriviaWizard(
+        wizard = SoundAlertWizard(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         self.__wizards[twitchChannelId] = wizard
-        self.__timber.log('RecurringActionsWizard', f'Started new Super Trivia wizard for {twitchChannel}:{twitchChannelId}')
+        self.__timber.log('CheerActionsWizard', f'Started new Sound Alert wizard for {twitchChannel}:{twitchChannelId}')
 
         return wizard
 
-    async def __startNewWeatherWizard(
+    async def __startNewTimeoutWizard(
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> WeatherWizard:
+    ) -> TimeoutWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        wizard = WeatherWizard(
+        wizard = TimeoutWizard(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         self.__wizards[twitchChannelId] = wizard
-        self.__timber.log('RecurringActionsWizard', f'Started new Weather wizard for {twitchChannel}:{twitchChannelId}')
-
-        return wizard
-
-    async def __startNewWordOfTheDayWizard(
-        self,
-        twitchChannel: str,
-        twitchChannelId: str
-    ) -> WordOfTheDayWizard:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        wizard = WordOfTheDayWizard(
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
-        )
-
-        self.__wizards[twitchChannelId] = wizard
-        self.__timber.log('RecurringActionsWizard', f'Started new Word Of The Day wizard for {twitchChannel}:{twitchChannelId}')
+        self.__timber.log('CheerActionsWizard', f'Started new Timeout wizard for {twitchChannel}:{twitchChannelId}')
 
         return wizard
