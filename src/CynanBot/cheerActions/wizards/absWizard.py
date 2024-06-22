@@ -29,6 +29,10 @@ class AbsWizard(ABC):
     def getSteps(self) -> AbsSteps:
         pass
 
+    @abstractmethod
+    def printOut(self) -> str:
+        pass
+
     @property
     def twitchChannel(self) -> str:
         return self.__twitchChannel

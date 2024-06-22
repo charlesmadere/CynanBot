@@ -1461,6 +1461,7 @@ cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
 )
 
 cheerActionsWizardChatAction = CheerActionsWizardChatAction(
+    cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     timber = timber,

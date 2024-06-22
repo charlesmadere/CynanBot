@@ -29,6 +29,9 @@ class SoundAlertWizard(AbsWizard):
     def getSteps(self) -> SoundAlertSteps:
         return self.__steps
 
+    def printOut(self) -> str:
+        return f'{self.__bits=}, {self.__tag=}'
+
     def requireBits(self) -> int:
         bits = self.__bits
 
@@ -67,5 +70,7 @@ class SoundAlertWizard(AbsWizard):
         return {
             'bits': self.__bits,
             'steps': self.__steps,
-            'tag': self.__tag
+            'tag': self.__tag,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }

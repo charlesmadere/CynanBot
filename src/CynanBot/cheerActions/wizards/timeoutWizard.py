@@ -32,6 +32,9 @@ class TimeoutWizard(AbsWizard):
     def getSteps(self) -> TimeoutSteps:
         return self.__steps
 
+    def printOut(self) -> str:
+        return f'{self.__streamStatus=}, {self.__bits=}, {self.__durationSeconds=}'
+
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
@@ -87,5 +90,7 @@ class TimeoutWizard(AbsWizard):
             'bits': self.__bits,
             'durationSeconds': self.__durationSeconds,
             'steps': self.__steps,
-            'streamStatus': self.__streamStatus
+            'streamStatus': self.__streamStatus,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }
