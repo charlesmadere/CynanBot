@@ -168,14 +168,14 @@ from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.soundPlayerManager.immediateSoundPlayerManagerInterface import \
+    ImmediateSoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerRandomizerHelper import \
     SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
-    ImmediateStreamAlertsManagerInterface
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.supStreamer.supStreamerRepositoryInterface import \
@@ -339,7 +339,7 @@ class CynanBot(
         funtoonRepository: FuntoonRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
-        immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface | None,
+        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         jishoHelper: JishoHelperInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
@@ -450,8 +450,8 @@ class CynanBot(
             raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif immediateStreamAlertsManager is not None and not isinstance(immediateStreamAlertsManager, ImmediateStreamAlertsManagerInterface):
-            raise TypeError(f'immediateStreamAlertsManager argument is malformed: \"{immediateStreamAlertsManager}\"')
+        elif immediateSoundPlayerManager is not None and not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
+            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
@@ -767,10 +767,10 @@ class CynanBot(
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
-        if immediateStreamAlertsManager is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
+        if immediateSoundPlayerManager is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(immediateStreamAlertsManager, soundPlayerRandomizerHelper, streamAlertsManager)
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(immediateSoundPlayerManager, soundPlayerRandomizerHelper, streamAlertsManager)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()

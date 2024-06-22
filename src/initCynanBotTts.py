@@ -124,6 +124,10 @@ from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.soundPlayerManager.immediateSoundPlayerManager import \
+    ImmediateSoundPlayerManager
+from CynanBot.soundPlayerManager.immediateSoundPlayerManagerInterface import \
+    ImmediateSoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundAlertJsonMapper import \
     SoundAlertJsonMapper
 from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
@@ -149,10 +153,6 @@ from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.storage.linesFileReader import LinesFileReader
 from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
-from CynanBot.streamAlertsManager.immediateStreamAlertsManager import \
-    ImmediateStreamAlertsManager
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
-    ImmediateStreamAlertsManagerInterface
 from CynanBot.streamAlertsManager.streamAlertsManager import \
     StreamAlertsManager
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
@@ -608,6 +608,11 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
 
 soundPlayerManager: SoundPlayerManagerInterface | None = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
 
+immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    timber = timber
+)
+
 
 ################################
 ## TTS initialization section ##
@@ -729,11 +734,6 @@ if mostRecentAnivMessageRepository is not None:
 ## Stream Alerts Manager intialization section ##
 #################################################
 
-immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface = ImmediateStreamAlertsManager(
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    timber = timber
-)
-
 streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
     settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')
 )
@@ -769,7 +769,7 @@ cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
-    immediateStreamAlertsManager = immediateStreamAlertsManager,
+    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     streamAlertsManager = streamAlertsManager,
@@ -924,7 +924,7 @@ cynanBot = CynanBot(
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
-    immediateStreamAlertsManager = immediateStreamAlertsManager,
+    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,
     languagesRepository = languagesRepository,

@@ -11,19 +11,13 @@ from CynanBot.cheerActions.soundAlert.soundAlertCheerActionHelperInterface impor
     SoundAlertCheerActionHelperInterface
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.soundPlayerManager.immediateSoundPlayerManagerInterface import \
+    ImmediateSoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
-    ImmediateStreamAlertsManagerInterface
-from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsProvider import TtsProvider
-from CynanBot.twitch.configuration.twitchChannelProvider import \
-    TwitchChannelProvider
-from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -36,7 +30,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
     def __init__(
         self,
-        immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface,
+        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
@@ -46,8 +40,8 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         minimumFollowDuration: timedelta = timedelta(weeks = 1)
     ):
-        if not isinstance(immediateStreamAlertsManager, ImmediateStreamAlertsManagerInterface):
-            raise TypeError(f'immediateStreamAlertsManager argument is malformed: \"{immediateStreamAlertsManager}\"')
+        if not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
+            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
@@ -65,7 +59,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         elif not isinstance(minimumFollowDuration, timedelta):
             raise TypeError(f'minimumFollowDuration argument is malformed: \"{minimumFollowDuration}\"')
 
-        self.__immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface = immediateStreamAlertsManager
+        self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
@@ -73,9 +67,6 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__minimumFollowDuration: timedelta = minimumFollowDuration
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def handleSoundAlertCheerAction(
         self,
@@ -185,15 +176,9 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not utils.isValidStr(soundAlertPath):
             return False
 
-        return await self.__immediateStreamAlertsManager.playSoundFile(
+        return await self.__immediateSoundPlayerManager.playSoundFile(
             filePath = soundAlertPath
         )
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
 
     async def __verifyStreamStatus(
         self,

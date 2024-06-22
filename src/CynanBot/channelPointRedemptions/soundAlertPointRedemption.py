@@ -1,11 +1,11 @@
 import CynanBot.misc.utils as utils
 from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
+from CynanBot.soundPlayerManager.immediateSoundPlayerManagerInterface import \
+    ImmediateSoundPlayerManagerInterface
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
-from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
-    ImmediateStreamAlertsManagerInterface
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
@@ -16,23 +16,22 @@ from CynanBot.users.soundAlertRedemption import SoundAlertRedemption
 from CynanBot.users.userInterface import UserInterface
 
 
-
 class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
-        immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface,
+        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface
     ):
-        if not isinstance(immediateStreamAlertsManager, ImmediateStreamAlertsManagerInterface):
-            raise TypeError(f'immediateStreamAlertsManager argument is malformed: \"{immediateStreamAlertsManager}\"')
+        if not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
+            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
 
-        self.__immediateStreamAlertsManager: ImmediateStreamAlertsManagerInterface = immediateStreamAlertsManager
+        self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
 
@@ -92,9 +91,9 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
         if isImmediate:
             if utils.isValidStr(filePath):
-                await self.__immediateStreamAlertsManager.playSoundFile(filePath)
+                await self.__immediateSoundPlayerManager.playSoundFile(filePath)
             elif soundAlert is not None:
-                await self.__immediateStreamAlertsManager.playSoundAlert(soundAlert)
+                await self.__immediateSoundPlayerManager.playSoundAlert(soundAlert)
         else:
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = soundAlert,

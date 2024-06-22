@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 
 
-class ImmediateStreamAlertsManagerInterface(ABC):
+class ImmediateSoundPlayerManagerInterface(ABC):
 
     @abstractmethod
     async def playSoundAlert(self, alert: SoundAlert) -> bool:

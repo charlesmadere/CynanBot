@@ -1,12 +1,12 @@
+from CynanBot.soundPlayerManager.immediateSoundPlayerManagerInterface import \
+    ImmediateSoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import \
     SoundPlayerManagerProviderInterface
-from CynanBot.streamAlertsManager.immediateStreamAlertsManagerInterface import \
-    ImmediateStreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
-class ImmediateStreamAlertsManager(ImmediateStreamAlertsManagerInterface):
+class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
 
     def __init__(
         self,
