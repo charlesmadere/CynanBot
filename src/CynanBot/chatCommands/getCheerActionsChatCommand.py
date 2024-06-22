@@ -1,6 +1,7 @@
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
+from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -61,6 +62,10 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'ⓘ You have {len(actions)} cheer action(s)')
 
             for index, action in enumerate(actions):
-                await self.__twitchUtils.safeSend(ctx, f'Action #{index} — {str(action)}')
+                actionString = await self.__toStr(action)
+                await self.__twitchUtils.safeSend(ctx, f'Action #{(index + 1)} — {actionString}')
 
         self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+    async def __toStr(self, action: CheerAction) -> str:
+        return f'ID={action.actionId}, bitRequirement={action.bitRequirement}, streamStatusRequirement={action.streamStatusRequirement}, actionType={action.actionType}, amount={action.amount}, durationSeconds={action.durationSeconds}, tag={action.tag}'
