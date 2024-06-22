@@ -1,4 +1,3 @@
-import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerManagerProviderInterface import \
     SoundPlayerManagerProviderInterface
@@ -32,9 +31,6 @@ class ImmediateStreamAlertsManager(ImmediateStreamAlertsManagerInterface):
     async def playSoundFile(self, filePath: str | None) -> bool:
         if filePath is not None and not isinstance(filePath, str):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
-
-        if not utils.isValidStr(filePath):
-            return False
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
         return await soundPlayerManager.playSoundFile(filePath)
