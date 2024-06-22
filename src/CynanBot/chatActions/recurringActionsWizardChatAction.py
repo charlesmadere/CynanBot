@@ -57,7 +57,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
             # this situation should be impossible for super trivia
             self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard is at an invalid step: ({content=}) ({step=}) ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
             await self.__twitchUtils.safeSend(channel, f'⚠ The Super Trivia wizard is in an invalid state, please try again')
-            await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
+            await self.__recurringActionsWizard.complete(wizard.getTwitchChannelId())
             return True
 
         minutesBetween = utils.safeStrToInt(content)
@@ -65,7 +65,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         if not utils.isValidInt(minutesBetween) or minutesBetween < 1 or minutesBetween > utils.getIntMaxSafeSize():
             self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard was given illegal minutesBetween value: ({content=}) ({step=}) ({minutesBetween=}) ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
             await self.__twitchUtils.safeSend(channel, f'⚠ The given \"minutes between\" value is malformed, please start over with recurring Super Trivia configuration')
-            await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
+            await self.__recurringActionsWizard.complete(wizard.getTwitchChannelId())
             return True
 
         wizard.setMinutesBetween(minutesBetween)
@@ -74,17 +74,17 @@ class RecurringActionsWizardChatAction(AbsChatAction):
             # this situation should be impossible for super trivia
             self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard was unable to step forward: ({content=}) ({step=}) ({minutesBetween=}) ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
             await self.__twitchUtils.safeSend(channel, f'⚠ The Super Trivia wizard is in an invalid state, please try again')
-            await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
+            await self.__recurringActionsWizard.complete(wizard.getTwitchChannelId())
             return True
 
         await self.__recurringActionsRepository.setRecurringAction(SuperTriviaRecurringAction(
             enabled = True,
             twitchChannel = channel.getTwitchChannelName(),
-            twitchChannelId = await channel.getTwitchChannelId(),
+            twitchChannelId = wizard.getTwitchChannelId(),
             minutesBetween = wizard.getMinutesBetween()
         ))
 
-        await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
+        await self.__recurringActionsWizard.complete(wizard.getTwitchChannelId())
 
         self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Super Trivia wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
         await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring recurring Super Trivia (minutes between: {wizard.getMinutesBetween()})')
