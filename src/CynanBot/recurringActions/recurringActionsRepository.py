@@ -194,34 +194,37 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS recurringactions (
-                        actiontype text NOT NULL,
-                        configurationjson text DEFAULT NULL,
-                        isenabled smallint DEFAULT 1 NOT NULL,
-                        minutesbetween integer DEFAULT NULL,
-                        twitchchannelid text NOT NULL,
-                        PRIMARY KEY (actiontype, twitchchannelid)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS recurringactions (
-                        actiontype TEXT NOT NULL,
-                        configurationjson TEXT DEFAULT NULL,
-                        isenabled INTEGER DEFAULT 1 NOT NULL,
-                        minutesbetween INTEGER DEFAULT NULL,
-                        twitchchannelid TEXT NOT NULL,
-                        PRIMARY KEY (actiontype, twitchchannelid)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS recurringactions (
+                            actiontype text NOT NULL,
+                            configurationjson text DEFAULT NULL,
+                            isenabled smallint DEFAULT 1 NOT NULL,
+                            minutesbetween integer DEFAULT NULL,
+                            twitchchannelid text NOT NULL,
+                            PRIMARY KEY (actiontype, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS recurringactions (
+                            actiontype TEXT NOT NULL,
+                            configurationjson TEXT DEFAULT NULL,
+                            isenabled INTEGER DEFAULT 1 NOT NULL,
+                            minutesbetween INTEGER DEFAULT NULL,
+                            twitchchannelid TEXT NOT NULL,
+                            PRIMARY KEY (actiontype, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
 
