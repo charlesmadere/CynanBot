@@ -772,11 +772,7 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = Sound
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
+    timber = timber
 )
 
 timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutCheerActionJsonMapper(
