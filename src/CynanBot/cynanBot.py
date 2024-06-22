@@ -101,6 +101,8 @@ from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
     CheerActionJsonMapperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.cheerActionsWizardInterface import \
+    CheerActionsWizardInterface
 from CynanBot.cheerActions.timeout.timeoutCheerActionHelperInterface import \
     TimeoutCheerActionHelperInterface
 from CynanBot.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
@@ -331,6 +333,7 @@ class CynanBot(
         cheerActionIdGenerator: CheerActionIdGeneratorInterface | None,
         cheerActionJsonMapper: CheerActionJsonMapperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
+        cheerActionsWizard: CheerActionsWizardInterface | None,
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
         funtoonRepository: FuntoonRepositoryInterface | None,
@@ -437,6 +440,8 @@ class CynanBot(
             raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif cheerActionsWizard is not None and not isinstance(cheerActionsWizard, CheerActionsWizardInterface):
+            raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
@@ -565,7 +570,6 @@ class CynanBot(
         self.__authRepository: AuthRepository = authRepository
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
-        self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
@@ -612,14 +616,14 @@ class CynanBot(
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
-        if cheerActionIdGenerator is None or cheerActionJsonMapper is None or cheerActionsRepository is None:
+        if cheerActionIdGenerator is None or cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
-            self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionJsonMapper, cheerActionsRepository, timber, twitchUtils, usersRepository)
+            self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 

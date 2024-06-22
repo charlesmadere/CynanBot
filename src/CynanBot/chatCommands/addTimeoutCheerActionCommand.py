@@ -1,22 +1,10 @@
-import traceback
-
-import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
-from CynanBot.cheerActions.cheerAction import CheerAction
-from CynanBot.cheerActions.cheerActionBitRequirement import \
-    CheerActionBitRequirement
-from CynanBot.cheerActions.cheerActionJsonMapperInterface import \
-    CheerActionJsonMapperInterface
-from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
-from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from CynanBot.cheerActions.cheerActionsWizardInterface import \
+    CheerActionsWizardInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.cheerActions.exceptions import (
-    CheerActionAlreadyExistsException, TimeoutDurationSecondsTooLongException,
-    TooManyCheerActionsException)
+from CynanBot.cheerActions.wizards.timeoutStep import TimeoutStep
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -28,18 +16,15 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        cheerActionJsonMapper: CheerActionJsonMapperInterface,
-        cheerActionsRepository: CheerActionsRepositoryInterface,
+        cheerActionsWizard: CheerActionsWizardInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
-            raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
-        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif not isinstance(cheerActionsWizard, CheerActionsWizardInterface):
+            raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -48,18 +33,10 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__cheerActionJsonMapper: CheerActionJsonMapperInterface = cheerActionJsonMapper
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__cheerActionsWizard: CheerActionsWizardInterface = cheerActionsWizard
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-    async def __actionToStr(self, action: CheerAction) -> str:
-        if not isinstance(action, CheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-
-        cheerActionString = f'id={action.actionId}, actionType={action.actionType}, amount={action.amount}, bitRequirement={action.bitRequirement}, duration={action.durationSeconds}, streamStatus={action.streamStatusRequirement}'
-        return f'ⓘ Your new timeout cheer action — {cheerActionString}'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -72,73 +49,17 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
         elif not user.areCheerActionsEnabled():
             return
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 3:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Two arguments are necessary (first bits, then timeout duration in seconds) for the !addtimeoutcheeraction command. Example: !addtimeoutcheeraction 50 120 (50 bits, 120 second timeout)')
-            return
+        wizard = await self.__cheerActionsWizard.start(
+            cheerActionType = CheerActionType.TIMEOUT,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = userId
+        )
 
-        bitsString: str | None = splits[1]
-        bits: int | None = None
-        try:
-            bits = int(bitsString)
-        except Exception as e:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Failed to parse bitsString (\"{bitsString}\") into bits int: {e}', e, traceback.format_exc())
+        step = wizard.getSteps().getStep()
 
-        durationSecondsString: str | None = splits[2]
-        durationSeconds: int | None = None
-        try:
-            durationSeconds = int(durationSecondsString)
-        except Exception as e:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Failed to parse durationSecondsString (\"{durationSecondsString}\") into durationSeconds int: {e}', e, traceback.format_exc())
+        if step is TimeoutStep.BITS:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of bits for this Timeout cheer action')
+        else:
+            raise RuntimeError(f'unknown TimeoutStep: \"{step}\"')
 
-        if not utils.isValidInt(bits) or not utils.isValidInt(durationSeconds):
-            self.__timber.log('AddTimeoutCheerActionCommand', f'The bitsString value (\"{bitsString}\") or durationSeconds value (\"{durationSeconds}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} failed to parse into an int')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addtimeoutcheeraction command. Example: !addtimeoutcheeraction 50 120 (50 bits, 120 second timeout)')
-            return
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
-            self.__timber.log('AddTimeoutCheerActionCommand', f'The bitsString value (\"{bitsString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds: {bitsString}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addtimeoutcheeraction command. Example: !addtimeoutcheeraction 50 120 (50 bits, 120 second timeout)')
-            return
-        elif durationSeconds < 1 or durationSeconds > 1209600:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'The durationString value (\"{durationSecondsString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds: {durationSeconds}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addtimeoutcheeraction command. Example: !addtimeoutcheeraction 50 120 (50 bits, 120 second timeout)')
-            return
-
-        streamStatus = CheerActionStreamStatusRequirement.ANY
-        if len(splits) >= 4:
-            streamStatusString = splits[3]
-            try:
-                streamStatus = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(streamStatusString)
-            except Exception as e:
-                self.__timber.log('AddTimeoutCheerActionCommand', f'The streamStatus value (\"{streamStatusString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed/invalid: {e}', e, traceback.format_exc())
-
-        try:
-            action = await self.__cheerActionsRepository.addAction(
-                bitRequirement = CheerActionBitRequirement.EXACT,
-                streamStatusRequirement = streamStatus,
-                actionType = CheerActionType.TIMEOUT,
-                amount = bits,
-                durationSeconds = durationSeconds,
-                tag = None,
-                userId = userId
-            )
-        except CheerActionAlreadyExistsException as e:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Failed to add new cheer action for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} due to this cheer action already existing: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to add new cheer action as you already have one with these same attributes')
-            return
-        except TimeoutDurationSecondsTooLongException as e:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Failed to add new cheer action for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} due to the timeout duration seconds being too long: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to add new cheer action as the given timeout duration is too long')
-            return
-        except TooManyCheerActionsException as e:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Failed to add new cheer action for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} due to this user having the maximum number of cheer actions: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to add new cheer action as you already have the maximum number of cheer actions')
-            return
-        except Exception as e:
-            self.__timber.log('AddTimeoutCheerActionCommand', f'Failed to add new cheer action for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to add new cheer action. Example: !addtimeoutcheeraction 50 120 (50 bits, 120 second timeout)')
-            return
-
-        await self.__twitchUtils.safeSend(ctx, await self.__actionToStr(action))
         self.__timber.log('AddTimeoutCheerActionCommand', f'Handled !addtimeoutcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

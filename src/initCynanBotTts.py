@@ -28,7 +28,6 @@ from CynanBot.aniv.mostRecentAnivMessageTimeoutHelper import \
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
-from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
@@ -765,6 +764,10 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber
 )
 
+cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
+    timber = timber
+)
+
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
     immediateStreamAlertsManager = immediateStreamAlertsManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -915,6 +918,7 @@ cynanBot = CynanBot(
     cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionsRepository = cheerActionsRepository,
+    cheerActionsWizard = cheerActionsWizard,
     cutenessRepository = None,
     cutenessUtils = None,
     funtoonRepository = funtoonRepository,
