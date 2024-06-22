@@ -1,7 +1,6 @@
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
-from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -21,8 +20,7 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = '; '
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -36,8 +34,6 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
@@ -45,22 +41,6 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
-
-    async def __actionsToStr(self, actions: list[CheerAction]) -> str:
-        if not isinstance(actions, list):
-            raise ValueError(f'actions argument is malformed: \"{actions}\"')
-
-        if len(actions) == 0:
-            return f'ⓘ You have no cheer actions'
-
-        cheerActionStrings: list[str] = list()
-
-        for action in actions:
-            cheerActionStrings.append(str(action))
-
-        cheerActionsString = self.__delimiter.join(cheerActionStrings)
-        return f'ⓘ Your cheer actions — {cheerActionsString}'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -74,5 +54,13 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             return
 
         actions = await self.__cheerActionsRepository.getActions(userId)
-        await self.__twitchUtils.safeSend(ctx, await self.__actionsToStr(actions))
+
+        if actions is None or len(actions) == 0:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ You have no cheer actions')
+        else:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ You have {len(actions)} cheer action(s)')
+
+            for index, action in enumerate(actions):
+                await self.__twitchUtils.safeSend(ctx, f'Action #{index} — {str(action)}')
+
         self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
