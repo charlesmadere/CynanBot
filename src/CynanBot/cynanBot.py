@@ -145,7 +145,8 @@ from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
-from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaRepositoryInterface import \
+    PokepediaRepositoryInterface
 from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 from CynanBot.recurringActions.recurringActionsHelperInterface import \
@@ -345,7 +346,7 @@ class CynanBot(
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
-        pokepediaRepository: PokepediaRepository | None,
+        pokepediaRepository: PokepediaRepositoryInterface | None,
         recurringActionsHelper: RecurringActionsHelperInterface | None,
         recurringActionsMachine: RecurringActionsMachineInterface | None,
         recurringActionsRepository: RecurringActionsRepositoryInterface | None,
@@ -464,7 +465,7 @@ class CynanBot(
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
             raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
-        elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepository):
+        elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif recurringActionsHelper is not None and not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
             raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')

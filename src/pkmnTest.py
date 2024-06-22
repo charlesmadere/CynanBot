@@ -15,6 +15,8 @@ from CynanBot.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from CynanBot.pkmn.pokepediaJsonMapperInterface import \
     PokepediaJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaRepositoryInterface import \
+    PokepediaRepositoryInterface
 from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface

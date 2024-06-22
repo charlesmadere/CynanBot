@@ -17,11 +17,13 @@ from CynanBot.pkmn.pokepediaMove import PokepediaMove
 from CynanBot.pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
 from CynanBot.pkmn.pokepediaNature import PokepediaNature
 from CynanBot.pkmn.pokepediaPokemon import PokepediaPokemon
+from CynanBot.pkmn.pokepediaRepositoryInterface import \
+    PokepediaRepositoryInterface
 from CynanBot.pkmn.pokepediaStat import PokepediaStat
 from CynanBot.timber.timberInterface import TimberInterface
 
 
-class PokepediaRepository():
+class PokepediaRepository(PokepediaRepositoryInterface):
 
     def __init__(
         self,
@@ -61,8 +63,10 @@ class PokepediaRepository():
         )
 
     async def __buildMoveFromJsonResponse(self, jsonResponse: dict[str, Any]) -> PokepediaMove:
-        if not utils.hasItems(jsonResponse):
-            raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+        if not isinstance(jsonResponse, dict):
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+        elif len(jsonResponse) == 0:
+            raise ValueError(f'jsonResponse argument is empty: \"{jsonResponse}\"')
 
         contestType: PokepediaContestType | None = None
         if utils.hasItems(jsonResponse.get('contest_type')):
@@ -102,8 +106,10 @@ class PokepediaRepository():
         )
 
     async def __buildPokemonFromJsonResponse(self, jsonResponse: dict[str, Any]) -> PokepediaPokemon:
-        if not utils.hasItems(jsonResponse):
-            raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+        if not isinstance(jsonResponse, dict):
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+        elif len(jsonResponse) == 0:
+            raise ValueError(f'jsonResponse argument is empty: \"{jsonResponse}\"')
 
         pokedexId = utils.getIntFromDict(jsonResponse, 'id')
         initialGeneration = PokepediaGeneration.fromPokedexId(pokedexId)
@@ -124,7 +130,7 @@ class PokepediaRepository():
 
     async def fetchMachine(self, machineId: int) -> PokepediaMachine:
         if not utils.isValidInt(machineId):
-            raise ValueError(f'machineId argument is malformed: \"{machineId}\"')
+            raise TypeError(f'machineId argument is malformed: \"{machineId}\"')
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -149,7 +155,7 @@ class PokepediaRepository():
 
     async def fetchMove(self, moveId: int) -> PokepediaMove:
         if not utils.isValidInt(moveId):
-            raise ValueError(f'moveId argument is malformed: \"{moveId}\"')
+            raise TypeError(f'moveId argument is malformed: \"{moveId}\"')
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -218,13 +224,13 @@ class PokepediaRepository():
 
     async def fetchNature(self, natureId: int) -> PokepediaNature:
         if not utils.isValidInt(natureId):
-            raise ValueError(f'natureId argument is malformed: \"{natureId}\"')
+            raise TypeError(f'natureId argument is malformed: \"{natureId}\"')
 
         return PokepediaNature.fromInt(natureId)
 
     async def fetchRandomMove(self, maxGeneration: PokepediaGeneration) -> PokepediaMove:
         if not isinstance(maxGeneration, PokepediaGeneration):
-            raise ValueError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
+            raise TypeError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
 
         randomMoveId = random.randint(1, maxGeneration.getMaxMoveId())
         return await self.fetchMove(randomMoveId)
@@ -236,7 +242,7 @@ class PokepediaRepository():
 
     async def fetchRandomPokemon(self, maxGeneration: PokepediaGeneration) -> PokepediaPokemon:
         if not isinstance(maxGeneration, PokepediaGeneration):
-            raise ValueError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
+            raise TypeError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
 
         randomPokemonId = random.randint(1, maxGeneration.getMaxPokedexId())
         clientSession = await self.__networkClientProvider.get()
@@ -488,7 +494,7 @@ class PokepediaRepository():
 
     async def searchMoves(self, name: str) -> PokepediaMove:
         if not utils.isValidStr(name):
-            raise ValueError(f'name argument is malformed: \"{name}\"')
+            raise TypeError(f'name argument is malformed: \"{name}\"')
 
         name = utils.cleanStr(name)
         name = name.replace(' ', '-')

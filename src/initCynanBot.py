@@ -164,6 +164,8 @@ from CynanBot.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from CynanBot.pkmn.pokepediaJsonMapperInterface import \
     PokepediaJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaRepositoryInterface import \
+    PokepediaRepositoryInterface
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
     MostRecentRecurringActionRepository
 from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
@@ -680,7 +682,7 @@ pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
     timber = timber
 )
 
-pokepediaRepository = PokepediaRepository(
+pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     pokepediaJsonMapper = pokepediaJsonMapper,
     timber = timber

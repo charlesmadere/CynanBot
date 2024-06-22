@@ -13,7 +13,8 @@ from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.misc.timedDict import TimedDict
-from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaRepositoryInterface import \
+    PokepediaRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -854,7 +855,7 @@ class PkMonCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        pokepediaRepository: PokepediaRepository,
+        pokepediaRepository: PokepediaRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
@@ -862,7 +863,7 @@ class PkMonCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(pokepediaRepository, PokepediaRepository):
+        elif not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -874,7 +875,7 @@ class PkMonCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -915,7 +916,7 @@ class PkMoveCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        pokepediaRepository: PokepediaRepository,
+        pokepediaRepository: PokepediaRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
@@ -923,7 +924,7 @@ class PkMoveCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(pokepediaRepository, PokepediaRepository):
+        elif not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -935,7 +936,7 @@ class PkMoveCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository

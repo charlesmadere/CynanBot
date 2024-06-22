@@ -12,7 +12,8 @@ from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
 from CynanBot.pkmn.pokepediaMachineType import PokepediaMachineType
 from CynanBot.pkmn.pokepediaMove import PokepediaMove
 from CynanBot.pkmn.pokepediaNature import PokepediaNature
-from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaRepositoryInterface import \
+    PokepediaRepositoryInterface
 from CynanBot.pkmn.pokepediaStat import PokepediaStat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
@@ -39,7 +40,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     def __init__(
         self,
-        pokepediaRepository: PokepediaRepository,
+        pokepediaRepository: PokepediaRepositoryInterface,
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
@@ -47,7 +48,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
     ):
         super().__init__(triviaSettingsRepository)
 
-        if not isinstance(pokepediaRepository, PokepediaRepository):
+        if not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -56,7 +57,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         elif not isinstance(maxGeneration, PokepediaGeneration):
             raise TypeError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
 
-        self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
         self.__timber: TimberInterface = timber
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__maxGeneration: PokepediaGeneration = maxGeneration
