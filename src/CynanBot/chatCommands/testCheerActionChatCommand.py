@@ -1,9 +1,12 @@
+import traceback
+
 import CynanBot.misc.utils as utils
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -13,17 +16,21 @@ class TestCheerActionChatCommand(AbsChatCommand):
         self,
         cheerActionHelper: CheerActionHelperInterface,
         timber: TimberInterface,
+        twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cheerActionHelper: CheerActionHelperInterface = cheerActionHelper
         self.__timber: TimberInterface = timber
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
@@ -49,11 +56,19 @@ class TestCheerActionChatCommand(AbsChatCommand):
             self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} specified an invalid bit amount ({splits=}) ({bits=})')
             return
 
-        await self.__cheerActionHelper.handleCheerAction(
-            bits = bits,
-            broadcasterUserId = twitchChannelId,
-            cheerUserId = ctx.getAuthorId(),
-            cheerUserName = ctx.getAuthorName(),
-            message = ' '.join(splits),
-            user = user
-        )
+        result = False
+
+        try:
+            result = await self.__cheerActionHelper.handleCheerAction(
+                bits = bits,
+                broadcasterUserId = twitchChannelId,
+                cheerUserId = ctx.getAuthorId(),
+                cheerUserName = ctx.getAuthorName(),
+                message = ' '.join(splits),
+                user = user
+            )
+        except Exception as e:
+            self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform cheer action test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}: {e}', e, traceback.format_exc())
+
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Cheer Action test result: {result=}')
+        self.__timber.log('TestCheerActionChatCommand', f'Handled !testcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({result=})')

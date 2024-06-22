@@ -745,7 +745,7 @@ class CynanBot(
         if cheerActionHelper is None:
             self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(cheerActionHelper, timber, usersRepository)
+            self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(cheerActionHelper, timber, twitchUtils, usersRepository)
 
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
