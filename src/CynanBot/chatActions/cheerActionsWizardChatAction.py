@@ -209,7 +209,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 return True
 
             case TimeoutStep.STREAM_STATUS:
-                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Timeout\'s required stream status. This value must be one of \"any\", \"offline\", or \"online\".')
+                streamStatusStrings: list[str] = list()
+
+                for streamStatus in list(CheerActionStreamStatusRequirement):
+                    string = await self.__cheerActionJsonMapper.serializeCheerActionStreamStatusRequirement(streamStatus)
+                    streamStatusStrings.append(f'\"{string}\"')
+
+                streamStatusString = ', '.join(streamStatusStrings)
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Timeout\'s required stream status. This value must be one of the following: {streamStatusString}.')
                 return True
 
             case _:
