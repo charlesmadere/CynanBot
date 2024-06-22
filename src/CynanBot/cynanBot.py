@@ -88,6 +88,8 @@ from CynanBot.chatCommands.removeRecurringWordOfTheDayAction import \
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from CynanBot.chatCommands.testCheerActionChatCommand import \
+    TestCheerActionChatCommand
 from CynanBot.chatCommands.translateChatCommand import TranslateChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from CynanBot.chatCommands.weatherChatCommand import WeatherChatCommand
@@ -740,6 +742,11 @@ class CynanBot(
         else:
             self.__weatherCommand: AbsChatCommand = WeatherChatCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
+        if cheerActionHelper is None:
+            self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(cheerActionHelper, timber, usersRepository)
+
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1334,7 +1341,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
 
-    @commands.command(name = 'getcheeractions')
+    @commands.command(name = 'getcheeractions', aliases = [ 'cheeractions' ])
     async def command_getcheeractions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getCheerActionsCommand.handleChatCommand(context)
@@ -1344,7 +1351,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getGlobalTriviaControllersCommand.handleCommand(context)
 
-    @commands.command(name = 'getrecurringactions')
+    @commands.command(name = 'getrecurringactions', aliases = [ 'recurringactions' ])
     async def command_getrecurringactions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__recurringActionsCommand.handleChatCommand(context)
@@ -1458,6 +1465,11 @@ class CynanBot(
     async def command_swquote(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__swQuoteCommand.handleCommand(context)
+
+    @commands.command(name = 'testcheeraction')
+    async def command_testcheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__testCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx: Context):
