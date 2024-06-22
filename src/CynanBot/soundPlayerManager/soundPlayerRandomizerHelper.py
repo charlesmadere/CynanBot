@@ -9,6 +9,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundPlayerRandomizerDirectoryScanResult import \
+    SoundPlayerRandomizerDirectoryScanResult
 from CynanBot.soundPlayerManager.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
@@ -57,7 +59,8 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self.__pointRedemptionSoundAlerts: set[SoundAlert] | None = pointRedemptionSoundAlerts
 
         self.__cache: dict[SoundAlert, str | None] | None = None
-        self.__soundFileRegEx: Pattern = re.compile(r'^[^.].+\.(mp3|ogg|wav)$', re.IGNORECASE)
+        self.__shinySoundFileRegEx: Pattern = re.compile(r'^shiny_\w+\.(mp3|ogg|wav)$', re.IGNORECASE)
+        self.__soundFileRegEx: Pattern = re.compile(r'^\w+\.(mp3|ogg|wav)$', re.IGNORECASE)
 
     async def clearCaches(self):
         self.__cache = None
@@ -85,33 +88,13 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
             return None
 
-        directoryContents = await aiofiles.os.scandir(
-            path = directoryPath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        )
+        scanResult = await self.__scanDirectoryForAudioFiles(directoryPath)
 
-        if directoryContents is None:
-            self.__timber.log('SoundPlayerRandomizerHelper', f'Failed to scan the given directory path: \"{directoryPath}\"')
-            return None
-
-        soundFiles: list[str] = list()
-
-        for entry in directoryContents:
-            if not entry.is_file():
-                continue
-            elif self.__soundFileRegEx.fullmatch(entry.name) is None:
-                continue
-
-            cleanedPath = utils.cleanPath(entry.name)
-            soundFiles.append(cleanedPath)
-
-        directoryContents.close()
-
-        if len(soundFiles) == 0:
+        if len(scanResult.soundFiles) == 0:
             self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
             return None
 
-        return random.choice(soundFiles)
+        return random.choice(scanResult.soundFiles)
 
     async def chooseRandomSoundAlert(self) -> SoundAlert | None:
         cache = self.__cache
@@ -153,3 +136,36 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
         self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in ({len(cache)}) sound alert(s)')
         return cache
+
+    async def __scanDirectoryForAudioFiles(
+        self,
+        directoryPath: str
+    ) -> SoundPlayerRandomizerDirectoryScanResult:
+        directoryContents = await aiofiles.os.scandir(
+            path = directoryPath,
+            loop = self.__backgroundTaskHelper.getEventLoop()
+        )
+
+        if directoryContents is None:
+            return SoundPlayerRandomizerDirectoryScanResult(
+                soundFiles = list(),
+                shinySoundFiles = list()
+            )
+
+        audioFiles: set[str] = set()
+        shinyAudioFiles: set[str] = set()
+
+        for entry in directoryContents:
+            if not entry.is_file():
+                continue
+            elif self.__shinySoundFileRegEx.fullmatch(entry.name) is not None:
+                shinyAudioFiles.add(utils.cleanPath(entry.path))
+            elif self.__soundFileRegEx.fullmatch(entry.name) is not None:
+                audioFiles.add(utils.cleanPath(entry.path))
+
+        directoryContents.close()
+
+        return SoundPlayerRandomizerDirectoryScanResult(
+            soundFiles = list(audioFiles),
+            shinySoundFiles = list(shinyAudioFiles)
+        )

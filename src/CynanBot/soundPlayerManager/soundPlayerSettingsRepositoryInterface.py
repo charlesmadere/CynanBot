@@ -7,6 +7,10 @@ from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 class SoundPlayerSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
+    async def areShiniesEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def getFilePathFor(self, soundAlert: SoundAlert) -> str | None:
         pass
 

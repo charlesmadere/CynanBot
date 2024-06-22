@@ -17,6 +17,10 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
         self.__settingsCache: dict[str, Any] | None = None
 
+    async def areShiniesEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'shiniesEnabled', fallback = True)
+
     async def clearCaches(self):
         self.__settingsCache = None
 
