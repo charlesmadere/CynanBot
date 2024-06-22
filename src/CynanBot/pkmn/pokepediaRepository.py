@@ -282,10 +282,10 @@ class PokepediaRepository(PokepediaRepositoryInterface):
         jsonResponse: dict[str, Any],
         initialGeneration: PokepediaGeneration
     ) -> dict[PokepediaGeneration, list[PokepediaElementType]]:
-        if jsonResponse is None:
-            raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+        if not isinstance(jsonResponse, dict):
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
         elif not isinstance(initialGeneration, PokepediaGeneration):
-            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
+            raise TypeError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
 
         currentTypesJson: list[dict[str, Any]] | None = jsonResponse.get('types')
         if not utils.hasItems(currentTypesJson):
