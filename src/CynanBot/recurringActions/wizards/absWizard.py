@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
@@ -21,15 +22,26 @@ class AbsWizard(ABC):
         self.__twitchChannelId: str = twitchChannelId
 
     @abstractmethod
-    def getRecurringActionType(self) -> RecurringActionType:
-        pass
-
-    @abstractmethod
     def getSteps(self) -> AbsSteps:
         pass
 
-    def getTwitchChannel(self) -> str:
+    @abstractmethod
+    def printOut(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def recurringActionType(self) -> RecurringActionType:
+        pass
+
+    @abstractmethod
+    def toDictionary(self) -> dict[str, Any]:
+        pass
+
+    @property
+    def twitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def getTwitchChannelId(self) -> str:
+    @property
+    def twitchChannelId(self) -> str:
         return self.__twitchChannelId

@@ -32,6 +32,10 @@ class SoundAlertWizard(AbsWizard):
     def printOut(self) -> str:
         return f'{self.__bits=}, {self.__tag=}'
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     def requireBits(self) -> int:
         bits = self.__bits
 
@@ -47,10 +51,6 @@ class SoundAlertWizard(AbsWizard):
             raise ValueError(f'tag value has not been set: ({self=})')
 
         return tag
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
 
     def setBits(self, bits: int):
         if not utils.isValidInt(bits):

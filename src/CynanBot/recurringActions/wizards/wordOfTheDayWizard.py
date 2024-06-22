@@ -1,3 +1,5 @@
+from typing import Any
+
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
 from CynanBot.recurringActions.wizards.absWizard import AbsWizard
@@ -23,11 +25,19 @@ class WordOfTheDayWizard(AbsWizard):
     def getMinutesBetween(self) -> int | None:
         return self.__minutesBetween
 
-    def getRecurringActionType(self) -> RecurringActionType:
-        return RecurringActionType.WORD_OF_THE_DAY
-
     def getSteps(self) -> WordOfTheDaySteps:
         return self.__steps
+
+    def printOut(self) -> str:
+        return f'{self.__minutesBetween=}'
+
+    @property
+    def recurringActionType(self) -> RecurringActionType:
+        return RecurringActionType.WORD_OF_THE_DAY
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
 
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):
@@ -36,3 +46,11 @@ class WordOfTheDayWizard(AbsWizard):
             raise ValueError(f'minutesBetween argument is out of bounds: {minutesBetween}')
 
         self.__minutesBetween = minutesBetween
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'minutesBetween': self.__minutesBetween,
+            'steps': self.__steps,
+            'twitchChannel': self.__twitchChannel,
+            'twitchChannelId': self.__twitchChannelId
+        }

@@ -78,14 +78,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     wizard.setTag(content)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to set tag value for Sound Alert wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
             case _:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         stepResult = steps.stepForward()
@@ -113,18 +113,26 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
+            case SoundAlertStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
             case SoundAlertStep.TAG:
                 await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Sound Alert\'s tag. This value must be some text.')
                 return True
 
             case _:
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
     async def __configureTimeoutWizard(
@@ -199,11 +207,18 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
+            case TimeoutStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
             case TimeoutStep.DURATION_SECONDS:
                 await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Timeout\'s duration (in seconds)')
                 return True
@@ -216,12 +231,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     streamStatusStrings.append(f'\"{string}\"')
 
                 streamStatusString = ', '.join(streamStatusStrings)
-                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Timeout\'s required stream status. This value must be one of the following: {streamStatusString}.')
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Timeout\'s required stream status. The value must be one of the following: {streamStatusString}.')
                 return True
 
             case _:
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
     async def handleChat(

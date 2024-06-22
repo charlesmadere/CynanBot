@@ -1,3 +1,5 @@
+from typing import Any
+
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
 from CynanBot.recurringActions.wizards.absWizard import AbsWizard
@@ -22,11 +24,19 @@ class WeatherWizard(AbsWizard):
     def getMinutesBetween(self) -> int | None:
         return self.__minutesBetween
 
-    def getRecurringActionType(self) -> RecurringActionType:
-        return RecurringActionType.WEATHER
-
     def getSteps(self) -> WeatherSteps:
         return self.__steps
+
+    def printOut(self) -> str:
+        return f'{self.__minutesBetween=}'
+
+    @property
+    def recurringActionType(self) -> RecurringActionType:
+        return RecurringActionType.WEATHER
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
 
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):
@@ -35,3 +45,11 @@ class WeatherWizard(AbsWizard):
             raise ValueError(f'minutesBetween argument is out of bounds: {minutesBetween}')
 
         self.__minutesBetween = minutesBetween
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'minutesBetween': self.__minutesBetween,
+            'steps': self.__steps,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
+        }
