@@ -374,6 +374,12 @@ class TestTriviaEmoteGenerator():
         assert result == '🍪'
 
     @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withFramedPicture(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🖼️')
+        assert result is not None
+        assert result == '🖼️'
+
+    @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withFriedShrimp(self):
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🍤')
         assert result is not None
@@ -618,10 +624,22 @@ class TestTriviaEmoteGenerator():
         assert result == '🍿'
 
     @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withPostalHorn(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('📯')
+        assert result is not None
+        assert result == '🎺'
+
+    @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withPotato(self):
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🥔')
         assert result is not None
         assert result == '🥔'
+
+    @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withPuzzlePiece(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🧩')
+        assert result is not None
+        assert result == '🧩'
 
     @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withRainbow(self):
@@ -778,6 +796,12 @@ class TestTriviaEmoteGenerator():
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🐠')
         assert result is not None
         assert result == '🐟'
+
+    @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withTrumpet(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🎺')
+        assert result is not None
+        assert result == '🎺'
 
     @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withTulip(self):
