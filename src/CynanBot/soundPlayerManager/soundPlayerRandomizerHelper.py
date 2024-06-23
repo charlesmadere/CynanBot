@@ -79,7 +79,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         scanResult = self.__scanResultCache.get(directoryPath, None)
 
         if scanResult is None:
-            scanResult = await self.__scanDirectoryForAudioFiles(directoryPath)
+            scanResult = await self.__scanDirectoryForSoundFiles(directoryPath)
 
         if len(scanResult.soundFiles) == 0:
             self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
@@ -128,7 +128,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in ({len(cache)}) sound alert(s)')
         return cache
 
-    async def __scanDirectoryForAudioFiles(
+    async def __scanDirectoryForSoundFiles(
         self,
         directoryPath: str
     ) -> SoundPlayerRandomizerDirectoryScanResult:
@@ -166,20 +166,21 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                 shinySoundFiles = list()
             )
 
-        audioFiles: set[str] = set()
-        shinyAudioFiles: set[str] = set()
+        soundFiles: set[str] = set()
+        shinySoundFiles: set[str] = set()
 
         for entry in directoryContents:
             if not entry.is_file():
                 continue
             elif self.__shinySoundFileRegEx.fullmatch(entry.name) is not None:
-                shinyAudioFiles.add(utils.cleanPath(entry.path))
+                shinySoundFiles.add(utils.cleanPath(entry.path))
             elif self.__soundFileRegEx.fullmatch(entry.name) is not None:
-                audioFiles.add(utils.cleanPath(entry.path))
+                soundFiles.add(utils.cleanPath(entry.path))
 
         directoryContents.close()
+        self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned \"{directoryPath}\" and found {len(soundFiles)} sound file(s) and {len(shinySoundFiles)} shiny sound file(s)')
 
         return SoundPlayerRandomizerDirectoryScanResult(
-            soundFiles = list(audioFiles),
-            shinySoundFiles = list(shinyAudioFiles)
+            soundFiles = list(soundFiles),
+            shinySoundFiles = list(shinySoundFiles)
         )
