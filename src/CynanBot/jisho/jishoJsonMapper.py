@@ -216,10 +216,6 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     data.append(dataEntry)
 
-        if len(data) == 0:
-            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"data\" field in JSON data: ({jsonContents=})')
-            return None
-
         return JishoResponse(
             data = data,
             meta = meta

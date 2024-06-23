@@ -68,10 +68,10 @@ class JishoChatCommand(AbsChatCommand):
         self.__lastMessageTimes.update(user.getHandle())
 
         try:
-            definitions = await self.__jishoHelper.search(query)
+            strings = await self.__jishoHelper.search(query)
 
-            for definition in definitions:
-                await self.__twitchUtils.safeSend(ctx, definition)
+            for string in strings:
+                await self.__twitchUtils.safeSend(ctx, string)
         except GenericNetworkException as e:
             self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')

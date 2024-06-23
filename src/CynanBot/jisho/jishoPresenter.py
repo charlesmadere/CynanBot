@@ -36,10 +36,15 @@ class JishoPresenter(JishoPresenterInterface):
         elif not isinstance(jishoResponse, JishoResponse):
             raise TypeError(f'jishoResponse argument is malformed: \"{jishoResponse}\"')
 
-        definitions: list[str] = list()
+        strings: list[str] = list()
+
+        if len(jishoResponse.data) == 0:
+            strings.append(f'ⓘ No Jisho results')
+            return strings
+
         index = 0
 
-        while index < len(jishoResponse.data) and len(definitions) < self.__definitionsMaxSize:
+        while index < len(jishoResponse.data) and len(strings) < self.__definitionsMaxSize:
             jishoData = jishoResponse.data[index]
             jishoJapanese = jishoData.japanese[0]
             jishoSense = jishoData.senses[0]
@@ -59,7 +64,7 @@ class JishoPresenter(JishoPresenterInterface):
                 raise ValueError(f'Illegal/impossible Jisho value: \"{jishoJapanese}\"')
 
             definition = f'{wordAndReading} — {jishoSense.englishDefinitions[0]} {jlptLevel}'.strip()
-            definitions.append(definition)
+            strings.append(definition)
             index = index + 1
 
-        return definitions
+        return strings
