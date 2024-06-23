@@ -84,6 +84,12 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         if len(scanResult.soundFiles) == 0 and len(scanResult.shinySoundFiles) == 0:
             return None
 
+        if await self.__soundPlayerSettingsRepository.areShiniesEnabled():
+            shinyProbability = await self.__soundPlayerSettingsRepository.getShinyProbability()
+
+            if len(scanResult.shinySoundFiles) >= 1 and random.random() <= shinyProbability:
+                return random.choice(scanResult.shinySoundFiles)
+
         return random.choice(scanResult.soundFiles)
 
     async def chooseRandomSoundAlert(self) -> SoundAlert | None:

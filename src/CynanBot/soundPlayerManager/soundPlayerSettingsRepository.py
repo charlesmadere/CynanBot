@@ -173,6 +173,10 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
         return utils.cleanPath(filePath)
 
+    async def getShinyChancePercentage(self) -> float:
+        jsonContents = await self.__readJson()
+        return utils.getFloatFromDict(jsonContents, 'shinyChance', fallback = 0.02)
+
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'enabled', fallback = True)

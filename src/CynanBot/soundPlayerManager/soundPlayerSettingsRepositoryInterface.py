@@ -15,5 +15,9 @@ class SoundPlayerSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getShinyProbability(self) -> float:
+        pass
+
+    @abstractmethod
     async def isEnabled(self) -> bool:
         pass
