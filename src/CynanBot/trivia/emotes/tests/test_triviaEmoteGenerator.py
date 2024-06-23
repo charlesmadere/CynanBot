@@ -14,7 +14,8 @@ from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
-from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
+from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import \
+    TriviaEmoteRepositoryInterface
 
 
 class TestTriviaEmoteGenerator():
@@ -516,6 +517,12 @@ class TestTriviaEmoteGenerator():
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🍄')
         assert result is not None
         assert result == '🍄'
+
+    @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withNationalPark(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🏞️')
+        assert result is not None
+        assert result == '🖼️'
 
     @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withNerdFace(self):

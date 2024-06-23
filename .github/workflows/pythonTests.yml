@@ -648,6 +648,7 @@ jobs:
       - name: Test trivia with pytest
         run: |
           pytest CynanBot/trivia/tests
+          pytest CynanBot/trivia/emotes/tests
 
 
   tts-tests:
