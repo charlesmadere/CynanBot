@@ -980,6 +980,7 @@ class CynanBot(
                 twitchChannelProvider = self,
                 twitchHandleProvider = self.__authRepository,
                 twitchTokensUtils = self.__twitchTokensUtils,
+                twitchUtils = self.__twitchUtils,
                 userIdsRepository = self.__userIdsRepository
             )
 

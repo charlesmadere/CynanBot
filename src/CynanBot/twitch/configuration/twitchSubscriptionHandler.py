@@ -30,6 +30,7 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
 from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -47,6 +48,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchChannelProvider: TwitchChannelProvider,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
+        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
@@ -63,6 +65,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
@@ -73,6 +77,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     async def __isRedundantSubscriptionAlert(
@@ -174,8 +179,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if not utils.isValidStr(twitchId) or twitchId != subGift.recipientUserId:
             return
 
-        # TODO
-        pass
+        twitchChannelProvider = self.__twitchChannelProvider
+
+        if twitchChannelProvider is None:
+            return
+
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        await self.__twitchUtils.safeSend(twitchChannel, f'KomodoHype thanks for the sub @{subGift.recipientUserLogin} KomodoHype')
+        self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.getHandle()} for a gifted sub!')
 
     async def __processSuperTriviaEvent(
         self,

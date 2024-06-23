@@ -26,7 +26,6 @@ class User(UserInterface):
         isDeerForceMessageEnabled: bool,
         isEnabled: bool,
         isEyesMessageEnabled: bool,
-        isGiftSubscriptionThanksMessageEnabled: bool,
         isGiveCutenessEnabled: bool,
         isImytSlurpMessageEnabled: bool,
         isJamCatMessageEnabled: bool,
@@ -124,8 +123,6 @@ class User(UserInterface):
             raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
         elif not utils.isValidBool(isEyesMessageEnabled):
             raise TypeError(f'isEyesMessageEnabled argument is malformed: \"{isEyesMessageEnabled}\"')
-        elif not utils.isValidBool(isGiftSubscriptionThanksMessageEnabled):
-            raise TypeError(f'isGiftSubscriptionThanksMessageEnabled argument is malformed: \"{isGiftSubscriptionThanksMessageEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
             raise TypeError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
         elif not utils.isValidBool(isImytSlurpMessageEnabled):
@@ -270,7 +267,6 @@ class User(UserInterface):
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
         self.__isEnabled: bool = isEnabled
         self.__isEyesMessageEnabled: bool = isEyesMessageEnabled
-        self.__isGiftSubscriptionThanksMessageEnabled: bool = isGiftSubscriptionThanksMessageEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
         self.__isImytSlurpMessageEnabled: bool = isImytSlurpMessageEnabled
         self.__isJamCatMessageEnabled: bool = isJamCatMessageEnabled
@@ -531,9 +527,6 @@ class User(UserInterface):
 
     def isEyesMessageEnabled(self) -> bool:
         return self.__isEyesMessageEnabled
-
-    def isGiftSubscriptionThanksMessageEnabled(self) -> bool:
-        return self.__isGiftSubscriptionThanksMessageEnabled
 
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled

@@ -27,9 +27,6 @@ class GeneralSettingsRepositorySnapshot():
 
         return refreshPubSubTokensSeconds
 
-    def getSubGiftThankMessagingDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'subGiftThankMessagingDelay', 8)
-
     def getSuperTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
 
@@ -84,9 +81,6 @@ class GeneralSettingsRepositorySnapshot():
     def isFuntoonTwitchChatFallbackEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'funtoonTwitchChatFallbackEnabled', True)
 
-    def isGiftSubscriptionThanksMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'giftSubscriptionThanksMessageEnabled', True)
-
     def isImytSlurpMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'imytSlurpMessageEnabled', False)
 
@@ -125,9 +119,6 @@ class GeneralSettingsRepositorySnapshot():
 
     def isSchubertWalkMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'schubertWalkMessageEnabled', False)
-
-    def isSubGiftThankingEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'subGiftThankingEnabled', True)
 
     def isSuperTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'superTriviaGameEnabled', False)
