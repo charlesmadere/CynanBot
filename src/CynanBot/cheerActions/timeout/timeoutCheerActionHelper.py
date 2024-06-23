@@ -119,6 +119,9 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
+        if not user.areCheerActionsEnabled():
+            return False
+
         timeoutActions: list[CheerAction] = list()
         for action in actions:
             if action.actionType is CheerActionType.TIMEOUT:
