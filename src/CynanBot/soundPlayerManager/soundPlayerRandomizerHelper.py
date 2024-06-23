@@ -81,8 +81,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         if scanResult is None:
             scanResult = await self.__scanDirectoryForSoundFiles(directoryPath)
 
-        if len(scanResult.soundFiles) == 0:
-            self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
+        if len(scanResult.soundFiles) == 0 and len(scanResult.shinySoundFiles) == 0:
             return None
 
         return random.choice(scanResult.soundFiles)
