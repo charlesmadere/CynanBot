@@ -53,7 +53,7 @@ class User(UserInterface):
         isWeatherEnabled: bool,
         isWelcomeTtsEnabled: bool,
         isWordOfTheDayEnabled: bool,
-        anivMessageCopyTimeoutChance: float | None,
+        anivMessageCopyTimeoutProbability: float | None,
         superTriviaCheerTriggerAmount: float | None,
         superTriviaSubscribeTriggerAmount: float | None,
         anivMessageCopyMaxAgeSeconds: int | None,
@@ -178,8 +178,8 @@ class User(UserInterface):
             raise TypeError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise TypeError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
-        elif anivMessageCopyTimeoutChance is not None and not utils.isValidNum(anivMessageCopyTimeoutChance):
-            raise TypeError(f'anivMessageCopyTimeoutChance argument is malformed: \"{anivMessageCopyTimeoutChance}\"')
+        elif anivMessageCopyTimeoutProbability is not None and not utils.isValidNum(anivMessageCopyTimeoutProbability):
+            raise TypeError(f'anivMessageCopyTimeoutProbability argument is malformed: \"{anivMessageCopyTimeoutProbability}\"')
         elif superTriviaCheerTriggerAmount is not None and not utils.isValidNum(superTriviaCheerTriggerAmount):
             raise TypeError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
@@ -297,7 +297,7 @@ class User(UserInterface):
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWelcomeTtsEnabled: bool = isWelcomeTtsEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
-        self.__anivMessageCopyTimeoutChance: float | None = anivMessageCopyTimeoutChance
+        self.__anivMessageCopyTimeoutProbability: float | None = anivMessageCopyTimeoutProbability
         self.__superTriviaCheerTriggerAmount: float | None = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: float | None = superTriviaSubscribeTriggerAmount
         self.__anivMessageCopyMaxAgeSeconds: int | None = anivMessageCopyMaxAgeSeconds
@@ -342,6 +342,10 @@ class User(UserInterface):
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:
         return self.__anivMessageCopyMaxAgeSeconds
 
+    @property
+    def anivMessageCopyTimeoutProbability(self) -> float | None:
+        return self.__anivMessageCopyTimeoutProbability
+
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled
 
@@ -350,9 +354,6 @@ class User(UserInterface):
 
     def areSoundAlertsEnabled(self) -> bool:
         return self.__areSoundAlertsEnabled
-
-    def getAnivMessageCopyTimeoutChance(self) -> float | None:
-        return self.__anivMessageCopyTimeoutChance
 
     def getAnivMessageCopyTimeoutSeconds(self) -> int | None:
         return self.__anivMessageCopyTimeoutSeconds

@@ -160,14 +160,14 @@ class UsersRepository(UsersRepositoryInterface):
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
         anivMessageCopyMaxAgeSeconds: int | None = None
-        anivMessageCopyTimeoutChance: float | None = None
+        anivMessageCopyTimeoutProbability: float | None = None
         anivMessageCopyTimeoutSeconds: int | None = None
         if isAnivMessageCopyTimeoutEnabled:
             if 'anivMessageCopyMaxAgeSeconds' in userJson and utils.isValidInt(userJson.get('anivCopyMessageMaxAgeSeconds')):
                 anivMessageCopyMaxAgeSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyMaxAgeSeconds')
 
-            if 'anivMessageCopyTimeoutChance' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutChance')):
-                anivMessageCopyTimeoutChance = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutChance')
+            if 'anivMessageCopyTimeoutProbability' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutProbability')):
+                anivMessageCopyTimeoutProbability = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutProbability')
 
             if 'anivMessageCopyTimeoutSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutSeconds')):
                 anivMessageCopyTimeoutSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutSeconds')
@@ -295,7 +295,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWeatherEnabled = isWeatherEnabled,
             isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
-            anivMessageCopyTimeoutChance = anivMessageCopyTimeoutChance,
+            anivMessageCopyTimeoutProbability = anivMessageCopyTimeoutProbability,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
             anivMessageCopyMaxAgeSeconds = anivMessageCopyMaxAgeSeconds,

@@ -12,6 +12,11 @@ class UserInterface(ABC):
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:
         pass
 
+    @property
+    @abstractmethod
+    def anivMessageCopyTimeoutProbability(self) -> float | None:
+        pass
+
     @abstractmethod
     def areCheerActionsEnabled(self) -> bool:
         pass
@@ -22,10 +27,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def areSoundAlertsEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    def getAnivMessageCopyTimeoutChance(self) -> float | None:
         pass
 
     @abstractmethod
