@@ -58,12 +58,14 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self.__timber: TimberInterface = timber
         self.__pointRedemptionSoundAlerts: set[SoundAlert] | None = pointRedemptionSoundAlerts
 
-        self.__cache: dict[SoundAlert, str | None] | None = None
+        self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
+        self.__soundAlertCache: dict[SoundAlert, str | None] | None = None
         self.__shinySoundFileRegEx: Pattern = re.compile(r'^shiny_\w+\.(mp3|ogg|wav)$', re.IGNORECASE)
         self.__soundFileRegEx: Pattern = re.compile(r'^\w+\.(mp3|ogg|wav)$', re.IGNORECASE)
 
     async def clearCaches(self):
-        self.__cache = None
+        self.__scanResultCache.clear()
+        self.__soundAlertCache = None
         self.__timber.log('SoundPlayerRandomizerHelper', 'Caches cleared')
 
     async def chooseRandomFromDirectorySoundAlert(
@@ -74,21 +76,31 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             return None
 
         directoryPath = utils.cleanPath(directoryPath)
+        scanResult = self.__scanResultCache.get(directoryPath, None)
 
-        if not await aiofiles.ospath.exists(
-            path = directoryPath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        ):
-            self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path does not exist: \"{directoryPath}\"')
-            return None
-        elif not await aiofiles.ospath.isdir(
-            s = directoryPath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        ):
-            self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
-            return None
+        if scanResult is None:
+            if not await aiofiles.ospath.exists(
+                path = directoryPath,
+                loop = self.__backgroundTaskHelper.getEventLoop()
+            ):
+                self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path does not exist: \"{directoryPath}\"')
 
-        scanResult = await self.__scanDirectoryForAudioFiles(directoryPath)
+                scanResult = SoundPlayerRandomizerDirectoryScanResult(
+                    soundFiles = list(),
+                    shinySoundFiles = list()
+                )
+            elif not await aiofiles.ospath.isdir(
+                s = directoryPath,
+                loop = self.__backgroundTaskHelper.getEventLoop()
+            ):
+                self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
+
+                scanResult = SoundPlayerRandomizerDirectoryScanResult(
+                    soundFiles = list(),
+                    shinySoundFiles = list()
+                )
+            else:
+                scanResult = await self.__scanDirectoryForAudioFiles(directoryPath)
 
         if len(scanResult.soundFiles) == 0:
             self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned the given directory path but found no sound files: \"{directoryPath}\"')
@@ -97,11 +109,11 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         return random.choice(scanResult.soundFiles)
 
     async def chooseRandomSoundAlert(self) -> SoundAlert | None:
-        cache = self.__cache
+        cache = self.__soundAlertCache
 
         if cache is None:
             cache = await self.__loadSoundAlertsCache()
-            self.__cache = cache
+            self.__soundAlertCache = cache
 
         availableSoundAlerts: list[SoundAlert] = list()
 
