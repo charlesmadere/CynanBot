@@ -48,7 +48,11 @@ class JsonFileReader(JsonReaderInterface):
 
         jsonContents: dict[Any, Any] | None = None
 
-        async with aiofiles.open(self.__fileName, mode = 'r', encoding = 'utf-8') as file:
+        async with aiofiles.open(
+            file = self.__fileName,
+            mode = 'r',
+            encoding = 'utf-8'
+        ) as file:
             data = await file.read()
             jsonContents = json.loads(data)
 
