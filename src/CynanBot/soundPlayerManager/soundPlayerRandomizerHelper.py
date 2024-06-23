@@ -104,16 +104,6 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         for soundAlert, filePath in cache.items():
             if not utils.isValidStr(filePath):
                 continue
-            elif not await aiofiles.ospath.exists(
-                path = filePath,
-                loop = self.__backgroundTaskHelper.getEventLoop()
-            ):
-                continue
-            elif not await aiofiles.ospath.isfile(
-                path = filePath,
-                loop = self.__backgroundTaskHelper.getEventLoop()
-            ):
-                continue
 
             availableSoundAlerts.append(soundAlert)
 
@@ -128,9 +118,23 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         if self.__pointRedemptionSoundAlerts is not None and len(self.__pointRedemptionSoundAlerts) >= 1:
             for soundAlert in self.__pointRedemptionSoundAlerts:
                 filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
+
+                if not utils.isValidStr(filePath):
+                    continue
+                elif not await aiofiles.ospath.exists(
+                    path = filePath,
+                    loop = self.__backgroundTaskHelper.getEventLoop()
+                ):
+                    continue
+                elif await aiofiles.ospath.isdir(
+                    s = filePath,
+                    loop = self.__backgroundTaskHelper.getEventLoop()
+                ):
+                    continue
+
                 cache[soundAlert] = filePath
 
-        self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in ({len(cache)}) sound alert(s)')
+        self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in {len(cache)} sound alert(s)')
         return cache
 
     async def __scanDirectoryForSoundFiles(
