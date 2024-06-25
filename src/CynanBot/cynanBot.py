@@ -9,6 +9,10 @@ from twitchio.ext.commands.errors import CommandNotFound
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.aniv.anivCopyMessageTimeoutScorePresenterInterface import \
+    AnivCopyMessageTimeoutScorePresenterInterface
+from CynanBot.aniv.anivCopyMessageTimeoutScoreRepositoryInterface import \
+    AnivCopyMessageTimeoutScoreRepositoryInterface
 from CynanBot.aniv.anivSettingsRepositoryInterface import \
     AnivSettingsRepositoryInterface
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
@@ -77,6 +81,8 @@ from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
 from CynanBot.chatCommands.jishoChatCommand import JishoChatCommand
+from CynanBot.chatCommands.myAnivTimeoutsChatCommand import \
+    MyAnivTimeoutsChatCommand
 from CynanBot.chatCommands.removeBannedTriviaControllerChatCommand import \
     RemoveBannedTriviaControllerChatCommand
 from CynanBot.chatCommands.removeRecurringSuperTriviaActionCommand import \
@@ -324,6 +330,8 @@ class CynanBot(
         twitchRaidHandler: AbsTwitchRaidHandler | None,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
         administratorProvider: AdministratorProviderInterface,
+        anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface | None,
+        anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface | None,
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
@@ -420,6 +428,10 @@ class CynanBot(
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
+        elif anivCopyMessageTimeoutScorePresenter is not None and not isinstance(anivCopyMessageTimeoutScorePresenter, AnivCopyMessageTimeoutScorePresenterInterface):
+            raise TypeError(f'anivCopyMessageTimeoutScorePresenter argument is malformed: \"{anivCopyMessageTimeoutScorePresenter}\"')
+        elif anivCopyMessageTimeoutScoreRepository is not None and not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
+            raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
         elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
@@ -714,6 +726,11 @@ class CynanBot(
             self.__jishoCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchUtils, usersRepository)
+
+        if anivCopyMessageTimeoutScorePresenter is None or anivCopyMessageTimeoutScoreRepository is None:
+            self.__myAnivTimeoutsCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__myAnivTimeoutsCommand: AbsChatCommand = MyAnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchTokensRepository, twitchUtils, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsCommand = StubCommand()
@@ -1386,6 +1403,11 @@ class CynanBot(
     async def command_mastodon(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__mastodonCommand.handleCommand(context)
+
+    @commands.command(name = 'myanivtimeouts')
+    async def command_myanivtimeouts(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__myAnivTimeoutsCommand.handleChatCommand(context)
 
     @commands.command(name = 'mycutenesshistory', aliases = [ 'mycuteness' ])
     async def command_mycutenesshistory(self, ctx: Context):

@@ -9,6 +9,10 @@ from CynanBot.administratorProviderInterface import \
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivContentScannerInterface import \
     AnivContentScannerInterface
+from CynanBot.aniv.anivCopyMessageTimeoutScorePresenter import \
+    AnivCopyMessageTimeoutScorePresenter
+from CynanBot.aniv.anivCopyMessageTimeoutScorePresenterInterface import \
+    AnivCopyMessageTimeoutScorePresenterInterface
 from CynanBot.aniv.anivCopyMessageTimeoutScoreRepository import \
     AnivCopyMessageTimeoutScoreRepository
 from CynanBot.aniv.anivCopyMessageTimeoutScoreRepositoryInterface import \
@@ -1144,6 +1148,8 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
 ## Aniv initialization section ##
 #################################
 
+anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
+
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
@@ -1559,6 +1565,8 @@ cynanBot = CynanBot(
     twitchRaidHandler = twitchRaidHandler,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     administratorProvider = administratorProvider,
+    anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettingsRepository = anivSettingsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
