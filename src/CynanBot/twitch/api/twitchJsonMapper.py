@@ -4,12 +4,16 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.twitch.api.twitchSendChatDropReason import TwitchSendChatDropReason
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchSendChatMessageResponse import \
+    TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.twitchValidationResponse import \
     TwitchValidationResponse
@@ -29,6 +33,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+
+    async def __calculateExpirationTime(self, expiresInSeconds: int | None) -> datetime:
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+
+        if utils.isValidInt(expiresInSeconds) and expiresInSeconds > 0:
+            return now + timedelta(seconds = expiresInSeconds)
+        else:
+            return now - timedelta(weeks = 1)
 
     async def parseApiScope(
         self,
@@ -87,6 +99,49 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'partner': return TwitchBroadcasterType.PARTNER
             case _: return TwitchBroadcasterType.NORMAL
 
+    async def parseSendChatDropReason(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchSendChatDropReason | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        code = utils.getStrFromDict(jsonResponse, 'code')
+
+        message: str | None
+        if 'message' in jsonResponse and utils.isValidStr(jsonResponse.get('message')):
+            message = utils.getStrFromDict(jsonResponse, 'message')
+
+        return TwitchSendChatDropReason(
+            code = code,
+            message = message
+        )
+
+    async def parseSendChatMessageResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchSendChatMessageResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        if not isinstance(data, list) or len(data) == 0:
+            return None
+
+        dataEntry: dict[str, Any] | Any | None = data[0]
+        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
+            return None
+
+        isSent = utils.getBoolFromDict(jsonResponse, 'is_sent', fallback = False)
+        messageId = utils.getStrFromDict(jsonResponse, 'message_id')
+        dropReason = await self.parseSendChatDropReason(jsonResponse.get('drop_reason'))
+
+        return TwitchSendChatMessageResponse(
+            isSent = isSent,
+            messageId = messageId,
+            dropReason = dropReason
+        )
+
     async def parseSubscriberTier(
         self,
         subscriberTier: str | None
@@ -104,6 +159,35 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchSubscriberTier value: \"{subscriberTier}\"')
                 return None
+
+    async def parseTokensDetails(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchTokensDetails | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        expirationTime = await self.__calculateExpirationTime(
+            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
+        )
+
+        if not 'access_token' in jsonResponse or not utils.isValidStr(jsonResponse.get('access_token')):
+            self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data does not include valid \"access_token\" value ({jsonResponse=})')
+            return None
+
+        accessToken = utils.getStrFromDict(jsonResponse, 'access_token')
+
+        if not 'refresh_token' in jsonResponse or not utils.isValidStr(jsonResponse.get('refresh_token')):
+            self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data does not include valid \"refresh_token\" value ({jsonResponse=})')
+            return None
+
+        refreshToken = utils.getStrFromDict(jsonResponse, 'refresh_token')
+
+        return TwitchTokensDetails(
+            expirationTime = expirationTime,
+            accessToken = accessToken,
+            refreshToken = refreshToken
+        )
 
     async def parseValidationResponse(
         self,

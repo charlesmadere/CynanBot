@@ -21,7 +21,6 @@ from CynanBot.twitch.api.twitchBannedUsersResponse import \
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBanResponse import TwitchBanResponse
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
-from CynanBot.twitch.api.twitchChatDropReason import TwitchChatDropReason
 from CynanBot.twitch.api.twitchEmoteDetails import TwitchEmoteDetails
 from CynanBot.twitch.api.twitchEmoteImage import TwitchEmoteImage
 from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -1011,25 +1010,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received an error of some kind when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
-        expirationTime = await self.__calculateExpirationTime(
-            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
-        )
+        tokensDetails = await self.__twitchJsonMapper.parseTokensDetails(jsonResponse)
 
-        accessToken = utils.getStrFromDict(jsonResponse, 'access_token', fallback = '')
-        if not utils.isValidStr(accessToken):
-            self.__timber.log('TwitchApiService', f'Received malformed \"access_token\" ({accessToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchAccessTokenMissingException(f'TwitchApiService received malformed \"access_token\" ({accessToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+        if tokensDetails is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({tokensDetails=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({tokensDetails=})')
 
-        refreshToken = utils.getStrFromDict(jsonResponse, 'refresh_token', fallback = '')
-        if not utils.isValidStr(refreshToken):
-            self.__timber.log('TwitchApiService', f'Received malformed \"refresh_token\" ({refreshToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchRefreshTokenMissingException(f'TwitchApiService received malformed \"refresh_token\" ({refreshToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-
-        return TwitchTokensDetails(
-            expirationTime = expirationTime,
-            accessToken = accessToken,
-            refreshToken = refreshToken
-        )
+        return tokensDetails
 
     async def sendChatMessage(
         self,
@@ -1068,37 +1055,18 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})')
-        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'TwitchApiService encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-
-        dataJson: list[dict[str, Any]] | None = jsonResponse.get('data')
-        if not isinstance(dataJson, list) or len(dataJson) == 0 or not isinstance(dataJson[0], dict) or len(dataJson[0]) == 0:
-            self.__timber.log('TwitchApiService', f'Encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'TwitchApiService encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-
-        chatResponseJson: dict[str, Any] = dataJson[0]
-        isSent = utils.getBoolFromDict(chatResponseJson, 'is_sent', fallback = False)
-        messageId = utils.getStrFromDict(chatResponseJson, 'message_id')
-
-        dropReasonJson: dict[str, Any] | None = chatResponseJson.get('drop_reason')
-        dropReason: TwitchChatDropReason | None = None
-        if isinstance(dropReasonJson, dict) and len(dropReasonJson) >= 1:
-            message: str | None = None
-            if 'message' in dropReasonJson and utils.isValidStr(dropReasonJson.get('message')):
-                message = utils.getStrFromDict(dropReasonJson, 'message')
-
-            dropReason = TwitchChatDropReason(
-                code = utils.getStrFromDict(dropReasonJson, 'code'),
-                message = message
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})'
             )
 
-        return TwitchSendChatMessageResponse(
-            isSent = isSent,
-            messageId = messageId,
-            dropReason = dropReason
-        )
+        sendChatMessageResponse = await self.__twitchJsonMapper.parseSendChatMessageResponse(jsonResponse)
+
+        if sendChatMessageResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when sending chat message ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({sendChatMessageResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when sending chat message ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({sendChatMessageResponse=})')
+
+        return sendChatMessageResponse
 
     async def unbanUser(
         self,
@@ -1173,14 +1141,11 @@ class TwitchApiService(TwitchApiServiceInterface):
                 statusCode = responseStatusCode,
                 message = f'TwitchApiService encountered non-200 HTTP status code when validating token ({twitchAccessToken=}) ({responseStatusCode=})'
             )
-        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when validating token ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when validating token ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=})')
 
-        response = await self.__twitchJsonMapper.parseValidationResponse(jsonResponse)
+        validationResponse = await self.__twitchJsonMapper.parseValidationResponse(jsonResponse)
 
-        if response is None:
-            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when validating token ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
-            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when validating token ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
+        if validationResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when validating token ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({validationResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when validating token ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({validationResponse=})')
 
-        return response
+        return validationResponse

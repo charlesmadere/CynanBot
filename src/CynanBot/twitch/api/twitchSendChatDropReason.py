@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class TwitchChatDropReason():
+class TwitchSendChatDropReason():
     code: str
     message: str | None
