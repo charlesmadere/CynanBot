@@ -4,17 +4,18 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-from CynanBot.twitch.api.twitchSendChatDropReason import TwitchSendChatDropReason
-from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
+from CynanBot.twitch.api.twitchSendChatDropReason import \
+    TwitchSendChatDropReason
 from CynanBot.twitch.api.twitchSendChatMessageResponse import \
     TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchValidationResponse import \
     TwitchValidationResponse
 
@@ -132,9 +133,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
             return None
 
-        isSent = utils.getBoolFromDict(jsonResponse, 'is_sent', fallback = False)
-        messageId = utils.getStrFromDict(jsonResponse, 'message_id')
-        dropReason = await self.parseSendChatDropReason(jsonResponse.get('drop_reason'))
+        isSent = utils.getBoolFromDict(dataEntry, 'is_sent', fallback = False)
+        messageId = utils.getStrFromDict(dataEntry, 'message_id')
+        dropReason = await self.parseSendChatDropReason(dataEntry.get('drop_reason'))
 
         return TwitchSendChatMessageResponse(
             isSent = isSent,
