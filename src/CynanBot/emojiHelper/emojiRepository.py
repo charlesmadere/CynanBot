@@ -1,12 +1,25 @@
 import traceback
-from typing import Any
+from typing import TypedDict
 
+from CynanBot.misc.type_check import validate_typeddict
 import CynanBot.misc.utils as utils
 from CynanBot.emojiHelper.emojiInfo import EmojiInfo
 from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
+
+
+class EmojiJson(TypedDict):
+    code: list[str]
+    category: str
+    emoji: str
+    name: str
+    subcategory: str
+
+
+class EmojiDataJson(TypedDict):
+    emojis: list[EmojiJson]
 
 
 class EmojiRepository(EmojiRepositoryInterface):
@@ -40,20 +53,13 @@ class EmojiRepository(EmojiRepositoryInterface):
 
     async def __parseDictToEmojiInfo(
         self,
-        emojiDict: dict[str, Any] | None
-    ) -> EmojiInfo | None:
-        if not isinstance(emojiDict, dict) or len(emojiDict) == 0:
-            return None
-
-        codes: set[str] = set()
-
-        for code in emojiDict['code']:
-            codes.add(code)
-
-        category = utils.getStrFromDict(emojiDict, 'category')
-        emoji = utils.getStrFromDict(emojiDict, 'emoji')
-        name = utils.getStrFromDict(emojiDict, 'name')
-        subCategory = utils.getStrFromDict(emojiDict, 'subcategory')
+        emojiDict: EmojiJson
+    ) -> EmojiInfo:
+        codes = set(emojiDict['code'])
+        category = emojiDict['category']
+        emoji = emojiDict['emoji']
+        name = emojiDict['name']
+        subCategory = emojiDict['subcategory']
 
         return EmojiInfo(
             codes = codes,
@@ -71,17 +77,14 @@ class EmojiRepository(EmojiRepositoryInterface):
         self.__timber.log('EmojiRepository', f'Reading in emoji info data...')
         jsonContents = await self.__emojiJsonReader.readJsonAsync()
 
-        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
-            self.__timber.log('EmojiRepository', f'Read in no data from emojiJsonReader: \"{jsonContents}\"')
-            return
-        elif 'emojis' not in jsonContents:
-            self.__timber.log('EmojiRepository', f'\"emojis\" field not in jsonContents!')
+        if not validate_typeddict(jsonContents, EmojiDataJson):
+            self.__timber.log('EmojiRepository', f'structure of emoji data json is wrong\n{jsonContents=}')
             return
 
-        emojisList: list[dict[str, Any]] | None = jsonContents.get('emojis')
+        emojisList = jsonContents['emojis']
 
-        if not isinstance(emojisList, list) or len(emojisList) == 0:
-            self.__timber.log('EmojiRepository', f'\"emojis\" field is either malformed or empty!')
+        if len(emojisList) == 0:
+            self.__timber.log('EmojiRepository', f'\"emojis\" field is empty!')
             return
 
         for index, emojiDict in enumerate(emojisList):
