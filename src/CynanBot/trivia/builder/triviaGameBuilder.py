@@ -13,6 +13,7 @@ from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaGameBuilder(TriviaGameBuilderInterface):
@@ -97,7 +98,8 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        numberOfGames: int = 1
+        numberOfGames: int = 1,
+        requiredTriviaSource: TriviaSource | None = None
     ) -> StartNewSuperTriviaGameAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -152,7 +154,8 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
             twitchChannelId = twitchChannelId,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+            requiredTriviaSource = requiredTriviaSource
         )
 
         return StartNewSuperTriviaGameAction(
