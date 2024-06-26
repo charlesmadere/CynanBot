@@ -243,6 +243,12 @@ class TriviaRepository(TriviaRepositoryInterface):
 
     async def __getTriviaSource(self, triviaFetchOptions: TriviaFetchOptions) -> TriviaQuestionRepositoryInterface:
         if triviaFetchOptions.requiredTriviaSource is not None:
+
+            invalidTriviaSources = await self.__getCurrentlyInvalidTriviaSources(triviaFetchOptions)
+
+            if triviaFetchOptions.requiredTriviaSource in invalidTriviaSources:
+                raise UnavailableTriviaSourceException("Trivia source is currently invalid")
+
             triviaSource = self.__triviaSourceToRepositoryMap[triviaFetchOptions.requiredTriviaSource]
             
             if triviaSource is None:
