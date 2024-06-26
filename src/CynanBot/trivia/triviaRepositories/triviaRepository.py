@@ -241,6 +241,17 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         return triviaSourceToRepositoryMap
 
+    async def __getTriviaSource(self, triviaFetchOptions: TriviaFetchOptions) -> TriviaQuestionRepositoryInterface:
+        if triviaFetchOptions.requiredTriviaSource is not None:
+            triviaSource = self.__triviaSourceToRepositoryMap[triviaFetchOptions.requiredTriviaSource]
+            
+            if triviaSource is None:
+                raise Exception("Unable to fetch trivia from trivia source repository map")
+            else:
+                return triviaSource
+        
+        return await self.__chooseRandomTriviaSource(triviaFetchOptions)
+
     async def fetchTrivia(
         self,
         emote: str,
@@ -257,10 +268,13 @@ class TriviaRepository(TriviaRepositoryInterface):
         attemptedTriviaSources: list[TriviaSource] = list()
 
         while retryCount < maxRetryCount:
-            question = await self.__retrieveSpooledTriviaQuestion(triviaFetchOptions)
+            if triviaFetchOptions.requiredTriviaSource is not None:
+                question = None
+            else:
+                question = await self.__retrieveSpooledTriviaQuestion(triviaFetchOptions)
 
             if question is None:
-                triviaQuestionRepository = await self.__chooseRandomTriviaSource(triviaFetchOptions)
+                triviaQuestionRepository = await self.__getTriviaSource(triviaFetchOptions)
                 triviaSource = triviaQuestionRepository.getTriviaSource()
                 attemptedTriviaSources.append(triviaSource)
 

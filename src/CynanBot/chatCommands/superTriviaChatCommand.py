@@ -14,7 +14,7 @@ from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
-
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 class SuperTriviaChatCommand(AbsChatCommand):
 
@@ -94,14 +94,30 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
                 return
 
+      # match splits[0]:
+      #     case '!supertrivialotr':
+      #         s
+      #     case _:
+
+        triviaSource = None
+
+        match splits[0]:
+            case '!supertrivialotr':
+                triviaSource = TriviaSource.LORD_OF_THE_RINGS
+                
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId(),
-            numberOfGames = numberOfGames
+            numberOfGames = numberOfGames,
+            requiredTriviaSource = triviaSource
         )
 
         if startNewSuperTriviaGameAction is None:
             return
 
         self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
-        self.__timber.log('SuperTriviaChatCommand', f'Handled !supertrivia command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        
+        # Presumably, a command should always be the first item in the splits array, use this ref
+        # just in case we want to add more specified supertrivia commands in the future.
+
+        self.__timber.log('SuperTriviaChatCommand', f'Handled {splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
