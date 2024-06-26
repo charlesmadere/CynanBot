@@ -371,3 +371,26 @@ def test_consumable_iterable() -> None:
     for _ in it:
         count += 1
     assert count == 1, f"{count=}"
+
+
+def test_typed_dict() -> None:
+    class TestTypedDict(typing.TypedDict):
+        one_key: int
+        other_key: list[str]
+
+    @type_check
+    def f(x: TestTypedDict) -> bool:
+        return len(x) > 2
+
+    f({
+        "one_key": 4,
+        "other_key": ["five"]
+    })
+
+
+def test_any() -> None:
+    @type_check
+    def f(x: typing.Any) -> str:
+        return str(x)
+
+    f(())
