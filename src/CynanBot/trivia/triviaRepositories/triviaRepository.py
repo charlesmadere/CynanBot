@@ -21,7 +21,7 @@ from CynanBot.trivia.scraper.triviaScraperInterface import \
 from CynanBot.trivia.triviaExceptions import (
     GenericTriviaNetworkException, MalformedTriviaJsonException,
     NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException,
-    NoTriviaQuestionException, TooManyTriviaFetchAttemptsException)
+    NoTriviaQuestionException, TooManyTriviaFetchAttemptsException, UnavailableTriviaSourceException)
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
@@ -246,7 +246,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             triviaSource = self.__triviaSourceToRepositoryMap[triviaFetchOptions.requiredTriviaSource]
             
             if triviaSource is None:
-                raise Exception("Unable to fetch trivia from trivia source repository map")
+                raise UnavailableTriviaSourceException("Unable to fetch trivia source from trivia source repository map")
             else:
                 return triviaSource
         
@@ -274,7 +274,12 @@ class TriviaRepository(TriviaRepositoryInterface):
                 question = await self.__retrieveSpooledTriviaQuestion(triviaFetchOptions)
 
             if question is None:
-                triviaQuestionRepository = await self.__getTriviaSource(triviaFetchOptions)
+                try:
+                    triviaQuestionRepository = await self.__getTriviaSource(triviaFetchOptions)
+                except UnavailableTriviaSourceException as e:
+                    self.__timber.log('TriviaRepository', f'Failed to get trivia source (required trivia source was \"{triviaFetchOptions.requiredTriviaSource}\"): {e}', e, traceback.format_exc())
+                    return
+
                 triviaSource = triviaQuestionRepository.getTriviaSource()
                 attemptedTriviaSources.append(triviaSource)
 
