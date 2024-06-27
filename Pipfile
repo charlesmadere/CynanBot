@@ -33,4 +33,4 @@ xmltodict = "0.13.0"
 
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
