@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Iterator, Mapping
 import logging
 from types import GenericAlias, UnionType
-from typing import Callable, NoReturn, ParamSpec, TypeGuard, TypeVar
+from typing import Any, Callable, NoReturn, ParamSpec, TypeGuard, TypeVar
 import typing
 from inspect import signature
 
@@ -18,6 +18,31 @@ def _is_generic_alias(obj: object) -> TypeGuard[GenericAlias]:
     return isinstance(obj, GenericAlias) or isinstance(obj, getattr(typing, "_GenericAlias"))
 
 
+def validate_typeddict[T](obj: dict[str, Any] | Any, t_dict: type[T], value_name: str = "unknown") -> TypeGuard[T]:
+    # TODO: assert t_dict is a TypedDict - I'm not sure of a good way to do this.
+    # I thought of `assert TypedDict in t_dict.__orig_bases__`
+    # but that doesn't work if the `TypedDict` came from `typing_extensions`
+    if not isinstance(obj, Mapping):
+        return False
+    for name, type_ in t_dict.__annotations__.items():
+        required = True
+        if repr(type_).startswith("typing.NotRequired"):  # maybe not the best way
+            required = False
+            type_ = type_.__args__[0]
+
+        if required and name not in obj:
+            return False
+
+        sentinel = object()
+        value = obj.get(name, sentinel)
+        if value is not sentinel:
+            try:
+                _check_type(value_name, type_, value)
+            except TypeError:
+                return False
+    return True
+
+
 def _check_type(name: str, expected_type: _Checkable, value: object) -> None:
     """ raises TypeError if `value` is not `expected_type` """
 
@@ -27,12 +52,18 @@ def _check_type(name: str, expected_type: _Checkable, value: object) -> None:
     if expected_type is None:
         if value is not None:
             error()
+    elif expected_type is typing.Any:
+        pass
     elif isinstance(expected_type, type):
         if expected_type is float:
             if not isinstance(value, (float, int)):
                 error()
         else:
-            if not isinstance(value, expected_type):
+            try:  # I don't know a better way to find out if `expected_type` is `TypedDict`
+                isinstance_result = isinstance(value, expected_type)
+            except TypeError:
+                isinstance_result = validate_typeddict(value, expected_type, name)
+            if not isinstance_result:
                 error()
     elif _is_generic_alias(expected_type):
         if not isinstance(value, expected_type.__origin__):
