@@ -1479,7 +1479,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleChatCommand(context)
 
-    @commands.command(name = 'supertrivia')
+    @commands.command(name = 'supertrivia', aliases = ['supertrivialotr'])
     async def command_supertrivia(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superTriviaCommand.handleChatCommand(context)

@@ -4,7 +4,7 @@ from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBot.trivia.actions.startNewTriviaGameAction import \
     StartNewTriviaGameAction
-
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 class TriviaGameBuilderInterface(ABC):
 
@@ -23,6 +23,7 @@ class TriviaGameBuilderInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        numberOfGames: int = 1
+        numberOfGames: int = 1,
+        requiredTriviaSource: TriviaSource | None = None
     ) -> StartNewSuperTriviaGameAction | None:
         pass
