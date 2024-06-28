@@ -7,7 +7,7 @@ If you'd like to add CynanBot to your Twitch stream, please talk to me on Discor
 
 ## Python
 
-At this time, the minimum required Python version is `3.11`.
+At this time, the minimum required Python version is `3.12`.
 
 
 ## Installation
