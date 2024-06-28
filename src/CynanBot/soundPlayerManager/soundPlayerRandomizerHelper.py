@@ -121,15 +121,9 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
                 if not utils.isValidStr(filePath):
                     continue
-                elif not await aiofiles.ospath.exists(
-                    path = filePath,
-                    loop = self.__backgroundTaskHelper.getEventLoop()
-                ):
+                elif not await aiofiles.ospath.exists(filePath):
                     continue
-                elif await aiofiles.ospath.isdir(
-                    s = filePath,
-                    loop = self.__backgroundTaskHelper.getEventLoop()
-                ):
+                elif await aiofiles.ospath.isdir(filePath):
                     continue
 
                 cache[soundAlert] = filePath
@@ -141,10 +135,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self,
         directoryPath: str
     ) -> SoundPlayerRandomizerDirectoryScanResult:
-        if not await aiofiles.ospath.exists(
-            path = directoryPath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        ):
+        if not await aiofiles.ospath.exists(directoryPath, self.__backgroundTaskHelper.getEventLoop()):
             self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path does not exist: \"{directoryPath}\"')
 
             return SoundPlayerRandomizerDirectoryScanResult(

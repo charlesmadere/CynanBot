@@ -70,16 +70,10 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         filePath = utils.cleanPath(filePath)
 
-        if not await aiofiles.ospath.exists(
-            path = filePath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        ):
+        if not await aiofiles.ospath.exists(filePath, self.__backgroundTaskHelper.getEventLoop()):
             self.__timber.log('VlcSoundPlayerManager', f'The given file path does not exist ({filePath=})')
             return False
-        elif not await aiofiles.ospath.isfile(
-            path = filePath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        ):
+        elif not await aiofiles.ospath.isfile(filePath, self.__backgroundTaskHelper.getEventLoop()):
             self.__timber.log('VlcSoundPlayerManager', f'The given file path is not a file ({filePath=})')
             return False
 
