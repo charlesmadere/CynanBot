@@ -53,8 +53,7 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
             async with aiofiles.open(
                 file = fileName,
                 mode = 'w',
-                encoding = 'windows-1252', # DECTalk requires Windows-1252 encoding
-                loop = self.__backgroundTaskHelper.getEventLoop()
+                encoding = 'windows-1252' # DECTalk requires Windows-1252 encoding
             ) as file:
                 await file.write(command)
                 await file.flush()

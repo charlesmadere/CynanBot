@@ -135,17 +135,14 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self,
         directoryPath: str
     ) -> SoundPlayerRandomizerDirectoryScanResult:
-        if not await aiofiles.ospath.exists(directoryPath, self.__backgroundTaskHelper.getEventLoop()):
+        if not await aiofiles.ospath.exists(directoryPath):
             self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path does not exist: \"{directoryPath}\"')
 
             return SoundPlayerRandomizerDirectoryScanResult(
                 soundFiles = list(),
                 shinySoundFiles = list()
             )
-        elif not await aiofiles.ospath.isdir(
-            s = directoryPath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        ):
+        elif not await aiofiles.ospath.isdir(directoryPath):
             self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
 
             return SoundPlayerRandomizerDirectoryScanResult(
@@ -153,10 +150,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                 shinySoundFiles = list()
             )
 
-        directoryContents = await aiofiles.os.scandir(
-            path = directoryPath,
-            loop = self.__backgroundTaskHelper.getEventLoop()
-        )
+        directoryContents = await aiofiles.os.scandir(directoryPath)
 
         if directoryContents is None:
             self.__timber.log('SoundPlayerRandomizerHelper', f'Scanning the given directory path yielded a None directory pointer: \"{directoryPath}\"')
