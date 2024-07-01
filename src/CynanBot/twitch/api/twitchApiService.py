@@ -21,10 +21,6 @@ from CynanBot.twitch.api.twitchBannedUsersResponse import \
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBanResponse import TwitchBanResponse
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
-from CynanBot.twitch.api.twitchEmoteDetails import TwitchEmoteDetails
-from CynanBot.twitch.api.twitchEmoteImage import TwitchEmoteImage
-from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
-from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
 from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
 from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
@@ -39,7 +35,6 @@ from CynanBot.twitch.api.twitchSendChatMessageRequest import \
 from CynanBot.twitch.api.twitchSendChatMessageResponse import \
     TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchStreamType import TwitchStreamType
-from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
@@ -459,78 +454,6 @@ class TwitchApiService(TwitchApiServiceInterface):
             users = users,
             pagination = pagination
         )
-
-    async def fetchEmoteDetails(
-        self,
-        broadcasterId: str,
-        twitchAccessToken: str
-    ) -> list[TwitchEmoteDetails]:
-        if not utils.isValidStr(broadcasterId):
-            raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
-        self.__timber.log('TwitchApiService', f'Fetching emote details... ({broadcasterId=})')
-        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
-        clientSession = await self.__networkClientProvider.get()
-
-        try:
-            response = await clientSession.get(
-                url = f'https://api.twitch.tv/helix/emotes?broadcaster_id={broadcasterId}',
-                headers = {
-                    'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
-                }
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching emote details (broadcasterId=\"{broadcasterId}\") (twitchAccessToken=\"{twitchAccessToken}\"): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching emote details (broadcasterId=\"{broadcasterId}\") (twitchAccessToken=\"{twitchAccessToken}\"): {e}')
-
-        responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | Any | None = await response.json()
-        await response.close()
-
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
-            self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-            raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-        elif responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching emote details (broadcasterId=\"{broadcasterId}\"): {responseStatusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching emote details (broadcasterId=\"{broadcasterId}\"): {responseStatusCode}')
-
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
-        if not utils.hasItems(data):
-            self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in the JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty \"data\" field in the JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-
-        emoteDetailsList: list[TwitchEmoteDetails] = list()
-
-        for emoteJson in data:
-            imagesJson: dict[str, str] = emoteJson['images']
-            emoteImages: list[TwitchEmoteImage] = list()
-
-            for imageJsonKey, imageJsonValue in imagesJson:
-                emoteImages.append(TwitchEmoteImage(
-                    url = imageJsonKey,
-                    imageScale = TwitchEmoteImageScale.fromStr(imageJsonValue)
-                ))
-
-            emoteId = utils.getStrFromDict(emoteJson, 'id')
-            emoteName = utils.getStrFromDict(emoteJson, 'name')
-            emoteType = TwitchEmoteType.fromStr(utils.getStrFromDict(emoteJson, 'emote_type'))
-            subscriberTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(emoteJson, 'tier'))
-
-            emoteDetailsList.append(TwitchEmoteDetails(
-                emoteImages = emoteImages,
-                emoteId = emoteId,
-                emoteName = emoteName,
-                emoteType = emoteType,
-                subscriberTier = subscriberTier
-            ))
-
-        return emoteDetailsList
 
     async def fetchFollower(
         self,

@@ -4,11 +4,15 @@ from typing import Any
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
 from CynanBot.twitch.api.twitchSendChatDropReason import \
     TwitchSendChatDropReason
 from CynanBot.twitch.api.twitchSendChatMessageResponse import \
     TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchThemeMode import TwitchThemeMode
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchValidationResponse import \
     TwitchValidationResponse
@@ -31,6 +35,27 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseEmoteImageFormat(
+        self,
+        emoteImageFormat: str | None
+    ) -> TwitchEmoteImageFormat | None:
+        pass
+
+    @abstractmethod
+    async def parseEmoteImageScale(
+        self,
+        emoteImageScale: str | None
+    ) -> TwitchEmoteImageScale | None:
+        pass
+
+    @abstractmethod
+    async def parseEmoteType(
+        self,
+        emoteType: str | None
+    ) -> TwitchEmoteType | None:
+        pass
+
+    @abstractmethod
     async def parseSendChatDropReason(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -49,6 +74,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         subscriberTier: str | None
     ) -> TwitchSubscriberTier | None:
+        pass
+
+    @abstractmethod
+    async def parseThemeMode(
+        self,
+        themeMode: str | None
+    ) -> TwitchThemeMode | None:
         pass
 
     @abstractmethod

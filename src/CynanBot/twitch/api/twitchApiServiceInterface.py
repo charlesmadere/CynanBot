@@ -5,7 +5,6 @@ from CynanBot.twitch.api.twitchBannedUsersResponse import \
     TwitchBannedUsersResponse
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBanResponse import TwitchBanResponse
-from CynanBot.twitch.api.twitchEmoteDetails import TwitchEmoteDetails
 from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
 from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
@@ -57,14 +56,6 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         bannedUserRequest: TwitchBannedUserRequest
     ) -> TwitchBannedUsersResponse:
-        pass
-
-    @abstractmethod
-    async def fetchEmoteDetails(
-        self,
-        broadcasterId: str,
-        twitchAccessToken: str
-    ) -> list[TwitchEmoteDetails]:
         pass
 
     @abstractmethod

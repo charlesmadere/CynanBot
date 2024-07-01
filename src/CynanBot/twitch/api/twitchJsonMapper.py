@@ -8,6 +8,9 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
 from CynanBot.twitch.api.twitchSendChatDropReason import \
@@ -15,6 +18,7 @@ from CynanBot.twitch.api.twitchSendChatDropReason import \
 from CynanBot.twitch.api.twitchSendChatMessageResponse import \
     TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchThemeMode import TwitchThemeMode
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchValidationResponse import \
     TwitchValidationResponse
@@ -100,6 +104,59 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'partner': return TwitchBroadcasterType.PARTNER
             case _: return TwitchBroadcasterType.NORMAL
 
+    async def parseEmoteImageFormat(
+        self,
+        emoteImageFormat: str | None
+    ) -> TwitchEmoteImageFormat | None:
+        if not utils.isValidStr(emoteImageFormat):
+            return None
+
+        emoteImageFormat = emoteImageFormat.lower()
+
+        match emoteImageFormat:
+            case 'animated': return TwitchEmoteImageFormat.ANIMATED
+            case 'static': return TwitchEmoteImageFormat.STATIC
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteImageFormat value: \"{emoteImageFormat}\"')
+                return None
+
+    async def parseEmoteImageScale(
+        self,
+        emoteImageScale: str | None
+    ) -> TwitchEmoteImageScale | None:
+        if not utils.isValidStr(emoteImageScale):
+            return None
+
+        emoteImageScale = emoteImageScale.lower()
+
+        match emoteImageScale:
+            case 'url_1x': return TwitchEmoteImageScale.SMALL
+            case 'url_2x': return TwitchEmoteImageScale.MEDIUM
+            case 'url_4x': return TwitchEmoteImageScale.LARGE
+            case '1.0': return TwitchEmoteImageScale.SMALL
+            case '2.0': return TwitchEmoteImageScale.MEDIUM
+            case '3.0': return TwitchEmoteImageScale.LARGE
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteImageScale value: \"{emoteImageScale}\"')
+                return None
+
+    async def parseEmoteType(
+        self,
+        emoteType: str | None
+    ) -> TwitchEmoteType | None:
+        if not utils.isValidStr(emoteType):
+            return None
+
+        emoteType = emoteType.lower()
+
+        match emoteType:
+            case 'bitstier': return TwitchEmoteType.BITS
+            case 'follower': return TwitchEmoteType.FOLLOWER
+            case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteType value: \"{emoteType}\"')
+                return None
+
     async def parseSendChatDropReason(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -159,6 +216,22 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case '3000': return TwitchSubscriberTier.TIER_THREE
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchSubscriberTier value: \"{subscriberTier}\"')
+                return None
+
+    async def parseThemeMode(
+        self,
+        themeMode: str | None
+    ) -> TwitchThemeMode | None:
+        if not utils.isValidStr(themeMode):
+            return None
+
+        themeMode = themeMode.lower()
+
+        match themeMode:
+            case 'dark': return TwitchThemeMode.DARK
+            case 'light': return TwitchThemeMode.LIGHT
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchThemeMode value: \"{themeMode}\"')
                 return None
 
     async def parseTokensDetails(
