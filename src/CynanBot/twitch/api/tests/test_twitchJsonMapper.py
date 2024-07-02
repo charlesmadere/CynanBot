@@ -7,6 +7,9 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 from CynanBot.twitch.api.twitchApiScope import TwitchApiScope
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
 from CynanBot.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from CynanBot.twitch.api.twitchJsonMapperInterface import \
     TwitchJsonMapperInterface
@@ -207,6 +210,106 @@ class TestTwitchJsonMapper():
     @pytest.mark.asyncio
     async def test_parseBroadcasterType_withWhitespaceString(self):
         result = await self.jsonMapper.parseBroadcasterType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteFormat_withAnimatedString(self):
+        result = await self.jsonMapper.parseEmoteImageFormat('animated')
+        assert result is TwitchEmoteImageFormat.ANIMATED
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteFormat_withEmptyString(self):
+        result = await self.jsonMapper.parseEmoteImageFormat('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteFormat_withNone(self):
+        result = await self.jsonMapper.parseEmoteImageFormat(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteFormat_withStaticString(self):
+        result = await self.jsonMapper.parseEmoteImageFormat('static')
+        assert result is TwitchEmoteImageFormat.STATIC
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteFormat_withWhitespaceString(self):
+        result = await self.jsonMapper.parseEmoteImageFormat(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_withEmptyString(self):
+        result = await self.jsonMapper.parseEmoteImageScale('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_withNone(self):
+        result = await self.jsonMapper.parseEmoteImageScale(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_withWhitespaceString(self):
+        result = await self.jsonMapper.parseEmoteImageScale(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_withUrl_1xString(self):
+        result = await self.jsonMapper.parseEmoteImageScale('url_1x')
+        assert result is TwitchEmoteImageScale.SMALL
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_withUrl_2xString(self):
+        result = await self.jsonMapper.parseEmoteImageScale('url_2x')
+        assert result is TwitchEmoteImageScale.MEDIUM
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_withUrl_4xString(self):
+        result = await self.jsonMapper.parseEmoteImageScale('url_4x')
+        assert result is TwitchEmoteImageScale.LARGE
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_with1_0String(self):
+        result = await self.jsonMapper.parseEmoteImageScale('1.0')
+        assert result is TwitchEmoteImageScale.SMALL
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_with2_0String(self):
+        result = await self.jsonMapper.parseEmoteImageScale('2.0')
+        assert result is TwitchEmoteImageScale.MEDIUM
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteImageScale_with3_0String(self):
+        result = await self.jsonMapper.parseEmoteImageScale('3.0')
+        assert result is TwitchEmoteImageScale.LARGE
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withBitstierString(self):
+        result = await self.jsonMapper.parseEmoteType('bitstier')
+        assert result is TwitchEmoteType.BITS
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withEmptyString(self):
+        result = await self.jsonMapper.parseEmoteType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withFollowerString(self):
+        result = await self.jsonMapper.parseEmoteType('follower')
+        assert result is TwitchEmoteType.FOLLOWER
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withNone(self):
+        result = await self.jsonMapper.parseEmoteType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withSubscriptionsString(self):
+        result = await self.jsonMapper.parseEmoteType('subscriptions')
+        assert result is TwitchEmoteType.SUBSCRIPTIONS
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseEmoteType(' ')
         assert result is None
 
     @pytest.mark.asyncio
