@@ -2,31 +2,27 @@ import asyncio
 from asyncio import AbstractEventLoop
 from typing import Any
 
-from CynanBot.location.locationsRepository import LocationsRepository
-from CynanBot.location.locationsRepositoryInterface import \
-    LocationsRepositoryInterface
-from CynanBot.location.timeZoneRepository import TimeZoneRepository
-from CynanBot.location.timeZoneRepositoryInterface import \
-    TimeZoneRepositoryInterface
-from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
-from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.openWeather.openWeatherApiKeyProvider import \
-    OpenWeatherApiKeyProvider
-from CynanBot.openWeather.openWeatherApiService import OpenWeatherApiService
-from CynanBot.openWeather.openWeatherApiServiceInterface import \
+from location.locationsRepository import LocationsRepository
+from location.locationsRepositoryInterface import LocationsRepositoryInterface
+from location.timeZoneRepository import TimeZoneRepository
+from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from network.aioHttpClientProvider import AioHttpClientProvider
+from network.networkClientProvider import NetworkClientProvider
+from openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
+from openWeather.openWeatherApiService import OpenWeatherApiService
+from openWeather.openWeatherApiServiceInterface import \
     OpenWeatherApiServiceInterface
-from CynanBot.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from CynanBot.openWeather.openWeatherJsonMapperInterface import \
+from openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
+from openWeather.openWeatherJsonMapperInterface import \
     OpenWeatherJsonMapperInterface
-from CynanBot.storage.jsonStaticReader import JsonStaticReader
-from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.timber.timberStub import TimberStub
-from CynanBot.weather.weatherReportPresenter import WeatherReportPresenter
-from CynanBot.weather.weatherReportPresenterInterface import \
+from storage.jsonStaticReader import JsonStaticReader
+from timber.timberInterface import TimberInterface
+from timber.timberStub import TimberStub
+from weather.weatherReportPresenter import WeatherReportPresenter
+from weather.weatherReportPresenterInterface import \
     WeatherReportPresenterInterface
-from CynanBot.weather.weatherRepository import WeatherRepository
-from CynanBot.weather.weatherRepositoryInterface import \
-    WeatherRepositoryInterface
+from weather.weatherRepository import WeatherRepository
+from weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
 class OpenWeatherApiKeyProviderStub(OpenWeatherApiKeyProvider):
