@@ -1,28 +1,27 @@
 import traceback
 
-from chatActions.absChatAction import AbsChatAction
-from cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
-from cheerActions.cheerActionJsonMapperInterface import \
+from .absChatAction import AbsChatAction
+from ..cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
+from ..cheerActions.cheerActionJsonMapperInterface import \
     CheerActionJsonMapperInterface
-from cheerActions.cheerActionStreamStatusRequirement import \
+from ..cheerActions.cheerActionStreamStatusRequirement import \
     CheerActionStreamStatusRequirement
-from cheerActions.cheerActionType import CheerActionType
-from cheerActions.cheerActionsRepositoryInterface import \
+from ..cheerActions.cheerActionType import CheerActionType
+from ..cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from cheerActions.cheerActionsWizardInterface import \
+from ..cheerActions.cheerActionsWizardInterface import \
     CheerActionsWizardInterface
-from cheerActions.wizards.soundAlertStep import SoundAlertStep
-from cheerActions.wizards.soundAlertWizard import SoundAlertWizard
-from cheerActions.wizards.stepResult import StepResult
-from cheerActions.wizards.timeoutStep import TimeoutStep
-from cheerActions.wizards.timeoutWizard import TimeoutWizard
-from mostRecentChat.mostRecentChat import MostRecentChat
-from timber.timberInterface import TimberInterface
-from twitch.configuration.twitchMessage import TwitchMessage
-from twitch.twitchUtilsInterface import TwitchUtilsInterface
-from users.userInterface import UserInterface
-
+from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
+from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
+from ..cheerActions.wizards.stepResult import StepResult
+from ..cheerActions.wizards.timeoutStep import TimeoutStep
+from ..cheerActions.wizards.timeoutWizard import TimeoutWizard
 from ..misc import utils as utils
+from ..mostRecentChat.mostRecentChat import MostRecentChat
+from ..timber.timberInterface import TimberInterface
+from ..twitch.configuration.twitchMessage import TwitchMessage
+from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
+from ..users.userInterface import UserInterface
 
 
 class CheerActionsWizardChatAction(AbsChatAction):
