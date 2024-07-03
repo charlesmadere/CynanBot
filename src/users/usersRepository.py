@@ -15,8 +15,7 @@ from .usersRepositoryInterface import UsersRepositoryInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
-from ..soundPlayerManager.soundAlertJsonMapperInterface import \
-    SoundAlertJsonMapperInterface
+from ..soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from ..timber.timberInterface import TimberInterface
 
 
