@@ -2,10 +2,8 @@ from datetime import timedelta
 
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .api.twitchStreamType import TwitchStreamType
-from .isLiveOnTwitchRepositoryInterface import \
-    IsLiveOnTwitchRepositoryInterface
-from .twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.timedDict import TimedDict

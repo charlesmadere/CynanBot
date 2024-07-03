@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 
-from twitch.api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
-from twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from users.userInterface import UserInterface
+from .api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from .configuration.twitchChannelProvider import TwitchChannelProvider
+from ..users.userInterface import UserInterface
 
 
 class AbsTwitchRaidHandler(ABC):

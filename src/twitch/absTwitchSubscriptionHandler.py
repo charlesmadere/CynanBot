@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
-from twitch.api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
-from users.userInterface import UserInterface
+from .api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..users.userInterface import UserInterface
 
 
 class AbsTwitchSubscriptionHandler(ABC):
