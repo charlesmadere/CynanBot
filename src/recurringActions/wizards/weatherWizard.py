@@ -2,8 +2,8 @@ from typing import Any
 
 from .absWizard import AbsWizard
 from .weatherSteps import WeatherSteps
-from ..misc import utils as utils
 from ..recurringActionType import RecurringActionType
+from ...misc import utils as utils
 
 
 class WeatherWizard(AbsWizard):
