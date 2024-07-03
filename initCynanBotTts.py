@@ -177,6 +177,8 @@ from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
 from src.users.usersRepositoryInterface import UsersRepositoryInterface
+from src.websocketConnection.websocketConnectionServer import WebsocketConnectionServer
+from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
