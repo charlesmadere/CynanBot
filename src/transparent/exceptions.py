@@ -1,4 +1,4 @@
-from language.languageEntry import LanguageEntry
+from ..language.languageEntry import LanguageEntry
 
 
 class WotdApiCodeUnavailableException(Exception):

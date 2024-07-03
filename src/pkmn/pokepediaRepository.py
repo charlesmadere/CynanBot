@@ -3,8 +3,6 @@ import re
 import traceback
 from typing import Any, Pattern
 
-from ..network.exceptions import GenericNetworkException
-from ..network.networkClientProvider import NetworkClientProvider
 from .pokepediaContestType import PokepediaContestType
 from .pokepediaDamageClass import PokepediaDamageClass
 from .pokepediaElementType import PokepediaElementType
@@ -17,8 +15,10 @@ from .pokepediaNature import PokepediaNature
 from .pokepediaPokemon import PokepediaPokemon
 from .pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from .pokepediaStat import PokepediaStat
-from ..timber.timberInterface import TimberInterface
 from ..misc import utils as utils
+from ..network.exceptions import GenericNetworkException
+from ..network.networkClientProvider import NetworkClientProvider
+from ..timber.timberInterface import TimberInterface
 
 
 class PokepediaRepository(PokepediaRepositoryInterface):
