@@ -90,16 +90,18 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
     async def parseBroadcasterType(
         self,
         broadcasterType: str | None
-    ) -> TwitchBroadcasterType | None:
+    ) -> TwitchBroadcasterType:
         if not utils.isValidStr(broadcasterType):
-            return None
+            return TwitchBroadcasterType.NORMAL
 
         broadcasterType = broadcasterType.lower()
 
         match broadcasterType:
             case 'affiliate': return TwitchBroadcasterType.AFFILIATE
             case 'partner': return TwitchBroadcasterType.PARTNER
-            case _: return TwitchBroadcasterType.NORMAL
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchBroadcasterType value: \"{broadcasterType}\"')
+                return TwitchBroadcasterType.NORMAL
 
     async def parseEmoteDetails(
         self,
@@ -420,6 +422,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             login = login,
             userId = userId
         )
+
+    async def requireBroadcasterType(
+        self,
+        broadcasterType: str | None
+    ) -> TwitchBroadcasterType:
+        result = await self.parseBroadcasterType(broadcasterType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{broadcasterType}\" into TwitchBroadcasterType value!')
+
+        return result
 
     async def requireSubscriberTier(
         self,

@@ -193,12 +193,12 @@ class TestTwitchJsonMapper():
     @pytest.mark.asyncio
     async def test_parseBroadcasterType_withEmptyString(self):
         result = await self.jsonMapper.parseBroadcasterType('')
-        assert result is None
+        assert result is TwitchBroadcasterType.NORMAL
 
     @pytest.mark.asyncio
     async def test_parseBroadcasterType_withNone(self):
         result = await self.jsonMapper.parseBroadcasterType(None)
-        assert result is None
+        assert result is TwitchBroadcasterType.NORMAL
 
     @pytest.mark.asyncio
     async def test_parseBroadcasterType_withPartnerString(self):
@@ -208,7 +208,7 @@ class TestTwitchJsonMapper():
     @pytest.mark.asyncio
     async def test_parseBroadcasterType_withWhitespaceString(self):
         result = await self.jsonMapper.parseBroadcasterType(' ')
-        assert result is None
+        assert result is TwitchBroadcasterType.NORMAL
 
     @pytest.mark.asyncio
     async def test_parseEmoteFormat_withAnimatedString(self):

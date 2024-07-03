@@ -30,7 +30,7 @@ class TwitchJsonMapperInterface(ABC):
     async def parseBroadcasterType(
         self,
         broadcasterType: str | None
-    ) -> TwitchBroadcasterType | None:
+    ) -> TwitchBroadcasterType:
         pass
 
     @abstractmethod

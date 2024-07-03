@@ -779,7 +779,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             displayName = utils.getStrFromDict(entry, 'display_name'),
             login = utils.getStrFromDict(entry, 'login'),
             userId = utils.getStrFromDict(entry, 'id'),
-            broadcasterType = TwitchBroadcasterType.fromStr(utils.getStrFromDict(entry, 'broadcaster_type')),
+            broadcasterType = await self.__twitchJsonMapper.parseBroadcasterType(utils.getStrFromDict(entry, 'broadcaster_type')),
             userType = TwitchUserType.fromStr(utils.getStrFromDict(entry, 'type'))
         )
 
@@ -846,7 +846,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             displayName = utils.getStrFromDict(entry, 'display_name'),
             login = utils.getStrFromDict(entry, 'login'),
             userId = utils.getStrFromDict(entry, 'id'),
-            broadcasterType = TwitchBroadcasterType.fromStr(utils.getStrFromDict(entry, 'broadcaster_type')),
+            broadcasterType = await self.__twitchJsonMapper.parseBroadcasterType(utils.getStrFromDict(entry, 'broadcaster_type')),
             userType = TwitchUserType.fromStr(utils.getStrFromDict(entry, 'type'))
         )
 
