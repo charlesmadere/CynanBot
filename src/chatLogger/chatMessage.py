@@ -1,8 +1,7 @@
-from chatLogger.absChatMessage import AbsChatMessage
-from chatLogger.chatEventType import ChatEventType
-from misc.simpleDateTime import SimpleDateTime
-
+from .absChatMessage import AbsChatMessage
+from .chatEventType import ChatEventType
 from ..misc import utils as utils
+from ..misc.simpleDateTime import SimpleDateTime
 
 
 class ChatMessage(AbsChatMessage):
