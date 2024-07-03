@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import jwt
+
 from .exceptions import (
     GoogleCloudProjectKeyIdUnavailableException,
     GoogleCloudProjectPrivateKeyUnavailableException,
@@ -13,7 +14,6 @@ from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from .googleScope import GoogleScope
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-
 from ..misc import utils as utils
 
 
