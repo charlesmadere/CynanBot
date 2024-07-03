@@ -1,12 +1,9 @@
-from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from soundPlayerManager.soundPlayerManagerInterface import \
-    SoundPlayerManagerInterface
-from soundPlayerManager.soundPlayerManagerProviderInterface import \
-    SoundPlayerManagerProviderInterface
-from soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
-from soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
-from timber.timberInterface import TimberInterface
+from .vlcSoundPlayerManager import VlcSoundPlayerManager
+from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...timber.timberInterface import TimberInterface
 
 
 class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):

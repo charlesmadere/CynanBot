@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from soundPlayerManager.soundAlert import SoundAlert
+from .soundAlert import SoundAlert
 
 
 class ImmediateSoundPlayerManagerInterface(ABC):
