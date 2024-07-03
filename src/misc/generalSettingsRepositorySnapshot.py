@@ -149,15 +149,15 @@ class GeneralSettingsRepositorySnapshot():
     def requireDatabaseType(self) -> DatabaseType:
         databaseType = self.__jsonContents.get('databaseType')
 
-        if not utils.isValidStr(databaseType):
-            raise ValueError(f'\"databaseType\" in General Settings file is malformed: \"{databaseType}\"')
-
-        return DatabaseType.fromStr(databaseType)
+        if utils.isValidStr(databaseType):
+            return DatabaseType.fromStr(databaseType)
+        else:
+            return DatabaseType.SQLITE
 
     def requireNetworkClientType(self) -> NetworkClientType:
         networkClientType = self.__jsonContents.get('networkClientType')
 
-        if not utils.isValidStr(networkClientType):
-            raise ValueError(f'\"networkClientType\" in General Settings file is malformed: \"{networkClientType}\"')
-
-        return NetworkClientType.fromStr(networkClientType)
+        if utils.isValidStr(networkClientType):
+            return NetworkClientType.fromStr(networkClientType)
+        else:
+            return NetworkClientType.AIOHTTP
