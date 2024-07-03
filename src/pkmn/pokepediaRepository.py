@@ -3,22 +3,21 @@ import re
 import traceback
 from typing import Any, Pattern
 
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from pkmn.pokepediaContestType import PokepediaContestType
-from pkmn.pokepediaDamageClass import PokepediaDamageClass
-from pkmn.pokepediaElementType import PokepediaElementType
-from pkmn.pokepediaGeneration import PokepediaGeneration
-from pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
-from pkmn.pokepediaMachine import PokepediaMachine
-from pkmn.pokepediaMove import PokepediaMove
-from pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
-from pkmn.pokepediaNature import PokepediaNature
-from pkmn.pokepediaPokemon import PokepediaPokemon
-from pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from pkmn.pokepediaStat import PokepediaStat
-from timber.timberInterface import TimberInterface
-
+from ..network.exceptions import GenericNetworkException
+from ..network.networkClientProvider import NetworkClientProvider
+from .pokepediaContestType import PokepediaContestType
+from .pokepediaDamageClass import PokepediaDamageClass
+from .pokepediaElementType import PokepediaElementType
+from .pokepediaGeneration import PokepediaGeneration
+from .pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
+from .pokepediaMachine import PokepediaMachine
+from .pokepediaMove import PokepediaMove
+from .pokepediaMoveGeneration import PokepediaMoveGeneration
+from .pokepediaNature import PokepediaNature
+from .pokepediaPokemon import PokepediaPokemon
+from .pokepediaRepositoryInterface import PokepediaRepositoryInterface
+from .pokepediaStat import PokepediaStat
+from ..timber.timberInterface import TimberInterface
 from ..misc import utils as utils
 
 
