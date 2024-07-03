@@ -1,14 +1,12 @@
 from datetime import datetime
 
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
-    ShinyTriviaOccurencesRepositoryInterface
-from trivia.specialStatus.shinyTriviaResult import ShinyTriviaResult
-
-from ..misc import utils as utils
+from .shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
+from .shinyTriviaResult import ShinyTriviaResult
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
 
 
 class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):

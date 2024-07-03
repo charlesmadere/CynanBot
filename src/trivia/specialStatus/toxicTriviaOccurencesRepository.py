@@ -1,14 +1,12 @@
 from datetime import datetime
 
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
-    ToxicTriviaOccurencesRepositoryInterface
-from trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
-
-from ..misc import utils as utils
+from .toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
+from .toxicTriviaResult import ToxicTriviaResult
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
 
 
 class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):

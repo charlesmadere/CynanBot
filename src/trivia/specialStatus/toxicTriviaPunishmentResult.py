@@ -1,7 +1,7 @@
 import locale
 from dataclasses import dataclass
 
-from trivia.specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
+from .toxicTriviaPunishment import ToxicTriviaPunishment
 
 
 @dataclass(frozen = True)

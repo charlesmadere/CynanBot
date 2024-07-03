@@ -1,12 +1,11 @@
 import random
 
-from timber.timberInterface import TimberInterface
-from trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
+from .toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
-from trivia.triviaSettingsRepositoryInterface import \
+from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-
-from ..misc import utils as utils
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class ToxicTriviaHelper():

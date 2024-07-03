@@ -1,7 +1,7 @@
 import locale
 from dataclasses import dataclass
 
-from cuteness.cutenessResult import CutenessResult
+from ...cuteness.cutenessResult import CutenessResult
 
 
 @dataclass(frozen = True)

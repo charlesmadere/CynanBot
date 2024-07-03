@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
+from .toxicTriviaResult import ToxicTriviaResult
 
 
 class ToxicTriviaOccurencesRepositoryInterface(ABC):

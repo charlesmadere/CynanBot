@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from trivia.specialStatus.shinyTriviaResult import ShinyTriviaResult
+from .shinyTriviaResult import ShinyTriviaResult
 
 
 class ShinyTriviaOccurencesRepositoryInterface(ABC):

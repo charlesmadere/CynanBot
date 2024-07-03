@@ -1,15 +1,12 @@
 import random
 from datetime import datetime, timedelta
 
-from cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from timber.timberInterface import TimberInterface
-from trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
-    ShinyTriviaOccurencesRepositoryInterface
-from trivia.triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
-
-from ..misc import utils as utils
+from .shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ...cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class ShinyTriviaHelper():
