@@ -1,7 +1,6 @@
-from jisho.jishoJlptLevel import JishoJlptLevel
-from jisho.jishoPresenterInterface import JishoPresenterInterface
-from jisho.jishoResponse import JishoResponse
-
+from .jishoJlptLevel import JishoJlptLevel
+from .jishoPresenterInterface import JishoPresenterInterface
+from .jishoResponse import JishoResponse
 from ..misc import utils as utils
 
 

@@ -1,14 +1,13 @@
 import traceback
 from urllib.parse import quote
 
-from jisho.jishoApiServiceInterface import JishoApiServiceInterface
-from jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
-from jisho.jishoResponse import JishoResponse
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from timber.timberInterface import TimberInterface
-
+from .jishoApiServiceInterface import JishoApiServiceInterface
+from .jishoJsonMapperInterface import JishoJsonMapperInterface
+from .jishoResponse import JishoResponse
 from ..misc import utils as utils
+from ..network.exceptions import GenericNetworkException
+from ..network.networkClientProvider import NetworkClientProvider
+from ..timber.timberInterface import TimberInterface
 
 
 class JishoApiService(JishoApiServiceInterface):
