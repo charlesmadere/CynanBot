@@ -4,13 +4,6 @@ import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
-from ..sentMessageLogger.messageMethod import MessageMethod
-from ..sentMessageLogger.sentMessageLoggerInterface import \
-    SentMessageLoggerInterface
-from ..timber.timberInterface import TimberInterface
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .api.twitchSendChatMessageRequest import \
     TwitchSendChatMessageRequest
@@ -22,9 +15,15 @@ from .twitchHandleProviderInterface import TwitchHandleProviderInterface
 from .twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from .twitchUtilsInterface import TwitchUtilsInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..misc.generalSettingsRepository import GeneralSettingsRepository
+from ..sentMessageLogger.messageMethod import MessageMethod
+from ..sentMessageLogger.sentMessageLoggerInterface import \
+    SentMessageLoggerInterface
+from ..timber.timberInterface import TimberInterface
+from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchUtils(TwitchUtilsInterface):
