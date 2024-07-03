@@ -1,8 +1,7 @@
 from datetime import timedelta
 
 from .recurringActionType import RecurringActionType
-from .recurringActionsWizardInterface import \
-    RecurringActionsWizardInterface
+from .recurringActionsWizardInterface import RecurringActionsWizardInterface
 from .wizards.absWizard import AbsWizard
 from .wizards.superTriviaWizard import SuperTriviaWizard
 from .wizards.weatherWizard import WeatherWizard

@@ -2,13 +2,10 @@ import json
 from typing import Any
 
 from .recurringAction import RecurringAction
-from .recurringActionsJsonParserInterface import \
-    RecurringActionsJsonParserInterface
-from .superTriviaRecurringAction import \
-    SuperTriviaRecurringAction
+from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
+from .superTriviaRecurringAction import SuperTriviaRecurringAction
 from .weatherRecurringAction import WeatherRecurringAction
-from .wordOfTheDayRecurringAction import \
-    WordOfTheDayRecurringAction
+from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..misc import utils as utils
