@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 
 from .googleAccessToken import GoogleAccessToken
-from .googleApiAccessTokenStorageInterface import \
-    GoogleApiAccessTokenStorageInterface
+from .googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 

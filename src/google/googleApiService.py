@@ -2,11 +2,9 @@ import traceback
 
 from .exceptions import GoogleCloudProjectIdUnavailableException
 from .googleAccessToken import GoogleAccessToken
-from .googleApiAccessTokenStorageInterface import \
-    GoogleApiAccessTokenStorageInterface
+from .googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from .googleApiServiceInterface import GoogleApiServiceInterface
-from .googleCloudProjectCredentialsProviderInterface import \
-    GoogleCloudProjectCredentialsProviderInterface
+from .googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from .googleTextSynthesisResponse import GoogleTextSynthesisResponse

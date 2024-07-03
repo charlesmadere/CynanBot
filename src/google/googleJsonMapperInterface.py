@@ -6,11 +6,9 @@ from .googleScope import GoogleScope
 from .googleTextSynthesisInput import GoogleTextSynthesisInput
 from .googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from .googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from .googleTranslateTextGlossaryConfig import \
-    GoogleTranslateTextGlossaryConfig
+from .googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
 from .googleTranslateTextResponse import GoogleTranslateTextResponse
-from .googleTranslateTextTransliterationConfig import \
-    GoogleTranslateTextTransliterationConfig
+from .googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
 from .googleTranslation import GoogleTranslation
 from .googleTranslationRequest import GoogleTranslationRequest
 from .googleVoiceAudioConfig import GoogleVoiceAudioConfig

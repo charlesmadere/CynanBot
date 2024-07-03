@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 
-from .googleTranslateTextGlossaryConfig import \
-    GoogleTranslateTextGlossaryConfig
-from .googleTranslateTextTransliterationConfig import \
-    GoogleTranslateTextTransliterationConfig
+from .googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
+from .googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
 
 
 @dataclass(frozen = True)
