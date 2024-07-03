@@ -21,6 +21,7 @@ from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterf
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
+from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
