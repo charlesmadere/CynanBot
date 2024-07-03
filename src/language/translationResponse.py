@@ -1,6 +1,5 @@
-from language.languageEntry import LanguageEntry
-from language.translationApiSource import TranslationApiSource
-
+from .languageEntry import LanguageEntry
+from .translationApiSource import TranslationApiSource
 from ..misc import utils as utils
 
 

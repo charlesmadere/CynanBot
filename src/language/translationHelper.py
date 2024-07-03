@@ -1,18 +1,17 @@
 import random
 import traceback
 
-from language.exceptions import (NoTranslationEnginesAvailableException,
-                                 TranslationLanguageHasNoIso6391Code)
-from language.languageEntry import LanguageEntry
-from language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from language.translation.deepLTranslationApi import DeepLTranslationApi
-from language.translation.googleTranslationApi import GoogleTranslationApi
-from language.translation.translationApi import TranslationApi
-from language.translationHelperInterface import TranslationHelperInterface
-from language.translationResponse import TranslationResponse
-from timber.timberInterface import TimberInterface
-
+from .exceptions import (NoTranslationEnginesAvailableException,
+                         TranslationLanguageHasNoIso6391Code)
+from .languageEntry import LanguageEntry
+from .languagesRepositoryInterface import LanguagesRepositoryInterface
+from .translation.deepLTranslationApi import DeepLTranslationApi
+from .translation.googleTranslationApi import GoogleTranslationApi
+from .translation.translationApi import TranslationApi
+from .translationHelperInterface import TranslationHelperInterface
+from .translationResponse import TranslationResponse
 from ..misc import utils as utils
+from ..timber.timberInterface import TimberInterface
 
 
 class TranslationHelper(TranslationHelperInterface):

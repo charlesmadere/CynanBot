@@ -3,15 +3,13 @@ from datetime import timedelta
 
 from .languageEntry import LanguageEntry
 from .romaji import to_romaji
-from .wordOfTheDayRepositoryInterface import \
-    WordOfTheDayRepositoryInterface
+from .wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .wordOfTheDayResponse import WordOfTheDayResponse
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..network.exceptions import GenericNetworkException
 from ..timber.timberInterface import TimberInterface
-from ..transparent.transparentApiServiceInterface import \
-    TransparentApiServiceInterface
+from ..transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 
 
 class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):

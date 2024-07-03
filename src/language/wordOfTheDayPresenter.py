@@ -1,5 +1,4 @@
-from .wordOfTheDayPresenterInterface import \
-    WordOfTheDayPresenterInterface
+from .wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from .wordOfTheDayResponse import WordOfTheDayResponse
 from ..misc import utils as utils
 
