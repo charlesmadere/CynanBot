@@ -1,37 +1,22 @@
-from channelPointRedemptions.absChannelPointRedemption import \
-    AbsChannelPointRedemption
-from channelPointRedemptions.casualGamePollPointRedemption import \
-    CasualGamePollPointRedemption
-from channelPointRedemptions.cutenessPointRedemption import \
-    CutenessPointRedemption
-from channelPointRedemptions.pkmnBattlePointRedemption import \
-    PkmnBattlePointRedemption
-from channelPointRedemptions.pkmnCatchPointRedemption import \
-    PkmnCatchPointRedemption
-from channelPointRedemptions.pkmnEvolvePointRedemption import \
-    PkmnEvolvePointRedemption
-from channelPointRedemptions.pkmnShinyPointRedemption import \
-    PkmnShinyPointRedemption
-from channelPointRedemptions.soundAlertPointRedemption import \
-    SoundAlertPointRedemption
-from channelPointRedemptions.stubChannelPointRedemption import \
-    StubPointRedemption
-from channelPointRedemptions.superTriviaGamePointRedemption import \
-    SuperTriviaGamePointRedemption
-from channelPointRedemptions.triviaGamePointRedemption import \
-    TriviaGamePointRedemption
-from timber.timberInterface import TimberInterface
-from twitch.absTwitchChannelPointRedemptionHandler import \
-    AbsTwitchChannelPointRedemptionHandler
-from twitch.api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
-from twitch.configuration.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
-from twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from users.userInterface import UserInterface
-
-from ..misc import utils as utils
+from .twitchChannelPointsMessage import TwitchChannelPointsMessage
+from .twitchChannelProvider import TwitchChannelProvider
+from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
+from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
+from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
+from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
+from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
+from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
+from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
+from ...channelPointRedemptions.stubChannelPointRedemption import StubPointRedemption
+from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
+from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...users.userInterface import UserInterface
 
 
 class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler):

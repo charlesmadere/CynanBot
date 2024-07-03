@@ -2,17 +2,14 @@ import math
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchCheerHandler import AbsTwitchCheerHandler
-from ..api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
-from ...streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...trivia.builder.triviaGameBuilderInterface import \
-    TriviaGameBuilderInterface
+from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsCheerDonation import TtsCheerDonation
 from ...tts.ttsDonation import TtsDonation

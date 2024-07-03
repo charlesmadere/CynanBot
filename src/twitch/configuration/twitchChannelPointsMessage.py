@@ -1,8 +1,6 @@
-from twitch.configuration.twitchConfigurationType import \
-    TwitchConfigurationType
-from users.userInterface import UserInterface
-
 from ..misc import utils as utils
+from ..twitch.configuration.twitchConfigurationType import TwitchConfigurationType
+from ..users.userInterface import UserInterface
 
 
 class TwitchChannelPointsMessage():

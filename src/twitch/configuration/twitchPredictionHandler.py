@@ -1,22 +1,17 @@
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from ..api.twitchOutcome import TwitchOutcome
-from ..api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from ..api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
-from ..twitchPredictionWebsocketUtilsInterface import \
-    TwitchPredictionWebsocketUtilsInterface
+from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
-from ...streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
 from ...tts.ttsProvider import TtsProvider
 from ...users.userInterface import UserInterface
-from ...websocketConnection.websocketConnectionServerInterface import \
-    WebsocketConnectionServerInterface
+from ...websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 
 class TwitchPredictionHandler(AbsTwitchPredictionHandler):

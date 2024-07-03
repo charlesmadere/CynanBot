@@ -1,13 +1,11 @@
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchRaidHandler import AbsTwitchRaidHandler
-from ..api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
-from ...streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
 from ...tts.ttsProvider import TtsProvider
