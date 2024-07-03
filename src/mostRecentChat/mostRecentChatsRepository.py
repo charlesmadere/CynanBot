@@ -5,11 +5,11 @@ from datetime import datetime
 
 from lru import LRU
 
-from ..misc import utils as utils
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .mostRecentChat import MostRecentChat
 from .mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType

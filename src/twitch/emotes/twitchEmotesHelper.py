@@ -3,8 +3,8 @@ from datetime import timedelta
 
 from .twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchEmotesResponse import TwitchEmotesResponse
 from ..api.twitchEmoteType import TwitchEmoteType
+from ..api.twitchEmotesResponse import TwitchEmotesResponse
 from ..api.twitchThemeMode import TwitchThemeMode
 from ...misc import utils as utils
 from ...misc.timedDict import TimedDict

@@ -1,8 +1,8 @@
 from typing import Any
 
-from ..misc import utils as utils
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
+from ..misc import utils as utils
 
 
 class WeatherRecurringAction(RecurringAction):

@@ -1,14 +1,14 @@
 from datetime import timedelta
 
-from ..misc import utils as utils
-from ..misc.timedDict import TimedDict
+from .recurringActionType import RecurringActionType
 from .recurringActionsWizardInterface import \
     RecurringActionsWizardInterface
-from .recurringActionType import RecurringActionType
 from .wizards.absWizard import AbsWizard
 from .wizards.superTriviaWizard import SuperTriviaWizard
 from .wizards.weatherWizard import WeatherWizard
 from .wizards.wordOfTheDayWizard import WordOfTheDayWizard
+from ..misc import utils as utils
+from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 
 

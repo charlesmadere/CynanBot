@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
+from .weatherReport import WeatherReport
 from ..location.location import Location
 from ..misc.clearable import Clearable
-from .weatherReport import WeatherReport
 
 
 class WeatherRepositoryInterface(Clearable):

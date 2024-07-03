@@ -2,11 +2,11 @@ from asyncio import AbstractEventLoop
 
 import aiosqlite
 
-from ..misc import utils as utils
 from .backingDatabase import BackingDatabase
 from .databaseConnection import DatabaseConnection
 from .databaseType import DatabaseType
 from .sqliteDatabaseConnection import SqliteDatabaseConnection
+from ..misc import utils as utils
 
 
 class BackingSqliteDatabase(BackingDatabase):

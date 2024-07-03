@@ -1,8 +1,8 @@
 from typing import Any
 
+from .jsonReaderInterface import JsonReaderInterface
 from ..misc import utils as utils
 from ..misc.clearable import Clearable
-from .jsonReaderInterface import JsonReaderInterface
 
 
 class PsqlCredentialsProvider(Clearable):

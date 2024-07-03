@@ -1,8 +1,8 @@
 from typing import Any
 
-from ..language.languageEntry import LanguageEntry
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
+from ..language.languageEntry import LanguageEntry
 
 
 class WordOfTheDayRecurringAction(RecurringAction):

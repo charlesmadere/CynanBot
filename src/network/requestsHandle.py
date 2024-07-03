@@ -3,12 +3,12 @@ from typing import Any
 import requests
 from requests.models import Response
 
-from ..misc import utils as utils
 from .exceptions import GenericNetworkException
 from .networkClientType import NetworkClientType
 from .networkHandle import NetworkHandle
 from .networkResponse import NetworkResponse
 from .requestsResponse import RequestsResponse
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 

@@ -1,7 +1,7 @@
 from datetime import timedelta
 
-from ..misc import utils as utils
 from .absChannelPointRedemption import AbsChannelPointRedemption
+from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel

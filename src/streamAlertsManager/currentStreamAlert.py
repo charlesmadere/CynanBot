@@ -1,8 +1,8 @@
 from typing import Any
 
-from ..soundPlayerManager.soundAlert import SoundAlert
 from .streamAlert import StreamAlert
 from .streamAlertState import StreamAlertState
+from ..soundPlayerManager.soundAlert import SoundAlert
 from ..tts.ttsEvent import TtsEvent
 
 

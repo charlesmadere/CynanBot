@@ -5,8 +5,8 @@ from typing import Any
 import aiofiles
 import aiofiles.ospath
 
-from ..misc import utils as utils
 from .jsonReaderInterface import JsonReaderInterface
+from ..misc import utils as utils
 
 
 class JsonFileReader(JsonReaderInterface):

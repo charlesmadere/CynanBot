@@ -1,9 +1,9 @@
 from typing import Any
 
-from ...misc import utils as utils
-from ..recurringActionType import RecurringActionType
 from .absWizard import AbsWizard
 from .superTriviaSteps import SuperTriviaSteps
+from ..recurringActionType import RecurringActionType
+from ...misc import utils as utils
 
 
 class SuperTriviaWizard(AbsWizard):

@@ -1,10 +1,7 @@
 import asyncio
 import locale
-import logging
 from asyncio import AbstractEventLoop
 
-from misc.administratorProvider import AdministratorProvider
-from misc.administratorProviderInterface import AdministratorProviderInterface
 from aniv.anivContentScanner import AnivContentScanner
 from aniv.anivContentScannerInterface import AnivContentScannerInterface
 from aniv.anivCopyMessageTimeoutScorePresenter import \
@@ -28,7 +25,6 @@ from aniv.mostRecentAnivMessageTimeoutHelper import \
     MostRecentAnivMessageTimeoutHelper
 from aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
-from misc.authRepository import AuthRepository
 from chatActions.anivCheckChatAction import AnivCheckChatAction
 from chatActions.catJamChatAction import CatJamChatAction
 from chatActions.chatActionsManager import ChatActionsManager
@@ -99,7 +95,6 @@ from funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
-from misc.generalSettingsRepository import GeneralSettingsRepository
 from google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from google.googleApiAccessTokenStorageInterface import \
     GoogleApiAccessTokenStorageInterface
@@ -134,8 +129,12 @@ from location.locationsRepository import LocationsRepository
 from location.locationsRepositoryInterface import LocationsRepositoryInterface
 from location.timeZoneRepository import TimeZoneRepository
 from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from misc.administratorProvider import AdministratorProvider
+from misc.administratorProviderInterface import AdministratorProviderInterface
+from misc.authRepository import AuthRepository
 from misc.backgroundTaskHelper import BackgroundTaskHelper
 from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from misc.generalSettingsRepository import GeneralSettingsRepository
 from mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface

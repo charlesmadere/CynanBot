@@ -1,8 +1,8 @@
-from ..misc import utils as utils
 from .networkClientProvider import NetworkClientProvider
 from .networkClientType import NetworkClientType
 from .networkHandle import NetworkHandle
 from .requestsHandle import RequestsHandle
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 

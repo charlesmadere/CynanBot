@@ -1,9 +1,9 @@
 from typing import Any
 
-from ..language.languageEntry import LanguageEntry
-from ..language.wordOfTheDayResponse import WordOfTheDayResponse
 from .recurringEvent import RecurringEvent
 from .recurringEventType import RecurringEventType
+from ..language.languageEntry import LanguageEntry
+from ..language.wordOfTheDayResponse import WordOfTheDayResponse
 
 
 class WordOfTheDayRecurringEvent(RecurringEvent):

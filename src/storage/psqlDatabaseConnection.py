@@ -2,10 +2,10 @@ from typing import Any
 
 import asyncpg
 
-from ..misc import utils as utils
 from .databaseConnection import DatabaseConnection
 from .databaseType import DatabaseType
 from .exceptions import DatabaseConnectionIsClosedException
+from ..misc import utils as utils
 
 
 class PsqlDatabaseConnection(DatabaseConnection):

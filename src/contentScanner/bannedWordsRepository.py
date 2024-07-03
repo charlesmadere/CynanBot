@@ -2,12 +2,12 @@ import re
 import traceback
 from typing import Pattern
 
-from ..misc import utils as utils
 from .absBannedWord import AbsBannedWord
 from .bannedPhrase import BannedPhrase
 from .bannedWord import BannedWord
 from .bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
+from ..misc import utils as utils
 from ..storage.linesReaderInterface import LinesReaderInterface
 from ..timber.timberInterface import TimberInterface
 

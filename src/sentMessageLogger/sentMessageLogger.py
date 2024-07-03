@@ -7,14 +7,14 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
-from ..misc import utils as utils
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..misc.simpleDateTime import SimpleDateTime
 from .messageMethod import MessageMethod
 from .sentMessage import SentMessage
 from .sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 
 

@@ -1,8 +1,8 @@
 from typing import Any
 
+from .streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..storage.jsonReaderInterface import JsonReaderInterface
-from .streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 
 
 class StreamAlertsSettingsRepository(StreamAlertsSettingsRepositoryInterface):

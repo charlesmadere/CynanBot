@@ -9,7 +9,6 @@ from .twitchBannedUser import TwitchBannedUser
 from .twitchBannedUserRequest import TwitchBannedUserRequest
 from .twitchBannedUsersPageResponse import TwitchBannedUsersPageResponse
 from .twitchBannedUsersResponse import TwitchBannedUsersResponse
-from .twitchBroadcasterType import TwitchBroadcasterType
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse

@@ -1,8 +1,8 @@
 import locale
 from dataclasses import dataclass
 
-from ..misc import utils as utils
 from .cutenessDate import CutenessDate
+from ..misc import utils as utils
 
 
 @dataclass(frozen = True)

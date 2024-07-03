@@ -2,11 +2,11 @@ from asyncio import AbstractEventLoop
 
 import aiohttp
 
-from ..misc import utils as utils
 from .aioHttpHandle import AioHttpHandle
 from .networkClientProvider import NetworkClientProvider
 from .networkClientType import NetworkClientType
 from .networkHandle import NetworkHandle
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 

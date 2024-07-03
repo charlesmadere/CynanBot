@@ -1,13 +1,13 @@
 import traceback
 from typing import Any
 
-from ..misc import utils as utils
 from .exceptions import NoFuntoonTokenException
 from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from .funtoonPkmnCatchType import FuntoonPkmnCatchType
 from .funtoonRepositoryInterface import FuntoonRepositoryInterface
 from .funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
+from ..misc import utils as utils
 from ..network.exceptions import GenericNetworkException
 from ..network.networkClientProvider import NetworkClientProvider
 from ..timber.timberInterface import TimberInterface

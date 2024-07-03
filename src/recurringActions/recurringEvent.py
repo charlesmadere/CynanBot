@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..misc import utils as utils
 from .recurringEventType import RecurringEventType
+from ..misc import utils as utils
 
 
 class RecurringEvent(ABC):

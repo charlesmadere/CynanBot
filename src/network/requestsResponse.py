@@ -4,11 +4,11 @@ from typing import Any
 import xmltodict
 from requests.models import Response
 
+from .exceptions import NetworkResponseIsClosedException
+from .networkClientType import NetworkClientType
+from .networkResponse import NetworkResponse
 from ..misc import utils as utils
-from network.exceptions import NetworkResponseIsClosedException
-from network.networkClientType import NetworkClientType
-from network.networkResponse import NetworkResponse
-from timber.timberInterface import TimberInterface
+from ..timber.timberInterface import TimberInterface
 
 
 class RequestsResponse(NetworkResponse):

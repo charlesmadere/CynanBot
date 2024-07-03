@@ -3,8 +3,8 @@ import os
 import aiofiles
 import aiofiles.ospath
 
-from ..misc import utils as utils
 from .linesReaderInterface import LinesReaderInterface
+from ..misc import utils as utils
 
 
 class LinesFileReader(LinesReaderInterface):

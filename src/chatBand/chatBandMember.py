@@ -1,5 +1,5 @@
-from ..misc import utils as utils
 from .chatBandInstrument import ChatBandInstrument
+from ..misc import utils as utils
 
 
 class ChatBandMember():

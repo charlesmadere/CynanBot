@@ -1,9 +1,6 @@
 import json
 from typing import Any
 
-from ..misc import utils as utils
-from ..language.languageEntry import LanguageEntry
-from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from .recurringAction import RecurringAction
 from .recurringActionsJsonParserInterface import \
     RecurringActionsJsonParserInterface
@@ -12,6 +9,9 @@ from .superTriviaRecurringAction import \
 from .weatherRecurringAction import WeatherRecurringAction
 from .wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
+from ..language.languageEntry import LanguageEntry
+from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 

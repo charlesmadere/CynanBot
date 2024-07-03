@@ -1,8 +1,10 @@
 import traceback
 from datetime import timedelta
 
-from ..misc import utils as utils
+from .weatherReport import WeatherReport
+from .weatherRepositoryInterface import WeatherRepositoryInterface
 from ..location.location import Location
+from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..network.exceptions import GenericNetworkException
 from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
@@ -12,8 +14,6 @@ from ..openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from ..openWeather.openWeatherApiServiceInterface import \
     OpenWeatherApiServiceInterface
 from ..timber.timberInterface import TimberInterface
-from .weatherReport import WeatherReport
-from .weatherRepositoryInterface import WeatherRepositoryInterface
 
 
 class WeatherRepository(WeatherRepositoryInterface):

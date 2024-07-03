@@ -1,4 +1,3 @@
-from ..misc import utils as utils
 from .cutenessChampionsResult import CutenessChampionsResult
 from .cutenessDate import CutenessDate
 from .cutenessHistoryEntry import CutenessHistoryEntry
@@ -9,6 +8,7 @@ from .cutenessLeaderboardHistoryResult import \
 from .cutenessLeaderboardResult import CutenessLeaderboardResult
 from .cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cutenessResult import CutenessResult
+from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType

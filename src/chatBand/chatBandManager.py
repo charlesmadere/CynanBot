@@ -1,10 +1,10 @@
 from datetime import timedelta
 from typing import Any
 
-from ..misc import utils as utils
 from .chatBandInstrument import ChatBandInstrument
 from .chatBandManagerInterface import ChatBandManagerInterface
 from .chatBandMember import ChatBandMember
+from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..timber.timberInterface import TimberInterface

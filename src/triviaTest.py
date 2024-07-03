@@ -1,7 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from misc.authRepository import AuthRepository
 from contentScanner.bannedWordsRepository import BannedWordsRepository
 from contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
@@ -13,8 +12,8 @@ from funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
+from misc.authRepository import AuthRepository
 from misc.backgroundTaskHelper import BackgroundTaskHelper
-from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from network.networkClientProvider import NetworkClientProvider
 from network.requestsClientProvider import RequestsClientProvider
 from pkmn.pokepediaRepository import PokepediaRepository
@@ -24,8 +23,6 @@ from storage.jsonFileReader import JsonFileReader
 from storage.linesFileReader import LinesFileReader
 from timber.timber import Timber
 from timber.timberInterface import TimberInterface
-from trivia.actions.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
 from trivia.additionalAnswers.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
@@ -91,8 +88,6 @@ from trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
     GlacialTriviaQuestionRepositoryInterface
 from trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
-from trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
-    LotrTriviaQuestionRepository
 from trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
     MillionaireTriviaQuestionRepository
 from trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
@@ -101,8 +96,6 @@ from trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
 from trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
-from trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
-    QuizApiTriviaQuestionRepository
 from trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \

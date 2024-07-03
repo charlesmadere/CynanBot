@@ -1,4 +1,3 @@
-from ..misc import utils as utils
 from .cutenessChampionsResult import CutenessChampionsResult
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
@@ -6,6 +5,7 @@ from .cutenessLeaderboardHistoryResult import \
     CutenessLeaderboardHistoryResult
 from .cutenessResult import CutenessResult
 from .cutenessUtilsInterface import CutenessUtilsInterface
+from ..misc import utils as utils
 
 
 class CutenessUtils(CutenessUtilsInterface):

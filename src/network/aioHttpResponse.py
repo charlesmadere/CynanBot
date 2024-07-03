@@ -4,10 +4,10 @@ from typing import Any
 import aiohttp
 import xmltodict
 
-from ..misc import utils as utils
 from .exceptions import NetworkResponseIsClosedException
 from .networkClientType import NetworkClientType
 from .networkResponse import NetworkResponse
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 

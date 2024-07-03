@@ -8,14 +8,13 @@ from typing import Any
 
 import websockets
 
+from .websocketConnectionServerInterface import WebsocketConnectionServerInterface
+from .websocketEvent import WebsocketEvent
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from storage.jsonReaderInterface import JsonReaderInterface
-from timber.timberInterface import TimberInterface
-from websocketConnection.websocketConnectionServerInterface import \
-    WebsocketConnectionServerInterface
-from websocketConnection.websocketEvent import WebsocketEvent
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..storage.jsonReaderInterface import JsonReaderInterface
+from ..timber.timberInterface import TimberInterface
 
 
 class WebsocketConnectionServer(WebsocketConnectionServerInterface):

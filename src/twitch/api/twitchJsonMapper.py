@@ -7,8 +7,8 @@ from .twitchBroadcasterType import TwitchBroadcasterType
 from .twitchEmoteDetails import TwitchEmoteDetails
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
-from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEmoteType import TwitchEmoteType
+from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse

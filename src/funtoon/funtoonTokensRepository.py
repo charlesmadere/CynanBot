@@ -1,9 +1,9 @@
 import traceback
 
-from ..misc import utils as utils
 from .exceptions import NoFuntoonTokenException
 from .funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
+from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType

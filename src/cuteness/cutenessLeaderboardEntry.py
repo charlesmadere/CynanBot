@@ -1,7 +1,7 @@
 import locale
 
-from ..misc import utils as utils
 from .cutenessEntry import CutenessEntry
+from ..misc import utils as utils
 
 
 class CutenessLeaderboardEntry(CutenessEntry):

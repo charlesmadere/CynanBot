@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from ..misc.simpleDateTime import SimpleDateTime
 from .messageMethod import MessageMethod
+from ..misc.simpleDateTime import SimpleDateTime
 
 
 @dataclass(frozen = True)

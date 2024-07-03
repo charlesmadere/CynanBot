@@ -1,13 +1,13 @@
 import re
 from typing import Pattern
 
-from ..misc import utils as utils
 from .bannedPhrase import BannedPhrase
 from .bannedWord import BannedWord
 from .bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
 from .contentCode import ContentCode
 from .contentScannerInterface import ContentScannerInterface
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 

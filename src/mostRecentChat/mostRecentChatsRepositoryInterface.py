@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from ..misc.clearable import Clearable
 from .mostRecentChat import MostRecentChat
+from ..misc.clearable import Clearable
 
 
 class MostRecentChatsRepositoryInterface(Clearable):

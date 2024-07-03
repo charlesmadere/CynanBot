@@ -1,9 +1,10 @@
 from typing import Any
 
-from ..misc import utils as utils
 from recurringActions.recurringActionType import RecurringActionType
 from recurringActions.wizards.absWizard import AbsWizard
 from recurringActions.wizards.weatherSteps import WeatherSteps
+
+from ..misc import utils as utils
 
 
 class WeatherWizard(AbsWizard):

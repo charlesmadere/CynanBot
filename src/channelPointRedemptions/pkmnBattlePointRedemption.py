@@ -1,6 +1,6 @@
-from ..misc import utils as utils
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
+from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel

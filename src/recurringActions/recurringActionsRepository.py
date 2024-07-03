@@ -1,13 +1,13 @@
 from typing import Any
 
-from ..misc import utils as utils
 from .recurringAction import RecurringAction
+from .recurringActionType import RecurringActionType
 from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
-from .recurringActionType import RecurringActionType
 from .superTriviaRecurringAction import SuperTriviaRecurringAction
 from .weatherRecurringAction import WeatherRecurringAction
 from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
+from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType

@@ -1,8 +1,8 @@
 from typing import Any
 
-from ..misc import utils as utils
 from .recurringEvent import RecurringEvent
 from .recurringEventType import RecurringEventType
+from ..misc import utils as utils
 from ..weather.weatherReport import WeatherReport
 
 

@@ -1,6 +1,6 @@
-from ..misc import utils as utils
 from .absChannelPointRedemption import \
     AbsChannelPointRedemption
+from ..misc import utils as utils
 from ..soundPlayerManager.immediateSoundPlayerManagerInterface import \
     ImmediateSoundPlayerManagerInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
