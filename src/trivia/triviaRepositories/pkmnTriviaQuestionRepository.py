@@ -2,6 +2,23 @@ import random
 import traceback
 from typing import Any
 
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
+from ..questions.absTriviaQuestion import AbsTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
+from ..questions.triviaQuestionType import TriviaQuestionType
+from ..questions.triviaSource import TriviaSource
+from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from ..triviaDifficulty import TriviaDifficulty
+from ..triviaExceptions import (GenericTriviaNetworkException,
+                                MalformedTriviaJsonException,
+                                UnsupportedTriviaTypeException)
+from ..triviaFetchOptions import TriviaFetchOptions
+from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
+from ..triviaSettingsRepositoryInterface import \
+    TriviaSettingsRepositoryInterface
+from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
 from ...pkmn.pokepediaContestType import PokepediaContestType
@@ -14,23 +31,6 @@ from ...pkmn.pokepediaNature import PokepediaNature
 from ...pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from ...pkmn.pokepediaStat import PokepediaStat
 from ...timber.timberInterface import TimberInterface
-from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
-from ..questions.triviaQuestionType import TriviaQuestionType
-from ..questions.triviaSource import TriviaSource
-from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     UnsupportedTriviaTypeException)
-from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
-from ...misc import utils as utils
 
 
 class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):

@@ -1,4 +1,3 @@
-from ...funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
@@ -8,6 +7,7 @@ from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
     GlacialTriviaQuestionRepositoryInterface
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from ...funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from ...misc import utils as utils
 
 

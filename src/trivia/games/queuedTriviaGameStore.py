@@ -2,14 +2,14 @@ import queue
 from collections import defaultdict
 from queue import SimpleQueue
 
-from ...timber.timberInterface import TimberInterface
+from .queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from ..addQueuedGamesResult import AddQueuedGamesResult
 from ..clearQueuedGamesResult import ClearQueuedGamesResult
-from .queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):

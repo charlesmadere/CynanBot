@@ -1,9 +1,9 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+from .questions.triviaSource import TriviaSource
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..timber.timberInterface import TimberInterface
-from .questions.triviaSource import TriviaSource
 
 
 class TriviaSourceInstabilityHelper():

@@ -1,13 +1,13 @@
-from ...storage.backingDatabase import BackingDatabase
-from ...storage.databaseConnection import DatabaseConnection
-from ...storage.databaseType import DatabaseType
-from ...timber.timberInterface import TimberInterface
 from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
 from .bannedTriviaQuestion import BannedTriviaQuestion
 from ..questions.triviaSource import TriviaSource
 from ...misc import utils as utils
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
+from ...timber.timberInterface import TimberInterface
 
 
 class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):

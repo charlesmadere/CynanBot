@@ -1,17 +1,17 @@
-from ..actions.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
-from ..actions.startNewTriviaGameAction import StartNewTriviaGameAction
 from .triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
 from .triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
+from ..actions.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from ..actions.startNewTriviaGameAction import StartNewTriviaGameAction
 from ..questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from ..questions.triviaSource import TriviaSource
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ...users.usersRepositoryInterface import UsersRepositoryInterface
 from ...misc import utils as utils
+from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class TriviaGameBuilder(TriviaGameBuilderInterface):

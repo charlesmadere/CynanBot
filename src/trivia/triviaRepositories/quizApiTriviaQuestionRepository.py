@@ -1,9 +1,8 @@
 import traceback
 from typing import Any, Tuple
 
-from ...network.exceptions import GenericNetworkException
-from ...network.networkClientProvider import NetworkClientProvider
-from ...timber.timberInterface import TimberInterface
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
@@ -12,16 +11,17 @@ from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     NoTriviaCorrectAnswersException,
-                                     UnsupportedTriviaTypeException)
+                                MalformedTriviaJsonException,
+                                NoTriviaCorrectAnswersException,
+                                UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...timber.timberInterface import TimberInterface
 
 
 class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):

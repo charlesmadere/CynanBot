@@ -2,9 +2,9 @@ import html
 import re
 from typing import Collection, Pattern
 
-from ...timber.timberInterface import TimberInterface
 from .triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):

@@ -1,18 +1,18 @@
 import traceback
 
-from ...storage.backingDatabase import BackingDatabase
-from ...storage.databaseConnection import DatabaseConnection
-from ...storage.databaseType import DatabaseType
-from ...timber.timberInterface import TimberInterface
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from .triviaGameController import TriviaGameController
 from .triviaGameControllersRepositoryInterface import \
     TriviaGameControllersRepositoryInterface
+from ...misc import utils as utils
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
+from ...timber.timberInterface import TimberInterface
 from ...twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ...misc import utils as utils
 
 
 class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):

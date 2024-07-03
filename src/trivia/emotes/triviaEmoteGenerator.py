@@ -1,9 +1,9 @@
 import random
 
-from ...timber.timberInterface import TimberInterface
 from .triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from .triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):

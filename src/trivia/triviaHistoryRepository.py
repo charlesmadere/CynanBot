@@ -1,10 +1,5 @@
 from datetime import datetime, timedelta
 
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..storage.backingDatabase import BackingDatabase
-from ..storage.databaseConnection import DatabaseConnection
-from ..storage.databaseType import DatabaseType
-from ..timber.timberInterface import TimberInterface
 from .content.triviaContentCode import TriviaContentCode
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .questions.triviaQuestionReference import TriviaQuestionReference
@@ -14,7 +9,12 @@ from .triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from .triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
+from ..storage.backingDatabase import BackingDatabase
+from ..storage.databaseConnection import DatabaseConnection
+from ..storage.databaseType import DatabaseType
+from ..timber.timberInterface import TimberInterface
 
 
 class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):

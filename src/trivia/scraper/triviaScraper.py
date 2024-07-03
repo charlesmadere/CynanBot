@@ -1,10 +1,10 @@
-from ...timber.timberInterface import TimberInterface
-from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from .triviaScraperInterface import TriviaScraperInterface
+from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
     GlacialTriviaQuestionRepositoryInterface
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from ...timber.timberInterface import TimberInterface
 
 
 class TriviaScraper(TriviaScraperInterface):

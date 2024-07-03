@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from ..misc.clearable import Clearable
 from .questions.triviaSource import TriviaSource
+from ..misc.clearable import Clearable
 
 
 class TriviaSettingsRepositoryInterface(Clearable):

@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
+from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaSource import TriviaSource
-from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
 
 
 class GlacialTriviaQuestionRepositoryInterface(TriviaQuestionRepositoryInterface):

@@ -1,9 +1,9 @@
-from ...storage.backingDatabase import BackingDatabase
-from ...storage.databaseConnection import DatabaseConnection
-from ...storage.databaseType import DatabaseType
 from .triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from .triviaScoreResult import TriviaScoreResult
 from ...misc import utils as utils
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
 
 
 class TriviaScoreRepository(TriviaScoreRepositoryInterface):

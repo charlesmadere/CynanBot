@@ -2,8 +2,8 @@ from enum import auto
 
 from typing_extensions import override
 
-from ...misc.enumWithToFromStr import EnumWithToFromStr
 from ...misc import utils as utils
+from ...misc.enumWithToFromStr import EnumWithToFromStr
 
 
 class TriviaSource(EnumWithToFromStr):

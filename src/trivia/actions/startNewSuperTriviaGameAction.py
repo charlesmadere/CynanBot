@@ -1,10 +1,10 @@
 import locale
 
-from ...misc.simpleDateTime import SimpleDateTime
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ..triviaFetchOptions import TriviaFetchOptions
 from ...misc import utils as utils
+from ...misc.simpleDateTime import SimpleDateTime
 
 
 class StartNewSuperTriviaGameAction(AbsTriviaAction):

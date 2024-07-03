@@ -1,9 +1,8 @@
 import traceback
 from typing import Any
 
-from ...network.exceptions import GenericNetworkException
-from ...network.networkClientProvider import NetworkClientProvider
-from ...timber.timberInterface import TimberInterface
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
 from ..compilers.triviaQuestionCompilerInterface import \
     TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -14,15 +13,16 @@ from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     UnsupportedTriviaTypeException)
+                                MalformedTriviaJsonException,
+                                UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...timber.timberInterface import TimberInterface
 
 
 class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):

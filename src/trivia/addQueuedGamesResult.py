@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import locale
+from dataclasses import dataclass
 
 
 @dataclass(frozen = True)

@@ -1,10 +1,10 @@
 from typing import Any
 
-from ..storage.jsonReaderInterface import JsonReaderInterface
 from .questions.triviaSource import TriviaSource
 from .triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ..misc import utils as utils
+from ..storage.jsonReaderInterface import JsonReaderInterface
 
 
 class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):

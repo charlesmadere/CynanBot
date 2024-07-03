@@ -4,7 +4,7 @@ import traceback
 from typing import Any, Generator, Pattern
 
 import polyleven
-from ..timber.timberInterface import TimberInterface
+
 from .compilers.triviaAnswerCompilerInterface import \
     TriviaAnswerCompilerInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
@@ -17,10 +17,11 @@ from .questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from .triviaAnswerCheckResult import TriviaAnswerCheckResult
 from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .triviaExceptions import (BadTriviaAnswerException,
-                                     UnsupportedTriviaTypeException)
+                               UnsupportedTriviaTypeException)
 from .triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ..misc import utils as utils
+from ..timber.timberInterface import TimberInterface
 
 
 class TriviaAnswerChecker(TriviaAnswerCheckerInterface):

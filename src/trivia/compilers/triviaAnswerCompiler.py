@@ -7,11 +7,11 @@ import unicodedata
 from num2words import num2words
 from roman import RomanError
 
-from ...timber.timberInterface import TimberInterface
 from .triviaAnswerCompilerInterface import \
     TriviaAnswerCompilerInterface
 from ..triviaExceptions import BadTriviaAnswerException
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):

@@ -3,7 +3,9 @@ from typing import Any
 import aiofiles
 import aiofiles.ospath
 import aiosqlite
-from ...timber.timberInterface import TimberInterface
+
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
 from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from ..compilers.triviaAnswerCompilerInterface import \
@@ -17,11 +19,10 @@ from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):

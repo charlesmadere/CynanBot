@@ -5,10 +5,6 @@ from datetime import datetime, timedelta
 from queue import SimpleQueue
 from typing import Any
 
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..timber.timberInterface import TimberInterface
 from .actions.absTriviaAction import AbsTriviaAction
 from .actions.checkAnswerTriviaAction import CheckAnswerTriviaAction
 from .actions.checkSuperAnswerTriviaAction import \
@@ -71,18 +67,22 @@ from .triviaAnswerCheckResult import TriviaAnswerCheckResult
 from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .triviaEventListener import TriviaEventListener
 from .triviaExceptions import (TooManyTriviaFetchAttemptsException,
-                                     UnknownTriviaActionTypeException,
-                                     UnknownTriviaGameTypeException)
+                               UnknownTriviaActionTypeException,
+                               UnknownTriviaGameTypeException)
 from .triviaGameMachineInterface import TriviaGameMachineInterface
 from .triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from .triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
 from .triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..timber.timberInterface import TimberInterface
 from ..twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..misc import utils as utils
 
 
 class TriviaGameMachine(TriviaGameMachineInterface):

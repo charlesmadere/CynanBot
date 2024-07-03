@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc.clearable import Clearable
-from ..timber.timberInterface import TimberInterface
 from .modifyUserActionType import ModifyUserActionType
 from .modifyUserData import ModifyUserData
 from .modifyUserEventListener import ModifyUserEventListener
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
+from ..misc.clearable import Clearable
+from ..timber.timberInterface import TimberInterface
 
 
 class ModifyUserDataHelper(Clearable):

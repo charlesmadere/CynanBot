@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from collections.abc import Sequence
 
-from ..misc.clearable import Clearable
 from .userInterface import UserInterface
+from ..misc.clearable import Clearable
 
 
 class UsersRepositoryInterface(Clearable):

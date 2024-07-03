@@ -1,9 +1,8 @@
 import traceback
 from typing import Any
 
-from ...network.exceptions import GenericNetworkException
-from ...network.networkClientProvider import NetworkClientProvider
-from ...timber.timberInterface import TimberInterface
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
 from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from ..compilers.triviaAnswerCompilerInterface import \
@@ -17,14 +16,15 @@ from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException)
+                                MalformedTriviaJsonException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...timber.timberInterface import TimberInterface
 
 
 class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):

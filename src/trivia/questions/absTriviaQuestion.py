@@ -4,9 +4,9 @@ from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (BadTriviaDifficultyException,
-                                     BadTriviaIdException,
-                                     BadTriviaSourceException,
-                                     NoTriviaQuestionException)
+                                BadTriviaIdException,
+                                BadTriviaSourceException,
+                                NoTriviaQuestionException)
 from ...misc import utils as utils
 
 

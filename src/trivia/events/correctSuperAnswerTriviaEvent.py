@@ -1,6 +1,5 @@
 import locale
 
-from ...cuteness.cutenessResult import CutenessResult
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -8,6 +7,7 @@ from ..score.triviaScoreResult import TriviaScoreResult
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from ..specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
+from ...cuteness.cutenessResult import CutenessResult
 from ...misc import utils as utils
 
 

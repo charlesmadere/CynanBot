@@ -4,25 +4,6 @@ import random
 import traceback
 from queue import SimpleQueue
 
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ...timber.timberInterface import TimberInterface
-from ..content.triviaContentCode import TriviaContentCode
-from ..questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
-from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
-from ..questions.triviaQuestionType import TriviaQuestionType
-from ..questions.triviaSource import TriviaSource
-from ..scraper.triviaScraperInterface import TriviaScraperInterface
-from ..triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     NoTriviaCorrectAnswersException,
-                                     NoTriviaMultipleChoiceResponsesException,
-                                     NoTriviaQuestionException,
-                                     TooManyTriviaFetchAttemptsException,
-                                     UnavailableTriviaSourceException)
-from ..triviaFetchOptions import TriviaFetchOptions
 from .bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from .funtoonTriviaQuestionRepository import \
@@ -55,13 +36,32 @@ from .willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from .wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
+from ..content.triviaContentCode import TriviaContentCode
+from ..questionAnswerTriviaConditions import \
+    QuestionAnswerTriviaConditions
+from ..questions.absTriviaQuestion import AbsTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from ..questions.triviaQuestionType import TriviaQuestionType
+from ..questions.triviaSource import TriviaSource
+from ..scraper.triviaScraperInterface import TriviaScraperInterface
+from ..triviaExceptions import (GenericTriviaNetworkException,
+                                MalformedTriviaJsonException,
+                                NoTriviaCorrectAnswersException,
+                                NoTriviaMultipleChoiceResponsesException,
+                                NoTriviaQuestionException,
+                                TooManyTriviaFetchAttemptsException,
+                                UnavailableTriviaSourceException)
+from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ..triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from ..triviaVerifierInterface import TriviaVerifierInterface
+from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...timber.timberInterface import TimberInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ...misc import utils as utils
 
 
 class TriviaRepository(TriviaRepositoryInterface):

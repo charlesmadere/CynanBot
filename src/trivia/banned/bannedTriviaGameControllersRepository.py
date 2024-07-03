@@ -1,10 +1,5 @@
 import traceback
 
-from ...misc.administratorProviderInterface import AdministratorProviderInterface
-from ...storage.backingDatabase import BackingDatabase
-from ...storage.databaseConnection import DatabaseConnection
-from ...storage.databaseType import DatabaseType
-from ...timber.timberInterface import TimberInterface
 from .addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
 from .bannedTriviaGameController import BannedTriviaGameController
@@ -12,10 +7,15 @@ from .bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from ..gameController.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
+from ...misc import utils as utils
+from ...misc.administratorProviderInterface import AdministratorProviderInterface
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
+from ...timber.timberInterface import TimberInterface
 from ...twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ...misc import utils as utils
 
 
 class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositoryInterface):

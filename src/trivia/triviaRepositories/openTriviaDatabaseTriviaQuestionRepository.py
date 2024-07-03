@@ -1,13 +1,8 @@
 import traceback
 from typing import Any
 
-from ...misc.clearable import Clearable
-from ...network.exceptions import GenericNetworkException
-from ...network.networkClientProvider import NetworkClientProvider
-from ...storage.backingDatabase import BackingDatabase
-from ...storage.databaseConnection import DatabaseConnection
-from ...storage.databaseType import DatabaseType
-from ...timber.timberInterface import TimberInterface
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
 from ..compilers.triviaQuestionCompilerInterface import \
     TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -18,16 +13,21 @@ from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (BadTriviaSessionTokenException,
-                                     GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     UnsupportedTriviaTypeException)
+                                GenericTriviaNetworkException,
+                                MalformedTriviaJsonException,
+                                UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.clearable import Clearable
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
+from ...timber.timberInterface import TimberInterface
 
 
 class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):

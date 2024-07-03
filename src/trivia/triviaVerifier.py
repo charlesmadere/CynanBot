@@ -1,4 +1,3 @@
-from ..timber.timberInterface import TimberInterface
 from .banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from .content.triviaContentCode import TriviaContentCode
 from .content.triviaContentScannerInterface import \
@@ -10,6 +9,7 @@ from .triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from .triviaVerifierInterface import TriviaVerifierInterface
 from ..misc import utils as utils
+from ..timber.timberInterface import TimberInterface
 
 
 class TriviaVerifier(TriviaVerifierInterface):

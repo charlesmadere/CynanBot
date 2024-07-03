@@ -1,8 +1,8 @@
+from .triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
+from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
-from .triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
-from ...misc import utils as utils
 
 
 class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):

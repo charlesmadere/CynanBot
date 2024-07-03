@@ -2,9 +2,6 @@ import locale
 import traceback
 from collections import defaultdict
 
-from ..cuteness.cutenessResult import CutenessResult
-from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..timber.timberInterface import TimberInterface
 from .banned.bannedTriviaGameController import BannedTriviaGameController
 from .banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
@@ -26,13 +23,16 @@ from .specialStatus.toxicTriviaResult import ToxicTriviaResult
 from .triviaQuestionPresenterInterface import \
     TriviaQuestionPresenterInterface
 from .triviaUtilsInterface import TriviaUtilsInterface
+from ..cuteness.cutenessResult import CutenessResult
+from ..misc import utils as utils
+from ..misc.administratorProviderInterface import AdministratorProviderInterface
+from ..timber.timberInterface import TimberInterface
 from ..twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
-from ..misc import utils as utils
 
 
 class TriviaUtils(TriviaUtilsInterface):

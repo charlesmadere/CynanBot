@@ -4,7 +4,11 @@ import aiofiles
 import aiofiles.ospath
 import aiosqlite
 from aiosqlite import Connection
-from ...timber.timberInterface import TimberInterface
+
+from .absTriviaQuestionRepository import \
+    AbsTriviaQuestionRepository
+from .glacialTriviaQuestionRepositoryInterface import \
+    GlacialTriviaQuestionRepositoryInterface
 from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from ..compilers.triviaAnswerCompilerInterface import \
@@ -23,20 +27,17 @@ from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (BadTriviaTypeException,
-                                     NoTriviaCorrectAnswersException,
-                                     NoTriviaMultipleChoiceResponsesException,
-                                     NoTriviaQuestionException,
-                                     UnsupportedTriviaTypeException)
+                                NoTriviaCorrectAnswersException,
+                                NoTriviaMultipleChoiceResponsesException,
+                                NoTriviaQuestionException,
+                                UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from .glacialTriviaQuestionRepositoryInterface import \
-    GlacialTriviaQuestionRepositoryInterface
 from ..triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ...misc import utils as utils
 
 
 class GlacialTriviaQuestionRepository(

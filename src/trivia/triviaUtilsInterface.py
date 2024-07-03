@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ..cuteness.cutenessResult import CutenessResult
 from .banned.bannedTriviaGameController import BannedTriviaGameController
 from .gameController.triviaGameController import TriviaGameController
 from .gameController.triviaGameGlobalController import TriviaGameGlobalController
@@ -10,6 +9,7 @@ from .specialStatus.shinyTriviaResult import ShinyTriviaResult
 from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
+from ..cuteness.cutenessResult import CutenessResult
 from ..users.userInterface import UserInterface
 
 
