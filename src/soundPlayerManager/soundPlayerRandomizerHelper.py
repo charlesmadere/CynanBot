@@ -6,12 +6,9 @@ import aiofiles.os
 import aiofiles.ospath
 
 from .soundAlert import SoundAlert
-from .soundPlayerRandomizerDirectoryScanResult import \
-    SoundPlayerRandomizerDirectoryScanResult
-from .soundPlayerRandomizerHelperInterface import \
-    SoundPlayerRandomizerHelperInterface
-from .soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
+from .soundPlayerRandomizerDirectoryScanResult import SoundPlayerRandomizerDirectoryScanResult
+from .soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
+from .soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface

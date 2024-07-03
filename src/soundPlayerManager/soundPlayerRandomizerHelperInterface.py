@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from misc.clearable import Clearable
-from soundPlayerManager.soundAlert import SoundAlert
+from .soundAlert import SoundAlert
+from ..misc.clearable import Clearable
 
 
 class SoundPlayerRandomizerHelperInterface(Clearable):

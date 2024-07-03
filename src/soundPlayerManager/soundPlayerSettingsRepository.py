@@ -1,11 +1,9 @@
 from typing import Any
 
-from soundPlayerManager.soundAlert import SoundAlert
-from soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
-from storage.jsonReaderInterface import JsonReaderInterface
-
+from .soundAlert import SoundAlert
+from .soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..misc import utils as utils
+from ..storage.jsonReaderInterface import JsonReaderInterface
 
 
 class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
