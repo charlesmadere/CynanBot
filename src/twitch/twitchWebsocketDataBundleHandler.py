@@ -1,18 +1,14 @@
-from .absTwitchChannelPointRedemptionHandler import \
-    AbsTwitchChannelPointRedemptionHandler
+from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from .absTwitchCheerHandler import AbsTwitchCheerHandler
 from .absTwitchFollowHandler import AbsTwitchFollowHandler
 from .absTwitchPollHandler import AbsTwitchPollHandler
 from .absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .absTwitchRaidHandler import AbsTwitchRaidHandler
 from .absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
-from .api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
+from .api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from .api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
-from .websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
+from .api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .websocket.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface

@@ -3,10 +3,8 @@ from typing import Any
 from .api.twitchOutcome import TwitchOutcome
 from .api.twitchOutcomeColor import TwitchOutcomeColor
 from .api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from .api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
-from .twitchPredictionWebsocketUtilsInterface import \
-    TwitchPredictionWebsocketUtilsInterface
+from .api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ..misc import utils as utils
 
 

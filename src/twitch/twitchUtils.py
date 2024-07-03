@@ -4,25 +4,25 @@ import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from misc.generalSettingsRepository import GeneralSettingsRepository
-from sentMessageLogger.messageMethod import MessageMethod
-from sentMessageLogger.sentMessageLoggerInterface import \
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..misc.generalSettingsRepository import GeneralSettingsRepository
+from ..sentMessageLogger.messageMethod import MessageMethod
+from ..sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from timber.timberInterface import TimberInterface
-from twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from twitch.api.twitchSendChatMessageRequest import \
+from ..timber.timberInterface import TimberInterface
+from .api.twitchApiServiceInterface import TwitchApiServiceInterface
+from .api.twitchSendChatMessageRequest import \
     TwitchSendChatMessageRequest
-from twitch.api.twitchSendChatMessageResponse import \
+from .api.twitchSendChatMessageResponse import \
     TwitchSendChatMessageResponse
-from twitch.configuration.twitchMessageable import TwitchMessageable
-from twitch.outboundMessage import OutboundMessage
-from twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from twitch.twitchTokensRepositoryInterface import \
+from .configuration.twitchMessageable import TwitchMessageable
+from .outboundMessage import OutboundMessage
+from .twitchHandleProviderInterface import TwitchHandleProviderInterface
+from .twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from twitch.twitchUtilsInterface import TwitchUtilsInterface
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from .twitchUtilsInterface import TwitchUtilsInterface
+from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 from ..misc import utils as utils
 
