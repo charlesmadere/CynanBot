@@ -91,6 +91,7 @@ from .language.translationHelper import TranslationHelper
 from .language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from .language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
+from .misc import utils as utils
 from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.authRepository import AuthRepository
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -189,7 +190,6 @@ from .users.usersRepositoryInterface import UsersRepositoryInterface
 from .weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from .weather.weatherRepositoryInterface import WeatherRepositoryInterface
 from .websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
-from ..misc import utils as utils
 
 
 class CynanBot(
