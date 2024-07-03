@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from .absSteps import AbsSteps
 from ..cheerActionType import CheerActionType
-from ..misc import utils as utils
+from ...misc import utils as utils
 
 
 class AbsWizard(ABC):
