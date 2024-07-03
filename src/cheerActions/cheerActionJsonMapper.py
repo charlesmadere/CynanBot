@@ -1,8 +1,6 @@
 from .cheerActionBitRequirement import CheerActionBitRequirement
-from .cheerActionJsonMapperInterface import \
-    CheerActionJsonMapperInterface
-from .cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface

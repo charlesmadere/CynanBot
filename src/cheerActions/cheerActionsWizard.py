@@ -1,8 +1,7 @@
 from datetime import timedelta
 
 from .cheerActionType import CheerActionType
-from .cheerActionsWizardInterface import \
-    CheerActionsWizardInterface
+from .cheerActionsWizardInterface import CheerActionsWizardInterface
 from .wizards.absWizard import AbsWizard
 from .wizards.soundAlertWizard import SoundAlertWizard
 from .wizards.timeoutWizard import TimeoutWizard

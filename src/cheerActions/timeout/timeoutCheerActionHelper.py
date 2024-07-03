@@ -2,31 +2,24 @@ import re
 from datetime import datetime, timedelta
 from typing import Pattern
 
-from .timeoutCheerActionHelperInterface import \
-    TimeoutCheerActionHelperInterface
-from .timeoutCheerActionHistoryRepositoryInterface import \
-    TimeoutCheerActionHistoryRepositoryInterface
+from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
+from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
 from ..cheerAction import CheerAction
 from ..cheerActionBitRequirement import CheerActionBitRequirement
-from ..cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
-from ...streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
 from ...tts.ttsProvider import TtsProvider
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchMessageable import TwitchMessageable
-from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
-    TwitchFollowingStatusRepositoryInterface
-from ...twitch.isLiveOnTwitchRepositoryInterface import \
-    IsLiveOnTwitchRepositoryInterface
-from ...twitch.timeout.twitchTimeoutHelperInterface import \
-    TwitchTimeoutHelperInterface
+from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from ...twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface

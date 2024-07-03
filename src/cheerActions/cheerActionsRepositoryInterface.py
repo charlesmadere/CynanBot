@@ -2,8 +2,7 @@ from abc import abstractmethod
 
 from .cheerAction import CheerAction
 from .cheerActionBitRequirement import CheerActionBitRequirement
-from .cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from ..misc.clearable import Clearable
 

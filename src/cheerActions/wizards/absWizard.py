@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
-from cheerActions.cheerActionType import CheerActionType
-from cheerActions.wizards.absSteps import AbsSteps
-
+from .absSteps import AbsSteps
+from ..cheerActionType import CheerActionType
 from ..misc import utils as utils
 
 

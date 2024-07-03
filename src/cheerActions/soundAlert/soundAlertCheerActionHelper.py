@@ -1,16 +1,12 @@
-from .soundAlertCheerActionHelperInterface import \
-    SoundAlertCheerActionHelperInterface
+from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..cheerAction import CheerAction
 from ..cheerActionBitRequirement import CheerActionBitRequirement
 from ..cheerActionType import CheerActionType
 from ...misc import utils as utils
-from ...soundPlayerManager.immediateSoundPlayerManagerInterface import \
-    ImmediateSoundPlayerManagerInterface
-from ...soundPlayerManager.soundPlayerRandomizerHelperInterface import \
-    SoundPlayerRandomizerHelperInterface
+from ...soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
+from ...soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ...timber.timberInterface import TimberInterface
-from ...twitch.isLiveOnTwitchRepositoryInterface import \
-    IsLiveOnTwitchRepositoryInterface
+from ...twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...users.userInterface import UserInterface
 
 

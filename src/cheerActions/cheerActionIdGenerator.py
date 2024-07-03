@@ -2,8 +2,7 @@ import re
 import uuid
 from typing import Pattern
 
-from .cheerActionIdGeneratorInterface import \
-    CheerActionIdGeneratorInterface
+from .cheerActionIdGeneratorInterface import CheerActionIdGeneratorInterface
 from ..misc import utils as utils
 
 

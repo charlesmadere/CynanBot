@@ -1,15 +1,11 @@
 from .cheerActionHelperInterface import CheerActionHelperInterface
-from .cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
-from .soundAlert.soundAlertCheerActionHelperInterface import \
-    SoundAlertCheerActionHelperInterface
-from .timeout.timeoutCheerActionHelperInterface import \
-    TimeoutCheerActionHelperInterface
+from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
+from .timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 

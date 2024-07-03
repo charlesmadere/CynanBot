@@ -2,8 +2,7 @@ from typing import Any
 
 from .absWizard import AbsWizard
 from .timeoutSteps import TimeoutSteps
-from ..cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
 from ...misc import utils as utils
 

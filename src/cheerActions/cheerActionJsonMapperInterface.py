@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
 from .cheerActionBitRequirement import CheerActionBitRequirement
-from .cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 
 

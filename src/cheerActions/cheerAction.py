@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .cheerActionBitRequirement import CheerActionBitRequirement
-from .cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from ..misc import utils as utils
 

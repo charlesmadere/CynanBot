@@ -1,14 +1,10 @@
 from .cheerAction import CheerAction
 from .cheerActionBitRequirement import CheerActionBitRequirement
-from .cheerActionIdGeneratorInterface import \
-    CheerActionIdGeneratorInterface
-from .cheerActionJsonMapperInterface import \
-    CheerActionJsonMapperInterface
-from .cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from .cheerActionIdGeneratorInterface import CheerActionIdGeneratorInterface
+from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
-from .cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
+from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .exceptions import (CheerActionAlreadyExistsException,
                          TimeoutDurationSecondsTooLongException,
                          TooManyCheerActionsException)
