@@ -1,32 +1,24 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from CynanBot.location.timeZoneRepository import TimeZoneRepository
-from CynanBot.location.timeZoneRepositoryInterface import \
-    TimeZoneRepositoryInterface
-from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.misc.backgroundTaskHelperInterface import \
-    BackgroundTaskHelperInterface
-from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.network.requestsClientProvider import RequestsClientProvider
-from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
-from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
-from CynanBot.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
-from CynanBot.pkmn.pokepediaJsonMapperInterface import \
-    PokepediaJsonMapperInterface
-from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBot.pkmn.pokepediaRepositoryInterface import \
-    PokepediaRepositoryInterface
-from CynanBot.storage.jsonFileReader import JsonFileReader
-from CynanBot.timber.timber import Timber
-from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
-from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
-from CynanBot.trivia.triviaIdGeneratorInterface import \
-    TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+from location.timeZoneRepository import TimeZoneRepository
+from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from misc.backgroundTaskHelper import BackgroundTaskHelper
+from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from network.networkClientProvider import NetworkClientProvider
+from network.requestsClientProvider import RequestsClientProvider
+from pkmn.pokepediaJsonMapper import PokepediaJsonMapper
+from pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
+from pkmn.pokepediaRepository import PokepediaRepository
+from storage.jsonFileReader import JsonFileReader
+from timber.timber import Timber
+from timber.timberInterface import TimberInterface
+from trivia.triviaFetchOptions import TriviaFetchOptions
+from trivia.triviaIdGenerator import TriviaIdGenerator
+from trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
+from trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
-from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
+from trivia.triviaSettingsRepository import TriviaSettingsRepository
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 

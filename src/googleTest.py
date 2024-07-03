@@ -1,46 +1,40 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from CynanBot.google.googleApiAccessTokenStorage import \
-    GoogleApiAccessTokenStorage
-from CynanBot.google.googleApiAccessTokenStorageInterface import \
+from google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
+from google.googleApiAccessTokenStorageInterface import \
     GoogleApiAccessTokenStorageInterface
-from CynanBot.google.googleApiService import GoogleApiService
-from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
-from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
+from google.googleApiService import GoogleApiService
+from google.googleApiServiceInterface import GoogleApiServiceInterface
+from google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
-from CynanBot.google.googleJsonMapper import GoogleJsonMapper
-from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
-from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
-from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
-from CynanBot.google.googleTextSynthesizeRequest import \
-    GoogleTextSynthesizeRequest
-from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from CynanBot.location.timeZoneRepository import TimeZoneRepository
-from CynanBot.location.timeZoneRepositoryInterface import \
-    TimeZoneRepositoryInterface
-from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.misc.backgroundTaskHelperInterface import \
-    BackgroundTaskHelperInterface
-from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
-from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.storage.jsonStaticReader import JsonStaticReader
-from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.timber.timberStub import TimberStub
-from CynanBot.tts.google.googleFileExtensionHelper import \
-    GoogleFileExtensionHelper
-from CynanBot.tts.google.googleFileExtensionHelperInterface import \
+from google.googleJsonMapper import GoogleJsonMapper
+from google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from google.googleJwtBuilder import GoogleJwtBuilder
+from google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from google.googleTextSynthesisInput import GoogleTextSynthesisInput
+from google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from location.timeZoneRepository import TimeZoneRepository
+from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from misc.backgroundTaskHelper import BackgroundTaskHelper
+from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from network.aioHttpClientProvider import AioHttpClientProvider
+from network.networkClientProvider import NetworkClientProvider
+from storage.jsonStaticReader import JsonStaticReader
+from timber.timberInterface import TimberInterface
+from timber.timberStub import TimberStub
+from tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
+from tts.google.googleFileExtensionHelperInterface import \
     GoogleFileExtensionHelperInterface
-from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
-from CynanBot.tts.google.googleTtsFileManagerInterface import \
+from tts.google.googleTtsFileManager import GoogleTtsFileManager
+from tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
-from CynanBot.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from CynanBot.tts.google.googleTtsVoiceChooserInterface import \
+from tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
+from tts.google.googleTtsVoiceChooserInterface import \
     GoogleTtsVoiceChooserInterface
-from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
-from CynanBot.tts.ttsSettingsRepositoryInterface import \
-    TtsSettingsRepositoryInterface
+from tts.ttsSettingsRepository import TtsSettingsRepository
+from tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
 class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):

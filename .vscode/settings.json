@@ -1,18 +1,25 @@
 {
     "editor.wordWrapColumn": 120,
     "files.autoSave": "afterDelay",
+    "files.trimFinalNewlines": true,
     "python.analysis.autoImportCompletions": true,
+    "python.analysis.importFormat": "relative",
     "python.analysis.typeCheckingMode": "basic",
-    "[python]": {
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
-        },
-        "editor.defaultFormatter": "ms-python.isort",
-        "editor.formatOnSave": true
-    },
+    "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.testing.pytestArgs": [
-        "src"
+        "tests"
     ],
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false
+    "python.testing.unittestEnabled": false,
+    "pythonIndent.trimLinesWithOnlyWhitespace": true,
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always",
+            "source.organizeImports.reorder-python-imports": "always",
+            "source.sortImports": "always"
+        },
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": false
+    }
 }

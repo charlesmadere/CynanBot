@@ -1,18 +1,18 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from CynanBot.jisho.jishoApiService import JishoApiService
-from CynanBot.jisho.jishoApiServiceInterface import JishoApiServiceInterface
-from CynanBot.jisho.jishoJsonMapper import JishoJsonMapper
-from CynanBot.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
-from CynanBot.jisho.jishoPresenter import JishoPresenter
-from CynanBot.jisho.jishoPresenterInterface import JishoPresenterInterface
-from CynanBot.language.jishoHelper import JishoHelper
-from CynanBot.language.jishoHelperInterface import JishoHelperInterface
-from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
-from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.timber.timberStub import TimberStub
+from jisho.jishoApiService import JishoApiService
+from jisho.jishoApiServiceInterface import JishoApiServiceInterface
+from jisho.jishoJsonMapper import JishoJsonMapper
+from jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
+from jisho.jishoPresenter import JishoPresenter
+from jisho.jishoPresenterInterface import JishoPresenterInterface
+from language.jishoHelper import JishoHelper
+from language.jishoHelperInterface import JishoHelperInterface
+from network.aioHttpClientProvider import AioHttpClientProvider
+from network.networkClientProvider import NetworkClientProvider
+from timber.timberInterface import TimberInterface
+from timber.timberStub import TimberStub
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 

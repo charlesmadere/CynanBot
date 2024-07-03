@@ -1,134 +1,136 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from CynanBot.authRepository import AuthRepository
-from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
-from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
+from misc.authRepository import AuthRepository
+from contentScanner.bannedWordsRepository import BannedWordsRepository
+from contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBot.cuteness.cutenessRepository import CutenessRepository
-from CynanBot.funtoon.funtoonRepository import FuntoonRepository
-from CynanBot.funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
-from CynanBot.funtoon.funtoonTokensRepository import FuntoonTokensRepository
-from CynanBot.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
-from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.network.requestsClientProvider import RequestsClientProvider
-from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBot.storage.backingDatabase import BackingDatabase
-from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
-from CynanBot.storage.jsonFileReader import JsonFileReader
-from CynanBot.timber.timber import Timber
-from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
+from contentScanner.contentScanner import ContentScanner
+from contentScanner.contentScannerInterface import ContentScannerInterface
+from cuteness.cutenessRepository import CutenessRepository
+from funtoon.funtoonRepository import FuntoonRepository
+from funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
+from funtoon.funtoonTokensRepository import FuntoonTokensRepository
+from funtoon.funtoonTokensRepositoryInterface import \
+    FuntoonTokensRepositoryInterface
+from misc.backgroundTaskHelper import BackgroundTaskHelper
+from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from network.networkClientProvider import NetworkClientProvider
+from network.requestsClientProvider import RequestsClientProvider
+from pkmn.pokepediaRepository import PokepediaRepository
+from storage.backingDatabase import BackingDatabase
+from storage.backingSqliteDatabase import BackingSqliteDatabase
+from storage.jsonFileReader import JsonFileReader
+from storage.linesFileReader import LinesFileReader
+from timber.timber import Timber
+from timber.timberInterface import TimberInterface
+from trivia.actions.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
-from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepository import \
+from trivia.additionalAnswers.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
-from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
-from CynanBot.trivia.banned.bannedTriviaIdsRepository import \
-    BannedTriviaIdsRepository
-from CynanBot.trivia.banned.bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
-from CynanBot.trivia.banned.triviaBanHelper import TriviaBanHelper
-from CynanBot.trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
-from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
-from CynanBot.trivia.scraper.triviaScraper import TriviaScraper
-from CynanBot.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
-from CynanBot.trivia.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
-from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
-from CynanBot.trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
-from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepository import GlacialTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
-from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
-from CynanBot.trivia.compilers.triviaQuestionCompiler import \
-    TriviaQuestionCompiler
-from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
-from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
-from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
-from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
-from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
-from CynanBot.trivia.questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
-from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
-from CynanBot.trivia.questions.triviaSource import TriviaSource
-from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
-from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
-from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
-    ShinyTriviaOccurencesRepository
-from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
-from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepository import ToxicTriviaOccurencesRepository
-from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
-from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
-from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBot.trivia.triviaEventListener import TriviaEventListener
-from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
-from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
-from CynanBot.trivia.triviaHistoryRepository import TriviaHistoryRepository
-from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
-from CynanBot.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
-    BongoTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
-    FuntoonTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
-    JServiceTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
-    LotrTriviaQuestionRepository
-from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
-from CynanBot.trivia.content.triviaContentScannerInterface import \
+from trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
+from trivia.banned.bannedTriviaIdsRepository import BannedTriviaIdsRepository
+from trivia.banned.bannedTriviaIdsRepositoryInterface import \
+    BannedTriviaIdsRepositoryInterface
+from trivia.banned.triviaBanHelper import TriviaBanHelper
+from trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
+from trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
+from trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
+from trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
+from trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
+from trivia.content.triviaContentScanner import TriviaContentScanner
+from trivia.content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
-from CynanBot.trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
+from trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
+from trivia.emotes.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
+from trivia.events.absTriviaEvent import AbsTriviaEvent
+from trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
+from trivia.games.triviaGameStore import TriviaGameStore
+from trivia.questionAnswerTriviaConditions import \
+    QuestionAnswerTriviaConditions
+from trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from trivia.questions.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from trivia.questions.triviaSource import TriviaSource
+from trivia.score.triviaScoreRepository import TriviaScoreRepository
+from trivia.scraper.triviaScraper import TriviaScraper
+from trivia.scraper.triviaScraperInterface import TriviaScraperInterface
+from trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
+from trivia.specialStatus.shinyTriviaOccurencesRepository import \
+    ShinyTriviaOccurencesRepository
+from trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
+    ShinyTriviaOccurencesRepositoryInterface
+from trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
+from trivia.specialStatus.toxicTriviaOccurencesRepository import \
+    ToxicTriviaOccurencesRepository
+from trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
+    ToxicTriviaOccurencesRepositoryInterface
+from trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
+from trivia.triviaAnswerChecker import TriviaAnswerChecker
+from trivia.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
+from trivia.triviaDifficulty import TriviaDifficulty
+from trivia.triviaEventListener import TriviaEventListener
+from trivia.triviaFetchOptions import TriviaFetchOptions
+from trivia.triviaGameMachine import TriviaGameMachine
+from trivia.triviaHistoryRepository import TriviaHistoryRepository
+from trivia.triviaHistoryRepositoryInterface import \
+    TriviaHistoryRepositoryInterface
+from trivia.triviaIdGenerator import TriviaIdGenerator
+from trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
+from trivia.triviaRepositories.bongoTriviaQuestionRepository import \
+    BongoTriviaQuestionRepository
+from trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
+    FuntoonTriviaQuestionRepository
+from trivia.triviaRepositories.glacialTriviaQuestionRepository import \
+    GlacialTriviaQuestionRepository
+from trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
+    GlacialTriviaQuestionRepositoryInterface
+from trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
+    JServiceTriviaQuestionRepository
+from trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
+    LotrTriviaQuestionRepository
+from trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
     MillionaireTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+from trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
+from trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+from trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
+from trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
+from trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
+from trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.triviaRepository import \
-    TriviaRepository
-from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
+from trivia.triviaRepositories.triviaRepository import TriviaRepository
+from trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
+from trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from CynanBot.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSourceInstabilityHelper import \
-    TriviaSourceInstabilityHelper
-from CynanBot.trivia.triviaVerifier import TriviaVerifier
-from CynanBot.twitch.api.twitchApiService import TwitchApiService
-from CynanBot.twitch.api.twitchApiServiceInterface import \
-    TwitchApiServiceInterface
-from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
-from CynanBot.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from CynanBot.users.userIdsRepository import UserIdsRepository
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
-    TwitchWebsocketJsonMapper
-from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
-    TwitchWebsocketJsonMapperInterface
-from CynanBot.twitch.twitchAnonymousUserIdProvider import \
-    TwitchAnonymousUserIdProvider
-from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \
+from trivia.triviaSettingsRepository import TriviaSettingsRepository
+from trivia.triviaSettingsRepositoryInterface import \
+    TriviaSettingsRepositoryInterface
+from trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
+from trivia.triviaVerifier import TriviaVerifier
+from twitch.api.twitchApiService import TwitchApiService
+from twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
+from twitch.twitchAnonymousUserIdProvider import TwitchAnonymousUserIdProvider
+from twitch.twitchAnonymousUserIdProviderInterface import \
     TwitchAnonymousUserIdProviderInterface
-from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
-from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
-from CynanBot.contentScanner.contentScanner import ContentScanner
-from CynanBot.contentScanner.contentScannerInterface import \
-    ContentScannerInterface
-from CynanBot.storage.linesFileReader import LinesFileReader
-
+from twitch.twitchTokensRepository import TwitchTokensRepository
+from twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
+from twitch.websocket.twitchWebsocketJsonMapper import \
+    TwitchWebsocketJsonMapper
+from twitch.websocket.twitchWebsocketJsonMapperInterface import \
+    TwitchWebsocketJsonMapperInterface
+from users.userIdsRepository import UserIdsRepository
+from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)

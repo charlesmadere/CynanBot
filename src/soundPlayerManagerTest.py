@@ -1,37 +1,32 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from CynanBot.aniv.anivContentScanner import AnivContentScanner
-from CynanBot.aniv.anivContentScannerInterface import \
-    AnivContentScannerInterface
-from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
-from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
+from aniv.anivContentScanner import AnivContentScanner
+from aniv.anivContentScannerInterface import AnivContentScannerInterface
+from contentScanner.bannedWordsRepository import BannedWordsRepository
+from contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBot.contentScanner.contentScanner import ContentScanner
-from CynanBot.contentScanner.contentScannerInterface import \
-    ContentScannerInterface
-from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.misc.backgroundTaskHelperInterface import \
-    BackgroundTaskHelperInterface
-from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+from contentScanner.contentScanner import ContentScanner
+from contentScanner.contentScannerInterface import ContentScannerInterface
+from misc.backgroundTaskHelper import BackgroundTaskHelper
+from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from soundPlayerManager.soundAlert import SoundAlert
+from soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
+from soundPlayerManager.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
+from soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
-from CynanBot.soundPlayerManager.vlc.vlcSoundPlayerManager import \
-    VlcSoundPlayerManager
-from CynanBot.storage.jsonStaticReader import JsonStaticReader
-from CynanBot.storage.linesStaticReader import LinesStaticReader
-from CynanBot.systemCommandHelper.systemCommandHelper import \
-    SystemCommandHelper
-from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
+from soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
+from storage.jsonStaticReader import JsonStaticReader
+from storage.linesStaticReader import LinesStaticReader
+from systemCommandHelper.systemCommandHelper import SystemCommandHelper
+from systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
-from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.timber.timberStub import TimberStub
-from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
-from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+from timber.timberInterface import TimberInterface
+from timber.timberStub import TimberStub
+from trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
+from trivia.compilers.triviaAnswerCompilerInterface import \
     TriviaAnswerCompilerInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
