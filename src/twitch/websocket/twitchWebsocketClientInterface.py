@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from twitch.websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
+from .twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 
 
 class TwitchWebsocketClientInterface(ABC):

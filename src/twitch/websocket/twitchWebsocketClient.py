@@ -7,37 +7,27 @@ from queue import SimpleQueue
 from typing import Any
 
 import websockets
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from misc.incrementalJsonBuilder import IncrementalJsonBuilder
-from misc.lruCache import LruCache
-from timber.timberInterface import TimberInterface
-from twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from twitch.api.twitchEventSubRequest import TwitchEventSubRequest
-from twitch.api.twitchEventSubResponse import TwitchEventSubResponse
-from twitch.api.websocket.twitchWebsocketCondition import \
-    TwitchWebsocketCondition
-from twitch.api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
-from twitch.api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
-from twitch.api.websocket.twitchWebsocketTransport import \
-    TwitchWebsocketTransport
-from twitch.api.websocket.twitchWebsocketTransportMethod import \
-    TwitchWebsocketTransportMethod
-from twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
-from twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \
-    TwitchWebsocketAllowedUsersRepositoryInterface
-from twitch.websocket.twitchWebsocketClientInterface import \
-    TwitchWebsocketClientInterface
-from twitch.websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
-from twitch.websocket.twitchWebsocketJsonMapperInterface import \
-    TwitchWebsocketJsonMapperInterface
-from twitch.websocket.twitchWebsocketUser import TwitchWebsocketUser
 
-from ..misc import utils as utils
+from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..api.twitchEventSubRequest import TwitchEventSubRequest
+from ..api.twitchEventSubResponse import TwitchEventSubResponse
+from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
+from ..api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
+from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..websocket.twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
+from ..websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
+from ..websocket.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
+from ..websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
+from ..websocket.twitchWebsocketUser import TwitchWebsocketUser
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...misc.incrementalJsonBuilder import IncrementalJsonBuilder
+from ...misc.lruCache import LruCache
+from ...timber.timberInterface import TimberInterface
 
 
 class TwitchWebsocketClient(TwitchWebsocketClientInterface):
