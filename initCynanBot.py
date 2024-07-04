@@ -106,8 +106,6 @@ from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
-from src.storage.storageJsonMapper import StorageJsonMapper
-from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from src.network.aioHttpClientProvider import AioHttpClientProvider
@@ -156,6 +154,8 @@ from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
 from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from src.storage.storageJsonMapper import StorageJsonMapper
+from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
