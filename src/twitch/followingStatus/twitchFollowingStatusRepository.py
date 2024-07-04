@@ -7,8 +7,7 @@ from datetime import datetime
 from lru import LRU
 
 from .twitchFollowingStatus import TwitchFollowingStatus
-from .twitchFollowingStatusRepositoryInterface import \
-    TwitchFollowingStatusRepositoryInterface
+from .twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..api.twitchFollower import TwitchFollower
 from ...misc import utils as utils

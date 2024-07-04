@@ -6,8 +6,7 @@ from typing import ByteString, Tuple
 
 import psutil
 
-from .systemCommandHelperInterface import \
-    SystemCommandHelperInterface
+from .systemCommandHelperInterface import SystemCommandHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 

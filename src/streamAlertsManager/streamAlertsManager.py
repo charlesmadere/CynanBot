@@ -7,12 +7,10 @@ from .currentStreamAlert import CurrentStreamAlert
 from .streamAlert import StreamAlert
 from .streamAlertState import StreamAlertState
 from .streamAlertsManagerInterface import StreamAlertsManagerInterface
-from .streamAlertsSettingsRepositoryInterface import \
-    StreamAlertsSettingsRepositoryInterface
+from .streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..soundPlayerManager.soundPlayerManagerInterface import \
-    SoundPlayerManagerInterface
+from ..soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsManagerInterface import TtsManagerInterface
 

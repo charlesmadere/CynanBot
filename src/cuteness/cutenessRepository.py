@@ -3,8 +3,7 @@ from .cutenessDate import CutenessDate
 from .cutenessHistoryEntry import CutenessHistoryEntry
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
-from .cutenessLeaderboardHistoryResult import \
-    CutenessLeaderboardHistoryResult
+from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
 from .cutenessLeaderboardResult import CutenessLeaderboardResult
 from .cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cutenessResult import CutenessResult

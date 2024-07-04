@@ -6,7 +6,7 @@ from .cutenessResult import CutenessResult
 
 
 @dataclass(frozen = True)
-class CutenessLeaderboardResult():
+class CutenessLeaderboardResult:
     cutenessDate: CutenessDate
     specificLookupCutenessResult: CutenessResult | None = None
     entries: list[CutenessLeaderboardEntry] | None = None

@@ -3,7 +3,7 @@ import pytest
 from src.storage.databaseType import DatabaseType
 
 
-class TestDatabaseType():
+class TestDatabaseType:
 
     def test_fromStr_withEmptyString(self):
         result: DatabaseType | None = None

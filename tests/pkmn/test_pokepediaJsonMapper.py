@@ -8,7 +8,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestPokepediaJsonMapper():
+class TestPokepediaJsonMapper:
 
     timber: TimberInterface = TimberStub()
 

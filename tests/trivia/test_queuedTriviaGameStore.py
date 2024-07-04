@@ -18,7 +18,7 @@ from src.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 
-class TestQueuedTriviaGameStore1():
+class TestQueuedTriviaGameStore1:
 
     timber: TimberInterface = TimberStub()
 

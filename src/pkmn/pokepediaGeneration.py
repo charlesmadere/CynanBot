@@ -105,64 +105,40 @@ class PokepediaGeneration(Enum):
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
     def getId(self) -> int:
-        if self is PokepediaGeneration.GENERATION_1:
-            return 1
-        elif self is PokepediaGeneration.GENERATION_2:
-            return 2
-        elif self is PokepediaGeneration.GENERATION_3:
-            return 3
-        elif self is PokepediaGeneration.GENERATION_4:
-            return 4
-        elif self is PokepediaGeneration.GENERATION_5:
-            return 5
-        elif self is PokepediaGeneration.GENERATION_6:
-            return 6
-        elif self is PokepediaGeneration.GENERATION_7:
-            return 7
-        elif self is PokepediaGeneration.GENERATION_8:
-            return 8
-        else:
-            raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
+        match self:
+            case PokepediaGeneration.GENERATION_1: return 1
+            case PokepediaGeneration.GENERATION_2: return 2
+            case PokepediaGeneration.GENERATION_3: return 3
+            case PokepediaGeneration.GENERATION_4: return 4
+            case PokepediaGeneration.GENERATION_5: return 5
+            case PokepediaGeneration.GENERATION_6: return 6
+            case PokepediaGeneration.GENERATION_7: return 7
+            case PokepediaGeneration.GENERATION_8: return 8
+            case _: raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
 
     def getMaxMoveId(self) -> int:
-        if self is PokepediaGeneration.GENERATION_1:
-            return 165
-        elif self is PokepediaGeneration.GENERATION_2:
-            return 251
-        elif self is PokepediaGeneration.GENERATION_3:
-            return 354
-        elif self is PokepediaGeneration.GENERATION_4:
-            return 467
-        elif self is PokepediaGeneration.GENERATION_5:
-            return 559
-        elif self is PokepediaGeneration.GENERATION_6:
-            return 621
-        elif self is PokepediaGeneration.GENERATION_7:
-            return 742
-        elif self is PokepediaGeneration.GENERATION_8:
-            return 826
-        else:
-            raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
+        match self:
+            case PokepediaGeneration.GENERATION_1: return 165
+            case PokepediaGeneration.GENERATION_2: return 251
+            case PokepediaGeneration.GENERATION_3: return 354
+            case PokepediaGeneration.GENERATION_4: return 467
+            case PokepediaGeneration.GENERATION_5: return 559
+            case PokepediaGeneration.GENERATION_6: return 621
+            case PokepediaGeneration.GENERATION_7: return 742
+            case PokepediaGeneration.GENERATION_8: return 826
+            case _: raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
 
     def getMaxPokedexId(self) -> int:
-        if self is PokepediaGeneration.GENERATION_1:
-            return 151
-        elif self is PokepediaGeneration.GENERATION_2:
-            return 251
-        elif self is PokepediaGeneration.GENERATION_3:
-            return 386
-        elif self is PokepediaGeneration.GENERATION_4:
-            return 493
-        elif self is PokepediaGeneration.GENERATION_5:
-            return 649
-        elif self is PokepediaGeneration.GENERATION_6:
-            return 721
-        elif self is PokepediaGeneration.GENERATION_7:
-            return 809
-        elif self is PokepediaGeneration.GENERATION_8:
-            return 905
-        else:
-            raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
+        match self:
+            case PokepediaGeneration.GENERATION_1: return 151
+            case PokepediaGeneration.GENERATION_2: return 251
+            case PokepediaGeneration.GENERATION_3: return 386
+            case PokepediaGeneration.GENERATION_4: return 493
+            case PokepediaGeneration.GENERATION_5: return 649
+            case PokepediaGeneration.GENERATION_6: return 721
+            case PokepediaGeneration.GENERATION_7: return 809
+            case PokepediaGeneration.GENERATION_8: return 905
+            case _: raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
 
     def __gt__(self, other: Any) -> bool:
         if isinstance(other, PokepediaGeneration):
@@ -193,41 +169,25 @@ class PokepediaGeneration(Enum):
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
     def toLongStr(self) -> str:
-        if self is PokepediaGeneration.GENERATION_1:
-            return 'generation 1'
-        elif self is PokepediaGeneration.GENERATION_2:
-            return 'generation 2'
-        elif self is PokepediaGeneration.GENERATION_3:
-            return 'generation 3'
-        elif self is PokepediaGeneration.GENERATION_4:
-            return 'generation 4'
-        elif self is PokepediaGeneration.GENERATION_5:
-            return 'generation 5'
-        elif self is PokepediaGeneration.GENERATION_6:
-            return 'generation 6'
-        elif self is PokepediaGeneration.GENERATION_7:
-            return 'generation 7'
-        elif self is PokepediaGeneration.GENERATION_8:
-            return 'generation 8'
-        else:
-            raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
+        match self:
+            case PokepediaGeneration.GENERATION_1: return 'generation 1'
+            case PokepediaGeneration.GENERATION_2: return 'generation 2'
+            case PokepediaGeneration.GENERATION_3: return 'generation 3'
+            case PokepediaGeneration.GENERATION_4: return 'generation 4'
+            case PokepediaGeneration.GENERATION_5: return 'generation 5'
+            case PokepediaGeneration.GENERATION_6: return 'generation 6'
+            case PokepediaGeneration.GENERATION_7: return 'generation 7'
+            case PokepediaGeneration.GENERATION_8: return 'generation 8'
+            case _: raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
 
     def toShortStr(self) -> str:
-        if self is PokepediaGeneration.GENERATION_1:
-            return 'G1'
-        elif self is PokepediaGeneration.GENERATION_2:
-            return 'G2'
-        elif self is PokepediaGeneration.GENERATION_3:
-            return 'G3'
-        elif self is PokepediaGeneration.GENERATION_4:
-            return 'G4'
-        elif self is PokepediaGeneration.GENERATION_5:
-            return 'G5'
-        elif self is PokepediaGeneration.GENERATION_6:
-            return 'G6'
-        elif self is PokepediaGeneration.GENERATION_7:
-            return 'G7'
-        elif self is PokepediaGeneration.GENERATION_8:
-            return 'G8'
-        else:
-            raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')
+        match self:
+            case PokepediaGeneration.GENERATION_1: return 'G1'
+            case PokepediaGeneration.GENERATION_2: return 'G2'
+            case PokepediaGeneration.GENERATION_3: return 'G3'
+            case PokepediaGeneration.GENERATION_4: return 'G4'
+            case PokepediaGeneration.GENERATION_5: return 'G5'
+            case PokepediaGeneration.GENERATION_6: return 'G6'
+            case PokepediaGeneration.GENERATION_7: return 'G7'
+            case PokepediaGeneration.GENERATION_8: return 'G8'
+            case _: raise RuntimeError(f'unknown PokepediaGeneration: \"{self}\"')

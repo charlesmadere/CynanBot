@@ -1,12 +1,11 @@
 from src.soundPlayerManager.soundAlert import SoundAlert
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
-from src.soundPlayerManager.soundAlertJsonMapperInterface import \
-    SoundAlertJsonMapperInterface
+from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestSoundAlertJsonMapper():
+class TestSoundAlertJsonMapper:
 
     timber: TimberInterface = TimberStub()
 

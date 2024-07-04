@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class CutenessBoosterPack():
+class CutenessBoosterPack:
     amount: int
     rewardId: str
 

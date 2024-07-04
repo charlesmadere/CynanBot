@@ -2,6 +2,7 @@ import asyncio
 from asyncio import AbstractEventLoop
 
 import pytest
+
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.storage.backingDatabase import BackingDatabase
@@ -16,7 +17,7 @@ from src.trivia.emotes.triviaEmoteRepositoryInterface import \
     TriviaEmoteRepositoryInterface
 
 
-class TestTriviaEmoteGenerator():
+class TestTriviaEmoteGenerator:
 
     eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 

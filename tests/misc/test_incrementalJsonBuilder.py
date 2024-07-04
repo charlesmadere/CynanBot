@@ -1,6 +1,7 @@
 from typing import Any
 
 import pytest
+
 from src.misc.incrementalJsonBuilder import IncrementalJsonBuilder
 
 

@@ -8,14 +8,12 @@ from ..api.twitchPollChoice import TwitchPollChoice
 from ..api.twitchResub import TwitchResub
 from ..api.twitchReward import TwitchReward
 from ..api.twitchSubGift import TwitchSubGift
-from ..api.websocket.twitchWebsocketChannelPointsVoting import \
-    TwitchWebsocketChannelPointsVoting
+from ..api.websocket.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.websocket.twitchWebsocketSession import TwitchWebsocketSession
-from ..api.websocket.twitchWebsocketSubscription import \
-    TwitchWebsocketSubscription
+from ..api.websocket.twitchWebsocketSubscription import TwitchWebsocketSubscription
 
 
 class TwitchWebsocketJsonMapperInterface(ABC):

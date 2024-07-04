@@ -27,7 +27,7 @@ from src.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 
-class TestTriviaContentScanner():
+class TestTriviaContentScanner:
 
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())

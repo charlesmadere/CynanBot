@@ -3,11 +3,10 @@ import pytest
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.transparent.transparentXmlMapper import TransparentXmlMapper
-from src.transparent.transparentXmlMapperInterface import \
-    TransparentXmlMapperInterface
+from src.transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 
 
-class TestTransparentXmlMapper():
+class TestTransparentXmlMapper:
 
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 

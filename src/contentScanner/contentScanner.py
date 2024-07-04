@@ -3,8 +3,7 @@ from typing import Pattern
 
 from .bannedPhrase import BannedPhrase
 from .bannedWord import BannedWord
-from .bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from .bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .contentCode import ContentCode
 from .contentScannerInterface import ContentScannerInterface
 from ..misc import utils as utils

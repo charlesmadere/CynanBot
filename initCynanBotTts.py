@@ -146,6 +146,8 @@ from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
 from src.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
+from src.twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
+from src.twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFollowingStatusRepository
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
@@ -215,33 +217,39 @@ generalSettingsRepository = GeneralSettingsRepository(
 generalSettingsSnapshot = generalSettingsRepository.getAll()
 
 backingDatabase: BackingDatabase
-if generalSettingsSnapshot.requireDatabaseType() is DatabaseType.POSTGRESQL:
-    backingDatabase: BackingDatabase = BackingPsqlDatabase(
-        eventLoop = eventLoop,
-        psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader('psqlCredentials.json')
-        ),
-        timber = timber
-    )
-elif generalSettingsSnapshot.requireDatabaseType() is DatabaseType.SQLITE:
-    backingDatabase: BackingDatabase = BackingSqliteDatabase(
-        eventLoop = eventLoop
-    )
-else:
-    raise RuntimeError(f'Unknown/misconfigured database type: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
+match generalSettingsSnapshot.requireDatabaseType():
+    case DatabaseType.POSTGRESQL:
+        backingDatabase = BackingPsqlDatabase(
+            eventLoop = eventLoop,
+            psqlCredentialsProvider = PsqlCredentialsProvider(
+                credentialsJsonReader = JsonFileReader('psqlCredentials.json')
+            ),
+            timber = timber
+        )
+
+    case DatabaseType.SQLITE:
+        backingDatabase = BackingSqliteDatabase(
+            eventLoop = eventLoop
+        )
+
+    case _:
+        raise RuntimeError(f'Unknown/misconfigured DatabaseType: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
 networkClientProvider: NetworkClientProvider
-if generalSettingsSnapshot.requireNetworkClientType() is NetworkClientType.AIOHTTP:
-    networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
-        eventLoop = eventLoop,
-        timber = timber
-    )
-elif generalSettingsSnapshot.requireNetworkClientType() is NetworkClientType.REQUESTS:
-    networkClientProvider: NetworkClientProvider = RequestsClientProvider(
-        timber = timber
-    )
-else:
-    raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
+match generalSettingsSnapshot.requireNetworkClientType():
+    case NetworkClientType.AIOHTTP:
+        networkClientProvider = AioHttpClientProvider(
+            eventLoop = eventLoop,
+            timber = timber
+        )
+
+    case NetworkClientType.REQUESTS:
+        networkClientProvider = RequestsClientProvider(
+            timber = timber
+        )
+
+    case _:
+        raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
 
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
@@ -311,6 +319,11 @@ contentScanner: ContentScannerInterface = ContentScanner(
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
+)
+
+twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
+    timber = timber,
+    twitchApiService = twitchApiService
 )
 
 twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = TwitchFollowingStatusRepository(
@@ -671,10 +684,6 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber
 )
 
-cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
-    timber = timber
-)
-
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -872,6 +881,7 @@ cynanBot = CynanBot(
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
+    twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,

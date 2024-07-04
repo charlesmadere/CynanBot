@@ -4,6 +4,6 @@ from typing import Any
 
 
 @dataclass(frozen = True)
-class WebsocketEvent():
+class WebsocketEvent:
     eventTime: datetime
     eventData: dict[str, Any]

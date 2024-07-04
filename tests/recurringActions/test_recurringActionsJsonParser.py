@@ -2,22 +2,19 @@ import json
 from typing import Any
 
 import pytest
+
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from src.recurringActions.recurringActionsJsonParser import \
-    RecurringActionsJsonParser
-from src.recurringActions.recurringActionsJsonParserInterface import \
-    RecurringActionsJsonParserInterface
-from src.recurringActions.superTriviaRecurringAction import \
-    SuperTriviaRecurringAction
+from src.recurringActions.recurringActionsJsonParser import RecurringActionsJsonParser
+from src.recurringActions.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
+from src.recurringActions.superTriviaRecurringAction import SuperTriviaRecurringAction
 from src.recurringActions.weatherRecurringAction import WeatherRecurringAction
-from src.recurringActions.wordOfTheDayRecurringAction import \
-    WordOfTheDayRecurringAction
+from src.recurringActions.wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestRecurringActionsJsonParser():
+class TestRecurringActionsJsonParser:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
 

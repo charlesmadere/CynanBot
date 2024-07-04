@@ -5,7 +5,7 @@ from ..misc import utils as utils
 from ..misc.simpleDateTime import SimpleDateTime
 
 
-class CutenessDate():
+class CutenessDate:
 
     def __init__(self, utcYearAndMonthStr: str | None = None):
         if utcYearAndMonthStr is not None and not isinstance(utcYearAndMonthStr, str):

@@ -14,7 +14,7 @@ from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
-class TestTwitchJsonMapper():
+class TestTwitchJsonMapper:
 
     timber: TimberInterface = TimberStub()
 

@@ -170,6 +170,7 @@ from .twitch.configuration.twitchFollowHandler import TwitchFollowHandler
 from .twitch.configuration.twitchPollHandler import TwitchPollHandler
 from .twitch.configuration.twitchPredictionHandler import TwitchPredictionHandler
 from .twitch.configuration.twitchSubscriptionHandler import TwitchSubscriptionHandler
+from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
@@ -270,6 +271,7 @@ class CynanBot(
         twitchApiService: TwitchApiServiceInterface,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchConfiguration: TwitchConfiguration,
+        twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
@@ -428,6 +430,8 @@ class CynanBot(
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
+        elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
+            raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
@@ -476,6 +480,7 @@ class CynanBot(
         self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
+        self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None = twitchFollowingStatusRepository
         self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
@@ -873,6 +878,7 @@ class CynanBot(
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,
                 twitchChannelProvider = self,
+                twitchEmotesHelper = self.__twitchEmotesHelper,
                 twitchHandleProvider = self.__authRepository,
                 twitchTokensUtils = self.__twitchTokensUtils,
                 twitchUtils = self.__twitchUtils,

@@ -3,8 +3,7 @@ from abc import ABC, abstractmethod
 from .cutenessChampionsResult import CutenessChampionsResult
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
-from .cutenessLeaderboardHistoryResult import \
-    CutenessLeaderboardHistoryResult
+from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
 from .cutenessResult import CutenessResult
 
 

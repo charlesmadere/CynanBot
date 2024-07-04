@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from .twitchWebsocketJsonMapperInterface import \
-    TwitchWebsocketJsonMapperInterface
+from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..api.twitchOutcome import TwitchOutcome
@@ -12,35 +11,23 @@ from ..api.twitchPollChoice import TwitchPollChoice
 from ..api.twitchPollStatus import TwitchPollStatus
 from ..api.twitchResub import TwitchResub
 from ..api.twitchReward import TwitchReward
-from ..api.twitchRewardRedemptionStatus import \
-    TwitchRewardRedemptionStatus
+from ..api.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..api.twitchSubGift import TwitchSubGift
 from ..api.twitchSubscriberTier import TwitchSubscriberTier
-from ..api.websocket.twitchWebsocketChannelPointsVoting import \
-    TwitchWebsocketChannelPointsVoting
-from ..api.websocket.twitchWebsocketCondition import \
-    TwitchWebsocketCondition
-from ..api.websocket.twitchWebsocketConnectionStatus import \
-    TwitchWebsocketConnectionStatus
-from ..api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
+from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from ..api.websocket.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from ..api.websocket.twitchWebsocketMessageType import \
-    TwitchWebsocketMessageType
-from ..api.websocket.twitchWebsocketMetadata import \
-    TwitchWebsocketMetadata
-from ..api.websocket.twitchWebsocketNoticeType import \
-    TwitchWebsocketNoticeType
+from ..api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
+from ..api.websocket.twitchWebsocketMetadata import TwitchWebsocketMetadata
+from ..api.websocket.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..api.websocket.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.websocket.twitchWebsocketSession import TwitchWebsocketSession
-from ..api.websocket.twitchWebsocketSubscription import \
-    TwitchWebsocketSubscription
-from ..api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
-from ..api.websocket.twitchWebsocketTransport import \
-    TwitchWebsocketTransport
-from ..api.websocket.twitchWebsocketTransportMethod import \
-    TwitchWebsocketTransportMethod
+from ..api.websocket.twitchWebsocketSubscription import TwitchWebsocketSubscription
+from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
+from ..api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

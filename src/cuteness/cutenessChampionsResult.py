@@ -4,7 +4,7 @@ from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 
 
 @dataclass(frozen = True)
-class CutenessChampionsResult():
+class CutenessChampionsResult:
     twitchChannel: str
     twitchChannelId: str
     champions: list[CutenessLeaderboardEntry] | None = None

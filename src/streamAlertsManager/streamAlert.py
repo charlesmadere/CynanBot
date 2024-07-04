@@ -5,7 +5,7 @@ from ..tts.ttsEvent import TtsEvent
 
 
 @dataclass(frozen = True)
-class StreamAlert():
+class StreamAlert:
     soundAlert: SoundAlert | None
     twitchChannel: str
     twitchChannelId: str

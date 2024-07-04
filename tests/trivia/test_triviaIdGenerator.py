@@ -2,6 +2,7 @@ import re
 from typing import Pattern
 
 import pytest
+
 from src.trivia.triviaIdGenerator import TriviaIdGenerator
 from src.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 

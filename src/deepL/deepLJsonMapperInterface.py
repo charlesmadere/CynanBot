@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..deepL.deepLTranslationRequest import DeepLTranslationRequest
-from ..deepL.deepLTranslationResponse import DeepLTranslationResponse
-from ..deepL.deepLTranslationResponses import DeepLTranslationResponses
+from .deepLTranslationRequest import DeepLTranslationRequest
+from .deepLTranslationResponse import DeepLTranslationResponse
+from .deepLTranslationResponses import DeepLTranslationResponses
 
 
 class DeepLJsonMapperInterface(ABC):

@@ -1,4 +1,6 @@
 import math
+import random
+import traceback
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -6,21 +8,18 @@ from ..api.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.twitchResub import TwitchResub
 from ..api.twitchSubGift import TwitchSubGift
 from ..api.twitchSubscriberTier import TwitchSubscriberTier
-from ..api.websocket.twitchWebsocketDataBundle import \
-    TwitchWebsocketDataBundle
-from ..api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
+from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
-from ...streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...trivia.builder.triviaGameBuilderInterface import \
-    TriviaGameBuilderInterface
+from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsDonation import TtsDonation
 from ...tts.ttsEvent import TtsEvent
@@ -40,6 +39,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
         twitchChannelProvider: TwitchChannelProvider,
+        twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -55,6 +55,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+        elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
+            raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -69,6 +71,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
+        self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -132,6 +135,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
+        if user.isSubGiftThankingEnabled:
+            await self.__processCynanBotAsGiftRecipient(
+                broadcasterUserId = broadcasterUserId,
+                subGift = subGift,
+                user = user
+            )
+
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
                 broadcasterUserId = broadcasterUserId,
@@ -161,10 +171,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     async def __processCynanBotAsGiftRecipient(
         self,
+        broadcasterUserId: str,
         subGift: TwitchSubGift | None,
         user: UserInterface
     ):
-        if subGift is None or not user.isSubGiftThankingEnabled:
+        if not user.isSubGiftThankingEnabled:
+            return
+        elif subGift is None:
             return
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
@@ -173,13 +186,25 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if not utils.isValidStr(twitchId) or twitchId != subGift.recipientUserId:
             return
 
-        twitchChannelProvider = self.__twitchChannelProvider
+        validEmotesSet: set[str] = { 'KomodoHype' }
+        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(broadcasterUserId)
 
-        if twitchChannelProvider is None:
-            return
+        if utils.isValidStr(twitchAccessToken):
+            try:
+                additionalValidEmotes = await self.__twitchEmotesHelper.fetchViableEmoteNamesFor(
+                    twitchAccessToken = twitchAccessToken,
+                    twitchChannelId = broadcasterUserId
+                )
+                validEmotesSet.update(additionalValidEmotes)
+            except Exception as e:
+                self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({user=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-        await self.__twitchUtils.safeSend(twitchChannel, f'KomodoHype thanks for the sub @{subGift.recipientUserLogin} KomodoHype')
+        validEmotesList: list[str] = list(validEmotesSet)
+        emoji1 = random.choice(validEmotesList)
+        emoji2 = random.choice(validEmotesList)
+
+        twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
+        await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')
         self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.getHandle()} for a gifted sub!')
 
     async def __processSuperTriviaEvent(
@@ -351,8 +376,3 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             twitchChannelId = broadcasterUserId,
             ttsEvent = ttsEvent
         ))
-
-        await self.__processCynanBotAsGiftRecipient(
-            subGift = subGift,
-            user = user
-        )

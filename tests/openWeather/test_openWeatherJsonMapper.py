@@ -2,16 +2,14 @@ import pytest
 
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from src.openWeather.openWeatherAirPollutionIndex import \
-    OpenWeatherAirPollutionIndex
+from src.openWeather.openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
 from src.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from src.openWeather.openWeatherJsonMapperInterface import \
-    OpenWeatherJsonMapperInterface
+from src.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestOpenWeatherJsonMapper():
+class TestOpenWeatherJsonMapper:
 
     timber: TimberInterface = TimberStub()
 

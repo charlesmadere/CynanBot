@@ -5,7 +5,7 @@ from ..network.networkClientType import NetworkClientType
 from ..storage.databaseType import DatabaseType
 
 
-class GeneralSettingsRepositorySnapshot():
+class GeneralSettingsRepositorySnapshot:
 
     def __init__(self, jsonContents: dict[str, Any]):
         if not isinstance(jsonContents, dict):
