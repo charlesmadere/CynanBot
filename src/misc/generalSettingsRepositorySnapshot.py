@@ -3,15 +3,23 @@ from typing import Any
 from . import utils as utils
 from ..network.networkClientType import NetworkClientType
 from ..storage.databaseType import DatabaseType
+from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 
 
 class GeneralSettingsRepositorySnapshot:
 
-    def __init__(self, jsonContents: dict[str, Any]):
+    def __init__(
+        self,
+        jsonContents: dict[str, Any],
+        storageJsonMapper: StorageJsonMapperInterface
+    ):
         if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+        elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
+            raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
 
         self.__jsonContents: dict[str, Any] = jsonContents
+        self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
 
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
@@ -147,12 +155,13 @@ class GeneralSettingsRepositorySnapshot:
         return administrator
 
     def requireDatabaseType(self) -> DatabaseType:
-        databaseType = self.__jsonContents.get('databaseType')
+        databaseTypeString = self.__jsonContents.get('databaseType')
+        databaseType = self.__storageJsonMapper.parseDatabaseType(databaseTypeString)
 
-        if utils.isValidStr(databaseType):
-            return DatabaseType.fromStr(databaseType)
-        else:
-            return DatabaseType.SQLITE
+        if databaseType is not None:
+            return databaseType
+
+        return DatabaseType.SQLITE
 
     def requireNetworkClientType(self) -> NetworkClientType:
         networkClientType = self.__jsonContents.get('networkClientType')

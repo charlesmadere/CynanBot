@@ -3,17 +3,26 @@ from typing import Any
 from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from ..storage.jsonReaderInterface import JsonReaderInterface
+from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from ..trivia.builder.triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
 
 
 class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
-    def __init__(self, settingsJsonReader: JsonReaderInterface):
+    def __init__(
+        self,
+        settingsJsonReader: JsonReaderInterface,
+        storageJsonMapper: StorageJsonMapperInterface
+    ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
+            raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
+
         self.__cache: GeneralSettingsRepositorySnapshot | None = None
 
     async def clearCaches(self):
@@ -28,9 +37,12 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
             return self.__cache
 
         jsonContents = self.__readJson()
-        snapshot = GeneralSettingsRepositorySnapshot(jsonContents)
-        self.__cache = snapshot
+        snapshot = GeneralSettingsRepositorySnapshot(
+            jsonContents = jsonContents,
+            storageJsonMapper = self.__storageJsonMapper
+        )
 
+        self.__cache = snapshot
         return snapshot
 
     async def getAllAsync(self) -> GeneralSettingsRepositorySnapshot:
@@ -38,9 +50,12 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
             return self.__cache
 
         jsonContents = await self.__readJsonAsync()
-        snapshot = GeneralSettingsRepositorySnapshot(jsonContents)
-        self.__cache = snapshot
+        snapshot = GeneralSettingsRepositorySnapshot(
+            jsonContents = jsonContents,
+            storageJsonMapper = self.__storageJsonMapper
+        )
 
+        self.__cache = snapshot
         return snapshot
 
     async def getSuperTriviaGamePerUserAttempts(self) -> int:

@@ -106,6 +106,8 @@ from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
+from src.storage.storageJsonMapper import StorageJsonMapper
+from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from src.network.aioHttpClientProvider import AioHttpClientProvider
@@ -344,8 +346,13 @@ timber: TimberInterface = Timber(
     timeZoneRepository = timeZoneRepository
 )
 
+storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper(
+    timber = timber
+)
+
 generalSettingsRepository = GeneralSettingsRepository(
-    settingsJsonReader = JsonFileReader('generalSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('generalSettingsRepository.json'),
+    storageJsonMapper = storageJsonMapper
 )
 
 generalSettingsSnapshot = generalSettingsRepository.getAll()

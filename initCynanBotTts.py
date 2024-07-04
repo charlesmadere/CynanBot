@@ -79,6 +79,8 @@ from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.storage.storageJsonMapper import StorageJsonMapper
+from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
@@ -210,8 +212,13 @@ timber: TimberInterface = Timber(
     timeZoneRepository = timeZoneRepository
 )
 
+storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper(
+    timber = timber
+)
+
 generalSettingsRepository = GeneralSettingsRepository(
-    settingsJsonReader = JsonFileReader('generalSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('generalSettingsRepository.json'),
+    storageJsonMapper = storageJsonMapper
 )
 
 generalSettingsSnapshot = generalSettingsRepository.getAll()
