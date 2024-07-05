@@ -71,6 +71,11 @@ class TestCheerActionJsonMapper():
         assert result is CheerActionStreamStatusRequirement.ONLINE
 
     @pytest.mark.asyncio
+    async def test_parseCheerActionType_withBeanChanceString(self):
+        result = await self.jsonMapper.parseCheerActionType('bean_chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+    @pytest.mark.asyncio
     async def test_parseCheerActionType_withEmptyString(self):
         result = await self.jsonMapper.parseCheerActionType('')
         assert result is None
@@ -121,6 +126,11 @@ class TestCheerActionJsonMapper():
         assert result is CheerActionStreamStatusRequirement.ONLINE
 
     @pytest.mark.asyncio
+    async def test_requireCheerActionType_withBeanChanceString(self):
+        result = await self.jsonMapper.requireCheerActionType('bean_chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+    @pytest.mark.asyncio
     async def test_requireCheerActionType_withSoundAlertString(self):
         result = await self.jsonMapper.requireCheerActionType('sound_alert')
         assert result is CheerActionType.SOUND_ALERT
@@ -154,6 +164,11 @@ class TestCheerActionJsonMapper():
     async def test_serializeCheerActionStreamStatusRequirement_withOnline(self):
         result = await self.jsonMapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ONLINE)
         assert result == 'online'
+
+    @pytest.mark.asyncio
+    async def test_serializeCheerActionType_withBeanChance(self):
+        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.BEAN_CHANCE)
+        assert result == 'bean_chance'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withSoundAlert(self):

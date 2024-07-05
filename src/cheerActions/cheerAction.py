@@ -9,7 +9,7 @@ from ..misc import utils as utils
 
 
 @dataclass(frozen = True)
-class CheerAction():
+class CheerAction:
     bitRequirement: CheerActionBitRequirement
     streamStatusRequirement: CheerActionStreamStatusRequirement
     actionType: CheerActionType

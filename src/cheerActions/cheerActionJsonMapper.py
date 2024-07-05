@@ -57,6 +57,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         jsonString = jsonString.lower()
 
         match jsonString:
+            case 'bean_chance': return CheerActionType.BEAN_CHANCE
             case 'sound_alert': return CheerActionType.SOUND_ALERT
             case 'timeout': return CheerActionType.TIMEOUT
             case _:
@@ -129,6 +130,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
 
         match actionType:
+            case CheerActionType.BEAN_CHANCE: return 'bean_chance'
             case CheerActionType.SOUND_ALERT: return 'sound_alert'
             case CheerActionType.TIMEOUT: return 'timeout'
             case _: raise ValueError(f'The given CheerActionType value is unknown: \"{actionType}\"')
