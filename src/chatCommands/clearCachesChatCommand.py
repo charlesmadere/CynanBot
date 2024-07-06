@@ -1,51 +1,36 @@
 from .absChatCommand import AbsChatCommand
-from ..aniv.anivSettingsRepositoryInterface import \
-    AnivSettingsRepositoryInterface
-from ..aniv.mostRecentAnivMessageRepositoryInterface import \
-    MostRecentAnivMessageRepositoryInterface
-from ..cheerActions.cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
+from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
-from ..contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
-from ..funtoon.funtoonTokensRepositoryInterface import \
-    FuntoonTokensRepositoryInterface
-from ..language.wordOfTheDayRepositoryInterface import \
-    WordOfTheDayRepositoryInterface
+from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
+from ..funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.authRepository import AuthRepository
 from ..misc.clearable import Clearable
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
-from ..mostRecentChat.mostRecentChatsRepositoryInterface import \
-    MostRecentChatsRepositoryInterface
-from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import \
-    SoundPlayerRandomizerHelperInterface
-from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
-from ..supStreamer.supStreamerRepositoryInterface import \
-    SupStreamerRepositoryInterface
+from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
+from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from ..trivia.triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
-    TwitchFollowingStatusRepositoryInterface
-from ..twitch.isLiveOnTwitchRepositoryInterface import \
-    IsLiveOnTwitchRepositoryInterface
-from ..twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.modifyUserDataHelper import ModifyUserDataHelper
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
-from ..websocketConnection.websocketConnectionServerInterface import \
-    WebsocketConnectionServerInterface
+from ..websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 
 class ClearCachesChatCommand(AbsChatCommand):

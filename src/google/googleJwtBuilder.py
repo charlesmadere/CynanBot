@@ -8,8 +8,7 @@ from .exceptions import (
     GoogleCloudProjectKeyIdUnavailableException,
     GoogleCloudProjectPrivateKeyUnavailableException,
     GoogleCloudServiceAccountEmailUnavailableException)
-from .googleCloudProjectCredentialsProviderInterface import \
-    GoogleCloudProjectCredentialsProviderInterface
+from .googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from .googleScope import GoogleScope

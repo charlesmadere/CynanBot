@@ -1,8 +1,7 @@
 from .absChatCommand import AbsChatCommand
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
-from ..trivia.actions.clearSuperTriviaQueueTriviaAction import \
-    ClearSuperTriviaQueueTriviaAction
+from ..trivia.actions.clearSuperTriviaQueueTriviaAction import ClearSuperTriviaQueueTriviaAction
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface

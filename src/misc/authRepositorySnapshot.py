@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..misc import utils as utils
+from . import utils as utils
 
 
 class AuthRepositorySnapshot():

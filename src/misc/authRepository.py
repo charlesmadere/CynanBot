@@ -3,12 +3,10 @@ from typing import Any
 from .authRepositorySnapshot import AuthRepositorySnapshot
 from .clearable import Clearable
 from ..deepL.deepLAuthKeyProviderInterface import DeepLAuthKeyProviderInterface
-from ..google.googleCloudProjectCredentialsProviderInterface import \
-    GoogleCloudProjectCredentialsProviderInterface
+from ..google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
 from ..openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from ..storage.jsonReaderInterface import JsonReaderInterface
-from ..twitch.twitchCredentialsProviderInterface import \
-    TwitchCredentialsProviderInterface
+from ..twitch.twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 
 

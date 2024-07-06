@@ -4,8 +4,7 @@ from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
-from ..trivia.builder.triviaGameBuilderSettingsInterface import \
-    TriviaGameBuilderSettingsInterface
+from ..trivia.builder.triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
 
 
 class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
