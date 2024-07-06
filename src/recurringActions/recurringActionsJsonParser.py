@@ -94,12 +94,10 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         languageEntry: LanguageEntry | None = None
 
         if utils.isValidStr(wotdApiCode):
-            languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(
-                wotdApiCode = wotdApiCode
-            )
+            languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(wotdApiCode)
 
             if languageEntry is None:
-                self.__timber.log('RecurringActionsJsonParser', f'Unable to find language for Word of the Day API code \"{wotdApiCode}\"')
+                self.__timber.log('RecurringActionsJsonParser', f'Unable to find language for Word of the Day API code ({wotdApiCode=}) ({jsonContents=})')
 
         return WordOfTheDayRecurringAction(
             enabled = enabled,
