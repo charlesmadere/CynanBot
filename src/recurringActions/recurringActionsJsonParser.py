@@ -125,7 +125,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         elif isinstance(action, WordOfTheDayRecurringAction):
             return await self.__wordOfTheDayToJson(action)
         else:
-            raise RuntimeError(f'Encountered unknown action type (\"{type(action)=}\") for action (\"{action}\")')
+            raise RuntimeError(f'Encountered unknown RecurringAction type ({action=})')
 
     async def __weatherToJson(self, action: WeatherRecurringAction) -> str:
         if not isinstance(action, WeatherRecurringAction):
