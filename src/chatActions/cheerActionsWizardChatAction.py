@@ -2,15 +2,12 @@ import traceback
 
 from .absChatAction import AbsChatAction
 from ..cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
-from ..cheerActions.cheerActionJsonMapperInterface import \
-    CheerActionJsonMapperInterface
-from ..cheerActions.cheerActionStreamStatusRequirement import \
-    CheerActionStreamStatusRequirement
+from ..cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from ..cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActions.cheerActionType import CheerActionType
-from ..cheerActions.cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
-from ..cheerActions.cheerActionsWizardInterface import \
-    CheerActionsWizardInterface
+from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from ..cheerActions.wizards.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
 from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
 from ..cheerActions.wizards.stepResult import StepResult
@@ -50,6 +47,15 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self.__cheerActionsWizard: CheerActionsWizardInterface = cheerActionsWizard
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+
+    async def __configureBeanChanceWizard(
+        self,
+        content: str,
+        wizard: BeanChanceWizard,
+        message: TwitchMessage
+    ) -> bool:
+        # TODO
+        return False
 
     async def __configureSoundAlertWizard(
         self,
@@ -97,10 +103,10 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bitRequirement = CheerActionBitRequirement.EXACT,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     actionType = CheerActionType.SOUND_ALERT,
-                    amount = wizard.requireBits(),
+                    bits = wizard.requireBits(),
                     durationSeconds = None,
                     tag = wizard.requireTag(),
-                    userId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId
                 )
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Sound Alert wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -191,10 +197,10 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bitRequirement = CheerActionBitRequirement.EXACT,
                     streamStatusRequirement = wizard.requireStreamStatus(),
                     actionType = CheerActionType.TIMEOUT,
-                    amount = wizard.requireBits(),
+                    bits = wizard.requireBits(),
                     durationSeconds = wizard.requireDurationSeconds(),
                     tag = None,
-                    userId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId
                 )
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Timeout wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -252,7 +258,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
         if not utils.isValidStr(content) or twitchChannelId != message.getAuthorId() or wizard is None:
             return False
 
-        if isinstance(wizard, SoundAlertWizard):
+        if isinstance(wizard, BeanChanceWizard):
+            return await self.__configureBeanChanceWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+        elif isinstance(wizard, SoundAlertWizard):
             return await self.__configureSoundAlertWizard(
                 content = content,
                 wizard = wizard,

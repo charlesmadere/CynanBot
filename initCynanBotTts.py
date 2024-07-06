@@ -30,6 +30,8 @@ from src.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
 from src.cheerActions.cheerActionIdGeneratorInterface import CheerActionIdGeneratorInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from src.cheerActions.cheerActionSettingsRepository import CheerActionSettingsRepository
+from src.cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from src.cheerActions.cheerActionsWizard import CheerActionsWizard
@@ -684,10 +686,15 @@ cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
     timber = timber
 )
 
+cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
+    settingsJsonReader = JsonFileReader('cheerActionSettings.json')
+)
+
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
     backingDatabase = backingDatabase,
     cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionJsonMapper = cheerActionJsonMapper,
+    cheerActionSettingsRepository = cheerActionSettingsRepository,
     timber = timber
 )
 
@@ -838,6 +845,7 @@ cynanBot = CynanBot(
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionJsonMapper = cheerActionJsonMapper,
+    cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     cutenessRepository = None,

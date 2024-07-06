@@ -66,4 +66,4 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
     async def __toStr(self, action: CheerAction) -> str:
-        return f'ID={action.actionId}, bitRequirement={action.bitRequirement}, streamStatusRequirement={action.streamStatusRequirement}, actionType={action.actionType}, amount={action.amount}, durationSeconds={action.durationSeconds}, tag={action.tag}'
+        return f'actionType={action.actionType}, bits={action.amount}, streamStatusRequirement={action.streamStatusRequirement}, durationSeconds={action.durationSeconds}, tag={action.tag}'

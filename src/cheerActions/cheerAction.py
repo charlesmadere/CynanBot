@@ -33,7 +33,7 @@ class CheerAction:
         if not isinstance(other, CheerAction):
             return False
 
-        return self.actionId == other.actionId and self.userId == other.userId
+        return self.amount == other.amount and self.userId == other.userId
 
     def __hash__(self) -> int:
         return hash((self.actionId, self.userId))

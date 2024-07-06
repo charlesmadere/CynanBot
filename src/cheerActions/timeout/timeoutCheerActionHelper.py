@@ -282,7 +282,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = durationSeconds,
-            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {durationSeconds} second(s), action ID \"{action.actionId}\"',
+            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {durationSeconds} second(s)',
             twitchAccessToken = moderatorTwitchAccessToken,
             twitchChannelAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,

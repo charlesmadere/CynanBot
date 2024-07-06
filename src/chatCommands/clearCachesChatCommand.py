@@ -1,6 +1,7 @@
 from .absChatCommand import AbsChatCommand
 from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
@@ -41,6 +42,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
+        cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -74,6 +76,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+        elif cheerActionSettingsRepository is not None and not isinstance(cheerActionSettingsRepository, CheerActionSettingsRepositoryInterface):
+            raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
@@ -133,6 +137,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(anivSettingsRepository)
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)
+        self.__clearables.append(cheerActionSettingsRepository)
         self.__clearables.append(cheerActionsRepository)
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)

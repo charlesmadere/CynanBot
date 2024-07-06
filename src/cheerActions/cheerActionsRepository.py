@@ -1,7 +1,10 @@
+from .absCheerAction import AbsCheerAction
+
 from .cheerAction import CheerAction
 from .cheerActionBitRequirement import CheerActionBitRequirement
 from .cheerActionIdGeneratorInterface import CheerActionIdGeneratorInterface
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from .cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
@@ -22,8 +25,8 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         backingDatabase: BackingDatabase,
         cheerActionIdGenerator: CheerActionIdGeneratorInterface,
         cheerActionJsonMapper: CheerActionJsonMapperInterface,
-        timber: TimberInterface,
-        maximumPerUser: int = 32
+        cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface,
+        timber: TimberInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -31,18 +34,16 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
         elif not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
             raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
+        elif not isinstance(cheerActionSettingsRepository, CheerActionSettingsRepositoryInterface):
+            raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(maximumPerUser):
-            raise TypeError(f'maximumPerUser argument is malformed: \"{maximumPerUser}\"')
-        elif maximumPerUser < 1 or maximumPerUser > utils.getIntMaxSafeSize():
-            raise ValueError(f'maximumPerUser argument is out of bounds: {maximumPerUser}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__cheerActionIdGenerator: CheerActionIdGeneratorInterface = cheerActionIdGenerator
         self.__cheerActionJsonMapper: CheerActionJsonMapperInterface = cheerActionJsonMapper
+        self.__cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = cheerActionSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__maximumPerUser: int = maximumPerUser
 
         self.__isDatabaseReady: bool = False
         self.__cache: dict[str, list[CheerAction] | None] = dict()
@@ -52,10 +53,10 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         bitRequirement: CheerActionBitRequirement,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         actionType: CheerActionType,
-        amount: int,
+        bits: int,
         durationSeconds: int | None,
         tag: str | None,
-        userId: str
+        twitchChannelId: str
     ) -> CheerAction:
         if not isinstance(bitRequirement, CheerActionBitRequirement):
             raise TypeError(f'actionRequirement argument is malformed: \"{bitRequirement}\"')
@@ -63,10 +64,10 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'streamStatusRequirement argument is malformed: \"{streamStatusRequirement}\"')
         elif not isinstance(actionType, CheerActionType):
             raise TypeError(f'cheerActionType argument is malformed: \"{actionType}\"')
-        elif not utils.isValidInt(amount):
-            raise TypeError(f'amount argument is malformed: \"{amount}\"')
-        elif amount < 1 or amount > utils.getIntMaxSafeSize():
-            raise ValueError(f'amount argument is out of bounds: {amount}')
+        elif not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
         elif durationSeconds is not None and not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
         elif durationSeconds is not None and durationSeconds < 0:
@@ -75,51 +76,42 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TimeoutDurationSecondsTooLongException(f'durationSeconds argument is out of bounds: {durationSeconds}')
         elif tag is not None and not isinstance(tag, str):
             raise TypeError(f'tag argument is malformed: \"{tag}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        actions = await self.getActions(userId)
+        actions = await self.getActions(twitchChannelId)
+        maximumPerTwitchChannel = await self.__cheerActionSettingsRepository.getMaximumPerTwitchChannel()
 
-        if len(actions) + 1 > self.__maximumPerUser:
-            raise TooManyCheerActionsException(f'Attempted to add new cheer action for {userId=} but they already have the maximum number of cheer actions (actions len: {len(actions)}) ({self.__maximumPerUser=})')
+        if len(actions) + 1 > maximumPerTwitchChannel:
+            raise TooManyCheerActionsException(f'Attempted to add new cheer action for {twitchChannelId=} but they already have the maximum number of cheer actions (actions len: {len(actions)}) ({maximumPerTwitchChannel=})')
 
         for action in actions:
-            if action.amount == amount:
-                raise CheerActionAlreadyExistsException(f'Attempted to add new cheer action for {userId=} but they already have a cheer action that requires the given amount ({amount}): {action=}')
+            if action.amount == bits:
+                raise CheerActionAlreadyExistsException(f'Attempted to add new cheer action for {twitchChannelId=} but they already have a cheer action that requires the given bit amount ({bits=}) ({action=})')
 
-        actionId: str | None = None
-        action: CheerAction | None = None
-
-        while actionId is None or action is not None:
-            actionId = await self.__cheerActionIdGenerator.generateActionId()
-            action = await self.getAction(
-                actionId = actionId,
-                userId = userId
-            )
-
-        bitRequirementString = await self.__cheerActionJsonMapper.serializeCheerActionBitRequirement(bitRequirement)
         actionTypeString = await self.__cheerActionJsonMapper.serializeCheerActionType(actionType)
+        configurationJson: str | None = None # TODO
         streamStatusRequirementString = await self.__cheerActionJsonMapper.serializeCheerActionStreamStatusRequirement(streamStatusRequirement)
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO cheeractions (actionid, bitrequirement, streamstatusrequirement, actiontype, amount, durationseconds, tag, userid)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                INSERT INTO cheeractions (actiontype, bits, configurationjson, streamstatusrequirement, twitchchannelid)
+                VALUES ($1, $2, $3, $4, $5)
             ''',
-            actionId, bitRequirementString, streamStatusRequirementString, actionTypeString, amount, durationSeconds, tag, userId
+            actionTypeString, bits, configurationJson, streamStatusRequirementString, twitchChannelId
         )
 
         await connection.close()
-        self.__cache.pop(userId, None)
+        self.__cache.pop(twitchChannelId, None)
 
         action = await self.getAction(
-            actionId = actionId,
-            userId = userId
+            bits = bits,
+            twitchChannelId = twitchChannelId
         )
 
         if action is None:
-            raise RuntimeError(f'Just finished creating a new action for user ID \"{userId}\", but it seems to not exist ({actionId})')
+            raise RuntimeError(f'Just finished creating a new action for Twitch channel ID \"{twitchChannelId}\", but it seems to not exist ({bits=}) ({twitchChannelId=})')
 
         self.__timber.log('CheerActionsRepository', f'Added new cheer action ({action=})')
         return action
@@ -128,58 +120,60 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__cache.clear()
         self.__timber.log('CheerActionsRepository', 'Caches cleared')
 
-    async def deleteAction(self, actionId: str, userId: str) -> CheerAction | None:
-        if not utils.isValidStr(actionId):
-            raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
+    async def deleteAction(self, bits: int, userId: str) -> CheerAction | None:
+        if not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         action = await self.getAction(
-            actionId = actionId,
+            bits = bits,
             userId = userId
         )
 
         if action is None:
-            self.__timber.log('CheerActionsRepository', f'Attempted to delete cheer action ID \"{actionId}\", but it does not exist in the database')
+            self.__timber.log('CheerActionsRepository', f'Attempted to delete cheer \"{bits}\", but it does not exist in the database')
             return None
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
                 DELETE FROM cheeractions
-                WHERE actionid = $1 AND userid = $2
+                WHERE bits = $1 AND userid = $2
             ''',
-            actionId, userId
+            bits, userId
         )
 
         await connection.close()
         self.__cache.pop(action.userId, None)
-        self.__timber.log('CheerActionsRepository', f'Deleted cheer action ({actionId=}) ({userId=}) ({action=})')
+        self.__timber.log('CheerActionsRepository', f'Deleted cheer action ({bits=}) ({userId=}) ({action=})')
 
         return action
 
-    async def getAction(self, actionId: str, userId: str) -> CheerAction | None:
-        if not utils.isValidStr(actionId):
-            raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+    async def getAction(self, bits: int, twitchChannelId: str) -> CheerAction | None:
+        if not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        actions = await self.getActions(userId)
+        actions = await self.getActions(
+            twitchChannelId = twitchChannelId
+        )
 
         if actions is None or len(actions) == 0:
             return None
 
         for action in actions:
-            if action.actionId == actionId:
+            if action.amount == bits:
                 return action
 
         return None
 
-    async def getActions(self, userId: str) -> list[CheerAction]:
-        if not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+    async def getActions(self, twitchChannelId: str) -> list[CheerAction]:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        actions: list[CheerAction] | None = self.__cache.get(userId, None)
+        actions: list[CheerAction] | None = self.__cache.get(twitchChannelId, None)
 
         if actions is not None:
             return actions
@@ -187,12 +181,12 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT cheeractions.actionid, cheeractions.bitrequirement, cheeractions.streamstatusrequirement, cheeractions.actiontype, cheeractions.amount, cheeractions.durationseconds, cheeractions.tag, cheeractions.userid, userids.username FROM cheeractions
-                INNER JOIN userids ON cheeractions.userid = userids.userid
-                WHERE cheeractions.userid = $1
-                ORDER BY cheeractions.amount DESC
+                SELECT cheeractions.bitrequirement, cheeractions.streamstatusrequirement, cheeractions.actiontype, cheeractions.bits, cheeractions.durationseconds, cheeractions.tag, userids.username FROM cheeractions
+                INNER JOIN userids ON cheeractions.twitchchannelid = userids.userid
+                WHERE cheeractions.twitchchannelid = $1
+                ORDER BY cheeractions.bits DESC
             ''',
-            userId
+            twitchChannelId
         )
 
         await connection.close()
@@ -200,23 +194,22 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         if records is not None and len(records) >= 1:
             for record in records:
-                bitRequirement = await self.__cheerActionJsonMapper.requireCheerActionBitRequirement(record[1])
-                streamStatusRequirement = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(record[2])
-                actionType = await self.__cheerActionJsonMapper.requireCheerActionType(record[3])
+                bitRequirement = await self.__cheerActionJsonMapper.requireCheerActionBitRequirement(record[0])
+                streamStatusRequirement = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(record[1])
+                actionType = await self.__cheerActionJsonMapper.requireCheerActionType(record[2])
 
                 actions.append(CheerAction(
                     bitRequirement = bitRequirement,
                     streamStatusRequirement = streamStatusRequirement,
                     actionType = actionType,
-                    amount = record[4],
-                    durationSeconds = record[5],
-                    actionId = record[0],
-                    tag = record[6],
-                    userId = record[7],
-                    userName = record[8]
+                    amount = record[3],
+                    durationSeconds = record[4],
+                    tag = record[5],
+                    twitchChannel = record[6],
+                    twitchChannelId = twitchChannelId
                 ))
 
-        self.__cache[userId] = actions
+        self.__cache[twitchChannelId] = actions
         return actions
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -235,15 +228,12 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 await connection.createTableIfNotExists(
                     '''
                         CREATE TABLE IF NOT EXISTS cheeractions (
-                            actionid public.citext NOT NULL,
-                            bitrequirement text NOT NULL,
-                            streamstatusrequirement text NOT NULL,
+                            bits integer NOT NULL,
                             actiontype text NOT NULL,
-                            tag text DEFAULT NULL,
-                            amount integer NOT NULL,
-                            durationseconds integer DEFAULT NULL,
-                            userid text NOT NULL,
-                            PRIMARY KEY (actionid, userid)
+                            configurationjson text DEFAULT NULL,
+                            streamstatusrequirement text NOT NULL,
+                            twitchchannelid text NOT NULL,
+                            PRIMARY KEY (bits, twitchchannelid)
                         )
                     '''
                 )
@@ -252,15 +242,12 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 await connection.createTableIfNotExists(
                     '''
                         CREATE TABLE IF NOT EXISTS cheeractions (
-                            actionid TEXT NOT NULL COLLATE NOCASE,
-                            bitrequirement TEXT NOT NULL,
-                            streamstatusrequirement TEXT NOT NULL,
                             actiontype TEXT NOT NULL,
-                            tag TEXT DEFAULT NULL,
-                            amount INTEGER NOT NULL,
-                            durationseconds INTEGER DEFAULT NULL,
-                            userid TEXT NOT NULL,
-                            PRIMARY KEY (actionid, userid)
+                            bits INTEGER NOT NULL,
+                            configurationjson TEXT DEFAULT NULL,
+                            streamstatusrequirement TEXT NOT NULL,
+                            twitchchannelid TEXT NOT NULL,
+                            PRIMARY KEY (bits, twitchchannelid)
                         )
                     '''
                 )
@@ -269,3 +256,9 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
+
+    async def setAction(self, action: AbsCheerAction):
+        if not isinstance(action, AbsCheerAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        pass
