@@ -1,9 +1,7 @@
-from enum import auto
-
-from ...misc.enumWithToFromStr import EnumWithToFromStr
+from enum import auto, Enum
 
 
-class TwitchThemeMode(EnumWithToFromStr):
+class TwitchThemeMode(Enum):
 
     DARK = auto()
     LIGHT = auto()

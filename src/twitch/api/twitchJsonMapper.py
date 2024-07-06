@@ -12,6 +12,7 @@ from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchThemeMode import TwitchThemeMode
 from .twitchTokensDetails import TwitchTokensDetails
@@ -323,6 +324,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             messageId = messageId,
             dropReason = dropReason
         )
+
+    async def parseStreamStype(
+        self,
+        streamType: str | None
+    ) -> TwitchStreamType | None:
+        if not utils.isValidStr(streamType):
+            return TwitchStreamType.UNKNOWN
+
+        streamType = streamType.lower()
+
+        match streamType:
+            case 'live': return TwitchStreamType.LIVE
+            case _: return TwitchStreamType.UNKNOWN
 
     async def parseSubscriberTier(
         self,

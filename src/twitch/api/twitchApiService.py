@@ -19,7 +19,6 @@ from .twitchModUser import TwitchModUser
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
-from .twitchStreamType import TwitchStreamType
 from .twitchTokensDetails import TwitchTokensDetails
 from .twitchUnbanRequest import TwitchUnbanRequest
 from .twitchUserDetails import TwitchUserDetails
@@ -606,7 +605,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                 language = utils.getStrFromDict(dataEntry, 'language', fallback = ''),
                 thumbnailUrl = utils.getStrFromDict(dataEntry, 'thumbnail_url', fallback = ''),
                 title = utils.getStrFromDict(dataEntry, 'title', fallback = ''),
-                streamType = TwitchStreamType.fromStr(utils.getStrFromDict(dataEntry, 'type', fallback = ''))
+                streamType = await self.__twitchJsonMapper.parseStreamStype(utils.getStrFromDict(dataEntry, 'type'))
             ))
 
         users.sort(key = lambda user: user.userName.casefold())

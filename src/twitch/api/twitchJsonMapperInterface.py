@@ -11,6 +11,7 @@ from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchThemeMode import TwitchThemeMode
 from .twitchTokensDetails import TwitchTokensDetails
@@ -80,6 +81,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchSendChatMessageResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseStreamStype(
+        self,
+        streamType: str | None
+    ) -> TwitchStreamType | None:
         pass
 
     @abstractmethod
