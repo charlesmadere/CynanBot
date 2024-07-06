@@ -35,6 +35,14 @@ class TestTriviaAnswerCompiler():
         assert result is False
 
     @pytest.mark.asyncio
+    async def test_compileBoolAnswer_withFalseAndWeirdUnicodeJunkBehindIt(self):
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('false\U000e0000')
+        assert result is False
+
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('false \U000e0000')
+        assert result is False
+
+    @pytest.mark.asyncio
     async def test_compileBoolAnswer_withNewLineString(self):
         result: bool | None = None
 
@@ -69,6 +77,14 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withTrue(self):
         result = await self.triviaAnswerCompiler.compileBoolAnswer('true')
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_compileBoolAnswer_withTrueAndWeirdUnicodeJunkBehindIt(self):
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('true\U000e0000')
+        assert result is True
+
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('true \U000e0000')
         assert result is True
 
     @pytest.mark.asyncio
@@ -145,6 +161,14 @@ class TestTriviaAnswerCompiler():
         assert result == 3
 
         result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('d')
+        assert result == 3
+
+    @pytest.mark.asyncio
+    async def test_compileMultipleChoiceAnswer_withDAndWeirdUnicodeJunkBehindIt(self):
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('D\U000e0000')
+        assert result == 3
+
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('D \U000e0000')
         assert result == 3
 
     @pytest.mark.asyncio

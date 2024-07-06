@@ -42,9 +42,11 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__hashRegEx: Pattern = re.compile(r'(#)')
         self.__honoraryPrefixRegEx: Pattern = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|csar|czar|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|minister|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|president|priest|prime minister|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|tsar|tzar|warden)\s+', re.IGNORECASE)
         self.__japaneseHonorarySuffixRegEx: Pattern = re.compile(r'(\s|-)(chan|kohai|kouhai|kun|sama|san|senpai|sensei|tan)$', re.IGNORECASE)
-        self.__multipleChoiceAnswerRegEx: Pattern = re.compile(r'^[a-z]$', re.IGNORECASE)
-        self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\[([a-z])\]$', re.IGNORECASE)
+        self.__multipleChoiceBasicAnswerRegEx: Pattern = re.compile(r'^([a-z])\s*(\U000e0000)*$', re.IGNORECASE)
+        self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\[([a-z])\]\s*(\U000e0000)*$', re.IGNORECASE)
+        self.__multipleChoiceCleanAnswerRegEx: Pattern = re.compile(r'^[a-z]$', re.IGNORECASE)
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
+        self.__oddUnicodeRemovalRegEx: Pattern = re.compile(r'\U000e0000', re.IGNORECASE)
         self.__parenGroupRegEx: Pattern = re.compile(r'(\(.*?\))', re.IGNORECASE)
         self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_ ]|(?<=\s)\s+', re.IGNORECASE)
         self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
@@ -118,8 +120,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         cleanedAnswer: str | None = None
 
         # check if the answer is just an alphabetical character from A to Z
-        if self.__multipleChoiceAnswerRegEx.fullmatch(answer) is not None:
-            cleanedAnswer = answer
+        basicAnswerMatch = self.__multipleChoiceBasicAnswerRegEx.fullmatch(answer)
+        if basicAnswerMatch is not None and utils.isValidStr(basicAnswerMatch.group(1)):
+            cleanedAnswer = basicAnswerMatch.group(1)
 
         if not utils.isValidStr(cleanedAnswer):
             # check if the answer is an alphabetical character that is surrounded by braces, like "[A]" or "[B]"
@@ -128,7 +131,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             if bracedAnswerMatch is not None and utils.isValidStr(bracedAnswerMatch.group(1)):
                 cleanedAnswer = bracedAnswerMatch.group(1)
 
-        if not utils.isValidStr(cleanedAnswer) or len(cleanedAnswer) != 1 or self.__multipleChoiceAnswerRegEx.fullmatch(cleanedAnswer) is None:
+        if not utils.isValidStr(cleanedAnswer) or len(cleanedAnswer) != 1 or self.__multipleChoiceCleanAnswerRegEx.fullmatch(cleanedAnswer) is None:
             raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal ({answer=}) ({cleanedAnswer=})')
 
         # this converts the answer 'A' into 0, 'B' into 1, 'C' into 2, and so on...
@@ -145,6 +148,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         # removes HTML tag-like junk
         answer = self.__tagRemovalRegEx.sub('', answer).strip()
+
+        # removes odd unicode characters
+        answer = self.__oddUnicodeRemovalRegEx.sub('', answer).strip()
 
         # replaces all new line characters with just a space
         answer = self.__newLineRegEx.sub(' ', answer).strip()
