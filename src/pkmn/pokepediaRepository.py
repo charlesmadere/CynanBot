@@ -202,10 +202,8 @@ class PokepediaRepository(PokepediaRepositoryInterface):
 
             try:
                 machineIdInt = int(machineIdStr)
-            except ValueError as e:
+            except Exception as e:
                 self.__timber.log('PokepediaRepository', f'Encountered exception when attempting to convert a machine ID into an int: \"{machineIdStr}\": {e}', e, traceback.format_exc())
-
-            if not utils.isValidInt(machineIdInt):
                 continue
 
             machine = await self.fetchMachine(machineIdInt)
