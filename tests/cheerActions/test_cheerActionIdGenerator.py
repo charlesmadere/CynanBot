@@ -2,7 +2,6 @@ import re
 from typing import Pattern
 
 import pytest
-
 from src.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
 from src.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface

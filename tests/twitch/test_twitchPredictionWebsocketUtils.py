@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 
 import pytest
-
 from src.twitch.api.twitchOutcome import TwitchOutcome
 from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.websocket.twitchWebsocketSubscriptionType import \
