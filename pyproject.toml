@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "CynanBot"
 version = "0.0.1"
 authors = [
-  { name="charlesmadere", email="" },
+  { name = "charlesmadere", email = "" },
 ]
 description = "CynanBot"
 readme = "README.md"
