@@ -12,7 +12,6 @@ class BeanChanceCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         randomChance: int,
-        actionId: str,
         twitchChannel: str,
         twitchChannelId: str
     ):
@@ -20,7 +19,6 @@ class BeanChanceCheerAction(AbsCheerAction):
             isEnable = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            actionId = actionId,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )

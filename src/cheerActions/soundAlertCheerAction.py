@@ -31,3 +31,7 @@ class SoundAlertCheerAction(AbsCheerAction):
     @property
     def actionType(self) -> CheerActionType:
         return CheerActionType.SOUND_ALERT
+
+    @property
+    def directory(self) -> str:
+        return self.__directory

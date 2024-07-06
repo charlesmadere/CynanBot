@@ -1,11 +1,27 @@
 from abc import ABC, abstractmethod
 
+from .absCheerAction import AbsCheerAction
+from .beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionBitRequirement import CheerActionBitRequirement
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
+from .soundAlertCheerAction import SoundAlertCheerAction
+from .timeoutCheerAction import TimeoutCheerAction
 
 
 class CheerActionJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseBeanChanceCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> BeanChanceCheerAction | None:
+        pass
 
     @abstractmethod
     async def parseCheerActionBitRequirement(
@@ -29,6 +45,30 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseSoundAlertCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> SoundAlertCheerAction | None:
+        pass
+
+    @abstractmethod
+    async def parseTimeoutCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> TimeoutCheerAction | None:
+        pass
+
+    @abstractmethod
     async def requireCheerActionBitRequirement(
         self,
         jsonString: str | None
@@ -47,6 +87,13 @@ class CheerActionJsonMapperInterface(ABC):
         self,
         jsonString: str | None
     ) -> CheerActionType:
+        pass
+
+    @abstractmethod
+    async def serializeAbsCheerAction(
+        self,
+        cheerAction: AbsCheerAction
+    ) -> str:
         pass
 
     @abstractmethod
