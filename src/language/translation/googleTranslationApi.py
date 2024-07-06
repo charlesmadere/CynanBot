@@ -1,15 +1,13 @@
 import traceback
 
 from .translationApi import TranslationApi
-from ..exceptions import (TranslationException,
-                          TranslationLanguageHasNoIso6391Code)
+from ..exceptions import TranslationException, TranslationLanguageHasNoIso6391Code
 from ..languageEntry import LanguageEntry
 from ..languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..translationApiSource import TranslationApiSource
 from ..translationResponse import TranslationResponse
 from ...google.googleApiServiceInterface import GoogleApiServiceInterface
-from ...google.googleCloudProjectCredentialsProviderInterface import \
-    GoogleCloudProjectCredentialsProviderInterface
+from ...google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
 from ...google.googleTranslateTextResponse import GoogleTranslateTextResponse
 from ...google.googleTranslationRequest import GoogleTranslationRequest
 from ...misc import utils as utils

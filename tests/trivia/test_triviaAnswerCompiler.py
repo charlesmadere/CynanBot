@@ -3,8 +3,7 @@ import pytest
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
-from src.trivia.compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
+from src.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from src.trivia.triviaExceptions import BadTriviaAnswerException
 
 
@@ -33,6 +32,14 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withFalse(self):
         result = await self.triviaAnswerCompiler.compileBoolAnswer('false')
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_compileBoolAnswer_withFalseAndWeirdUnicodeJunkBehindIt(self):
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('false\U000e0000')
+        assert result is False
+
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('false \U000e0000')
         assert result is False
 
     @pytest.mark.asyncio
@@ -73,6 +80,14 @@ class TestTriviaAnswerCompiler():
         assert result is True
 
     @pytest.mark.asyncio
+    async def test_compileBoolAnswer_withTrueAndWeirdUnicodeJunkBehindIt(self):
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('true\U000e0000')
+        assert result is True
+
+        result = await self.triviaAnswerCompiler.compileBoolAnswer('true \U000e0000')
+        assert result is True
+
+    @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withA(self):
         result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('A')
         assert result == 0
@@ -82,7 +97,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withB(self):
-        result: int = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('B')
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('B')
         assert result == 1
 
         result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('b')
@@ -134,7 +149,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withC(self):
-        result: int = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('C')
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('C')
         assert result == 2
 
         result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('c')
@@ -142,10 +157,18 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withD(self):
-        result: int = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('D')
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('D')
         assert result == 3
 
         result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('d')
+        assert result == 3
+
+    @pytest.mark.asyncio
+    async def test_compileMultipleChoiceAnswer_withDAndWeirdUnicodeJunkBehindIt(self):
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('D\U000e0000')
+        assert result == 3
+
+        result = await self.triviaAnswerCompiler.compileMultipleChoiceAnswer('D \U000e0000')
         assert result == 3
 
     @pytest.mark.asyncio

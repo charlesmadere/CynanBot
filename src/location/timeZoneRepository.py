@@ -2,7 +2,7 @@ from datetime import timezone, tzinfo
 
 import pytz
 
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from .timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 
 

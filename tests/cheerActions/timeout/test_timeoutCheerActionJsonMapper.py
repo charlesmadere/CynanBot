@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-
 from src.cheerActions.timeout.timeoutCheerActionEntry import \
     TimeoutCheerActionEntry
 from src.cheerActions.timeout.timeoutCheerActionJsonMapper import \
