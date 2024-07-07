@@ -1,6 +1,6 @@
 import queue
+import random
 from collections import defaultdict
-from queue import SimpleQueue
 
 from .queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
@@ -37,7 +37,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
-        self.__queuedSuperGames: dict[str, SimpleQueue[StartNewSuperTriviaGameAction]] = defaultdict(lambda: SimpleQueue())
+        self.__queuedSuperGames: dict[str, list[StartNewSuperTriviaGameAction]] = defaultdict(lambda: list())
 
     async def addSuperGames(
         self,
@@ -50,7 +50,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         queuedSuperGames = self.__queuedSuperGames[action.getTwitchChannelId()]
-        oldQueueSize = queuedSuperGames.qsize()
+        oldQueueSize = len(queuedSuperGames)
 
         if action.isQueueActionConsumed():
             return AddQueuedGamesResult(
@@ -84,8 +84,8 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         amountAdded = 0
 
         for _ in range(numberOfGames):
-            if queuedSuperGames.qsize() < maxSuperTriviaGameQueueSize:
-                queuedSuperGames.put(StartNewSuperTriviaGameAction(
+            if len(queuedSuperGames) < maxSuperTriviaGameQueueSize:
+                queuedSuperGames.append(StartNewSuperTriviaGameAction(
                     isQueueActionConsumed = True,
                     isShinyTriviaEnabled = action.isShinyTriviaEnabled(),
                     isToxicTriviaEnabled = action.isToxicTriviaEnabled(),
@@ -106,10 +106,19 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                 amountAdded += 1
             else:
                 break
+        
+        def shouldShuffle():
+            for item in queuedSuperGames:
+                if item.getTriviaFetchOptions().requiredTriviaSource != None:
+                    return True
+            return False
+
+        if shouldShuffle() and oldQueueSize > 0:
+            random.shuffle(queuedSuperGames)
 
         return AddQueuedGamesResult(
             amountAdded = amountAdded,
-            newQueueSize = queuedSuperGames.qsize(),
+            newQueueSize = len(queuedSuperGames),
             oldQueueSize = oldQueueSize
         )
 
@@ -118,15 +127,11 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         queuedSuperGames = self.__queuedSuperGames[twitchChannelId]
-        oldQueueSize = queuedSuperGames.qsize()
-        amountRemoved = 0
+        oldQueueSize = len(queuedSuperGames)
 
-        try:
-            while not queuedSuperGames.empty():
-                queuedSuperGames.get(block = True, timeout = self.__queueTimeoutSeconds)
-                amountRemoved = amountRemoved + 1
-        except queue.Empty as e:
-            self.__timber.log('QueuedTriviaGameStore', f'Unable to clear all queued super games for \"{twitchChannelId}\" (queue size: {queuedSuperGames.qsize()}) (oldQueueSize: {oldQueueSize}): {e}', e)
+        queuedSuperGames.clear()
+
+        amountRemoved = oldQueueSize
 
         return ClearQueuedGamesResult(
             amountRemoved = amountRemoved,
@@ -138,7 +143,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if twitchChannelId in self.__queuedSuperGames:
-            return self.__queuedSuperGames[twitchChannelId].qsize()
+            return len(self.__queuedSuperGames[twitchChannelId])
         else:
             return 0
 
@@ -148,12 +153,12 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         for twitchChannelId, queuedSuperGames in self.__queuedSuperGames.items():
             if twitchChannelId in activeChannelIds:
                 continue
-            elif queuedSuperGames.empty():
+            elif len(queuedSuperGames) == 0:
                 continue
 
             try:
-                superGames.append(queuedSuperGames.get(block = True, timeout = self.__queueTimeoutSeconds))
+                superGames.append(queuedSuperGames.pop(0))
             except queue.Empty as e:
-                self.__timber.log('QueuedTriviaGameStore', f'Unable to get queued super game for \"{twitchChannelId}\" (queue size: {queuedSuperGames.qsize()}): {e}', e)
+                self.__timber.log('QueuedTriviaGameStore', f'Unable to get queued super game for \"{twitchChannelId}\" (queue size: {len(queuedSuperGames)}): {e}', e)
 
         return superGames
