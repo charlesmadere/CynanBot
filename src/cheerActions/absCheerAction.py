@@ -12,7 +12,6 @@ class AbsCheerAction(ABC):
     isEnabled: bool
     streamStatusRequirement: CheerActionStreamStatusRequirement
     bits: int
-    twitchChannel: str
     twitchChannelId: str
 
     @property
@@ -32,3 +31,7 @@ class AbsCheerAction(ABC):
 
     def __hash__(self) -> int:
         return hash((self.bits, self.twitchChannelId))
+
+    @abstractmethod
+    def printOut(self) -> str:
+        pass

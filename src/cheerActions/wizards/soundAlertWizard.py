@@ -20,7 +20,7 @@ class SoundAlertWizard(AbsWizard):
 
         self.__steps = SoundAlertSteps()
         self.__bits: int | None = None
-        self.__tag: str | None = None
+        self.__directory: str | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
@@ -30,7 +30,7 @@ class SoundAlertWizard(AbsWizard):
         return self.__steps
 
     def printOut(self) -> str:
-        return f'{self.__bits=}, {self.__tag=}'
+        return f'{self.__bits=}, {self.__directory=}'
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -44,13 +44,13 @@ class SoundAlertWizard(AbsWizard):
 
         return bits
 
-    def requireTag(self) -> str:
-        tag = self.__tag
+    def requireDirectory(self) -> str:
+        directory = self.__directory
 
-        if tag is None:
-            raise ValueError(f'tag value has not been set: ({self=})')
+        if directory is None:
+            raise ValueError(f'directory value has not been set: ({self=})')
 
-        return tag
+        return directory
 
     def setBits(self, bits: int):
         if not utils.isValidInt(bits):
@@ -60,17 +60,17 @@ class SoundAlertWizard(AbsWizard):
 
         self.__bits = bits
 
-    def setTag(self, tag: str):
-        if not utils.isValidStr(tag):
-            raise TypeError(f'tag argument is malformed: \"{tag}\"')
+    def setDirectory(self, directory: str):
+        if not utils.isValidStr(directory):
+            raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
-        self.__tag = tag
+        self.__directory = directory
 
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'directory': self.__directory,
             'steps': self.__steps,
-            'tag': self.__tag,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId
         }

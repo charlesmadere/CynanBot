@@ -24,7 +24,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> BeanChanceCheerAction | None:
         if not utils.isValidStr(jsonString):
@@ -47,7 +46,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             randomChance = randomChance,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -107,7 +105,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> SoundAlertCheerAction | None:
         if not utils.isValidStr(jsonString):
@@ -130,7 +127,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             directory = directory,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -140,7 +136,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> TimeoutCheerAction | None:
         if not utils.isValidStr(jsonString):
@@ -163,7 +158,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             durationSeconds = durationSeconds,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 

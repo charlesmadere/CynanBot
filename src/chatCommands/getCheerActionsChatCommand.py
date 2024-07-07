@@ -1,7 +1,5 @@
 from .absChatCommand import AbsChatCommand
-from ..cheerActions.cheerAction import CheerAction
-from ..cheerActions.cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
+from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -61,9 +59,6 @@ class GetCheerActionsChatCommand(AbsChatCommand):
 
             for index, action in enumerate(actions):
                 actionString = await self.__toStr(action)
-                await self.__twitchUtils.safeSend(ctx, f'Action #{(index + 1)} — {actionString}')
+                await self.__twitchUtils.safeSend(ctx, f'Action #{(index + 1)} — {action.printOut()}')
 
         self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-    async def __toStr(self, action: CheerAction) -> str:
-        return f'actionType={action.actionType}, bits={action.amount}, streamStatusRequirement={action.streamStatusRequirement}, durationSeconds={action.durationSeconds}, tag={action.tag}'

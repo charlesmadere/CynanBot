@@ -7,6 +7,7 @@ from ..cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamS
 from ..cheerActions.cheerActionType import CheerActionType
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from ..cheerActions.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.wizards.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
 from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
@@ -78,9 +79,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
-            case SoundAlertStep.TAG:
+            case SoundAlertStep.DIRECTORY:
                 try:
-                    wizard.setTag(content)
+                    wizard.setDirectory(content)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to set tag value for Sound Alert wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
                     await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard encountered an error, please try again')
@@ -99,15 +100,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
             case StepResult.DONE:
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
 
-                await self.__cheerActionsRepository.addAction(
-                    bitRequirement = CheerActionBitRequirement.EXACT,
+                await self.__cheerActionsRepository.setAction(SoundAlertCheerAction(
+                    isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
-                    actionType = CheerActionType.SOUND_ALERT,
                     bits = wizard.requireBits(),
-                    durationSeconds = None,
-                    tag = wizard.requireTag(),
+                    directory = wizard.requireTag(),
                     twitchChannelId = wizard.twitchChannelId
-                )
+                ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Sound Alert wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
                 await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Sound Alert ({wizard.printOut()})')
@@ -130,8 +129,8 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-            case SoundAlertStep.TAG:
-                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Sound Alert\'s tag. This value must be some text.')
+            case SoundAlertStep.DIRECTORY:
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Sound Alert\'s directory. This value must be text.')
                 return True
 
             case _:

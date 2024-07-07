@@ -12,14 +12,12 @@ class SoundAlertCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         directory: str,
-        twitchChannel: str,
         twitchChannelId: str
     ):
         super().__init__(
             isEnable = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -35,3 +33,6 @@ class SoundAlertCheerAction(AbsCheerAction):
     @property
     def directory(self) -> str:
         return self.__directory
+
+    def printOut(self) -> str:
+        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, directory={self.__directory}'

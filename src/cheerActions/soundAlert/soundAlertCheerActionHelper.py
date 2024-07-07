@@ -1,7 +1,7 @@
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
-from ..cheerAction import CheerAction
-from ..cheerActionBitRequirement import CheerActionBitRequirement
+from ..absCheerAction import AbsCheerAction
 from ..cheerActionType import CheerActionType
+from ..soundAlertCheerAction import SoundAlertCheerAction
 from ...misc import utils as utils
 from ...soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from ...soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
@@ -36,7 +36,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
     async def handleSoundAlertCheerAction(
         self,
         bits: int,
-        actions: list[CheerAction],
+        actions: list[AbsCheerAction],
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
@@ -72,32 +72,17 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not user.areSoundAlertsEnabled():
             return False
 
-        soundAlertActions: list[CheerAction] = list()
+        soundAlertAction: SoundAlertCheerAction | None = None
+
         for action in actions:
-            if action.actionType is CheerActionType.SOUND_ALERT:
-                soundAlertActions.append(action)
-
-        if len(soundAlertActions) == 0:
-            return False
-
-        soundAlertActions.sort(key = lambda action: action.amount, reverse = True)
-        soundAlertAction: CheerAction | None = None
-
-        for action in soundAlertActions:
-            if action.bitRequirement is CheerActionBitRequirement.EXACT and bits == action.amount:
+            if action.actionType is CheerActionType.SOUND_ALERT and action.bits == bits:
                 soundAlertAction = action
                 break
 
         if soundAlertAction is None:
-            for action in soundAlertActions:
-                if action.bitRequirement is CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO and bits >= action.amount:
-                    soundAlertAction = action
-                    break
-
-        if soundAlertAction is None:
             return False
-        elif not utils.isValidStr(soundAlertAction.tag):
-            self.__timber.log('SoundAlertCheerActionHelper', f'Encountered a valid sound alert CheerAction instance but it has no tag value, this should be impossible ({user.getHandle()=}) ({soundAlertAction=})')
+        elif not utils.isValidStr(soundAlertAction.directory):
+            self.__timber.log('SoundAlertCheerActionHelper', f'Encountered a valid SoundAlertCheerAction instance but it has no directory value, this should be impossible ({user.getHandle()=}) ({soundAlertAction=})')
             return False
         elif not await self.__isLiveOnTwitchRepository.isLive(broadcasterUserId):
             self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.getHandle()=}) ({soundAlertAction=})')
@@ -107,7 +92,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             bits = bits,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
-            tag = soundAlertAction.tag,
+            directory = soundAlertAction.directory,
             twitchChannelId = broadcasterUserId,
             user = user
         )
@@ -117,7 +102,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         bits: int,
         cheerUserId: str,
         cheerUserName: str,
-        tag: str,
+        directory: str,
         twitchChannelId: str,
         user: UserInterface
     ) -> bool:
@@ -127,8 +112,8 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(tag):
-            raise TypeError(f'tag argument is malformed: \"{tag}\"')
+        elif not utils.isValidStr(directory):
+            raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(user, UserInterface):
@@ -138,7 +123,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             return False
 
         soundAlertPath = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(
-            directoryPath = tag
+            directoryPath = directory
         )
 
         if not utils.isValidStr(soundAlertPath):

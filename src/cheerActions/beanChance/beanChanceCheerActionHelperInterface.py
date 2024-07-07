@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..cheerAction import CheerAction
+from ..absCheerAction import AbsCheerAction
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
 
@@ -11,7 +11,7 @@ class BeanChanceCheerActionHelperInterface(ABC):
     async def handleTimeoutCheerAction(
         self,
         bits: int,
-        actions: list[CheerAction],
+        actions: list[AbsCheerAction],
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
