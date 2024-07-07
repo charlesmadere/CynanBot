@@ -43,3 +43,6 @@ class TimeoutCheerAction(AbsCheerAction):
     @property
     def durationSecondsStr(self) -> str:
         return locale.format_string("%d", self.__durationSeconds, grouping = True)
+
+    def printOut(self) -> str:
+        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, durationSeconds={self.__durationSeconds}'

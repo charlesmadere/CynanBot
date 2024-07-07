@@ -19,7 +19,7 @@ class SoundAlertSteps(AbsSteps):
                 self.__step = SoundAlertStep.TAG
                 return StepResult.NEXT
 
-            case SoundAlertStep.TAG:
+            case SoundAlertStep.DIRECTORY:
                 return StepResult.DONE
 
             case _:

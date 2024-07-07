@@ -62,6 +62,7 @@ from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionIdGeneratorInterface import CheerActionIdGeneratorInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
@@ -221,6 +222,7 @@ class CynanBot(
         cheerActionHelper: CheerActionHelperInterface | None,
         cheerActionIdGenerator: CheerActionIdGeneratorInterface | None,
         cheerActionJsonMapper: CheerActionJsonMapperInterface | None,
+        cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         cheerActionsWizard: CheerActionsWizardInterface | None,
         cutenessRepository: CutenessRepositoryInterface | None,
@@ -332,6 +334,8 @@ class CynanBot(
             raise TypeError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
         elif cheerActionJsonMapper is not None and not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
             raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
+        elif cheerActionSettingsRepository is not None and not isinstance(cheerActionSettingsRepository, CheerActionSettingsRepositoryInterface):
+            raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cheerActionsWizard is not None and not isinstance(cheerActionsWizard, CheerActionsWizardInterface):
@@ -499,7 +503,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)

@@ -18,7 +18,6 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> BeanChanceCheerAction | None:
         pass
@@ -51,7 +50,6 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> SoundAlertCheerAction | None:
         pass
@@ -63,7 +61,6 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> TimeoutCheerAction | None:
         pass

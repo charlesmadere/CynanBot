@@ -12,14 +12,12 @@ class BeanChanceCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         randomChance: int,
-        twitchChannel: str,
         twitchChannelId: str
     ):
         super().__init__(
             isEnable = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -33,6 +31,9 @@ class BeanChanceCheerAction(AbsCheerAction):
     @property
     def actionType(self) -> CheerActionType:
         return CheerActionType.BEAN_CHANCE
+
+    def printOut(self) -> str:
+        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, randomChance={self.__randomChance}'
 
     @property
     def randomChance(self) -> int:

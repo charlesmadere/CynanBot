@@ -4,10 +4,10 @@ from typing import Pattern
 
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
-from ..cheerAction import CheerAction
-from ..cheerActionBitRequirement import CheerActionBitRequirement
+from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
+from ..timeoutCheerAction import TimeoutCheerAction
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -75,7 +75,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     async def handleTimeoutCheerAction(
         self,
         bits: int,
-        actions: list[CheerAction],
+        actions: list[AbsCheerAction],
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
@@ -111,32 +111,17 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         if not user.areCheerActionsEnabled():
             return False
 
-        timeoutActions: list[CheerAction] = list()
+        timeoutAction: TimeoutCheerAction | None = None
+
         for action in actions:
-            if action.actionType is CheerActionType.TIMEOUT:
-                timeoutActions.append(action)
-
-        if len(timeoutActions) == 0:
-            return False
-
-        timeoutActions.sort(key = lambda action: action.amount, reverse = True)
-        timeoutAction: CheerAction | None = None
-
-        for action in timeoutActions:
-            if action.bitRequirement is CheerActionBitRequirement.EXACT and bits == action.amount:
+            if action.actionType is CheerActionType.TIMEOUT and action.bits == bits:
                 timeoutAction = action
                 break
 
         if timeoutAction is None:
-            for action in timeoutActions:
-                if action.bitRequirement is CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO and bits >= action.amount:
-                    timeoutAction = action
-                    break
-
-        if timeoutAction is None:
             return False
-        elif not utils.isValidInt(action.durationSeconds):
-            self.__timber.log('TimeoutCheerActionHelper', f'Encountered a valid timeout CheerAction instance but it has no durationSeconds value, this should be impossible: {timeoutAction}')
+        elif not utils.isValidInt(timeoutAction.durationSeconds):
+            self.__timber.log('TimeoutCheerActionHelper', f'Encountered a valid TimeoutCheerAction instance but it has no durationSeconds value, this should be impossible ({user.getHandle()=}) ({timeoutAction=})')
             return False
 
         userNameToTimeoutMatch = self.__userNameRegEx.fullmatch(message)
@@ -282,7 +267,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = durationSeconds,
-            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {durationSeconds} second(s), action ID \"{action.actionId}\"',
+            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {durationSeconds} second(s)',
             twitchAccessToken = moderatorTwitchAccessToken,
             twitchChannelAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,

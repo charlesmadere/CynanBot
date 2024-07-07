@@ -6,4 +6,4 @@ from .absStep import AbsStep
 class SoundAlertStep(AbsStep):
 
     BITS = auto()
-    TAG = auto()
+    DIRECTORY = auto()
