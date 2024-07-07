@@ -106,10 +106,10 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                 amountAdded += 1
             else:
                 break
-        
+
         def shouldShuffle():
             for item in queuedSuperGames:
-                if item.getTriviaFetchOptions().requiredTriviaSource != None:
+                if item.getTriviaFetchOptions().requiredTriviaSource is not None:
                     return True
             return False
 
@@ -128,9 +128,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
         queuedSuperGames = self.__queuedSuperGames[twitchChannelId]
         oldQueueSize = len(queuedSuperGames)
-
         queuedSuperGames.clear()
-
         amountRemoved = oldQueueSize
 
         return ClearQueuedGamesResult(
