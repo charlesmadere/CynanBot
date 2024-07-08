@@ -107,7 +107,7 @@ class UsersRepository(UsersRepositoryInterface):
             if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
                 timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
 
-        areBeanChancesEnabled = utils.getBoolFromDict(userJson, 'areBeanChancesEnabled', False)
+        areBeanChancesEnabled = utils.getBoolFromDict(userJson, 'beanChancesEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
