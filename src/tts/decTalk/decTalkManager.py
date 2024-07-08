@@ -2,7 +2,7 @@ import asyncio
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import Any, ByteString, Tuple
+from typing import Any, ByteString
 
 import aiofiles.ospath
 import psutil
@@ -74,7 +74,7 @@ class DecTalkManager(TtsManagerInterface):
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         process: Process | None = None
-        outputTuple: Tuple[ByteString, ByteString] | None = None
+        outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
         try:

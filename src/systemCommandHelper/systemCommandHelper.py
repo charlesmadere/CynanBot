@@ -2,7 +2,7 @@ import asyncio
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import ByteString, Tuple
+from typing import ByteString
 
 import psutil
 
@@ -29,7 +29,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         process: Process | None = None
-        outputTuple: Tuple[ByteString, ByteString] | None = None
+        outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
         try:

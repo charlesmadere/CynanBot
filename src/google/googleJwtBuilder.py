@@ -23,10 +23,10 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         googleCloudCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
         googleJsonMapper: GoogleJsonMapperInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        googleScopes: tuple[GoogleScope] = (
+        googleScopes: set[GoogleScope] = {
             GoogleScope.CLOUD_TEXT_TO_SPEECH,
             GoogleScope.CLOUD_TRANSLATION
-        )
+        }
     ):
         if not isinstance(googleCloudCredentialsProvider, GoogleCloudProjectCredentialsProviderInterface):
             raise TypeError(f'(googleCloudCredentialsProvider argument is malformed: \"{googleCloudCredentialsProvider}\"')
@@ -42,7 +42,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         self.__googleCloudCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudCredentialsProvider
         self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__googleScopes: tuple[GoogleScope] = googleScopes
+        self.__googleScopes: set[GoogleScope] = googleScopes
 
         self.__scopesString: str | None = None
 

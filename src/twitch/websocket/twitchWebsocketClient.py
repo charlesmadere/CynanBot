@@ -45,7 +45,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.25,
         websocketSleepTimeSeconds: float = 3,
-        subscriptionTypes: tuple[TwitchWebsocketSubscriptionType] = (
+        subscriptionTypes: set[TwitchWebsocketSubscriptionType] = {
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
@@ -60,7 +60,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
-        ),
+        },
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
         maxMessageAge: timedelta = timedelta(minutes = 3)
     ):
@@ -112,7 +112,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
-        self.__subscriptionTypes: tuple[TwitchWebsocketSubscriptionType] = subscriptionTypes
+        self.__subscriptionTypes: set[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
 
         self.__isStarted: bool = False

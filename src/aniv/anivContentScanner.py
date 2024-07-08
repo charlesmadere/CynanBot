@@ -1,6 +1,6 @@
 import re
 from re import Match
-from typing import Pattern, Tuple
+from typing import Pattern
 
 from .anivContentCode import AnivContentCode
 from .anivContentScannerInterface import AnivContentScannerInterface
@@ -83,7 +83,7 @@ class AnivContentScanner(AnivContentScannerInterface):
         stack: Stack[str] = Stack()
         keys: set[str] = set(characterPairs.keys())
         values: set[str] = set(characterPairs.values())
-        items: list[Tuple[str, str]] = list(characterPairs.items())
+        items: list[tuple[str, str]] = list(characterPairs.items())
 
         try:
             for character in message:
