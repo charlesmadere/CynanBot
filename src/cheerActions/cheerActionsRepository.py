@@ -156,7 +156,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT enabled, bits, actiontype, configurationjson, streamstatusrequirement FROM cheeractions
+                SELECT isenabled, bits, actiontype, configurationjson, streamstatusrequirement FROM cheeractions
                 WHERE twitchchannelid = $1
                 ORDER BY bits DESC
             ''',
