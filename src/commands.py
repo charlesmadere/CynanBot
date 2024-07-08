@@ -5,41 +5,29 @@ from datetime import datetime, timedelta
 
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
-from .funtoon.funtoonTokensRepositoryInterface import \
-    FuntoonTokensRepositoryInterface
+from .funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .misc import utils as utils
 from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .misc.timedDict import TimedDict
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from .starWars.starWarsQuotesRepositoryInterface import \
-    StarWarsQuotesRepositoryInterface
-from .streamAlertsManager.streamAlert import StreamAlert
-from .streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from .starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from .timber.timberInterface import TimberInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from .trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
-from .trivia.emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
-from .trivia.gameController.removeTriviaGameControllerResult import \
-    RemoveTriviaGameControllerResult
-from .trivia.gameController.triviaGameControllersRepositoryInterface import \
-    TriviaGameControllersRepositoryInterface
+from .trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from .trivia.gameController.removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
+from .trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from .trivia.triviaHistoryRepositoryInterface import \
-    TriviaHistoryRepositoryInterface
+from .trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from .trivia.triviaUtilsInterface import TriviaUtilsInterface
-from .tts.ttsEvent import TtsEvent
-from .tts.ttsProvider import TtsProvider
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitch.api.twitchUserDetails import TwitchUserDetails
 from .twitch.configuration.twitchContext import TwitchContext
 from .twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from .twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from .twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchUtilsInterface import TwitchUtilsInterface
 from .users.modifyUserActionType import ModifyUserActionType
 from .users.modifyUserDataHelper import ModifyUserDataHelper
@@ -1559,74 +1547,6 @@ class TriviaInfoCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.triviaSource.toStr()}:{reference.triviaId} triviaType:{reference.triviaType.toStr()} additionalAnswers:{additionalAnswersLen} isLocal:{str(reference.triviaSource.isLocal()).lower()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
-class TtsCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        streamAlertsManager: StreamAlertsManagerInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.isTtsEnabled():
-            return
-
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if user.getHandle().lower() != ctx.getAuthorName() and administrator != ctx.getAuthorId():
-            self.__timber.log('TtsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
-            return
-
-        message = ' '.join(splits[1:])
-        if not utils.isValidStr(message):
-            await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
-            return
-
-        self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = None,
-            twitchChannel = user.getHandle(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            ttsEvent = TtsEvent(
-                message = message,
-                twitchChannel = user.getHandle(),
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                userId = ctx.getAuthorId(),
-                userName = ctx.getAuthorName(),
-                donation = None,
-                provider = TtsProvider.DEC_TALK,
-                raidInfo = None
-            )
-        ))
-
-        self.__timber.log('TtsCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TwitchInfoCommand(AbsCommand):

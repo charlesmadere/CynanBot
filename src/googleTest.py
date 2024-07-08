@@ -2,12 +2,10 @@ import asyncio
 from asyncio import AbstractEventLoop
 
 from google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
-from google.googleApiAccessTokenStorageInterface import \
-    GoogleApiAccessTokenStorageInterface
+from google.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from google.googleApiService import GoogleApiService
 from google.googleApiServiceInterface import GoogleApiServiceInterface
-from google.googleCloudProjectCredentialsProviderInterface import \
-    GoogleCloudProjectCredentialsProviderInterface
+from google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
 from google.googleJsonMapper import GoogleJsonMapper
 from google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from google.googleJwtBuilder import GoogleJwtBuilder
@@ -25,14 +23,11 @@ from storage.jsonStaticReader import JsonStaticReader
 from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 from tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
-from tts.google.googleFileExtensionHelperInterface import \
-    GoogleFileExtensionHelperInterface
+from tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from tts.google.googleTtsFileManager import GoogleTtsFileManager
-from tts.google.googleTtsFileManagerInterface import \
-    GoogleTtsFileManagerInterface
+from tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from tts.google.googleTtsVoiceChooserInterface import \
-    GoogleTtsVoiceChooserInterface
+from tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from tts.ttsSettingsRepository import TtsSettingsRepository
 from tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 

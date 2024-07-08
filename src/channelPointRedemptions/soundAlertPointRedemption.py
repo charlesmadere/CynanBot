@@ -1,17 +1,12 @@
-from .absChannelPointRedemption import \
-    AbsChannelPointRedemption
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
-from ..soundPlayerManager.immediateSoundPlayerManagerInterface import \
-    ImmediateSoundPlayerManagerInterface
+from ..soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
-from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import \
-    SoundPlayerRandomizerHelperInterface
+from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
-from ..streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
+from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..users.soundAlertRedemption import SoundAlertRedemption
 from ..users.userInterface import UserInterface
 
@@ -59,7 +54,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
     ) -> bool:
         user = twitchChannelPointsMessage.getTwitchUser()
 
-        if not user.areSoundAlertsEnabled():
+        if not user.areSoundAlertsEnabled:
             return False
 
         isImmediate = False

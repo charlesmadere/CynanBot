@@ -21,7 +21,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
-        pointRedemptionSoundAlerts: set[SoundAlert] | None = {
+        pointRedemptionSoundAlerts: tuple[SoundAlert] | None = (
             SoundAlert.POINT_REDEMPTION_01,
             SoundAlert.POINT_REDEMPTION_02,
             SoundAlert.POINT_REDEMPTION_03,
@@ -38,7 +38,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             SoundAlert.POINT_REDEMPTION_14,
             SoundAlert.POINT_REDEMPTION_15,
             SoundAlert.POINT_REDEMPTION_16
-        }
+        )
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -52,7 +52,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__pointRedemptionSoundAlerts: set[SoundAlert] | None = pointRedemptionSoundAlerts
+        self.__pointRedemptionSoundAlerts: tuple[SoundAlert] | None = pointRedemptionSoundAlerts
 
         self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
         self.__soundAlertCache: dict[SoundAlert, str | None] | None = None

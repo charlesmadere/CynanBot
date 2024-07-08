@@ -2,6 +2,9 @@ from typing import Any
 
 from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
+from ..network.networkClientType import NetworkClientType
+from ..network.networkJsonMapperInterface import NetworkJsonMapperInterface
+from ..storage.databaseType import DatabaseType
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from ..trivia.builder.triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
@@ -12,15 +15,27 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
-        storageJsonMapper: StorageJsonMapperInterface
+        networkJsonMapper: NetworkJsonMapperInterface,
+        storageJsonMapper: StorageJsonMapperInterface,
+        defaultDatabaseType: DatabaseType = DatabaseType.SQLITE,
+        defaultNetworkClientType: NetworkClientType = NetworkClientType.AIOHTTP,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(networkJsonMapper, NetworkJsonMapperInterface):
+            raise TypeError(f'networkJsonMapper argument is malformed: \"{networkJsonMapper}\"')
         elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
             raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
+        elif not isinstance(defaultDatabaseType, DatabaseType):
+            raise TypeError(f'defaultDatabaseType argument is malformed: \"{defaultDatabaseType}\"')
+        elif not isinstance(defaultNetworkClientType, NetworkClientType):
+            raise TypeError(f'defaultNetworkClientType argument is malformed: \"{defaultNetworkClientType}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__networkJsonMapper: NetworkJsonMapperInterface = networkJsonMapper
         self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
+        self.__defaultDatabaseType: DatabaseType = defaultDatabaseType
+        self.__defaultNetworkClientType: NetworkClientType = defaultNetworkClientType
 
         self.__cache: GeneralSettingsRepositorySnapshot | None = None
 
@@ -37,7 +52,10 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
         jsonContents = self.__readJson()
         snapshot = GeneralSettingsRepositorySnapshot(
+            defaultDatabaseType = self.__defaultDatabaseType,
+            defaultNetworkClientType = self.__defaultNetworkClientType,
             jsonContents = jsonContents,
+            networkJsonMapper = self.__networkJsonMapper,
             storageJsonMapper = self.__storageJsonMapper
         )
 
@@ -50,7 +68,10 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
         jsonContents = await self.__readJsonAsync()
         snapshot = GeneralSettingsRepositorySnapshot(
+            defaultDatabaseType = self.__defaultDatabaseType,
+            defaultNetworkClientType = self.__defaultNetworkClientType,
             jsonContents = jsonContents,
+            networkJsonMapper = self.__networkJsonMapper,
             storageJsonMapper = self.__storageJsonMapper
         )
 

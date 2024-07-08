@@ -1,8 +1,7 @@
+import traceback
+
 from .absChatCommand import AbsChatCommand
-from ..cheerActions.cheerActionIdGeneratorInterface import \
-    CheerActionIdGeneratorInterface
-from ..cheerActions.cheerActionsRepositoryInterface import \
-    CheerActionsRepositoryInterface
+from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
@@ -17,7 +16,6 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        cheerActionIdGenerator: CheerActionIdGeneratorInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -25,22 +23,19 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
-            raise ValueError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__cheerActionIdGenerator: CheerActionIdGeneratorInterface = cheerActionIdGenerator
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -55,26 +50,30 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areCheerActionsEnabled():
+        elif not user.areCheerActionsEnabled:
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2 or not utils.strContainsAlphanumericCharacters(splits[1]):
             self.__timber.log('DeleteCheerActionCommand', f'Incorrect arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            actionId = await self.__cheerActionIdGenerator.generateActionId()
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Action ID is necessary for the !deletecheeraction command. Example: !deletecheeraction {actionId}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Bit amount is necessary for the !deletecheeraction command. Example: !deletecheeraction 100')
             return
 
-        actionId = splits[1]
+        try:
+            bits = int(splits[1])
+        except Exception as e:
+            self.__timber.log('DeleteCheerActionCommand', f'Cheer action was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but was unable to convert: {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Bit amount is necessary for the !deletecheeraction command. Example: !deletecheeraction 100')
+            return
 
         action = await self.__cheerActionsRepository.deleteAction(
-            actionId = splits[1],
-            userId = userId
+            bits = bits,
+            twitchChannelId = userId
         )
 
         if action is None:
-            self.__timber.log('DeleteCheerActionCommand', f'Cheer action ID {actionId} was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no corresponding cheer action was found')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Could not find any corresponding cheer action with ID \"{actionId}\"')
+            self.__timber.log('DeleteCheerActionCommand', f'Cheer {bits} was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no corresponding cheer action was found')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Could not find any corresponding cheer action with bits \"{bits}\"')
             return
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted cheer action — {action}')

@@ -15,7 +15,7 @@ class SoundAlertCheerAction(AbsCheerAction):
         twitchChannelId: str
     ):
         super().__init__(
-            isEnable = isEnabled,
+            isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             twitchChannelId = twitchChannelId

@@ -4,30 +4,24 @@ from asyncio import AbstractEventLoop
 from aniv.anivContentScanner import AnivContentScanner
 from aniv.anivContentScannerInterface import AnivContentScannerInterface
 from contentScanner.bannedWordsRepository import BannedWordsRepository
-from contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from contentScanner.contentScanner import ContentScanner
 from contentScanner.contentScannerInterface import ContentScannerInterface
 from misc.backgroundTaskHelper import BackgroundTaskHelper
 from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from soundPlayerManager.soundAlert import SoundAlert
-from soundPlayerManager.soundPlayerManagerInterface import \
-    SoundPlayerManagerInterface
-from soundPlayerManager.soundPlayerSettingsRepository import \
-    SoundPlayerSettingsRepository
-from soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
+from soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
+from soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
+from soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
 from storage.jsonStaticReader import JsonStaticReader
 from storage.linesStaticReader import LinesStaticReader
 from systemCommandHelper.systemCommandHelper import SystemCommandHelper
-from systemCommandHelper.systemCommandHelperInterface import \
-    SystemCommandHelperInterface
+from systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
 from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 from trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
-from trivia.compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
+from trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 

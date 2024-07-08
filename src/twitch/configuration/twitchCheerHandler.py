@@ -86,7 +86,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-        if not user.areCheerActionsEnabled() or not await self.__processCheerAction(
+        if not user.areCheerActionsEnabled or not await self.__processCheerAction(
             bits = bits,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,

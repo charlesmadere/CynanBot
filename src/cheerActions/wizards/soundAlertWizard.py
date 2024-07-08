@@ -32,10 +32,6 @@ class SoundAlertWizard(AbsWizard):
     def printOut(self) -> str:
         return f'{self.__bits=}, {self.__directory=}'
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
     def requireBits(self) -> int:
         bits = self.__bits
 
@@ -69,6 +65,7 @@ class SoundAlertWizard(AbsWizard):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'cheerActionType': self.cheerActionType,
             'directory': self.__directory,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,

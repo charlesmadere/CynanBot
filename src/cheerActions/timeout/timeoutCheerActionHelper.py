@@ -108,7 +108,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.areCheerActionsEnabled():
+        if not user.areCheerActionsEnabled or not user.areTimeoutCheerActionsEnabled:
             return False
 
         timeoutAction: TimeoutCheerAction | None = None
@@ -144,8 +144,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout the broadcaster themself from {cheerUserName}:{cheerUserId} in {user.getHandle()}, so will instead time out the user: ({message=}) ({timeoutAction=})')
 
         return await self.__timeoutUser(
-            action = timeoutAction,
-            bits = bits,
             twitchChannelId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
@@ -153,6 +151,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             moderatorUserId = moderatorUserId,
             userIdToTimeout = userIdToTimeout,
             userTwitchAccessToken = userTwitchAccessToken,
+            action = timeoutAction,
             user = user
         )
 
@@ -204,8 +203,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __timeoutUser(
         self,
-        action: CheerAction,
-        bits: int,
         cheerUserId: str,
         cheerUserName: str,
         moderatorTwitchAccessToken: str,
@@ -213,13 +210,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         twitchChannelId: str,
         userIdToTimeout: str,
         userTwitchAccessToken: str,
+        action: TimeoutCheerAction,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, CheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-        elif not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif not utils.isValidStr(cheerUserId):
+        if not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
@@ -233,6 +227,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
+        elif not isinstance(action, TimeoutCheerAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -248,8 +244,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         if not await self.__verifyStreamStatus(
-            timeoutAction = action,
             twitchChannelId = twitchChannelId,
+            timeoutAction = action,
             user = user
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but the current stream status is invalid ({action=})')
@@ -263,11 +259,9 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but this user is a new follower ({action=})')
             return False
 
-        durationSeconds = action.requireDurationSeconds()
-
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
-            durationSeconds = durationSeconds,
-            reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {durationSeconds} second(s)',
+            durationSeconds = action.durationSeconds,
+            reason = f'Cheer timeout from {cheerUserName} — {action.bits} bit(s), {action.durationSeconds} second(s)',
             twitchAccessToken = moderatorTwitchAccessToken,
             twitchChannelAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,
@@ -293,11 +287,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} in {user.getHandle()}, but an error occurred ({timeoutResult=}) ({action=})')
             return False
 
-        self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" for {durationSeconds} second(s)')
+        self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" for {action.durationSeconds} second(s)')
 
         await self.__timeoutCheerActionHistoryRepository.add(
-            bitAmount = bits,
-            durationSeconds = durationSeconds,
+            bitAmount = action.bits,
+            durationSeconds = action.durationSeconds,
             chatterUserId = userIdToTimeout,
             timedOutByUserId = cheerUserId,
             twitchAccessToken = userTwitchAccessToken,
@@ -306,7 +300,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         if user.isTtsEnabled():
-            message = f'{cheerUserName} timed out {userNameToTimeout} for {durationSeconds} seconds! rip bozo!'
+            message = f'{cheerUserName} timed out {userNameToTimeout} for {action.durationSecondsStr} seconds! rip bozo!'
 
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = None,
@@ -331,14 +325,14 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __verifyStreamStatus(
         self,
-        timeoutAction: CheerAction,
         twitchChannelId: str,
+        timeoutAction: TimeoutCheerAction,
         user: UserInterface
     ) -> bool:
-        if not isinstance(timeoutAction, CheerAction):
-            raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(timeoutAction, TimeoutCheerAction):
+            raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 

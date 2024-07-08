@@ -4,8 +4,7 @@ from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from ..trivia.gameController.removeBannedTriviaGameControllerResult import \
-    RemoveBannedTriviaGameControllerResult
+from ..trivia.gameController.removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface

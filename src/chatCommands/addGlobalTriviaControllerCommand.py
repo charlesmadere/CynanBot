@@ -2,8 +2,7 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..trivia.gameController.addTriviaGameControllerResult import \
-    AddTriviaGameControllerResult
+from ..trivia.gameController.addTriviaGameControllerResult import AddTriviaGameControllerResult
 from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext

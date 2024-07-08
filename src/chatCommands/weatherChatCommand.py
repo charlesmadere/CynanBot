@@ -11,8 +11,7 @@ from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
-from ..weather.weatherReportPresenterInterface import \
-    WeatherReportPresenterInterface
+from ..weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 

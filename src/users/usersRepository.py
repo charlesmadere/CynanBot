@@ -107,8 +107,10 @@ class UsersRepository(UsersRepositoryInterface):
             if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
                 timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
 
+        areBeanChancesEnabled = utils.getBoolFromDict(userJson, 'areBeanChancesEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
+        areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, 'anivMessageCopyTimeoutEnabled', False)
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
@@ -250,9 +252,11 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
 
         user = User(
+            areBeanChancesEnabled = areBeanChancesEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
+            areTimeoutCheerActionsEnabled = areTimeoutCheerActionsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,

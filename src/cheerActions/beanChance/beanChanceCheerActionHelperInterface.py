@@ -8,7 +8,7 @@ from ...users.userInterface import UserInterface
 class BeanChanceCheerActionHelperInterface(ABC):
 
     @abstractmethod
-    async def handleTimeoutCheerAction(
+    async def handleBeanChanceCheerAction(
         self,
         bits: int,
         actions: list[AbsCheerAction],

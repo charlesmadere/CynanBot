@@ -1,7 +1,6 @@
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..recurringActions.recurringActionsWizardInterface import \
-    RecurringActionsWizardInterface
+from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

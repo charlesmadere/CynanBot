@@ -47,7 +47,7 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('GetCheerActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areCheerActionsEnabled():
+        elif not user.areCheerActionsEnabled:
             return
 
         actions = await self.__cheerActionsRepository.getActions(userId)
@@ -58,7 +58,6 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'ⓘ You have {len(actions)} cheer action(s)')
 
             for index, action in enumerate(actions):
-                actionString = await self.__toStr(action)
                 await self.__twitchUtils.safeSend(ctx, f'Action #{(index + 1)} — {action.printOut()}')
 
         self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

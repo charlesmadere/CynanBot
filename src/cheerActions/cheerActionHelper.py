@@ -1,3 +1,4 @@
+from .beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
@@ -14,6 +15,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
+        beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timber: TimberInterface,
@@ -22,7 +24,9 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+        if beanChanceCheerActionHelper is not None and not isinstance(beanChanceCheerActionHelper, BeanChanceCheerActionHelperInterface):
+            raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
+        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif soundAlertCheerActionHelper is not None and not isinstance(soundAlertCheerActionHelper, SoundAlertCheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
@@ -37,6 +41,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = soundAlertCheerActionHelper
         self.__timber: TimberInterface = timber
@@ -69,7 +74,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.areCheerActionsEnabled():
+        if not user.areCheerActionsEnabled:
             return False
 
         moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
@@ -89,6 +94,20 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         if actions is None or len(actions) == 0:
             return False
+
+        if self.__beanChanceCheerActionHelper is not None and await self.__beanChanceCheerActionHelper.handleBeanChanceCheerAction(
+            bits = bits,
+            actions = actions,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user
+        ):
+            return True
 
         if self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
             bits = bits,

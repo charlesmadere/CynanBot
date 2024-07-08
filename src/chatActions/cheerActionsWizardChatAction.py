@@ -1,13 +1,14 @@
 import traceback
 
 from .absChatAction import AbsChatAction
-from ..cheerActions.cheerActionBitRequirement import CheerActionBitRequirement
+from ..cheerActions.beanChanceCheerAction import BeanChanceCheerAction
 from ..cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from ..cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from ..cheerActions.cheerActionType import CheerActionType
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from ..cheerActions.soundAlertCheerAction import SoundAlertCheerAction
+from ..cheerActions.timeoutCheerAction import TimeoutCheerAction
+from ..cheerActions.wizards.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
 from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
@@ -55,8 +56,81 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: BeanChanceWizard,
         message: TwitchMessage
     ) -> bool:
-        # TODO
-        return False
+        channel = message.getChannel()
+        steps = wizard.getSteps()
+        step = steps.getStep()
+
+        match step:
+            case BeanChanceStep.BITS:
+                try:
+                    bits = int(content)
+                    wizard.setBits(bits)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Bean Chance wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case BeanChanceStep.RANDOM_CHANCE:
+                try:
+                    randomChance = int(content)
+                    wizard.setRandomChance(randomChance)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set randomChance value for Bean Chance wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__cheerActionsRepository.setAction(BeanChanceCheerAction(
+                    isEnabled = True,
+                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
+                    bits = wizard.requireBits(),
+                    randomChance = wizard.requireRandomChance(),
+                    twitchChannelId = wizard.twitchChannelId
+                ))
+
+                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Bean Chance wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Bean Chance ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                # this is intentionally empty
+                pass
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        match steps.getStep():
+            case BeanChanceStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case BeanChanceStep.RANDOM_CHANCE:
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Bean Chance\'s random chance. This value must be a number from 0 to 100 (decimals aren\'t allowed).')
+                return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
 
     async def __configureSoundAlertWizard(
         self,
@@ -104,7 +178,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
-                    directory = wizard.requireTag(),
+                    directory = wizard.requireDirectory(),
                     twitchChannelId = wizard.twitchChannelId
                 ))
 
@@ -192,15 +266,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
             case StepResult.DONE:
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
 
-                await self.__cheerActionsRepository.addAction(
-                    bitRequirement = CheerActionBitRequirement.EXACT,
+                await self.__cheerActionsRepository.setAction(TimeoutCheerAction(
+                    isEnabled = True,
                     streamStatusRequirement = wizard.requireStreamStatus(),
-                    actionType = CheerActionType.TIMEOUT,
                     bits = wizard.requireBits(),
                     durationSeconds = wizard.requireDurationSeconds(),
-                    tag = None,
                     twitchChannelId = wizard.twitchChannelId
-                )
+                ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Timeout wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
                 await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Timeout ({wizard.printOut()})')

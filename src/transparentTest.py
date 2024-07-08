@@ -10,11 +10,9 @@ from network.networkClientProvider import NetworkClientProvider
 from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 from transparent.transparentApiService import TransparentApiService
-from transparent.transparentApiServiceInterface import \
-    TransparentApiServiceInterface
+from transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 from transparent.transparentXmlMapper import TransparentXmlMapper
-from transparent.transparentXmlMapperInterface import \
-    TransparentXmlMapperInterface
+from transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 
 timber: TimberInterface = TimberStub()
 

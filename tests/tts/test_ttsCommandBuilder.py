@@ -1,8 +1,7 @@
 import pytest
 
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
-from src.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
 from src.emojiHelper.emojiHelper import EmojiHelper

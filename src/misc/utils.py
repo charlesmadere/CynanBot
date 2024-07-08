@@ -516,7 +516,7 @@ def splitLongStringIntoMessages(
 
 alphanumericRegEx: Pattern = re.compile(r'.*[a-z0-9]+.*', re.IGNORECASE)
 
-def strContainsAlphanumericCharacters(s: Optional[str]) -> TypeGuard[str]:
+def strContainsAlphanumericCharacters(s: str | None) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 

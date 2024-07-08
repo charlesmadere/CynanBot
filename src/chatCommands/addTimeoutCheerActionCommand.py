@@ -1,7 +1,6 @@
 from .absChatCommand import AbsChatCommand
 from ..cheerActions.cheerActionType import CheerActionType
-from ..cheerActions.cheerActionsWizardInterface import \
-    CheerActionsWizardInterface
+from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from ..cheerActions.wizards.timeoutStep import TimeoutStep
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
@@ -45,7 +44,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('AddTimeoutCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areCheerActionsEnabled():
+        elif not user.areCheerActionsEnabled:
             return
 
         wizard = await self.__cheerActionsWizard.start(

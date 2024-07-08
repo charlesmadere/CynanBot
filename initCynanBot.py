@@ -29,10 +29,10 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
+from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
-from src.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
-from src.cheerActions.cheerActionIdGeneratorInterface import CheerActionIdGeneratorInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionSettingsRepository import CheerActionSettingsRepository
@@ -113,6 +113,8 @@ from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChat
 from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
+from src.network.networkJsonMapper import NetworkJsonMapper
+from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requestsClientProvider import RequestsClientProvider
 from src.openWeather.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
@@ -266,6 +268,8 @@ from src.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
 from src.tts.tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from src.tts.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from src.tts.ttsJsonMapper import TtsJsonMapper
+from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.ttsManager import TtsManager
 from src.tts.ttsManagerInterface import TtsManagerInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -348,12 +352,12 @@ timber: TimberInterface = Timber(
     timeZoneRepository = timeZoneRepository
 )
 
-storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper(
-    timber = timber
-)
+networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
+storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('generalSettingsRepository.json'),
+    networkJsonMapper = networkJsonMapper,
     storageJsonMapper = storageJsonMapper
 )
 
@@ -1123,6 +1127,10 @@ immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSou
 ## TTS initialization section ##
 ################################
 
+ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+    timber = timber
+)
+
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
@@ -1245,8 +1253,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionIdGenerator: CheerActionIdGeneratorInterface = CheerActionIdGenerator()
-
 cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
     timber = timber
 )
@@ -1257,9 +1263,12 @@ cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerAct
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
     backingDatabase = backingDatabase,
-    cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
+    timber = timber
+)
+
+beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
     timber = timber
 )
 
@@ -1295,6 +1304,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timber = timber,
@@ -1433,7 +1443,6 @@ cynanBot = CynanBot(
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
-    cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
@@ -1482,6 +1491,7 @@ cynanBot = CynanBot(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
+    ttsJsonMapper = ttsJsonMapper,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

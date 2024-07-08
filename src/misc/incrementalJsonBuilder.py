@@ -4,7 +4,7 @@ from typing import Any
 from . import utils as utils
 
 
-class IncrementalJsonBuilder():
+class IncrementalJsonBuilder:
 
     def __init__(self):
         self.__jsonString: str | None = None

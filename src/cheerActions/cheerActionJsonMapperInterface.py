@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from .absCheerAction import AbsCheerAction
 from .beanChanceCheerAction import BeanChanceCheerAction
-from .cheerActionBitRequirement import CheerActionBitRequirement
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from .soundAlertCheerAction import SoundAlertCheerAction
@@ -20,13 +19,6 @@ class CheerActionJsonMapperInterface(ABC):
         jsonString: str | None,
         twitchChannelId: str
     ) -> BeanChanceCheerAction | None:
-        pass
-
-    @abstractmethod
-    async def parseCheerActionBitRequirement(
-        self,
-        jsonString: str | None
-    ) -> CheerActionBitRequirement | None:
         pass
 
     @abstractmethod
@@ -66,13 +58,6 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def requireCheerActionBitRequirement(
-        self,
-        jsonString: str | None
-    ) -> CheerActionBitRequirement:
-        pass
-
-    @abstractmethod
     async def requireCheerActionStreamStatusRequirement(
         self,
         jsonString: str | None
@@ -90,13 +75,6 @@ class CheerActionJsonMapperInterface(ABC):
     async def serializeAbsCheerAction(
         self,
         cheerAction: AbsCheerAction
-    ) -> str:
-        pass
-
-    @abstractmethod
-    async def serializeCheerActionBitRequirement(
-        self,
-        bitRequirement: CheerActionBitRequirement
     ) -> str:
         pass
 

@@ -1,30 +1,28 @@
 from .absChatCommand import AbsChatCommand
+from ..cheerActions.cheerActionType import CheerActionType
+from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from ..cheerActions.wizards.beanChanceStep import BeanChanceStep
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
-from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class RemoveRecurringWeatherActionCommand(AbsChatCommand):
+class AddBeanChanceCheerActionCommand(AbsChatCommand):
 
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        recurringActionsHelper: RecurringActionsHelperInterface,
-        recurringActionsRepository: RecurringActionsRepositoryInterface,
+        cheerActionsWizard: CheerActionsWizardInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
-            raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')
-        elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+        elif not isinstance(cheerActionsWizard, CheerActionsWizardInterface):
+            raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -33,8 +31,7 @@ class RemoveRecurringWeatherActionCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__recurringActionsHelper: RecurringActionsHelperInterface = recurringActionsHelper
-        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
+        self.__cheerActionsWizard: CheerActionsWizardInterface = cheerActionsWizard
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -45,21 +42,22 @@ class RemoveRecurringWeatherActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddBeanChanceCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+        elif not user.areCheerActionsEnabled:
             return
 
-        recurringAction = await self.__recurringActionsRepository.getWeatherRecurringAction(
+        wizard = await self.__cheerActionsWizard.start(
+            cheerActionType = CheerActionType.BEAN_CHANCE,
             twitchChannel = user.getHandle(),
             twitchChannelId = userId
         )
 
-        if recurringAction is None:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring weather action')
-            return
-        elif not recurringAction.isEnabled():
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring weather action is already disabled')
-            return
+        step = wizard.getSteps().getStep()
 
-        await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring weather action has been disabled')
-        self.__timber.log('RemoveWeatherRecurringActionCommand', f'Handled !removeweatherrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        if step is BeanChanceStep.BITS:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of bits for this Bean Chance cheer action')
+        else:
+            raise RuntimeError(f'unknown BeanChanceStep: \"{step}\"')
+
+        self.__timber.log('AddBeanChanceCheerActionCommand', f'Handled !addbeanchancecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

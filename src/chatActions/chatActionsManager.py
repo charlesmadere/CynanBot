@@ -3,22 +3,17 @@ from .anivCheckChatAction import AnivCheckChatAction
 from .catJamChatAction import CatJamChatAction
 from .chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatLoggerChatAction import ChatLoggerChatAction
-from .cheerActionsWizardChatAction import \
-    CheerActionsWizardChatAction
+from .cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from .deerForceChatAction import DeerForceChatAction
 from .persistAllUsersChatAction import PersistAllUsersChatAction
-from .recurringActionsWizardChatAction import \
-    RecurringActionsWizardChatAction
-from .saveMostRecentAnivMessageChatAction import \
-    SaveMostRecentAnivMessageChatAction
+from .recurringActionsWizardChatAction import RecurringActionsWizardChatAction
+from .saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from .schubertWalkChatAction import SchubertWalkChatAction
 from .supStreamerChatAction import SupStreamerChatAction
-from ..aniv.mostRecentAnivMessageTimeoutHelperInterface import \
-    MostRecentAnivMessageTimeoutHelperInterface
+from ..aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChat import MostRecentChat
-from ..mostRecentChat.mostRecentChatsRepositoryInterface import \
-    MostRecentChatsRepositoryInterface
+from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

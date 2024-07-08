@@ -2,6 +2,7 @@ from typing import Any
 
 from . import utils as utils
 from ..network.networkClientType import NetworkClientType
+from ..network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from ..storage.databaseType import DatabaseType
 from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 
@@ -10,15 +11,27 @@ class GeneralSettingsRepositorySnapshot:
 
     def __init__(
         self,
+        defaultDatabaseType: DatabaseType,
+        defaultNetworkClientType: NetworkClientType,
         jsonContents: dict[str, Any],
+        networkJsonMapper: NetworkJsonMapperInterface,
         storageJsonMapper: StorageJsonMapperInterface
     ):
-        if not isinstance(jsonContents, dict):
+        if not isinstance(defaultDatabaseType, DatabaseType):
+            raise TypeError(f'defaultDatabaseType argument is malformed: \"{defaultDatabaseType}\"')
+        elif not isinstance(defaultNetworkClientType, NetworkClientType):
+            raise TypeError(f'defaultNetworkClientType argument is malformed: \"{defaultNetworkClientType}\"')
+        elif not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+        elif not isinstance(networkJsonMapper, NetworkJsonMapperInterface):
+            raise TypeError(f'networkJsonMapper argument is malformed: \"{networkJsonMapper}\"')
         elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
             raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
 
+        self.__defaultDatabaseType: DatabaseType = defaultDatabaseType
+        self.__defaultNetworkClientType: NetworkClientType = defaultNetworkClientType
         self.__jsonContents: dict[str, Any] = jsonContents
+        self.__networkJsonMapper: NetworkJsonMapperInterface = networkJsonMapper
         self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
 
     def getEventSubPort(self) -> int:
@@ -155,18 +168,17 @@ class GeneralSettingsRepositorySnapshot:
         return administrator
 
     def requireDatabaseType(self) -> DatabaseType:
-        databaseTypeString = self.__jsonContents.get('databaseType')
-        databaseType = self.__storageJsonMapper.parseDatabaseType(databaseTypeString)
+        databaseType = self.__jsonContents.get('databaseType')
 
-        if databaseType is not None:
-            return databaseType
-
-        return DatabaseType.SQLITE
+        if utils.isValidStr(databaseType):
+            return self.__storageJsonMapper.parseDatabaseType(databaseType)
+        else:
+            return self.__defaultDatabaseType
 
     def requireNetworkClientType(self) -> NetworkClientType:
         networkClientType = self.__jsonContents.get('networkClientType')
 
         if utils.isValidStr(networkClientType):
-            return NetworkClientType.fromStr(networkClientType)
+            return self.__networkJsonMapper.parseClientType(networkClientType)
         else:
-            return NetworkClientType.AIOHTTP
+            return self.__defaultNetworkClientType

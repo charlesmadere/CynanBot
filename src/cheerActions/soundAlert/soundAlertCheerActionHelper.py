@@ -69,7 +69,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.areSoundAlertsEnabled():
+        if not user.areCheerActionsEnabled or not user.areSoundAlertsEnabled:
             return False
 
         soundAlertAction: SoundAlertCheerAction | None = None
@@ -89,41 +89,34 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             return False
 
         return await self.__playSoundAlert(
-            bits = bits,
+            action = soundAlertAction,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
-            directory = soundAlertAction.directory,
             twitchChannelId = broadcasterUserId,
             user = user
         )
 
     async def __playSoundAlert(
         self,
-        bits: int,
+        action: SoundAlertCheerAction,
         cheerUserId: str,
         cheerUserName: str,
-        directory: str,
         twitchChannelId: str,
         user: UserInterface
     ) -> bool:
-        if not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        if not isinstance(action, SoundAlertCheerAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(directory):
-            raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.areSoundAlertsEnabled():
-            return False
-
         soundAlertPath = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(
-            directoryPath = directory
+            directoryPath = action.directory
         )
 
         if not utils.isValidStr(soundAlertPath):

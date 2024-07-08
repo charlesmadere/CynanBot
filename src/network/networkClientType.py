@@ -1,9 +1,7 @@
-from enum import auto
-
-from ..misc.enumWithToFromStr import EnumWithToFromStr
+from enum import Enum, auto
 
 
-class NetworkClientType(EnumWithToFromStr):
+class NetworkClientType(Enum):
 
     AIOHTTP = auto()
     REQUESTS = auto()

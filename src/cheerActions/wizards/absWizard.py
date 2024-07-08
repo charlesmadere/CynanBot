@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from .absSteps import AbsSteps
 from ..cheerActionType import CheerActionType
@@ -31,6 +32,14 @@ class AbsWizard(ABC):
 
     @abstractmethod
     def printOut(self) -> str:
+        pass
+
+    def __repr__(self):
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    @abstractmethod
+    def toDictionary(self) -> dict[str, Any]:
         pass
 
     @property

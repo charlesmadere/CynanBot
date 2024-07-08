@@ -10,25 +10,11 @@ class StorageJsonMapperInterface(ABC):
     def parseDatabaseType(
         self,
         databaseType: str | Any | None
-    ) -> DatabaseType | None:
-        pass
-
-    @abstractmethod
-    async def parseDatabaseTypeAsync(
-        self,
-        databaseType: str | Any | None
-    ) -> DatabaseType | None:
-        pass
-
-    @abstractmethod
-    def requireDatabaseType(
-        self,
-        databaseType: str | Any | None
     ) -> DatabaseType:
         pass
 
     @abstractmethod
-    async def requireDatabaseTypeAsync(
+    async def parseDatabaseTypeAsync(
         self,
         databaseType: str | Any | None
     ) -> DatabaseType:

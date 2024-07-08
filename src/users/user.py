@@ -11,9 +11,11 @@ class User(UserInterface):
 
     def __init__(
         self,
+        areBeanChancesEnabled: bool,
         areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
+        areTimeoutCheerActionsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
         isCatJamMessageEnabled: bool,
@@ -93,12 +95,16 @@ class User(UserInterface):
         pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None,
         timeZones: list[tzinfo] | None
     ):
-        if not utils.isValidBool(areCheerActionsEnabled):
+        if not utils.isValidBool(areBeanChancesEnabled):
+            raise TypeError(f'areBeanChancesEnabled argument is malformed: \"{areBeanChancesEnabled}\"')
+        elif not utils.isValidBool(areCheerActionsEnabled):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
+        elif not utils.isValidBool(areTimeoutCheerActionsEnabled):
+            raise TypeError(f'areTimeoutCheerActionsEnabled argument is malformed: \"{areTimeoutCheerActionsEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isAnivMessageCopyTimeoutEnabled):
@@ -252,9 +258,11 @@ class User(UserInterface):
         elif timeZones is not None and not isinstance(timeZones, list):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
+        self.__areBeanChancesEnabled: bool = areBeanChancesEnabled
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
+        self.__areTimeoutCheerActionsEnabled: bool = areTimeoutCheerActionsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
         self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
@@ -342,14 +350,24 @@ class User(UserInterface):
     def anivMessageCopyTimeoutProbability(self) -> float | None:
         return self.__anivMessageCopyTimeoutProbability
 
+    @property
+    def areBeanChancesEnabled(self) -> bool:
+        return self.__areBeanChancesEnabled
+
+    @property
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled
 
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
 
+    @property
     def areSoundAlertsEnabled(self) -> bool:
         return self.__areSoundAlertsEnabled
+
+    @property
+    def areTimeoutCheerActionsEnabled(self) -> bool:
+        return self.__areTimeoutCheerActionsEnabled
 
     def getAnivMessageCopyTimeoutSeconds(self) -> int | None:
         return self.__anivMessageCopyTimeoutSeconds

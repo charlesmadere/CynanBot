@@ -6,7 +6,7 @@ from ..misc import utils as utils
 
 
 @dataclass(frozen = True)
-class CutenessResult():
+class CutenessResult:
     cutenessDate: CutenessDate
     cuteness: int | None
     userId: str

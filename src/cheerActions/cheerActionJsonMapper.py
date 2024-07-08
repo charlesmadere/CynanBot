@@ -1,6 +1,8 @@
+import json
+from typing import Any
+
 from .absCheerAction import AbsCheerAction
 from .beanChanceCheerAction import BeanChanceCheerAction
-from .cheerActionBitRequirement import CheerActionBitRequirement
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
@@ -48,22 +50,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             randomChance = randomChance,
             twitchChannelId = twitchChannelId
         )
-
-    async def parseCheerActionBitRequirement(
-        self,
-        jsonString: str | None
-    ) -> CheerActionBitRequirement | None:
-        if not utils.isValidStr(jsonString):
-            return None
-
-        jsonString = jsonString.lower()
-
-        match jsonString:
-            case 'exact': return CheerActionBitRequirement.EXACT
-            case 'greater_than_or_equal_to': return CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO
-            case _:
-                self.__timber.log('CheerActionJsonMapper', f'Encountered unknown CheerActionBitRequirement value: \"{jsonString}\"')
-                return None
 
     async def parseCheerActionStreamStatusRequirement(
         self,
@@ -143,7 +129,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] | None = json.loads(jsonString)
 
-        durationSeconds = utils.getStrFromDict(
+        durationSeconds = utils.getIntFromDict(
             d = jsonContents,
             key = 'durationSeconds',
             fallback = 0
@@ -160,17 +146,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             durationSeconds = durationSeconds,
             twitchChannelId = twitchChannelId
         )
-
-    async def requireCheerActionBitRequirement(
-        self,
-        jsonString: str | None
-    ) -> CheerActionBitRequirement:
-        bitRequirement = await self.parseCheerActionBitRequirement(jsonString)
-
-        if bitRequirement is None:
-            raise ValueError(f'Unable to parse \"{jsonString}\" into CheerActionBitRequirement value!')
-
-        return bitRequirement
 
     async def requireCheerActionStreamStatusRequirement(
         self,
@@ -222,18 +197,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         }
 
         return json.dumps(jsonContents)
-
-    async def serializeCheerActionBitRequirement(
-        self,
-        bitRequirement: CheerActionBitRequirement
-    ) -> str:
-        if not isinstance(bitRequirement, CheerActionBitRequirement):
-            raise TypeError(f'bitRequirement argument is malformed: \"{bitRequirement}\"')
-
-        match bitRequirement:
-            case CheerActionBitRequirement.EXACT: return 'exact'
-            case CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO: return 'greater_than_or_equal_to'
-            case _: raise ValueError(f'The given CheerActionBitRequirement value is unknown: \"{bitRequirement}\"')
 
     async def serializeCheerActionStreamStatusRequirement(
         self,

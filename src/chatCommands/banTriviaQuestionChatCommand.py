@@ -3,10 +3,8 @@ from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
-from ..trivia.emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
-from ..trivia.triviaHistoryRepositoryInterface import \
-    TriviaHistoryRepositoryInterface
+from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from ..trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -73,7 +71,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote = splits[1]
+        emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):

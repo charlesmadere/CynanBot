@@ -14,14 +14,12 @@ class TimeoutCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         durationSeconds: int,
-        twitchChannel: str,
         twitchChannelId: str
     ):
         super().__init__(
-            isEnable = isEnabled,
+            isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 

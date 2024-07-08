@@ -17,6 +17,12 @@ class UserInterface(ABC):
     def anivMessageCopyTimeoutProbability(self) -> float | None:
         pass
 
+    @property
+    @abstractmethod
+    def areBeanChancesEnabled(self) -> bool:
+        pass
+
+    @property
     @abstractmethod
     def areCheerActionsEnabled(self) -> bool:
         pass
@@ -25,8 +31,14 @@ class UserInterface(ABC):
     def areRecurringActionsEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def areSoundAlertsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def areTimeoutCheerActionsEnabled(self) -> bool:
         pass
 
     @abstractmethod

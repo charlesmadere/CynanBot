@@ -3,6 +3,7 @@ from datetime import timedelta
 from .cheerActionType import CheerActionType
 from .cheerActionsWizardInterface import CheerActionsWizardInterface
 from .wizards.absWizard import AbsWizard
+from .wizards.beanChanceWizard import BeanChanceWizard
 from .wizards.soundAlertWizard import SoundAlertWizard
 from .wizards.timeoutWizard import TimeoutWizard
 from ..misc import utils as utils
@@ -56,6 +57,12 @@ class CheerActionsWizard(CheerActionsWizardInterface):
             self.__timber.log('CheerActionsWizard', f'Starting a new \"{cheerActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
 
         match cheerActionType:
+            case CheerActionType.BEAN_CHANCE:
+                return await self.__startNewBeanChanceWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
             case CheerActionType.SOUND_ALERT:
                 return await self.__startNewSoundAlertWizard(
                     twitchChannel = twitchChannel,
@@ -70,6 +77,26 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
             case _:
                 raise RuntimeError(f'unknown CheerActionType: \"{cheerActionType}\"')
+
+    async def __startNewBeanChanceWizard(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> BeanChanceWizard:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        wizard = BeanChanceWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('CheerActionsWizard', f'Started new Bean Chance wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
 
     async def __startNewSoundAlertWizard(
         self,

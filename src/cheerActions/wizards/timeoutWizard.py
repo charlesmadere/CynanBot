@@ -34,10 +34,6 @@ class TimeoutWizard(AbsWizard):
     def printOut(self) -> str:
         return f'{self.__streamStatus=}, {self.__bits=}, {self.__durationSeconds=}'
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
     def requireBits(self) -> int:
         bits = self.__bits
 
@@ -87,6 +83,7 @@ class TimeoutWizard(AbsWizard):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'cheerActionType': self.cheerActionType,
             'durationSeconds': self.__durationSeconds,
             'steps': self.__steps,
             'streamStatus': self.__streamStatus,

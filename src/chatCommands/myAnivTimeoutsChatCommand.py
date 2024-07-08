@@ -1,16 +1,13 @@
 from datetime import timedelta
 
 from .absChatCommand import AbsChatCommand
-from ..aniv.anivCopyMessageTimeoutScorePresenterInterface import \
-    AnivCopyMessageTimeoutScorePresenterInterface
-from ..aniv.anivCopyMessageTimeoutScoreRepositoryInterface import \
-    AnivCopyMessageTimeoutScoreRepositoryInterface
+from ..aniv.anivCopyMessageTimeoutScorePresenterInterface import AnivCopyMessageTimeoutScorePresenterInterface
+from ..aniv.anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 

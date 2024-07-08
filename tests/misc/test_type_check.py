@@ -4,6 +4,7 @@ from collections import abc
 from enum import Enum
 
 import pytest
+
 from src.misc.type_check import type_check
 
 

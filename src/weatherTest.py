@@ -10,17 +10,14 @@ from network.aioHttpClientProvider import AioHttpClientProvider
 from network.networkClientProvider import NetworkClientProvider
 from openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from openWeather.openWeatherApiService import OpenWeatherApiService
-from openWeather.openWeatherApiServiceInterface import \
-    OpenWeatherApiServiceInterface
+from openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from openWeather.openWeatherJsonMapperInterface import \
-    OpenWeatherJsonMapperInterface
+from openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
 from storage.jsonStaticReader import JsonStaticReader
 from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 from weather.weatherReportPresenter import WeatherReportPresenter
-from weather.weatherReportPresenterInterface import \
-    WeatherReportPresenterInterface
+from weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from weather.weatherRepository import WeatherRepository
 from weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
