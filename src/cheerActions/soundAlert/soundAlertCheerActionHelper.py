@@ -1,6 +1,5 @@
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
-from ..cheerActionType import CheerActionType
 from ..soundAlertCheerAction import SoundAlertCheerAction
 from ...misc import utils as utils
 from ...soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
@@ -75,14 +74,11 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         soundAlertAction: SoundAlertCheerAction | None = None
 
         for action in actions:
-            if action.actionType is CheerActionType.SOUND_ALERT and action.bits == bits:
+            if isinstance(action, SoundAlertCheerAction) and action.isEnabled and action.bits == bits:
                 soundAlertAction = action
                 break
 
         if soundAlertAction is None:
-            return False
-        elif not utils.isValidStr(soundAlertAction.directory):
-            self.__timber.log('SoundAlertCheerActionHelper', f'Encountered a valid SoundAlertCheerAction instance but it has no directory value, this should be impossible ({user.getHandle()=}) ({soundAlertAction=})')
             return False
         elif not await self.__isLiveOnTwitchRepository.isLive(broadcasterUserId):
             self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.getHandle()=}) ({soundAlertAction=})')

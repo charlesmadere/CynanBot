@@ -6,7 +6,6 @@ from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from ..cheerActionType import CheerActionType
 from ..timeoutCheerAction import TimeoutCheerAction
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -114,14 +113,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timeoutAction: TimeoutCheerAction | None = None
 
         for action in actions:
-            if action.actionType is CheerActionType.TIMEOUT and action.bits == bits:
+            if isinstance(action, TimeoutCheerAction) and action.isEnabled and action.bits == bits:
                 timeoutAction = action
                 break
 
         if timeoutAction is None:
-            return False
-        elif not utils.isValidInt(timeoutAction.durationSeconds):
-            self.__timber.log('TimeoutCheerActionHelper', f'Encountered a valid TimeoutCheerAction instance but it has no durationSeconds value, this should be impossible ({user.getHandle()=}) ({timeoutAction=})')
             return False
 
         userNameToTimeoutMatch = self.__userNameRegEx.fullmatch(message)

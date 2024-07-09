@@ -1,5 +1,6 @@
 from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
+from ..beanChanceCheerAction import BeanChanceCheerAction
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
@@ -32,6 +33,16 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         user: UserInterface
     ) -> bool:
         if not user.areCheerActionsEnabled or not user.areBeanChancesEnabled:
+            return False
+
+        beanAction: BeanChanceCheerAction | None = None
+
+        for action in actions:
+            if isinstance(action, BeanChanceCheerAction) and action.isEnabled and action.bits == bits:
+                beanAction = action
+                break
+
+        if beanAction is None:
             return False
 
         # TODO
