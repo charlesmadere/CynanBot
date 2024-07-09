@@ -56,8 +56,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
         self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
         self.__soundAlertCache: dict[SoundAlert, str | None] | None = None
-        self.__shinySoundFileRegEx: Pattern = re.compile(r'^shiny_\w+\.(mp3|ogg|wav)$', re.IGNORECASE)
-        self.__soundFileRegEx: Pattern = re.compile(r'^\w+\.(mp3|ogg|wav)$', re.IGNORECASE)
+        self.__soundFileRegEx: Pattern = re.compile(r'^\w[\w\s]*\s?(\(shiny\))?\.(mp3|ogg|wav)$', re.IGNORECASE)
 
     async def clearCaches(self):
         self.__scanResultCache.clear()
@@ -76,6 +75,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
         if scanResult is None:
             scanResult = await self.__scanDirectoryForSoundFiles(directoryPath)
+            self.__scanResultCache[directoryPath] = scanResult
 
         if len(scanResult.soundFiles) == 0 and len(scanResult.shinySoundFiles) == 0:
             return None
@@ -139,7 +139,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                 shinySoundFiles = list()
             )
         elif not await aiofiles.ospath.isdir(directoryPath):
-            self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directry: \"{directoryPath}\"')
+            self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directory: \"{directoryPath}\"')
 
             return SoundPlayerRandomizerDirectoryScanResult(
                 soundFiles = list(),
@@ -156,21 +156,36 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                 shinySoundFiles = list()
             )
 
-        soundFiles: set[str] = set()
-        shinySoundFiles: set[str] = set()
+        soundFilesSet: set[str] = set()
+        shinySoundFilesSet: set[str] = set()
 
         for entry in directoryContents:
             if not entry.is_file():
                 continue
-            elif self.__shinySoundFileRegEx.fullmatch(entry.name) is not None:
-                shinySoundFiles.add(utils.cleanPath(entry.path))
-            elif self.__soundFileRegEx.fullmatch(entry.name) is not None:
-                soundFiles.add(utils.cleanPath(entry.path))
+
+            soundFileMatch = self.__soundFileRegEx.fullmatch(entry.name)
+
+            if soundFileMatch is None:
+                continue
+
+            shinyGroup: str | None = soundFileMatch.group(1)
+            cleanPath = utils.cleanPath(entry.path)
+
+            if utils.isValidStr(shinyGroup):
+                shinySoundFilesSet.add(cleanPath)
+            else:
+                soundFilesSet.add(cleanPath)
 
         directoryContents.close()
-        self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned \"{directoryPath}\" and found {len(soundFiles)} sound file(s) and {len(shinySoundFiles)} shiny sound file(s)')
+        self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned \"{directoryPath}\" and found {len(soundFilesSet)} sound file(s) and {len(shinySoundFilesSet)} shiny sound file(s)')
+
+        soundFilesList = list(soundFilesSet)
+        soundFilesList.sort(key = lambda path: path.casefold())
+
+        shinySoundFilesList = list(shinySoundFilesSet)
+        shinySoundFilesList.sort(key = lambda path: path.casefold())
 
         return SoundPlayerRandomizerDirectoryScanResult(
-            soundFiles = list(soundFiles),
-            shinySoundFiles = list(shinySoundFiles)
+            soundFiles = soundFilesList,
+            shinySoundFiles = shinySoundFilesList
         )

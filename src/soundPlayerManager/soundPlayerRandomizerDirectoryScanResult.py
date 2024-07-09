@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class SoundPlayerRandomizerDirectoryScanResult():
+class SoundPlayerRandomizerDirectoryScanResult:
     soundFiles: list[str]
     shinySoundFiles: list[str]
