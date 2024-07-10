@@ -187,9 +187,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchEmoteDetails(
             images = images,
-            formats = formats,
-            scales = scales,
-            themeModes = themeModes,
+            formats = frozenset(formats),
+            scales = frozenset(scales),
+            themeModes = frozenset(themeModes),
             emoteId = emoteId,
             emoteSetId = emoteSetId,
             name = name,

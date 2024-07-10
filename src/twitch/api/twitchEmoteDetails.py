@@ -8,11 +8,11 @@ from .twitchThemeMode import TwitchThemeMode
 
 
 @dataclass(frozen = True)
-class TwitchEmoteDetails():
+class TwitchEmoteDetails:
     images: dict[TwitchEmoteImageScale, str]
-    formats: set[TwitchEmoteImageFormat]
-    scales: set[TwitchEmoteImageScale]
-    themeModes: set[TwitchThemeMode]
+    formats: frozenset[TwitchEmoteImageFormat]
+    scales: frozenset[TwitchEmoteImageScale]
+    themeModes: frozenset[TwitchThemeMode]
     emoteId: str
     emoteSetId: str
     name: str
