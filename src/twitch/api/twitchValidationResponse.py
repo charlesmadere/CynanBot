@@ -5,10 +5,10 @@ from .twitchApiScope import TwitchApiScope
 
 
 @dataclass(frozen = True)
-class TwitchValidationResponse():
+class TwitchValidationResponse:
     expiresAt: datetime
+    scopes: frozenset[TwitchApiScope]
     expiresInSeconds: int
-    scopes: set[TwitchApiScope]
     clientId: str
     login: str
     userId: str

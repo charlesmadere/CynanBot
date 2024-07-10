@@ -430,9 +430,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchValidationResponse(
             expiresAt = expiresAt,
+            scopes = frozenset(scopes),
             expiresInSeconds = expiresInSeconds,
             clientId = clientId,
-            scopes = scopes,
             login = login,
             userId = userId
         )

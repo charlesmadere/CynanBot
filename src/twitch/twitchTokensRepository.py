@@ -293,11 +293,13 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         if twitchChannelId in self.__cache:
             tokensDetails = self.__cache.get(twitchChannelId, None)
+
+            if tokensDetails is None:
+                self.__cache.pop(twitchChannelId, None)
         else:
             tokensDetails = await self.__fetchTokensDetailsFromDatabase(twitchChannelId)
 
         if tokensDetails is None:
-            self.__cache[twitchChannelId] = None
             return None
 
         tokensDetails = await self.__validateAndRefreshAccessToken(
@@ -508,7 +510,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         self.__timber.log('TwitchTokensRepository', f'Validating Twitch tokens for \"{twitchChannelId}\"...')
         self.__twitchChannelIdToValidationTime.pop(twitchChannelId, None)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
         validationResponse: TwitchValidationResponse | None = None
 
         try:
@@ -523,7 +524,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             pass
 
         if validationResponse is not None:
-            self.__twitchChannelIdToValidationTime[twitchChannelId] = now
+            self.__twitchChannelIdToValidationTime[twitchChannelId] = validationResponse.expiresAt
 
         if validationResponse is None or validationResponse.expiresAt + self.__tokensExpirationBuffer > nowDateTime:
             try:
