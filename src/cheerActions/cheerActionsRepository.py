@@ -67,7 +67,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
         elif not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 0 or bits > utils.getIntMaxSafeSize():
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif configurationJson is not None and not isinstance(configurationJson, str):
             raise TypeError(f'configurationJson argument is out of bounds: \"{configurationJson}\"')

@@ -61,7 +61,7 @@ class CheerActionHelper(CheerActionHelperInterface):
     ) -> bool:
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 0 or bits > utils.getIntMaxSafeSize():
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'userId argument is malformed: \"{broadcasterUserId}\"')
