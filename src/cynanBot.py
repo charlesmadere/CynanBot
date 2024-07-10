@@ -40,6 +40,8 @@ from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueue
 from .chatCommands.commandsChatCommand import CommandsChatCommand
 from .chatCommands.cutenessChatCommand import CutenessChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
+from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
+from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsCommand import GetRecurringActionsCommand
@@ -521,11 +523,15 @@ class CynanBot(
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__disableCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__enableCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
+            self.__enableCheerActionCommand: AbsChatCommand = EnableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
@@ -1237,10 +1243,20 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__deleteTriviaAnswersCommand.handleCommand(context)
 
+    @commands.command(name = 'disablecheeraction')
+    async def command_disablecheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__disableCheerActionCommand.handleChatCommand(context)
+
     @commands.command(name = 'discord')
     async def command_discord(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__discordCommand.handleCommand(context)
+
+    @commands.command(name = 'enablecheeraction')
+    async def command_enablecheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__enableCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'getbannedtriviacontrollers')
     async def command_getbannedtriviacontrollers(self, ctx: Context):

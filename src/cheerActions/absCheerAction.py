@@ -22,7 +22,7 @@ class AbsCheerAction(ABC):
             raise TypeError(f'streamStatusRequirement argument is malformed: \"{streamStatusRequirement}\"')
         elif not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 0 or bits > utils.getIntMaxSafeSize():
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')

@@ -1,9 +1,17 @@
+import traceback
+
 from .absCheerAction import AbsCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from .editCheerActionResult.alreadyDisabledEditCheerActionResult import AlreadyDisabledEditCheerActionResult
+from .editCheerActionResult.alreadyEnabledEditCheerActionResult import AlreadyEnabledEditCheerActionResult
+from .editCheerActionResult.editCheerActionResult import EditCheerActionResult
+from .editCheerActionResult.notFoundEditCheerActionResult import NotFoundEditCheerActionResult
+from .editCheerActionResult.successfullyDisabledEditCheerActionResult import SuccessfullyDisabledEditCheerActionResult
+from .editCheerActionResult.successfullyEnabledEditCheerActionResult import SuccessfullyEnabledEditCheerActionResult
 from .exceptions import CheerActionAlreadyExistsException, TooManyCheerActionsException
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
@@ -126,6 +134,93 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__timber.log('CheerActionsRepository', f'Deleted cheer action ({bits=}) ({twitchChannelId=}) ({action=})')
 
         return action
+
+    async def disableAction(self, bits: int, twitchChannelId: str) -> EditCheerActionResult:
+        if not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        return await self.__enableOrDisableAction(
+            enable = False,
+            bits = bits,
+            twitchChannelId = twitchChannelId
+        )
+
+    async def enableAction(self, bits: int, twitchChannelId: str) -> EditCheerActionResult:
+        if not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        return await self.__enableOrDisableAction(
+            enable = True,
+            bits = bits,
+            twitchChannelId = twitchChannelId
+        )
+
+    async def __enableOrDisableAction(
+        self,
+        enable: bool,
+        bits: int,
+        twitchChannelId: str
+    ) -> EditCheerActionResult:
+        if not utils.isValidBool(enable):
+            raise TypeError(f'enable argument is malformed: \"{enable}\"')
+        elif not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        action = await self.getAction(
+            bits = bits,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            return NotFoundEditCheerActionResult(
+                bits = bits,
+                twitchChannelId = twitchChannelId
+            )
+        elif enable and action.isEnabled:
+            return AlreadyEnabledEditCheerActionResult(action)
+        elif not enable and not action.isEnabled:
+            return AlreadyDisabledEditCheerActionResult(action)
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                UPDATE cheeractions
+                SET isenabled = $1
+                WHERE bits = $2 AND twitchchannelid = $3
+            ''',
+            utils.boolToNum(enable), bits, twitchChannelId
+        )
+
+        await connection.close()
+        self.__cache.pop(twitchChannelId, None)
+
+        action = await self.getAction(
+            bits = bits,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            exception = RuntimeError(f'Updated cheer action {enable=} {bits=} {twitchChannelId=}, but then it was unable to be found?')
+            self.__timber.log('CheerActionsRepository', f'Updated cheer action but it was then unable to be found ({enable=}) ({bits=}) ({twitchChannelId=}): {exception}', exception, traceback.format_exc())
+            raise exception
+        elif enable:
+            self.__timber.log('CheerActionsRepository', f'Enabled cheer action ({enable=}) ({bits=}) ({twitchChannelId=})')
+            return SuccessfullyEnabledEditCheerActionResult(action)
+        else:
+            self.__timber.log('CheerActionsRepository', f'Disabled cheer action ({enable=}) ({bits=}) ({twitchChannelId=})')
+            return SuccessfullyDisabledEditCheerActionResult(action)
 
     async def getAction(self, bits: int, twitchChannelId: str) -> AbsCheerAction | None:
         if not utils.isValidInt(bits):

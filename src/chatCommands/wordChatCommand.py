@@ -4,10 +4,8 @@ from datetime import timedelta
 from .absChatCommand import AbsChatCommand
 from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from ..language.wordOfTheDayPresenterInterface import \
-    WordOfTheDayPresenterInterface
-from ..language.wordOfTheDayRepositoryInterface import \
-    WordOfTheDayRepositoryInterface
+from ..language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
+from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.timedDict import TimedDict
