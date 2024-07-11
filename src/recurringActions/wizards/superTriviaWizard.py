@@ -31,10 +31,6 @@ class SuperTriviaWizard(AbsWizard):
     def recurringActionType(self) -> RecurringActionType:
         return RecurringActionType.SUPER_TRIVIA
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
     def requireMinutesBetween(self) -> int | None:
         minutesBetween = self.__minutesBetween
 
@@ -54,6 +50,7 @@ class SuperTriviaWizard(AbsWizard):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'minutesBetween': self.__minutesBetween,
+            'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId

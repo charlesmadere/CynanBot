@@ -1,9 +1,7 @@
-from .triviaQuestionRepositoryInterface import \
-    TriviaQuestionRepositoryInterface
+from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
 from ..triviaExceptions import (NoTriviaCorrectAnswersException,
                                 NoTriviaMultipleChoiceResponsesException)
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 
 

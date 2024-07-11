@@ -1,14 +1,14 @@
 import re
 import traceback
+import unicodedata
 from typing import Collection, Pattern
 
 import roman
-import unicodedata
+from frozenlist import FrozenList
 from num2words import num2words
 from roman import RomanError
 
-from .triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
+from .triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from ..triviaExceptions import BadTriviaAnswerException
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -69,6 +69,15 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         self.__combiningDiacriticsRegEx: Pattern = re.compile(r'[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]')
 
+        # RegEx patterns for "this <x>" formatted questions
+        self.__answerAddendumRegExes: FrozenList[Pattern] = FrozenList([
+            re.compile(r'\s*this\s+kind\s+of\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE),
+            re.compile(r'\s*this\s+type\s+of\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE),
+            re.compile(r'\s*this\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE),
+            re.compile(r'\s*these\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE)
+        ])
+        self.__answerAddendumRegExes.freeze()
+
         self.__specialCharsRegEx: Pattern = re.compile(
             r"""
                 (?P<a>[ÅåǺǻḀḁẚĂăẶặẮắẰằẲẳẴẵȂȃâẬậẤấẦầẪẫẨẩẢảǍǎȺⱥȦȧǠǡẠạÄäǞǟÀàȀȁÁáĀāÃãĄąᶏɑᶐⱯɐɒᴀᴬᵃᵄᶛₐªÅ∀@₳ΑαАаⲀⲁⒶⓐ⒜🅰𝔄𝔞𝕬𝖆𝓐𝓪𝒜𝒶𝔸𝕒Ａａ🄰ค𝐀𝐚𝗔𝗮𝘈𝘢𝘼𝙖𝙰𝚊Λ卂ﾑȺᗩΔልДдꚈꚉꚀꚁꙢꙣꭿꋫλ🅐🅰️ꙢꙣꙘѦԬꙙѧԭӒӓҨҩ])|
@@ -100,6 +109,26 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             """,
             re.VERBOSE | re.IGNORECASE
         )
+
+    async def findQuestionBasedAnswerAddendum(self, questionText: str) -> str | None:
+        if not isinstance(questionText, str):
+            raise TypeError(f'questionText argument is malformed: \"{questionText}\"')
+
+        for answerAddendumRegEx in self.__answerAddendumRegExes:
+            match = answerAddendumRegEx.match(questionText)
+
+            if match is None:
+                continue
+
+            answerAddendum = utils.cleanStr(match.group(1))
+
+            if not utils.isValidStr(answerAddendum):
+                continue
+
+            self.__timber.log('TriviaAnswerCompiler', f'Found answer addendum within question text ({answerAddendum=}) ({questionText=})')
+            return answerAddendum
+
+        return None
 
     async def compileBoolAnswer(self, answer: str | None) -> bool:
         if answer is not None and not isinstance(answer, str):
@@ -209,8 +238,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         for i in range(1, len(split), 2):
             match = self.__groupedNumeralRegEx.fullmatch(split[i])
+
             if not match:
                 raise BadTriviaAnswerException(f'numbers cannot be expanded properly in trivia answer: \"{answer}\"')
+
             if not match.group(1):
                 # roman numerals
                 split[i] = await self.__getRomanNumeralSubstitutes(match.group(2))

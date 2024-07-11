@@ -27,10 +27,12 @@ class WordOfTheDayRecurringAction(RecurringAction):
 
         self.__languageEntry: LanguageEntry | None = languageEntry
 
-    def getActionType(self) -> RecurringActionType:
+    @property
+    def actionType(self) -> RecurringActionType:
         return RecurringActionType.WORD_OF_THE_DAY
 
-    def getLanguageEntry(self) -> LanguageEntry | None:
+    @property
+    def languageEntry(self) -> LanguageEntry | None:
         return self.__languageEntry
 
     def requireLanguageEntry(self) -> LanguageEntry:
@@ -43,10 +45,10 @@ class WordOfTheDayRecurringAction(RecurringAction):
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'actionType': self.getActionType(),
-            'enabled': self.isEnabled(),
+            'actionType': self.actionType,
+            'enabled': self.isEnabled,
             'languageEntry': self.__languageEntry,
-            'minutesBetween': self.getMinutesBetween(),
-            'twitchChannel': self.getTwitchChannel(),
-            'twitchChannelId': self.getTwitchChannelId()
+            'minutesBetween': self.minutesBetween,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }

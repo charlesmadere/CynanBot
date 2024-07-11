@@ -1,9 +1,11 @@
+from typing import Any
+
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (NoTriviaCorrectAnswersException,
-                                     NoTriviaMultipleChoiceResponsesException)
+                                NoTriviaMultipleChoiceResponsesException)
 from ...misc import utils as utils
 
 
@@ -61,6 +63,22 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
     @property
     def responseCount(self) -> int:
         return len(self.__multipleChoiceResponses)
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'category': self.category,
+            'categoryId': self.categoryId,
+            'correctAnswers': self.correctAnswers,
+            'indexesWithCorrectAnswers': self.indexesWithCorrectAnswers,
+            'originalTriviaSource': self.originalTriviaSource,
+            'question': self.question,
+            'responses': self.responses,
+            'responseCount': self.responseCount,
+            'triviaDifficulty': self.triviaDifficulty,
+            'triviaId': self.triviaId,
+            'triviaSource': self.triviaSource,
+            'triviaType': self.triviaType
+        }
 
     @property
     def triviaType(self) -> TriviaQuestionType:

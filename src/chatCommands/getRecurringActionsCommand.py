@@ -67,7 +67,7 @@ class GetRecurringActionsCommand(AbsChatCommand):
         recurringActionsStrs: list[str] = list()
 
         for recurringAction in recurringActions:
-            recurringActionsStrs.append(recurringAction.getActionType().toReadableStr())
+            recurringActionsStrs.append(recurringAction.actionType.toReadableStr())
 
         recurringActionsStr = self.__delimiter.join(recurringActionsStrs)
         return f'ⓘ Your channel\'s recurring action(s): {recurringActionsStr}'

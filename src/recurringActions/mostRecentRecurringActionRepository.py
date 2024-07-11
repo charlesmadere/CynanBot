@@ -117,7 +117,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                 VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET actiontype = EXCLUDED.actiontype, datetime = EXCLUDED.datetime
             ''',
-            action.getActionType().toStr(), nowDateTime.isoformat(), action.getTwitchChannelId()
+            action.actionType.toStr(), nowDateTime.isoformat(), action.twitchChannelId
         )
 
         await connection.close()

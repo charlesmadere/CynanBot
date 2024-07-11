@@ -1,5 +1,6 @@
 from typing import Any
 
+from .exceptions import NoSuchLocationException
 from .location import Location
 from .locationsRepositoryInterface import LocationsRepositoryInterface
 from .timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -61,7 +62,7 @@ class LocationsRepository(LocationsRepositoryInterface):
                 self.__cache[jsonLocationId.casefold()] = location
                 return location
 
-        raise RuntimeError(f'Unable to find location with ID \"{locationId}\" in locations file: {self.__locationsJsonReader}')
+        raise NoSuchLocationException(f'Unable to find location with ID \"{locationId}\" in locations file: {self.__locationsJsonReader}')
 
     async def __readAllJson(self) -> dict[str, dict[str, Any]]:
         jsonContents: dict[str, dict[str, Any]] | None = await self.__locationsJsonReader.readJsonAsync()

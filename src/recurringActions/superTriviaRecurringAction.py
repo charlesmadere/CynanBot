@@ -20,14 +20,15 @@ class SuperTriviaRecurringAction(RecurringAction):
             minutesBetween = minutesBetween
         )
 
-    def getActionType(self) -> RecurringActionType:
+    @property
+    def actionType(self) -> RecurringActionType:
         return RecurringActionType.SUPER_TRIVIA
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'actionType': self.getActionType(),
-            'enabled': self.isEnabled(),
-            'minutesBetween': self.getMinutesBetween(),
-            'twitchChannel': self.getTwitchChannel(),
-            'twitchChannelId': self.getTwitchChannelId()
+            'actionType': self.actionType,
+            'enabled': self.isEnabled,
+            'minutesBetween': self.minutesBetween,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }

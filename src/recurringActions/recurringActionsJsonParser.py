@@ -132,7 +132,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         jsonContents: dict[str, Any] = {
-            'alertsOnly': action.isAlertsOnly()
+            'alertsOnly': action.isAlertsOnly
         }
 
         return json.dumps(jsonContents)
@@ -141,8 +141,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         if not isinstance(action, WordOfTheDayRecurringAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        languageEntry = action.getLanguageEntry()
-
+        languageEntry = action.languageEntry
         jsonContents: dict[str, Any] = dict()
 
         if languageEntry is not None and utils.isValidStr(languageEntry.wotdApiCode):

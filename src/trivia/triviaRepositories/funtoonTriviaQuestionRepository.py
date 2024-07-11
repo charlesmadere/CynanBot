@@ -1,24 +1,18 @@
 import traceback
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
-    AdditionalTriviaAnswersRepositoryInterface
-from ..compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
+from ..compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (GenericTriviaNetworkException,
                                 MalformedTriviaJsonException)
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider
@@ -119,6 +113,10 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaSource = self.getTriviaSource()
         )
 
+        answerAddendum = await self.__triviaAnswerCompiler.findQuestionBasedAnswerAddendum(
+            questionText = question
+        )
+
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
 
         expandedCleanedCorrectAnswers: set[str] = set()
@@ -138,7 +136,8 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.getTriviaSource(),
+            answerAddendum = answerAddendum
         )
 
     def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:

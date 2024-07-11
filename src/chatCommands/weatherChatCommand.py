@@ -2,6 +2,7 @@ import traceback
 from datetime import timedelta
 
 from .absChatCommand import AbsChatCommand
+from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -69,7 +70,12 @@ class WeatherChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
-        location = await self.__locationsRepository.getLocation(locationId)
+        try:
+            location = await self.__locationsRepository.getLocation(locationId)
+        except NoSuchLocationException as e:
+            self.__timber.log('WeatherCommand', f'Unable to get location ID when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} ({locationId=}): {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching your user account\'s location ID')
+            return
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)

@@ -34,10 +34,6 @@ class WordOfTheDayWizard(AbsWizard):
     def recurringActionType(self) -> RecurringActionType:
         return RecurringActionType.WORD_OF_THE_DAY
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):
             raise TypeError(f'minutesBetween argument is malformed: \"{minutesBetween}\"')
@@ -49,6 +45,7 @@ class WordOfTheDayWizard(AbsWizard):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'minutesBetween': self.__minutesBetween,
+            'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
             'twitchChannel': self.__twitchChannel,
             'twitchChannelId': self.__twitchChannelId

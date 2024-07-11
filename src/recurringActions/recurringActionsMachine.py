@@ -19,11 +19,12 @@ from .weatherRecurringEvent import WeatherRecurringEvent
 from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from .wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
 from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
-from ..language.wordOfTheDayResponse import WordOfTheDayResponse
+from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..network.exceptions import GenericNetworkException
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
@@ -31,7 +32,6 @@ from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryI
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
-from ..weather.weatherReport import WeatherReport
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
@@ -176,16 +176,16 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                 case _:
                     raise RuntimeError(f'Unknown RecurringActionType: \"{actionType}\"')
 
-            if action is not None and not action.isEnabled():
+            if action is not None and not action.isEnabled:
                 action = None
             elif mostRecentAction is not None and action is not None:
                 if now < mostRecentAction.dateTime + self.__cooldown:
                     action = None
                 else:
-                    minutesBetweenInt = action.getMinutesBetween()
+                    minutesBetweenInt = action.minutesBetween
 
                     if not utils.isValidInt(minutesBetweenInt):
-                        minutesBetweenInt = action.getActionType().getDefaultRecurringActionTimingMinutes()
+                        minutesBetweenInt = action.actionType.getDefaultRecurringActionTimingMinutes()
 
                     minutesBetween = timedelta(minutes = minutesBetweenInt)
 
@@ -204,7 +204,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(action, RecurringAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        if not action.isEnabled():
+        if not action.isEnabled:
             raise RuntimeError(f'Attempting to process a disabled action: \"{action}\"')
 
         if isinstance(action, SuperTriviaRecurringAction):
@@ -223,7 +223,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                 action = action
             )
         else:
-            raise RuntimeError(f'Unknown RecurringAction type: \"{type(action)=}\"')
+            raise RuntimeError(f'Unknown RecurringAction: ({type(action)=}) ({action=})')
 
     async def __processSuperTriviaRecurringAction(
         self,
@@ -244,8 +244,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(SuperTriviaRecurringEvent(
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId()
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId
         ))
 
         # delay to allow users to prepare for an incoming trivia question
@@ -271,23 +271,25 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if not utils.isValidStr(locationId):
             return False
 
-        location = await self.__locationsRepository.getLocation(locationId)
-        weatherReport: WeatherReport | None = None
+        try:
+            location = await self.__locationsRepository.getLocation(locationId)
+        except NoSuchLocationException as e:
+            self.__timber.log('RecurringActionsMachine', f'Unable to get location ({locationId=}) ({action=}): {e}', e, traceback.format_exc())
+            return False
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
-        except Exception:
-            pass
-
-        if weatherReport is None:
+        except GenericNetworkException as e:
+            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching weather ({locationId=}) ({action=}): {e}', e, traceback.format_exc())
             return False
-        elif action.isAlertsOnly() and (weatherReport.report.alerts is None or len(weatherReport.report.alerts) == 0):
+
+        if action.isAlertsOnly and len(weatherReport.report.alerts) == 0:
             return False
 
         await self.__submitEvent(WeatherRecurringEvent(
-            alertsOnly = action.isAlertsOnly(),
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId(),
+            alertsOnly = action.isAlertsOnly,
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId,
             weatherReport = weatherReport
         ))
 
@@ -303,25 +305,21 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(action, WordOfTheDayRecurringAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        languageEntry = action.getLanguageEntry()
+        languageEntry = action.languageEntry
 
         if languageEntry is None:
             return False
 
-        wordOfTheDayResponse: WordOfTheDayResponse | None = None
-
         try:
             wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-        except Exception:
-            pass
-
-        if wordOfTheDayResponse is None:
+        except GenericNetworkException as e:
+            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching Word of the Day ({action=}): {e}', e, traceback.format_exc())
             return False
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
             languageEntry = languageEntry,
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId(),
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId,
             wordOfTheDayResponse = wordOfTheDayResponse
         ))
 
@@ -355,7 +353,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         twitchChannelIdToLiveStatus = await self.__isLiveOnTwitchRepository.areLive(twitchChannelIds)
 
         for user, action in userToRecurringAction.items():
-            if not twitchChannelIdToLiveStatus.get(action.getTwitchChannelId(), False):
+            if not twitchChannelIdToLiveStatus.get(action.twitchChannelId, False):
                 continue
 
             if await self.__processRecurringAction(

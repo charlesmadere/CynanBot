@@ -28,20 +28,23 @@ class WordOfTheDayRecurringEvent(RecurringEvent):
         self.__languageEntry: LanguageEntry = languageEntry
         self.__wordOfTheDayResponse: WordOfTheDayResponse = wordOfTheDayResponse
 
-    def getEventType(self) -> RecurringEventType:
+    @property
+    def eventType(self) -> RecurringEventType:
         return RecurringEventType.WORD_OF_THE_DAY
 
-    def getLanguageEntry(self) -> LanguageEntry:
+    @property
+    def languageEntry(self) -> LanguageEntry:
         return self.__languageEntry
 
-    def getWordOfTheDayResponse(self) -> WordOfTheDayResponse:
+    @property
+    def wordOfTheDayResponse(self) -> WordOfTheDayResponse:
         return self.__wordOfTheDayResponse
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'eventType': self.getEventType(),
+            'eventType': self.eventType,
             'languageEntry': self.__languageEntry,
-            'twitchChannel': self.getTwitchChannel(),
-            'twitchChannelId': self.getTwitchChannelId(),
-            'wordOfTheDayResponse': self.getWordOfTheDayResponse()
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId,
+            'wordOfTheDayResponse': self.__wordOfTheDayResponse
         }

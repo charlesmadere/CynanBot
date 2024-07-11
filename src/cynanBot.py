@@ -930,7 +930,7 @@ class CynanBot(
         if not isinstance(event, SuperTriviaRecurringEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
         await self.__twitchUtils.safeSend(twitchChannel, 'Super trivia starting soon!')
 
     async def __handleWeatherRecurringActionEvent(self, event: WeatherRecurringEvent):
@@ -942,8 +942,8 @@ class CynanBot(
         if weatherReportPresenter is None:
             return
 
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        weatherReportString = await weatherReportPresenter.toString(event.getWeatherReport())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        weatherReportString = await weatherReportPresenter.toString(event.weatherReport)
         await self.__twitchUtils.safeSend(twitchChannel, weatherReportString)
 
     async def __handleWordOfTheDayRecurringActionEvent(self, event: WordOfTheDayRecurringEvent):
@@ -955,11 +955,11 @@ class CynanBot(
         if wordOfTheDayPresenter is None:
             return
 
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
 
         wordOfTheDayString = await wordOfTheDayPresenter.toString(
             includeRomaji = False,
-            wordOfTheDay = event.getWordOfTheDayResponse()
+            wordOfTheDay = event.wordOfTheDayResponse
         )
 
         await self.__twitchUtils.safeSend(twitchChannel, wordOfTheDayString)

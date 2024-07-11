@@ -16,12 +16,13 @@ class SuperTriviaRecurringEvent(RecurringEvent):
             twitchChannelId = twitchChannelId
         )
 
-    def getEventType(self) -> RecurringEventType:
+    @property
+    def eventType(self) -> RecurringEventType:
         return RecurringEventType.SUPER_TRIVIA
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'eventType': self.getEventType(),
-            'twitchChannel': self.getTwitchChannel(),
-            'twitchChannelId': self.getTwitchChannelId()
+            'eventType': self.eventType,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }

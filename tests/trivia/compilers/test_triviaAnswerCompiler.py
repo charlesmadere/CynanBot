@@ -16,6 +16,36 @@ class TestTriviaAnswerCompiler():
     )
 
     @pytest.mark.asyncio
+    async def test_findQuestionBasedAnswerAddendum_withEmptyString(self):
+        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_findQuestionBasedAnswerAddendum_withTheseFoodsString(self):
+        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('these foods')
+        assert result == 'foods'
+
+    @pytest.mark.asyncio
+    async def test_findQuestionBasedAnswerAddendum_withThisKindOfBrickString(self):
+        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('this kind of brick')
+        assert result == 'brick'
+
+    @pytest.mark.asyncio
+    async def test_findQuestionBasedAnswerAddendum_withThisTypeOfLanguageString(self):
+        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('this type of language')
+        assert result == 'language'
+
+    @pytest.mark.asyncio
+    async def test_findQuestionBasedAnswerAddendum_withThisNintendoString(self):
+        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('this nintendo')
+        assert result == 'nintendo'
+
+    @pytest.mark.asyncio
+    async def test_findQuestionBasedAnswerAddendum_withWhitespaceString(self):
+        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_compileBoolAnswer_withEmptyString(self):
         result: bool | None = None
 
@@ -697,4 +727,5 @@ class TestTriviaAnswerCompiler():
 
     def test_sanity(self):
         assert self.triviaAnswerCompiler is not None
+        assert isinstance(self.triviaAnswerCompiler, TriviaAnswerCompiler)
         assert isinstance(self.triviaAnswerCompiler, TriviaAnswerCompilerInterface)

@@ -1,10 +1,12 @@
+from typing import Any
+
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (BadTriviaOriginalCorrectAnswersException,
-                                     NoTriviaCorrectAnswersException)
-
+from ..triviaExceptions import (BadTriviaAnswerAddendumException,
+                                BadTriviaOriginalCorrectAnswersException,
+                                NoTriviaCorrectAnswersException)
 from ...misc import utils as utils
 
 
@@ -21,7 +23,8 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
+        answerAddendum: str | None = None
     ):
         super().__init__(
             category = category,
@@ -39,10 +42,17 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             raise NoTriviaCorrectAnswersException(f'cleanedCorrectAnswers argument is malformed: \"{cleanedCorrectAnswers}\"')
         elif not isinstance(originalCorrectAnswers, list) or len(originalCorrectAnswers) == 0:
             raise BadTriviaOriginalCorrectAnswersException(f'originalCorrectAnswers argument is malformed: \"{originalCorrectAnswers}\"')
+        elif answerAddendum is not None and not isinstance(answerAddendum, str):
+            raise BadTriviaAnswerAddendumException(f'answerAddendum argument is malformed: \"{answerAddendum}\"')
 
         self.__correctAnswers: list[str] = correctAnswers
         self.__cleanedCorrectAnswers: list[str] = cleanedCorrectAnswers
         self.__originalCorrectAnswers: list[str] = originalCorrectAnswers
+        self.__answerAddendum: str | None = answerAddendum
+
+    @property
+    def answerAddendum(self) -> str | None:
+        return self.__answerAddendum
 
     @property
     def cleanedCorrectAnswers(self) -> list[str]:
@@ -59,6 +69,23 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
     @property
     def responses(self) -> list[str]:
         return list()
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'answerAddendum': self.answerAddendum,
+            'category': self.category,
+            'categoryId': self.categoryId,
+            'cleanedCorrectAnswers': self.cleanedCorrectAnswers,
+            'correctAnswers': self.correctAnswers,
+            'originalCorrectAnswers': self.originalCorrectAnswers,
+            'originalTriviaSource': self.originalTriviaSource,
+            'question': self.question,
+            'responses': self.responses,
+            'triviaDifficulty': self.triviaDifficulty,
+            'triviaId': self.triviaId,
+            'triviaSource': self.triviaSource,
+            'triviaType': self.triviaType
+        }
 
     @property
     def triviaType(self) -> TriviaQuestionType:

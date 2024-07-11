@@ -350,11 +350,9 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         longitude = utils.getFloatFromDict(jsonContents, 'lon')
 
         alertsArray: list[dict[str, Any] | None] | None = jsonContents.get('alerts')
-        alerts: list[OpenWeatherAlert] | None = None
+        alerts: list[OpenWeatherAlert] = list()
 
         if isinstance(alertsArray, list) and len(alertsArray) >= 1:
-            alerts = list()
-
             for index, alertEntryJson in enumerate(alertsArray):
                 alert = await self.parseAlert(alertEntryJson)
 

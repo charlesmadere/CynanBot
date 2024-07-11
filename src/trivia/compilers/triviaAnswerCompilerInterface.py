@@ -5,6 +5,10 @@ from typing import Collection
 class TriviaAnswerCompilerInterface(ABC):
 
     @abstractmethod
+    async def findQuestionBasedAnswerAddendum(self, questionText: str) -> str | None:
+        pass
+
+    @abstractmethod
     async def compileBoolAnswer(self, answer: str | None) -> bool:
         pass
 

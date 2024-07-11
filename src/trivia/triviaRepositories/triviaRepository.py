@@ -4,44 +4,26 @@ import random
 import traceback
 from queue import SimpleQueue
 
-from .bongoTriviaQuestionRepository import \
-    BongoTriviaQuestionRepository
-from .funtoonTriviaQuestionRepository import \
-    FuntoonTriviaQuestionRepository
-from .glacialTriviaQuestionRepositoryInterface import \
-    GlacialTriviaQuestionRepositoryInterface
-from .jServiceTriviaQuestionRepository import \
-    JServiceTriviaQuestionRepository
-from .lotrTriviaQuestionsRepository import \
-    LotrTriviaQuestionRepository
-from .millionaireTriviaQuestionRepository import \
-    MillionaireTriviaQuestionRepository
-from .openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
-from .openTriviaQaTriviaQuestionRepository import \
-    OpenTriviaQaTriviaQuestionRepository
-from .pkmnTriviaQuestionRepository import \
-    PkmnTriviaQuestionRepository
-from .quizApiTriviaQuestionRepository import \
-    QuizApiTriviaQuestionRepository
-from .triviaDatabaseTriviaQuestionRepository import \
-    TriviaDatabaseTriviaQuestionRepository
-from .triviaQuestionCompanyTriviaQuestionRepository import \
-    TriviaQuestionCompanyTriviaQuestionRepository
-from .triviaQuestionRepositoryInterface import \
-    TriviaQuestionRepositoryInterface
-from .triviaRepositoryInterface import \
-    TriviaRepositoryInterface
-from .willFryTriviaQuestionRepository import \
-    WillFryTriviaQuestionRepository
-from .wwtbamTriviaQuestionRepository import \
-    WwtbamTriviaQuestionRepository
+from .bongoTriviaQuestionRepository import BongoTriviaQuestionRepository
+from .funtoonTriviaQuestionRepository import FuntoonTriviaQuestionRepository
+from .glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
+from .jServiceTriviaQuestionRepository import JServiceTriviaQuestionRepository
+from .lotrTriviaQuestionsRepository import LotrTriviaQuestionRepository
+from .millionaireTriviaQuestionRepository import MillionaireTriviaQuestionRepository
+from .openTriviaDatabaseTriviaQuestionRepository import OpenTriviaDatabaseTriviaQuestionRepository
+from .openTriviaQaTriviaQuestionRepository import OpenTriviaQaTriviaQuestionRepository
+from .pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
+from .quizApiTriviaQuestionRepository import QuizApiTriviaQuestionRepository
+from .triviaDatabaseTriviaQuestionRepository import TriviaDatabaseTriviaQuestionRepository
+from .triviaQuestionCompanyTriviaQuestionRepository import TriviaQuestionCompanyTriviaQuestionRepository
+from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
+from .triviaRepositoryInterface import TriviaRepositoryInterface
+from .willFryTriviaQuestionRepository import WillFryTriviaQuestionRepository
+from .wwtbamTriviaQuestionRepository import WwtbamTriviaQuestionRepository
 from ..content.triviaContentCode import TriviaContentCode
-from ..questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
+from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..scraper.triviaScraperInterface import TriviaScraperInterface
@@ -53,8 +35,7 @@ from ..triviaExceptions import (GenericTriviaNetworkException,
                                 TooManyTriviaFetchAttemptsException,
                                 UnavailableTriviaSourceException)
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from ..triviaVerifierInterface import TriviaVerifierInterface
 from ...misc import utils as utils

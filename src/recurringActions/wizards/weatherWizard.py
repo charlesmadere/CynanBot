@@ -21,7 +21,8 @@ class WeatherWizard(AbsWizard):
         self.__steps = WeatherSteps()
         self.__minutesBetween: int | None = None
 
-    def getMinutesBetween(self) -> int | None:
+    @property
+    def minutesBetween(self) -> int | None:
         return self.__minutesBetween
 
     def getSteps(self) -> WeatherSteps:
@@ -34,10 +35,6 @@ class WeatherWizard(AbsWizard):
     def recurringActionType(self) -> RecurringActionType:
         return RecurringActionType.WEATHER
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):
             raise TypeError(f'minutesBetween argument is malformed: \"{minutesBetween}\"')
@@ -49,6 +46,7 @@ class WeatherWizard(AbsWizard):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'minutesBetween': self.__minutesBetween,
+            'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId

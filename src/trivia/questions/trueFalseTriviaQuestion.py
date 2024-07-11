@@ -1,3 +1,5 @@
+from typing import Any
+
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
@@ -45,6 +47,21 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
     @property
     def responses(self) -> list[str]:
         return [ str(True).lower(), str(False).lower() ]
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'category': self.category,
+            'categoryId': self.categoryId,
+            'correctAnswer': self.correctAnswer,
+            'correctAnswers': self.correctAnswers,
+            'originalTriviaSource': self.originalTriviaSource,
+            'question': self.question,
+            'responses': self.responses,
+            'triviaDifficulty': self.triviaDifficulty,
+            'triviaId': self.triviaId,
+            'triviaSource': self.triviaSource,
+            'triviaType': self.triviaType
+        }
 
     @property
     def triviaType(self) -> TriviaQuestionType:

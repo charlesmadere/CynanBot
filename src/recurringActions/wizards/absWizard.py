@@ -34,6 +34,10 @@ class AbsWizard(ABC):
     def recurringActionType(self) -> RecurringActionType:
         pass
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     @abstractmethod
     def toDictionary(self) -> dict[str, Any]:
         pass

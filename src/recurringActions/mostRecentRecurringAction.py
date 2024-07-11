@@ -5,7 +5,7 @@ from .recurringActionType import RecurringActionType
 
 
 @dataclass(frozen = True)
-class MostRecentRecurringAction():
+class MostRecentRecurringAction:
     dateTime: datetime
     actionType: RecurringActionType
     twitchChannel: str

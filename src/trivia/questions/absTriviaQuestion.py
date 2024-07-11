@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
@@ -62,9 +63,17 @@ class AbsTriviaQuestion(ABC):
     def question(self) -> str:
         return self.__question
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     @property
     @abstractmethod
     def responses(self) -> list[str]:
+        pass
+
+    @abstractmethod
+    def toDictionary(self) -> dict[str, Any]:
         pass
 
     @property

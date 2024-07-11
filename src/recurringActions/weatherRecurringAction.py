@@ -27,18 +27,20 @@ class WeatherRecurringAction(RecurringAction):
 
         self.__alertsOnly: bool = alertsOnly
 
-    def getActionType(self) -> RecurringActionType:
+    @property
+    def actionType(self) -> RecurringActionType:
         return RecurringActionType.WEATHER
 
+    @property
     def isAlertsOnly(self) -> bool:
         return self.__alertsOnly
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'actionType': self.getActionType(),
+            'actionType': self.actionType,
             'alertsOnly': self.__alertsOnly,
-            'enabled': self.isEnabled(),
-            'minutesBetween': self.getMinutesBetween(),
-            'twitchChannel': self.getTwitchChannel(),
-            'twitchChannelId': self.getTwitchChannelId()
+            'enabled': self.isEnabled,
+            'minutesBetween': self.minutesBetween,
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }

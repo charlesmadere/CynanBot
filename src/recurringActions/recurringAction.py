@@ -30,21 +30,26 @@ class RecurringAction(ABC):
         self.__twitchChannelId: str = twitchChannelId
         self.__minutesBetween: int | None = minutesBetween
 
+    @property
     @abstractmethod
-    def getActionType(self) -> RecurringActionType:
+    def actionType(self) -> RecurringActionType:
         pass
 
-    def getMinutesBetween(self) -> int | None:
-        return self.__minutesBetween
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
+    @property
     def isEnabled(self) -> bool:
         return self.__enabled
+
+    @property
+    def minutesBetween(self) -> int | None:
+        return self.__minutesBetween
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()

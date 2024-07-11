@@ -3,8 +3,7 @@ import pytest
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
-from src.trivia.compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 
 
 class TestTriviaQuestionCompiler():
@@ -147,4 +146,5 @@ class TestTriviaQuestionCompiler():
 
     def test_sanity(self):
         assert self.triviaQuestionCompiler is not None
+        assert isinstance(self.triviaQuestionCompiler, TriviaQuestionCompiler)
         assert isinstance(self.triviaQuestionCompiler, TriviaQuestionCompilerInterface)

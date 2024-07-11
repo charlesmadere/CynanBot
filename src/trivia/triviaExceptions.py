@@ -31,6 +31,12 @@ class AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(Exception):
         super().__init__(message, triviaQuestionType, triviaSource)
 
 
+class BadTriviaAnswerAddendumException(Exception):
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
 class BadTriviaAnswerException(Exception):
 
     def __init__(self, message: str):

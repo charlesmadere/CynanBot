@@ -29,7 +29,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         if recurringAction is None:
             self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is None: \"{recurringAction}\"')
             return False
-        elif not recurringAction.isEnabled():
+        elif not recurringAction.isEnabled:
             self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is already disabled: \"{recurringAction}\"')
             return False
 
@@ -40,7 +40,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         elif isinstance(recurringAction, WordOfTheDayRecurringAction):
             await self.__disableWordOfTheDayRecurringAction(recurringAction)
         else:
-            raise ValueError(f'unknown RecurringActionType ({recurringAction.getActionType()}) and RecurringAction ({recurringAction})')
+            raise ValueError(f'unknown RecurringActionType ({recurringAction.actionType}) and RecurringAction ({recurringAction})')
 
         self.__timber.log('RecurringActionsHelper', f'Finished disabling RecurringAction: \"{recurringAction}\"')
         return True
@@ -48,25 +48,25 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
     async def __disableSuperTriviaRecurringAction(self, recurringAction: SuperTriviaRecurringAction):
         await self.__recurringActionsRepository.setRecurringAction(SuperTriviaRecurringAction(
             enabled = False,
-            twitchChannel = recurringAction.getTwitchChannel(),
-            twitchChannelId = recurringAction.getTwitchChannelId(),
-            minutesBetween = recurringAction.getMinutesBetween()
+            twitchChannel = recurringAction.twitchChannel,
+            twitchChannelId = recurringAction.twitchChannelId,
+            minutesBetween = recurringAction.minutesBetween
         ))
 
     async def __disableWeatherRecurringAction(self, recurringAction: WeatherRecurringAction):
         await self.__recurringActionsRepository.setRecurringAction(WeatherRecurringAction(
             enabled = False,
-            twitchChannel = recurringAction.getTwitchChannel(),
-            twitchChannelId = recurringAction.getTwitchChannelId(),
-            alertsOnly = recurringAction.isAlertsOnly(),
-            minutesBetween = recurringAction.getMinutesBetween()
+            twitchChannel = recurringAction.twitchChannel,
+            twitchChannelId = recurringAction.twitchChannelId,
+            alertsOnly = recurringAction.isAlertsOnly,
+            minutesBetween = recurringAction.minutesBetween
         ))
 
     async def __disableWordOfTheDayRecurringAction(self, recurringAction: WordOfTheDayRecurringAction):
         await self.__recurringActionsRepository.setRecurringAction(WordOfTheDayRecurringAction(
             enabled = False,
-            twitchChannel = recurringAction.getTwitchChannel(),
-            twitchChannelId = recurringAction.getTwitchChannelId(),
-            minutesBetween = recurringAction.getMinutesBetween(),
-            languageEntry = recurringAction.getLanguageEntry()
+            twitchChannel = recurringAction.twitchChannel,
+            twitchChannelId = recurringAction.twitchChannelId,
+            minutesBetween = recurringAction.minutesBetween,
+            languageEntry = recurringAction.languageEntry
         ))

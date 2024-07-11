@@ -20,14 +20,17 @@ class RecurringEvent(ABC):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
+    @property
     @abstractmethod
-    def getEventType(self) -> RecurringEventType:
+    def eventType(self) -> RecurringEventType:
         pass
 
-    def getTwitchChannel(self) -> str:
+    @property
+    def twitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def getTwitchChannelId(self) -> str:
+    @property
+    def twitchChannelId(self) -> str:
         return self.__twitchChannelId
 
     def __repr__(self) -> str:

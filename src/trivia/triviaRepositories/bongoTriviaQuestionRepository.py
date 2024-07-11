@@ -1,13 +1,10 @@
 import traceback
 from typing import Any
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
@@ -17,8 +14,7 @@ from ..triviaExceptions import (GenericTriviaNetworkException,
                                 UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider

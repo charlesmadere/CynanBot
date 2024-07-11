@@ -5,21 +5,16 @@ from typing import Any, Generator, Pattern
 
 import polyleven
 
-from .compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
+from .compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
-from .questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
-from .questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from .questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
+from .questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from .questions.triviaQuestionType import TriviaQuestionType
 from .questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from .triviaAnswerCheckResult import TriviaAnswerCheckResult
 from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
-from .triviaExceptions import (BadTriviaAnswerException,
-                               UnsupportedTriviaTypeException)
-from .triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from .triviaExceptions import BadTriviaAnswerException, UnsupportedTriviaTypeException
+from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
@@ -71,16 +66,17 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             'woman': { 'women' }
         }
 
-        self.__stopWords: set[str] = {
-            'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them', 'what',
-            'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been',
-            'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if',
-            'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between',
-            'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out',
-            'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why',
-            'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'some', 'such', 'nor', 'not', 'only',
-            'own', 'same', 'so', 'than', 'too', 'very', 'can', 'will', 'just', 'dont', 'should', 'now',
-        }
+        self.__stopWords: frozenset[str] = frozenset({
+            'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them',
+            'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were',
+            'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the',
+            'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about',
+            'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from',
+            'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here',
+            'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'some',
+            'such', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'can', 'will', 'just',
+            'dont', 'should', 'now',
+        })
 
     async def checkAnswer(
         self,

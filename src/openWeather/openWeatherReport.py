@@ -7,10 +7,10 @@ from .openWeatherMoment import OpenWeatherMoment
 
 
 @dataclass(frozen = True)
-class OpenWeatherReport():
+class OpenWeatherReport:
     latitude: float
     longitude: float
-    alerts: list[OpenWeatherAlert] | None
+    alerts: list[OpenWeatherAlert]
     days: list[OpenWeatherDay]
     current: OpenWeatherMoment
     timeZone: tzinfo

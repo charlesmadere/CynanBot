@@ -36,10 +36,10 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, SuperTriviaRecurringAction)
-        assert action.getMinutesBetween() is None
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert action.isEnabled()
+        assert action.minutesBetween is None
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert action.isEnabled
 
     @pytest.mark.asyncio
     async def test_parseSuperTrivia2(self):
@@ -52,10 +52,10 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, SuperTriviaRecurringAction)
-        assert action.getMinutesBetween() == 60
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert not action.isEnabled()
+        assert action.minutesBetween == 60
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert not action.isEnabled
 
     @pytest.mark.asyncio
     async def test_parseSuperTrivia_withJsonStringEmpty(self):
@@ -92,11 +92,11 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, WeatherRecurringAction)
-        assert action.getMinutesBetween() is None
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert action.isAlertsOnly()
-        assert action.isEnabled()
+        assert action.minutesBetween is None
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert action.isAlertsOnly
+        assert action.isEnabled
 
     @pytest.mark.asyncio
     async def test_parseWeather2(self):
@@ -113,11 +113,11 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, WeatherRecurringAction)
-        assert action.getMinutesBetween() == 60
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert action.isAlertsOnly()
-        assert not action.isEnabled()
+        assert action.minutesBetween == 60
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert action.isAlertsOnly
+        assert not action.isEnabled
 
     @pytest.mark.asyncio
     async def test_parseWeather3(self):
@@ -134,11 +134,11 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, WeatherRecurringAction)
-        assert action.getMinutesBetween() == 120
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert not action.isAlertsOnly()
-        assert action.isEnabled()
+        assert action.minutesBetween == 120
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert not action.isAlertsOnly
+        assert action.isEnabled
 
     @pytest.mark.asyncio
     async def test_parseWeather_withJsonStringEmpty(self):
@@ -175,11 +175,14 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, WordOfTheDayRecurringAction)
-        assert action.getLanguageEntry() is None
-        assert action.getMinutesBetween() is None
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert action.isEnabled()
+        assert action.languageEntry is None
+        assert action.minutesBetween is None
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert action.isEnabled
+
+        with pytest.raises(RuntimeError):
+            action.requireLanguageEntry()
 
     @pytest.mark.asyncio
     async def test_parseWordOfTheDay2(self):
@@ -196,14 +199,17 @@ class TestRecurringActionsJsonParser:
         )
 
         assert isinstance(action, WordOfTheDayRecurringAction)
-        assert action.getMinutesBetween() == 180
-        assert action.getTwitchChannel() == 'smCharles'
-        assert action.getTwitchChannelId() == 'c'
-        assert not action.isEnabled()
+        assert action.minutesBetween == 180
+        assert action.twitchChannel == 'smCharles'
+        assert action.twitchChannelId == 'c'
+        assert not action.isEnabled
 
-        languageEntry = action.getLanguageEntry()
+        languageEntry = action.languageEntry
         assert languageEntry is not None
         assert languageEntry.wotdApiCode == 'ja'
+
+        requiredLanguageEntry = action.requireLanguageEntry()
+        assert languageEntry is requiredLanguageEntry
 
     @pytest.mark.asyncio
     async def test_parseWordOfTheDay_withJsonStringEmpty(self):
@@ -263,7 +269,7 @@ class TestRecurringActionsJsonParser:
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 1
-        assert jsonObject.get('alertsOnly') is action.isAlertsOnly()
+        assert jsonObject.get('alertsOnly') is action.isAlertsOnly
 
     @pytest.mark.asyncio
     async def test_toJson_withWeatherRecurringAction_alertsOnlyTrue(self):
@@ -282,7 +288,7 @@ class TestRecurringActionsJsonParser:
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 1
-        assert jsonObject.get('alertsOnly') is action.isAlertsOnly()
+        assert jsonObject.get('alertsOnly') is action.isAlertsOnly
 
     @pytest.mark.asyncio
     async def test_toJson_withWordOfTheDayRecurringAction_languageEntryJapanese(self):

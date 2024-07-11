@@ -58,7 +58,7 @@ class RemoveRecurringSuperTriviaActionCommand(AbsChatCommand):
         if recurringAction is None:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring super trivia action')
             return
-        elif not recurringAction.isEnabled():
+        elif not recurringAction.isEnabled:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring super trivia action is already disabled')
             return
 

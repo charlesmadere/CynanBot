@@ -27,7 +27,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__exactWordRegEx: Pattern = re.compile(r'^\"(.+)\"$', re.IGNORECASE)
-        self.__cache: set[AbsBannedWord] | None = None
+        self.__cache: frozenset[AbsBannedWord] | None = None
 
     async def clearCaches(self):
         self.__cache = None
@@ -36,14 +36,14 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
     def __createCleanedBannedWordsSetFromLines(
         self,
         lines: list[str] | None
-    ) -> set[AbsBannedWord]:
+    ) -> frozenset[AbsBannedWord]:
         if lines is not None and not isinstance(lines, list):
             raise TypeError(f'lines argument is malformed: \"{lines}\"')
 
-        cleanedBannedWords: set[AbsBannedWord] = set()
-
         if lines is None or len(lines) == 0:
-            return cleanedBannedWords
+            return frozenset()
+
+        cleanedBannedWords: set[AbsBannedWord] = set()
 
         for line in lines:
             bannedWord = self.__processLine(line)
@@ -51,9 +51,9 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
             if bannedWord is not None:
                 cleanedBannedWords.add(bannedWord)
 
-        return cleanedBannedWords
+        return frozenset(cleanedBannedWords)
 
-    def __fetchBannedWords(self) -> set[AbsBannedWord]:
+    def __fetchBannedWords(self) -> frozenset[AbsBannedWord]:
         lines: list[str] | None = None
 
         try:
@@ -64,7 +64,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return self.__createCleanedBannedWordsSetFromLines(lines)
 
-    async def __fetchBannedWordsAsync(self) -> set[AbsBannedWord]:
+    async def __fetchBannedWordsAsync(self) -> frozenset[AbsBannedWord]:
         lines: list[str] | None = None
 
         try:
@@ -75,7 +75,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return self.__createCleanedBannedWordsSetFromLines(lines)
 
-    def getBannedWords(self) -> set[AbsBannedWord]:
+    def getBannedWords(self) -> frozenset[AbsBannedWord]:
         cache = self.__cache
         if cache is not None:
             return cache
@@ -86,7 +86,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return bannedWords
 
-    async def getBannedWordsAsync(self) -> set[AbsBannedWord]:
+    async def getBannedWordsAsync(self) -> frozenset[AbsBannedWord]:
         cache = self.__cache
         if cache is not None:
             return cache
