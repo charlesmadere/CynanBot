@@ -61,12 +61,12 @@ class BeanChanceWizard(AbsWizard):
         self.__bits = bits
 
     def setRandomChance(self, randomChance: int):
-        if not utils.isValidNum(randomChance):
+        if not utils.isValidInt(randomChance):
             raise TypeError(f'randomChance argument is malformed: \"{randomChance}\"')
         elif randomChance < 1 or randomChance > 100:
             raise ValueError(f'randomChance argument is out of bounds: {randomChance}')
 
-        self.__randomChance = int(randomChance)
+        self.__randomChance = randomChance
 
     def toDictionary(self) -> dict[str, Any]:
         return {
