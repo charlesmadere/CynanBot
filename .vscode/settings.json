@@ -4,7 +4,8 @@
     "files.trimFinalNewlines": true,
     "python.analysis.autoImportCompletions": true,
     "python.analysis.importFormat": "relative",
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.diagnosticMode": "workspace",
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.testing.pytestArgs": [
         "tests"
