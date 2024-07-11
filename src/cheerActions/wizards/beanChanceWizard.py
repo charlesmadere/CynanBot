@@ -66,7 +66,7 @@ class BeanChanceWizard(AbsWizard):
         elif randomChance < 1 or randomChance > 100:
             raise ValueError(f'randomChance argument is out of bounds: {randomChance}')
 
-        self.__randomChance = randomChance
+        self.__randomChance = int(randomChance)
 
     def toDictionary(self) -> dict[str, Any]:
         return {

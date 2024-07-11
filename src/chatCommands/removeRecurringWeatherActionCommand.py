@@ -56,7 +56,7 @@ class RemoveRecurringWeatherActionCommand(AbsChatCommand):
         if recurringAction is None:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring weather action')
             return
-        elif not recurringAction.isEnabled():
+        elif not recurringAction.isEnabled:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring weather action is already disabled')
             return
 

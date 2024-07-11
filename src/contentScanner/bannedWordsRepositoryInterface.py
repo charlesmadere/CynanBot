@@ -7,9 +7,9 @@ from ..misc.clearable import Clearable
 class BannedWordsRepositoryInterface(Clearable):
 
     @abstractmethod
-    def getBannedWords(self) -> set[AbsBannedWord]:
+    def getBannedWords(self) -> frozenset[AbsBannedWord]:
         pass
 
     @abstractmethod
-    async def getBannedWordsAsync(self) -> set[AbsBannedWord]:
+    async def getBannedWordsAsync(self) -> frozenset[AbsBannedWord]:
         pass
