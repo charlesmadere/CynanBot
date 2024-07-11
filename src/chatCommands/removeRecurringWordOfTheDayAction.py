@@ -58,7 +58,7 @@ class RemoveRecurringWordOfTheDayActionCommand(AbsChatCommand):
         if recurringAction is None:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring word of the day action')
             return
-        elif not recurringAction.isEnabled():
+        elif not recurringAction.isEnabled:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring word of the day action is already disabled')
             return
 

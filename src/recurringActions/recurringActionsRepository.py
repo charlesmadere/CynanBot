@@ -52,7 +52,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             twitchChannelId = twitchChannelId
         )
 
-        if superTrivia is not None and superTrivia.isEnabled():
+        if superTrivia is not None and superTrivia.isEnabled:
             recurringActions.append(superTrivia)
 
         weather = await self.getWeatherRecurringAction(
@@ -60,7 +60,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             twitchChannelId = twitchChannelId
         )
 
-        if weather is not None and weather.isEnabled():
+        if weather is not None and weather.isEnabled:
             recurringActions.append(weather)
 
         wordOfTheDay = await self.getWordOfTheDayRecurringAction(
@@ -68,7 +68,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             twitchChannelId = twitchChannelId
         )
 
-        if wordOfTheDay is not None and wordOfTheDay.isEnabled():
+        if wordOfTheDay is not None and wordOfTheDay.isEnabled:
             recurringActions.append(wordOfTheDay)
 
         return recurringActions
@@ -234,7 +234,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             configurationJson = configurationJson
         )
 
-        self.__timber.log('RecurringActionsRepository', f'Updated {action.getActionType()} action for \"{action.getTwitchChannel()}\"')
+        self.__timber.log('RecurringActionsRepository', f'Updated {action.actionType} action for \"{action.twitchChannel}\"')
 
     async def __setRecurringAction(
         self,
@@ -246,7 +246,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         elif not utils.isValidStr(configurationJson):
             raise TypeError(f'configurationJson argument is malformed: \"{configurationJson}\"')
 
-        isEnabled = utils.boolToNum(action.isEnabled())
+        isEnabled = utils.boolToNum(action.isEnabled)
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -255,7 +255,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (actiontype, twitchchannelid) DO UPDATE SET configurationjson = EXCLUDED.configurationjson, isenabled = EXCLUDED.isenabled, minutesbetween = EXCLUDED.minutesbetween
             ''',
-            action.getActionType().toStr(), configurationJson, isEnabled, action.getMinutesBetween(), action.getTwitchChannelId()
+            action.actionType.toStr(), configurationJson, isEnabled, action.minutesBetween, action.twitchChannelId
         )
 
         await connection.close()
