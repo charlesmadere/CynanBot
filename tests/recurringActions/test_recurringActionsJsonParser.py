@@ -26,6 +26,11 @@ class TestRecurringActionsJsonParser:
     )
 
     @pytest.mark.asyncio
+    async def test_parseActionType_withCuteness(self):
+        result = await self.parser.parseActionType('cuteness')
+        assert result is RecurringActionType.CUTENESS
+
+    @pytest.mark.asyncio
     async def test_parseActionType_withEmptyString(self):
         result = await self.parser.parseActionType('')
         assert result is None
@@ -264,6 +269,49 @@ class TestRecurringActionsJsonParser:
         )
 
         assert action is None
+
+    @pytest.mark.asyncio
+    async def test_requireActionType_withCuteness(self):
+        result = await self.parser.requireActionType('cuteness')
+        assert result is RecurringActionType.CUTENESS
+
+    @pytest.mark.asyncio
+    async def test_requireActionType_withEmptyString(self):
+        result: RecurringActionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.parser.requireActionType('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireActionType_withSuperTrivia(self):
+        result = await self.parser.requireActionType('super_trivia')
+        assert result is RecurringActionType.SUPER_TRIVIA
+
+    @pytest.mark.asyncio
+    async def test_requireActionType_withWeather(self):
+        result = await self.parser.requireActionType('weather')
+        assert result is RecurringActionType.WEATHER
+
+    @pytest.mark.asyncio
+    async def test_requireActionType_withWhitespaceString(self):
+        result: RecurringActionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.parser.requireActionType(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireActionType_withWordOfTheDay(self):
+        result = await self.parser.requireActionType('word_of_the_day')
+        assert result is RecurringActionType.WORD_OF_THE_DAY
+
+    @pytest.mark.asyncio
+    async def test_serializeActionType_withCuteness(self):
+        result = await self.parser.serializeActionType(RecurringActionType.CUTENESS)
+        assert result == 'cuteness'
 
     @pytest.mark.asyncio
     async def test_serializeActionType_withSuperTrivia(self):

@@ -66,7 +66,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         if record is None or len(record) == 0:
             return None
 
-        actionType = await self.__recurringActionsJsonParser.parseActionType(record[0])
+        actionType = await self.__recurringActionsJsonParser.requireActionType(record[0])
         dateTime = datetime.fromisoformat(record[1])
 
         return MostRecentRecurringAction(

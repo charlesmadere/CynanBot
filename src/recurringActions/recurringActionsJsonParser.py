@@ -38,6 +38,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         actionType = actionType.lower()
 
         match actionType:
+            case 'cuteness': return RecurringActionType.CUTENESS
             case 'super_trivia': return RecurringActionType.SUPER_TRIVIA
             case 'weather': return RecurringActionType.WEATHER
             case 'word_of_the_day': return RecurringActionType.WORD_OF_THE_DAY
@@ -125,6 +126,17 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             languageEntry = languageEntry
         )
 
+    async def requireActionType(
+        self,
+        actionType: str | Any | None
+    ) -> RecurringActionType:
+        result = await self.parseActionType(actionType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{actionType}\" into RecurringActionType value!')
+
+        return result
+
     async def serializeActionType(
         self,
         actionType: RecurringActionType
@@ -133,6 +145,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
 
         match actionType:
+            case RecurringActionType.CUTENESS: return 'cuteness'
             case RecurringActionType.SUPER_TRIVIA: return 'super_trivia'
             case RecurringActionType.WEATHER: return 'weather'
             case RecurringActionType.WORD_OF_THE_DAY: return 'word_of_the_day'

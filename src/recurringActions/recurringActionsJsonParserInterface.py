@@ -51,6 +51,13 @@ class RecurringActionsJsonParserInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireActionType(
+        self,
+        actionType: str | Any | None
+    ) -> RecurringActionType:
+        pass
+
+    @abstractmethod
     async def serializeActionType(
         self,
         actionType: RecurringActionType
