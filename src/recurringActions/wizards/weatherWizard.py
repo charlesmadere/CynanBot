@@ -21,10 +21,6 @@ class WeatherWizard(AbsWizard):
         self.__steps = WeatherSteps()
         self.__minutesBetween: int | None = None
 
-    @property
-    def minutesBetween(self) -> int | None:
-        return self.__minutesBetween
-
     def getSteps(self) -> WeatherSteps:
         return self.__steps
 
@@ -34,6 +30,14 @@ class WeatherWizard(AbsWizard):
     @property
     def recurringActionType(self) -> RecurringActionType:
         return RecurringActionType.WEATHER
+
+    def requireMinutesBetween(self) -> int:
+        minutesBetween = self.__minutesBetween
+
+        if minutesBetween is None:
+            raise ValueError(f'minutesBetween value has not been set: ({self=})')
+
+        return minutesBetween
 
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):

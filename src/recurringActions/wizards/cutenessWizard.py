@@ -31,8 +31,13 @@ class CutenessWizard(AbsWizard):
     def recurringActionType(self) -> RecurringActionType:
         return RecurringActionType.CUTENESS
 
-    def requireMinutesBetween(self) -> int | None:
-        return self.__minutesBetween
+    def requireMinutesBetween(self) -> int:
+        minutesBetween = self.__minutesBetween
+
+        if minutesBetween is None:
+            raise ValueError(f'minutesBetween value has not been set: ({self=})')
+
+        return minutesBetween
 
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):

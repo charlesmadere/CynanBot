@@ -3,12 +3,9 @@ import traceback
 from .absChatAction import AbsChatAction
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
-from ..recurringActions.recurringActionsRepositoryInterface import \
-    RecurringActionsRepositoryInterface
-from ..recurringActions.recurringActionsWizardInterface import \
-    RecurringActionsWizardInterface
-from ..recurringActions.superTriviaRecurringAction import \
-    SuperTriviaRecurringAction
+from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
+from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
+from ..recurringActions.superTriviaRecurringAction import SuperTriviaRecurringAction
 from ..recurringActions.wizards.stepResult import StepResult
 from ..recurringActions.wizards.superTriviaStep import SuperTriviaStep
 from ..recurringActions.wizards.superTriviaWizard import SuperTriviaWizard

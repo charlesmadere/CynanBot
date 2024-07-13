@@ -31,7 +31,7 @@ class SuperTriviaWizard(AbsWizard):
     def recurringActionType(self) -> RecurringActionType:
         return RecurringActionType.SUPER_TRIVIA
 
-    def requireMinutesBetween(self) -> int | None:
+    def requireMinutesBetween(self) -> int:
         minutesBetween = self.__minutesBetween
 
         if minutesBetween is None:
