@@ -38,6 +38,10 @@ class BackingPsqlDatabase(BackingDatabase):
 
         await databaseConnection.execute('CREATE EXTENSION IF NOT EXISTS citext')
 
+    @property
+    def databaseType(self) -> DatabaseType:
+        return DatabaseType.POSTGRESQL
+
     async def getConnection(self) -> DatabaseConnection:
         connectionPoolCreated = False
         connectionPool = self.__connectionPool
@@ -77,6 +81,3 @@ class BackingPsqlDatabase(BackingDatabase):
             await self.__createCollations(databaseConnection)
 
         return databaseConnection
-
-    def getDatabaseType(self) -> DatabaseType:
-        return DatabaseType.POSTGRESQL

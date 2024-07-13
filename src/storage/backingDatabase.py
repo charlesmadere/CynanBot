@@ -6,10 +6,11 @@ from .databaseType import DatabaseType
 
 class BackingDatabase(ABC):
 
+    @property
     @abstractmethod
-    async def getConnection(self) -> DatabaseConnection:
+    def databaseType(self) -> DatabaseType:
         pass
 
     @abstractmethod
-    def getDatabaseType(self) -> DatabaseType:
+    async def getConnection(self) -> DatabaseConnection:
         pass

@@ -24,11 +24,12 @@ class BackingSqliteDatabase(BackingDatabase):
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__backingDatabaseFile: str = backingDatabaseFile
 
+    @property
+    def databaseType(self) -> DatabaseType:
+        return DatabaseType.SQLITE
+
     async def getConnection(self) -> DatabaseConnection:
         return SqliteDatabaseConnection(await aiosqlite.connect(
             database = self.__backingDatabaseFile,
             loop = self.__eventLoop
         ))
-
-    def getDatabaseType(self) -> DatabaseType:
-        return DatabaseType.SQLITE
