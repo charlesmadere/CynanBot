@@ -78,6 +78,7 @@ from src.misc.administratorProvider import AdministratorProvider
 from src.misc.administratorProviderInterface import AdministratorProviderInterface
 from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
+from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
@@ -208,7 +209,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-backgroundTaskHelper: BackgroundTaskHelper = BackgroundTaskHelper(
+backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
 
