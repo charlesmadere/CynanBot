@@ -3,7 +3,7 @@ from datetime import datetime
 from .mostRecentRecurringAction import MostRecentRecurringAction
 from .mostRecentRecurringActionRepositoryInterface import MostRecentRecurringActionRepositoryInterface
 from .recurringAction import RecurringAction
-from .recurringActionType import RecurringActionType
+from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
@@ -17,17 +17,21 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
     def __init__(
         self,
         backingDatabase: BackingDatabase,
+        recurringActionsJsonParser: RecurringActionsJsonParserInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(recurringActionsJsonParser, RecurringActionsJsonParserInterface):
+            raise TypeError(f'recurringActionsJsonParser argument is malformed: \"{recurringActionsJsonParser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__recurringActionsJsonParser: RecurringActionsJsonParserInterface = recurringActionsJsonParser
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
@@ -62,7 +66,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         if record is None or len(record) == 0:
             return None
 
-        actionType = RecurringActionType.fromStr(record[0])
+        actionType = await self.__recurringActionsJsonParser.parseActionType(record[0])
         dateTime = datetime.fromisoformat(record[1])
 
         return MostRecentRecurringAction(
@@ -108,6 +112,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         if not isinstance(action, RecurringAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
+        actionTypeString = await self.__recurringActionsJsonParser.serializeActionType(action.actionType)
         nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         connection = await self.__getDatabaseConnection()
@@ -117,7 +122,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                 VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET actiontype = EXCLUDED.actiontype, datetime = EXCLUDED.datetime
             ''',
-            action.actionType.toStr(), nowDateTime.isoformat(), action.twitchChannelId
+            actionTypeString, nowDateTime.isoformat(), action.twitchChannelId
         )
 
         await connection.close()

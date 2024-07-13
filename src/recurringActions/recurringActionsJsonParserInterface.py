@@ -1,12 +1,21 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from .recurringAction import RecurringAction
+from .recurringActionType import RecurringActionType
 from .superTriviaRecurringAction import SuperTriviaRecurringAction
 from .weatherRecurringAction import WeatherRecurringAction
 from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 
 
 class RecurringActionsJsonParserInterface(ABC):
+
+    @abstractmethod
+    async def parseActionType(
+        self,
+        actionType: str | Any | None
+    ) -> RecurringActionType | None:
+        pass
 
     @abstractmethod
     async def parseSuperTrivia(
@@ -39,6 +48,13 @@ class RecurringActionsJsonParserInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str
     ) -> WordOfTheDayRecurringAction | None:
+        pass
+
+    @abstractmethod
+    async def serializeActionType(
+        self,
+        actionType: RecurringActionType
+    ) -> str:
         pass
 
     @abstractmethod

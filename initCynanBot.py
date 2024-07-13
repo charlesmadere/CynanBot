@@ -130,6 +130,7 @@ from src.recurringActions.mostRecentRecurringActionRepositoryInterface import \
 from src.recurringActions.recurringActionsHelper import RecurringActionsHelper
 from src.recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
 from src.recurringActions.recurringActionsJsonParser import RecurringActionsJsonParser
+from src.recurringActions.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from src.recurringActions.recurringActionsMachine import RecurringActionsMachine
 from src.recurringActions.recurringActionsMachineInterface import RecurringActionsMachineInterface
 from src.recurringActions.recurringActionsRepository import RecurringActionsRepository
@@ -1054,17 +1055,20 @@ if mostRecentAnivMessageRepository is not None:
 ## Recurring Actions initialization section ##
 ##############################################
 
+recurringActionsJsonParser: RecurringActionsJsonParserInterface = RecurringActionsJsonParser(
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
 recurringActionsRepository: RecurringActionsRepositoryInterface = RecurringActionsRepository(
     backingDatabase = backingDatabase,
-    recurringActionsJsonParser = RecurringActionsJsonParser(
-        languagesRepository = languagesRepository,
-        timber = timber
-    ),
+    recurringActionsJsonParser = recurringActionsJsonParser,
     timber = timber
 )
 
 mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface = MostRecentRecurringActionRepository(
     backingDatabase = backingDatabase,
+    recurringActionsJsonParser = recurringActionsJsonParser,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )

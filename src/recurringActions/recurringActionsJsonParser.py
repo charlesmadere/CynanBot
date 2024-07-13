@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 from .recurringAction import RecurringAction
+from .recurringActionType import RecurringActionType
 from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from .superTriviaRecurringAction import SuperTriviaRecurringAction
 from .weatherRecurringAction import WeatherRecurringAction
@@ -26,6 +27,23 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
+
+    async def parseActionType(
+        self,
+        actionType: str | Any | None
+    ) -> RecurringActionType | None:
+        if not utils.isValidStr(actionType):
+            return None
+
+        actionType = actionType.lower()
+
+        match actionType:
+            case 'super_trivia': return RecurringActionType.SUPER_TRIVIA
+            case 'weather': return RecurringActionType.WEATHER
+            case 'word_of_the_day': return RecurringActionType.WORD_OF_THE_DAY
+            case _:
+                self.__timber.log('RecurringActionsJsonParser', f'Encountered unknown RecurringActionType value: \"{actionType}\"')
+                return None
 
     async def parseSuperTrivia(
         self,
@@ -107,6 +125,19 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             languageEntry = languageEntry
         )
 
+    async def serializeActionType(
+        self,
+        actionType: RecurringActionType
+    ) -> str:
+        if not isinstance(actionType, RecurringActionType):
+            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
+
+        match actionType:
+            case RecurringActionType.SUPER_TRIVIA: return 'super_trivia'
+            case RecurringActionType.WEATHER: return 'weather'
+            case RecurringActionType.WORD_OF_THE_DAY: return 'word_of_the_day'
+            case _: raise ValueError(f'Encountered unknown RecurringActionType: \"{actionType}\"')
+
     async def __superTriviaToJson(self, action: SuperTriviaRecurringAction) -> str:
         if not isinstance(action, SuperTriviaRecurringAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -125,7 +156,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         elif isinstance(action, WordOfTheDayRecurringAction):
             return await self.__wordOfTheDayToJson(action)
         else:
-            raise RuntimeError(f'Encountered unknown RecurringAction type ({action=})')
+            raise ValueError(f'Encountered unknown RecurringAction type ({action=})')
 
     async def __weatherToJson(self, action: WeatherRecurringAction) -> str:
         if not isinstance(action, WeatherRecurringAction):

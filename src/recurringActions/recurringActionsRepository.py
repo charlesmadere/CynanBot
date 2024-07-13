@@ -87,6 +87,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        actionTypeString = await self.__recurringActionsJsonParser.serializeActionType(actionType)
+
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
@@ -94,7 +96,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                 WHERE actiontype = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            actionType.toStr(), twitchChannelId
+            actionTypeString, twitchChannelId
         )
 
         await connection.close()
@@ -246,6 +248,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         elif not utils.isValidStr(configurationJson):
             raise TypeError(f'configurationJson argument is malformed: \"{configurationJson}\"')
 
+        actionTypeString = await self.__recurringActionsJsonParser.serializeActionType(action.actionType)
         isEnabled = utils.boolToNum(action.isEnabled)
 
         connection = await self.__getDatabaseConnection()
@@ -255,7 +258,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (actiontype, twitchchannelid) DO UPDATE SET configurationjson = EXCLUDED.configurationjson, isenabled = EXCLUDED.isenabled, minutesbetween = EXCLUDED.minutesbetween
             ''',
-            action.actionType.toStr(), configurationJson, isEnabled, action.minutesBetween, action.twitchChannelId
+            actionTypeString, configurationJson, isEnabled, action.minutesBetween, action.twitchChannelId
         )
 
         await connection.close()

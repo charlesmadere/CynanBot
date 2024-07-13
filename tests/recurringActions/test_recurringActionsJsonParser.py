@@ -2,9 +2,9 @@ import json
 from typing import Any
 
 import pytest
-
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.recurringActions.recurringActionType import RecurringActionType
 from src.recurringActions.recurringActionsJsonParser import RecurringActionsJsonParser
 from src.recurringActions.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from src.recurringActions.superTriviaRecurringAction import SuperTriviaRecurringAction
@@ -24,6 +24,36 @@ class TestRecurringActionsJsonParser:
         languagesRepository = languagesRepository,
         timber = timber
     )
+
+    @pytest.mark.asyncio
+    async def test_parseActionType_withEmptyString(self):
+        result = await self.parser.parseActionType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseActionType_withNone(self):
+        result = await self.parser.parseActionType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseActionType_withSuperTrivia(self):
+        result = await self.parser.parseActionType('super_trivia')
+        assert result is RecurringActionType.SUPER_TRIVIA
+
+    @pytest.mark.asyncio
+    async def test_parseActionType_withWeather(self):
+        result = await self.parser.parseActionType('weather')
+        assert result is RecurringActionType.WEATHER
+
+    @pytest.mark.asyncio
+    async def test_parseActionType_withWhitespaceString(self):
+        result = await self.parser.parseActionType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseActionType_withWordOfTheDay(self):
+        result = await self.parser.parseActionType('word_of_the_day')
+        assert result is RecurringActionType.WORD_OF_THE_DAY
 
     @pytest.mark.asyncio
     async def test_parseSuperTrivia1(self):
@@ -236,6 +266,21 @@ class TestRecurringActionsJsonParser:
         assert action is None
 
     @pytest.mark.asyncio
+    async def test_serializeActionType_withSuperTrivia(self):
+        result = await self.parser.serializeActionType(RecurringActionType.SUPER_TRIVIA)
+        assert result == 'super_trivia'
+
+    @pytest.mark.asyncio
+    async def test_serializeActionType_withWeather(self):
+        result = await self.parser.serializeActionType(RecurringActionType.WEATHER)
+        assert result == 'weather'
+
+    @pytest.mark.asyncio
+    async def test_serializeActionType_withWordOfTheDay(self):
+        result = await self.parser.serializeActionType(RecurringActionType.WORD_OF_THE_DAY)
+        assert result == 'word_of_the_day'
+
+    @pytest.mark.asyncio
     async def test_toJson_withSuperTriviaAction(self):
         action = SuperTriviaRecurringAction(
             enabled = True,
@@ -327,3 +372,8 @@ class TestRecurringActionsJsonParser:
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 0
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, RecurringActionsJsonParserInterface)
+        assert isinstance(self.parser, RecurringActionsJsonParser)
