@@ -11,7 +11,8 @@ class GenericNetworkException(Exception):
 
         self.__statusCode: int | None = statusCode
 
-    def getStatusCode(self) -> int | None:
+    @property
+    def statusCode(self) -> int | None:
         return self.__statusCode
 
 

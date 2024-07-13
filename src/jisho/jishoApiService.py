@@ -47,7 +47,7 @@ class JishoApiService(JishoApiServiceInterface):
             self.__timber.log('JishoApiService', f'Encountered network error when fetching Jisho query ({encodedQuery=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'JishoApiService encountered network error when fetching Jisho query ({encodedQuery=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 

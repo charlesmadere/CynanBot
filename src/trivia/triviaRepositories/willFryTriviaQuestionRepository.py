@@ -65,8 +65,8 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.statusCode}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
         jsonResponse: list[dict[str, Any] | Any] | None | Any = await response.json()

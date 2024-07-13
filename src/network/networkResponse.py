@@ -11,23 +11,16 @@ class NetworkResponse(ABC):
         pass
 
     @abstractmethod
-    def getNetworkClientType(self) -> NetworkClientType:
-        pass
-
-    @abstractmethod
-    def getStatusCode(self) -> int:
-        pass
-
-    @abstractmethod
-    def getUrl(self) -> str:
-        pass
-
-    @abstractmethod
     def isClosed(self) -> bool:
         pass
 
     @abstractmethod
     async def json(self) -> dict[str, Any] | list[Any] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def networkClientType(self) -> NetworkClientType:
         pass
 
     @abstractmethod
@@ -38,8 +31,18 @@ class NetworkResponse(ABC):
         dictionary = self.toDictionary()
         return str(dictionary)
 
+    @property
+    @abstractmethod
+    def statusCode(self) -> int:
+        pass
+
     @abstractmethod
     def toDictionary(self) -> dict[str, Any]:
+        pass
+
+    @property
+    @abstractmethod
+    def url(self) -> str:
         pass
 
     @abstractmethod

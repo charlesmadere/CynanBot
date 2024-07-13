@@ -23,8 +23,9 @@ class NetworkHandle(ABC):
     ) -> NetworkResponse:
         pass
 
+    @property
     @abstractmethod
-    def getNetworkClientType(self) -> NetworkClientType:
+    def networkClientType(self) -> NetworkClientType:
         pass
 
     @abstractmethod

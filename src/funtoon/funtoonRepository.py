@@ -55,7 +55,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         responseStatus: int | None = None
 
         if response is not None:
-            responseStatus = response.getStatusCode()
+            responseStatus = response.statusCode
             await response.close()
 
         return utils.isValidInt(responseStatus) and responseStatus == 200
@@ -103,7 +103,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
         responseStatusCode: int | None = None
         if response is not None:
-            responseStatusCode = response.getStatusCode()
+            responseStatusCode = response.statusCode
             await response.close()
 
         if responseStatusCode == 200:

@@ -55,7 +55,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
             self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'OpenWeatherApiService encountered network error when fetching weather ({location=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
@@ -93,7 +93,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
             self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'OpenWeatherApiService encountered network error when fetching weather ({location=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 

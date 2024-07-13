@@ -39,16 +39,6 @@ class RequestsResponse(NetworkResponse):
         self.__isClosed = True
         self.__response.close()
 
-    def getNetworkClientType(self) -> NetworkClientType:
-        return NetworkClientType.REQUESTS
-
-    def getStatusCode(self) -> int:
-        self.__requireNotClosed()
-        return self.__response.status_code
-
-    def getUrl(self) -> str:
-        return self.__url
-
     def isClosed(self) -> bool:
         return self.__isClosed
 
@@ -61,21 +51,34 @@ class RequestsResponse(NetworkResponse):
             self.__timber.log('RequestsResponse', f'Unable to decode response into JSON for url \"{self.__url}\"', e)
             return None
 
+    @property
+    def networkClientType(self) -> NetworkClientType:
+        return NetworkClientType.REQUESTS
+
     async def read(self) -> bytes:
         self.__requireNotClosed()
         return self.__response.content
 
     def __requireNotClosed(self):
         if self.__isClosed:
-            raise NetworkResponseIsClosedException(f'This response has already been closed! ({self.getNetworkClientType()})')
+            raise NetworkResponseIsClosedException(f'This response has already been closed! ({self})')
+
+    @property
+    def statusCode(self) -> int:
+        self.__requireNotClosed()
+        return self.__response.status_code
 
     def toDictionary(self) -> dict[str, Any]:
         return {
             'isClosed': self.__isClosed,
-            'networkClientType': self.getNetworkClientType(),
+            'networkClientType': self.networkClientType,
             'response': self.__response,
             'url': self.__url
         }
+
+    @property
+    def url(self) -> str:
+        return self.__url
 
     async def xml(self) -> dict[str, Any] | list[Any] | None:
         self.__requireNotClosed()

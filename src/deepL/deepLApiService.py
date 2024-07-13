@@ -70,7 +70,7 @@ class DeepLApiService(DeepLApiServiceInterface):
             self.__timber.log('DeepLApiService', f'Encountered unknown network error when fetching translation ({request=}) ({response=})')
             raise GenericNetworkException(f'DeepLApiService encountered unknown network error when fetching translation ({request=}) ({response=})')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 

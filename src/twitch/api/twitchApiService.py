@@ -116,7 +116,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered unknown network error when adding moderator ({broadcasterId=}) ({userId=}) ({response=})')
             raise GenericNetworkException(f'TwitchApiService encountered unknown network error when adding moderator ({broadcasterId=}) ({userId=}) ({response=})')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         await response.close()
 
         if responseStatusCode == 204:
@@ -156,7 +156,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered unknown network error when banning user ({banRequest=}) ({response=})')
             raise GenericNetworkException(f'TwitchApiService encountered unknown network error when banning user ({banRequest=}) ({response=})')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
@@ -224,7 +224,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=})): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
@@ -384,7 +384,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
@@ -469,7 +469,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
@@ -510,7 +510,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
@@ -572,7 +572,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching live user details ({twitchChannelIds=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({twitchChannelIds=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
@@ -639,7 +639,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching moderator ({broadcasterId=}) ({userId=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching moderator ({broadcasterId=}) ({userId=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
@@ -681,9 +681,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching tokens (code=\"{code}\"): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching tokens (code=\"{code}\"): {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.getStatusCode()}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.getStatusCode()}')
+        if response.statusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.statusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.statusCode}')
 
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
@@ -742,9 +742,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details ({userId=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({userId=}): {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
+        if response.statusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userId=}): {response.statusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userId=}): {response.statusCode}')
 
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
@@ -809,9 +809,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details (userName=\"{userName}\"): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details (userName=\"{userName}\"): {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
+        if response.statusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.statusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.statusCode}')
 
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
@@ -878,9 +878,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.getStatusCode()}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.getStatusCode()}')
+        if response.statusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.statusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.statusCode}')
 
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
@@ -942,7 +942,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when refreshing tokens ({twitchRefreshToken=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when refreshing tokens ({twitchRefreshToken=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
@@ -998,7 +998,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when sending chat message ({chatRequest=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat message ({chatRequest=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
@@ -1049,7 +1049,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered unknown network error when unbanning user ({unbanRequest=}) ({response=})')
             raise GenericNetworkException(f'TwitchApiService encountered unknown network error when unbanning user ({unbanRequest=}) ({response=})')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         await response.close()
 
         if responseStatusCode == 204:
@@ -1080,7 +1080,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when validating token ({twitchAccessToken=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when validating token ({twitchAccessToken=}): {e}')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 

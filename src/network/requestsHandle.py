@@ -43,12 +43,12 @@ class RequestsHandle(NetworkHandle):
                 timeout = self.__timeoutSeconds
             )
         except Exception as e:
-            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.getNetworkClientType()}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\": {e}', e)
-            raise GenericNetworkException(f'Encountered network error (via {self.getNetworkClientType()}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\": {e}')
+            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\": {e}', e)
+            raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\": {e}')
 
         if response is None:
-            self.__timber.log('RequestsHandle', f'Received no response (via {self.getNetworkClientType()}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\"')
-            raise GenericNetworkException(f'Received no response (via {self.getNetworkClientType()}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\"')
+            self.__timber.log('RequestsHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\"')
+            raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\"')
 
         return RequestsResponse(
             response = response,
@@ -70,12 +70,12 @@ class RequestsHandle(NetworkHandle):
                 timeout = self.__timeoutSeconds
             )
         except Exception as e:
-            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.getNetworkClientType()}) when trying to HTTP GET \"{url}\" with headers \"{headers}\": {e}', e)
-            raise GenericNetworkException(f'Encountered network error (via {self.getNetworkClientType()}) when trying to HTTP GET \"{url}\" with headers \"{headers}\": {e}')
+            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET \"{url}\" with headers \"{headers}\": {e}', e)
+            raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET \"{url}\" with headers \"{headers}\": {e}')
 
         if response is None:
-            self.__timber.log('RequestsHandle', f'Received no response (via {self.getNetworkClientType()}) when trying to HTTP GET \"{url}\" with headers \"{headers}\"')
-            raise GenericNetworkException(f'Received no response (via {self.getNetworkClientType()}) when trying to HTTP GET \"{url}\" with headers \"{headers}\"')
+            self.__timber.log('RequestsHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP GET \"{url}\" with headers \"{headers}\"')
+            raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP GET \"{url}\" with headers \"{headers}\"')
 
         return RequestsResponse(
             response = response,
@@ -83,7 +83,8 @@ class RequestsHandle(NetworkHandle):
             timber = self.__timber
         )
 
-    def getNetworkClientType(self) -> NetworkClientType:
+    @property
+    def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.REQUESTS
 
     async def post(
@@ -102,12 +103,12 @@ class RequestsHandle(NetworkHandle):
                 timeout = self.__timeoutSeconds
             )
         except Exception as e:
-            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.getNetworkClientType()}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\": {e}', e)
-            raise GenericNetworkException(f'Encountered network error (via {self.getNetworkClientType()}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\": {e}')
+            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\": {e}', e)
+            raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\": {e}')
 
         if response is None:
-            self.__timber.log('RequestsHandle', f'Received no response (via {self.getNetworkClientType()}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\"')
-            raise GenericNetworkException(f'Received no response (via {self.getNetworkClientType()}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\"')
+            self.__timber.log('RequestsHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\"')
+            raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\"')
 
         return RequestsResponse(
             response = response,

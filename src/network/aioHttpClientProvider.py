@@ -53,6 +53,3 @@ class AioHttpClientProvider(NetworkClientProvider):
     @property
     def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.AIOHTTP
-
-    def getNetworkClientType(self) -> NetworkClientType:
-        return NetworkClientType.AIOHTTP

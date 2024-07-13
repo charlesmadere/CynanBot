@@ -138,9 +138,9 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when fetching machine with ID \"{machineId}\": {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when fetching machine with ID \"{machineId}\": {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.getStatusCode()}\"')
-            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.statusCode}\"')
+            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.statusCode}\"')
 
         jsonResponse = await response.json()
         await response.close()
@@ -163,9 +163,9 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when fetching move with ID \"{moveId}\": {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when fetching move with ID \"{moveId}\": {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching move with ID \"{moveId}\": \"{response.getStatusCode()}\"')
-            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching move with ID \"{moveId}\": \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching move with ID \"{moveId}\": \"{response.statusCode}\"')
+            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching move with ID \"{moveId}\": \"{response.statusCode}\"')
 
         jsonResponse = await response.json()
         await response.close()
@@ -249,9 +249,9 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": \"{response.getStatusCode()}\"')
-            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": \"{response.statusCode}\"')
+            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": \"{response.statusCode}\"')
 
         jsonResponse = await response.json()
         await response.close()
@@ -503,9 +503,9 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when searching for \"{name}\" move: {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when searching for \"{name}\" move: {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" move: \"{response.getStatusCode()}\"')
-            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" move: \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" move: \"{response.statusCode}\"')
+            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" move: \"{response.statusCode}\"')
 
         jsonResponse = await response.json()
         await response.close()
@@ -531,9 +531,9 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when searching for \"{name}\" Pokemon: {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when searching for \"{name}\" Pokemon: {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" Pokemon: \"{response.getStatusCode()}\"')
-            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" Pokemon: \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" Pokemon: \"{response.statusCode}\"')
+            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" Pokemon: \"{response.statusCode}\"')
 
         jsonResponse = await response.json()
         await response.close()

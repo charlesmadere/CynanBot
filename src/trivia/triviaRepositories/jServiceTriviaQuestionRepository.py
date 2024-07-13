@@ -74,8 +74,8 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered network error ({fetchOptions=}): {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\" ({response=}) ({fetchOptions=})')
+        if response.statusCode != 200:
+            self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.statusCode}\" ({response=}) ({fetchOptions=})')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
         jsonResponse = await response.json()

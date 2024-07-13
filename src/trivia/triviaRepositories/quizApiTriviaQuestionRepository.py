@@ -66,8 +66,8 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.statusCode}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
         jsonResponse = await response.json()

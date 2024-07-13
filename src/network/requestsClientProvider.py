@@ -29,9 +29,6 @@ class RequestsClientProvider(NetworkClientProvider):
             timeoutSeconds = self.__timeoutSeconds
         )
 
-    def getNetworkClientType(self) -> NetworkClientType:
-        return NetworkClientType.REQUESTS
-
     @property
     def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.REQUESTS

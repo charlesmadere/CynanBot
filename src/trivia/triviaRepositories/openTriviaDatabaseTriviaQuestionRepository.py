@@ -81,9 +81,9 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered network error when fetching Open Trivia Database\'s session token ({twitchChannelId=}): {e}', e, traceback.format_exc())
             raise BadTriviaSessionTokenException(f'Encountered network error when fetching Open Trivia Database\'s session token ({twitchChannelId=}): {e}')
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code ({response.getStatusCode()}) when fetching Open Trivia Database\'s session token ({twitchChannelId=})')
-            raise BadTriviaSessionTokenException(f'Encountered non-200 HTTP status code ({response.getStatusCode()}) when fetching Open Trivia Database\'s session token ({twitchChannelId=})')
+        if response.statusCode != 200:
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code ({response.statusCode}) when fetching Open Trivia Database\'s session token ({twitchChannelId=})')
+            raise BadTriviaSessionTokenException(f'Encountered non-200 HTTP status code ({response.statusCode}) when fetching Open Trivia Database\'s session token ({twitchChannelId=})')
 
         jsonResponse = await response.json()
         await response.close()
@@ -118,8 +118,8 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.getStatusCode()}\"')
+        if response.statusCode != 200:
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.statusCode}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
         jsonResponse = await response.json()

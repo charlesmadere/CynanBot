@@ -57,7 +57,7 @@ class TransparentApiService(TransparentApiServiceInterface):
             self.__timber.log('TransparentApiService', f'Encountered network error when fetching word of the day ({targetLanguage=})')
             raise GenericNetworkException(f'TransparentApiService encountered network error when fetching word of the day ({targetLanguage=})')
 
-        responseStatusCode = response.getStatusCode()
+        responseStatusCode = response.statusCode
         xmlResponse = await response.xml()
         await response.close()
 

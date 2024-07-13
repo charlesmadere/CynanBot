@@ -14,7 +14,3 @@ class NetworkClientProvider(ABC):
     @abstractmethod
     def networkClientType(self) -> NetworkClientType:
         pass
-
-    @abstractmethod
-    def getNetworkClientType(self) -> NetworkClientType:
-        pass
