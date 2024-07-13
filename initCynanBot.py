@@ -340,7 +340,8 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Core initialization section ##
 #################################
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
