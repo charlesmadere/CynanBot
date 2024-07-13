@@ -13,7 +13,7 @@ python {
     pythonBinary = 'python3.12'
     minPythonVersion = '3.12'
     minPipVersion = '24.1.1'
-    pip 'pip:24.1.1'
+    pip 'pip:24.1.2'
     pip 'aiofiles:24.1.0'
     pip 'aiohttp:3.9.5'
     pip 'aiosignal:1.3.1'
