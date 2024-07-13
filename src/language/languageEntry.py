@@ -5,7 +5,7 @@ from ..misc import utils as utils
 
 
 @dataclass(frozen = True)
-class LanguageEntry():
+class LanguageEntry:
     commandNames: list[str]
     name: str
     flag: str | None = None
