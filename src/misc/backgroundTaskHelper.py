@@ -24,6 +24,3 @@ class BackgroundTaskHelper(BackgroundTaskHelperInterface):
     @property
     def eventLoop(self) -> AbstractEventLoop:
         return self.__eventLoop
-
-    def getEventLoop(self) -> AbstractEventLoop:
-        return self.__eventLoop

@@ -13,7 +13,3 @@ class BackgroundTaskHelperInterface(ABC):
     @abstractmethod
     def eventLoop(self) -> AbstractEventLoop:
         pass
-
-    @abstractmethod
-    def getEventLoop(self) -> AbstractEventLoop:
-        pass
