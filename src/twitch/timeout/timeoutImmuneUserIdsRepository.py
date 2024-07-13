@@ -14,6 +14,8 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             '546457893', # CynanBot
             '977636741', # CynanBotTTS
             '477393386', # FUNtoon
+            '100135110', # StreamElements
+            '105166207', # Streamlabs
         }
     ):
         if not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
@@ -25,7 +27,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
 
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__immuneUserIds: set[str] = immuneUserIds
+        self.__immuneUserIds: frozenset[str] = frozenset(immuneUserIds)
 
         self.__twitchUserId: str | None = None
 
