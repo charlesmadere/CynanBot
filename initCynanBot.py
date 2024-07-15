@@ -54,9 +54,12 @@ from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
+from src.cuteness.cutenessPresenter import CutenessPresenter
+from src.cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from src.cuteness.cutenessRepository import CutenessRepository
 from src.cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from src.cuteness.cutenessUtils import CutenessUtils
+from src.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from src.cynanBot import CynanBot
 from src.deepL.deepLApiService import DeepLApiService
 from src.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
@@ -503,17 +506,24 @@ chatLogger: ChatLoggerInterface = ChatLogger(
     timeZoneRepository = timeZoneRepository
 )
 
+
+#####################################
+## Cuteness initialization section ##
+#####################################
+
+cutenessPresenter: CutenessPresenterInterface = CutenessPresenter()
+
 cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
-emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('emojiRepository.json'),
-    timber = timber
-)
-emojiHelper: EmojiHelperInterface = EmojiHelper(
-    emojiRepository = emojiRepository
-)
+
+cutenessUtils: CutenessUtilsInterface = CutenessUtils()
+
+
+####################################
+## Funtoon initialization section ##
+####################################
 
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
@@ -529,6 +539,15 @@ funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonTokensRepository = funtoonTokensRepository,
     networkClientProvider = networkClientProvider,
     timber = timber
+)
+
+emojiRepository: EmojiRepositoryInterface = EmojiRepository(
+    emojiJsonReader = JsonFileReader('emojiRepository.json'),
+    timber = timber
+)
+
+emojiHelper: EmojiHelperInterface = EmojiHelper(
+    emojiRepository = emojiRepository
 )
 
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
@@ -1452,8 +1471,9 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    cutenessPresenter = cutenessPresenter,
     cutenessRepository = cutenessRepository,
-    cutenessUtils = CutenessUtils(),
+    cutenessUtils = cutenessUtils,
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,

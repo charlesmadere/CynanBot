@@ -376,13 +376,10 @@ chatLogger: ChatLoggerInterface = ChatLogger(
     timeZoneRepository = timeZoneRepository
 )
 
-emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('emojiRepository.json'),
-    timber = timber
-)
-emojiHelper: EmojiHelperInterface = EmojiHelper(
-    emojiRepository = emojiRepository
-)
+
+####################################
+## Funtoon initialization section ##
+####################################
 
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
@@ -398,6 +395,15 @@ funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonTokensRepository = funtoonTokensRepository,
     networkClientProvider = networkClientProvider,
     timber = timber
+)
+
+emojiRepository: EmojiRepositoryInterface = EmojiRepository(
+    emojiJsonReader = JsonFileReader('emojiRepository.json'),
+    timber = timber
+)
+
+emojiHelper: EmojiHelperInterface = EmojiHelper(
+    emojiRepository = emojiRepository
 )
 
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
@@ -859,6 +865,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    cutenessPresenter = None,
     cutenessRepository = None,
     cutenessUtils = None,
     funtoonRepository = funtoonRepository,

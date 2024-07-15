@@ -1,10 +1,8 @@
 from datetime import timedelta
 
 from .absChatCommand import AbsChatCommand
-from ..cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
+from ..cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from ..cuteness.cutenessResult import CutenessResult
-from ..cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
@@ -18,8 +16,8 @@ class CutenessChatCommand(AbsChatCommand):
 
     def __init__(
         self,
+        cutenessPresenter: CutenessPresenterInterface,
         cutenessRepository: CutenessRepositoryInterface,
-        cutenessUtils: CutenessUtilsInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -27,10 +25,10 @@ class CutenessChatCommand(AbsChatCommand):
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 2)
     ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
+        if not isinstance(cutenessPresenter, CutenessPresenterInterface):
+            raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
+        elif not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -44,49 +42,14 @@ class CutenessChatCommand(AbsChatCommand):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__cutenessPresenter: CutenessPresenterInterface = cutenessPresenter
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__cutenessUtils: CutenessUtilsInterface = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    def __cutenessLeaderboardResultToStr(self, result: CutenessLeaderboardResult) -> str:
-        if not isinstance(result, CutenessLeaderboardResult):
-            raise TypeError(f'result argument is malformed: \"{result}\"')
-
-        if result.entries is None or len(result.entries) == 0:
-            return f'{result.cutenessDate.getHumanString()} Leaderboard is empty 😿'
-
-        specificLookupText: str | None = None
-
-        if result.specificLookupCutenessResult is not None:
-            userName = result.specificLookupCutenessResult.userName
-            cutenessStr = result.specificLookupCutenessResult.cutenessStr
-            specificLookupText = f'@{userName} your cuteness is {cutenessStr}'
-
-        leaderboard = self.__cutenessUtils.getLeaderboard(
-            entries = result.entries,
-            delimiter = self.__delimiter
-        )
-
-        if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the {result.cutenessDate.getHumanString()} Leaderboard is: {leaderboard} ✨'
-        else:
-            return f'{result.cutenessDate.getHumanString()} Leaderboard {leaderboard} ✨'
-
-    def __cutenessResultToStr(self, result: CutenessResult) -> str:
-        if not isinstance(result, CutenessResult):
-            raise TypeError(f'result argument is malformed: \"{result}\"')
-
-        cuteness = result.cuteness
-
-        if utils.isValidInt(cuteness) and cuteness >= 1:
-            return f'{result.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr} ✨'
-        else:
-            return f'{result.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -117,7 +80,8 @@ class CutenessChatCommand(AbsChatCommand):
                 userName = userName
             )
 
-            await self.__twitchUtils.safeSend(ctx, self.__cutenessResultToStr(result))
+            printOut = await self.__cutenessPresenter.printCuteness(result)
+            await self.__twitchUtils.safeSend(ctx, printOut)
         else:
             userId = ctx.getAuthorId()
 
@@ -128,6 +92,7 @@ class CutenessChatCommand(AbsChatCommand):
                 specificLookupUserName = userName
             )
 
-            await self.__twitchUtils.safeSend(ctx, self.__cutenessLeaderboardResultToStr(result))
+            printOut = await self.__cutenessPresenter.printLeaderboard(result)
+            await self.__twitchUtils.safeSend(ctx, printOut)
 
         self.__timber.log('CutenessChatCommand', f'Handled !cuteness command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
