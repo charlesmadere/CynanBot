@@ -101,6 +101,7 @@ from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
+from .recurringActions.cutenessRecurringEvent import CutenessRecurringEvent
 from .recurringActions.recurringActionEventListener import RecurringActionEventListener
 from .recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
 from .recurringActions.recurringActionsMachineInterface import RecurringActionsMachineInterface
@@ -476,6 +477,7 @@ class CynanBot(
         self.__authRepository: AuthRepository = authRepository
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__cutenessPresenter: CutenessPresenterInterface | None = cutenessPresenter
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
@@ -923,12 +925,27 @@ class CynanBot(
 
         self.__timber.log('CynanBot', f'Received new recurring action event: \"{event}\"')
 
-        if isinstance(event, SuperTriviaRecurringEvent):
+        if isinstance(event, CutenessRecurringEvent):
+            await self.__handleCutenessRecurringActionEvent(event)
+        elif isinstance(event, SuperTriviaRecurringEvent):
             await self.__handleSuperTriviaRecurringActionEvent(event)
         elif isinstance(event, WeatherRecurringEvent):
             await self.__handleWeatherRecurringActionEvent(event)
         elif isinstance(event, WordOfTheDayRecurringEvent):
             await self.__handleWordOfTheDayRecurringActionEvent(event)
+
+    async def __handleCutenessRecurringActionEvent(self, event: CutenessRecurringEvent):
+        if not isinstance(event, CutenessRecurringEvent):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
+
+        cutenessPresenter = self.__cutenessPresenter
+
+        if cutenessPresenter is None:
+            return
+
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        printOut = await cutenessPresenter.printLeaderboard(event.leaderboard)
+        await self.__twitchUtils.safeSend(twitchChannel, printOut)
 
     async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):
         if not isinstance(event, SuperTriviaRecurringEvent):

@@ -36,10 +36,6 @@ class WeatherRecurringEvent(RecurringEvent):
     def isAlertsOnly(self) -> bool:
         return self.__alertsOnly
 
-    @property
-    def weatherReport(self) -> WeatherReport:
-        return self.__weatherReport
-
     def toDictionary(self) -> dict[str, Any]:
         return {
             'alertsOnly': self.__alertsOnly,
@@ -48,3 +44,7 @@ class WeatherRecurringEvent(RecurringEvent):
             'twitchChannelId': self.twitchChannelId,
             'weatherReport': self.weatherReport
         }
+
+    @property
+    def weatherReport(self) -> WeatherReport:
+        return self.__weatherReport

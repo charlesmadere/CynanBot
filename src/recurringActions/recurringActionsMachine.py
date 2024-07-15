@@ -5,6 +5,8 @@ import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
+from .cutenessRecurringAction import CutenessRecurringAction
+from .cutenessRecurringEvent import CutenessRecurringEvent
 from .mostRecentRecurringActionRepositoryInterface import MostRecentRecurringActionRepositoryInterface
 from .recurringAction import RecurringAction
 from .recurringActionEventListener import RecurringActionEventListener
@@ -18,6 +20,7 @@ from .weatherRecurringAction import WeatherRecurringAction
 from .weatherRecurringEvent import WeatherRecurringEvent
 from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from .wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
+from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -40,6 +43,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        cutenessRepository: CutenessRepositoryInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface,
         mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface,
@@ -60,6 +64,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
+            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(locationsRepository, LocationsRepositoryInterface):
@@ -104,6 +110,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__cutenessRepository: CutenessRepositoryInterface | None = cutenessRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__locationsRepository: LocationsRepositoryInterface = locationsRepository
         self.__mostRecentRecurringActionsRepository: MostRecentRecurringActionRepositoryInterface = mostRecentRecurringActionRepository
@@ -194,6 +201,32 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         return action
 
+    async def __processCutenessRecurringAction(
+        self,
+        user: UserInterface,
+        action: CutenessRecurringAction
+    ) -> bool:
+        if not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(action, CutenessRecurringAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if self.__cutenessRepository is None:
+            return False
+
+        leaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = action.twitchChannelId
+        )
+
+        await self.__submitEvent(CutenessRecurringEvent(
+            leaderboard = leaderboard,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = action.twitchChannelId
+        ))
+
+        return True
+
     async def __processRecurringAction(
         self,
         user: UserInterface,
@@ -237,7 +270,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         newTriviaGame = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
-            twitchChannelId = await self.__userIdsRepository.requireUserId(user.getHandle())
+            twitchChannelId = action.twitchChannelId
         )
 
         if newTriviaGame is None:
