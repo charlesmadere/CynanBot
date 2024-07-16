@@ -1096,6 +1096,7 @@ mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterfac
 
 recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMachine(
     backgroundTaskHelper = backgroundTaskHelper,
+    cutenessRepository = cutenessRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     locationsRepository = locationsRepository,
     mostRecentRecurringActionRepository = mostRecentRecurringActionRepository,
