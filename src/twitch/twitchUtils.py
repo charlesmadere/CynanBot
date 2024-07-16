@@ -97,12 +97,6 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
         self.__senderId: str | None = None
 
-    def getMaxMessageSize(self) -> int:
-        return 494
-
-    def getMaxTimeoutSeconds(self) -> int:
-        return 1209600
-
     async def __getSenderId(self) -> str:
         senderId = self.__senderId
 
@@ -125,6 +119,14 @@ class TwitchUtils(TwitchUtilsInterface):
         twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
         return await self.__twitchTokensRepository.requireAccessToken(twitchChannel)
 
+    @property
+    def maxMessageSize(self) -> int:
+        return 494
+
+    @property
+    def maxTimeoutSeconds(self) -> int:
+        return 1209600
+
     async def safeSend(
         self,
         messageable: TwitchMessageable,
@@ -144,13 +146,13 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
         elif perMessageMaxSize < 300:
             raise ValueError(f'perMessageMaxSize is too small: {perMessageMaxSize}')
-        elif perMessageMaxSize > self.getMaxMessageSize():
-            raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {self.getMaxMessageSize()})')
+        elif perMessageMaxSize > self.maxMessageSize:
+            raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {self.maxMessageSize})')
 
         if not utils.isValidStr(message):
             return
 
-        if len(message) < self.getMaxMessageSize():
+        if len(message) < self.maxMessageSize:
             await self.__safeSend(
                 messageable = messageable,
                 message = message

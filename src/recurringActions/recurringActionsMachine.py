@@ -162,6 +162,12 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             actionTypes.remove(actionType)
 
             match actionType:
+                case RecurringActionType.CUTENESS:
+                    action = await self.__recurringActionsRepository.getCutenessRecurringAction(
+                        twitchChannel = user.getHandle(),
+                        twitchChannelId = twitchChannelId
+                    )
+
                 case RecurringActionType.SUPER_TRIVIA:
                     action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
                         twitchChannel = user.getHandle(),

@@ -147,7 +147,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ) -> TwitchTimeoutResult:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.getMaxTimeoutSeconds():
+        elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.maxTimeoutSeconds:
             raise ValueError(f'durationSeconds argument is out of bounds: \"{durationSeconds}\"')
         elif reason is not None and not isinstance(reason, str):
             raise TypeError(f'reason argument is malformed: \"{reason}\"')
@@ -234,7 +234,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ) -> bool:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.getMaxTimeoutSeconds():
+        elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.maxTimeoutSeconds:
             raise ValueError(f'durationSeconds argument is out of bounds: \"{durationSeconds}\"')
         elif not utils.isValidStr(cynanBotUserId):
             raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')

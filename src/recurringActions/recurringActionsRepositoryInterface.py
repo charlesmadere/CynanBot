@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from .cutenessRecurringAction import CutenessRecurringAction
 from .recurringAction import RecurringAction
 from .superTriviaRecurringAction import SuperTriviaRecurringAction
 from .weatherRecurringAction import WeatherRecurringAction
@@ -14,6 +15,14 @@ class RecurringActionsRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str
     ) -> list[RecurringAction]:
+        pass
+
+    @abstractmethod
+    async def getCutenessRecurringAction(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessRecurringAction | None:
         pass
 
     @abstractmethod

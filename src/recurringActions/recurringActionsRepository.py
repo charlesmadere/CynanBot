@@ -1,5 +1,6 @@
 from typing import Any
 
+from .cutenessRecurringAction import CutenessRecurringAction
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
 from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
@@ -47,6 +48,14 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
         recurringActions: list[RecurringAction] = list()
 
+        cuteness = await self.getCutenessRecurringAction(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        if cuteness is not None and cuteness.isEnabled:
+            recurringActions.append(cuteness)
+
         superTrivia = await self.getSuperTriviaRecurringAction(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
@@ -72,6 +81,32 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             recurringActions.append(wordOfTheDay)
 
         return recurringActions
+
+    async def getCutenessRecurringAction(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessRecurringAction | None:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        record = await self.__getRecurringAction(
+            actionType = RecurringActionType.CUTENESS,
+            twitchChannelId = twitchChannelId
+        )
+
+        if record is None or len(record) == 0:
+            return None
+
+        return await self.__recurringActionsJsonParser.parseCuteness(
+            enabled = utils.numToBool(record[1]),
+            minutesBetween = record[2],
+            jsonString = record[0],
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()

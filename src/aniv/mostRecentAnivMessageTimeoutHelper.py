@@ -2,26 +2,21 @@ import random
 from datetime import datetime, timedelta
 
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
-from .anivCopyMessageTimeoutScoreRepositoryInterface import \
-    AnivCopyMessageTimeoutScoreRepositoryInterface
-from .anivSettingsRepositoryInterface import \
-    AnivSettingsRepositoryInterface
+from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
+from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from .anivUserIdProviderInterface import AnivUserIdProviderInterface
 from .mostRecentAnivMessage import MostRecentAnivMessage
-from .mostRecentAnivMessageRepositoryInterface import \
-    MostRecentAnivMessageRepositoryInterface
-from .mostRecentAnivMessageTimeoutHelperInterface import \
-    MostRecentAnivMessageTimeoutHelperInterface
+from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from ..twitch.timeout.twitchTimeoutHelperInterface import \
-    TwitchTimeoutHelperInterface
+from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from ..twitch.twitchConstantsInterface import TwitchConstantsInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userInterface import UserInterface
 
@@ -37,6 +32,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchConstants: TwitchConstantsInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
@@ -53,6 +49,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(twitchConstants, TwitchConstantsInterface):
+            raise TypeError(f'twitchConstants argument is malformed: \"{twitchConstants}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -68,6 +66,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -128,6 +127,14 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidInt(durationSeconds):
             durationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
 
+        criticalTimeoutProbability = await self.__anivSettingsRepository.getCopyMessageCriticalTimeoutProbability()
+        isCritical = random.random() <= criticalTimeoutProbability
+        if isCritical:
+            criticalTimeoutMultiplier = await self.__anivSettingsRepository.getCopyMessageCriticalTimeoutSecondsMultiplier()
+            durationSeconds = durationSeconds * int(round(criticalTimeoutMultiplier))
+            durationSeconds = int(min(durationSeconds, self.__twitchConstants.maxTimeoutSeconds))
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} is being hit with a critical aniv copy message timeout! ({criticalTimeoutProbability=}) ({criticalTimeoutMultiplier=}) ({durationSeconds=})')
+
         twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
         if not utils.isValidStr(twitchChannelAccessToken):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch channel access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
@@ -159,7 +166,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if twitchChannelProvider is not None:
             twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
             timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-            await self.__twitchUtils.safeSend(twitchChannel, f'@{chatterUserName} RIPBOZO {timeoutScoreString}')
+            msg = f'@{chatterUserName} RIPBOZO {timeoutScoreString}'
+
+            if isCritical:
+                while (len(msg) + len(' RIPBOZO')) < self.__twitchConstants.maxMessageSize:
+                    msg = f'{msg} RIPBOZO'
+
+            await self.__twitchUtils.safeSend(twitchChannel, msg)
 
         return True
 

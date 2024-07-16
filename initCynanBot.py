@@ -1064,6 +1064,7 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
+        twitchConstants = twitchUtils,
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,

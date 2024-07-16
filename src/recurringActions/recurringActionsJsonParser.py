@@ -1,6 +1,7 @@
 import json
 from typing import Any
 
+from .cutenessRecurringAction import CutenessRecurringAction
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
 from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
@@ -45,6 +46,24 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             case _:
                 self.__timber.log('RecurringActionsJsonParser', f'Encountered unknown RecurringActionType value: \"{actionType}\"')
                 return None
+
+    async def parseCuteness(
+        self,
+        enabled: bool,
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessRecurringAction | None:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        return CutenessRecurringAction(
+            enabled = enabled,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
+            minutesBetween = minutesBetween
+        )
 
     async def parseSuperTrivia(
         self,

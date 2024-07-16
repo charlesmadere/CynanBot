@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from .cutenessRecurringAction import CutenessRecurringAction
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
 from .superTriviaRecurringAction import SuperTriviaRecurringAction
@@ -15,6 +16,17 @@ class RecurringActionsJsonParserInterface(ABC):
         self,
         actionType: str | Any | None
     ) -> RecurringActionType | None:
+        pass
+
+    @abstractmethod
+    async def parseCuteness(
+        self,
+        enabled: bool,
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessRecurringAction | None:
         pass
 
     @abstractmethod

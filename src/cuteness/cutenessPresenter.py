@@ -44,23 +44,20 @@ class CutenessPresenter(CutenessPresenterInterface):
         entriesString = delimiter.join(entryStrings)
 
         if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the {result.cutenessDate.getHumanString()} Leaderboard is: {leaderboard} ✨'
+            return f'{specificLookupText}, and the {result.cutenessDate.getHumanString()} Leaderboard is: {entriesString} ✨'
         else:
-            return f'{result.cutenessDate.getHumanString()} Leaderboard {leaderboard} ✨'
+            return f'{result.cutenessDate.getHumanString()} Leaderboard {entriesString} ✨'
 
     async def printLeaderboardPlacement(self, entry: CutenessLeaderboardEntry) -> str:
         if not isinstance(entry, CutenessLeaderboardEntry):
             raise TypeError(f'result argument is malformed: \"{entry}\"')
 
-        rankStr = ''
+        rankStr: str
 
-        if entry.rank == 1:
-            rankStr = '🥇'
-        elif entry.rank == 2:
-            rankStr = '🥈'
-        elif entry.rank == 3:
-            rankStr = '🥉'
-        else:
-            rankStr = f'#{entry.rankStr}'
+        match entry.rank:
+            case 1: rankStr = '🥇'
+            case 2: rankStr = '🥈'
+            case 3: rankStr = '🥉'
+            case _: rankStr = f'#{entry.rankStr}'
 
         return f'{rankStr} {entry.userName} ({entry.cutenessStr})'

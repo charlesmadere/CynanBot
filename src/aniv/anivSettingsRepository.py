@@ -19,6 +19,24 @@ class AnivSettingsRepository(AnivSettingsRepositoryInterface):
     async def clearCaches(self):
         self.__settingsCache = None
 
+    async def getCopyMessageCriticalTimeoutProbability(self) -> float:
+        jsonContents = await self.__readJson()
+
+        return utils.getFloatFromDict(
+            d = jsonContents,
+            key = 'copyMessageCriticalTimeoutProbability',
+            fallback = 0.03
+        )
+
+    async def getCopyMessageCriticalTimeoutSecondsMultiplier(self) -> float:
+        jsonContents = await self.__readJson()
+
+        return utils.getFloatFromDict(
+            d = jsonContents,
+            key = 'copyMessageCriticalTimeoutSecondsMultiplier',
+            fallback = float(5)
+        )
+
     async def getCopyMessageMaxAgeSeconds(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'copyMessageMaxAgeSeconds', fallback = 30)

@@ -3,10 +3,12 @@ from abc import ABC, abstractmethod
 
 class TwitchConstantsInterface(ABC):
 
+    @property
     @abstractmethod
-    def getMaxMessageSize(self) -> int:
+    def maxMessageSize(self) -> int:
         pass
 
+    @property
     @abstractmethod
-    def getMaxTimeoutSeconds(self) -> int:
+    def maxTimeoutSeconds(self) -> int:
         pass

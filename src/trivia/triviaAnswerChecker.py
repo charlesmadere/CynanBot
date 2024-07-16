@@ -40,30 +40,30 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
         self.__whitespacePattern: Pattern = re.compile(r'\s\s+', re.IGNORECASE)
 
-        self.__irregularNouns: dict[str, set[str]] = {
-            'addendum': { 'addenda', 'addendums' },
-            'alumna': { 'alumnae' },
-            'bacterium': { 'bacteria' },
-            'child': { 'children' },
-            'deer': { 'deer', 'deers' },
-            'die': { 'dice' },
-            'fish': { 'fish', 'fishes' },
-            'foot': { 'feet' },
-            'goose': { 'geese' },
-            'index': { 'indexes', 'indices' },
-            'loaf': { 'loaves' },
-            'man': { 'men' },
-            'moose': { 'moose' },
-            'mouse': { 'mice' },
-            'person': { 'people' },
-            'ox': { 'ox', 'oxen' },
-            'scarf': { 'scarfs', 'scarves' },
-            'self': { 'selves' },
-            'tooth': { 'teeth' },
-            'vertebra': { 'vertebrae', 'vertebras' },
-            'wife': { 'wives' },
-            'wolf': { 'wolves' },
-            'woman': { 'women' }
+        self.__irregularNouns: dict[str, frozenset[str]] = {
+            'addendum': frozenset({ 'addenda', 'addendums' }),
+            'alumna': frozenset({ 'alumnae' }),
+            'bacterium': frozenset({ 'bacteria' }),
+            'child': frozenset({ 'children' }),
+            'deer': frozenset({ 'deer', 'deers' }),
+            'die': frozenset({ 'dice' }),
+            'fish': frozenset({ 'fish', 'fishes' }),
+            'foot': frozenset({ 'feet' }),
+            'goose': frozenset({ 'geese' }),
+            'index': frozenset({ 'indexes', 'indices' }),
+            'loaf': frozenset({ 'loaves' }),
+            'man': frozenset({ 'men' }),
+            'moose': frozenset({ 'moose' }),
+            'mouse': frozenset({ 'mice' }),
+            'person': frozenset({ 'people' }),
+            'ox': frozenset({ 'ox', 'oxen' }),
+            'scarf': frozenset({ 'scarfs', 'scarves' }),
+            'self': frozenset({ 'selves' }),
+            'tooth': frozenset({ 'teeth' }),
+            'vertebra': frozenset({ 'vertebrae', 'vertebras' }),
+            'wife': frozenset({ 'wives' }),
+            'wolf': frozenset({ 'wolves' }),
+            'woman': frozenset({ 'women' })
         }
 
         self.__stopWords: frozenset[str] = frozenset({
@@ -150,12 +150,16 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if utils.isValidStr(answer) and len(answer) > maxPhraseGuessLength:
             answer = answer[0:maxPhraseGuessLength]
 
-        cleanedAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList([ answer ], False)
+        cleanedAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
+            answers = [ answer ],
+            expandParentheses = False
+        )
+
         if not all(utils.isValidStr(cleanedAnswer) for cleanedAnswer in cleanedAnswers):
             return TriviaAnswerCheckResult.INCORRECT
 
         cleanedCorrectAnswers = triviaQuestion.cleanedCorrectAnswers
-        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({cleanedAnswers=}) ({triviaQuestion.correctAnswers=}) ({cleanedCorrectAnswers=}) ({extras=})')
+        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({cleanedAnswers=}) ({triviaQuestion.correctAnswers=}) ({cleanedCorrectAnswers=}) ({triviaQuestion.answerAddendum=}) ({extras=})')
 
         for cleanedCorrectAnswer in cleanedCorrectAnswers:
             for cleanedAnswer in cleanedAnswers:
