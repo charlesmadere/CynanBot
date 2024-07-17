@@ -16,7 +16,7 @@ class SoundAlertSteps(AbsSteps):
 
         match currentStep:
             case SoundAlertStep.BITS:
-                self.__step = SoundAlertStep.TAG
+                self.__step = SoundAlertStep.DIRECTORY
                 return StepResult.NEXT
 
             case SoundAlertStep.DIRECTORY:

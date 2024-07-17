@@ -198,8 +198,6 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             if not utils.isValidStr(machineIdStr):
                 continue
 
-            machineIdInt: int | None = None
-
             try:
                 machineIdInt = int(machineIdStr)
             except Exception as e:

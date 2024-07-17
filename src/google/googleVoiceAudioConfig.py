@@ -4,7 +4,7 @@ from .googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 
 
 @dataclass(frozen = True)
-class GoogleVoiceAudioConfig():
+class GoogleVoiceAudioConfig:
     pitch: float | None
     speakingRate: float | None
     volumeGainDb: float | None

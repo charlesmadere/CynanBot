@@ -3,6 +3,6 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class GoogleAccessToken():
+class GoogleAccessToken:
     expireTime: datetime
     accessToken: str

@@ -4,6 +4,6 @@ from .googleVoiceAudioConfig import GoogleVoiceAudioConfig
 
 
 @dataclass(frozen = True)
-class GoogleTextSynthesisResponse():
+class GoogleTextSynthesisResponse:
     audioConfig: GoogleVoiceAudioConfig | None
     audioContent: str

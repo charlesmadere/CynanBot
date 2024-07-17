@@ -5,8 +5,7 @@ from .exceptions import NoFuntoonTokenException
 from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from .funtoonPkmnCatchType import FuntoonPkmnCatchType
 from .funtoonRepositoryInterface import FuntoonRepositoryInterface
-from .funtoonTokensRepositoryInterface import \
-    FuntoonTokensRepositoryInterface
+from .funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..misc import utils as utils
 from ..network.exceptions import GenericNetworkException
 from ..network.networkClientProvider import NetworkClientProvider
@@ -172,7 +171,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnCatch as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
             return False
 
-        data: dict[str, Any] | str | None = None
+        data: dict[str, Any] | str | None
 
         if funtoonPkmnCatchType is None:
             data = userThatRedeemed

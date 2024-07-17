@@ -2,6 +2,8 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .googleAccessToken import GoogleAccessToken
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from .googleScope import GoogleScope
@@ -95,11 +97,11 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if jsonContents is None or len(jsonContents) == 0:
             return None
 
-        glossaryTranslations: list[GoogleTranslation] | None = None
+        glossaryTranslations: FrozenList[GoogleTranslation] | None = None
         glossaryTranslationsJson: list[dict[str, Any]] | None = jsonContents.get('glossaryTranslations')
 
         if isinstance(glossaryTranslationsJson, list):
-            glossaryTranslations = list()
+            glossaryTranslations = FrozenList()
 
             for glossaryTranslationJson in glossaryTranslationsJson:
                 glossaryTranslation = await self.parseTranslation(glossaryTranslationJson)
@@ -107,17 +109,21 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
                 if glossaryTranslation is not None:
                     glossaryTranslations.append(glossaryTranslation)
 
-        translations: list[GoogleTranslation] | None = None
+            glossaryTranslations.freeze()
+
+        translations: FrozenList[GoogleTranslation] | None = None
         translationsJson: list[dict[str, Any]] | None = jsonContents.get('translations')
 
         if isinstance(translationsJson, list):
-            translations = list()
+            translations = FrozenList()
 
             for translationJson in translationsJson:
                 translation = await self.parseTranslation(translationJson)
 
                 if translation is not None:
                     translations.append(translation)
+
+            translations.freeze()
 
         return GoogleTranslateTextResponse(
             glossaryTranslations = glossaryTranslations,
@@ -326,11 +332,11 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         self,
         transliterationConfig: GoogleTranslateTextTransliterationConfig
     ) -> dict[str, Any]:
-        if not isinstance(transliterationConfig, GoogleTranslationRequest):
+        if not isinstance(transliterationConfig, GoogleTranslateTextTransliterationConfig):
             raise TypeError(f'transliterationConfig argument is malformed: \"{transliterationConfig}\"')
 
         return {
-            'enableTransliteration': transliterationConfig.getEnableTransliteration()
+            'enableTransliteration': transliterationConfig.enableTransliteration
         }
 
     async def serializeVoiceAudioConfig(

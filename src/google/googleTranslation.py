@@ -4,7 +4,7 @@ from .googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
 
 
 @dataclass(frozen = True)
-class GoogleTranslation():
+class GoogleTranslation:
     glossaryConfig: GoogleTranslateTextGlossaryConfig | None
     detectedLanguageCode: str | None
     model: str | None

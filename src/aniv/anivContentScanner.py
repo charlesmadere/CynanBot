@@ -2,6 +2,8 @@ import re
 from re import Match
 from typing import Pattern
 
+from frozenlist import FrozenList
+
 from .anivContentCode import AnivContentCode
 from .anivContentScannerInterface import AnivContentScannerInterface
 from ..contentScanner.contentCode import ContentCode
@@ -37,11 +39,12 @@ class AnivContentScanner(AnivContentScannerInterface):
             '「': '」'
         }
 
-        self.__twitchEmojiPatterns: list[Pattern] = [
+        self.__twitchEmojiPatterns: FrozenList[Pattern] = FrozenList([
             re.compile(r'^[BR:;]-?[\)]$'),
             re.compile(r'^[:>]\($'),
             re.compile(r'^<3$')
-        ]
+        ])
+        self.__twitchEmojiPatterns.freeze()
 
     async def __cleanTwitchEmojisFromString(self, message: str) -> str:
         if not utils.isValidStr(message):
@@ -81,8 +84,8 @@ class AnivContentScanner(AnivContentScannerInterface):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         stack: Stack[str] = Stack()
-        keys: set[str] = set(characterPairs.keys())
-        values: set[str] = set(characterPairs.values())
+        keys: frozenset[str] = frozenset(set(characterPairs.keys()))
+        values: frozenset[str] = frozenset(set(characterPairs.values()))
         items: list[tuple[str, str]] = list(characterPairs.items())
 
         try:

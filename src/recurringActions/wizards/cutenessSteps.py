@@ -8,7 +8,7 @@ class CutenessSteps(AbsSteps):
     def __init__(self):
         self.__step = CutenessStep.MINUTES_BETWEEN
 
-    def getStep(self) -> SuperTriviaStep:
+    def getStep(self) -> CutenessStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

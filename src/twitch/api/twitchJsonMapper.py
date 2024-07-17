@@ -130,12 +130,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         formats: set[TwitchEmoteImageFormat] = set()
         if isinstance(formatsList, list) and len(formatsList) >= 1:
             for index, formatString in enumerate(formatsList):
-                format = await self.parseEmoteImageFormat(formatString)
+                emoteImageFormat = await self.parseEmoteImageFormat(formatString)
 
-                if format is None:
+                if emoteImageFormat is None:
                     self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"format\" data ({jsonResponse=})')
                 else:
-                    formats.add(format)
+                    formats.add(emoteImageFormat)
 
         if len(formats) == 0:
             self.__timber.log('TwitchJsonMapper', f'Encountered missing/invalid \"format\" field in JSON data: ({jsonResponse=})')
@@ -291,7 +291,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         code = utils.getStrFromDict(jsonResponse, 'code')
 
-        message: str | None
+        message: str | None = None
         if 'message' in jsonResponse and utils.isValidStr(jsonResponse.get('message')):
             message = utils.getStrFromDict(jsonResponse, 'message')
 

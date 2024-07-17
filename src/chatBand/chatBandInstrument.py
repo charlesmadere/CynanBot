@@ -1,6 +1,6 @@
 from enum import auto
 
-from misc.enumWithToFromStr import EnumWithToFromStr
+from ..misc.enumWithToFromStr import EnumWithToFromStr
 
 
 class ChatBandInstrument(EnumWithToFromStr):

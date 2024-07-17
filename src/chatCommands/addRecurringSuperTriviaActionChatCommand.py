@@ -1,8 +1,7 @@
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.recurringActionType import RecurringActionType
-from ..recurringActions.recurringActionsWizardInterface import \
-    RecurringActionsWizardInterface
+from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from ..recurringActions.wizards.superTriviaStep import SuperTriviaStep
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -56,9 +55,9 @@ class AddRecurringSuperTriviaActionChatCommand(AbsChatCommand):
 
         step = wizard.getSteps().getStep()
 
-        if step is SuperTriviaStep.MINUTES_BETWEEN:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between recurring Super Trivia questions (most people choose 20 - 45 minutes)')
-        else:
+        if step is not SuperTriviaStep.MINUTES_BETWEEN:
             raise RuntimeError(f'unknown SuperTriviaStep: \"{step}\"')
 
+        minimumRecurringActionTimingMinutes = RecurringActionType.SUPER_TRIVIA.getMinimumRecurringActionTimingMinutes()
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between recurring Super Trivia questions (most people choose 20 - 45 minutes, minimum is {minimumRecurringActionTimingMinutes})')
         self.__timber.log('AddRecurringSuperTriviaActionChatCommand', f'Handled !addrecurringsupertriviaaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -21,7 +21,7 @@ class CutenessWizard(AbsWizard):
         self.__steps = CutenessSteps()
         self.__minutesBetween: int | None = None
 
-    def getSteps(self) -> WordOfTheDaySteps:
+    def getSteps(self) -> CutenessSteps:
         return self.__steps
 
     def printOut(self) -> str:

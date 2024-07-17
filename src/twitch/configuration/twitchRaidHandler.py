@@ -135,4 +135,4 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
-        self.__provider = provider
+        self.__twitchChannelProvider = provider

@@ -1,3 +1,5 @@
+from abc import ABC
+
 from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
 from ..triviaExceptions import (NoTriviaCorrectAnswersException,
                                 NoTriviaMultipleChoiceResponsesException)
@@ -5,7 +7,7 @@ from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterfac
 from ...misc import utils as utils
 
 
-class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
+class AbsTriviaQuestionRepository(ABC, TriviaQuestionRepositoryInterface):
 
     def __init__(
         self,

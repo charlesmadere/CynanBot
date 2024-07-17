@@ -5,7 +5,7 @@ from .googleTranslateTextTransliterationConfig import GoogleTranslateTextTransli
 
 
 @dataclass(frozen = True)
-class GoogleTranslationRequest():
+class GoogleTranslationRequest:
     glossaryConfig: GoogleTranslateTextGlossaryConfig | None
     transliterationConfig: GoogleTranslateTextTransliterationConfig | None
     contents: list[str]

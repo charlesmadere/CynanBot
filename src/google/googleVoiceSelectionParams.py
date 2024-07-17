@@ -4,7 +4,7 @@ from .googleVoiceGender import GoogleVoiceGender
 
 
 @dataclass(frozen = True)
-class GoogleVoiceSelectionParams():
+class GoogleVoiceSelectionParams:
     gender: GoogleVoiceGender | None
     languageCode: str
     name: str | None
