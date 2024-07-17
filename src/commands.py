@@ -1,7 +1,7 @@
 import traceback
 import uuid
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
@@ -484,50 +484,6 @@ class DiscordCommand(AbsCommand):
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
-class GetGlobalTriviaControllersCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        timber: TimberInterface,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
-        triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__timber: TimberInterface = timber
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        userName = ctx.getAuthorName().lower()
-
-        if user.getHandle().lower() != userName and ctx.getAuthorId() != administrator:
-            self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-
-        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
-        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
-        self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
 class GetTriviaAnswersCommand(AbsCommand):
 
     def __init__(
@@ -624,64 +580,6 @@ class GetTriviaAnswersCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Additional trivia answers for {result.triviaSource.toStr()}:{result.triviaId} — {additionalAnswers}')
 
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
-class GetTriviaControllersCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
-        triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
-            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-    async def handleCommand(self, ctx: TwitchContext):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
-            return
-
-        twitchChannelId = await ctx.getTwitchChannelId()
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('GetTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-
-        controllers = await self.__triviaGameControllersRepository.getControllers(
-            twitchChannel = user.getHandle(),
-            twitchChannelId = twitchChannelId
-        )
-
-        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameControllers(controllers))
-        self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class LoremIpsumCommand(AbsCommand):
@@ -1402,58 +1300,6 @@ class SwQuoteCommand(AbsCommand):
         except ValueError:
             self.__timber.log('SwQuoteCommand', f'Error retrieving Star Wars quote with query: \"{query}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
-
-
-class TimeCommand(AbsCommand):
-
-    def __init__(
-        self,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(minutes = 1)
-    ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        timeZones = user.getTimeZones()
-        if timeZones is None or len(timeZones) == 0:
-            return
-
-        first = True
-        text = ''
-
-        for timeZone in timeZones:
-            localTime = datetime.now(timeZone)
-
-            if first:
-                first = False
-                formattedTime = utils.formatTime(localTime)
-                text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
-            else:
-                formattedTime = utils.formatTimeShort(localTime)
-                timeZoneName = timeZone.tzname(datetime.utcnow())
-                text = f'{text} {timeZoneName} time is {formattedTime}.'
-
-        await self.__twitchUtils.safeSend(ctx, text)
-        self.__timber.log('TimeCommand', f'Handled !time command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TriviaInfoCommand(AbsCommand):

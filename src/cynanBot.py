@@ -26,6 +26,7 @@ from .chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatCommands.absChatCommand import AbsChatCommand
 from .chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from .chatCommands.addGlobalTriviaControllerCommand import AddGlobalTriviaControllerCommand
+from .chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
 from .chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringSuperTriviaActionChatCommand
 from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeatherActionChatCommand
 from .chatCommands.addRecurringWordOfTheDayActionChatCommand import AddRecurringWordOfTheDayActionChatCommand
@@ -44,7 +45,9 @@ from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCo
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
+from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from .chatCommands.getRecurringActionsCommand import GetRecurringActionsCommand
+from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.myAnivTimeoutsChatCommand import MyAnivTimeoutsChatCommand
@@ -56,6 +59,7 @@ from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from .chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from .chatCommands.testCheerActionChatCommand import TestCheerActionChatCommand
+from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
@@ -70,18 +74,12 @@ from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterfac
 from .cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand,
-                       CutenessChampionsCommand, CutenessHistoryCommand,
-                       CynanSourceCommand, DeleteTriviaAnswersCommand,
-                       DiscordCommand, GetGlobalTriviaControllersCommand,
-                       GetTriviaAnswersCommand, GetTriviaControllersCommand,
-                       LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand,
-                       PkMonCommand, PkMoveCommand, RaceCommand,
-                       RemoveGlobalTriviaControllerCommand,
-                       RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
-                       SetTwitchCodeCommand, StubCommand, SwQuoteCommand,
-                       TimeCommand, TriviaInfoCommand, TwitchInfoCommand,
-                       TwitterCommand, UnbanTriviaQuestionCommand)
+from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CutenessChampionsCommand, CutenessHistoryCommand,
+                       CynanSourceCommand, DeleteTriviaAnswersCommand, DiscordCommand, GetTriviaAnswersCommand,
+                       LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand, PkMonCommand, PkMoveCommand,
+                       RaceCommand, RemoveGlobalTriviaControllerCommand, RemoveTriviaControllerCommand,
+                       SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TriviaInfoCommand,
+                       TwitchInfoCommand, TwitterCommand, UnbanTriviaQuestionCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
@@ -521,7 +519,7 @@ class CynanBot(
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
-        self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
+        self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
@@ -541,6 +539,7 @@ class CynanBot(
             self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
+            self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
@@ -549,6 +548,7 @@ class CynanBot(
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
         else:
+            self.__addRecurringCutenessActionCommand: AbsChatCommand = AddRecurringCutenessActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
@@ -574,9 +574,9 @@ class CynanBot(
             self.__banTriviaQuestionCommand: AbsChatCommand = StubChatCommand()
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
-            self.__getGlobalTriviaControllersCommand: AbsCommand = StubCommand()
+            self.__getGlobalTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
-            self.__getTriviaControllersCommand: AbsCommand = StubCommand()
+            self.__getTriviaControllersChatCommand: AbsChatCommand = StubChatCommand()
             self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
             self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
@@ -592,9 +592,9 @@ class CynanBot(
             self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getGlobalTriviaControllersCommand: AbsChatCommand = GetGlobalTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getTriviaControllersCommand: AbsChatCommand = GetTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
@@ -1164,6 +1164,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGlobalTriviaControllerCommand.handleChatCommand(context)
 
+    @commands.command(name = 'addrecurringcutenessaction')
+    async def command_addrecurringcutenessaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addRecurringCutenessActionCommand.handleChatCommand(context)
+
     @commands.command(name = 'addrecurringsupertriviaaction', aliases = [ 'addrecurringtriviaaction' ])
     async def command_addrecurringsupertriviaaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1174,7 +1179,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringWeatherActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addrecurringwordofthedayaction', aliases = [ 'addrecurringwordaction' ])
+    @commands.command(name = 'addrecurringwordofthedayaction', aliases = [ 'addrecurringwordaction', 'addrecurringwotdaction' ])
     async def command_addrecurringwordofthedayaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
@@ -1234,7 +1239,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__confirmCommand.handleCommand(context)
 
-    @commands.command(name = 'cuteness', aliases = [ 'CUTENESS' ])
+    @commands.command(name = 'cuteness', aliases = [ 'CUTENESS', 'Cuteness' ])
     async def command_cuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__cutenessCommand.handleChatCommand(context)
@@ -1422,7 +1427,7 @@ class CynanBot(
     @commands.command(name = 'time')
     async def command_time(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__timeCommand.handleCommand(context)
+        await self.__timeCommand.handleChatCommand(context)
 
     @commands.command(name = 'translate')
     async def command_translate(self, ctx: Context):
