@@ -112,7 +112,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidNum(timeoutProbability):
             timeoutProbability = await self.__anivSettingsRepository.getCopyMessageTimeoutProbability()
 
-        if random.random() > timeoutProbability:
+        randomNumber = random.random()
+        if randomNumber > timeoutProbability:
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv! ({timeoutProbability=})')
 
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
@@ -128,8 +129,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             durationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
 
         criticalTimeoutProbability = await self.__anivSettingsRepository.getCopyMessageCriticalTimeoutProbability()
-        isCritical = random.random() <= criticalTimeoutProbability
-        if isCritical:
+        isCriticalTimeout = randomNumber <= criticalTimeoutProbability
+        if isCriticalTimeout:
             criticalTimeoutMultiplier = await self.__anivSettingsRepository.getCopyMessageCriticalTimeoutSecondsMultiplier()
             durationSeconds = durationSeconds * int(round(criticalTimeoutMultiplier))
             durationSeconds = int(min(durationSeconds, self.__twitchConstants.maxTimeoutSeconds))
@@ -168,7 +169,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
             msg = f'@{chatterUserName} RIPBOZO {timeoutScoreString}'
 
-            if isCritical:
+            if isCriticalTimeout:
                 while (len(msg) + len(' RIPBOZO')) < self.__twitchConstants.maxMessageSize:
                     msg = f'{msg} RIPBOZO'
 
