@@ -283,7 +283,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(SuperTriviaRecurringEvent(
-            twitchChannel = action.twitchChannel,
+            twitchChannel = user.getHandle(),
             twitchChannelId = action.twitchChannelId
         ))
 
@@ -327,7 +327,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(WeatherRecurringEvent(
             alertsOnly = action.isAlertsOnly,
-            twitchChannel = action.twitchChannel,
+            twitchChannel = user.getHandle(),
             twitchChannelId = action.twitchChannelId,
             weatherReport = weatherReport
         ))
@@ -357,7 +357,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
             languageEntry = languageEntry,
-            twitchChannel = action.twitchChannel,
+            twitchChannel = user.getHandle(),
             twitchChannelId = action.twitchChannelId,
             wordOfTheDayResponse = wordOfTheDayResponse
         ))
