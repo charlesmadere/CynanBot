@@ -126,12 +126,12 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         randomGeneration = await self.__selectRandomGeneration(move.getInitialGeneration())
         machine = machines[randomGeneration][0]
-        correctMachineNumber = machine.getMachineNumber()
-        machinePrefix = machine.getMachineType().toStr()
+        correctMachineNumber = machine.machineNumber
+        machinePrefix = machine.machineType.toStr()
 
         falseMachineNumbers = await self.__selectRandomFalseMachineNumbers(
             actualMachineNumber = correctMachineNumber,
-            actualMachineType = machine.getMachineType()
+            actualMachineType = machine.machineType
         )
 
         falseMachineNumbersStrs: list[str] = list()
@@ -139,7 +139,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             falseMachineNumbersStrs.append(f'{machinePrefix}{falseMachineNumber}')
 
         return {
-            'correctAnswer': machine.getMachineName(),
+            'correctAnswer': machine.machineName,
             'incorrectAnswers': falseMachineNumbersStrs,
             'question': f'In Pokémon {randomGeneration.toLongStr()}, {move.getName()} can be taught via which {machinePrefix}?',
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE

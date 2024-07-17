@@ -206,13 +206,13 @@ class PokepediaRepository(PokepediaRepositoryInterface):
 
             machine = await self.fetchMachine(machineIdInt)
 
-            if machine.getGeneration() not in generationMachines:
-                generationMachines[machine.getGeneration()] = list()
+            if machine.generation not in generationMachines:
+                generationMachines[machine.generation] = list()
 
-            generationMachines[machine.getGeneration()].append(machine)
+            generationMachines[machine.generation].append(machine)
 
         for machines in generationMachines.values():
-            machines.sort(key = lambda machine: (machine.getGeneration(), machine.getMachineId()))
+            machines.sort(key = lambda machine: (machine.generation, machine.machineId))
 
         return generationMachines
 
@@ -417,7 +417,7 @@ class PokepediaRepository(PokepediaRepositoryInterface):
         if generation.isEarlyGeneration() and damageClass is not PokepediaDamageClass.STATUS:
             damageClass = PokepediaDamageClass.getTypeBasedDamageClass(elementType)
 
-        move = PokepediaMoveGeneration(
+        move: PokepediaMoveGeneration | None = PokepediaMoveGeneration(
             accuracy = accuracy,
             power = power,
             pp = pp,
@@ -431,37 +431,37 @@ class PokepediaRepository(PokepediaRepositoryInterface):
         # scan for case where gen4+ type changed but not reflected in past_values JSON array
         if PokepediaGeneration.GENERATION_4 not in moveGenerationDictionary:
             if PokepediaGeneration.GENERATION_3 in moveGenerationDictionary:
-                if moveGenerationDictionary[PokepediaGeneration.GENERATION_3].getDamageClass() != damageClass:
+                if moveGenerationDictionary[PokepediaGeneration.GENERATION_3].damageClass is not damageClass:
                     move = PokepediaMoveGeneration(
-                        accuracy = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].getAccuracy(),
-                        power = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].getPower(),
-                        pp = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].getPp(),
+                        accuracy = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].accuracy,
+                        power = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].power,
+                        pp = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].pp,
                         damageClass = damageClass,
-                        elementType = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].getElementType(),
+                        elementType = moveGenerationDictionary[PokepediaGeneration.GENERATION_3].elementType,
                         generation = PokepediaGeneration.GENERATION_4
                     )
 
                     moveGenerationDictionary[PokepediaGeneration.GENERATION_4] = move
             elif PokepediaGeneration.GENERATION_2 in moveGenerationDictionary:
-                if moveGenerationDictionary[PokepediaGeneration.GENERATION_2].getDamageClass() != damageClass:
+                if moveGenerationDictionary[PokepediaGeneration.GENERATION_2].damageClass is not damageClass:
                     move = PokepediaMoveGeneration(
-                        accuracy = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].getAccuracy(),
-                        power = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].getPower(),
-                        pp = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].getPp(),
+                        accuracy = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].accuracy,
+                        power = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].power,
+                        pp = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].pp,
                         damageClass = damageClass,
-                        elementType = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].getElementType(),
+                        elementType = moveGenerationDictionary[PokepediaGeneration.GENERATION_2].elementType,
                         generation = PokepediaGeneration.GENERATION_4
                     )
 
                     moveGenerationDictionary[PokepediaGeneration.GENERATION_4] = move
             elif PokepediaGeneration.GENERATION_1 in moveGenerationDictionary:
-                if moveGenerationDictionary[PokepediaGeneration.GENERATION_1].getDamageClass() != damageClass:
+                if moveGenerationDictionary[PokepediaGeneration.GENERATION_1].damageClass != damageClass:
                     move = PokepediaMoveGeneration(
-                        accuracy = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].getAccuracy(),
-                        power = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].getPower(),
-                        pp = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].getPp(),
+                        accuracy = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].accuracy,
+                        power = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].power,
+                        pp = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].pp,
                         damageClass = damageClass,
-                        elementType = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].getElementType(),
+                        elementType = moveGenerationDictionary[PokepediaGeneration.GENERATION_1].elementType,
                         generation = PokepediaGeneration.GENERATION_4
                     )
 
@@ -479,7 +479,7 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             else:
                 comparison = moveGenerationDictionary[pokepediaGeneration]
 
-                if move.getAccuracy() == comparison.getAccuracy() and move.getDamageClass() is comparison.getDamageClass() and move.getElementType() is comparison.getElementType() and move.getPower() == comparison.getPower() and move.getPp() == comparison.getPp():
+                if move.accuracy == comparison.accuracy and move.damageClass is comparison.damageClass and move.elementType is comparison.elementType and move.power == comparison.power and move.pp == comparison.pp:
                     del moveGenerationDictionary[pokepediaGeneration]
 
                 move = comparison
