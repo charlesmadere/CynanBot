@@ -1,6 +1,6 @@
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..recurringActions.recurringAction import RecurringAction
+from ..recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
 from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -8,19 +8,21 @@ from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class GetRecurringActionsCommand(AbsChatCommand):
+class RemoveRecurringCutenessActionChatCommand(AbsChatCommand):
 
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        recurringActionsHelper: RecurringActionsHelperInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', '
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
+            raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -29,15 +31,13 @@ class GetRecurringActionsCommand(AbsChatCommand):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__recurringActionsHelper: RecurringActionsHelperInterface = recurringActionsHelper
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -45,28 +45,21 @@ class GetRecurringActionsCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('GetRecurringActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveRecurringCutenessActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(
+        recurringAction = await self.__recurringActionsRepository.getCutenessRecurringAction(
             twitchChannel = user.getHandle(),
             twitchChannelId = userId
         )
 
-        await self.__twitchUtils.safeSend(ctx, await self.__toStr(recurringActions))
-        self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        if recurringAction is None:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring cuteness action')
+            return
+        elif not recurringAction.isEnabled:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring cuteness action is already disabled')
+            return
 
-    async def __toStr(self, recurringActions: list[RecurringAction]) -> str:
-        if not isinstance(recurringActions, list):
-            raise TypeError(f'recurringActions argument is malformed: \"{recurringActions}\"')
-
-        if len(recurringActions) == 0:
-            return 'ⓘ Your channel has no recurring actions'
-
-        recurringActionsStrs: list[str] = list()
-
-        for recurringAction in recurringActions:
-            recurringActionsStrs.append(recurringAction.actionType.toReadableStr())
-
-        recurringActionsStr = self.__delimiter.join(recurringActionsStrs)
-        return f'ⓘ Your channel\'s recurring action(s): {recurringActionsStr}'
+        await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring cuteness action has been disabled')
+        self.__timber.log('RemoveRecurringCutenessActionChatCommand', f'Handled !removerecurringcutenessaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

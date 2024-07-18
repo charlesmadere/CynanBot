@@ -2,8 +2,7 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
-from ..trivia.actions.checkSuperAnswerTriviaAction import \
-    CheckSuperAnswerTriviaAction
+from ..trivia.actions.checkSuperAnswerTriviaAction import CheckSuperAnswerTriviaAction
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ..twitch.configuration.twitchContext import TwitchContext

@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from .absChatCommand import AbsChatCommand
 from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
@@ -132,7 +134,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
-        self.__clearables: list[Clearable | None] = list()
+        self.__clearables: FrozenList[Clearable | None] = FrozenList()
         self.__clearables.append(administratorProvider)
         self.__clearables.append(anivSettingsRepository)
         self.__clearables.append(authRepository)
@@ -160,6 +162,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(weatherRepository)
         self.__clearables.append(websocketConnectionServer)
         self.__clearables.append(wordOfTheDayRepository)
+        self.__clearables.freeze()
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

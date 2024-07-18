@@ -3,10 +3,8 @@ from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
-from ..trivia.gameController.addTriviaGameControllerResult import \
-    AddTriviaGameControllerResult
-from ..trivia.gameController.triviaGameControllersRepositoryInterface import \
-    TriviaGameControllersRepositoryInterface
+from ..trivia.gameController.addTriviaGameControllerResult import AddTriviaGameControllerResult
+from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface

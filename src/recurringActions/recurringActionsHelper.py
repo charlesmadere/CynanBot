@@ -1,3 +1,4 @@
+from .cutenessRecurringAction import CutenessRecurringAction
 from .recurringAction import RecurringAction
 from .recurringActionsHelperInterface import RecurringActionsHelperInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
@@ -22,6 +23,14 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
 
+    async def __disableCutenessRecurringAction(self, recurringAction: CutenessRecurringAction):
+        await self.__recurringActionsRepository.setRecurringAction(CutenessRecurringAction(
+            enabled = False,
+            twitchChannel = recurringAction.twitchChannel,
+            twitchChannelId = recurringAction.twitchChannelId,
+            minutesBetween = recurringAction.minutesBetween
+        ))
+
     async def disableRecurringAction(self, recurringAction: RecurringAction | None) -> bool:
         if recurringAction is not None and not isinstance(recurringAction, RecurringAction):
             raise TypeError(f'recurringAction argument is malformed: \"{recurringAction}\"')
@@ -33,14 +42,16 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
             self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is already disabled: \"{recurringAction}\"')
             return False
 
-        if isinstance(recurringAction, SuperTriviaRecurringAction):
+        if isinstance(recurringAction, CutenessRecurringAction):
+            await self.__disableCutenessRecurringAction(recurringAction)
+        elif isinstance(recurringAction, SuperTriviaRecurringAction):
             await self.__disableSuperTriviaRecurringAction(recurringAction)
         elif isinstance(recurringAction, WeatherRecurringAction):
             await self.__disableWeatherRecurringAction(recurringAction)
         elif isinstance(recurringAction, WordOfTheDayRecurringAction):
             await self.__disableWordOfTheDayRecurringAction(recurringAction)
         else:
-            raise ValueError(f'unknown RecurringActionType ({recurringAction.actionType}) and RecurringAction ({recurringAction})')
+            raise ValueError(f'unknown RecurringAction instance ({recurringAction=})')
 
         self.__timber.log('RecurringActionsHelper', f'Finished disabling RecurringAction: \"{recurringAction}\"')
         return True

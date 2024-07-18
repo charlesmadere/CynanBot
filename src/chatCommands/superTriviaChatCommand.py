@@ -4,12 +4,10 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
-from ..trivia.builder.triviaGameBuilderInterface import \
-    TriviaGameBuilderInterface
+from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.questions.triviaSource import TriviaSource
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ..trivia.triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -99,7 +97,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         match splits[0]:
             case '!supertrivialotr':
                 triviaSource = TriviaSource.LORD_OF_THE_RINGS
-                
+
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId(),
@@ -111,7 +109,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             return
 
         self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
-        
+
         # Presumably, a command should always be the first item in the splits array, use this ref
         # just in case we want to add more specified supertrivia commands in the future.
 

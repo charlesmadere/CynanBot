@@ -41,17 +41,20 @@ from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueue
 from .chatCommands.commandsChatCommand import CommandsChatCommand
 from .chatCommands.cutenessChatCommand import CutenessChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
+from .chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from .chatCommands.getRecurringActionsCommand import GetRecurringActionsCommand
+from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.myAnivTimeoutsChatCommand import MyAnivTimeoutsChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
+from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
 from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
@@ -75,11 +78,11 @@ from .cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheer
 from .cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
 from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CutenessChampionsCommand, CutenessHistoryCommand,
-                       CynanSourceCommand, DeleteTriviaAnswersCommand, DiscordCommand, GetTriviaAnswersCommand,
-                       LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand, PkMonCommand, PkMoveCommand,
-                       RaceCommand, RemoveGlobalTriviaControllerCommand, RemoveTriviaControllerCommand,
-                       SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TriviaInfoCommand,
-                       TwitchInfoCommand, TwitterCommand, UnbanTriviaQuestionCommand)
+                       CynanSourceCommand, DiscordCommand, LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand,
+                       PkMonCommand, PkMoveCommand, RaceCommand, RemoveGlobalTriviaControllerCommand,
+                       RemoveTriviaControllerCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand,
+                       SwQuoteCommand, TriviaInfoCommand, TwitchInfoCommand, TwitterCommand,
+                       UnbanTriviaQuestionCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
@@ -544,6 +547,7 @@ class CynanBot(
             self.__addRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
             self.__recurringActionsCommand: AbsChatCommand = StubChatCommand()
+            self.__removeRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
@@ -553,6 +557,7 @@ class CynanBot(
             self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
@@ -573,9 +578,9 @@ class CynanBot(
             self.__answerCommand: AbsChatCommand = StubChatCommand()
             self.__banTriviaQuestionCommand: AbsChatCommand = StubChatCommand()
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
-            self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
+            self.__deleteTriviaAnswersCommand: AbsChatCommand = StubChatCommand()
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = StubChatCommand()
-            self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
+            self.__getTriviaAnswersCommand: AbsChatCommand = StubChatCommand()
             self.__getTriviaControllersChatCommand: AbsChatCommand = StubChatCommand()
             self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
@@ -591,9 +596,9 @@ class CynanBot(
             self.__answerCommand: AbsChatCommand = AnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
-            self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__deleteTriviaAnswersCommand: AbsChatCommand = DeleteTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = GetGlobalTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getTriviaAnswersCommand: AbsChatCommand = GetTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaControllersCommand: AbsChatCommand = GetTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
@@ -944,8 +949,8 @@ class CynanBot(
             return
 
         twitchChannel = await self.__getChannel(event.twitchChannel)
-        printOut = await cutenessPresenter.printLeaderboard(event.leaderboard)
-        await self.__twitchUtils.safeSend(twitchChannel, printOut)
+        leaderboardString = await cutenessPresenter.printLeaderboard(event.leaderboard)
+        await self.__twitchUtils.safeSend(twitchChannel, leaderboardString)
 
     async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):
         if not isinstance(event, SuperTriviaRecurringEvent):
@@ -1267,7 +1272,7 @@ class CynanBot(
     @commands.command(name = 'deletetriviaanswers')
     async def command_deletetriviaanswers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__deleteTriviaAnswersCommand.handleCommand(context)
+        await self.__deleteTriviaAnswersCommand.handleChatCommand(context)
 
     @commands.command(name = 'disablecheeraction')
     async def command_disablecheeraction(self, ctx: Context):
@@ -1297,22 +1302,22 @@ class CynanBot(
     @commands.command(name = 'getglobaltriviacontrollers')
     async def command_getglobaltriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getGlobalTriviaControllersCommand.handleCommand(context)
+        await self.__getGlobalTriviaControllersCommand.handleChatCommand(context)
 
     @commands.command(name = 'getrecurringactions', aliases = [ 'recurringactions' ])
     async def command_getrecurringactions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__recurringActionsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'gettriviaanswers')
+    @commands.command(name = 'gettriviaanswers', aliases = [ 'triviaanswers' ])
     async def command_gettriviaanswers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getTriviaAnswersCommand.handleCommand(context)
+        await self.__getTriviaAnswersCommand.handleChatCommand(context)
 
     @commands.command(name = 'gettriviacontrollers')
     async def command_gettriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getTriviaControllersCommand.handleCommand(context)
+        await self.__getTriviaControllersCommand.handleChatCommand(context)
 
     @commands.command(name = 'givecuteness', aliases = [ 'addcuteness' ])
     async def command_givecuteness(self, ctx: Context):
@@ -1373,6 +1378,11 @@ class CynanBot(
     async def command_removeglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerCommand.handleCommand(context)
+
+    @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'deleterecurringcutenessaction' ])
+    async def command_removerecurringcutenessaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeRecurringCutenessActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'removerecurringsupertriviaaction', aliases = [ 'deleterecurringsupertriviaaction', 'deleterecurringtriviaaction', 'removerecurringtriviaaction' ])
     async def command_removerecurringsupertriviaaction(self, ctx: Context):

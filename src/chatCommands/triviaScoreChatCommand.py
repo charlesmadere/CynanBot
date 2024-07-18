@@ -5,12 +5,9 @@ from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
-from ..trivia.score.triviaScoreRepositoryInterface import \
-    TriviaScoreRepositoryInterface
-from ..trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
-    ShinyTriviaOccurencesRepositoryInterface
-from ..trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
-    ToxicTriviaOccurencesRepositoryInterface
+from ..trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
+from ..trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
+from ..trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -86,7 +83,7 @@ class TriviaScoreChatCommand(AbsChatCommand):
         else:
             userName = ctx.getAuthorName()
 
-        userId: str | None = None
+        userId: str | None
 
         # this means that a user is querying for another user's trivia score
         if userName.lower() != ctx.getAuthorName().lower():
