@@ -1,13 +1,10 @@
 import traceback
 from typing import Any
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
@@ -17,8 +14,7 @@ from ..triviaExceptions import (GenericTriviaNetworkException,
                                 UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider
@@ -63,11 +59,11 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             response = await clientSession.get('https://the-trivia-api.com/api/questions?limit=1')
         except GenericNetworkException as e:
             self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         if response.statusCode != 200:
             self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.statusCode}\"')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
 
         jsonResponse: list[dict[str, Any] | Any] | None | Any = await response.json()
         await response.close()
@@ -126,7 +122,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = TriviaDifficulty.UNKNOWN,
                     originalTriviaSource = None,
-                    triviaSource = self.getTriviaSource()
+                    triviaSource = self.triviaSource
                 )
             else:
                 self.__timber.log('WillFryTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -145,16 +141,18 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = TriviaDifficulty.UNKNOWN,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Will Fry Trivia: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.WILL_FRY_TRIVIA
-
     async def hasQuestionSetAvailable(self) -> bool:
         return True
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.WILL_FRY_TRIVIA

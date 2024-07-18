@@ -85,7 +85,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
@@ -98,7 +98,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Trivia Database: {triviaDict}')
@@ -118,7 +118,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         row = await cursor.fetchone()
         if not utils.hasItems(row) or len(row) != 9:
-            raise RuntimeError(f'Received malformed data from {self.getTriviaSource()} database: {row}')
+            raise RuntimeError(f'Received malformed data from {self.triviaSource} database: {row}')
 
         triviaQuestionDict: dict[str, Any] = {
             'category': row[0],
@@ -134,12 +134,6 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.TRIVIA_DATABASE
-
     async def hasQuestionSetAvailable(self) -> bool:
         if self.__hasQuestionSetAvailable is not None:
             return self.__hasQuestionSetAvailable
@@ -148,3 +142,11 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__hasQuestionSetAvailable = hasQuestionSetAvailable
 
         return hasQuestionSetAvailable
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.TRIVIA_DATABASE

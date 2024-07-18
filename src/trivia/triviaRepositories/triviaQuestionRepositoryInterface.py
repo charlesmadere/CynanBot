@@ -13,13 +13,15 @@ class TriviaQuestionRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        pass
-
-    @abstractmethod
-    def getTriviaSource(self) -> TriviaSource:
-        pass
-
-    @abstractmethod
     async def hasQuestionSetAvailable(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        pass
+
+    @property
+    @abstractmethod
+    def triviaSource(self) -> TriviaSource:
         pass

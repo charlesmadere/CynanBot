@@ -4,19 +4,15 @@ import aiofiles
 import aiofiles.ospath
 import aiosqlite
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -82,7 +78,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         )
 
     async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
@@ -113,12 +109,6 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.MILLIONAIRE
-
     async def hasQuestionSetAvailable(self) -> bool:
         if self.__hasQuestionSetAvailable is not None:
             return self.__hasQuestionSetAvailable
@@ -127,3 +117,11 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__hasQuestionSetAvailable = hasQuestionSetAvailable
 
         return hasQuestionSetAvailable
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.MILLIONAIRE

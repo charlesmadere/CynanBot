@@ -64,11 +64,11 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
         except GenericNetworkException as e:
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         if response.statusCode != 200:
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.statusCode}\"')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
 
         jsonResponse = await response.json()
         await response.close()
@@ -144,7 +144,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = None,
-                    triviaSource = self.getTriviaSource()
+                    triviaSource = self.triviaSource
                 )
             else:
                 self.__timber.log('QuizApiTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -159,16 +159,18 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Quiz API: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.QUIZ_API
-
     async def hasQuestionSetAvailable(self) -> bool:
         return True
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.QUIZ_API

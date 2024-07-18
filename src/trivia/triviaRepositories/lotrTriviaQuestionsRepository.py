@@ -4,23 +4,17 @@ import aiofiles
 import aiofiles.ospath
 import aiosqlite
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
-    AdditionalTriviaAnswersRepositoryInterface
-from ..compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
+from ..compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -83,7 +77,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = correctAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         ):
             self.__timber.log('LotrTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
@@ -106,7 +100,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         )
 
     async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
@@ -145,12 +139,6 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.QUESTION_ANSWER }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.LORD_OF_THE_RINGS
-
     async def hasQuestionSetAvailable(self) -> bool:
         if self.__hasQuestionSetAvailable is not None:
             return self.__hasQuestionSetAvailable
@@ -166,3 +154,11 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if utils.isValidStr(correctAnswer):
             correctAnswers.append(correctAnswer)
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.QUESTION_ANSWER }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.LORD_OF_THE_RINGS

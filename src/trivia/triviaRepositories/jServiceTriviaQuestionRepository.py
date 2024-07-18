@@ -1,26 +1,19 @@
 import traceback
 from typing import Any
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
-    AdditionalTriviaAnswersRepositoryInterface
-from ..compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
+from ..compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (GenericTriviaNetworkException,
-                                MalformedTriviaJsonException)
+from ..triviaExceptions import GenericTriviaNetworkException, MalformedTriviaJsonException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider
@@ -72,11 +65,11 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             response = await clientSession.get('https://jservice.io/api/random?count=1')
         except GenericNetworkException as e:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered network error ({fetchOptions=}): {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         if response.statusCode != 200:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.statusCode}\" ({response=}) ({fetchOptions=})')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
 
         jsonResponse = await response.json()
         await response.close()
@@ -115,7 +108,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = correctAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         ):
             self.__timber.log('JServiceTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
@@ -128,7 +121,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = cleanedCorrectAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         )
 
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
@@ -147,14 +140,16 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         )
-
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.QUESTION_ANSWER }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.J_SERVICE
 
     async def hasQuestionSetAvailable(self) -> bool:
         return True
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.QUESTION_ANSWER }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.J_SERVICE

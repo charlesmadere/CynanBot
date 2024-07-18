@@ -5,23 +5,15 @@ import aiofiles.ospath
 import aiosqlite
 from aiosqlite import Connection
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from .glacialTriviaQuestionRepositoryInterface import \
-    GlacialTriviaQuestionRepositoryInterface
-from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
-    AdditionalTriviaAnswersRepositoryInterface
-from ..compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
-from ..questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from .glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
+from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
+from ..compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
+from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
-from ..questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
@@ -32,8 +24,7 @@ from ..triviaExceptions import (BadTriviaTypeException,
                                 NoTriviaQuestionException,
                                 UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
@@ -224,7 +215,7 @@ class GlacialTriviaQuestionRepository(
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = originalTriviaSource,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         elif triviaType is TriviaQuestionType.QUESTION_ANSWER:
             await connection.close()
@@ -240,7 +231,7 @@ class GlacialTriviaQuestionRepository(
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = originalTriviaSource,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             await connection.close()
@@ -253,7 +244,7 @@ class GlacialTriviaQuestionRepository(
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = originalTriviaSource,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         else:
             exception = UnsupportedTriviaTypeException(f'Received an invalid trivia question type! ({triviaType=}) ({fetchOptions=}) ({row=})')
@@ -319,7 +310,7 @@ class GlacialTriviaQuestionRepository(
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = originalTriviaSource,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             await connection.close()
@@ -332,7 +323,7 @@ class GlacialTriviaQuestionRepository(
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = originalTriviaSource,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         else:
             await connection.close()
@@ -393,7 +384,7 @@ class GlacialTriviaQuestionRepository(
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             originalTriviaSource = originalTriviaSource,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         )
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
@@ -413,7 +404,7 @@ class GlacialTriviaQuestionRepository(
             question = await self.__fetchMultipleChoiceOrTrueFalseTriviaQuestion(fetchOptions)
 
         if not isinstance(question, AbsTriviaQuestion):
-            raise NoTriviaQuestionException(f'Unable to fetch trivia question from {self.getTriviaSource()} ({fetchOptions=}) ({question=})')
+            raise NoTriviaQuestionException(f'Unable to fetch trivia question from {self.triviaSource} ({fetchOptions=}) ({question=})')
 
         return question
 
@@ -487,16 +478,6 @@ class GlacialTriviaQuestionRepository(
             raise exception
 
         return await self.__triviaQuestionCompiler.compileResponses(multipleChoiceResponses)
-
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return {
-            TriviaQuestionType.MULTIPLE_CHOICE,
-            TriviaQuestionType.QUESTION_ANSWER,
-            TriviaQuestionType.TRUE_FALSE
-        }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.GLACIAL
 
     async def __getTwitchChannelId(self) -> str:
         twitchChannelId = self.__twitchChannelId
@@ -718,3 +699,15 @@ class GlacialTriviaQuestionRepository(
             ''',
             (correctAnswer, question.triviaSource.toStr(), question.triviaId, )
         )
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return {
+            TriviaQuestionType.MULTIPLE_CHOICE,
+            TriviaQuestionType.QUESTION_ANSWER,
+            TriviaQuestionType.TRUE_FALSE
+        }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.GLACIAL

@@ -229,12 +229,12 @@ class TriviaRepository(TriviaRepositoryInterface):
                 raise UnavailableTriviaSourceException("Trivia source is currently invalid")
 
             triviaSource = self.__triviaSourceToRepositoryMap[triviaFetchOptions.requiredTriviaSource]
-            
+
             if triviaSource is None:
                 raise UnavailableTriviaSourceException("Unable to fetch trivia source from trivia source repository map")
             else:
                 return triviaSource
-        
+
         return await self.__chooseRandomTriviaSource(triviaFetchOptions)
 
     async def fetchTrivia(
@@ -265,7 +265,7 @@ class TriviaRepository(TriviaRepositoryInterface):
                     self.__timber.log('TriviaRepository', f'Failed to get trivia source (required trivia source was \"{triviaFetchOptions.requiredTriviaSource}\"): {e}', e, traceback.format_exc())
                     return
 
-                triviaSource = triviaQuestionRepository.getTriviaSource()
+                triviaSource = triviaQuestionRepository.triviaSource
                 attemptedTriviaSources.append(triviaSource)
 
                 try:
@@ -314,12 +314,12 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if not triviaFetchOptions.areQuestionAnswerTriviaQuestionsEnabled():
             for triviaSource, triviaQuestionRepository in availableTriviaSourcesMap.items():
-                if TriviaQuestionType.QUESTION_ANSWER in triviaQuestionRepository.getSupportedTriviaTypes():
+                if TriviaQuestionType.QUESTION_ANSWER in triviaQuestionRepository.supportedTriviaTypes:
                     currentlyInvalidTriviaSources.add(triviaSource)
 
         if triviaFetchOptions.requireQuestionAnswerTriviaQuestion():
             for triviaSource, triviaQuestionRepository in availableTriviaSourcesMap.items():
-                if TriviaQuestionType.QUESTION_ANSWER not in triviaQuestionRepository.getSupportedTriviaTypes():
+                if TriviaQuestionType.QUESTION_ANSWER not in triviaQuestionRepository.supportedTriviaTypes:
                     currentlyInvalidTriviaSources.add(triviaSource)
 
         if not await self.__isGlacialTriviaQuestionRepositoryAvailable():
@@ -423,7 +423,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         self.__timber.log('TriviaRepository', f'Spooling up a super trivia question (current qsize: {self.__superTriviaQuestionSpool.qsize()})')
         triviaQuestionRepository = await self.__chooseRandomTriviaSource(triviaFetchOptions)
-        triviaSource = triviaQuestionRepository.getTriviaSource()
+        triviaSource = triviaQuestionRepository.triviaSource
         question: AbsTriviaQuestion | None = None
 
         try:
@@ -469,7 +469,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         self.__timber.log('TriviaRepository', f'Spooling up a trivia question (current qsize: {self.__triviaQuestionSpool.qsize()})')
         triviaQuestionRepository = await self.__chooseRandomTriviaSource(triviaFetchOptions)
-        triviaSource = triviaQuestionRepository.getTriviaSource()
+        triviaSource = triviaQuestionRepository.triviaSource
         question: AbsTriviaQuestion | None = None
 
         try:
@@ -561,7 +561,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         triviaContentCode = await self.__triviaVerifier.checkHistory(
-            question = question, 
+            question = question,
             emote = emote,
             triviaFetchOptions = triviaFetchOptions
         )

@@ -1,13 +1,10 @@
 import traceback
 from typing import Any
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
-from ..compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
@@ -18,8 +15,7 @@ from ..triviaExceptions import (BadTriviaSessionTokenException,
                                 UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...misc.clearable import Clearable
 from ...network.exceptions import GenericNetworkException
@@ -116,11 +112,11 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 response = await clientSession.get('https://opentdb.com/api.php?amount=1')
         except GenericNetworkException as e:
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         if response.statusCode != 200:
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.statusCode}\"')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
 
         jsonResponse = await response.json()
         await response.close()
@@ -134,7 +130,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         elif utils.getIntFromDict(jsonResponse, 'response_code', fallback = -1) != 0:
             await self.__removeSessionToken(fetchOptions.twitchChannelId)
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to bad \"response_code\" value: {jsonResponse}')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
         elif not isinstance(jsonResponse.get('results'), list):
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to missing/null \"results\" array: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON data due to missing/null \"results\" array: {jsonResponse}')
@@ -192,7 +188,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = None,
-                    triviaSource = self.getTriviaSource()
+                    triviaSource = self.triviaSource
                 )
             else:
                 self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -209,7 +205,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Open Trivia Database: {jsonResponse}')
@@ -236,12 +232,6 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         )
 
         return sessionToken
-
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.OPEN_TRIVIA_DATABASE
 
     async def hasQuestionSetAvailable(self) -> bool:
         return True
@@ -348,3 +338,11 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             self.__cache.pop(twitchChannelId, None)
 
         await connection.close()
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.OPEN_TRIVIA_DATABASE

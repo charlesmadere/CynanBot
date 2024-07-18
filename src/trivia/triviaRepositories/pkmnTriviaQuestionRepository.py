@@ -2,11 +2,9 @@ import random
 import traceback
 from typing import Any
 
-from .absTriviaQuestionRepository import \
-    AbsTriviaQuestionRepository
+from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
-from ..questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
@@ -16,8 +14,7 @@ from ..triviaExceptions import (GenericTriviaNetworkException,
                                 UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
@@ -150,7 +147,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             move = await self.__pokepediaRepository.fetchRandomMove(maxGeneration = self.__maxGeneration)
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         triviaDict: dict[str, Any] | None = None
 
@@ -175,7 +172,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             nature = await self.__pokepediaRepository.fetchRandomNature()
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         triviaDict: dict[str, Any] | None = None
 
@@ -287,7 +284,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             pokemon = await self.__pokepediaRepository.fetchRandomPokemon(maxGeneration = self.__maxGeneration)
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         randomGeneration = await self.__selectRandomGeneration(pokemon.getInitialGeneration())
         correctTypes = pokemon.getCorrespondingGenerationElementTypes(randomGeneration)
@@ -321,7 +318,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             stat = await self.__pokepediaRepository.fetchRandomStat()
         except GenericNetworkException as e:
             self.__timber.log('PkmnTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         triviaDict: dict[str, Any] | None = None
 
@@ -416,7 +413,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer= utils.getBoolFromDict(triviaDict, 'correctAnswer')
@@ -429,16 +426,10 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Pkmn Trivia: {triviaDict}')
-
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.POKE_API
 
     async def hasQuestionSetAvailable(self) -> bool:
         return True
@@ -552,3 +543,11 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             raise RuntimeError(f'indexOfMax ({indexOfMax}) or indexOfMin ({indexOfMin}) is incompatible with an initial generation of {initialGeneration}! (maxGeneration={self.__maxGeneration})')
 
         return allGenerations[random.randint(indexOfMin, indexOfMax)]
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.POKE_API

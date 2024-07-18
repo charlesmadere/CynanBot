@@ -9,8 +9,7 @@ from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (GenericTriviaNetworkException,
-                                MalformedTriviaJsonException)
+from ..triviaExceptions import GenericTriviaNetworkException, MalformedTriviaJsonException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -61,11 +60,11 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             response = await clientSession.get(f'https://funtoon.party/api/trivia/random')
         except GenericNetworkException as e:
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         if response.statusCode != 200:
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.statusCode}\"')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
 
         jsonResponse = await response.json()
         await response.close()
@@ -97,7 +96,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = correctAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         ):
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
@@ -110,7 +109,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = cleanedCorrectAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.getTriviaSource()
+            triviaSource = self.triviaSource
         )
 
         answerAddendum = await self.__triviaAnswerCompiler.findQuestionBasedAnswerAddendum(
@@ -136,15 +135,17 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.getTriviaSource(),
+            triviaSource = self.triviaSource,
             answerAddendum = answerAddendum
         )
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.QUESTION_ANSWER }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.FUNTOON
-
     async def hasQuestionSetAvailable(self) -> bool:
         return True
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.QUESTION_ANSWER }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.FUNTOON

@@ -58,11 +58,11 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             response = await clientSession.get('https://beta-trivia.bongo.best/?limit=1')
         except GenericNetworkException as e:
             self.__timber.log('BongoTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
-            raise GenericTriviaNetworkException(self.getTriviaSource(), e)
+            raise GenericTriviaNetworkException(self.triviaSource, e)
 
         if response.statusCode != 200:
             self.__timber.log('BongoTriviaQuestionRepository', f'Encountered non-200 HTTP status code: {response.statusCode}')
-            raise GenericTriviaNetworkException(self.getTriviaSource())
+            raise GenericTriviaNetworkException(self.triviaSource)
 
         jsonResponse: list[dict[str, Any]] | None | Any = await response.json()
         await response.close()
@@ -131,7 +131,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = None,
-                    triviaSource = TriviaSource.BONGO
+                    triviaSource = self.triviaSource
                 )
             else:
                 self.__timber.log('BongoTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -148,16 +148,18 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = TriviaSource.BONGO
+                triviaSource = self.triviaSource
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Bongo: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.BONGO
-
     async def hasQuestionSetAvailable(self) -> bool:
         return True
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.BONGO

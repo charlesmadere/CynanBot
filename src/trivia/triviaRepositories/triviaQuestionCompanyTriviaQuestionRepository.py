@@ -83,10 +83,10 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
                 triviaId = questionId,
                 triviaDifficulty = difficulty,
                 originalTriviaSource = None,
-                triviaSource = self.getTriviaSource()
+                triviaSource = self.triviaSource
             )
 
-        raise UnsupportedTriviaTypeException(f'triviaType \"{questionType}\" is not supported for {self.getTriviaSource()}: {triviaDict}')
+        raise UnsupportedTriviaTypeException(f'triviaType \"{questionType}\" is not supported for {self.triviaSource}: {triviaDict}')
 
     async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
@@ -103,7 +103,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
 
         row = await cursor.fetchone()
         if not utils.hasItems(row) or len(row) != 10:
-            raise RuntimeError(f'Received malformed data from {self.getTriviaSource()} database: {row}')
+            raise RuntimeError(f'Received malformed data from {self.triviaSource} database: {row}')
 
         questionDict: dict[str, Any] = {
             'category': row[0],
@@ -119,12 +119,6 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         await connection.close()
         return questionDict
 
-    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
-        return { TriviaQuestionType.MULTIPLE_CHOICE }
-
-    def getTriviaSource(self) -> TriviaSource:
-        return TriviaSource.THE_QUESTION_CO
-
     async def hasQuestionSetAvailable(self) -> bool:
         if self.__hasQuestionSetAvailable is not None:
             return self.__hasQuestionSetAvailable
@@ -133,3 +127,11 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         self.__hasQuestionSetAvailable = hasQuestionSetAvailable
 
         return hasQuestionSetAvailable
+
+    @property
+    def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE }
+
+    @property
+    def triviaSource(self) -> TriviaSource:
+        return TriviaSource.THE_QUESTION_CO
