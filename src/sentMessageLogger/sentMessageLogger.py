@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import traceback
 from collections import defaultdict
 from queue import SimpleQueue
 
@@ -9,8 +10,7 @@ import aiofiles.ospath
 
 from .messageMethod import MessageMethod
 from .sentMessage import SentMessage
-from .sentMessageLoggerInterface import \
-    SentMessageLoggerInterface
+from .sentMessageLoggerInterface import SentMessageLoggerInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -122,8 +122,8 @@ class SentMessageLogger(SentMessageLoggerInterface):
                 while not self.__messageQueue.empty():
                     message = self.__messageQueue.get_nowait()
                     messages.append(message)
-            except queue.Empty:
-                pass
+            except queue.Empty as e:
+                self.__timber.log('SentMessageLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (events size: {len(messages)}): {e}', e, traceback.format_exc())
 
             await self.__writeToLogFiles(messages)
             await asyncio.sleep(self.__sleepTimeSeconds)

@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import traceback
 from collections import defaultdict
 from queue import SimpleQueue
 
@@ -138,8 +139,8 @@ class ChatLogger(ChatLoggerInterface):
                 while not self.__messageQueue.empty():
                     message = self.__messageQueue.get_nowait()
                     messages.append(message)
-            except queue.Empty:
-                pass
+            except queue.Empty as e:
+                self.__timber.log('ChatLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (messages size: {len(messages)}): {e}', e, traceback.format_exc())
 
             await self.__writeToLogFiles(messages)
             await asyncio.sleep(self.__sleepTimeSeconds)

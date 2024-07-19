@@ -5,7 +5,7 @@ from ..misc.simpleDateTime import SimpleDateTime
 
 
 @dataclass(frozen = True)
-class SentMessage():
+class SentMessage:
     successfullySent: bool
     numberOfRetries: int
     exceptions: list[Exception] | None
