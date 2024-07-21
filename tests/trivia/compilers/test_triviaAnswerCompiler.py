@@ -382,6 +382,37 @@ class TestTriviaAnswerCompiler:
         assert result == '6 months old'
 
     @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withAnswerAddendumDisabled_AppalachianMountain(self):
+        self.triviaSettingsJson['answer_addendum_enabled'] = False
+        await self.triviaSettingsRepository.clearCaches()
+
+        result = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = [ 'appalachian' ],
+            answerAddendum = 'mountain'
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert 'appalachian' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withAnswerAddendumEnabled_AppalachianMountain(self):
+        self.triviaSettingsJson['answer_addendum_enabled'] = True
+        await self.triviaSettingsRepository.clearCaches()
+
+        result = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = [ 'appalachian' ],
+            answerAddendum = 'mountain'
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 4
+        assert 'appalachian' in result
+        assert 'mountain appalachian' in result
+        assert 'appalachian mountain' in result
+        assert 'mountain appalachian mountain' in result
+
+    @pytest.mark.asyncio
     async def test_compileTextAnswersList_withAnswerAddendumDisabled_LakeErie(self):
         self.triviaSettingsJson['answer_addendum_enabled'] = False
         await self.triviaSettingsRepository.clearCaches()
