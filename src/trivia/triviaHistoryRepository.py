@@ -91,36 +91,39 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS triviahistory (
-                        datetime text NOT NULL,
-                        emote text NOT NULL,
-                        triviaid text NOT NULL,
-                        triviasource text NOT NULL,
-                        triviatype text NOT NULL,
-                        twitchchannelid text NOT NULL,
-                        PRIMARY KEY (triviaid, triviasource, triviatype, twitchchannelid)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS triviahistory (
-                        datetime TEXT NOT NULL,
-                        emote TEXT NOT NULL,
-                        triviaid TEXT NOT NULL,
-                        triviasource TEXT NOT NULL,
-                        triviatype TEXT NOT NULL,
-                        twitchchannelid TEXT NOT NULL,
-                        PRIMARY KEY (triviaid, triviasource, triviatype, twitchchannelid)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS triviahistory (
+                            datetime text NOT NULL,
+                            emote text NOT NULL,
+                            triviaid text NOT NULL,
+                            triviasource text NOT NULL,
+                            triviatype text NOT NULL,
+                            twitchchannelid text NOT NULL,
+                            PRIMARY KEY (triviaid, triviasource, triviatype, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS triviahistory (
+                            datetime TEXT NOT NULL,
+                            emote TEXT NOT NULL,
+                            triviaid TEXT NOT NULL,
+                            triviasource TEXT NOT NULL,
+                            triviatype TEXT NOT NULL,
+                            twitchchannelid TEXT NOT NULL,
+                            PRIMARY KEY (triviaid, triviasource, triviatype, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
 

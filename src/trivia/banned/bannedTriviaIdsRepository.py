@@ -106,30 +106,33 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS bannedtriviaids (
-                        triviaid public.citext NOT NULL,
-                        triviasource public.citext NOT NULL,
-                        userid text NOT NULL,
-                        PRIMARY KEY (triviaid, triviasource)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS bannedtriviaids (
-                        triviaid TEXT NOT NULL COLLATE NOCASE,
-                        triviasource TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL,
-                        PRIMARY KEY (triviaid, triviasource)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS bannedtriviaids (
+                            triviaid public.citext NOT NULL,
+                            triviasource public.citext NOT NULL,
+                            userid text NOT NULL,
+                            PRIMARY KEY (triviaid, triviasource)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS bannedtriviaids (
+                            triviaid TEXT NOT NULL COLLATE NOCASE,
+                            triviasource TEXT NOT NULL COLLATE NOCASE,
+                            userid TEXT NOT NULL,
+                            PRIMARY KEY (triviaid, triviasource)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
 

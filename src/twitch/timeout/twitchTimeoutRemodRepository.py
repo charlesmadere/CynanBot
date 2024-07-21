@@ -112,29 +112,32 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
-                        broadcasteruserid text NOT NULL,
-                        remoddatetime text NOT NULL,
-                        userid text NOT NULL,
-                        PRIMARY KEY (broadcasteruserid, userid)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
-                        broadcasteruserid TEXT NOT NULL,
-                        remoddatetime TEXT NOT NULL,
-                        userid TEXT NOT NULL,
-                        PRIMARY KEY (broadcasteruserid, userid)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
+                            broadcasteruserid text NOT NULL,
+                            remoddatetime text NOT NULL,
+                            userid text NOT NULL,
+                            PRIMARY KEY (broadcasteruserid, userid)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
+                            broadcasteruserid TEXT NOT NULL,
+                            remoddatetime TEXT NOT NULL,
+                            userid TEXT NOT NULL,
+                            PRIMARY KEY (broadcasteruserid, userid)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()

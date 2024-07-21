@@ -83,28 +83,31 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
-                        actiontype text NOT NULL,
-                        datetime text NOT NULL,
-                        twitchchannelid text NOT NULL PRIMARY KEY
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
-                        actiontype TEXT NOT NULL,
-                        datetime TEXT NOT NULL,
-                        twitchchannelid TEXT NOT NULL PRIMARY KEY
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
+                            actiontype text NOT NULL,
+                            datetime text NOT NULL,
+                            twitchchannelid text NOT NULL PRIMARY KEY
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
+                            actiontype TEXT NOT NULL,
+                            datetime TEXT NOT NULL,
+                            twitchchannelid TEXT NOT NULL PRIMARY KEY
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
 
