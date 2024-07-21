@@ -22,6 +22,8 @@ from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 from trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from trivia.triviaSettingsRepository import TriviaSettingsRepository
+from trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
@@ -48,8 +50,13 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     timber = timber
 )
 
+triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    settingsJsonReader = JsonStaticReader(dict())
+)
+
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-    timber = timber
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
 )
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(

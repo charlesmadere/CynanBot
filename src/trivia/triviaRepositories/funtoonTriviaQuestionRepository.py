@@ -116,7 +116,10 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             questionText = question
         )
 
-        cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
+        cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
+            answers = cleanedCorrectAnswers,
+            answerAddendum = answerAddendum
+        )
 
         expandedCleanedCorrectAnswers: set[str] = set()
         for answer in cleanedCorrectAnswers:

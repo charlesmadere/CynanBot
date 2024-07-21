@@ -10,6 +10,7 @@ from roman import RomanError
 
 from .triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from ..triviaExceptions import BadTriviaAnswerException
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -29,11 +30,18 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     There are many other simple conversions that this class performs, but those are some key examples.
     """
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__timber: TimberInterface = timber
+        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
         self.__ampersandRegEx: Pattern = re.compile(r'(^&\s+)|(\s+&\s+)|(\s+&$)', re.IGNORECASE)
         self.__decadeRegEx: Pattern = re.compile(r'^((in\s+)?the\s+)?(\d{4})\'?s$', re.IGNORECASE)
@@ -201,17 +209,21 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     async def compileTextAnswersList(
         self,
         answers: Collection[str | None] | None,
-        expandParentheses: bool = True
+        expandParentheses: bool = True,
+        answerAddendum: str | None = None
     ) -> list[str]:
         if answers is not None and not isinstance(answers, Collection):
             raise TypeError(f'answers argument is malformed: \"{answers}\"')
         elif not utils.isValidBool(expandParentheses):
             raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
+        elif answerAddendum is not None and not isinstance(answerAddendum, str):
+            raise TypeError(f'answerAddendum argument is malformed: \"{answerAddendum}\"')
 
         if answers is None or len(answers) == 0:
             return list()
 
         cleanedAnswers: set[str] = set()
+        answerAddendumEnabled = await self.__triviaSettingsRepository.isAnswerAddendumEnabled()
 
         for answer in answers:
             if not utils.isValidStr(answer):
@@ -220,6 +232,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             cases = await self.__expandSpecialCases(answer)
 
             for case in cases:
+                if answerAddendumEnabled and utils.isValidStr(answerAddendum):
+                    case = f'({answerAddendum}) {case} ({answerAddendum})'
+
                 if expandParentheses:
                     possibilities = await self.__getParentheticalPossibilities(case)
                 else:

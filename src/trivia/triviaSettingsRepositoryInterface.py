@@ -99,6 +99,10 @@ class TriviaSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def isAnswerAddendumEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def isBanListEnabled(self) -> bool:
         pass
 

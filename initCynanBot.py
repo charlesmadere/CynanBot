@@ -762,16 +762,17 @@ toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = Toxi
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository
 )
+triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
+)
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-    timber = timber
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
 )
 triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
     timber = timber
 )
 triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
-triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
-)
 triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository

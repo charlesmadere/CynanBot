@@ -24,7 +24,8 @@ class TriviaAnswerCompilerInterface(ABC):
     async def compileTextAnswersList(
         self,
         answers: Collection[str | None] | None,
-        expandParentheses: bool = True
+        expandParentheses: bool = True,
+        answerAddendum: str | None = None
     ) -> list[str]:
         pass
 

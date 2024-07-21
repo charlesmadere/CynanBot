@@ -1,18 +1,30 @@
+from typing import Any
+
 import pytest
 
+from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from src.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from src.trivia.triviaExceptions import BadTriviaAnswerException
+from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
+from src.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
 
-class TestTriviaAnswerCompiler():
+class TestTriviaAnswerCompiler:
 
     timber: TimberInterface = TimberStub()
 
+    triviaSettingsJson: dict[str, Any] = dict()
+
+    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+        settingsJsonReader = JsonStaticReader(triviaSettingsJson)
+    )
+
     triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-        timber = timber
+        timber = timber,
+        triviaSettingsRepository = triviaSettingsRepository
     )
 
     @pytest.mark.asyncio
@@ -368,6 +380,37 @@ class TestTriviaAnswerCompiler():
     async def test_compileTextAnswer_with6MonthsOld(self):
         result = await self.triviaAnswerCompiler.compileTextAnswer('6 months old')
         assert result == '6 months old'
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withAnswerAddendumDisabled_LakeErie(self):
+        self.triviaSettingsJson['answer_addendum_enabled'] = False
+        await self.triviaSettingsRepository.clearCaches()
+
+        result = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = [ 'erie' ],
+            answerAddendum = 'lake'
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert 'erie' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withAnswerAddendumEnabled_LakeErie(self):
+        self.triviaSettingsJson['answer_addendum_enabled'] = True
+        await self.triviaSettingsRepository.clearCaches()
+
+        result = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = [ 'erie' ],
+            answerAddendum = 'lake'
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 4
+        assert 'erie' in result
+        assert 'lake erie' in result
+        assert 'erie lake' in result
+        assert 'lake erie lake' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withDuplicateWords(self):

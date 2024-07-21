@@ -4,16 +4,12 @@ from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
-from src.trivia.compilers.triviaAnswerCompilerInterface import \
-    TriviaAnswerCompilerInterface
+from src.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from src.trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
-from src.trivia.compilers.triviaQuestionCompilerInterface import \
-    TriviaQuestionCompilerInterface
+from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from src.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from src.trivia.questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
-from src.trivia.questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from src.trivia.questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
+from src.trivia.questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from src.trivia.questions.triviaSource import TriviaSource
 from src.trivia.questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from src.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
@@ -21,24 +17,24 @@ from src.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from src.trivia.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from src.trivia.triviaDifficulty import TriviaDifficulty
 from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from src.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
 
-class TestTriviaAnswerChecker():
+class TestTriviaAnswerChecker:
 
     timber: TimberInterface = TimberStub()
 
+    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+        settingsJsonReader = JsonStaticReader(dict())
+    )
+
     triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-        timber = timber
+        timber = timber,
+        triviaSettingsRepository = triviaSettingsRepository
     )
 
     triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
         timber = timber
-    )
-
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-        settingsJsonReader = JsonStaticReader(dict())
     )
 
     triviaAnswerChecker: TriviaAnswerCheckerInterface = TriviaAnswerChecker(
