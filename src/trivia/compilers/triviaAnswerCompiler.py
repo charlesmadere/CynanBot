@@ -203,7 +203,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         answers: Collection[str | None] | None,
         expandParentheses: bool = True
     ) -> list[str]:
-        if not utils.isValidBool(expandParentheses):
+        if answers is not None and not isinstance(answers, Collection):
+            raise TypeError(f'answers argument is malformed: \"{answers}\"')
+        elif not utils.isValidBool(expandParentheses):
             raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
 
         if answers is None or len(answers) == 0:
