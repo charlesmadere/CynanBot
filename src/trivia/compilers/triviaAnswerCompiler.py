@@ -255,36 +255,36 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     async def __expandSpecialCases(self, answer: str) -> list[str]:
         specialCases = await self.__expandSpecialCasesDecade(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         specialCases = await self.__expandSpecialCasesThingIsPhrase(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         specialCases = await self.__expandSpecialCasesUsDollar(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         specialCases = await self.__expandSpecialCasesWordSlashWord(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         specialCases = await self.__expandSpecialCasesSimpleTimeDuration(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         specialCases = await self.__expandSpecialCasesEquation(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         specialCases = await self.__expandSpecialCasesWordDashWord(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         # this special case is intentionally at the end of the list
         specialCases = await self.__expandSpecialCasesWordThenNumber(answer)
-        if utils.hasItems(specialCases):
+        if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
         return list()

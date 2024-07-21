@@ -245,7 +245,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
             else:
                 validEntries.append(entry)
 
-        if not utils.hasItems(validEntries):
+        if len(validEntries) == 0:
             raise RuntimeError(f'Unable to find a single LanguageEntry with given requirements ({hasIso6391Code=}) ({hasWotdApiCode=})')
 
         return validEntries
