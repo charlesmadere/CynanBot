@@ -354,7 +354,7 @@ class UsersRepository(UsersRepositoryInterface):
             user = self.__createUser(key, userJson)
             users.append(user)
 
-        if not len(users) == 0:
+        if len(users) == 0:
             raise NoUsersException(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
         users.sort(key = lambda user: user.getHandle().casefold())
