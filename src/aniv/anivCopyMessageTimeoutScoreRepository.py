@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
-from .anivCopyMessageTimeoutScoreRepositoryInterface import \
-    AnivCopyMessageTimeoutScoreRepositoryInterface
+from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
@@ -206,7 +205,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        match connection.getDatabaseType():
+        match connection.databaseType:
             case DatabaseType.POSTGRESQL:
                 await connection.createTableIfNotExists(
                     '''
@@ -238,7 +237,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                 )
 
             case _:
-                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
     async def __saveScoreToDatabase(self, score: AnivCopyMessageTimeoutScore):
         if not isinstance(score, AnivCopyMessageTimeoutScore):

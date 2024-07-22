@@ -14,6 +14,11 @@ class DatabaseConnection(ABC):
     async def createTableIfNotExists(self, query: str, *args: Any | None):
         pass
 
+    @property
+    @abstractmethod
+    def databaseType(self) -> DatabaseType:
+        pass
+
     @abstractmethod
     async def execute(self, query: str, *args: Any | None):
         pass

@@ -35,6 +35,10 @@ class SqliteDatabaseConnection(DatabaseConnection):
         else:
             await self.execute(query)
 
+    @property
+    def databaseType(self) -> DatabaseType:
+        return DatabaseType.SQLITE
+
     async def execute(self, query: str, *args: Any | None):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
@@ -93,7 +97,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
         return records
 
     def getDatabaseType(self) -> DatabaseType:
-        return DatabaseType.SQLITE
+        return self.databaseType
 
     def isClosed(self) -> bool:
         return self.__isClosed

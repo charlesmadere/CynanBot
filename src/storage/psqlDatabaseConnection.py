@@ -39,6 +39,10 @@ class PsqlDatabaseConnection(DatabaseConnection):
         else:
             await self.execute(query)
 
+    @property
+    def databaseType(self) -> DatabaseType:
+        return DatabaseType.POSTGRESQL
+
     async def execute(self, query: str, *args: Any | None):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
@@ -78,7 +82,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         return rows
 
     def getDatabaseType(self) -> DatabaseType:
-        return DatabaseType.POSTGRESQL
+        return self.databaseType
 
     def isClosed(self) -> bool:
         return self.__isClosed

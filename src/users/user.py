@@ -42,6 +42,7 @@ class User(UserInterface):
         isRoachMessageEnabled: bool,
         isSchubertWalkMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
+        isShizaMessageEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
@@ -85,6 +86,7 @@ class User(UserInterface):
         pkmnEvolveRewardId: str | None,
         pkmnShinyRewardId: str | None,
         randomSoundAlertRewardId: str | None,
+        shizaMessageRewardId: str | None,
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
         supStreamerMessage: str | None,
@@ -157,6 +159,8 @@ class User(UserInterface):
             raise TypeError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise TypeError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
+        elif not utils.isValidBool(isShizaMessageEnabled):
+            raise TypeError(f'isShizaMessageEnabled argument is malformed: \"{isShizaMessageEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
             raise TypeError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
@@ -239,6 +243,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif randomSoundAlertRewardId is not None and not isinstance(randomSoundAlertRewardId, str):
             raise TypeError(f'randomSoundAlertRewardId argument is malformed: \"{randomSoundAlertRewardId}\"')
+        elif shizaMessageRewardId is not None and not isinstance(shizaMessageRewardId, str):
+            raise TypeError(f'shizaMessageRewardId argument is malformed: \"{shizaMessageRewardId}\"')
         elif soundAlertRewardId is not None and not isinstance(soundAlertRewardId, str):
             raise TypeError(f'soundAlertRewardId argument is malformed: \"{soundAlertRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
@@ -289,6 +295,7 @@ class User(UserInterface):
         self.__isRoachMessageEnabled: bool = isRoachMessageEnabled
         self.__isSchubertWalkMessageEnabled: bool = isSchubertWalkMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
+        self.__isShizaMessageEnabled: bool = isShizaMessageEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
@@ -332,6 +339,7 @@ class User(UserInterface):
         self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
         self.__randomSoundAlertRewardId: str | None = randomSoundAlertRewardId
+        self.__shizaMessageRewardId: str | None = shizaMessageRewardId
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
         self.__supStreamerMessage: str | None = supStreamerMessage
@@ -588,6 +596,10 @@ class User(UserInterface):
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled
 
+    @property
+    def isShizaMessageEnabled(self) -> bool:
+        return self.__isShizaMessageEnabled
+
     def isStarWarsQuotesEnabled(self) -> bool:
         return self.__isStarWarsQuotesEnabled
 
@@ -627,6 +639,10 @@ class User(UserInterface):
 
     def __repr__(self) -> str:
         return self.__handle
+
+    @property
+    def shizaMessageRewardId(self) -> str | None:
+        return self.__shizaMessageRewardId
 
     @property
     def timeoutCheerActionFollowShieldDays(self) -> int | None:

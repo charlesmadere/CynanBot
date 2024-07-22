@@ -53,7 +53,7 @@ class UsersRepository(UsersRepositoryInterface):
         jsonContents = await self.__readJsonAsync()
 
         for key in jsonContents.keys():
-            if key.lower() == handle.lower():
+            if key.casefold() == handle.casefold():
                 self.__timber.log('UsersRepository', f'Unable to add user \"{handle}\" as a user with that handle already exists')
                 return
 
@@ -136,6 +136,7 @@ class UsersRepository(UsersRepositoryInterface):
         isRewardIdPrintingEnabled = utils.getBoolFromDict(userJson, 'rewardIdPrintingEnabled', False)
         isRoachMessageEnabled = utils.getBoolFromDict(userJson, 'roachMessageEnabled', False)
         isSchubertWalkMessageEnabled = utils.getBoolFromDict(userJson, 'schubertWalkMessageEnabled', False)
+        isShizaMessageEnabled = utils.getBoolFromDict(userJson, 'shizaMessageEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isSupStreamerEnabled = utils.getBoolFromDict(userJson, 'supStreamerEnabled', False)
@@ -153,6 +154,7 @@ class UsersRepository(UsersRepositoryInterface):
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
         randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
+        shizaMessageRewardId = utils.getStrFromDict(userJson, 'shizaMessageRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
@@ -283,6 +285,7 @@ class UsersRepository(UsersRepositoryInterface):
             isRoachMessageEnabled = isRoachMessageEnabled,
             isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
+            isShizaMessageEnabled = isShizaMessageEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
@@ -326,6 +329,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             randomSoundAlertRewardId = randomSoundAlertRewardId,
+            shizaMessageRewardId = shizaMessageRewardId,
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,
@@ -337,22 +341,23 @@ class UsersRepository(UsersRepositoryInterface):
             timeZones = timeZones
         )
 
-        self.__userCache[handle.lower()] = user
+        self.__userCache[handle.casefold()] = user
         return user
 
     def __createUsers(self, jsonContents: dict[str, Any]) -> list[User]:
-        if not utils.hasItems(jsonContents):
+        if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         users: list[User] = list()
+
         for key, userJson in jsonContents.items():
             user = self.__createUser(key, userJson)
             users.append(user)
 
-        if not utils.hasItems(users):
+        if not len(users) == 0:
             raise NoUsersException(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
-        users.sort(key = lambda user: user.getHandle().lower())
+        users.sort(key = lambda user: user.getHandle().casefold())
         return users
 
     def __findAndCreateUser(self, handle: str, jsonContents: dict[str, Any]) -> User:
@@ -361,13 +366,13 @@ class UsersRepository(UsersRepositoryInterface):
         elif jsonContents is None:
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        user = self.__userCache.get(handle.lower(), None)
+        user = self.__userCache.get(handle.casefold(), None)
 
         if user is not None:
             return user
 
         for key, userJson in jsonContents.items():
-            if handle.lower() == key.lower():
+            if handle.casefold() == key.casefold():
                 return self.__createUser(handle, userJson)
 
         raise NoSuchUserException(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
@@ -398,7 +403,9 @@ class UsersRepository(UsersRepositoryInterface):
         self,
         jsonList: list[dict[str, Any]] | None
     ) -> list[CutenessBoosterPack] | None:
-        if not utils.hasItems(jsonList):
+        if jsonList is not None and not isinstance(jsonList, list):
+            raise TypeError(f'jsonList argument is malformed: \"{jsonList}\"')
+        elif jsonList is None:
             return None
 
         cutenessBoosterPacks: list[CutenessBoosterPack] = list()
@@ -528,7 +535,7 @@ class UsersRepository(UsersRepositoryInterface):
         preExistingHandle: str | None = None
 
         for key in jsonContents.keys():
-            if key.lower() == handle.lower():
+            if key.casefold() == handle.casefold():
                 preExistingHandle = key
                 break
 

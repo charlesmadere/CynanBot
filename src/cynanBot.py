@@ -18,6 +18,7 @@ from .channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRe
 from .channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from .channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from .channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
+from .channelPointRedemptions.shizaPointRedemption import ShizaPointRedemption
 from .channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from .channelPointRedemptions.stubChannelPointRedemption import StubPointRedemption
 from .channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
@@ -678,6 +679,7 @@ class CynanBot(
         ########################################################
 
         self.__casualGamePollPointRedemption: AbsChannelPointRedemption = CasualGamePollPointRedemption(timber, twitchUtils)
+        self.__shizaPointRedemption: AbsChannelPointRedemption = ShizaPointRedemption(timber, twitchUtils)
 
         if cutenessRepository is None:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -860,6 +862,7 @@ class CynanBot(
                 pkmnCatchPointRedemption = self.__pkmnCatchPointRedemption,
                 pkmnEvolvePointRedemption = self.__pkmnEvolvePointRedemption,
                 pkmnShinyPointRedemption = self.__pkmnShinyPointRedemption,
+                shizaPointRedemption = self.__shizaPointRedemption,
                 soundAlertPointRedemption = self.__soundAlertPointRedemption,
                 superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
                 triviaGamePointRedemption = self.__triviaGamePointRedemption,

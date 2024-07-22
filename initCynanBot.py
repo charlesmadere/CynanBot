@@ -75,6 +75,8 @@ from src.funtoon.funtoonRepository import FuntoonRepository
 from src.funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from src.funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from src.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
+from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 from src.google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.googleApiService import GoogleApiService
@@ -168,6 +170,10 @@ from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
 from src.streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
+from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
+from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
+from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
+from src.streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.systemCommandHelper.systemCommandHelper import SystemCommandHelper
@@ -525,6 +531,8 @@ cutenessUtils: CutenessUtilsInterface = CutenessUtils()
 ## Funtoon initialization section ##
 ####################################
 
+funtoonUserIdProvider: FuntoonUserIdProviderInterface = FuntoonUserIdProvider()
+
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -556,7 +564,9 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
+
 languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader('locationsRepository.json'),
     timber = timber,
@@ -620,7 +630,14 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElementsUserIdProvider()
+
+streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
+
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  TimeoutImmuneUserIdsRepository(
+    funtoonUserIdProvider = funtoonUserIdProvider,
+    streamElementsUserIdProvider = streamElementsUserIdProvider,
+    streamLabsUserIdProvider = streamLabsUserIdProvider,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository
 )

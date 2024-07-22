@@ -9,6 +9,7 @@ from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePoint
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
+from ...channelPointRedemptions.shizaPointRedemption import ShizaPointRedemption
 from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from ...channelPointRedemptions.stubChannelPointRedemption import StubPointRedemption
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
@@ -29,6 +30,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         pkmnCatchPointRedemption: AbsChannelPointRedemption,
         pkmnEvolvePointRedemption: AbsChannelPointRedemption,
         pkmnShinyPointRedemption: AbsChannelPointRedemption,
+        shizaPointRedemption: AbsChannelPointRedemption,
         soundAlertPointRedemption: AbsChannelPointRedemption,
         superTriviaGamePointRedemption: AbsChannelPointRedemption,
         triviaGamePointRedemption: AbsChannelPointRedemption,
@@ -47,6 +49,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
         elif not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption) and not isinstance(pkmnShinyPointRedemption, StubPointRedemption):
             raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
+        elif not isinstance(shizaPointRedemption, ShizaPointRedemption) and not isinstance(shizaPointRedemption, StubPointRedemption):
+            raise TypeError(f'shizaPointRedemption argument is malformed: \"{shizaPointRedemption}\"')
         elif not isinstance(soundAlertPointRedemption, SoundAlertPointRedemption) and not isinstance(soundAlertPointRedemption, StubPointRedemption):
             raise TypeError(f'soundAlertPointRedemption argument is malformed: \"{soundAlertPointRedemption}\"')
         elif not isinstance(superTriviaGamePointRedemption, SuperTriviaGamePointRedemption) and not isinstance(superTriviaGamePointRedemption, StubPointRedemption):
@@ -64,6 +68,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
         self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
         self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
+        self.__shizaPointRedemption: AbsChannelPointRedemption = shizaPointRedemption
         self.__soundAlertPointRedemption: AbsChannelPointRedemption = soundAlertPointRedemption
         self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
@@ -167,6 +172,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
+
+        if user.isShizaMessageEnabled and channelPointsMessage.getRewardId() == user.shizaMessageRewardId:
+            if await self.__shizaPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
 
         if user.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getTriviaGameRewardId():
             if await self.__triviaGamePointRedemption.handlePointRedemption(

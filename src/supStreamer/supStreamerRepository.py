@@ -95,30 +95,33 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS supstreamerchatters (
-                        chatteruserid text NOT NULL,
-                        mostrecentsup text NOT NULL,
-                        twitchchannelid text NOT NULL,
-                        PRIMARY KEY (chatteruserid, twitchchannelid)
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS supstreamerchatters (
-                        chatteruserid TEXT NOT NULL,
-                        mostrecentsup TEXT NOT NULL,
-                        twitchchannelid TEXT NOT NULL,
-                        PRIMARY KEY (chatteruserid, twitchchannelid)
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+        match connection.getDatabaseType():
+            case DatabaseType.POSTGRESQL:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS supstreamerchatters (
+                            chatteruserid text NOT NULL,
+                            mostrecentsup text NOT NULL,
+                            twitchchannelid text NOT NULL,
+                            PRIMARY KEY (chatteruserid, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.createTableIfNotExists(
+                    '''
+                        CREATE TABLE IF NOT EXISTS supstreamerchatters (
+                            chatteruserid TEXT NOT NULL,
+                            mostrecentsup TEXT NOT NULL,
+                            twitchchannelid TEXT NOT NULL,
+                            PRIMARY KEY (chatteruserid, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
 
         await connection.close()
 

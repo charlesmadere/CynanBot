@@ -281,6 +281,11 @@ class UserInterface(ABC):
     def isShinyTriviaEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isShizaMessageEnabled(self) -> bool:
+        pass
+
     @abstractmethod
     def isStarWarsQuotesEnabled(self) -> bool:
         pass
@@ -328,6 +333,11 @@ class UserInterface(ABC):
 
     @abstractmethod
     def isWordOfTheDayEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def shizaMessageRewardId(self) -> str | None:
         pass
 
     @property
