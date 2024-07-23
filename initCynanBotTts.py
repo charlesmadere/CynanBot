@@ -50,6 +50,8 @@ from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsReposit
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
 from src.cynanBot import CynanBot
+from src.cynanBot.cynanBotUserIdsProvider import CynanBotUserIdsProvider
+from src.cynanBot.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -90,6 +92,8 @@ from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requestsClientProvider import RequestsClientProvider
+from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
+from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPlayerManager
@@ -383,6 +387,20 @@ chatLogger: ChatLoggerInterface = ChatLogger(
 )
 
 
+#####################################
+## CynanBot initialization section ##
+#####################################
+
+cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvider()
+
+
+#####################################
+## Nightbot initialization section ##
+#####################################
+
+nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider()
+
+
 ####################################
 ## Funtoon initialization section ##
 ####################################
@@ -481,7 +499,9 @@ streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElem
 streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  TimeoutImmuneUserIdsRepository(
+    cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
+    nightbotUserIdProvider = nightbotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     twitchHandleProvider = authRepository,
