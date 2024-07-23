@@ -213,7 +213,6 @@ if questions is not None:
         optionals = []
         for questionWord in questionWords:
             for questionAnswer in question.cleanedCorrectAnswers:
-                newAnswer = ""
                 for splitQuestionAnswer in questionAnswer.split(' '):
                     if questionWord.capitalize() == splitQuestionAnswer.capitalize():
                         if splitQuestionAnswer not in optionals:
