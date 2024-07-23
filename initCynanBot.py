@@ -112,6 +112,8 @@ from src.misc.administratorProviderInterface import AdministratorProviderInterfa
 from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from src.misc.cynanBotUserIdsProvider import CynanBotUserIdsProvider
+from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
@@ -121,6 +123,8 @@ from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requestsClientProvider import RequestsClientProvider
+from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
+from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from src.openWeather.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
@@ -514,6 +518,13 @@ chatLogger: ChatLoggerInterface = ChatLogger(
 
 
 #####################################
+## CynanBot initialization section ##
+#####################################
+
+cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvider()
+
+
+#####################################
 ## Cuteness initialization section ##
 #####################################
 
@@ -525,6 +536,13 @@ cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
 )
 
 cutenessUtils: CutenessUtilsInterface = CutenessUtils()
+
+
+#####################################
+## Nightbot initialization section ##
+#####################################
+
+nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider()
 
 
 ####################################
@@ -635,7 +653,9 @@ streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElem
 streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  TimeoutImmuneUserIdsRepository(
+    cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
+    nightbotUserIdProvider = nightbotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     twitchHandleProvider = authRepository,
