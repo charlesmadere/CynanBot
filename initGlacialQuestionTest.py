@@ -203,14 +203,25 @@ questionRetrievalTask = eventLoop.create_task(glacialTriviaQuestionRepository.fe
 
 questions = eventLoop.run_until_complete(questionRetrievalTask)
 
-columns = ["Question", "Correct Answers", "Trivia Type"]
+columns = ["Question", "Correct Answers", "Possible Optional Answer Words", "Trivia Type"]
 
 for column in columns:
     table.add_column(column)
 if questions is not None:
     for question in questions:
-        row = [question.question, ', '.join(question.correctAnswers), question.triviaType.name]
-        table.add_row(*row, style='bright_green')
+        questionWords = question.question.split(' ')
+        optionals = []
+        for questionWord in questionWords:
+            for questionAnswer in question.cleanedCorrectAnswers:
+                newAnswer = ""
+                for splitQuestionAnswer in questionAnswer.split(' '):
+                    if questionWord.capitalize() == splitQuestionAnswer.capitalize():
+                        if splitQuestionAnswer not in optionals:
+                            optionals.append(splitQuestionAnswer)
+
+        if len(optionals) > 0:
+            row = [question.question, ', '.join(question.cleanedCorrectAnswers), ', '.join(optionals), question.triviaType.name]
+            table.add_row(*row, style='bright_green')
 
 console = Console()
 console.print(table)
