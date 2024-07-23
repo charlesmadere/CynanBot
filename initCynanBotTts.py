@@ -50,8 +50,6 @@ from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsReposit
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
 from src.cynanBot import CynanBot
-from src.cynanBot.cynanBotUserIdsProvider import CynanBotUserIdsProvider
-from src.cynanBot.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -83,6 +81,8 @@ from src.misc.administratorProviderInterface import AdministratorProviderInterfa
 from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from src.misc.cynanBotUserIdsProvider import CynanBotUserIdsProvider
+from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface

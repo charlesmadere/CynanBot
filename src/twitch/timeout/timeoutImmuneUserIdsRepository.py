@@ -1,8 +1,8 @@
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...cynanBot.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 from ...misc import utils as utils
+from ...misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from ...nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from ...streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from ...streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
