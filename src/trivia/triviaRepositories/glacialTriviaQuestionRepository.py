@@ -387,6 +387,66 @@ class GlacialTriviaQuestionRepository(
             triviaSource = self.triviaSource
         )
 
+    async def __fetchAllQuestionAnswerTriviaQuestions(
+        self,
+        fetchOptions: TriviaFetchOptions
+    ) -> list[QuestionAnswerTriviaQuestion] | None:
+        if not isinstance(fetchOptions, TriviaFetchOptions):
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+
+        connection = await aiosqlite.connect(self.__triviaDatabaseFile)
+        cursor = await connection.execute(
+            '''
+                SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId FROM glacialQuestions
+                WHERE triviaType = $1
+            ''',
+            (TriviaQuestionType.QUESTION_ANSWER.toStr(), )
+        )
+
+        rows = await cursor.fetchall()
+        await cursor.close()
+
+        if rows is None or sum(1 for _ in rows) == 0:
+            await connection.close()
+            self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.QUESTION_ANSWER} questions in the database! ({fetchOptions=})')
+            return None
+ 
+        questions = []
+
+        for row in rows:
+            category = await self.__triviaQuestionCompiler.compileCategory(row[0])
+            categoryId: str | None = row[1]
+            originalTriviaSource = TriviaSource.fromStr(row[2])
+            question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
+            triviaDifficulty = TriviaDifficulty.fromStr(row[4])
+            triviaId: str = row[5]
+    
+            correctAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
+                connection = connection,
+                triviaId = triviaId,
+                triviaType = TriviaQuestionType.QUESTION_ANSWER,
+                originalTriviaSource = originalTriviaSource
+            )
+
+            cleanedCorrectAnswers = await self.__buildCleanedCorrectAnswersForQuestionAnswerTrivia(correctAnswers)
+
+            questions.append(QuestionAnswerTriviaQuestion(
+                correctAnswers = correctAnswers,
+                cleanedCorrectAnswers = cleanedCorrectAnswers,
+                category = category,
+                categoryId = categoryId,
+                originalCorrectAnswers = correctAnswers,
+                question = question,
+                triviaId = triviaId,
+                triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = originalTriviaSource,
+                triviaSource = self.triviaSource
+            ))
+
+        await connection.close()
+
+        return questions
+
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -407,6 +467,21 @@ class GlacialTriviaQuestionRepository(
             raise NoTriviaQuestionException(f'Unable to fetch trivia question from {self.triviaSource} ({fetchOptions=}) ({question=})')
 
         return question
+
+    async def fetchAllQuestionAnswerTriviaQuestions(self, fetchOptions: TriviaFetchOptions) -> list[QuestionAnswerTriviaQuestion]:
+        if not isinstance(fetchOptions, TriviaFetchOptions):
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+
+        if not await self.__triviaDatabaseFileExists():
+            raise FileNotFoundError(f'Glacial trivia database file not found: \"{self.__triviaDatabaseFile}\"')
+
+        questions = await self.__fetchAllQuestionAnswerTriviaQuestions(fetchOptions)
+
+        if not isinstance(questions, list):
+            raise NoTriviaQuestionException(f'Unable to fetch trivia questions from {self.triviaSource} ({fetchOptions=}) ({questions=})')
+
+        return questions
+
 
     async def __fetchTriviaQuestionCorrectAnswers(
         self,

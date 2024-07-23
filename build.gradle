@@ -50,6 +50,7 @@ python {
     pip 'python-vlc:3.0.20123'
     pip 'pytz:2024.1'
     pip 'requests:2.32.3'
+    pip 'rich:13.7.1'
     pip 'roman:4.2'
     pip 'twitchio:2.10.0'
     pip 'typing_extensions:4.12.2'
