@@ -565,6 +565,8 @@ class GlacialTriviaQuestionRepository(
 
         if not await self._triviaSettingsRepository.isScraperEnabled():
             return False
+        elif question.triviaSource is TriviaSource.GLACIAL:
+            return False
 
         connection = await aiosqlite.connect(self.__triviaDatabaseFile)
         await self.__createTablesIfNotExists(connection)

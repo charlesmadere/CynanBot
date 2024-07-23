@@ -1,5 +1,6 @@
 from .triviaScraperInterface import TriviaScraperInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
+from ..questions.triviaSource import TriviaSource
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...timber.timberInterface import TimberInterface
@@ -29,6 +30,8 @@ class TriviaScraper(TriviaScraperInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
         if not await self.__triviaSettingsRepository.isScraperEnabled():
+            return
+        elif question.triviaSource is TriviaSource.GLACIAL:
             return
 
         if await self.__glacialTriviaQuestionRepository.store(question):
