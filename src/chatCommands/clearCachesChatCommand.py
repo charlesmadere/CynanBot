@@ -29,7 +29,7 @@ from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import Tw
 from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
+from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
@@ -40,6 +40,7 @@ class ClearCachesChatCommand(AbsChatCommand):
 
     def __init__(
         self,
+        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
@@ -50,7 +51,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
-        modifyUserDataHelper: AddOrRemoveUserDataHelper,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
@@ -70,7 +70,9 @@ class ClearCachesChatCommand(AbsChatCommand):
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
+        if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
+            raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
@@ -90,8 +92,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif not isinstance(modifyUserDataHelper, AddOrRemoveUserDataHelper):
-            raise TypeError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
@@ -135,6 +135,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
         self.__clearables: FrozenList[Clearable | None] = FrozenList()
+        self.__clearables.append(addOrRemoveUserDataHelper)
         self.__clearables.append(administratorProvider)
         self.__clearables.append(anivSettingsRepository)
         self.__clearables.append(authRepository)
@@ -145,7 +146,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)
-        self.__clearables.append(modifyUserDataHelper)
         self.__clearables.append(mostRecentAnivMessageRepository)
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)

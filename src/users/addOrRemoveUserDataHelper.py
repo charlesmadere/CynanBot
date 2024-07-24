@@ -28,37 +28,37 @@ class AddOrRemoveUserDataHelper(AddOrRemoveUserDataHelperInterface):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__timeToLive: timedelta = timeToLive
 
-        self.__modifyUserData: AddOrRemoveUserData | None = None
+        self.__addOrRemoveUserData: AddOrRemoveUserData | None = None
         self.__addOrRemoveUserEventListener: AddOrRemoveUserEventListener | None = None
         self.__setTime: datetime | None = None
 
     async def clearCaches(self):
-        self.__modifyUserData = None
+        self.__addOrRemoveUserData = None
         self.__setTime = None
-        self.__timber.log('ModifyUserDataHelper', 'Caches cleared')
+        self.__timber.log('AddOrRemoveUserDataHelper', 'Caches cleared')
 
     async def getData(self) -> AddOrRemoveUserData | None:
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if self.__setTime is None or self.__setTime + self.__timeToLive < now:
-            self.__modifyUserData = None
+            self.__addOrRemoveUserData = None
             return None
 
-        return self.__modifyUserData
+        return self.__addOrRemoveUserData
 
     async def notifyAddOrRemoveUserEventListenerAndClearData(self):
-        modifyUserEventListener = self.__addOrRemoveUserEventListener
-        if modifyUserEventListener is None:
-            self.__timber.log('ModifyUserDataHelper', f'Attempted to notify listener of a user being modified, but no listener has been set')
+        addOrRemoveUserEventListener = self.__addOrRemoveUserEventListener
+        if addOrRemoveUserEventListener is None:
+            self.__timber.log('AddOrRemoveUserDataHelper', f'Attempted to notify listener of a user being modified, but no listener has been set')
             return
 
-        modifyUserData = self.__modifyUserData
-        if modifyUserData is None:
-            self.__timber.log('ModifyUserDataHelper', f'Attempted to notify listener of a user being modified, but no user data has been set')
+        addOrRemoveUserData = self.__addOrRemoveUserData
+        if addOrRemoveUserData is None:
+            self.__timber.log('AddOrRemoveUserDataHelper', f'Attempted to notify listener of a user being modified, but no user data has been set')
             return
 
         await self.clearCaches()
-        await modifyUserEventListener.onAddOrRemoveUserEvent(modifyUserData)
+        await addOrRemoveUserEventListener.onAddOrRemoveUserEvent(addOrRemoveUserData)
 
     def setAddOrRemoveUserEventListener(self, listener: AddOrRemoveUserEventListener | None):
         if listener is not None and not isinstance(listener, AddOrRemoveUserEventListener):
@@ -81,10 +81,10 @@ class AddOrRemoveUserDataHelper(AddOrRemoveUserDataHelperInterface):
 
         self.__setTime = datetime.now(self.__timeZoneRepository.getDefault())
 
-        self.__modifyUserData = AddOrRemoveUserData(
+        self.__addOrRemoveUserData = AddOrRemoveUserData(
             actionType = actionType,
             userId = userId,
             userName = userName
         )
 
-        self.__timber.log('ModifyUserDataHelper', f'Persisted user data: (actionType=\"{actionType}\") (userId=\"{userId}\") (userName=\"{userName}\")')
+        self.__timber.log('AddOrRemoveUserDataHelper', f'Persisted user data: (actionType=\"{actionType}\") (userId=\"{userId}\") (userName=\"{userName}\")')

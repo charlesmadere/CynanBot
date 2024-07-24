@@ -330,6 +330,7 @@ from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketC
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
+from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -505,7 +506,7 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     usersRepository = usersRepository
 )
 
-addOrRemoveUserDataHelper: AddOrRemoveUserDataHelper = AddOrRemoveUserDataHelper(
+addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserDataHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )

@@ -190,7 +190,7 @@ from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHa
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from .users.addOrRemoveUserActionType import AddOrRemoveUserActionType
 from .users.addOrRemoveUserData import AddOrRemoveUserData
-from .users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
+from .users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from .users.addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.userInterface import UserInterface
@@ -215,7 +215,7 @@ class CynanBot(
         twitchCheerHandler: AbsTwitchCheerHandler | None,
         twitchRaidHandler: AbsTwitchRaidHandler | None,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
-        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelper,
+        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
         anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface | None,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface | None,
@@ -315,7 +315,7 @@ class CynanBot(
             raise TypeError(f'twitchRaidHandler argument is malformed: \"{twitchRaidHandler}\"')
         elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelper):
+        elif not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
             raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
@@ -476,7 +476,7 @@ class CynanBot(
 
         self.__twitchCheerHandler: AbsTwitchCheerHandler | None = twitchCheerHandler
         self.__twitchRaidHandler: AbsTwitchRaidHandler | None = twitchRaidHandler
-        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelper = addOrRemoveUserDataHelper
+        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = addOrRemoveUserDataHelper
         self.__authRepository: AuthRepository = authRepository
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
@@ -513,7 +513,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, addOrRemoveUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -794,16 +794,19 @@ class CynanBot(
 
         await self.wait_for_ready()
 
-        if event.actionType is AddOrRemoveUserActionType.ADD:
-            channels: list[str] = list()
-            channels.append(event.userName)
-            await self.join_channels(channels)
-        elif event.actionType is AddOrRemoveUserActionType.REMOVE:
-            channels: list[str] = list()
-            channels.append(event.userName)
-            await self.part_channels(channels)
-        else:
-            raise RuntimeError(f'unknown ModifyUserActionType: \"{event.actionType}\"')
+        match event.actionType:
+            case AddOrRemoveUserActionType.ADD:
+                channels: list[str] = list()
+                channels.append(event.userName)
+                await self.join_channels(channels)
+
+            case AddOrRemoveUserActionType.REMOVE:
+                channels: list[str] = list()
+                channels.append(event.userName)
+                await self.part_channels(channels)
+
+            case _:
+                raise RuntimeError(f'unknown AddOrRemoveUserActionType: \"{event.actionType}\"')
 
     async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
         eventType = event.getEventType()
