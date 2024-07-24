@@ -329,7 +329,7 @@ from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
-from src.users.modifyUserDataHelper import ModifyUserDataHelper
+from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -505,7 +505,7 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     usersRepository = usersRepository
 )
 
-modifyUserDataHelper: ModifyUserDataHelper = ModifyUserDataHelper(
+addOrRemoveUserDataHelper: AddOrRemoveUserDataHelper = AddOrRemoveUserDataHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -1496,6 +1496,7 @@ cynanBot = CynanBot(
     twitchCheerHandler = twitchCheerHandler,
     twitchRaidHandler = twitchRaidHandler,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+    addOrRemoveUserDataHelper= addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
@@ -1522,7 +1523,6 @@ cynanBot = CynanBot(
     jishoHelper = jishoHelper,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
-    modifyUserDataHelper = modifyUserDataHelper,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,

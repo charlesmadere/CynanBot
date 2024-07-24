@@ -29,7 +29,7 @@ from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import Tw
 from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.modifyUserDataHelper import ModifyUserDataHelper
+from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
@@ -50,7 +50,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
-        modifyUserDataHelper: ModifyUserDataHelper,
+        modifyUserDataHelper: AddOrRemoveUserDataHelper,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
@@ -90,7 +90,7 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
+        elif not isinstance(modifyUserDataHelper, AddOrRemoveUserDataHelper):
             raise TypeError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')

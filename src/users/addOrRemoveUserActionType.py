@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class ModifyUserActionType(Enum):
+class AddOrRemoveUserActionType(Enum):
 
     ADD = auto()
     REMOVE = auto()

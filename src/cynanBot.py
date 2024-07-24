@@ -188,10 +188,10 @@ from .twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from .twitch.twitchUtilsInterface import TwitchUtilsInterface
 from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
-from .users.modifyUserActionType import ModifyUserActionType
-from .users.modifyUserData import ModifyUserData
-from .users.modifyUserDataHelper import ModifyUserDataHelper
-from .users.modifyUserEventListener import ModifyUserEventListener
+from .users.addOrRemoveUserActionType import AddOrRemoveUserActionType
+from .users.addOrRemoveUserData import AddOrRemoveUserData
+from .users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
+from .users.addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.userInterface import UserInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
@@ -203,7 +203,7 @@ from .websocketConnection.websocketConnectionServerInterface import WebsocketCon
 class CynanBot(
     commands.Bot,
     ChannelJoinListener,
-    ModifyUserEventListener,
+    AddOrRemoveUserEventListener,
     RecurringActionEventListener,
     TriviaEventListener,
     TwitchChannelProvider
@@ -215,6 +215,7 @@ class CynanBot(
         twitchCheerHandler: AbsTwitchCheerHandler | None,
         twitchRaidHandler: AbsTwitchRaidHandler | None,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
+        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelper,
         administratorProvider: AdministratorProviderInterface,
         anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface | None,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface | None,
@@ -241,7 +242,6 @@ class CynanBot(
         jishoHelper: JishoHelperInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface | None,
-        modifyUserDataHelper: ModifyUserDataHelper,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
@@ -315,6 +315,8 @@ class CynanBot(
             raise TypeError(f'twitchRaidHandler argument is malformed: \"{twitchRaidHandler}\"')
         elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
+        elif not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelper):
+            raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
         elif anivCopyMessageTimeoutScorePresenter is not None and not isinstance(anivCopyMessageTimeoutScorePresenter, AnivCopyMessageTimeoutScorePresenterInterface):
@@ -365,8 +367,6 @@ class CynanBot(
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
-            raise TypeError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentAnivMessageTimeoutHelper is not None and not isinstance(mostRecentAnivMessageTimeoutHelper, MostRecentAnivMessageTimeoutHelperInterface):
@@ -476,12 +476,12 @@ class CynanBot(
 
         self.__twitchCheerHandler: AbsTwitchCheerHandler | None = twitchCheerHandler
         self.__twitchRaidHandler: AbsTwitchRaidHandler | None = twitchRaidHandler
+        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelper = addOrRemoveUserDataHelper
         self.__authRepository: AuthRepository = authRepository
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__cutenessPresenter: CutenessPresenterInterface | None = cutenessPresenter
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__recurringActionsMachine: RecurringActionsMachineInterface | None = recurringActionsMachine
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
@@ -512,10 +512,10 @@ class CynanBot(
         ## Initialization of command objects ##
         #######################################
 
-        self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, addOrRemoveUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
-        self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
+        self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
@@ -759,7 +759,6 @@ class CynanBot(
 
         self.__twitchChannelJoinHelper.setChannelJoinListener(self)
         self.__twitchChannelJoinHelper.joinChannels()
-        self.__modifyUserDataHelper.setModifyUserEventListener(self)
 
     async def event_reconnect(self):
         self.__timber.log('CynanBot', f'Received new reconnect event')
@@ -790,16 +789,16 @@ class CynanBot(
     async def getTwitchChannel(self, twitchChannel: str) -> TwitchChannel:
         return await self.__getChannel(twitchChannel)
 
-    async def onModifyUserEvent(self, event: ModifyUserData):
+    async def onAddOrRemoveUserEvent(self, event: AddOrRemoveUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event}')
 
         await self.wait_for_ready()
 
-        if event.actionType is ModifyUserActionType.ADD:
+        if event.actionType is AddOrRemoveUserActionType.ADD:
             channels: list[str] = list()
             channels.append(event.userName)
             await self.join_channels(channels)
-        elif event.actionType is ModifyUserActionType.REMOVE:
+        elif event.actionType is AddOrRemoveUserActionType.REMOVE:
             channels: list[str] = list()
             channels.append(event.userName)
             await self.part_channels(channels)
@@ -820,6 +819,7 @@ class CynanBot(
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
         self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
 
+        self.__addOrRemoveUserDataHelper.setAddOrRemoveUserEventListener(self)
         self.__timber.start()
         self.__twitchTokensRepository.start()
         self.__sentMessageLogger.start()

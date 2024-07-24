@@ -1,15 +1,15 @@
 from datetime import datetime, timedelta
 
-from .modifyUserActionType import ModifyUserActionType
-from .modifyUserData import ModifyUserData
-from .modifyUserEventListener import ModifyUserEventListener
+from .addOrRemoveUserActionType import AddOrRemoveUserActionType
+from .addOrRemoveUserData import AddOrRemoveUserData
+from .addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
+from .addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
-from ..misc.clearable import Clearable
 from ..timber.timberInterface import TimberInterface
 
 
-class ModifyUserDataHelper(Clearable):
+class AddOrRemoveUserDataHelper(AddOrRemoveUserDataHelperInterface):
 
     def __init__(
         self,
@@ -28,8 +28,8 @@ class ModifyUserDataHelper(Clearable):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__timeToLive: timedelta = timeToLive
 
-        self.__modifyUserData: ModifyUserData | None = None
-        self.__modifyUserEventListener: ModifyUserEventListener | None = None
+        self.__modifyUserData: AddOrRemoveUserData | None = None
+        self.__addOrRemoveUserEventListener: AddOrRemoveUserEventListener | None = None
         self.__setTime: datetime | None = None
 
     async def clearCaches(self):
@@ -37,7 +37,7 @@ class ModifyUserDataHelper(Clearable):
         self.__setTime = None
         self.__timber.log('ModifyUserDataHelper', 'Caches cleared')
 
-    async def getUserData(self) -> ModifyUserData | None:
+    async def getData(self) -> AddOrRemoveUserData | None:
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if self.__setTime is None or self.__setTime + self.__timeToLive < now:
@@ -46,8 +46,8 @@ class ModifyUserDataHelper(Clearable):
 
         return self.__modifyUserData
 
-    async def notifyModifyUserListenerAndClearData(self):
-        modifyUserEventListener = self.__modifyUserEventListener
+    async def notifyAddOrRemoveUserEventListenerAndClearData(self):
+        modifyUserEventListener = self.__addOrRemoveUserEventListener
         if modifyUserEventListener is None:
             self.__timber.log('ModifyUserDataHelper', f'Attempted to notify listener of a user being modified, but no listener has been set')
             return
@@ -58,21 +58,21 @@ class ModifyUserDataHelper(Clearable):
             return
 
         await self.clearCaches()
-        await modifyUserEventListener.onModifyUserEvent(modifyUserData)
+        await modifyUserEventListener.onAddOrRemoveUserEvent(modifyUserData)
 
-    def setModifyUserEventListener(self, listener: ModifyUserEventListener | None):
-        if listener is not None and not isinstance(listener, ModifyUserEventListener):
+    def setAddOrRemoveUserEventListener(self, listener: AddOrRemoveUserEventListener | None):
+        if listener is not None and not isinstance(listener, AddOrRemoveUserEventListener):
             raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
-        self.__modifyUserEventListener = listener
+        self.__addOrRemoveUserEventListener = listener
 
     async def setUserData(
         self,
-        actionType: ModifyUserActionType,
+        actionType: AddOrRemoveUserActionType,
         userId: str,
         userName: str
     ):
-        if not isinstance(actionType, ModifyUserActionType):
+        if not isinstance(actionType, AddOrRemoveUserActionType):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
@@ -81,7 +81,7 @@ class ModifyUserDataHelper(Clearable):
 
         self.__setTime = datetime.now(self.__timeZoneRepository.getDefault())
 
-        self.__modifyUserData = ModifyUserData(
+        self.__modifyUserData = AddOrRemoveUserData(
             actionType = actionType,
             userId = userId,
             userName = userName

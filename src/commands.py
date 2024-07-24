@@ -29,8 +29,8 @@ from .twitch.configuration.twitchContext import TwitchContext
 from .twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from .twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchUtilsInterface import TwitchUtilsInterface
-from .users.modifyUserActionType import ModifyUserActionType
-from .users.modifyUserDataHelper import ModifyUserDataHelper
+from .users.addOrRemoveUserActionType import AddOrRemoveUserActionType
+from .users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -46,18 +46,18 @@ class AddUserCommand(AbsCommand):
 
     def __init__(
         self,
+        addOrRemoveDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
-        modifyUserDataHelper: ModifyUserDataHelper,
         timber: TimberInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
+        if not isinstance(addOrRemoveDataHelper, AddOrRemoveUserDataHelperInterface):
+            raise ValueError(f'addOrRemoveDataHelper argument is malformed: \"{addOrRemoveDataHelper}\"')
+        elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
-            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -69,8 +69,8 @@ class AddUserCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = addOrRemoveDataHelper
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: TimberInterface = timber
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -113,8 +113,8 @@ class AddUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\"!')
             return
 
-        await self.__modifyUserDataHelper.setUserData(
-            actionType = ModifyUserActionType.ADD,
+        await self.__addOrRemoveUserDataHelper.setUserData(
+            actionType = AddOrRemoveUserActionType.ADD,
             userId = userId,
             userName = userName
         )
@@ -127,16 +127,16 @@ class ConfirmCommand(AbsCommand):
 
     def __init__(
         self,
+        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
-        modifyUserDataHelper: ModifyUserDataHelper,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
+        if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
+            raise ValueError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
+        elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
-            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -144,7 +144,7 @@ class ConfirmCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
+        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = addOrRemoveUserDataHelper
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -158,20 +158,23 @@ class ConfirmCommand(AbsCommand):
             self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        userData = await self.__modifyUserDataHelper.getUserData()
+        data = await self.__addOrRemoveUserDataHelper.getData()
 
-        if userData is None:
+        if data is None:
             self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried confirming the modification of a user, but there is no persisted user data')
             return
 
-        if userData.actionType is ModifyUserActionType.ADD:
-            await self.__usersRepository.addUser(userData.userName)
-        elif userData.actionType is ModifyUserActionType.REMOVE:
-            await self.__usersRepository.removeUser(userData.userName)
-        else:
-            raise RuntimeError(f'unknown ModifyUserActionType: \"{userData.actionType}\"')
+        match data.actionType:
+            case AddOrRemoveUserActionType.ADD:
+                await self.__usersRepository.addUser(data.userName)
 
-        await self.__modifyUserDataHelper.notifyModifyUserListenerAndClearData()
+            case AddOrRemoveUserActionType.REMOVE:
+                await self.__usersRepository.removeUser(data.userName)
+
+            case _:
+                raise RuntimeError(f'unknown ModifyUserActionType: \"{data.actionType}\"')
+
+        await self.__addOrRemoveUserDataHelper.notifyAddOrRemoveUserEventListenerAndClearData()
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -839,18 +842,18 @@ class RemoveUserCommand(AbsCommand):
 
     def __init__(
         self,
+        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
-        modifyUserDataHelper: ModifyUserDataHelper,
         timber: TimberInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
+        if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
+            raise ValueError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
+        elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
-            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -862,8 +865,8 @@ class RemoveUserCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = addOrRemoveUserDataHelper
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: TimberInterface = timber
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -898,8 +901,8 @@ class RemoveUserCommand(AbsCommand):
         await self.__twitchTokensRepository.removeUser(userName)
         userId = await self.__userIdsRepository.requireUserId(userName = userName)
 
-        await self.__modifyUserDataHelper.setUserData(
-            actionType = ModifyUserActionType.REMOVE,
+        await self.__addOrRemoveUserDataHelper.setUserData(
+            actionType = AddOrRemoveUserActionType.REMOVE,
             userId = userId,
             userName = userName
         )
