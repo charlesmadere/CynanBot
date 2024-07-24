@@ -172,7 +172,7 @@ class ConfirmCommand(AbsCommand):
                 await self.__usersRepository.removeUser(data.userName)
 
             case _:
-                raise RuntimeError(f'unknown ModifyUserActionType: \"{data.actionType}\"')
+                raise RuntimeError(f'unknown AddOrRemoveUserActionType: \"{data.actionType}\"')
 
         await self.__addOrRemoveUserDataHelper.notifyAddOrRemoveUserEventListenerAndClearData()
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -71,7 +71,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
     ):
         if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
-            raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+            raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
