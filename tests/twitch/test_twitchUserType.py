@@ -1,7 +1,7 @@
 from src.twitch.api.twitchUserType import TwitchUserType
 
 
-class TestTwitchUserType():
+class TestTwitchUserType:
 
     def test_fromStr_withAdminString(self):
         result = TwitchUserType.fromStr('admin')
