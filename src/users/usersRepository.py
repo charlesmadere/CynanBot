@@ -6,11 +6,12 @@ from typing import Any
 import aiofiles
 import aiofiles.ospath
 
-from .exceptions import NoSuchUserException, NoUsersException
+from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmnCatchType import PkmnCatchType
 from .soundAlertRedemption import SoundAlertRedemption
 from .user import User
+from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -112,7 +113,7 @@ class UsersRepository(UsersRepositoryInterface):
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
-        isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, 'anivMessageCopyTimeoutEnabled', False)
+        isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
@@ -398,6 +399,76 @@ class UsersRepository(UsersRepositoryInterface):
     async def getUsersAsync(self) -> list[User]:
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
+
+    async def modifyUserValue(self, handle: str, key: UserJsonConstant, value: Any | None):
+        if not utils.isValidStr(handle):
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
+        elif not isinstance(key, UserJsonConstant):
+            raise TypeError(f'key argument is malformed: \"{key}\"')
+
+        jsonContents = await self.__readJsonAsync()
+        userJson = jsonContents.get(handle.casefold())
+
+        if not isinstance(userJson, dict):
+            raise NoSuchUserException(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
+
+        match key:
+            case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED:
+                await self.__modifyUserBooleanValue(
+                    handle = handle,
+                    userJson = userJson,
+                    key = key,
+                    rawValue = value
+                )
+
+            case UserJsonConstant.CHEER_ACTIONS_ENABLED:
+                await self.__modifyUserBooleanValue(
+                    handle = handle,
+                    userJson = userJson,
+                    key = key,
+                    rawValue = value
+                )
+
+            case _:
+                raise NotImplementedError(f'Modifying this UserJsonConstant is not implemented ({handle=}) ({key=}) ({value=})')
+
+        async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
+            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
+            await file.write(jsonString)
+            await file.flush()
+
+        # be sure to clear caches, as JSON file contents have now been updated
+        await self.clearCaches()
+
+        self.__timber.log('UsersRepository', f'Finished modifying user value ({handle=}) ({key=}) ({value=})')
+
+    async def __modifyUserBooleanValue(
+        self,
+        handle: str,
+        userJson: dict[str, Any],
+        key: UserJsonConstant,
+        rawValue: Any | None
+    ):
+        if not utils.isValidStr(handle):
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
+        elif not isinstance(userJson, dict):
+            raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
+        elif not isinstance(key, UserJsonConstant):
+            raise TypeError(f'key argument is malformed: \"{key}\"')
+
+        if rawValue is None:
+            raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({key=}) ({rawValue=})')
+
+        value: bool | None
+
+        if isinstance(rawValue, str):
+            value = utils.strictStrToBool(rawValue)
+        elif utils.isValidBool(rawValue):
+            value = rawValue
+        else:
+            raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({key=}) ({rawValue=})')
+
+        userJson[key.jsonKey] = value
 
     def __parseCutenessBoosterPacksFromJson(
         self,

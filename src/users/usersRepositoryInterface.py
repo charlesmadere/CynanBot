@@ -1,7 +1,9 @@
 from abc import abstractmethod
 from collections.abc import Sequence
+from typing import Any
 
 from .userInterface import UserInterface
+from .userJsonConstant import UserJsonConstant
 from ..misc.clearable import Clearable
 
 
@@ -33,6 +35,10 @@ class UsersRepositoryInterface(Clearable):
 
     @abstractmethod
     async def getUsersAsync(self) -> Sequence[UserInterface]:
+        pass
+
+    @abstractmethod
+    async def modifyUserValue(self, handle: str, key: UserJsonConstant, value: Any | None):
         pass
 
     @abstractmethod
