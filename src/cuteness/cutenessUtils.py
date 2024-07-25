@@ -1,4 +1,3 @@
-from .cutenessChampionsResult import CutenessChampionsResult
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
@@ -24,25 +23,6 @@ class CutenessUtils(CutenessUtilsInterface):
             return f'@{result.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr} ✨'
         else:
             return f'@{result.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
-
-    def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
-        if not isinstance(result, CutenessChampionsResult):
-            raise TypeError(f'result argument is malformed: \"{result}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        champions = result.champions
-
-        if champions is None or len(champions) == 0:
-            return f'There are no cuteness champions 😿'
-
-        championsStrs: list[str] = list()
-
-        for champion in champions:
-            championsStrs.append(self.__getLeaderboardPlacementString(champion))
-
-        championsStr = delimiter.join(championsStrs)
-        return f'Cuteness Champions {championsStr} ✨'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
         if not isinstance(result, CutenessHistoryResult):

@@ -178,58 +178,6 @@ class ConfirmCommand(AbsCommand):
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
-class CutenessChampionsCommand(AbsCommand):
-
-    def __init__(
-        self,
-        cutenessRepository: CutenessRepositoryInterface,
-        cutenessUtils: CutenessUtilsInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 15)
-    ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__cutenessUtils: CutenessUtilsInterface = cutenessUtils
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.isCutenessEnabled():
-            return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        result = await self.__cutenessRepository.fetchCutenessChampions(
-            twitchChannel = user.getHandle(),
-            twitchChannelId = await ctx.getTwitchChannelId()
-        )
-
-        await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
-        self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
 class CutenessHistoryCommand(AbsCommand):
 
     def __init__(

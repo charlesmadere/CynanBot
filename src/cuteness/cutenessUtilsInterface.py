@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from .cutenessChampionsResult import CutenessChampionsResult
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
@@ -11,10 +10,6 @@ class CutenessUtilsInterface(ABC):
 
     @abstractmethod
     def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
-        pass
-
-    @abstractmethod
-    def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
         pass
 
     @abstractmethod
