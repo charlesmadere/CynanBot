@@ -557,7 +557,7 @@ class UsersRepository(UsersRepositoryInterface):
         if not os.path.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
-        with open(self.__usersFile, 'r') as file:
+        with open(self.__usersFile, mode = 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents is None:
