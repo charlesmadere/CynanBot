@@ -38,7 +38,7 @@ class UsersRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def modifyUserValue(self, handle: str, key: UserJsonConstant, value: Any | None):
+    async def modifyUserValue(self, handle: str, jsonConstant: UserJsonConstant, value: Any | None):
         pass
 
     @abstractmethod

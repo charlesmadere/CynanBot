@@ -559,7 +559,7 @@ def strictStrToBool(s: str | None) -> bool:
     else:
         raise ValueError(f'no matching bool conversion: \"{s}\"')
 
-def strToBool(s: Optional[str]) -> bool:
+def strToBool(s: str | None) -> bool:
     """_summary_
 
     Converts the given string into a bool. None/empty/whitespace strings are converted into True.
@@ -576,14 +576,3 @@ def strToBool(s: Optional[str]) -> bool:
         return True
     else:
         return False
-
-def strsToBools(l: Collection[str] | None) -> List[bool]:
-    bools: List[bool] = list()
-
-    if not hasItems(l):
-        return bools
-
-    for s in l:
-        bools.append(strToBool(s))
-
-    return bools

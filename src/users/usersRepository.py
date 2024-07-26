@@ -59,15 +59,7 @@ class UsersRepository(UsersRepositoryInterface):
                 return
 
         jsonContents[handle] = dict()
-
-        async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
-            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
-            await file.write(jsonString)
-            await file.flush()
-
-        # be sure to clear caches, as JSON file contents have now been updated
-        await self.clearCaches()
-
+        await self.__writeAndFlushUsersFileAsync(jsonContents)
         self.__timber.log('UsersRepository', f'Finished adding user \"{handle}\"')
 
     async def clearCaches(self):
@@ -144,7 +136,7 @@ class UsersRepository(UsersRepositoryInterface):
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
-        isTtsEnabled = utils.getBoolFromDict(userJson, 'ttsEnabled', False)
+        isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWelcomeTtsEnabled = utils.getBoolFromDict(userJson, 'welcomeTtsEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
@@ -400,11 +392,11 @@ class UsersRepository(UsersRepositoryInterface):
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
 
-    async def modifyUserValue(self, handle: str, key: UserJsonConstant, value: Any | None):
+    async def modifyUserValue(self, handle: str, jsonConstant: UserJsonConstant, value: Any | None):
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
-        elif not isinstance(key, UserJsonConstant):
-            raise TypeError(f'key argument is malformed: \"{key}\"')
+        elif not isinstance(jsonConstant, UserJsonConstant):
+            raise TypeError(f'jsonConstant argument is malformed: \"{jsonConstant}\"')
 
         jsonContents = await self.__readJsonAsync()
         userJson = jsonContents.get(handle.casefold())
@@ -412,12 +404,12 @@ class UsersRepository(UsersRepositoryInterface):
         if not isinstance(userJson, dict):
             raise NoSuchUserException(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
 
-        match key:
+        match jsonConstant:
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED:
                 await self.__modifyUserBooleanValue(
                     handle = handle,
                     userJson = userJson,
-                    key = key,
+                    jsonConstant = jsonConstant,
                     rawValue = value
                 )
 
@@ -425,39 +417,37 @@ class UsersRepository(UsersRepositoryInterface):
                 await self.__modifyUserBooleanValue(
                     handle = handle,
                     userJson = userJson,
-                    key = key,
+                    jsonConstant = jsonConstant,
+                    rawValue = value
+                )
+
+            case UserJsonConstant.TTS_ENABLED:
+                await self.__modifyUserBooleanValue(
+                    handle = handle,
+                    userJson = userJson,
+                    jsonConstant = jsonConstant,
                     rawValue = value
                 )
 
             case _:
-                raise NotImplementedError(f'Modifying this UserJsonConstant is not implemented ({handle=}) ({key=}) ({value=})')
+                raise NotImplementedError(f'Modifying this UserJsonConstant is not implemented ({handle=}) ({jsonConstant=}) ({value=})')
 
-        async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
-            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
-            await file.write(jsonString)
-            await file.flush()
-
-        # be sure to clear caches, as JSON file contents have now been updated
-        await self.clearCaches()
-
-        self.__timber.log('UsersRepository', f'Finished modifying user value ({handle=}) ({key=}) ({value=})')
+        await self.__writeAndFlushUsersFileAsync(jsonContents)
+        self.__timber.log('UsersRepository', f'Finished modifying user value ({handle=}) ({jsonConstant=}) ({value=})')
 
     async def __modifyUserBooleanValue(
         self,
         handle: str,
         userJson: dict[str, Any],
-        key: UserJsonConstant,
+        jsonConstant: UserJsonConstant,
         rawValue: Any | None
     ):
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
-        elif not isinstance(key, UserJsonConstant):
-            raise TypeError(f'key argument is malformed: \"{key}\"')
-
-        if rawValue is None:
-            raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({key=}) ({rawValue=})')
+        elif not isinstance(jsonConstant, UserJsonConstant):
+            raise TypeError(f'jsonConstant argument is malformed: \"{jsonConstant}\"')
 
         value: bool | None
 
@@ -466,9 +456,9 @@ class UsersRepository(UsersRepositoryInterface):
         elif utils.isValidBool(rawValue):
             value = rawValue
         else:
-            raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({key=}) ({rawValue=})')
+            raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
 
-        userJson[key.jsonKey] = value
+        userJson[jsonConstant.jsonKey] = value
 
     def __parseCutenessBoosterPacksFromJson(
         self,
@@ -615,6 +605,12 @@ class UsersRepository(UsersRepositoryInterface):
             return
 
         jsonContents[preExistingHandle]['enabled'] = enabled
+        await self.__writeAndFlushUsersFileAsync(jsonContents)
+        self.__timber.log('UsersRepository', f'Finished changing enabled status for user ({handle=}) ({enabled=})')
+
+    async def __writeAndFlushUsersFileAsync(self, jsonContents: dict[str, Any]):
+        if not isinstance(jsonContents, dict):
+            raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
             jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
@@ -624,4 +620,4 @@ class UsersRepository(UsersRepositoryInterface):
         # be sure to clear caches, as JSON file contents have now been updated
         await self.clearCaches()
 
-        self.__timber.log('UsersRepository', f'Finished changing enabled status for user \"{handle}\" to \"{enabled}\"')
+        self.__timber.log('UsersRepository', f'Finished writing out changes to users repository JSON file (\"{self.__usersFile}\")')
