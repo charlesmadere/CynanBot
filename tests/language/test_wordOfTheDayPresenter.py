@@ -13,7 +13,7 @@ from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.transparent.transparentResponse import TransparentResponse
 
 
-class TestWordOfTheDayPresenter():
+class TestWordOfTheDayPresenter:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()

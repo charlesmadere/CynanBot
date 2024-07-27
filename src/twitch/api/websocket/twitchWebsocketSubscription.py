@@ -8,7 +8,7 @@ from .twitchWebsocketTransport import TwitchWebsocketTransport
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketSubscription():
+class TwitchWebsocketSubscription:
     createdAt: datetime
     cost: int
     subscriptionId: str

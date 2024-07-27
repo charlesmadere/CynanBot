@@ -1,7 +1,7 @@
 from src.pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
 
 
-class TestPokepediaBerryFlavor():
+class TestPokepediaBerryFlavor:
 
     def test_getBerryFlavorId_withBitter(self):
         assert PokepediaBerryFlavor.BITTER.getBerryFlavorId() == 4

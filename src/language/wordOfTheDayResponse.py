@@ -5,7 +5,7 @@ from ..transparent.transparentResponse import TransparentResponse
 
 
 @dataclass(frozen = True)
-class WordOfTheDayResponse():
+class WordOfTheDayResponse:
     languageEntry: LanguageEntry
     romaji: str | None
     transparentResponse: TransparentResponse

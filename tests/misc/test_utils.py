@@ -7,7 +7,7 @@ import pytest
 import src.misc.utils as utils
 
 
-class TestUtils():
+class TestUtils:
 
     def test_areAllStrsInts_withEmptyList(self):
         result: bool | None = None

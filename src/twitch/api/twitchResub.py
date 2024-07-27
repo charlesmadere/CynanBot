@@ -4,7 +4,7 @@ from .twitchSubscriberTier import TwitchSubscriberTier
 
 
 @dataclass(frozen = True)
-class TwitchResub():
+class TwitchResub:
     gifterIsAnonymous: bool | None
     isGift: bool
     cumulativeMonths: int

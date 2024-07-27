@@ -5,7 +5,7 @@ from .twitchWebsocketPayload import TwitchWebsocketPayload
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketDataBundle():
+class TwitchWebsocketDataBundle:
     metadata: TwitchWebsocketMetadata
     payload: TwitchWebsocketPayload | None = None
 

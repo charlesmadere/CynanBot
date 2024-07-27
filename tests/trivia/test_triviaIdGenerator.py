@@ -7,7 +7,7 @@ from src.trivia.triviaIdGenerator import TriviaIdGenerator
 from src.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 
 
-class TestTriviaIdGenerator():
+class TestTriviaIdGenerator:
 
     actionIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
     triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()

@@ -2,7 +2,7 @@ from src.twitch.api.websocket.twitchWebsocketNoticeType import \
     TwitchWebsocketNoticeType
 
 
-class TestTwitchWebsocketNoticeType():
+class TestTwitchWebsocketNoticeType:
 
     def test_fromStr_withAnnouncementString(self):
         result = TwitchWebsocketNoticeType.fromStr('announcement')

@@ -2,7 +2,7 @@ from src.twitch.api.websocket.twitchWebsocketConnectionStatus import \
     TwitchWebsocketConnectionStatus
 
 
-class TestTwitchWebsocketConnectionStatus():
+class TestTwitchWebsocketConnectionStatus:
 
     def test_fromStr_withAdminString(self):
         result = TwitchWebsocketConnectionStatus.fromStr('connected')

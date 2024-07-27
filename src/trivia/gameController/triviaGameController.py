@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class TriviaGameController():
+class TriviaGameController:
     twitchChannel: str
     twitchChannelId: str
     userId: str

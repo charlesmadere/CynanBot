@@ -4,7 +4,7 @@ from dataclasses import dataclass
 # This class intends to directly correspond to Twitch's "Ban User" API:
 # https://dev.twitch.tv/docs/api/reference/#ban-user
 @dataclass(frozen = True)
-class TwitchBanRequest():
+class TwitchBanRequest:
     duration: int | None
     broadcasterUserId: str
     moderatorUserId: str

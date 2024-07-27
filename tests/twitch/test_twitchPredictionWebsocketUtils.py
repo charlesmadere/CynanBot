@@ -12,7 +12,7 @@ from src.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 
 
-class TestTwitchPredictionWebsocketUtils():
+class TestTwitchPredictionWebsocketUtils:
 
     utils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils()
 

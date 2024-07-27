@@ -5,7 +5,7 @@ from .twitchUserType import TwitchUserType
 
 
 @dataclass(frozen = True)
-class TwitchUserDetails():
+class TwitchUserDetails:
     displayName: str
     login: str
     userId: str

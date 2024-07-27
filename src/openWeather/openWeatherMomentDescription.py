@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class OpenWeatherMomentDescription():
+class OpenWeatherMomentDescription:
     description: str
     descriptionId: str
     emoji: str | None

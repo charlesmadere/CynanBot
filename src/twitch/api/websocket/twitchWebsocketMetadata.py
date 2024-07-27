@@ -6,7 +6,7 @@ from .twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketMetadata():
+class TwitchWebsocketMetadata:
     messageTimestamp: datetime
     messageId: str
     subscriptionVersion: str | None

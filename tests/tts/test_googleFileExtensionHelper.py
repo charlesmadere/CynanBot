@@ -6,7 +6,7 @@ from src.tts.google.googleFileExtensionHelperInterface import \
     GoogleFileExtensionHelperInterface
 
 
-class TestGoogleFileExtensionHelper():
+class TestGoogleFileExtensionHelper:
 
     fileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 

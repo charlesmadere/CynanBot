@@ -4,7 +4,7 @@ from ..soundPlayerManager.soundAlert import SoundAlert
 
 
 @dataclass(frozen = True)
-class SoundAlertRedemption():
+class SoundAlertRedemption:
     isImmediate: bool
     soundAlert: SoundAlert
     directoryPath: str | None

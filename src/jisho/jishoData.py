@@ -7,7 +7,7 @@ from .jishoSense import JishoSense
 
 
 @dataclass(frozen = True)
-class JishoData():
+class JishoData:
     isCommon: bool
     attribution: JishoAttribution | None
     japanese: list[JishoJapaneseWord]

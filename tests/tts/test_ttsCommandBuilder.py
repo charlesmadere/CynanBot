@@ -23,7 +23,7 @@ from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
-class TestTtsCommandBuilder():
+class TestTtsCommandBuilder:
 
     timber: TimberInterface = TimberStub()
 

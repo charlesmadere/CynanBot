@@ -4,6 +4,6 @@ from ..language.languageEntry import LanguageEntry
 
 
 @dataclass(frozen = True)
-class DeepLTranslationRequest():
+class DeepLTranslationRequest:
     targetLanguage: LanguageEntry
     text: str

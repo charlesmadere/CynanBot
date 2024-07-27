@@ -5,6 +5,6 @@ from ...google.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
 @dataclass(frozen = True)
-class GoogleTtsChoice():
+class GoogleTtsChoice:
     audioConfig: GoogleVoiceAudioConfig
     selectionParams: GoogleVoiceSelectionParams

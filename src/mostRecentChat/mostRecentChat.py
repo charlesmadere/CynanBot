@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class MostRecentChat():
+class MostRecentChat:
     mostRecentChat: datetime
     twitchChannelId: str
     userId: str

@@ -5,7 +5,7 @@ from .configuration.twitchMessageable import TwitchMessageable
 
 
 @dataclass(frozen = True)
-class OutboundMessage():
+class OutboundMessage:
     delayUntilTime: datetime
     message: str
     messageable: TwitchMessageable

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class AddQueuedGamesResult():
+class AddQueuedGamesResult:
     amountAdded: int
     newQueueSize: int
     oldQueueSize: int

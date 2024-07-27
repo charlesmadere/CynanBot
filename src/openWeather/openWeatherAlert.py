@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class OpenWeatherAlert():
+class OpenWeatherAlert:
     end: int
     start: int
     description: str

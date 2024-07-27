@@ -18,7 +18,7 @@ from src.trivia.questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from src.trivia.triviaDifficulty import TriviaDifficulty
 
 
-class TriviaGameStoreTests():
+class TriviaGameStoreTests:
 
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 

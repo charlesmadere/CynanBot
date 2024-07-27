@@ -6,7 +6,7 @@ from ..questions.triviaSource import TriviaSource
 
 
 @dataclass(frozen = True)
-class AdditionalTriviaAnswers():
+class AdditionalTriviaAnswers:
     answers: list[AdditionalTriviaAnswer]
     triviaId: str
     triviaQuestionType: TriviaQuestionType

@@ -2,7 +2,7 @@ from src.contentScanner.bannedPhrase import BannedPhrase
 from src.contentScanner.bannedWordType import BannedWordType
 
 
-class TestBannedPhrase():
+class TestBannedPhrase:
 
     def test_equals_withDifferentWords(self):
         one = BannedPhrase('cat')

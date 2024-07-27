@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TwitchBannedUser():
+class TwitchBannedUser:
     createdAt: datetime
     expiresAt: datetime | None
     moderatorId: str

@@ -9,7 +9,7 @@ from src.twitch.api.websocket.twitchWebsocketTransportMethod import \
     TwitchWebsocketTransportMethod
 
 
-class TestTwitchEventSubRequest():
+class TestTwitchEventSubRequest:
 
     def test_toJson1(self):
         condition = TwitchWebsocketCondition(

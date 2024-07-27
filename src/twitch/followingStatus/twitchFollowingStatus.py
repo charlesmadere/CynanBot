@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TwitchFollowingStatus():
+class TwitchFollowingStatus:
     followedAt: datetime
     twitchChannel: str
     twitchChannelId: str

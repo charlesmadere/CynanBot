@@ -3,7 +3,7 @@ import pytest
 from src.trivia.questions.triviaQuestionType import TriviaQuestionType
 
 
-class TestTriviaQuestionType():
+class TestTriviaQuestionType:
 
     def test_fromStr_withEmptyString(self):
         result: TriviaQuestionType | None = None

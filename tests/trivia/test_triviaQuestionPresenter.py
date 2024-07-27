@@ -13,7 +13,7 @@ from src.trivia.triviaQuestionPresenterInterface import \
     TriviaQuestionPresenterInterface
 
 
-class TestTriviaQuestionPresenter():
+class TestTriviaQuestionPresenter:
 
     multipleChoiceQuestion1: AbsTriviaQuestion = MultipleChoiceTriviaQuestion(
         correctAnswers = [ 'Saturn' ],

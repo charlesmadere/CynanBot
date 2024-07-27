@@ -2,7 +2,7 @@ from src.twitch.api.websocket.twitchWebsocketMessageType import \
     TwitchWebsocketMessageType
 
 
-class TestTwitchWebsocketMessageType():
+class TestTwitchWebsocketMessageType:
 
     def test_fromStr_withEmptyString(self):
         result = TwitchWebsocketMessageType.fromStr('')

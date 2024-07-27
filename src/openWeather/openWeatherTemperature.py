@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class OpenWeatherTemperature():
+class OpenWeatherTemperature:
     day: float
     evening: float
     maximum: float

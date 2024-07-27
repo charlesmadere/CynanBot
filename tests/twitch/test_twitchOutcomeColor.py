@@ -3,7 +3,7 @@ from typing import Optional
 from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 
 
-class TestTwitchOutcomeColor():
+class TestTwitchOutcomeColor:
 
     def test_fromStr_withBlueString(self):
         result = TwitchOutcomeColor.fromStr('blue')

@@ -3,7 +3,7 @@ import locale
 from ...misc import utils as utils
 
 
-class TriviaScoreResult():
+class TriviaScoreResult:
 
     def __init__(
         self,

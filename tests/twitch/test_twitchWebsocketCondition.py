@@ -4,7 +4,7 @@ from src.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 
 
-class TestTwitchWebsocketCondition():
+class TestTwitchWebsocketCondition:
 
     def test_requireBroadcasterUserId_withEmptyString(self):
         condition = TwitchWebsocketCondition(

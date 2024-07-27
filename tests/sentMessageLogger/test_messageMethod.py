@@ -1,7 +1,7 @@
 from src.sentMessageLogger.messageMethod import MessageMethod
 
 
-class TestMessageMethod():
+class TestMessageMethod:
 
     def test_toStr_withIrc(self):
         result = MessageMethod.IRC.toStr()

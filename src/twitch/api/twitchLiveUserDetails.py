@@ -5,7 +5,7 @@ from .twitchStreamType import TwitchStreamType
 
 
 @dataclass(frozen = True)
-class TwitchLiveUserDetails():
+class TwitchLiveUserDetails:
     isMature: bool
     viewerCount: int
     streamId: str

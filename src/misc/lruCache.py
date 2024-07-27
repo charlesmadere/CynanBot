@@ -5,7 +5,7 @@ from . import utils as utils
 # https://gist.github.com/jerryan999/6677a2619e8175e54ed05d3c6e1621cf
 #
 # I then slightly tweaked it for simplification... (fingers crossed it works)
-class LinkedNode():
+class LinkedNode:
 
     def __init__(self, key: str):
         if not utils.isValidStr(key):
@@ -16,7 +16,7 @@ class LinkedNode():
         self.prev: LinkedNode | None = None
 
 
-class LruCache():
+class LruCache:
 
     def __init__(self, capacity: int):
         if not utils.isValidInt(capacity):

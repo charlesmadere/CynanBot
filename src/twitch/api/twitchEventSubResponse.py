@@ -8,7 +8,7 @@ from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
 
 
 @dataclass(frozen = True)
-class TwitchEventSubResponse():
+class TwitchEventSubResponse:
     createdAt: datetime
     cost: int
     maxTotalCost: int

@@ -3,7 +3,7 @@ from .translationApiSource import TranslationApiSource
 from ..misc import utils as utils
 
 
-class TranslationResponse():
+class TranslationResponse:
 
     def __init__(
         self,

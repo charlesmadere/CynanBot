@@ -176,7 +176,7 @@ class TestQueuedTriviaGameStore1:
         assert isinstance(self.queuedTriviaGameStore, QueuedTriviaGameStoreInterface)
 
 
-class TestQueuedTriviaGameStore2():
+class TestQueuedTriviaGameStore2:
 
     timber: TimberInterface = TimberStub()
 
@@ -202,7 +202,7 @@ class TestQueuedTriviaGameStore2():
         assert isinstance(self.queuedTriviaGameStore, QueuedTriviaGameStoreInterface)
 
 
-class TestQueuedTriviaGameStore3():
+class TestQueuedTriviaGameStore3:
 
     timber: TimberInterface = TimberStub()
 
@@ -229,7 +229,7 @@ class TestQueuedTriviaGameStore3():
         assert isinstance(self.queuedTriviaGameStore, QueuedTriviaGameStoreInterface)
 
 
-class TestQueuedTriviaGameStore4():
+class TestQueuedTriviaGameStore4:
 
     timber: TimberInterface = TimberStub()
 
@@ -286,7 +286,7 @@ class TestQueuedTriviaGameStore4():
         assert isinstance(self.queuedTriviaGameStore, QueuedTriviaGameStoreInterface)
 
 
-class TestQueuedTriviaGameStore5():
+class TestQueuedTriviaGameStore5:
 
     timber: TimberInterface = TimberStub()
 
@@ -343,7 +343,7 @@ class TestQueuedTriviaGameStore5():
         assert isinstance(self.queuedTriviaGameStore, QueuedTriviaGameStoreInterface)
 
 
-class TestQueuedTriviaGameStore6():
+class TestQueuedTriviaGameStore6:
 
     timber: TimberInterface = TimberStub()
 
@@ -421,7 +421,7 @@ class TestQueuedTriviaGameStore6():
         assert isinstance(self.queuedTriviaGameStore, QueuedTriviaGameStoreInterface)
 
 
-class TestQueuedTriviaGameStore7():
+class TestQueuedTriviaGameStore7:
 
     timber: TimberInterface = TimberStub()
 

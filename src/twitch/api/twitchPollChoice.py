@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class TwitchPollChoice():
+class TwitchPollChoice:
     channelPointsVotes: int
     votes: int
     choiceId: str

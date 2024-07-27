@@ -4,6 +4,6 @@ from .twitchEmoteDetails import TwitchEmoteDetails
 
 
 @dataclass(frozen = True)
-class TwitchEmotesResponse():
+class TwitchEmotesResponse:
     emoteData: list[TwitchEmoteDetails]
     template: str

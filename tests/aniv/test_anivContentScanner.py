@@ -13,7 +13,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestAnivContentScanner():
+class TestAnivContentScanner:
 
     timber: TimberInterface = TimberStub()
 

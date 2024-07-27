@@ -284,19 +284,19 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         return {
             'audioConfig': await self.serializeVoiceAudioConfig(synthesizeRequest.audioConfig),
-            'input': await self.serializeTextSynthesisInput(synthesizeRequest.input),
+            'input': await self.serializeTextSynthesisInput(synthesizeRequest.synthesisInput),
             'voice': await self.serializeVoiceSelectionParams(synthesizeRequest.voice)
         }
 
     async def serializeTextSynthesisInput(
         self,
-        textSynthesisInput: GoogleTextSynthesisInput
+        synthesisInput: GoogleTextSynthesisInput
     ) -> dict[str, Any]:
-        if not isinstance(textSynthesisInput, GoogleTextSynthesisInput):
-            raise TypeError(f'textSynthesisInput argument is malformed: \"{textSynthesisInput}\"')
+        if not isinstance(synthesisInput, GoogleTextSynthesisInput):
+            raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
 
         return {
-            'text': textSynthesisInput.text
+            'text': synthesisInput.text
         }
 
     async def serializeTranslationRequest(

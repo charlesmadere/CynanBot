@@ -3,7 +3,7 @@ import pytest
 from src.trivia.questions.triviaSource import TriviaSource
 
 
-class TestTriviaSource():
+class TestTriviaSource:
 
     def test_fromStr_withEmptyString(self):
         result: TriviaSource | None = None

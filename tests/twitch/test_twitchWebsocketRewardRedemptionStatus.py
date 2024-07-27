@@ -2,7 +2,7 @@ from src.twitch.api.twitchRewardRedemptionStatus import \
     TwitchRewardRedemptionStatus
 
 
-class TestTwitchWebsocketRewardRedemptionStatus():
+class TestTwitchWebsocketRewardRedemptionStatus:
 
     def test_fromStr_withCanceledString(self):
         result = TwitchRewardRedemptionStatus.fromStr('canceled')

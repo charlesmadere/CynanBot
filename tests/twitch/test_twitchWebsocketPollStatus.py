@@ -1,7 +1,7 @@
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
 
 
-class TestTwitchWebsocketPollStatus():
+class TestTwitchWebsocketPollStatus:
 
     def test_fromStr_withActiveString(self):
         result = TwitchPollStatus.fromStr('active')

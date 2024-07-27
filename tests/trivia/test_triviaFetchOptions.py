@@ -3,7 +3,7 @@ from src.trivia.questionAnswerTriviaConditions import \
 from src.trivia.triviaFetchOptions import TriviaFetchOptions
 
 
-class TestTriviaFetchOptions():
+class TestTriviaFetchOptions:
 
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsAllowed(self):
         options = TriviaFetchOptions(

@@ -4,7 +4,7 @@ from ..questions.triviaSource import TriviaSource
 
 
 @dataclass(frozen = True)
-class BannedTriviaQuestion():
+class BannedTriviaQuestion:
     triviaId: str
     userId: str
     userName: str

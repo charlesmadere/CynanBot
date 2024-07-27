@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TransparentResponse():
+class TransparentResponse:
     date: datetime
     enPhrase: str
     fnPhrase: str

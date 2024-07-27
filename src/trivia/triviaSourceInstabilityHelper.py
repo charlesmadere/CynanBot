@@ -6,7 +6,7 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 
 
-class TriviaSourceInstabilityHelper():
+class TriviaSourceInstabilityHelper:
 
     def __init__(
         self,

@@ -4,7 +4,7 @@ from ..misc.simpleDateTime import SimpleDateTime
 
 
 @dataclass(frozen = True)
-class TimberEntry():
+class TimberEntry:
     exception: Exception | None
     logTime: SimpleDateTime
     msg: str

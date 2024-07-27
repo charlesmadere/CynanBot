@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class AdditionalTriviaAnswer():
+class AdditionalTriviaAnswer:
     answer: str
     userId: str
     userName: str

@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class ShinyTriviaResult():
+class ShinyTriviaResult:
     mostRecent: datetime | None
     newShinyCount: int
     oldShinyCount: int

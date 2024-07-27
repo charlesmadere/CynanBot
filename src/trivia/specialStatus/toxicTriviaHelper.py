@@ -1,14 +1,12 @@
 import random
 
-from .toxicTriviaOccurencesRepositoryInterface import \
-    ToxicTriviaOccurencesRepositoryInterface
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from .toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
-class ToxicTriviaHelper():
+class ToxicTriviaHelper:
 
     def __init__(
         self,
@@ -32,7 +30,7 @@ class ToxicTriviaHelper():
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if not await self.__triviaSettingsRepository.areToxicTriviasEnabled():
-            return False        
+            return False
 
         probability = await self.__triviaSettingsRepository.getToxicProbability()
         randomNumber = random.uniform(0, 1)

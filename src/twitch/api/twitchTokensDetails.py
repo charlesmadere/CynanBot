@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TwitchTokensDetails():
+class TwitchTokensDetails:
     expirationTime: datetime
     accessToken: str
     refreshToken: str

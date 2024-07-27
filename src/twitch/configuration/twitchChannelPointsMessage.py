@@ -3,7 +3,7 @@ from ...misc import utils as utils
 from ...users.userInterface import UserInterface
 
 
-class TwitchChannelPointsMessage():
+class TwitchChannelPointsMessage:
 
     def __init__(
         self,

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class JishoAttribution():
+class JishoAttribution:
     dbpedia: bool | None = None
     jmdict: bool | None = None
     jmnedict: bool | None = None

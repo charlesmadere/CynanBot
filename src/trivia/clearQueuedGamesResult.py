@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class ClearQueuedGamesResult():
+class ClearQueuedGamesResult:
     amountRemoved: int
     oldQueueSize: int
 

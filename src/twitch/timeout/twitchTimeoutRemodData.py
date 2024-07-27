@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TwitchTimeoutRemodData():
+class TwitchTimeoutRemodData:
     remodDateTime: datetime
     broadcasterUserId: str
     broadcasterUserName: str

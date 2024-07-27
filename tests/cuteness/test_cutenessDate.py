@@ -1,7 +1,7 @@
 from src.cuteness.cutenessDate import CutenessDate
 
 
-class TestCutenessDate():
+class TestCutenessDate:
 
     def test_constructWithDecember2021String(self):
         cd = CutenessDate('2021-12')

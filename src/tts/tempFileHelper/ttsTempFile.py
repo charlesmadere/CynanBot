@@ -3,7 +3,7 @@ from datetime import datetime
 from ...misc import utils as utils
 
 
-class TtsTempFile():
+class TtsTempFile:
 
     def __init__(
         self,

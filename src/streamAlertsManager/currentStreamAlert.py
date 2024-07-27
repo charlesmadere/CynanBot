@@ -6,7 +6,7 @@ from ..soundPlayerManager.soundAlert import SoundAlert
 from ..tts.ttsEvent import TtsEvent
 
 
-class CurrentStreamAlert():
+class CurrentStreamAlert:
 
     def __init__(self, streamAlert: StreamAlert):
         if not isinstance(streamAlert, StreamAlert):

@@ -5,7 +5,7 @@ from .openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
 
 
 @dataclass(frozen = True)
-class OpenWeatherAirPollutionReport():
+class OpenWeatherAirPollutionReport:
     dateTime: datetime
     latitude: float
     longitude: float

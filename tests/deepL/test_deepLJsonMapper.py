@@ -9,7 +9,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestDeepLJsonMapper():
+class TestDeepLJsonMapper:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     timber: TimberInterface = TimberStub()

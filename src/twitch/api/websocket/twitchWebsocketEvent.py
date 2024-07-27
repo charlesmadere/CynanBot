@@ -15,7 +15,7 @@ from ..twitchSubscriberTier import TwitchSubscriberTier
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketEvent():
+class TwitchWebsocketEvent:
     isAnonymous: bool | None = None
     isGift: bool | None = None
     endedAt: datetime | None = None

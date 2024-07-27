@@ -3,7 +3,7 @@ from typing import Any
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketUser():
+class TwitchWebsocketUser:
     userId: str
     userName: str
 

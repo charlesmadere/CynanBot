@@ -5,7 +5,7 @@ from ...misc import utils as utils
 
 # This class intends to directly correspond to Twitch's "Unban User" API:
 # https://dev.twitch.tv/docs/api/reference/#unban-user
-class TwitchUnbanRequest():
+class TwitchUnbanRequest:
 
     def __init__(
         self,

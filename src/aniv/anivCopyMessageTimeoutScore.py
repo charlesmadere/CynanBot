@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class AnivCopyMessageTimeoutScore():
+class AnivCopyMessageTimeoutScore:
     mostRecentDodge: datetime | None
     mostRecentTimeout: datetime | None
     dodgeScore: int

@@ -20,7 +20,7 @@ from src.twitch.api.websocket.twitchWebsocketTransport import \
     TwitchWebsocketTransport
 
 
-class TestTwitchWebsocketPayload():
+class TestTwitchWebsocketPayload:
 
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 

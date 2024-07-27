@@ -1,7 +1,7 @@
 from src.twitch.websocket.twitchWebsocketUser import TwitchWebsocketUser
 
 
-class TestTwitchWebsocketUser():
+class TestTwitchWebsocketUser:
 
     def test_equals_withDifferentUserIds(self):
         userName = 'smCharles'

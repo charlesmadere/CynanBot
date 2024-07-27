@@ -7,7 +7,7 @@ from .pokepediaTypeChart import PokepediaTypeChart
 from ..misc import utils as utils
 
 
-class PokepediaPokemon():
+class PokepediaPokemon:
 
     def __init__(
         self,

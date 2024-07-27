@@ -11,7 +11,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
-class TestBannedWordsRepository():
+class TestBannedWordsRepository:
 
     timber: TimberInterface = TimberStub()
 

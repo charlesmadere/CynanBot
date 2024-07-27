@@ -5,7 +5,7 @@ from .twitchOutcomePredictor import TwitchOutcomePredictor
 
 
 @dataclass(frozen = True)
-class TwitchOutcome():
+class TwitchOutcome:
     channelPoints: int
     users: int
     outcomeId: str

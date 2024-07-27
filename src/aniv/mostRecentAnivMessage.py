@@ -3,6 +3,6 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class MostRecentAnivMessage():
+class MostRecentAnivMessage:
     dateTime: datetime
     message: str | None

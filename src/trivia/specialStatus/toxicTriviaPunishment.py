@@ -5,7 +5,7 @@ from ...cuteness.cutenessResult import CutenessResult
 
 
 @dataclass(frozen = True)
-class ToxicTriviaPunishment():
+class ToxicTriviaPunishment:
     cutenessResult: CutenessResult
     numberOfPunishments: int
     punishedByPoints: int

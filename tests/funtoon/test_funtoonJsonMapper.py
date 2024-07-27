@@ -5,7 +5,7 @@ from src.funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from src.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 
 
-class TestFuntoonJsonMapper():
+class TestFuntoonJsonMapper:
 
     jsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
 

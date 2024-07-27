@@ -7,7 +7,7 @@ from .openWeatherTemperature import OpenWeatherTemperature
 
 
 @dataclass(frozen = True)
-class OpenWeatherDay():
+class OpenWeatherDay:
     dateTime: datetime
     moonrise: datetime
     moonset: datetime

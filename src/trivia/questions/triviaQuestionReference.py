@@ -5,7 +5,7 @@ from .triviaSource import TriviaSource
 
 
 @dataclass(frozen = True)
-class TriviaQuestionReference():
+class TriviaQuestionReference:
     emote: str
     triviaId: str
     twitchChannel: str

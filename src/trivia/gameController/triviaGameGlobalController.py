@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class TriviaGameGlobalController():
+class TriviaGameGlobalController:
     userId: str
     userName: str

@@ -10,7 +10,7 @@ from src.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
 
 
-class TestAnivCopyMessageTimeoutScorePresenter():
+class TestAnivCopyMessageTimeoutScorePresenter:
 
     presenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
 

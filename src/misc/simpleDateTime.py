@@ -4,7 +4,7 @@ from typing import Any
 from . import utils as utils
 
 
-class SimpleDateTime():
+class SimpleDateTime:
 
     def __init__(
         self,

@@ -3,7 +3,7 @@ import pytest
 from src.misc.lruCache import LruCache
 
 
-class TestLruCache():
+class TestLruCache:
 
     def test_constructWithNegativeOneCapacity(self):
         with pytest.raises(ValueError):

@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class SupStreamerChatter():
+class SupStreamerChatter:
     mostRecentSup: datetime
     twitchChannelId: str
     userId: str

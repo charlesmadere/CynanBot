@@ -2,7 +2,7 @@ from src.twitch.api.websocket.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType
 
 
-class TestTwitchWebsocketSubscriptionType():
+class TestTwitchWebsocketSubscriptionType:
 
     def test_fromStr_withChannelChannelPointsCustomRewardRedemptionString(self):
         result = TwitchWebsocketSubscriptionType.fromStr('channel.channel_points_custom_reward_redemption.add')

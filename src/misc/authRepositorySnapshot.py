@@ -3,7 +3,7 @@ from typing import Any
 from . import utils as utils
 
 
-class AuthRepositorySnapshot():
+class AuthRepositorySnapshot:
 
     def __init__(self, jsonContents: dict[str, Any]):
         if not isinstance(jsonContents, dict):

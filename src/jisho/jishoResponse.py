@@ -5,6 +5,6 @@ from .jishoMeta import JishoMeta
 
 
 @dataclass(frozen = True)
-class JishoResponse():
+class JishoResponse:
     data: list[JishoData]
     meta: JishoMeta

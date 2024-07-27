@@ -4,7 +4,7 @@ from .twitchBannedUser import TwitchBannedUser
 
 
 @dataclass(frozen = True)
-class TwitchBannedUsersResponse():
+class TwitchBannedUsersResponse:
     users: list[TwitchBannedUser] | None
     broadcasterId: str
     requestedUserId: str | None

@@ -4,7 +4,7 @@ from .twitchSubscriberTier import TwitchSubscriberTier
 
 
 @dataclass(frozen = True)
-class TwitchCommunitySubGift():
+class TwitchCommunitySubGift:
     cumulativeTotal: int | None
     total: int
     communitySubGiftId: str

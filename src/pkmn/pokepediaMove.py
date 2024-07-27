@@ -6,7 +6,7 @@ from .pokepediaMoveGeneration import PokepediaMoveGeneration
 from ..misc import utils as utils
 
 
-class PokepediaMove():
+class PokepediaMove:
 
     def __init__(
         self,

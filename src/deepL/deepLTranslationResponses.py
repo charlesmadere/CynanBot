@@ -4,5 +4,5 @@ from .deepLTranslationResponse import DeepLTranslationResponse
 
 
 @dataclass(frozen = True)
-class DeepLTranslationResponses():
+class DeepLTranslationResponses:
     translations: list[DeepLTranslationResponse] | None = None

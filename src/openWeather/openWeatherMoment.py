@@ -5,7 +5,7 @@ from .openWeatherMomentDescription import OpenWeatherMomentDescription
 
 
 @dataclass(frozen = True)
-class OpenWeatherMoment():
+class OpenWeatherMoment:
     dateTime: datetime
     sunrise: datetime
     sunset: datetime

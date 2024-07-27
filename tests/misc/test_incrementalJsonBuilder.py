@@ -5,7 +5,7 @@ import pytest
 from src.misc.incrementalJsonBuilder import IncrementalJsonBuilder
 
 
-class TestIncrementalJsonBuilder():
+class TestIncrementalJsonBuilder:
 
     @pytest.mark.asyncio
     async def test_buildDictionariesOrAppendInternalJsonCache_withEmptyJsonStructure(self):

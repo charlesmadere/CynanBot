@@ -4,7 +4,7 @@ from src.twitch.api.websocket.twitchWebsocketTransport import \
     TwitchWebsocketTransport
 
 
-class TestTwitchWebsocketTransport():
+class TestTwitchWebsocketTransport:
 
     def test_requireSessionId_withEmptyString(self):
         transport = TwitchWebsocketTransport(sessionId = '')

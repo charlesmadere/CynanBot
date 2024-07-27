@@ -9,7 +9,7 @@ from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
-class ShinyTriviaHelper():
+class ShinyTriviaHelper:
 
     def __init__(
         self,

@@ -4,7 +4,7 @@ from .timeoutCheerActionEntry import TimeoutCheerActionEntry
 
 
 @dataclass(frozen = True)
-class TimeoutCheerActionHistory():
+class TimeoutCheerActionHistory:
     totalTimeouts: int
     entries: list[TimeoutCheerActionEntry] | None
     chatterUserId: str

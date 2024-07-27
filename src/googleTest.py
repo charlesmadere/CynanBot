@@ -119,7 +119,7 @@ async def main():
 
     # print(f'translation result: {translationResult}')
 
-    input = GoogleTextSynthesisInput(
+    synthesisInput = GoogleTextSynthesisInput(
         text = 'sheeples23 timed out aniv for 60 seconds! rip bozo!'
     )
 
@@ -134,7 +134,7 @@ async def main():
     )
 
     request = GoogleTextSynthesizeRequest(
-        input = input,
+        synthesisInput = synthesisInput,
         voice = selectionParams,
         audioConfig = audioConfig
     )

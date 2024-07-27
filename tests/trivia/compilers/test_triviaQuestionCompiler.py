@@ -6,7 +6,7 @@ from src.trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
 from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 
 
-class TestTriviaQuestionCompiler():
+class TestTriviaQuestionCompiler:
 
     timber: TimberInterface = TimberStub()
 

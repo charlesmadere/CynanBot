@@ -5,6 +5,6 @@ from .twitchPaginationResponse import TwitchPaginationResponse
 
 
 @dataclass(frozen = True)
-class TwitchBannedUsersPageResponse():
+class TwitchBannedUsersPageResponse:
     users: list[TwitchBannedUser] | None
     pagination: TwitchPaginationResponse | None

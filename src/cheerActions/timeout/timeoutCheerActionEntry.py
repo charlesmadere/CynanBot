@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TimeoutCheerActionEntry():
+class TimeoutCheerActionEntry:
     timedOutAtDateTime: datetime
     bitAmount: int
     durationSeconds: int

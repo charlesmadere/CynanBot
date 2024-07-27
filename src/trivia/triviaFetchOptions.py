@@ -5,7 +5,7 @@ from .questions.triviaSource import TriviaSource
 
 
 @dataclass(frozen = True)
-class TriviaFetchOptions():
+class TriviaFetchOptions:
     twitchChannel: str
     twitchChannelId: str
     requiredTriviaSource: TriviaSource | None = None

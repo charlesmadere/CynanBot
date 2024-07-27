@@ -3,7 +3,7 @@ from datetime import tzinfo
 
 
 @dataclass(frozen = True)
-class Location():
+class Location:
     latitude: float
     longitude: float
     locationId: str

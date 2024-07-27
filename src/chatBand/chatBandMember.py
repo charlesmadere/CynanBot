@@ -2,7 +2,7 @@ from .chatBandInstrument import ChatBandInstrument
 from ..misc import utils as utils
 
 
-class ChatBandMember():
+class ChatBandMember:
 
     def __init__(
         self,

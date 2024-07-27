@@ -1,7 +1,7 @@
 from src.trivia.triviaDifficulty import TriviaDifficulty
 
 
-class TestTriviaDifficulty():
+class TestTriviaDifficulty:
 
     def test_fromInt_withFour(self):
         result = TriviaDifficulty.fromInt(4)

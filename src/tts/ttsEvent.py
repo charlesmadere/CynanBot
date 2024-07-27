@@ -6,7 +6,7 @@ from .ttsRaidInfo import TtsRaidInfo
 
 
 @dataclass(frozen = True)
-class TtsEvent():
+class TtsEvent:
     message: str | None
     twitchChannel: str
     twitchChannelId: str

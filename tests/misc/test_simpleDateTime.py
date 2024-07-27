@@ -4,7 +4,7 @@ import src.misc.utils as utils
 from src.misc.simpleDateTime import SimpleDateTime
 
 
-class TestSimpleDateTime():
+class TestSimpleDateTime:
 
     def test_add(self):
         someDate = utils.getDateTimeFromStr('2023-08-25T04:55:21+00:00')

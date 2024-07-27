@@ -3,7 +3,7 @@ import pytest
 from src.misc.stack import Stack
 
 
-class TestStack():
+class TestStack:
 
     def test_clear(self):
         stack: Stack[bool] = Stack()

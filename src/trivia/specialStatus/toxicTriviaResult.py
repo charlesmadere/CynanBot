@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class ToxicTriviaResult():
+class ToxicTriviaResult:
     mostRecent: datetime | None
     newToxicCount: int
     oldToxicCount: int

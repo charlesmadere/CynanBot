@@ -2,7 +2,7 @@ from .twitchSubscriberTier import TwitchSubscriberTier
 from ...misc import utils as utils
 
 
-class TwitchUserSubscriptionDetails():
+class TwitchUserSubscriptionDetails:
 
     def __init__(
         self,

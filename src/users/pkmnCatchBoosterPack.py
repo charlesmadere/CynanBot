@@ -4,6 +4,6 @@ from .pkmnCatchType import PkmnCatchType
 
 
 @dataclass(frozen = True)
-class PkmnCatchBoosterPack():
+class PkmnCatchBoosterPack:
     catchType: PkmnCatchType | None
     rewardId: str

@@ -4,7 +4,7 @@ from ....misc import utils as utils
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketCondition():
+class TwitchWebsocketCondition:
     broadcasterUserId: str | None = None
     broadcasterUserLogin: str | None = None
     broadcasterUserName: str | None = None

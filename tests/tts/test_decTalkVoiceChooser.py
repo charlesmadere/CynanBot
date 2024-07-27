@@ -8,7 +8,7 @@ from src.tts.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.tts.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 
 
-class TestDecTalkVoiceChooser():
+class TestDecTalkVoiceChooser:
 
     decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
