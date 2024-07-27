@@ -42,54 +42,6 @@ class TestUtils():
         result = utils.areAllStrsInts([ 'hello', 'world' ])
         assert result is False
 
-    def test_areValidBools_withEmptyList(self):
-        result = utils.areValidBools(list())
-        assert result is False
-
-    def test_areValidBools_withEmptyStringList(self):
-        result = utils.areValidBools([ '', '\n', 'hello', 'world', '' ])  # type: ignore
-        assert result is False
-
-    def test_areValidBools_withIntList(self):
-        result = utils.areValidBools([ 100, 200 ])  # type: ignore
-        assert result is False
-
-    def test_areValidBools_withMixedTypeList(self):
-        result = utils.areValidBools([ True, 'hello', 1, False ])  # type: ignore
-        assert result is False
-
-    def test_areValidBools_withNone(self):
-        result = utils.areValidBools(None)
-        assert result is False
-
-    def test_areValidBools_withValidList(self):
-        result = utils.areValidBools([ True, False, False, True ])
-        assert result is True
-
-    def test_areValidStrs_withEmptyList(self):
-        result = utils.areValidStrs(list())
-        assert result is False
-
-    def test_areValidStrs_withEmptyStringList(self):
-        result = utils.areValidStrs([ '', '\n', 'hello', 'world', '' ])
-        assert result is False
-
-    def test_areValidStrs_withIntList(self):
-        result = utils.areValidStrs([ 100, 200 ])  # type: ignore
-        assert result is False
-
-    def test_areValidStrs_withMixedTypeList(self):
-        result = utils.areValidStrs([ True, 'hello', 1, False ])  # type: ignore
-        assert result is False
-
-    def test_areValidStrs_withNone(self):
-        result = utils.areValidStrs(None)
-        assert result is False
-
-    def test_areValidStrs_withValidList(self):
-        result = utils.areValidStrs([ 'hello', 'world' ])
-        assert result is True
-
     def test_boolToNum_withFalse(self):
         result = utils.boolToNum(False)
         assert result == 0
@@ -207,16 +159,8 @@ class TestUtils():
 
     def test_getBoolFromDict_withNoneDict(self):
         d: dict[str, Any] | None = None
-        value: bool | None = None
-        exception: Exception | None = None
-
-        try:
-            value = utils.getBoolFromDict(d = d, key = "hello", fallback = True)
-        except Exception as e:
-            exception = e
-
+        value = utils.getBoolFromDict(d = d, key = "hello", fallback = True)
         assert value is True
-        assert exception is None
 
     def test_getBoolFromDict_withNoneDictAndNoneFallback(self):
         d: dict[str, Any] | None = None
@@ -376,16 +320,8 @@ class TestUtils():
 
     def test_getIntFromDict_withNoneDict(self):
         d: dict[str, Any] | None = None
-        value: int | None = None
-        exception: Exception | None = None
-
-        try:
-            value = utils.getIntFromDict(d = d, key = "hello", fallback = 2000)
-        except Exception as e:
-            exception = e
-
+        value = utils.getIntFromDict(d = d, key = "hello", fallback = 2000)
         assert value == 2000
-        assert exception is None
 
     def test_getIntFromDict_withNoneDictAndNoneFallback(self):
         d: dict[str, Any] | None = None

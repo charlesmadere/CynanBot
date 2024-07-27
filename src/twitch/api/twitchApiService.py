@@ -22,27 +22,20 @@ from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchTokensDetails import TwitchTokensDetails
 from .twitchUnbanRequest import TwitchUnbanRequest
 from .twitchUserDetails import TwitchUserDetails
-from .twitchUserSubscriptionDetails import \
-    TwitchUserSubscriptionDetails
+from .twitchUserSubscriptionDetails import TwitchUserSubscriptionDetails
 from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
-from .websocket.twitchWebsocketConnectionStatus import \
-    TwitchWebsocketConnectionStatus
-from .websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
+from .websocket.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
+from .websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
-from .websocket.twitchWebsocketTransportMethod import \
-    TwitchWebsocketTransportMethod
 from ..exceptions import (TwitchAccessTokenMissingException,
                           TwitchErrorException, TwitchJsonException,
                           TwitchPasswordChangedException,
                           TwitchRefreshTokenMissingException,
                           TwitchStatusCodeException,
                           TwitchTokenIsExpiredException)
-from ..twitchCredentialsProviderInterface import \
-    TwitchCredentialsProviderInterface
-from ..websocket.twitchWebsocketJsonMapperInterface import \
-    TwitchWebsocketJsonMapperInterface
+from ..twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
+from ..websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -276,7 +269,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         transport = TwitchWebsocketTransport(
             connectedAt = utils.getDateTimeFromDict(transportJson, 'connected_at'),
             sessionId = utils.getStrFromDict(transportJson, 'session_id'),
-            method = TwitchWebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
+            method = await self.__twitchWebsocketJsonMapper.requireTransportMethod(utils.getStrFromDict(transportJson, 'method'))
         )
 
         return TwitchEventSubResponse(

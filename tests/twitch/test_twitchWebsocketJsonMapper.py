@@ -6,63 +6,86 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
-from src.twitch.api.websocket.twitchWebsocketCondition import \
-    TwitchWebsocketCondition
-from src.twitch.websocket.twitchWebsocketJsonMapper import \
-    TwitchWebsocketJsonMapper
-from src.twitch.websocket.twitchWebsocketJsonMapperInterface import \
-    TwitchWebsocketJsonMapperInterface
+from src.twitch.api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
+from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
+from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 
 
-class TestTwitchWebsocketJsonMapper():
+class TestTwitchWebsocketJsonMapper:
 
     timber: TimberInterface = TimberStub()
 
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
-    twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+    jsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
         timber = timber,
         timeZoneRepository = timeZoneRepository
     )
 
-    jsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
+    websocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
         timber = timber,
-        twitchJsonMapper = twitchJsonMapper
+        twitchJsonMapper = jsonMapper
     )
 
     @pytest.mark.asyncio
+    async def test_parseTransportMethod_withEmptyString(self):
+        result = await self.websocketJsonMapper.parseTransportMethod('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTransportMethod_withNone(self):
+        result = await self.websocketJsonMapper.parseTransportMethod(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTransportMethod_withWebhook(self):
+        result = await self.websocketJsonMapper.parseTransportMethod('webhook')
+        assert result is TwitchWebsocketTransportMethod.WEBHOOK
+
+    @pytest.mark.asyncio
+    async def test_parseTransportMethod_withWebsocket(self):
+        result = await self.websocketJsonMapper.parseTransportMethod('websocket')
+        assert result is TwitchWebsocketTransportMethod.WEBSOCKET
+
+    @pytest.mark.asyncio
+    async def test_parseTransportMethod_withWhitespaceString(self):
+        result = await self.websocketJsonMapper.parseTransportMethod(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseWebsocketChannelPointsVoting_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketChannelPointsVoting(dict())
+        result = await self.websocketJsonMapper.parseWebsocketChannelPointsVoting(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketChannelPointsVoting_withNone(self):
-        result = await self.jsonMapper.parseWebsocketChannelPointsVoting(None)
+        result = await self.websocketJsonMapper.parseWebsocketChannelPointsVoting(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketPollChoice_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketPollChoice(dict())
+        result = await self.websocketJsonMapper.parseWebsocketPollChoice(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketPollChoice_withNone(self):
-        result = await self.jsonMapper.parseWebsocketPollChoice(None)
+        result = await self.websocketJsonMapper.parseWebsocketPollChoice(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketCommunitySubGift_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketCommunitySubGift(dict())
+        result = await self.websocketJsonMapper.parseWebsocketCommunitySubGift(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketCommunitySubGift_withNone(self):
-        result = await self.jsonMapper.parseWebsocketCommunitySubGift(None)
+        result = await self.websocketJsonMapper.parseWebsocketCommunitySubGift(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketCondition_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketCondition(dict())
+        result = await self.websocketJsonMapper.parseWebsocketCondition(dict())
         assert isinstance(result, TwitchWebsocketCondition)
         assert result.broadcasterUserId is None
         assert result.broadcasterUserLogin is None
@@ -91,89 +114,126 @@ class TestTwitchWebsocketJsonMapper():
 
     @pytest.mark.asyncio
     async def test_parseWebsocketCondition_withNone(self):
-        result = await self.jsonMapper.parseWebsocketCondition(None)
+        result = await self.websocketJsonMapper.parseWebsocketCondition(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketDataBundle_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketDataBundle(dict())
+        result = await self.websocketJsonMapper.parseWebsocketDataBundle(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketDataBundle_withNone(self):
-        result = await self.jsonMapper.parseWebsocketDataBundle(None)
+        result = await self.websocketJsonMapper.parseWebsocketDataBundle(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketEvent_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketEvent(dict())
+        result = await self.websocketJsonMapper.parseWebsocketEvent(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketEvent_withNone(self):
-        result = await self.jsonMapper.parseWebsocketEvent(None)
+        result = await self.websocketJsonMapper.parseWebsocketEvent(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcome_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseTwitchOutcome(dict())
+        result = await self.websocketJsonMapper.parseTwitchOutcome(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcome_withNone(self):
-        result = await self.jsonMapper.parseTwitchOutcome(None)
+        result = await self.websocketJsonMapper.parseTwitchOutcome(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcomePredictor_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseTwitchOutcomePredictor(dict())
+        result = await self.websocketJsonMapper.parseTwitchOutcomePredictor(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcomePredictor_withNone(self):
-        result = await self.jsonMapper.parseTwitchOutcomePredictor(None)
+        result = await self.websocketJsonMapper.parseTwitchOutcomePredictor(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketReward_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketReward(dict())
+        result = await self.websocketJsonMapper.parseWebsocketReward(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketReward_withNone(self):
-        result = await self.jsonMapper.parseWebsocketReward(None)
+        result = await self.websocketJsonMapper.parseWebsocketReward(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSession_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseTwitchWebsocketSession(dict())
+        result = await self.websocketJsonMapper.parseTwitchWebsocketSession(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSession_withNone(self):
-        result = await self.jsonMapper.parseTwitchWebsocketSession(None)
+        result = await self.websocketJsonMapper.parseTwitchWebsocketSession(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSubGift_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketSubGift(dict())
+        result = await self.websocketJsonMapper.parseWebsocketSubGift(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSubGift_withNone(self):
-        result = await self.jsonMapper.parseWebsocketSubGift(None)
+        result = await self.websocketJsonMapper.parseWebsocketSubGift(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSubscription_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketSubscription(dict())
+        result = await self.websocketJsonMapper.parseWebsocketSubscription(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSubscription_withNone(self):
-        result = await self.jsonMapper.parseWebsocketSubscription(None)
+        result = await self.websocketJsonMapper.parseWebsocketSubscription(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireTransportMethod_withEmptyString(self):
+        result: TwitchWebsocketTransportMethod | None = None
+
+        with pytest.raises(Exception):
+            result = await self.websocketJsonMapper.requireTransportMethod('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireTransportMethod_withNone(self):
+        result: TwitchWebsocketTransportMethod | None = None
+
+        with pytest.raises(Exception):
+            result = await self.websocketJsonMapper.requireTransportMethod(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireTransportMethod_withWebhook(self):
+        result = await self.websocketJsonMapper.requireTransportMethod('webhook')
+        assert result is TwitchWebsocketTransportMethod.WEBHOOK
+
+    @pytest.mark.asyncio
+    async def test_requireTransportMethod_withWebsocket(self):
+        result = await self.websocketJsonMapper.requireTransportMethod('websocket')
+        assert result is TwitchWebsocketTransportMethod.WEBSOCKET
+
+    @pytest.mark.asyncio
+    async def test_requireTransportMethod_withWhitespaceString(self):
+        result: TwitchWebsocketTransportMethod | None = None
+
+        with pytest.raises(Exception):
+            result = await self.websocketJsonMapper.requireTransportMethod(' ')
+
         assert result is None
 
     def test_sanity(self):
-        assert self.jsonMapper is not None
-        assert isinstance(self.jsonMapper, TwitchWebsocketJsonMapperInterface)
+        assert self.websocketJsonMapper is not None
+        assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapperInterface)

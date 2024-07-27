@@ -265,7 +265,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'session_id' in transportJson and utils.isValidBool(transportJson.get('session_id')):
             sessionId = utils.getStrFromDict(transportJson, 'session_id')
 
-        method = TwitchWebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
+        method = await self.requireTransportMethod(utils.getStrFromDict(transportJson, 'method'))
 
         return TwitchWebsocketTransport(
             connectedAt = connectedAt,
@@ -274,6 +274,20 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             sessionId = sessionId,
             method = method
         )
+
+    async def parseTransportMethod(
+        self,
+        transportMethod: str | Any | None
+    ) -> TwitchWebsocketTransportMethod | None:
+        if not utils.isValidStr(transportMethod):
+            return None
+
+        transportMethod = transportMethod.lower()
+
+        match transportMethod:
+            case 'webhook': return TwitchWebsocketTransportMethod.WEBHOOK
+            case 'websocket': return TwitchWebsocketTransportMethod.WEBSOCKET
+            case _: raise ValueError(f'Encountered unknown TwitchWebsocketTransportMethod: \"{transportMethod}\"')
 
     async def parseWebsocketDataBundle(
         self,
@@ -767,3 +781,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscriptionType = subscriptionType,
             transport = transport
         )
+
+    async def requireTransportMethod(
+        self,
+        transportMethod: str | Any | None
+    ) -> TwitchWebsocketTransportMethod:
+        result = await self.parseTransportMethod(transportMethod)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{transportMethod}\" into TwitchWebsocketTransportMethod value!')
+
+        return result

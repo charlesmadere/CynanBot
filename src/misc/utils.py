@@ -3,46 +3,26 @@ import math
 import os
 import random
 import re
-from collections.abc import Collection
 from datetime import datetime
-from typing import (Any, Dict, Generator, List, Optional, Pattern, Sized,
-                    TypeVar, overload)
+from typing import Any, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
 from typing_extensions import TypeGuard
 
 
-def areAllStrsInts(l: List[str]) -> bool:
-    if not hasItems(l):
-        raise ValueError(f'l argument is malformed: \"{l}\"')
+def areAllStrsInts(l: list[str]) -> bool:
+    if not isinstance(l, list):
+        raise TypeError(f'l argument is malformed: \"{l}\"')
+    elif len(l) == 0:
+        raise ValueError(f'l argument can\'t be empty: \"{l}\"')
 
     for s in l:
         try:
             number = int(s)
-
-            if not isValidNum(number):
-                return False
         except (SyntaxError, TypeError, ValueError):
             return False
 
-    return True
-
-def areValidBools(l: Optional[Collection[Optional[bool]]]) -> TypeGuard[Collection[bool]]:
-    if not hasItems(l):
-        return False
-
-    for b in l:
-        if not isValidBool(b):
-            return False
-
-    return True
-
-def areValidStrs(l: Optional[Collection[Optional[str]]]) -> TypeGuard[Collection[str]]:
-    if not hasItems(l):
-        return False
-
-    for s in l:
-        if not isValidStr(s):
+        if not isValidInt(number):
             return False
 
     return True
@@ -150,15 +130,17 @@ def formatTimeShort(time, includeSeconds: bool = False) -> str:
     else:
         return time.strftime("%b %d %I:%M%p")
 
-def getBoolFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[bool] = None) -> bool:
-    if not isValidStr(key):
-        raise ValueError(f'key argument is malformed: \"{key}\"')
+def getBoolFromDict(d: dict[str, Any] | None, key: str, fallback: bool | None = None) -> bool:
+    if d is not None and not isinstance(d, dict):
+        raise TypeError(f'd argument is malformed: \"{d}\"')
+    elif not isValidStr(key):
+        raise TypeError(f'key argument is malformed: \"{key}\"')
     elif fallback is not None and not isValidBool(fallback):
-        raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
+        raise TypeError(f'fallback argument is malformed: \"{fallback}\"')
 
-    value: Optional[bool] = None
+    value: bool | None = None
 
-    if not hasItems(d):
+    if d is None or len(d) == 0:
         if fallback is None:
             raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
         else:
@@ -242,7 +224,7 @@ endsWithZRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)Z$', re.IGNORECASE)
 endsWithZAndPlusRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)Z\+\d{1,2}\:\d{2}$', re.IGNORECASE)
 naiveTimeZoneRegEx: Pattern = re.compile(r'^\d{4}.+T.+\:\d{1,2}\:\d{2}$', re.IGNORECASE)
 
-def getDateTimeFromStr(text: Optional[str]) -> Optional[datetime]:
+def getDateTimeFromStr(text: str | None) -> datetime | None:
     if not isValidStr(text):
         return None
 
@@ -266,15 +248,17 @@ def getDateTimeFromStr(text: Optional[str]) -> Optional[datetime]:
 
     return datetime.fromisoformat(text)
 
-def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[float] = None) -> float:
-    if not isValidStr(key):
-        raise ValueError(f'key argument is malformed: \"{key}\"')
+def getFloatFromDict(d: dict[str, Any] | None, key: str, fallback: float | None = None) -> float:
+    if d is not None and not isinstance(d, dict):
+        raise TypeError(f'd argument is malformed: \"{d}\"')
+    elif not isValidStr(key):
+        raise TypeError(f'key argument is malformed: \"{key}\"')
     elif fallback is not None and not isValidNum(fallback):
-        raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
+        raise TypeError(f'fallback argument is malformed: \"{fallback}\"')
 
-    value: Optional[float] = None
+    value: float | None = None
 
-    if not hasItems(d):
+    if d is None or len(d) == 0:
         if isValidNum(fallback):
             value = fallback
         else:
@@ -294,15 +278,17 @@ def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[f
 
     return value
 
-def getIntFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[int] = None) -> int:
-    if not isValidStr(key):
-        raise ValueError(f'key argument is malformed: \"{key}\"')
+def getIntFromDict(d: dict[str, Any] | None, key: str, fallback: int | None = None) -> int:
+    if d is not None and not isinstance(d, dict):
+        raise TypeError(f'd argument is malformed: \"{d}\"')
+    elif not isValidStr(key):
+        raise TypeError(f'key argument is malformed: \"{key}\"')
     elif fallback is not None and not isValidNum(fallback):
-        raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
+        raise TypeError(f'fallback argument is malformed: \"{fallback}\"')
 
-    value: Optional[float] = None
+    value: float | None = None
 
-    if not hasItems(d):
+    if d is None or len(d) == 0:
         if isValidNum(fallback):
             value = fallback
         else:
@@ -341,11 +327,11 @@ def getLongMinSafeSize() -> int:
     return -9223372036854775808
 
 def getRandomSadEmoji() -> str:
-    sadEmoji: List[str] = [ '😭', '😢', '😿', '🤣', '😥', '🥲' ]
+    sadEmoji: list[str] = [ '😭', '😢', '😿', '🤣', '😥', '🥲' ]
     return random.choice(sadEmoji)
 
 def getRandomSpaceEmoji() -> str:
-    spaceEmoji: List[str] = [ '🚀', '👾', '☄️', '🌌', '👨‍🚀', '👩‍🚀', '👽', '🌠' ]
+    spaceEmoji: list[str] = [ '🚀', '👾', '☄️', '🌌', '👨‍🚀', '👩‍🚀', '👽', '🌠' ]
     return random.choice(spaceEmoji)
 
 def getStrFromDict(
@@ -391,23 +377,23 @@ def getStrFromDict(
 
 T_Sized = TypeVar("T_Sized", bound=Sized)
 
-def hasItems(l: Optional[T_Sized]) -> TypeGuard[T_Sized]:
+def hasItems(l: T_Sized | None) -> TypeGuard[T_Sized]:
     return l is not None and len(l) >= 1
 
-def isValidBool(b: Optional[bool]) -> TypeGuard[bool]:
+def isValidBool(b: bool | None) -> TypeGuard[bool]:
     return b is not None and isinstance(b, bool)
 
-def isValidInt(i: Optional[float]) -> TypeGuard[int]:
+def isValidInt(i: float | None) -> TypeGuard[int]:
     return isValidNum(i) and isinstance(i, int)
 
-def isValidNum(n: Optional[float]) -> TypeGuard[float]:
+def isValidNum(n: float | None) -> TypeGuard[float]:
     return n is not None and isinstance(n, (float, int)) and math.isfinite(n)
 
 def isValidStr(s: str | None) -> TypeGuard[str]:
     """ str len >= 1, not all space """
     return s is not None and isinstance(s, str) and len(s) >= 1 and not s.isspace()
 
-def isValidUrl(s: Optional[str]) -> TypeGuard[str]:
+def isValidUrl(s: str | None) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 
@@ -425,9 +411,9 @@ def numToBool(n: float | None) -> bool:
 
     return n != 0
 
-def permuteSubArrays(array: List[Any], pos: int = 0) -> Generator[List[Any], None, None]:
+def permuteSubArrays(array: list[Any], pos: int = 0) -> Generator[list[Any], None, None]:
     if not isValidInt(pos):
-        raise ValueError(f'pos argument is malformed: \"{pos}\"')
+        raise TypeError(f'pos argument is malformed: \"{pos}\"')
 
     if pos >= len(array):
         yield []
@@ -453,7 +439,7 @@ def removePreceedingAt(s: None) -> None:
 def removePreceedingAt(s: str) -> str:
     ...
 
-def removePreceedingAt(s: Optional[str]) -> Optional[str]:
+def removePreceedingAt(s: str | None) -> str | None:
     if s is None:
         return s
     elif s.startswith('@'):
@@ -461,7 +447,7 @@ def removePreceedingAt(s: Optional[str]) -> Optional[str]:
     else:
         return s
 
-def safeStrToInt(s: Optional[str]) -> Optional[int]:
+def safeStrToInt(s: str | None) -> int | None:
     if not isValidStr(s):
         return None
 
@@ -473,18 +459,18 @@ def safeStrToInt(s: Optional[str]) -> Optional[int]:
 def splitLongStringIntoMessages(
     maxMessages: int,
     perMessageMaxSize: int,
-    message: Optional[str]
-) -> List[str]:
+    message: str | None
+) -> list[str]:
     if not isValidInt(maxMessages):
-        raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
+        raise TypeError(f'maxMessages argument is malformed: \"{maxMessages}\"')
     elif maxMessages < 1 or maxMessages >= getIntMaxSafeSize():
         raise ValueError(f'maxMessages argument is out of bounds: {maxMessages}')
     elif not isValidInt(perMessageMaxSize):
-        raise ValueError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
+        raise TypeError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
     elif perMessageMaxSize < 50 or perMessageMaxSize >= getIntMaxSafeSize():
         raise ValueError(f'perMessageMaxSize argument is out of bounds: {perMessageMaxSize}')
 
-    messages: List[str] = list()
+    messages: list[str] = list()
 
     if not isValidStr(message):
         return messages

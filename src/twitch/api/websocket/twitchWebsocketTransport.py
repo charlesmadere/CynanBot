@@ -6,7 +6,7 @@ from ....misc import utils as utils
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketTransport():
+class TwitchWebsocketTransport:
     connectedAt: datetime | None = None
     disconnectedAt: datetime | None = None
     secret: str | None = None
