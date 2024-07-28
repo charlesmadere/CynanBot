@@ -114,7 +114,7 @@ class GoogleTtsManager(TtsManagerInterface):
         ttsChoice = await self.__randomlyChooseTts()
 
         request = GoogleTextSynthesizeRequest(
-            input = GoogleTextSynthesisInput(
+            synthesisInput = GoogleTextSynthesisInput(
                 text = message
             ),
             voice = ttsChoice.selectionParams,
