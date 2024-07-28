@@ -210,6 +210,7 @@ class UserInterface(ABC):
     def hasTwitter(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isAnivContentScanningEnabled(self) -> bool:
         pass

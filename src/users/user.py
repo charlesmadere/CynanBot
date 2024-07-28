@@ -519,6 +519,7 @@ class User(UserInterface):
     def hasTwitter(self) -> bool:
         return utils.isValidUrl(self.__twitterUrl)
 
+    @property
     def isAnivContentScanningEnabled(self) -> bool:
         return self.__isAnivContentScanningEnabled
 

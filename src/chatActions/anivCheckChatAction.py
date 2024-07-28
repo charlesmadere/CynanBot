@@ -75,7 +75,7 @@ class AnivCheckChatAction(AbsChatAction):
             return False
         if message.getAuthorId() != anivUserId:
             return False
-        elif not user.isAnivContentScanningEnabled():
+        elif not user.isAnivContentScanningEnabled:
             return False
 
         contentCode = await self.__anivContentScanner.scan(message.getContent())
