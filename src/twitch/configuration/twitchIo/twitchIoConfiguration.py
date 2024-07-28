@@ -48,5 +48,6 @@ class TwitchIoConfiguration(TwitchConfiguration):
             userIdsRepository = self.__userIdsRepository
         )
 
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
+    @property
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO

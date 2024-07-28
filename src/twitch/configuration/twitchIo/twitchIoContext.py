@@ -21,9 +21,10 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__context: Context = context
-        self.__twitchChannelId: str | None = None
         self.__author: TwitchAuthor = TwitchIoAuthor(context.author)
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+        self.__twitchChannelId: str | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -55,9 +56,6 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     def getTwitchChannelName(self) -> str:
         return self.__context.channel.name
 
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        return TwitchConfigurationType.TWITCHIO
-
     def isAuthorMod(self) -> bool:
         return self.__author.isMod()
 
@@ -66,3 +64,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
 
     async def send(self, message: str):
         await self.__context.send(message)
+
+    @property
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
+        return TwitchConfigurationType.TWITCHIO

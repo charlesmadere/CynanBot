@@ -21,6 +21,7 @@ class TwitchConfiguration(ABC):
     def getMessage(self, message: Any) -> TwitchMessage:
         pass
 
+    @property
     @abstractmethod
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
         pass

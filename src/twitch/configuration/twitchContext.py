@@ -32,10 +32,6 @@ class TwitchContext(TwitchMessageable):
         pass
 
     @abstractmethod
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        pass
-
-    @abstractmethod
     def isAuthorMod(self) -> bool:
         pass
 
@@ -45,4 +41,9 @@ class TwitchContext(TwitchMessageable):
 
     @abstractmethod
     async def send(self, message: str):
+        pass
+
+    @property
+    @abstractmethod
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
         pass

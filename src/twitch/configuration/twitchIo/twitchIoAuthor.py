@@ -38,9 +38,6 @@ class TwitchIoAuthor(TwitchAuthor):
 
         return authorName
 
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        return TwitchConfigurationType.TWITCHIO
-
     def isMod(self) -> bool:
         isMod: bool | None = self.__author.is_mod
 
@@ -56,3 +53,7 @@ class TwitchIoAuthor(TwitchAuthor):
             raise RuntimeError(f'isVip value is missing! ({isVip=}) ({self.__author=})')
 
         return isVip
+
+    @property
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
+        return TwitchConfigurationType.TWITCHIO

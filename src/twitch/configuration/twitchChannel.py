@@ -6,6 +6,7 @@ from .twitchMessageable import TwitchMessageable
 
 class TwitchChannel(TwitchMessageable):
 
+    @property
     @abstractmethod
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
         pass

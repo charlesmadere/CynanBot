@@ -14,9 +14,10 @@ class TwitchMessageable(ABC):
         pass
 
     @abstractmethod
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
+    async def send(self, message: str):
         pass
 
+    @property
     @abstractmethod
-    async def send(self, message: str):
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
         pass

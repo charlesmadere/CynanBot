@@ -72,9 +72,6 @@ class TwitchIoMessage(TwitchMessage):
     def getTwitchChannelName(self) -> str:
         return self.__channel.getTwitchChannelName()
 
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        return TwitchConfigurationType.TWITCHIO
-
     @property
     def isEcho(self) -> bool:
         return self.__message.echo
@@ -101,3 +98,7 @@ class TwitchIoMessage(TwitchMessage):
 
         self.__isReply = isReply
         return isReply
+
+    @property
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
+        return TwitchConfigurationType.TWITCHIO

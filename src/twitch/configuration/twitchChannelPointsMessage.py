@@ -43,9 +43,6 @@ class TwitchChannelPointsMessage:
     def getRewardId(self) -> str:
         return self.__rewardId
 
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        return TwitchConfigurationType.STUB
-
     def getTwitchUser(self) -> UserInterface:
         return self.__twitchUser
 
@@ -54,3 +51,7 @@ class TwitchChannelPointsMessage:
 
     def getUserName(self) -> str:
         return self.__userName
+
+    @property
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
+        return TwitchConfigurationType.STUB

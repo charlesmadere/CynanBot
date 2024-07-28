@@ -18,13 +18,14 @@ class TwitchAuthor(ABC):
         pass
 
     @abstractmethod
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        pass
-
-    @abstractmethod
     def isMod(self) -> bool:
         pass
 
     @abstractmethod
     def isVip(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def twitchConfigurationType(self) -> TwitchConfigurationType:
         pass
