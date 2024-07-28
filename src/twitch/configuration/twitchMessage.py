@@ -39,10 +39,11 @@ class TwitchMessage(ABC):
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         pass
 
+    @property
     @abstractmethod
     def isEcho(self) -> bool:
         pass
 
     @abstractmethod
-    def isReply(self) -> bool:
+    async def isReply(self) -> bool:
         pass

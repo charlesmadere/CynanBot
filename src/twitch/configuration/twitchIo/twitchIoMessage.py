@@ -32,6 +32,7 @@ class TwitchIoMessage(TwitchMessage):
         )
 
         self.__isReply: bool | None = None
+        self.__twitchChannelId: str | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -49,7 +50,24 @@ class TwitchIoMessage(TwitchMessage):
         return self.__message.content
 
     async def getTwitchChannelId(self) -> str:
-        return await self.__channel.getTwitchChannelId()
+        twitchChannelId = self.__twitchChannelId
+
+        if twitchChannelId is not None:
+            return twitchChannelId
+
+        tags: dict[Any, Any] = self.__message.tags
+        twitchChannelId = tags['room-id']
+
+        if not utils.isValidStr(twitchChannelId):
+            raise RuntimeError(f'Error trying to retrieve twitchChannelId ({twitchChannelId=}) from tags ({tags=}) ({self=})')
+
+        parentTwitchChannelId = await self.__channel.getTwitchChannelId()
+
+        if twitchChannelId != parentTwitchChannelId:
+            raise RuntimeError(f'Tags twitchChannelId ({twitchChannelId=}) is different than parentTwitchChannelId ({parentTwitchChannelId=}) ({tags=}) ({self=})')
+
+        self.__twitchChannelId = twitchChannelId
+        return twitchChannelId
 
     def getTwitchChannelName(self) -> str:
         return self.__channel.getTwitchChannelName()
@@ -57,10 +75,11 @@ class TwitchIoMessage(TwitchMessage):
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO
 
+    @property
     def isEcho(self) -> bool:
         return self.__message.echo
 
-    def isReply(self) -> bool:
+    async def isReply(self) -> bool:
         isReply = self.__isReply
 
         if isReply is not None:
