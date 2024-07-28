@@ -3,26 +3,18 @@ from src.twitch.api.twitchUserType import TwitchUserType
 
 class TestTwitchUserType:
 
-    def test_fromStr_withAdminString(self):
-        result = TwitchUserType.fromStr('admin')
-        assert result is TwitchUserType.ADMIN
+    def test_toStr_withAdmin(self):
+        result = TwitchUserType.ADMIN.toStr()
+        assert result == 'admin'
 
-    def test_fromStr_withEmptyString(self):
-        result = TwitchUserType.fromStr('')
-        assert result is TwitchUserType.NORMAL
+    def test_toStr_withGlobalMod(self):
+        result = TwitchUserType.GLOBAL_MOD.toStr()
+        assert result == 'global_mod'
 
-    def test_fromStr_withGlobalModString(self):
-        result = TwitchUserType.fromStr('global_mod')
-        assert result is TwitchUserType.GLOBAL_MOD
+    def test_toStr_withNormal(self):
+        result = TwitchUserType.NORMAL.toStr()
+        assert result == 'normal'
 
-    def test_fromStr_withNone(self):
-        result = TwitchUserType.fromStr(None)
-        assert result is TwitchUserType.NORMAL
-
-    def test_fromStr_withStaffString(self):
-        result = TwitchUserType.fromStr('staff')
-        assert result is TwitchUserType.STAFF
-
-    def test_fromStr_withWhitespaceString(self):
-        result = TwitchUserType.fromStr(' ')
-        assert result is TwitchUserType.NORMAL
+    def test_toStr_withStaff(self):
+        result = TwitchUserType.STAFF.toStr()
+        assert result == 'staff'

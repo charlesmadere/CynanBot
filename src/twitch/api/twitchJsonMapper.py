@@ -16,6 +16,7 @@ from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchThemeMode import TwitchThemeMode
 from .twitchTokensDetails import TwitchTokensDetails
+from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -400,6 +401,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             accessToken = accessToken,
             refreshToken = refreshToken
         )
+
+    async def parseUserType(
+        self,
+        userType: str | Any | None
+    ) -> TwitchUserType:
+        if not utils.isValidStr(userType):
+            return TwitchUserType.NORMAL
+
+        userType = userType.lower()
+
+        match userType:
+            case 'admin': return TwitchUserType.ADMIN
+            case 'global_mod': return TwitchUserType.GLOBAL_MOD
+            case 'staff': return TwitchUserType.STAFF
+            case _: return TwitchUserType.NORMAL
 
     async def parseValidationResponse(
         self,

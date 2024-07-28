@@ -11,6 +11,7 @@ from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.api.twitchUserType import TwitchUserType
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
@@ -344,6 +345,36 @@ class TestTwitchJsonMapper:
     async def test_parseSubscriberTier_withWhitespaceString(self):
         result = await self.jsonMapper.parseSubscriberTier(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserType_withAdminString(self):
+        result = await self.jsonMapper.parseUserType('admin')
+        assert result is TwitchUserType.ADMIN
+
+    @pytest.mark.asyncio
+    async def test_parseUserType_withEmptyString(self):
+        result = await self.jsonMapper.parseUserType('')
+        assert result is TwitchUserType.NORMAL
+
+    @pytest.mark.asyncio
+    async def test_parseUserType_withGlobalModString(self):
+        result = await self.jsonMapper.parseUserType('global_mod')
+        assert result is TwitchUserType.GLOBAL_MOD
+
+    @pytest.mark.asyncio
+    async def test_parseUserType_withNone(self):
+        result = await self.jsonMapper.parseUserType(None)
+        assert result is TwitchUserType.NORMAL
+
+    @pytest.mark.asyncio
+    async def test_parseUserType_withStaffString(self):
+        result = await self.jsonMapper.parseUserType('staff')
+        assert result is TwitchUserType.STAFF
+
+    @pytest.mark.asyncio
+    async def test_parseUserType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseUserType(' ')
+        assert result is TwitchUserType.NORMAL
 
     @pytest.mark.asyncio
     async def test_requireSubscriberTier_withPrimeString(self):
