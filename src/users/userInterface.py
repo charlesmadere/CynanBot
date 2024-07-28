@@ -27,6 +27,7 @@ class UserInterface(ABC):
     def areCheerActionsEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def areRecurringActionsEnabled(self) -> bool:
         pass

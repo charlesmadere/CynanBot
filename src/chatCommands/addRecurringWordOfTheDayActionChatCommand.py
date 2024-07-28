@@ -42,7 +42,7 @@ class AddRecurringWordOfTheDayActionChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('AddRecurringWordOfTheDayActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areRecurringActionsEnabled():
+        elif not user.areRecurringActionsEnabled:
             return
 
         # TODO

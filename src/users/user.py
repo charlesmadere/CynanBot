@@ -366,6 +366,7 @@ class User(UserInterface):
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled
 
+    @property
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
 

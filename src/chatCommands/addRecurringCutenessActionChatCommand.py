@@ -44,7 +44,7 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('AddRecurringCutenessActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areRecurringActionsEnabled():
+        elif not user.areRecurringActionsEnabled:
             return
 
         wizard = await self.__recurringActionsWizard.start(
