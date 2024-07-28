@@ -1,3 +1,4 @@
+from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
