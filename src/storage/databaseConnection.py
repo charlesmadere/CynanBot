@@ -32,9 +32,5 @@ class DatabaseConnection(ABC):
         pass
 
     @abstractmethod
-    def getDatabaseType(self) -> DatabaseType:
-        pass
-
-    @abstractmethod
     def isClosed(self) -> bool:
         pass

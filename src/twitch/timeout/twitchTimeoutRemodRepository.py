@@ -112,7 +112,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        match connection.getDatabaseType():
+        match connection.databaseType:
             case DatabaseType.POSTGRESQL:
                 await connection.createTableIfNotExists(
                     '''
@@ -138,6 +138,6 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 )
 
             case _:
-                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
         await connection.close()

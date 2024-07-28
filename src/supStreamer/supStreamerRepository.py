@@ -95,7 +95,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         self.__isDatabaseReady = True
         connection = await self.__backingDatabase.getConnection()
 
-        match connection.getDatabaseType():
+        match connection.databaseType:
             case DatabaseType.POSTGRESQL:
                 await connection.createTableIfNotExists(
                     '''
@@ -121,7 +121,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 )
 
             case _:
-                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
         await connection.close()
 

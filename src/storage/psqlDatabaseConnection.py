@@ -81,12 +81,9 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
         return rows
 
-    def getDatabaseType(self) -> DatabaseType:
-        return self.databaseType
-
     def isClosed(self) -> bool:
         return self.__isClosed
 
     def __requireNotClosed(self):
         if self.isClosed():
-            raise DatabaseConnectionIsClosedException(f'This database connection has already been closed! ({self.getDatabaseType()})')
+            raise DatabaseConnectionIsClosedException(f'This database connection has already been closed! ({self.databaseType})')

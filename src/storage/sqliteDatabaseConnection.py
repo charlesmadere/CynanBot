@@ -96,12 +96,9 @@ class SqliteDatabaseConnection(DatabaseConnection):
         await cursor.close()
         return records
 
-    def getDatabaseType(self) -> DatabaseType:
-        return self.databaseType
-
     def isClosed(self) -> bool:
         return self.__isClosed
 
     def __requireNotClosed(self):
         if self.__isClosed:
-            raise DatabaseConnectionIsClosedException(f'This database connection has already been closed! ({self.getDatabaseType()})')
+            raise DatabaseConnectionIsClosedException(f'This database connection has already been closed! ({self.databaseType})')
