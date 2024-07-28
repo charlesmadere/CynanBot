@@ -56,6 +56,7 @@ from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.myAnivTimeoutsChatCommand import MyAnivTimeoutsChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
+from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
 from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
@@ -79,12 +80,11 @@ from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterfac
 from .cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CutenessHistoryCommand,
-                       CynanSourceCommand, DiscordCommand, LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand,
-                       PkMonCommand, PkMoveCommand, RaceCommand, RemoveGlobalTriviaControllerCommand,
-                       RemoveTriviaControllerCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand,
-                       SwQuoteCommand, TriviaInfoCommand, TwitchInfoCommand, TwitterCommand,
-                       UnbanTriviaQuestionCommand)
+from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CutenessHistoryCommand, CynanSourceCommand,
+                       DiscordCommand, LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
+                       PkMoveCommand, RaceCommand, RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
+                       SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TriviaInfoCommand, TwitchInfoCommand,
+                       TwitterCommand, UnbanTriviaQuestionCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
@@ -589,7 +589,7 @@ class CynanBot(
             self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
             self.__triviaInfoCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
+            self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
@@ -602,7 +602,7 @@ class CynanBot(
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = GetGlobalTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsChatCommand = GetTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaControllersCommand: AbsChatCommand = GetTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = RemoveGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
@@ -1384,7 +1384,7 @@ class CynanBot(
     @commands.command(name = 'removeglobaltriviacontroller')
     async def command_removeglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeGlobalTriviaControllerCommand.handleCommand(context)
+        await self.__removeGlobalTriviaControllerChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'deleterecurringcutenessaction' ])
     async def command_removerecurringcutenessaction(self, ctx: Context):

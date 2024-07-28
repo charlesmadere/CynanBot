@@ -51,7 +51,7 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as no username argument was given. Example: !removebannedtriviacontroller {user.getHandle()}')
             return
 
-        userName = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveBannedTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as username argument is malformed. Example: !removebannedtriviacontroller {user.getHandle()}')
