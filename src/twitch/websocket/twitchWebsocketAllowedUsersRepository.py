@@ -79,7 +79,7 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
         users = await self.__usersRepository.getUsersAsync()
 
         for user in users:
-            if user.isEnabled():
+            if user.isEnabled:
                 enabledUsers.add(user.getHandle())
 
         return enabledUsers

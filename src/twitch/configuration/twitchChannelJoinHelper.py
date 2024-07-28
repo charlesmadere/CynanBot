@@ -75,7 +75,7 @@ class TwitchChannelJoinHelper(TwitchChannelJoinHelperInterface):
         users = await self.__usersRepository.getUsersAsync()
 
         for user in users:
-            if user.isEnabled():
+            if user.isEnabled:
                 allChannels.append(user.getHandle())
             else:
                 disabledChannels.append(user.getHandle())

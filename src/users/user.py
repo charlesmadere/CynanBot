@@ -548,6 +548,7 @@ class User(UserInterface):
     def isDeerForceMessageEnabled(self) -> bool:
         return self.__isDeerForceMessageEnabled
 
+    @property
     def isEnabled(self) -> bool:
         return self.__isEnabled
 

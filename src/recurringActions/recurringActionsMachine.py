@@ -135,7 +135,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     async def __fetchViableUsers(self) -> list[UserInterface]:
         users = await self.__usersRepository.getUsersAsync()
-        return [ user for user in users if user.isEnabled() and user.areRecurringActionsEnabled() ]
+        return [ user for user in users if user.isEnabled and user.areRecurringActionsEnabled() ]
 
     async def __findDueRecurringAction(
         self,
