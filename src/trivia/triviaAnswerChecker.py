@@ -159,7 +159,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             return TriviaAnswerCheckResult.INCORRECT
 
         cleanedCorrectAnswers = triviaQuestion.cleanedCorrectAnswers
-        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({cleanedAnswers=}) ({triviaQuestion.correctAnswers=}) ({cleanedCorrectAnswers=}) ({triviaQuestion.answerAddendum=}) ({extras=})')
+        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({cleanedAnswers=}) ({triviaQuestion.correctAnswers=}) ({cleanedCorrectAnswers=}) ({extras=})')
 
         for cleanedCorrectAnswer in cleanedCorrectAnswers:
             for cleanedAnswer in cleanedAnswers:

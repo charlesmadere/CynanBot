@@ -284,7 +284,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             raise TypeError(f'configurationJson argument is malformed: \"{configurationJson}\"')
 
         actionTypeString = await self.__recurringActionsJsonParser.serializeActionType(action.actionType)
-        isEnabled = utils.boolToNum(action.isEnabled)
+        isEnabled = utils.boolToInt(action.isEnabled)
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(

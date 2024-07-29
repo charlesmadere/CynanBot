@@ -3,6 +3,7 @@ from datetime import timedelta
 from .recurringActionType import RecurringActionType
 from .recurringActionsWizardInterface import RecurringActionsWizardInterface
 from .wizards.absWizard import AbsWizard
+from .wizards.cutenessWizard import CutenessWizard
 from .wizards.superTriviaWizard import SuperTriviaWizard
 from .wizards.weatherWizard import WeatherWizard
 from .wizards.wordOfTheDayWizard import WordOfTheDayWizard
@@ -57,6 +58,12 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
             self.__timber.log('RecurringActionsWizard', f'Starting a new \"{recurringActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
 
         match recurringActionType:
+            case RecurringActionType.CUTENESS:
+                return await self.__startNewCutenessWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
             case RecurringActionType.SUPER_TRIVIA:
                 return await self.__startNewSuperTriviaWizard(
                     twitchChannel = twitchChannel,
@@ -77,6 +84,26 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
             case _:
                 raise RuntimeError(f'unknown RecurringActionType: \"{recurringActionType}\"')
+
+    async def __startNewCutenessWizard(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessWizard:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        wizard = CutenessWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('RecurringActionsWizard', f'Started new Cuteness wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
 
     async def __startNewSuperTriviaWizard(
         self,

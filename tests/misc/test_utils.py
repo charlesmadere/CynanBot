@@ -42,12 +42,14 @@ class TestUtils:
         result = utils.areAllStrsInts([ 'hello', 'world' ])
         assert result is False
 
-    def test_boolToNum_withFalse(self):
-        result = utils.boolToNum(False)
+    def test_boolToInt_withFalse(self):
+        result = utils.boolToInt(False)
+        assert isinstance(result, int)
         assert result == 0
 
-    def test_boolToNum_withTrue(self):
-        result = utils.boolToNum(True)
+    def test_boolToInt_withTrue(self):
+        result = utils.boolToInt(True)
+        assert isinstance(result, int)
         assert result == 1
 
     def test_containsUrl_withEmptyString(self):

@@ -200,7 +200,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 SET isenabled = $1
                 WHERE bits = $2 AND twitchchannelid = $3
             ''',
-            utils.boolToNum(enable), bits, twitchChannelId
+            utils.boolToInt(enable), bits, twitchChannelId
         )
 
         await connection.close()

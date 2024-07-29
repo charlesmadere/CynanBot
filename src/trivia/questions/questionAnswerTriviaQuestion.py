@@ -72,7 +72,6 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'answerAddendum': self.answerAddendum,
             'category': self.category,
             'categoryId': self.categoryId,
             'cleanedCorrectAnswers': self.cleanedCorrectAnswers,

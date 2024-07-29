@@ -27,9 +27,9 @@ def areAllStrsInts(l: list[str]) -> bool:
 
     return True
 
-def boolToNum(b: bool) -> int:
+def boolToInt(b: bool) -> int:
     if not isValidBool(b):
-        raise ValueError(f'b argument is malformed: \"{b}\"')
+        raise TypeError(f'b argument is malformed: \"{b}\"')
 
     if b:
         return 1

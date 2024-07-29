@@ -29,6 +29,13 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
 
+    async def __cutenessToJson(self, action: CutenessRecurringAction) -> str:
+        if not isinstance(action, CutenessRecurringAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        jsonContents: dict[str, Any] = dict()
+        return json.dumps(jsonContents)
+
     async def parseActionType(
         self,
         actionType: str | Any | None
@@ -181,7 +188,9 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         if not isinstance(action, RecurringAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        if isinstance(action, SuperTriviaRecurringAction):
+        if isinstance(action, CutenessRecurringAction):
+            return await self.__cutenessToJson(action)
+        elif isinstance(action, SuperTriviaRecurringAction):
             return await self.__superTriviaToJson(action)
         elif isinstance(action, WeatherRecurringAction):
             return await self.__weatherToJson(action)
