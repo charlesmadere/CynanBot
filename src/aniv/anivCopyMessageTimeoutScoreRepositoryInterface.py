@@ -9,7 +9,8 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
     async def getScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore | None:
         pass
@@ -18,7 +19,8 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
     async def incrementDodgeScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore:
         pass
@@ -27,7 +29,8 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
     async def incrementTimeoutScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore:
         pass

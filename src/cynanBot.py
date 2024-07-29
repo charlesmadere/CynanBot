@@ -636,7 +636,7 @@ class CynanBot(
         if anivCopyMessageTimeoutScorePresenter is None or anivCopyMessageTimeoutScoreRepository is None:
             self.__myAnivTimeoutsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__myAnivTimeoutsCommand: AbsChatCommand = MyAnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchTokensRepository, twitchUtils, usersRepository)
+            self.__myAnivTimeoutsCommand: AbsChatCommand = MyAnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchUtils, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsCommand = StubCommand()

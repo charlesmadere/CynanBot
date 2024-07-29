@@ -7,7 +7,6 @@ from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositoryInterface):
@@ -15,44 +14,33 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timeZoneRepository: TimeZoneRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
         self.__isDatabaseReady: bool = False
 
     async def __createDefaultScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        chatterUserName = await self.__userIdsRepository.requireUserName(
-            userId = chatterUserId,
-            twitchAccessToken = twitchAccessToken
-        )
-
-        twitchChannel = await self.__userIdsRepository.requireUserName(
-            userId = twitchChannelId,
-            twitchAccessToken = twitchAccessToken
-        )
 
         return AnivCopyMessageTimeoutScore(
             mostRecentDodge = None,
@@ -72,22 +60,24 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
     async def getScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT anivcopymessagetimeoutscores.mostrecentdodge, anivcopymessagetimeoutscores.mostrecenttimeout, anivcopymessagetimeoutscores.dodgescore, anivcopymessagetimeoutscores.timeoutscore, userids.username FROM anivcopymessagetimeoutscores
-                INNER JOIN userids ON anivcopymessagetimeoutscores.twitchchannelid = userids.userid
-                WHERE anivcopymessagetimeoutscores.chatteruserid = $1 AND anivcopymessagetimeoutscores.twitchchannelid = $2
+                SELECT mostrecentdodge, mostrecenttimeout, dodgescore, timeoutscore FROM anivcopymessagetimeoutscores
+                WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
             chatterUserId, twitchChannelId
@@ -97,11 +87,6 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
 
         if record is None or len(record) == 0:
             return None
-
-        chatterUserName = await self.__userIdsRepository.requireUserName(
-            userId = chatterUserId,
-            twitchAccessToken = twitchAccessToken
-        )
 
         mostRecentDodge: datetime | None = None
         if utils.isValidStr(record[0]):
@@ -118,31 +103,38 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             timeoutScore = record[3],
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
-            twitchChannel = record[4],
+            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
     async def incrementDodgeScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         score = await self.getScore(
             chatterUserId = chatterUserId,
-            twitchAccessToken = twitchAccessToken,
+            chatterUserName = chatterUserName,
+            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         if score is None:
             score = await self.__createDefaultScore(
                 chatterUserId = chatterUserId,
-                twitchAccessToken = twitchAccessToken,
+                chatterUserName = chatterUserName,
+                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
 
@@ -163,24 +155,31 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
     async def incrementTimeoutScore(
         self,
         chatterUserId: str,
-        twitchAccessToken: str,
+        chatterUserName: str,
+        twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         score = await self.getScore(
             chatterUserId = chatterUserId,
-            twitchAccessToken = twitchAccessToken,
+            chatterUserName = chatterUserName,
+            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         if score is None:
             score = await self.__createDefaultScore(
                 chatterUserId = chatterUserId,
-                twitchAccessToken = twitchAccessToken,
+                chatterUserName = chatterUserName,
+                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
 
