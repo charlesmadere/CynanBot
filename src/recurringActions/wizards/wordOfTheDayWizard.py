@@ -47,6 +47,6 @@ class WordOfTheDayWizard(AbsWizard):
             'minutesBetween': self.__minutesBetween,
             'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
-            'twitchChannel': self.__twitchChannel,
-            'twitchChannelId': self.__twitchChannelId
+            'twitchChannel': self.twitchChannel,
+            'twitchChannelId': self.twitchChannelId
         }
