@@ -1,10 +1,10 @@
 import random
 from datetime import datetime, timedelta
 
-from .anivTimeoutData import AnivTimeoutData
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from .anivTimeoutData import AnivTimeoutData
 from .anivUserIdProviderInterface import AnivUserIdProviderInterface
 from .mostRecentAnivMessage import MostRecentAnivMessage
 from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
@@ -129,7 +129,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutData.durationSeconds,
-            reason = f'{timeoutData.durationSeconds}s timeout for copying an aniv message',
+            reason = f'{timeoutData.durationSecondsStr}s timeout for copying an aniv message',
             twitchAccessToken = twitchAccessToken,
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
@@ -209,9 +209,9 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         # TODO
 
         return AnivTimeoutData(
-            durationSeconds = minDurationSeconds,
             randomNumber = randomNumber,
-            timeoutProbability = timeoutProbability
+            timeoutProbability = timeoutProbability,
+            durationSeconds = minDurationSeconds
         )
 
     async def __ripBozoInChat(
@@ -228,7 +228,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-        msg = f'@{chatterUserName} {timeoutData.durationSeconds}s RIPBOZO {timeoutScoreString}'
+        msg = f'@{chatterUserName} {timeoutData.durationSecondsStr}s RIPBOZO {timeoutScoreString}'
 
         await self.__twitchUtils.safeSend(twitchChannel, msg)
 
