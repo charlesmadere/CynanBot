@@ -169,8 +169,8 @@ class TriviaRepository(TriviaRepositoryInterface):
             if triviaSourceToRemove in triviaSourcesAndWeights:
                 del triviaSourcesAndWeights[triviaSourceToRemove]
 
-        if not utils.hasItems(triviaSourcesAndWeights):
-            raise RuntimeError(f'There are no trivia sources available to be fetched from! TriviaFetchOptions are: {triviaFetchOptions}')
+        if len(triviaSourcesAndWeights) == 0:
+            raise RuntimeError(f'There are no trivia sources available to be fetched from! ({triviaFetchOptions=})')
 
         triviaSources: list[TriviaSource] = list()
         triviaWeights: list[int] = list()
@@ -183,9 +183,6 @@ class TriviaRepository(TriviaRepositoryInterface):
             population = triviaSources,
             weights = triviaWeights
         )
-
-        if not utils.hasItems(randomChoices):
-            raise RuntimeError(f'TriviaSource list returned by random.choices() is malformed: \"{randomChoices}\"')
 
         randomlyChosenTriviaSource = randomChoices[0]
         randomlyChosenTriviaRepository = self.__triviaSourceToRepositoryMap[randomlyChosenTriviaSource]
