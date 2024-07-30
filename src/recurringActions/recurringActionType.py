@@ -16,7 +16,8 @@ class RecurringActionType(Enum):
             case RecurringActionType.WORD_OF_THE_DAY: return 90
             case _: raise RuntimeError(f'unknown RecurringActionType: \"{self}\"')
 
-    def getMinimumRecurringActionTimingMinutes(self) -> int:
+    @property
+    def minimumRecurringActionTimingMinutes(self) -> int:
         match self:
             case RecurringActionType.CUTENESS: return 30
             case RecurringActionType.SUPER_TRIVIA: return 5

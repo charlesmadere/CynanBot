@@ -44,6 +44,8 @@ class WeatherWizard(AbsWizard):
             raise TypeError(f'minutesBetween argument is malformed: \"{minutesBetween}\"')
         elif minutesBetween < 1 or minutesBetween > utils.getIntMaxSafeSize():
             raise ValueError(f'minutesBetween argument is out of bounds: {minutesBetween}')
+        elif minutesBetween < self.recurringActionType.minimumRecurringActionTimingMinutes:
+            raise ValueError(f'minutesBetween argument is below the minimum requirement: {minutesBetween}')
 
         self.__minutesBetween = minutesBetween
 

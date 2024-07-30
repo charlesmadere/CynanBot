@@ -58,6 +58,6 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
         if step is not CutenessStep.MINUTES_BETWEEN:
             raise RuntimeError(f'unknown CutenessStep: \"{step}\"')
 
-        minimumRecurringActionTimingMinutes = RecurringActionType.CUTENESS.getMinimumRecurringActionTimingMinutes()
+        minimumRecurringActionTimingMinutes = RecurringActionType.CUTENESS.minimumRecurringActionTimingMinutes
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between recurring Cuteness Leaderboard prompts (most people choose 60 - 120 minutes, minimum is {minimumRecurringActionTimingMinutes})')
         self.__timber.log('AddRecurringCutenessActionChatCommand', f'Handled !addrecurringcutenessaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
