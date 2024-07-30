@@ -6,6 +6,7 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from ..recurringActions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from ..recurringActions.wizards.cutenessWizard import CutenessWizard
 from ..recurringActions.wizards.stepResult import StepResult
 from ..recurringActions.wizards.superTriviaStep import SuperTriviaStep
 from ..recurringActions.wizards.superTriviaWizard import SuperTriviaWizard
@@ -39,6 +40,15 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         self.__recurringActionsWizard: RecurringActionsWizardInterface = recurringActionsWizard
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+
+    async def __configureCutenessWizard(
+        self,
+        content: str,
+        wizard: CutenessWizard,
+        message: TwitchMessage
+    ) -> bool:
+        # TODO
+        return False
 
     async def __configureSuperTriviaWizard(
         self,
@@ -127,7 +137,13 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         if not utils.isValidStr(content) or twitchChannelId != message.getAuthorId() or wizard is None:
             return False
 
-        if isinstance(wizard, SuperTriviaWizard):
+        if isinstance(wizard, CutenessWizard):
+            return await self.__configureCutenessWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+        elif isinstance(wizard, SuperTriviaWizard):
             return await self.__configureSuperTriviaWizard(
                 content = content,
                 wizard = wizard,
