@@ -153,18 +153,22 @@ class UsersRepository(UsersRepositoryInterface):
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
-        anivMessageCopyMaxAgeSeconds: int | None = None
         anivMessageCopyTimeoutProbability: float | None = None
-        anivMessageCopyTimeoutSeconds: int | None = None
+        anivMessageCopyMaxAgeSeconds: int | None = None
+        anivMessageCopyTimeoutMinSeconds: int | None = None
+        anivMessageCopyTimeoutMaxSeconds: int | None = None
         if isAnivMessageCopyTimeoutEnabled:
-            if 'anivMessageCopyMaxAgeSeconds' in userJson and utils.isValidInt(userJson.get('anivCopyMessageMaxAgeSeconds')):
-                anivMessageCopyMaxAgeSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyMaxAgeSeconds')
-
             if 'anivMessageCopyTimeoutProbability' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutProbability')):
                 anivMessageCopyTimeoutProbability = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutProbability')
 
-            if 'anivMessageCopyTimeoutSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutSeconds')):
-                anivMessageCopyTimeoutSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutSeconds')
+            if 'anivMessageCopyMaxAgeSeconds' in userJson and utils.isValidInt(userJson.get('anivCopyMessageMaxAgeSeconds')):
+                anivMessageCopyMaxAgeSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyMaxAgeSeconds')
+
+            if 'anivMessageCopyTimeoutMinSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutMinSeconds')):
+                anivMessageCopyTimeoutMinSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutMinSeconds')
+
+            if 'anivMessageCopyTimeoutMaxSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutMaxSeconds')):
+                anivMessageCopyTimeoutMaxSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutMaxSeconds')
 
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
@@ -295,7 +299,8 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
             anivMessageCopyMaxAgeSeconds = anivMessageCopyMaxAgeSeconds,
-            anivMessageCopyTimeoutSeconds = anivMessageCopyTimeoutSeconds,
+            anivMessageCopyTimeoutMinSeconds = anivMessageCopyTimeoutMinSeconds,
+            anivMessageCopyTimeoutMaxSeconds = anivMessageCopyTimeoutMaxSeconds,
             maximumTtsCheerAmount = maximumTtsCheerAmount,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
             superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,

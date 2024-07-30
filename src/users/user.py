@@ -59,7 +59,8 @@ class User(UserInterface):
         superTriviaCheerTriggerAmount: float | None,
         superTriviaSubscribeTriggerAmount: float | None,
         anivMessageCopyMaxAgeSeconds: int | None,
-        anivMessageCopyTimeoutSeconds: int | None,
+        anivMessageCopyTimeoutMinSeconds: int | None,
+        anivMessageCopyTimeoutMaxSeconds: int | None,
         maximumTtsCheerAmount: int | None,
         minimumTtsCheerAmount: int | None,
         superTriviaCheerTriggerMaximum: int | None,
@@ -193,8 +194,10 @@ class User(UserInterface):
             raise TypeError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
         elif anivMessageCopyMaxAgeSeconds is not None and not utils.isValidInt(anivMessageCopyMaxAgeSeconds):
             raise TypeError(f'anivMessageCopyMaxAgeSeconds argument is malformed: \"{anivMessageCopyMaxAgeSeconds}\"')
-        elif anivMessageCopyTimeoutSeconds is not None and not utils.isValidInt(anivMessageCopyTimeoutSeconds):
-            raise TypeError(f'anivMessageCopyTimeoutSeconds argument is malformed: \"{anivMessageCopyTimeoutSeconds}\"')
+        elif anivMessageCopyTimeoutMinSeconds is not None and not utils.isValidInt(anivMessageCopyTimeoutMinSeconds):
+            raise TypeError(f'anivMessageCopyTimeoutMinSeconds argument is malformed: \"{anivMessageCopyTimeoutMinSeconds}\"')
+        elif anivMessageCopyTimeoutMaxSeconds is not None and not utils.isValidInt(anivMessageCopyTimeoutMaxSeconds):
+            raise TypeError(f'anivMessageCopyTimeoutMaxSeconds argument is malformed: \"{anivMessageCopyTimeoutMaxSeconds}\"')
         elif maximumTtsCheerAmount is not None and not utils.isValidInt(maximumTtsCheerAmount):
             raise TypeError(f'maximumTtsCheerAmount argument is malformed: \"{maximumTtsCheerAmount}\"')
         elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
@@ -312,7 +315,8 @@ class User(UserInterface):
         self.__superTriviaCheerTriggerAmount: float | None = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: float | None = superTriviaSubscribeTriggerAmount
         self.__anivMessageCopyMaxAgeSeconds: int | None = anivMessageCopyMaxAgeSeconds
-        self.__anivMessageCopyTimeoutSeconds: int | None = anivMessageCopyTimeoutSeconds
+        self.__anivMessageCopyTimeoutMinSeconds: int | None = anivMessageCopyTimeoutMinSeconds
+        self.__anivMessageCopyTimeoutMaxSeconds: int | None = anivMessageCopyTimeoutMaxSeconds
         self.__maximumTtsCheerAmount: int | None = maximumTtsCheerAmount
         self.__minimumTtsCheerAmount: int | None = minimumTtsCheerAmount
         self.__superTriviaCheerTriggerMaximum: int | None = superTriviaCheerTriggerMaximum
@@ -355,6 +359,14 @@ class User(UserInterface):
         return self.__anivMessageCopyMaxAgeSeconds
 
     @property
+    def anivMessageCopyTimeoutMinSeconds(self) -> int | None:
+        return self.__anivMessageCopyTimeoutMinSeconds
+
+    @property
+    def anivMessageCopyTimeoutMaxSeconds(self) -> int | None:
+        return self.__anivMessageCopyTimeoutMaxSeconds
+
+    @property
     def anivMessageCopyTimeoutProbability(self) -> float | None:
         return self.__anivMessageCopyTimeoutProbability
 
@@ -377,9 +389,6 @@ class User(UserInterface):
     @property
     def areTimeoutCheerActionsEnabled(self) -> bool:
         return self.__areTimeoutCheerActionsEnabled
-
-    def getAnivMessageCopyTimeoutSeconds(self) -> int | None:
-        return self.__anivMessageCopyTimeoutSeconds
 
     def getCasualGamePollRewardId(self) -> str | None:
         return self.__casualGamePollRewardId

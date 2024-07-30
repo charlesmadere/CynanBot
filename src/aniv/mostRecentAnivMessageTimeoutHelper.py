@@ -1,6 +1,7 @@
 import random
 from datetime import datetime, timedelta
 
+from .anivTimeoutData import AnivTimeoutData
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
@@ -108,42 +109,27 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
             return False
 
-        timeoutProbability = user.anivMessageCopyTimeoutProbability
-        if not utils.isValidNum(timeoutProbability):
-            timeoutProbability = await self.__anivSettingsRepository.getCopyMessageTimeoutProbability()
+        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
+        if not utils.isValidStr(twitchChannelAccessToken):
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch channel access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv ({twitchChannelId=})')
+            return False
 
-        randomNumber = random.random()
-        if randomNumber > timeoutProbability:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv! ({timeoutProbability=})')
+        timeoutData = await self.__determineTimeout(user)
+        if timeoutData is None:
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv!')
 
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
-                twitchAccessToken = twitchAccessToken,
+                chatterUserName = chatterUserName,
+                twitchChannel = user.getHandle(),
                 twitchChannelId = twitchChannelId
             )
 
             return False
 
-        durationSeconds = user.getAnivMessageCopyTimeoutSeconds()
-        if not utils.isValidInt(durationSeconds):
-            durationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
-
-        criticalTimeoutProbability = await self.__anivSettingsRepository.getCopyMessageCriticalTimeoutProbability()
-        isCriticalTimeout = randomNumber <= criticalTimeoutProbability
-        if isCriticalTimeout:
-            criticalTimeoutMultiplier = await self.__anivSettingsRepository.getCopyMessageCriticalTimeoutSecondsMultiplier()
-            durationSeconds = durationSeconds * int(round(criticalTimeoutMultiplier))
-            durationSeconds = int(min(durationSeconds, self.__twitchConstants.maxTimeoutSeconds))
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} is being hit with a critical aniv copy message timeout! ({criticalTimeoutProbability=}) ({criticalTimeoutMultiplier=}) ({durationSeconds=})')
-
-        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
-        if not utils.isValidStr(twitchChannelAccessToken):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch channel access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
-            return False
-
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
-            durationSeconds = durationSeconds,
-            reason = f'{durationSeconds}s timeout for copying an aniv message',
+            durationSeconds = timeoutData.durationSeconds,
+            reason = f'{timeoutData.durationSeconds}s timeout for copying an aniv message',
             twitchAccessToken = twitchAccessToken,
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
@@ -156,24 +142,21 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
 
         timeoutScore = await self.__anivCopyMessageTimeoutScoreRepository.incrementTimeoutScore(
+            timeoutDurationSeconds = timeoutData.durationSeconds,
             chatterUserId = chatterUserId,
-            twitchAccessToken = twitchAccessToken,
+            chatterUserName = chatterUserName,
+            twitchChannel = user.getHandle(),
             twitchChannelId = twitchChannelId
         )
 
         self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')
 
-        twitchChannelProvider = self.__twitchChannelProvider
-        if twitchChannelProvider is not None:
-            twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-            timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-            msg = f'@{chatterUserName} RIPBOZO {timeoutScoreString}'
-
-            if isCriticalTimeout:
-                while (len(msg) + len(' RIPBOZO')) < self.__twitchConstants.maxMessageSize:
-                    msg = f'{msg} RIPBOZO'
-
-            await self.__twitchUtils.safeSend(twitchChannel, msg)
+        await self.__ripBozoInChat(
+            timeoutScore = timeoutScore,
+            timeoutData = timeoutData,
+            chatterUserName = chatterUserName,
+            user = user
+        )
 
         return True
 
@@ -187,6 +170,67 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             maxAgeSeconds = await self.__anivSettingsRepository.getCopyMessageMaxAgeSeconds()
 
         return anivMessage.dateTime + timedelta(seconds = maxAgeSeconds)
+
+    async def __determineTimeout(self, user: UserInterface) -> AnivTimeoutData | None:
+        if not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        timeoutProbability = user.anivMessageCopyTimeoutProbability
+        if not utils.isValidNum(timeoutProbability):
+            timeoutProbability = await self.__anivSettingsRepository.getCopyMessageTimeoutProbability()
+
+        randomNumber = random.random()
+        if randomNumber > timeoutProbability:
+            return None
+
+        minDurationSeconds = user.anivMessageCopyTimeoutMinSeconds
+        if not utils.isValidInt(minDurationSeconds):
+            minDurationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
+
+        maxDurationSeconds = user.anivMessageCopyTimeoutMaxSeconds
+        if not utils.isValidInt(maxDurationSeconds):
+            maxDurationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutMaxSeconds()
+
+        rangeList: list[list[float]] = [
+            [0.0, 0.2],
+            [0.2, 0.4],
+            [0.4, 0.6],
+            [0.6, 0.8],
+            [0.8, 1.0]
+        ]
+
+        randomChoices = random.choices(
+            population = rangeList,
+            weights = (70, 16, 8, 4, 2)
+        )
+
+        randomChoice = randomChoices[0]
+
+        # TODO
+
+        return AnivTimeoutData(
+            durationSeconds = minDurationSeconds,
+            randomNumber = randomNumber,
+            timeoutProbability = timeoutProbability
+        )
+
+    async def __ripBozoInChat(
+        self,
+        timeoutScore: AnivCopyMessageTimeoutScore,
+        timeoutData: AnivTimeoutData,
+        chatterUserName: str,
+        user: UserInterface
+    ):
+        twitchChannelProvider = self.__twitchChannelProvider
+
+        if twitchChannelProvider is None:
+            return
+
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
+        msg = f'@{chatterUserName} {timeoutData.durationSeconds}s RIPBOZO {timeoutScoreString}'
+
+        await self.__twitchUtils.safeSend(twitchChannel, msg)
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

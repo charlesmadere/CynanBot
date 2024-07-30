@@ -154,12 +154,15 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
 
     async def incrementTimeoutScore(
         self,
+        timeoutDurationSeconds: int,
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
         twitchChannelId: str
     ) -> AnivCopyMessageTimeoutScore:
-        if not utils.isValidStr(chatterUserId):
+        if not utils.isValidInt(timeoutDurationSeconds):
+            raise TypeError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
+        elif not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(chatterUserName):
             raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')

@@ -19,6 +19,16 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def anivMessageCopyTimeoutMinSeconds(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
+    def anivMessageCopyTimeoutMaxSeconds(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
     def areBeanChancesEnabled(self) -> bool:
         pass
 
@@ -40,10 +50,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def areTimeoutCheerActionsEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    def getAnivMessageCopyTimeoutSeconds(self) -> int | None:
         pass
 
     @abstractmethod

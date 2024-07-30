@@ -28,6 +28,7 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
     @abstractmethod
     async def incrementTimeoutScore(
         self,
+        timeoutDurationSeconds: int,
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
