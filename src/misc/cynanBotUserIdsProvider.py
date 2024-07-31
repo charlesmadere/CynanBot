@@ -5,7 +5,7 @@ class CynanBotUserIdsProvider(CynanBotUserIdsProviderInterface):
 
     def __init__(
         self,
-        cynanBotUserId: str | None = '477393386',
+        cynanBotUserId: str | None = '546457893',
         cynanBotTtsUserId: str | None = '977636741'
     ):
         if cynanBotUserId is not None and not isinstance(cynanBotUserId, str):
