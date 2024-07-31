@@ -54,7 +54,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
 
         if record is not None and len(record) >= 1:
             toxicCount = record[0]
-            mostRecent = utils.getDateTimeFromStr(record[1])
+            mostRecent = datetime.fromisoformat(record[1])
 
         await connection.close()
 

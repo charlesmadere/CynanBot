@@ -205,7 +205,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if not isinstance(metadataJson, dict) or len(metadataJson) == 0:
             return None
 
-        messageTimestamp = datetime.fromisoformat(utils.getStrFromDict(metadataJson, 'message_timestamp'))
+        messageTimestamp = utils.getDateTimeFromDict(metadataJson, 'message_timestamp')
         messageId = utils.getStrFromDict(metadataJson, 'message_id')
         messageType = TwitchWebsocketMessageType.fromStr(utils.getStrFromDict(metadataJson, 'message_type'))
 
@@ -251,11 +251,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         connectedAt: datetime | None = None
         if 'connected_at' in transportJson and utils.isValidStr(transportJson.get('connected_at')):
-            connectedAt = datetime.fromisoformat(utils.getStrFromDict(transportJson, 'connected_at'))
+            connectedAt = utils.getDateTimeFromDict(transportJson, 'connected_at')
 
         disconnectedAt: datetime | None = None
         if 'disconnected_at' in transportJson and utils.isValidStr(transportJson.get('disconnected_at')):
-            disconnectedAt = datetime.fromisoformat(utils.getStrFromDict(transportJson, 'disconnected_at'))
+            disconnectedAt = utils.getDateTimeFromDict(transportJson, 'disconnected_at')
 
         secret: str | None = None
         if 'secret' in transportJson and utils.isValidStr(transportJson.get('secret')):
@@ -346,27 +346,27 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         endedAt: datetime | None = None
         if 'ended_at' in eventJson and utils.isValidStr(eventJson.get('ended_at')):
-            endedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'ended_at'))
+            endedAt = utils.getDateTimeFromDict(eventJson, 'ended_at')
 
         endsAt: datetime | None = None
         if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
-            endsAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'ends_at'))
+            endsAt = utils.getDateTimeFromDict(eventJson, 'ends_at')
 
         lockedAt: datetime | None = None
         if 'locked_at' in eventJson and utils.isValidStr(eventJson.get('locked_at')):
-            lockedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'locked_at'))
+            lockedAt = utils.getDateTimeFromDict(eventJson, 'locked_at')
 
         locksAt: datetime | None = None
         if 'locks_at' in eventJson and utils.isValidStr(eventJson.get('locks_at')):
-            locksAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'locks_at'))
+            locksAt = utils.getDateTimeFromDict(eventJson, 'locks_at')
 
         redeemedAt: datetime | None = None
         if 'redeemed_at' in eventJson and utils.isValidStr(eventJson.get('redeemed_at')):
-            redeemedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'redeemed_at'))
+            redeemedAt = utils.getDateTimeFromDict(eventJson, 'redeemed_at')
 
         startedAt: datetime | None = None
         if 'started_at' in eventJson and utils.isValidStr(eventJson.get('started_at')):
-            startedAt = datetime.fromisoformat(utils.getStrFromDict(eventJson, 'started_at'))
+            startedAt = utils.getDateTimeFromDict(eventJson, 'started_at')
 
         broadcasterUserId: str | None = None
         if 'broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('broadcaster_user_id')):
@@ -707,7 +707,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         keepAliveTimeoutSeconds = utils.getIntFromDict(sessionJson, 'keepalive_timeout_seconds')
-        connectedAt = datetime.fromisoformat(utils.getStrFromDict(sessionJson, 'connected_at'))
+        connectedAt = utils.getDateTimeFromDict(sessionJson, 'connected_at')
         sessionId = utils.getStrFromDict(sessionJson, 'id')
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(sessionJson, 'status'))
 
@@ -759,7 +759,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         cost = utils.getIntFromDict(subscriptionJson, 'cost')
-        createdAt = datetime.fromisoformat(utils.getStrFromDict(subscriptionJson, 'created_at'))
+        createdAt = utils.getDateTimeFromDict(subscriptionJson, 'created_at')
         subscriptionId = utils.getStrFromDict(subscriptionJson, 'id')
         version = utils.getStrFromDict(subscriptionJson, 'version')
         condition = await self.parseWebsocketCondition(subscriptionJson.get('condition'))

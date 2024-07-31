@@ -219,35 +219,6 @@ def getDateTimeFromDict(
 
     return value
 
-digitsAfterDecimalRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)\.\d+(.+)$', re.IGNORECASE)
-endsWithZRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)Z$', re.IGNORECASE)
-endsWithZAndPlusRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)Z\+\d{1,2}\:\d{2}$', re.IGNORECASE)
-naiveTimeZoneRegEx: Pattern = re.compile(r'^\d{4}.+T.+\:\d{1,2}\:\d{2}$', re.IGNORECASE)
-
-def getDateTimeFromStr(text: str | None) -> datetime | None:
-    if not isValidStr(text):
-        return None
-
-    digitsAfterDecimalMatch = digitsAfterDecimalRegEx.fullmatch(text)
-    if digitsAfterDecimalMatch is not None:
-        text = f'{digitsAfterDecimalMatch.group(1)}{digitsAfterDecimalMatch.group(2)}'
-
-    endsWithZMatch = endsWithZRegEx.fullmatch(text)
-    if endsWithZMatch is not None:
-        text = endsWithZMatch.group(1)
-    else:
-        endsWithZAndPlusMatch = endsWithZAndPlusRegEx.fullmatch(text)
-
-        if endsWithZAndPlusMatch is not None:
-            text = endsWithZAndPlusMatch.group(1)
-
-    if naiveTimeZoneRegEx.fullmatch(text) is not None:
-        text = f'{text}+00:00'
-
-    assert isinstance(text, str)
-
-    return datetime.fromisoformat(text)
-
 def getFloatFromDict(d: dict[str, Any] | None, key: str, fallback: float | None = None) -> float:
     if d is not None and not isinstance(d, dict):
         raise TypeError(f'd argument is malformed: \"{d}\"')

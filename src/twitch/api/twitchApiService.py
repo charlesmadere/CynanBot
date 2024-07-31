@@ -171,10 +171,10 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         endTime: datetime | None = None
         if 'end_time' in entry and utils.isValidStr(entry.get('end_time')):
-            endTime = datetime.fromisoformat(utils.getStrFromDict(entry, 'end_time'))
+            endTime = utils.getDateTimeFromDict(entry, 'end_time')
 
         return TwitchBanResponse(
-            createdAt = datetime.fromisoformat(utils.getStrFromDict(entry, 'created_at')),
+            createdAt = utils.getDateTimeFromDict(entry, 'created_at'),
             endTime = endTime,
             broadcasterUserId = utils.getStrFromDict(entry, 'broadcaster_id'),
             moderatorUserId = utils.getStrFromDict(entry, 'moderator_id'),

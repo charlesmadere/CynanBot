@@ -1,5 +1,5 @@
 import math
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import pytest
@@ -204,43 +204,32 @@ class TestUtils:
         assert result is not None
         assert len(result) == 0
 
-    def test_getDateTimeFromStr_withDateTimeString1(self):
-        result = utils.getDateTimeFromStr('2002-01-01T23:11:59')
-        assert isinstance(result, datetime)
-        assert result.year == 2002
-        assert result.month == 1
-        assert result.day == 1
-        assert result.hour == 23
-        assert result.minute == 11
-        assert result.second == 59
+    def test_getDateTimeFromDict_withEmptyDict(self):
+        d: dict[str, Any] = dict()
+        value: datetime | None = None
 
-    def test_getDateTimeFromStr_withEmptyString(self):
-        result = utils.getDateTimeFromStr('')
-        assert result is None
+        with pytest.raises(Exception):
+            value = utils.getDateTimeFromDict(d = d, key = 'hello')
 
-    def test_getDateTimeFromStr_withNone(self):
-        result = utils.getDateTimeFromStr(None)
-        assert result is None
+        assert value is None
 
-    def test_getDateTimeFromStr_withTwitchDateTimeString(self):
-        result = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z')
-        assert isinstance(result, datetime)
-        assert result.year == 2023
-        assert result.month == 10
-        assert result.day == 21
-        assert result.hour == 14
-        assert result.minute == 11
-        assert result.second == 45
+    def test_getDateTimeFromDict_withNoneDict(self):
+        d: dict[str, Any] | None = None
+        value: datetime | None = None
 
-    def test_getDateTimeFromStr_withZPlusDateTimeString(self):
-        result = utils.getDateTimeFromStr('2023-11-11T17:13:41Z+00:00')
-        assert isinstance(result, datetime)
-        assert result.year == 2023
-        assert result.month == 11
-        assert result.day == 11
-        assert result.hour == 17
-        assert result.minute == 13
-        assert result.second == 41
+        with pytest.raises(Exception):
+            value = utils.getDateTimeFromDict(d = d, key = 'hello')
+
+        assert value is None
+
+    def test_getDateTimeFromDict_withNow(self):
+        d: dict[str, Any] = dict()
+
+        now = datetime.now(timezone.utc)
+        d['hello'] = now.isoformat()
+
+        value = utils.getDateTimeFromDict(d = d, key = 'hello')
+        assert now == value
 
     def test_getFloatFromDict_withEmptyDict(self):
         d: dict[str, Any] = dict()
