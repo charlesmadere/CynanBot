@@ -144,30 +144,50 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when banning user ({banRequest=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when banning user ({banRequest=}): {e}')
 
-        if response is None:
-            self.__timber.log('TwitchApiService', f'Encountered unknown network error when banning user ({banRequest=}) ({response=})')
-            raise GenericNetworkException(f'TwitchApiService encountered unknown network error when banning user ({banRequest=}) ({response=})')
-
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
-        if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
+        if responseStatusCode == 500 and utils.isValidInt(banRequest.duration):
+            # DUMB EDGE CASE ALERT
+            # Sometimes Twitch seems to successfully time a user out, but still fails in some
+            # way internally. So the user becomes timed out, we just unfortunately don't receive
+            # a proper API response of this actually happening, and instead just receive notice
+            # that the server internally ran into an issue (error code 500). So let's make an
+            # assumption that whenever we are notified of error 500, that the timeout did
+            # actually successfully complete.
+            # DUMB EDGE CASE ALERT
+
+            self.__timber.log('TwitchApiService', f'Encountered 500 HTTP status code when timing out user; assuming a timeout successfully happened in order to recover ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+
+            # Make up this timeout's createdAt and endTime. These are just educated guesses
+            # and are probably off by a few seconds.
+            createdAt = datetime.now(self.__timeZoneRepository.getDefault()) - timedelta(seconds = 3)
+            endTime = createdAt + timedelta(seconds = banRequest.duration)
+
+            return TwitchBanResponse(
+                createdAt = createdAt,
+                endTime = endTime,
+                broadcasterUserId = banRequest.broadcasterUserId,
+                moderatorUserId = banRequest.moderatorUserId,
+                userId = banRequest.userIdToBan
+            )
+        elif responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
         elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when banning user ({banRequest=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'Recieved a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'Received a null/empty JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
         data: list[dict[str, Any]] | None = jsonResponse.get('data')
         if not isinstance(data, list) or len(data) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed \"data\" field in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'Received a null/empty \"data\" field in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
+            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed \"data\" field in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'Received a null/empty \"data\" field in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=})({jsonResponse=})')
 
-        entry: dict[str, Any] = data[0]
+        entry: dict[str, Any] | None = data[0]
         if not isinstance(entry, dict) or len(entry) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
+            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
         endTime: datetime | None = None
         if 'end_time' in entry and utils.isValidStr(entry.get('end_time')):
