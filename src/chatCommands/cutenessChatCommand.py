@@ -66,11 +66,11 @@ class CutenessChatCommand(AbsChatCommand):
             userName = utils.removePreceedingAt(splits[1])
 
         # this means that a user is querying for another user's cuteness
-        if userName.lower() != ctx.getAuthorName().lower():
+        if userName.casefold() != ctx.getAuthorName().casefold():
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find cuteness info for \"{userName}\"')
                 return
 
             result = await self.__cutenessRepository.fetchCuteness(

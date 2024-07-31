@@ -35,6 +35,7 @@ from .chatCommands.addSoundAlertCheerActionCommand import AddSoundAlertCheerActi
 from .chatCommands.addTimeoutCheerActionCommand import AddTimeoutCheerActionCommand
 from .chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
+from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from .chatCommands.answerChatCommand import AnswerChatCommand
 from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
@@ -54,7 +55,6 @@ from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatComman
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
-from .chatCommands.myAnivTimeoutsChatCommand import MyAnivTimeoutsChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
@@ -634,9 +634,9 @@ class CynanBot(
             self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchUtils, usersRepository)
 
         if anivCopyMessageTimeoutScorePresenter is None or anivCopyMessageTimeoutScoreRepository is None:
-            self.__myAnivTimeoutsCommand: AbsChatCommand = StubChatCommand()
+            self.__anivTimeoutsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__myAnivTimeoutsCommand: AbsChatCommand = MyAnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchUtils, usersRepository)
+            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsCommand = StubCommand()
@@ -1221,6 +1221,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addUserCommand.handleCommand(context)
 
+    @commands.command(name = 'anivtimeouts')
+    async def command_anivtimeouts(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__anivTimeoutsCommand.handleChatCommand(context)
+
     @commands.command(name = 'answer', aliases = [ 'ANSWER', 'Answer', 'a', 'A' ])
     async def command_answer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1345,11 +1350,6 @@ class CynanBot(
     async def command_mastodon(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__mastodonCommand.handleCommand(context)
-
-    @commands.command(name = 'myanivtimeouts')
-    async def command_myanivtimeouts(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__myAnivTimeoutsCommand.handleChatCommand(context)
 
     @commands.command(name = 'mycutenesshistory', aliases = [ 'mycuteness' ])
     async def command_mycutenesshistory(self, ctx: Context):
