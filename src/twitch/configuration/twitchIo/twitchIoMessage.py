@@ -55,16 +55,13 @@ class TwitchIoMessage(TwitchMessage):
         if twitchChannelId is not None:
             return twitchChannelId
 
-        tags: dict[Any, Any] = self.__message.tags
-        twitchChannelId = tags['room-id']
+        tags: dict[Any, Any] | Any | None = self.__message.tags
+        if not isinstance(tags, dict) or len(tags) == 0:
+            raise RuntimeError(f'Error trying to retrieve twitchChannelId ({twitchChannelId}) from tags ({tags}) ({self=})')
 
+        twitchChannelId = tags.get('room-id')
         if not utils.isValidStr(twitchChannelId):
             raise RuntimeError(f'Error trying to retrieve twitchChannelId ({twitchChannelId=}) from tags ({tags=}) ({self=})')
-
-        parentTwitchChannelId = await self.__channel.getTwitchChannelId()
-
-        if twitchChannelId != parentTwitchChannelId:
-            raise RuntimeError(f'Tags twitchChannelId ({twitchChannelId=}) is different than parentTwitchChannelId ({parentTwitchChannelId=}) ({tags=}) ({self=})')
 
         self.__twitchChannelId = twitchChannelId
         return twitchChannelId

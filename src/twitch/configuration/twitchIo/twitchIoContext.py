@@ -1,9 +1,11 @@
 from twitchio.ext.commands import Context
 
 from .twitchIoAuthor import TwitchIoAuthor
+from .twitchIoMessage import TwitchIoMessage
 from ..twitchAuthor import TwitchAuthor
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchContext import TwitchContext
+from ..twitchMessage import TwitchMessage
 from ..twitchMessageable import TwitchMessageable
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -22,7 +24,10 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
 
         self.__context: Context = context
         self.__author: TwitchAuthor = TwitchIoAuthor(context.author)
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__message: TwitchMessage = TwitchIoMessage(
+            message = context.message,
+            userIdsRepository = userIdsRepository
+        )
 
         self.__twitchChannelId: str | None = None
 
@@ -42,16 +47,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
         return self.__context.message.content
 
     async def getTwitchChannelId(self) -> str:
-        twitchChannelId = self.__twitchChannelId
-
-        if twitchChannelId is None:
-            twitchChannelId = await self.__userIdsRepository.requireUserId(
-                userName = self.getTwitchChannelName()
-            )
-
-            self.__twitchChannelId = twitchChannelId
-
-        return twitchChannelId
+        return await self.__message.getTwitchChannelId()
 
     def getTwitchChannelName(self) -> str:
         return self.__context.channel.name
