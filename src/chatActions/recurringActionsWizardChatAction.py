@@ -3,9 +3,11 @@ import traceback
 from .absChatAction import AbsChatAction
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
+from ..recurringActions.cutenessRecurringAction import CutenessRecurringAction
 from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from ..recurringActions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from ..recurringActions.wizards.cutenessStep import CutenessStep
 from ..recurringActions.wizards.cutenessWizard import CutenessWizard
 from ..recurringActions.wizards.stepResult import StepResult
 from ..recurringActions.wizards.superTriviaStep import SuperTriviaStep
@@ -43,12 +45,59 @@ class RecurringActionsWizardChatAction(AbsChatAction):
 
     async def __configureCutenessWizard(
         self,
-        content: str,
         wizard: CutenessWizard,
+        content: str,
         message: TwitchMessage
     ) -> bool:
-        # TODO
-        return False
+        channel = message.getChannel()
+        steps = wizard.getSteps()
+        step = steps.getStep()
+
+        match step:
+            case CutenessStep.MINUTES_BETWEEN:
+                try:
+                    minutesBetween = int(content)
+                    wizard.setMinutesBetween(minutesBetween)
+                except Exception as e:
+                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Cuteness wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Cuteness wizard encountered an error, please try again')
+                    await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Cuteness wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Cuteness wizard is in an invalid state, please try again')
+                await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__recurringActionsRepository.setRecurringAction(CutenessRecurringAction(
+                    enabled = True,
+                    twitchChannel = wizard.twitchChannel,
+                    twitchChannelId = wizard.twitchChannelId,
+                    minutesBetween = wizard.requireMinutesBetween()
+                ))
+
+                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Cuteness wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Super Trivia ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                self.__timber.log('RecurringActionsWizardChatAction', f'Cuteness wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Cuteness wizard is in an invalid state, please try again')
+                await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case _:
+                self.__timber.log('RecurringActionsWizardChatAction', f'Cuteness wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Cuteness wizard is in an invalid state, please try again')
+                await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
+                return True
 
     async def __configureSuperTriviaWizard(
         self,
@@ -139,8 +188,8 @@ class RecurringActionsWizardChatAction(AbsChatAction):
 
         if isinstance(wizard, CutenessWizard):
             return await self.__configureCutenessWizard(
-                content = content,
                 wizard = wizard,
+                content = content,
                 message = message
             )
         elif isinstance(wizard, SuperTriviaWizard):
