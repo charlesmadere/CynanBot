@@ -35,6 +35,10 @@ class AnivSettingsRepository(AnivSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutMaxSeconds', fallback = 1800)
 
+    async def isRandomTimeoutScalingEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'randomTimeoutScalingEnabled', fallback = True)
+
     async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:
             return self.__settingsCache

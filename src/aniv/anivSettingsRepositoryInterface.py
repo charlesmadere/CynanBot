@@ -20,3 +20,7 @@ class AnivSettingsRepositoryInterface(Clearable):
     @abstractmethod
     async def getCopyMessageTimeoutMaxSeconds(self) -> int:
         pass
+
+    @abstractmethod
+    async def isRandomTimeoutScalingEnabled(self) -> bool:
+        pass

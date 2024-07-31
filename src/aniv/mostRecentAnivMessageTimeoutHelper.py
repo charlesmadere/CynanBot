@@ -191,27 +191,23 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidInt(maxDurationSeconds):
             maxDurationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutMaxSeconds()
 
-        rangeList: list[list[float]] = [
-            [0.0, 0.2],
-            [0.2, 0.4],
-            [0.4, 0.6],
-            [0.6, 0.8],
-            [0.8, 1.0]
-        ]
+        timeoutScale: float | None
+        durationSeconds: int
 
-        randomChoices = random.choices(
-            population = rangeList,
-            weights = (70, 16, 8, 4, 2)
-        )
-
-        randomChoice = randomChoices[0]
-
-        # TODO
+        if await self.__anivSettingsRepository.isRandomTimeoutScalingEnabled():
+            minFloat = float(minDurationSeconds)
+            maxFloat = float(maxDurationSeconds)
+            timeoutScale = random.random()
+            durationSeconds = int(round(pow(timeoutScale, 9) * (maxFloat - minFloat) + minFloat))
+        else:
+            timeoutScale = None
+            durationSeconds = minDurationSeconds
 
         return AnivTimeoutData(
             randomNumber = randomNumber,
+            timeoutScale = timeoutScale,
             timeoutProbability = timeoutProbability,
-            durationSeconds = minDurationSeconds
+            durationSeconds = durationSeconds
         )
 
     async def __ripBozoInChat(
@@ -228,7 +224,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-        msg = f'@{chatterUserName} {timeoutData.durationSecondsStr}s RIPBOZO {timeoutScoreString}'
+        msg = f'@{chatterUserName} RIPBOZO {timeoutData.durationSecondsStr}s RIPBOZO {timeoutScoreString}'
 
         await self.__twitchUtils.safeSend(twitchChannel, msg)
 
