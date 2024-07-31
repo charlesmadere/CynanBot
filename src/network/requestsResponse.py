@@ -60,7 +60,7 @@ class RequestsResponse(NetworkResponse):
         return self.__response.content
 
     def __requireNotClosed(self):
-        if self.__isClosed:
+        if self.isClosed():
             raise NetworkResponseIsClosedException(f'This response has already been closed! ({self})')
 
     @property
