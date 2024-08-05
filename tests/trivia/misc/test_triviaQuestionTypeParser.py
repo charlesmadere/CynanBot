@@ -54,6 +54,26 @@ class TestTriviaQuestionTypeParser:
             assert result is TriviaQuestionType.QUESTION_ANSWER
 
     @pytest.mark.asyncio
+    async def test_parse_withRandomNoise1(self):
+        string = 'b44W5mrxgzHcLqgf'
+        result: TriviaQuestionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.parser.parse(string)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parse_withRandomNoise2(self):
+        string = 'PXZE0hfk0vFX6tBx'
+        result: TriviaQuestionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.parser.parse(string)
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parse_withTrueFalseStrings(self):
         strings: set[str] = { 'true-false', 'true_false', 'true false' }
 
