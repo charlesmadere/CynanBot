@@ -102,6 +102,13 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
 
+        allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+            category = category,
+            question = question
+        )
+
+        self.__timber.log('FuntoonTriviaQuestionRepository', f'All words found in question ({question=}) and category ({category=}) ({triviaId=}): ({allWords=})')
+
         compiledCorrectAnswers: list[str] = list()
         compiledCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
 
