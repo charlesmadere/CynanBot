@@ -217,6 +217,8 @@ from src.trivia.gameController.triviaGameGlobalControllersRepositoryInterface im
     TriviaGameGlobalControllersRepositoryInterface
 from src.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from src.trivia.games.triviaGameStore import TriviaGameStore
+from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
+from src.trivia.misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from src.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from src.trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from src.trivia.scraper.triviaScraper import TriviaScraper
@@ -877,12 +879,17 @@ triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInte
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+
+triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = TriviaQuestionTypeParser()
+
 triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
+    triviaQuestionTypeParser = triviaQuestionTypeParser,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
