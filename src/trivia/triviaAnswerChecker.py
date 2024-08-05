@@ -150,27 +150,27 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if utils.isValidStr(answer) and len(answer) > maxPhraseGuessLength:
             answer = answer[0:maxPhraseGuessLength]
 
-        cleanedAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
+        compiledUserAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
             answers = [ answer ],
             expandParentheses = False
         )
 
-        if not all(utils.isValidStr(cleanedAnswer) for cleanedAnswer in cleanedAnswers):
+        if not all(utils.isValidStr(cleanedAnswer) for cleanedAnswer in compiledUserAnswers):
             return TriviaAnswerCheckResult.INCORRECT
 
-        cleanedCorrectAnswers = triviaQuestion.cleanedCorrectAnswers
-        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({cleanedAnswers=}) ({triviaQuestion.correctAnswers=}) ({cleanedCorrectAnswers=}) ({extras=})')
+        compiledCorrectAnswers = triviaQuestion.compiledCorrectAnswers
+        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({compiledUserAnswers=}) ({triviaQuestion.correctAnswers=}) ({compiledCorrectAnswers=}) ({extras=})')
 
-        for cleanedCorrectAnswer in cleanedCorrectAnswers:
-            for cleanedAnswer in cleanedAnswers:
-                expandedGuesses = await self.__triviaAnswerCompiler.expandNumerals(cleanedAnswer)
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            for compiledUserAnswer in compiledUserAnswers:
+                expandedUserAnswers = await self.__triviaAnswerCompiler.expandNumerals(compiledUserAnswer)
 
-                for guess in expandedGuesses:
-                    if guess == cleanedCorrectAnswer:
+                for expandedUserAnswer in expandedUserAnswers:
+                    if expandedUserAnswer == compiledCorrectAnswer:
                         return TriviaAnswerCheckResult.CORRECT
 
-                    guessWords = self.__whitespacePattern.sub(' ', guess).split(' ')
-                    answerWords = self.__whitespacePattern.sub(' ', cleanedCorrectAnswer).split(' ')
+                    guessWords = self.__whitespacePattern.sub(' ', expandedUserAnswer).split(' ')
+                    answerWords = self.__whitespacePattern.sub(' ', compiledCorrectAnswer).split(' ')
                     minWords = min(len(guessWords), len(answerWords))
 
                     for gWords in self.__mergeWords(guessWords, minWords):

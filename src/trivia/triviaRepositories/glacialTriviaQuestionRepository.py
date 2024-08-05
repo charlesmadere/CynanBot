@@ -76,17 +76,17 @@ class GlacialTriviaQuestionRepository(
         self.__hasQuestionSetAvailable: bool | None = None
         self.__twitchChannelId: str | None = None
 
-    async def __buildCleanedCorrectAnswersForQuestionAnswerTrivia(
+    async def __buildCompiledCorrectAnswersForQuestionAnswerTrivia(
         self,
         correctAnswers: list[str]
     ) -> list[str]:
-        cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
+        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
-        expandedCleanedCorrectAnswers: set[str] = set()
-        for answer in cleanedCorrectAnswers:
-            expandedCleanedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for answer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
-        return list(expandedCleanedCorrectAnswers)
+        return list(expandedCompiledCorrectAnswers)
 
     async def __checkIfQuestionIsAlreadyStored(
         self,
@@ -179,7 +179,7 @@ class GlacialTriviaQuestionRepository(
             await connection.close()
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.QUESTION_ANSWER} questions in the database! ({fetchOptions=})')
             return None
- 
+
         questions = []
 
         for row in rows:
@@ -189,22 +189,23 @@ class GlacialTriviaQuestionRepository(
             question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
             triviaDifficulty = TriviaDifficulty.fromStr(row[4])
             triviaId: str = row[5]
-    
-            correctAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
+
+            originalCorrectAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
                 connection = connection,
                 triviaId = triviaId,
                 triviaType = TriviaQuestionType.QUESTION_ANSWER,
                 originalTriviaSource = originalTriviaSource
             )
 
-            cleanedCorrectAnswers = await self.__buildCleanedCorrectAnswersForQuestionAnswerTrivia(correctAnswers)
+            correctAnswers = await self.__triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+            compiledCorrectAnswers = await self.__buildCompiledCorrectAnswersForQuestionAnswerTrivia(originalCorrectAnswers)
 
             questions.append(QuestionAnswerTriviaQuestion(
+                compiledCorrectAnswers = compiledCorrectAnswers,
                 correctAnswers = correctAnswers,
-                cleanedCorrectAnswers = cleanedCorrectAnswers,
+                originalCorrectAnswers = originalCorrectAnswers,
                 category = category,
                 categoryId = categoryId,
-                originalCorrectAnswers = correctAnswers,
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
@@ -248,68 +249,72 @@ class GlacialTriviaQuestionRepository(
         triviaId: str = row[5]
         triviaType = TriviaQuestionType.fromStr(row[6])
 
-        correctAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
+        originalCorrectAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
             connection = connection,
             triviaId = triviaId,
             triviaType = triviaType,
             originalTriviaSource = originalTriviaSource,
         )
 
-        multipleChoiceResponses: list[str] | None = None
+        correctAnswers = await self.__triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
 
-        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
-                connection = connection,
-                triviaId = triviaId,
-                originalTriviaSource = originalTriviaSource
-            )
+        match triviaType:
+            case TriviaQuestionType.MULTIPLE_CHOICE:
+                multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
+                    connection = connection,
+                    triviaId = triviaId,
+                    originalTriviaSource = originalTriviaSource
+                )
 
-            await connection.close()
+                await connection.close()
 
-            return MultipleChoiceTriviaQuestion(
-                correctAnswers = correctAnswers,
-                multipleChoiceResponses = multipleChoiceResponses,
-                category = category,
-                categoryId = categoryId,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = originalTriviaSource,
-                triviaSource = self.triviaSource
-            )
-        elif triviaType is TriviaQuestionType.QUESTION_ANSWER:
-            await connection.close()
-            cleanedCorrectAnswers = await self.__buildCleanedCorrectAnswersForQuestionAnswerTrivia(correctAnswers)
+                return MultipleChoiceTriviaQuestion(
+                    correctAnswers = correctAnswers,
+                    multipleChoiceResponses = multipleChoiceResponses,
+                    category = category,
+                    categoryId = categoryId,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = originalTriviaSource,
+                    triviaSource = self.triviaSource
+                )
 
-            return QuestionAnswerTriviaQuestion(
-                correctAnswers = correctAnswers,
-                cleanedCorrectAnswers = cleanedCorrectAnswers,
-                category = category,
-                categoryId = categoryId,
-                originalCorrectAnswers = correctAnswers,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = originalTriviaSource,
-                triviaSource = self.triviaSource
-            )
-        elif triviaType is TriviaQuestionType.TRUE_FALSE:
-            await connection.close()
+            case TriviaQuestionType.QUESTION_ANSWER:
+                await connection.close()
+                compiledCorrectAnswers = await self.__buildCompiledCorrectAnswersForQuestionAnswerTrivia(originalCorrectAnswers)
 
-            return TrueFalseTriviaQuestion(
-                correctAnswer = utils.strictStrToBool(correctAnswers[0]),
-                category = category,
-                categoryId = categoryId,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = originalTriviaSource,
-                triviaSource = self.triviaSource
-            )
-        else:
-            exception = UnsupportedTriviaTypeException(f'Received an invalid trivia question type! ({triviaType=}) ({fetchOptions=}) ({row=})')
-            self.__timber.log('GlacialTriviaQuestionRepository', f'Received an invalid trivia question type when fetching a question answer trivia question ({triviaType=}) ({fetchOptions=}) ({row=}): {exception}', exception, traceback.format_exc())
-            raise exception
+                return QuestionAnswerTriviaQuestion(
+                    compiledCorrectAnswers = compiledCorrectAnswers,
+                    correctAnswers = correctAnswers,
+                    originalCorrectAnswers = originalCorrectAnswers,
+                    category = category,
+                    categoryId = categoryId,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = originalTriviaSource,
+                    triviaSource = self.triviaSource
+                )
+
+            case TriviaQuestionType.TRUE_FALSE:
+                await connection.close()
+
+                return TrueFalseTriviaQuestion(
+                    correctAnswer = utils.strictStrToBool(originalCorrectAnswers[0]),
+                    category = category,
+                    categoryId = categoryId,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = originalTriviaSource,
+                    triviaSource = self.triviaSource
+                )
+
+            case _:
+                exception = UnsupportedTriviaTypeException(f'Received an invalid trivia question type! ({triviaType=}) ({fetchOptions=}) ({row=})')
+                self.__timber.log('GlacialTriviaQuestionRepository', f'Received an invalid trivia question type when fetching a question answer trivia question ({triviaType=}) ({fetchOptions=}) ({row=}): {exception}', exception, traceback.format_exc())
+                raise exception
 
     async def __fetchMultipleChoiceOrTrueFalseTriviaQuestion(
         self,
@@ -345,51 +350,54 @@ class GlacialTriviaQuestionRepository(
         triviaId: str = row[5]
         triviaType = TriviaQuestionType.fromStr(row[6])
 
-        correctAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
+        originalCorrectAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
             connection = connection,
             triviaId = triviaId,
             triviaType = triviaType,
             originalTriviaSource = originalTriviaSource
         )
 
-        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
-                connection = connection,
-                triviaId = triviaId,
-                originalTriviaSource = originalTriviaSource
-            )
+        match triviaType:
+            case TriviaQuestionType.MULTIPLE_CHOICE:
+                multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
+                    connection = connection,
+                    triviaId = triviaId,
+                    originalTriviaSource = originalTriviaSource
+                )
 
-            await connection.close()
+                await connection.close()
 
-            return MultipleChoiceTriviaQuestion(
-                correctAnswers = correctAnswers,
-                multipleChoiceResponses = multipleChoiceResponses,
-                category = category,
-                categoryId = categoryId,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = originalTriviaSource,
-                triviaSource = self.triviaSource
-            )
-        elif triviaType is TriviaQuestionType.TRUE_FALSE:
-            await connection.close()
+                return MultipleChoiceTriviaQuestion(
+                    correctAnswers = originalCorrectAnswers,
+                    multipleChoiceResponses = multipleChoiceResponses,
+                    category = category,
+                    categoryId = categoryId,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = originalTriviaSource,
+                    triviaSource = self.triviaSource
+                )
 
-            return TrueFalseTriviaQuestion(
-                correctAnswer = utils.strictStrToBool(correctAnswers[0]),
-                category = category,
-                categoryId = categoryId,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = originalTriviaSource,
-                triviaSource = self.triviaSource
-            )
-        else:
-            await connection.close()
-            exception = UnsupportedTriviaTypeException(f'Received an invalid trivia question type! ({triviaType=}) ({fetchOptions=}) ({row=})')
-            self.__timber.log('GlacialTriviaQuestionRepository', f'Received an invalid trivia question type when fetching a multiple choice or true false trivia question ({triviaType=}) ({fetchOptions=}) ({row=}): {exception}', exception, traceback.format_exc())
-            raise exception
+            case TriviaQuestionType.TRUE_FALSE:
+                await connection.close()
+
+                return TrueFalseTriviaQuestion(
+                    correctAnswer = utils.strictStrToBool(originalCorrectAnswers[0]),
+                    category = category,
+                    categoryId = categoryId,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = originalTriviaSource,
+                    triviaSource = self.triviaSource
+                )
+
+            case _:
+                await connection.close()
+                exception = UnsupportedTriviaTypeException(f'Received an invalid trivia question type! ({triviaType=}) ({fetchOptions=}) ({row=})')
+                self.__timber.log('GlacialTriviaQuestionRepository', f'Received an invalid trivia question type when fetching a multiple choice or true false trivia question ({triviaType=}) ({fetchOptions=}) ({row=}): {exception}', exception, traceback.format_exc())
+                raise exception
 
     async def __fetchQuestionAnswerTriviaQuestion(
         self,
@@ -424,7 +432,7 @@ class GlacialTriviaQuestionRepository(
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
 
-        correctAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
+        originalCorrectAnswers = await self.__fetchTriviaQuestionCorrectAnswers(
             connection = connection,
             triviaId = triviaId,
             triviaType = TriviaQuestionType.QUESTION_ANSWER,
@@ -432,14 +440,16 @@ class GlacialTriviaQuestionRepository(
         )
 
         await connection.close()
-        cleanedCorrectAnswers = await self.__buildCleanedCorrectAnswersForQuestionAnswerTrivia(correctAnswers)
+
+        correctAnswers = await self.__triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.__buildCompiledCorrectAnswersForQuestionAnswerTrivia(originalCorrectAnswers)
 
         return QuestionAnswerTriviaQuestion(
+            compiledCorrectAnswers = compiledCorrectAnswers,
             correctAnswers = correctAnswers,
-            cleanedCorrectAnswers = cleanedCorrectAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
             category = category,
             categoryId = categoryId,
-            originalCorrectAnswers = correctAnswers,
             question = question,
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,

@@ -101,41 +101,41 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 category = category
             )
 
-        correctAnswers: list[str] = list()
-        correctAnswers.append(utils.getStrFromDict(triviaJson, 'answer').encode('latin1').decode('utf-8'))
+        originalCorrectAnswers: list[str] = list()
+        originalCorrectAnswers.append(utils.getStrFromDict(triviaJson, 'answer').encode('latin1').decode('utf-8'))
 
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
-            currentAnswers = correctAnswers,
+            currentAnswers = originalCorrectAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
             triviaSource = self.triviaSource
         ):
             self.__timber.log('JServiceTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
-        correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
+        correctAnswers = await self.__triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
 
-        cleanedCorrectAnswers: list[str] = list()
-        cleanedCorrectAnswers.append(utils.getStrFromDict(triviaJson, 'answer').encode('latin1').decode('utf-8'))
+        compiledCorrectAnswers: list[str] = list()
+        compiledCorrectAnswers.append(utils.getStrFromDict(triviaJson, 'answer').encode('latin1').decode('utf-8'))
 
         await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
-            currentAnswers = cleanedCorrectAnswers,
+            currentAnswers = compiledCorrectAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
             triviaSource = self.triviaSource
         )
 
-        cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
+        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(compiledCorrectAnswers)
 
-        expandedCleanedCorrectAnswers: set[str] = set()
-        for answer in cleanedCorrectAnswers:
-            expandedCleanedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for answer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
         return QuestionAnswerTriviaQuestion(
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
-            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            originalCorrectAnswers = correctAnswers,
             category = category,
             categoryId = None,
-            originalCorrectAnswers = correctAnswers,
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,

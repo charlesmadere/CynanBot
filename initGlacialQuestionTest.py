@@ -212,14 +212,14 @@ if questions is not None:
         questionWords = question.question.split(' ')
         optionals = []
         for questionWord in questionWords:
-            for questionAnswer in question.cleanedCorrectAnswers:
+            for questionAnswer in question.compiledCorrectAnswers:
                 for splitQuestionAnswer in questionAnswer.split(' '):
                     if questionWord.capitalize() == splitQuestionAnswer.capitalize():
                         if splitQuestionAnswer not in optionals:
                             optionals.append(splitQuestionAnswer)
 
         if len(optionals) > 0:
-            row = [question.question, ', '.join(question.cleanedCorrectAnswers), ', '.join(optionals), question.triviaType.name]
+            row = [question.question, ', '.join(question.compiledCorrectAnswers), ', '.join(optionals), question.triviaType.name]
             table.add_row(*row, style='bright_green')
 
 console = Console()

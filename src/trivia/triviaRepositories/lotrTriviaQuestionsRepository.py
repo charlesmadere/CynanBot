@@ -82,20 +82,18 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('LotrTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
+        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
-        cleanedCorrectAnswers: list[str] = list()
-        cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
-
-        expandedCorrectAnswers: set[str] = set()
-        for answer in cleanedCorrectAnswers:
-            expandedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for answer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
         return QuestionAnswerTriviaQuestion(
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
-            cleanedCorrectAnswers = list(expandedCorrectAnswers),
+            originalCorrectAnswers = originalCorrectAnswers,
             category = 'Lord of the Rings',
             categoryId = None,
-            originalCorrectAnswers = originalCorrectAnswers,
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,

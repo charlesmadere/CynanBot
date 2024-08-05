@@ -358,16 +358,18 @@ async def main():
 
     await asyncio.sleep(1)
 
-    correctAnswers = await triviaQuestionCompiler.compileResponses([ '$1000000000.559 USD' ])
-    cleanedCorrectAnswers = await triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
+    originalCorrectAnswers: list[str] = [ '$1000000000.559 USD' ]
+    correctAnswers = await triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+    compiledCorrectAnswers = await triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
-    expandedCleanedCorrectAnswers: set[str] = set()
-    for answer in cleanedCorrectAnswers:
-        expandedCleanedCorrectAnswers.update(await triviaAnswerCompiler.expandNumerals(answer))
+    expandedCompiledCorrectAnswers: set[str] = set()
+    for answer in compiledCorrectAnswers:
+        expandedCompiledCorrectAnswers.update(await triviaAnswerCompiler.expandNumerals(answer))
 
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
         correctAnswers = correctAnswers,
-        cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+        originalCorrectAnswers = originalCorrectAnswers,
         category = 'Test Category',
         categoryId = None,
         question = 'In what decade did that one thing happen?',

@@ -28,12 +28,12 @@ class TestTriviaQuestionPresenter:
     )
 
     questionAnswerQuestion1: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        compiledCorrectAnswers = [ 'mercury' ],
         correctAnswers = [ 'Mercury' ],
-        cleanedCorrectAnswers = [ 'mercury' ],
+        originalCorrectAnswers = [ 'Mercury' ],
         category = None,
         categoryId = None,
         question = 'This planet is the closest to the sun.',
-        originalCorrectAnswers = [ 'Mercury' ],
         triviaId = 'abc123',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
         originalTriviaSource = None,

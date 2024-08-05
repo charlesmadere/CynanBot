@@ -4,7 +4,9 @@ from typing import Any
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (BadTriviaDifficultyException,
+from ..triviaExceptions import (BadTriviaCategoryException,
+                                BadTriviaCategoryIdException,
+                                BadTriviaDifficultyException,
                                 BadTriviaIdException,
                                 BadTriviaSourceException,
                                 NoTriviaQuestionException)
@@ -23,7 +25,11 @@ class AbsTriviaQuestion(ABC):
         originalTriviaSource: TriviaSource | None,
         triviaSource: TriviaSource
     ):
-        if not utils.isValidStr(question):
+        if category is not None and not isinstance(category, str):
+            raise BadTriviaCategoryException(f'category argument is malformed: \"{category}\"')
+        elif categoryId is not None and not isinstance(categoryId, str):
+            raise BadTriviaCategoryIdException(f'categoryId argument is malformed: \"{categoryId}\"')
+        elif not utils.isValidStr(question):
             raise NoTriviaQuestionException(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidStr(triviaId):
             raise BadTriviaIdException(f'triviaId argument is malformed: \"{triviaId}\"')

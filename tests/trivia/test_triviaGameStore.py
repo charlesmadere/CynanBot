@@ -58,11 +58,11 @@ class TriviaGameStoreTests:
     )
 
     superQuestion1: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        compiledCorrectAnswers = [ 'chicago bullies' ],
         correctAnswers = [ 'Chicago Bullies' ],
-        cleanedCorrectAnswers = [ 'chicago bullies' ],
+        originalCorrectAnswers = [ 'Chicago Bullies' ],
         category = None,
         categoryId = None,
-        originalCorrectAnswers = [ 'Chicago Bullies' ],
         question = 'One of this team\'s members is stashiocat.',
         triviaId = 'ghi789',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
@@ -71,11 +71,11 @@ class TriviaGameStoreTests:
     )
 
     superQuestion2: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        compiledCorrectAnswers = [ 'stashiocat' ],
         correctAnswers = [ 'stashiocat' ],
-        cleanedCorrectAnswers = [ 'stashiocat' ],
+        originalCorrectAnswers = [ 'stashiocat' ],
         category = None,
         categoryId = None,
-        originalCorrectAnswers = [ 'stashiocat' ],
         question = 'This player forgot to fight Phantoon in a randomizer match.',
         triviaId = 'jkl012',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,

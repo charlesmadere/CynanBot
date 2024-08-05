@@ -4,9 +4,7 @@ from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (BadTriviaAnswerAddendumException,
-                                BadTriviaOriginalCorrectAnswersException,
-                                NoTriviaCorrectAnswersException)
+from ..triviaExceptions import BadTriviaOriginalCorrectAnswersException, NoTriviaCorrectAnswersException
 from ...misc import utils as utils
 
 
@@ -14,17 +12,16 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
 
     def __init__(
         self,
+        compiledCorrectAnswers: list[str],
         correctAnswers: list[str],
-        cleanedCorrectAnswers: list[str],
+        originalCorrectAnswers: list[str],
         category: str | None,
         categoryId: str | None,
         question: str,
-        originalCorrectAnswers: list[str],
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource,
-        answerAddendum: str | None = None
+        triviaSource: TriviaSource
     ):
         super().__init__(
             category = category,
@@ -36,27 +33,20 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             originalTriviaSource = originalTriviaSource
         )
 
-        if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
+        if not isinstance(compiledCorrectAnswers, list) or len(compiledCorrectAnswers) == 0:
+            raise NoTriviaCorrectAnswersException(f'compiledCorrectAnswers argument is malformed: \"{compiledCorrectAnswers}\"')
+        elif not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not isinstance(cleanedCorrectAnswers, list) or len(cleanedCorrectAnswers) == 0:
-            raise NoTriviaCorrectAnswersException(f'cleanedCorrectAnswers argument is malformed: \"{cleanedCorrectAnswers}\"')
         elif not isinstance(originalCorrectAnswers, list) or len(originalCorrectAnswers) == 0:
             raise BadTriviaOriginalCorrectAnswersException(f'originalCorrectAnswers argument is malformed: \"{originalCorrectAnswers}\"')
-        elif answerAddendum is not None and not isinstance(answerAddendum, str):
-            raise BadTriviaAnswerAddendumException(f'answerAddendum argument is malformed: \"{answerAddendum}\"')
 
+        self.__compiledCorrectAnswers: list[str] = compiledCorrectAnswers
         self.__correctAnswers: list[str] = correctAnswers
-        self.__cleanedCorrectAnswers: list[str] = cleanedCorrectAnswers
         self.__originalCorrectAnswers: list[str] = originalCorrectAnswers
-        self.__answerAddendum: str | None = answerAddendum
 
     @property
-    def answerAddendum(self) -> str | None:
-        return self.__answerAddendum
-
-    @property
-    def cleanedCorrectAnswers(self) -> list[str]:
-        return utils.copyList(self.__cleanedCorrectAnswers)
+    def compiledCorrectAnswers(self) -> list[str]:
+        return utils.copyList(self.__compiledCorrectAnswers)
 
     @property
     def correctAnswers(self) -> list[str]:
@@ -74,12 +64,11 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         return {
             'category': self.category,
             'categoryId': self.categoryId,
-            'cleanedCorrectAnswers': self.cleanedCorrectAnswers,
-            'correctAnswers': self.correctAnswers,
-            'originalCorrectAnswers': self.originalCorrectAnswers,
+            'compiled': self.__compiledCorrectAnswers,
+            'correctAnswers': self.__correctAnswers,
+            'originalCorrectAnswers': self.__originalCorrectAnswers,
             'originalTriviaSource': self.originalTriviaSource,
             'question': self.question,
-            'responses': self.responses,
             'triviaDifficulty': self.triviaDifficulty,
             'triviaId': self.triviaId,
             'triviaSource': self.triviaSource,

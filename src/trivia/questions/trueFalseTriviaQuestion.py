@@ -52,7 +52,7 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
         return {
             'category': self.category,
             'categoryId': self.categoryId,
-            'correctAnswer': self.correctAnswer,
+            'correctAnswer': self.__correctAnswer,
             'correctAnswers': self.correctAnswers,
             'originalTriviaSource': self.originalTriviaSource,
             'question': self.question,

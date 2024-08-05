@@ -28,36 +28,6 @@ class TestTriviaAnswerCompiler:
     )
 
     @pytest.mark.asyncio
-    async def test_findQuestionBasedAnswerAddendum_withEmptyString(self):
-        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('')
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_findQuestionBasedAnswerAddendum_withTheseFoodsString(self):
-        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('these foods')
-        assert result == 'foods'
-
-    @pytest.mark.asyncio
-    async def test_findQuestionBasedAnswerAddendum_withThisKindOfBrickString(self):
-        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('this kind of brick')
-        assert result == 'brick'
-
-    @pytest.mark.asyncio
-    async def test_findQuestionBasedAnswerAddendum_withThisTypeOfLanguageString(self):
-        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('this type of language')
-        assert result == 'language'
-
-    @pytest.mark.asyncio
-    async def test_findQuestionBasedAnswerAddendum_withThisNintendoString(self):
-        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum('this nintendo')
-        assert result == 'nintendo'
-
-    @pytest.mark.asyncio
-    async def test_findQuestionBasedAnswerAddendum_withWhitespaceString(self):
-        result = await self.triviaAnswerCompiler.findQuestionBasedAnswerAddendum(' ')
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_compileBoolAnswer_withEmptyString(self):
         result: bool | None = None
 
@@ -380,68 +350,6 @@ class TestTriviaAnswerCompiler:
     async def test_compileTextAnswer_with6MonthsOld(self):
         result = await self.triviaAnswerCompiler.compileTextAnswer('6 months old')
         assert result == '6 months old'
-
-    @pytest.mark.asyncio
-    async def test_compileTextAnswersList_withAnswerAddendumDisabled_AppalachianMountain(self):
-        self.triviaSettingsJson['answer_addendum_enabled'] = False
-        await self.triviaSettingsRepository.clearCaches()
-
-        result = await self.triviaAnswerCompiler.compileTextAnswersList(
-            answers = [ 'appalachian' ],
-            answerAddendum = 'mountain'
-        )
-
-        assert isinstance(result, list)
-        assert len(result) == 1
-        assert 'appalachian' in result
-
-    @pytest.mark.asyncio
-    async def test_compileTextAnswersList_withAnswerAddendumEnabled_AppalachianMountain(self):
-        self.triviaSettingsJson['answer_addendum_enabled'] = True
-        await self.triviaSettingsRepository.clearCaches()
-
-        result = await self.triviaAnswerCompiler.compileTextAnswersList(
-            answers = [ 'appalachian' ],
-            answerAddendum = 'mountain'
-        )
-
-        assert isinstance(result, list)
-        assert len(result) == 4
-        assert 'appalachian' in result
-        assert 'mountain appalachian' in result
-        assert 'appalachian mountain' in result
-        assert 'mountain appalachian mountain' in result
-
-    @pytest.mark.asyncio
-    async def test_compileTextAnswersList_withAnswerAddendumDisabled_LakeErie(self):
-        self.triviaSettingsJson['answer_addendum_enabled'] = False
-        await self.triviaSettingsRepository.clearCaches()
-
-        result = await self.triviaAnswerCompiler.compileTextAnswersList(
-            answers = [ 'erie' ],
-            answerAddendum = 'lake'
-        )
-
-        assert isinstance(result, list)
-        assert len(result) == 1
-        assert 'erie' in result
-
-    @pytest.mark.asyncio
-    async def test_compileTextAnswersList_withAnswerAddendumEnabled_LakeErie(self):
-        self.triviaSettingsJson['answer_addendum_enabled'] = True
-        await self.triviaSettingsRepository.clearCaches()
-
-        result = await self.triviaAnswerCompiler.compileTextAnswersList(
-            answers = [ 'erie' ],
-            answerAddendum = 'lake'
-        )
-
-        assert isinstance(result, list)
-        assert len(result) == 4
-        assert 'erie' in result
-        assert 'lake erie' in result
-        assert 'erie lake' in result
-        assert 'lake erie lake' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withDuplicateWords(self):

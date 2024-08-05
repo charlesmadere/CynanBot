@@ -102,44 +102,36 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
 
-        cleanedCorrectAnswers: list[str] = list()
-        cleanedCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
+        compiledCorrectAnswers: list[str] = list()
+        compiledCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
 
         await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
-            currentAnswers = cleanedCorrectAnswers,
+            currentAnswers = compiledCorrectAnswers,
             triviaId = triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
             triviaSource = self.triviaSource
         )
 
-        answerAddendum = await self.__triviaAnswerCompiler.findQuestionBasedAnswerAddendum(
-            questionText = question
-        )
+        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(compiledCorrectAnswers)
 
-        cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
-            answers = cleanedCorrectAnswers,
-            answerAddendum = answerAddendum
-        )
-
-        expandedCleanedCorrectAnswers: set[str] = set()
-        for answer in cleanedCorrectAnswers:
-            expandedCleanedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for answer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
         # TODO In the future, we will also check some additional fields (`formatted_answer` and
         # `format_type`). These will assist in providing computer-readable answer logic.
 
         return QuestionAnswerTriviaQuestion(
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
-            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            originalCorrectAnswers = originalCorrectAnswers,
             category = category,
             categoryId = categoryId,
-            originalCorrectAnswers = originalCorrectAnswers,
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.triviaSource,
-            answerAddendum = answerAddendum
+            triviaSource = self.triviaSource
         )
 
     async def hasQuestionSetAvailable(self) -> bool:

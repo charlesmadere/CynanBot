@@ -4,8 +4,7 @@ from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import (NoTriviaCorrectAnswersException,
-                                NoTriviaMultipleChoiceResponsesException)
+from ..triviaExceptions import NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException
 from ...misc import utils as utils
 
 
@@ -68,11 +67,11 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         return {
             'category': self.category,
             'categoryId': self.categoryId,
-            'correctAnswers': self.correctAnswers,
+            'correctAnswers': self.__correctAnswers,
             'indexesWithCorrectAnswers': self.indexesWithCorrectAnswers,
             'originalTriviaSource': self.originalTriviaSource,
             'question': self.question,
-            'responses': self.responses,
+            'responses': self.__multipleChoiceResponses,
             'responseCount': self.responseCount,
             'triviaDifficulty': self.triviaDifficulty,
             'triviaId': self.triviaId,

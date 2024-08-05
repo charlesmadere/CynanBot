@@ -62,46 +62,45 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         category = await self.__triviaQuestionCompiler.compileCategory(utils.getStrFromDict(triviaDict, 'category', fallback = ''))
         question = await self.__triviaQuestionCompiler.compileQuestion(utils.getStrFromDict(triviaDict, 'question'))
 
-        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
-                response = utils.getStrFromDict(triviaDict, 'correctAnswer')
-            )
-            correctAnswerStrings: list[str] = list()
-            correctAnswerStrings.append(correctAnswer)
+        match triviaType:
+            case TriviaQuestionType.MULTIPLE_CHOICE:
+                originalCorrectAnswers: list[str] = [ utils.getStrFromDict(triviaDict, 'correctAnswer') ]
+                correctAnswers = await self.__triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+                wrongAnswers = await self.__triviaQuestionCompiler.compileResponses(triviaDict['wrongAnswers'])
 
-            wrongAnswers = await self.__triviaQuestionCompiler.compileResponses(triviaDict['wrongAnswers'])
+                multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
+                    correctAnswers = correctAnswers,
+                    multipleChoiceResponses = wrongAnswers
+                )
 
-            multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswerStrings,
-                multipleChoiceResponses = wrongAnswers
-            )
+                return MultipleChoiceTriviaQuestion(
+                    correctAnswers = correctAnswers,
+                    multipleChoiceResponses = multipleChoiceResponses,
+                    category = category,
+                    categoryId = None,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = None,
+                    triviaSource = self.triviaSource
+                )
 
-            return MultipleChoiceTriviaQuestion(
-                correctAnswers = correctAnswerStrings,
-                multipleChoiceResponses = multipleChoiceResponses,
-                category = category,
-                categoryId = None,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = None,
-                triviaSource = self.triviaSource
-            )
-        elif triviaType is TriviaQuestionType.TRUE_FALSE:
-            correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
+            case TriviaQuestionType.TRUE_FALSE:
+                correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
 
-            return TrueFalseTriviaQuestion(
-                correctAnswer = correctAnswer,
-                category = category,
-                categoryId = None,
-                question = question,
-                triviaId = triviaId,
-                triviaDifficulty = triviaDifficulty,
-                originalTriviaSource = None,
-                triviaSource = self.triviaSource
-            )
+                return TrueFalseTriviaQuestion(
+                    correctAnswer = correctAnswer,
+                    category = category,
+                    categoryId = None,
+                    question = question,
+                    triviaId = triviaId,
+                    triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = None,
+                    triviaSource = self.triviaSource
+                )
 
-        raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Trivia Database: {triviaDict}')
+            case _:
+                raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Trivia Database: {triviaDict}')
 
     async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):

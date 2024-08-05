@@ -4,7 +4,6 @@ import unicodedata
 from typing import Collection, Pattern
 
 import roman
-from frozenlist import FrozenList
 from num2words import num2words
 from roman import RomanError
 
@@ -77,15 +76,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         self.__combiningDiacriticsRegEx: Pattern = re.compile(r'[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]')
 
-        # RegEx patterns for "this <x>" formatted questions
-        self.__answerAddendumRegExes: FrozenList[Pattern] = FrozenList([
-            re.compile(r'\s*this\s+kind\s+of\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE),
-            re.compile(r'\s*this\s+type\s+of\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE),
-            re.compile(r'\s*this\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE),
-            re.compile(r'\s*these\s+([a-z]{3,})\s*([,.!?])?', re.IGNORECASE)
-        ])
-        self.__answerAddendumRegExes.freeze()
-
         self.__specialCharsRegEx: Pattern = re.compile(
             r"""
                 (?P<a>[ÅåǺǻḀḁẚĂăẶặẮắẰằẲẳẴẵȂȃâẬậẤấẦầẪẫẨẩẢảǍǎȺⱥȦȧǠǡẠạÄäǞǟÀàȀȁÁáĀāÃãĄąᶏɑᶐⱯɐɒᴀᴬᵃᵄᶛₐªÅ∀@₳ΑαАаⲀⲁⒶⓐ⒜🅰𝔄𝔞𝕬𝖆𝓐𝓪𝒜𝒶𝔸𝕒Ａａ🄰ค𝐀𝐚𝗔𝗮𝘈𝘢𝘼𝙖𝙰𝚊Λ卂ﾑȺᗩΔልДдꚈꚉꚀꚁꙢꙣꭿꋫλ🅐🅰️ꙢꙣꙘѦԬꙙѧԭӒӓҨҩ])|
@@ -117,26 +107,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             """,
             re.VERBOSE | re.IGNORECASE
         )
-
-    async def findQuestionBasedAnswerAddendum(self, questionText: str) -> str | None:
-        if not isinstance(questionText, str):
-            raise TypeError(f'questionText argument is malformed: \"{questionText}\"')
-
-        for answerAddendumRegEx in self.__answerAddendumRegExes:
-            match = answerAddendumRegEx.match(questionText)
-
-            if match is None:
-                continue
-
-            answerAddendum = utils.cleanStr(match.group(1))
-
-            if not utils.isValidStr(answerAddendum):
-                continue
-
-            self.__timber.log('TriviaAnswerCompiler', f'Found answer addendum within question text ({answerAddendum=}) ({questionText=})')
-            return answerAddendum
-
-        return None
 
     async def compileBoolAnswer(self, answer: str | None) -> bool:
         if answer is not None and not isinstance(answer, str):
@@ -209,21 +179,17 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     async def compileTextAnswersList(
         self,
         answers: Collection[str | None] | None,
-        expandParentheses: bool = True,
-        answerAddendum: str | None = None
+        expandParentheses: bool = True
     ) -> list[str]:
         if answers is not None and not isinstance(answers, Collection):
             raise TypeError(f'answers argument is malformed: \"{answers}\"')
         elif not utils.isValidBool(expandParentheses):
             raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
-        elif answerAddendum is not None and not isinstance(answerAddendum, str):
-            raise TypeError(f'answerAddendum argument is malformed: \"{answerAddendum}\"')
 
         if answers is None or len(answers) == 0:
             return list()
 
-        cleanedAnswers: set[str] = set()
-        answerAddendumEnabled = await self.__triviaSettingsRepository.isAnswerAddendumEnabled()
+        compiledAnswers: set[str] = set()
 
         for answer in answers:
             if not utils.isValidStr(answer):
@@ -232,19 +198,16 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             cases = await self.__expandSpecialCases(answer)
 
             for case in cases:
-                if answerAddendumEnabled and utils.isValidStr(answerAddendum):
-                    case = f'({answerAddendum}) {case} ({answerAddendum})'
-
                 if expandParentheses:
                     possibilities = await self.__getParentheticalPossibilities(case)
                 else:
                     possibilities = [ case ]
 
                 for possibility in possibilities:
-                    cleanedAnswer = await self.compileTextAnswer(possibility)
-                    cleanedAnswers.add(self.__whiteSpaceRegEx.sub(' ', cleanedAnswer).strip())
+                    compiledAnswer = await self.compileTextAnswer(possibility)
+                    compiledAnswers.add(self.__whiteSpaceRegEx.sub(' ', compiledAnswer).strip())
 
-        return list(answer for answer in cleanedAnswers if utils.isValidStr(answer))
+        return list(answer for answer in compiledAnswers if utils.isValidStr(answer))
 
     # returns text answers with all arabic and roman numerals expanded into possible full-word forms
     async def expandNumerals(self, answer: str) -> list[str]:

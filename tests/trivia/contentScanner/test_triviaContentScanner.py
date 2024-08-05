@@ -105,16 +105,16 @@ class TestTriviaContentScanner:
         correctAnswers: list[str] = list()
         correctAnswers.append('a trumpet')
 
-        cleanedCorrectAnswers: list[str] = list()
-        cleanedCorrectAnswers.append('trumpet')
+        compiledCorrectAnswers: list[str] = list()
+        compiledCorrectAnswers.append('trumpet')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            compiledCorrectAnswers = compiledCorrectAnswers,
             correctAnswers = correctAnswers,
-            cleanedCorrectAnswers = cleanedCorrectAnswers,
+            originalCorrectAnswers = correctAnswers,
             category = 'Politics',
             categoryId = None,
-            originalCorrectAnswers = correctAnswers,
-            question = 'This instrument is made from brass.', 
+            question = 'This instrument is made from brass.',
             triviaId = 'asdfasdfasdf',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -194,15 +194,15 @@ class TestTriviaContentScanner:
         correctAnswers: list[str] = list()
         correctAnswers.append('(King) James')
 
-        cleanedCorrectAnswers: list[str] = list()
-        cleanedCorrectAnswers.append('(King) James')
+        compiledCorrectAnswers: list[str] = list()
+        compiledCorrectAnswers.append('(King) James')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            compiledCorrectAnswers = compiledCorrectAnswers,
             correctAnswers = correctAnswers,
-            cleanedCorrectAnswers = cleanedCorrectAnswers,
+            originalCorrectAnswers = correctAnswers,
             category = 'The Dark Ages',
             categoryId = None,
-            originalCorrectAnswers = correctAnswers,
             question = 'Who was a king from way back?',
             triviaId = 'azerty',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,

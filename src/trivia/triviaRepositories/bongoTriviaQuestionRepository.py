@@ -101,12 +101,11 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
 
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
-                response = utils.getStrFromDict(triviaJson, 'correct_answer'),
+            originalCorrectAnswers: list[str] = [ utils.getStrFromDict(triviaJson, 'correct_answer') ]
+            correctAnswers = await self.__triviaQuestionCompiler.compileResponses(
+                responses = originalCorrectAnswers,
                 htmlUnescape = True
             )
-            correctAnswerStrings: list[str] = list()
-            correctAnswerStrings.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
                 responses = triviaJson['incorrect_answers'],
@@ -114,16 +113,16 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswerStrings,
+                correctAnswers = correctAnswers,
                 multipleChoiceResponses = incorrectAnswers
             )
 
             if await self._verifyIsActuallyMultipleChoiceQuestion(
-                correctAnswers = correctAnswerStrings,
+                correctAnswers = correctAnswers,
                 multipleChoiceResponses = multipleChoiceResponses
             ):
                 return MultipleChoiceTriviaQuestion(
-                    correctAnswers = correctAnswerStrings,
+                    correctAnswers = correctAnswers,
                     multipleChoiceResponses = multipleChoiceResponses,
                     category = category,
                     categoryId = None,

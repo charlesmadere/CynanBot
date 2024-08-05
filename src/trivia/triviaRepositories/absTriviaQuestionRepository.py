@@ -1,6 +1,5 @@
 from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
-from ..triviaExceptions import (NoTriviaCorrectAnswersException,
-                                NoTriviaMultipleChoiceResponsesException)
+from ..triviaExceptions import NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 
@@ -21,9 +20,9 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
         correctAnswers: list[str],
         multipleChoiceResponses: list[str]
     ) -> list[str]:
-        if not utils.hasItems(correctAnswers):
+        if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.hasItems(multipleChoiceResponses):
+        elif not isinstance(multipleChoiceResponses, list) or len(multipleChoiceResponses) == 0:
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         filteredMultipleChoiceResponses: list[str] = utils.copyList(correctAnswers)
@@ -53,13 +52,13 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
                 if len(filteredMultipleChoiceResponses) >= maxMultipleChoiceResponses:
                     break
 
-        if not utils.hasItems(filteredMultipleChoiceResponses):
+        if len(filteredMultipleChoiceResponses) == 0:
             return filteredMultipleChoiceResponses
 
         if utils.areAllStrsInts(filteredMultipleChoiceResponses):
             filteredMultipleChoiceResponses.sort(key = lambda response: int(response))
         else:
-            filteredMultipleChoiceResponses.sort(key = lambda response: response.lower())
+            filteredMultipleChoiceResponses.sort(key = lambda response: response.casefold())
 
         return filteredMultipleChoiceResponses
 
@@ -68,13 +67,13 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
         correctAnswers: list[str],
         multipleChoiceResponses: list[str]
     ) -> bool:
-        if not utils.hasItems(correctAnswers):
+        if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.hasItems(multipleChoiceResponses):
+        elif not isinstance(multipleChoiceResponses, list) or len(multipleChoiceResponses) == 0:
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         for correctAnswer in correctAnswers:
-            if correctAnswer.lower() != str(True).lower() and correctAnswer.lower() != str(False).lower():
+            if correctAnswer.casefold() != str(True).casefold() and correctAnswer.casefold() != str(False).casefold():
                 return True
 
         if len(multipleChoiceResponses) != 2:
@@ -84,9 +83,11 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
         containsFalse = False
 
         for response in multipleChoiceResponses:
-            if response.lower() == str(True).lower():
+            if response.casefold() == str(True).casefold():
                 containsTrue = True
-            elif response.lower() == str(False).lower():
+            elif response.casefold() == str(False).casefold():
                 containsFalse = True
+            else:
+                break
 
         return not containsTrue or not containsFalse

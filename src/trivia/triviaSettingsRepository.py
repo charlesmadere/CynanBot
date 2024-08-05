@@ -161,10 +161,6 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'trivia_source_instability_threshold', 3)
 
-    async def isAnswerAddendumEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'answer_addendum_enabled', False)
-
     async def isBanListEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'is_ban_list_enabled', True)
