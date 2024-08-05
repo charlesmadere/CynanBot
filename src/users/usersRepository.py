@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import tzinfo
-from typing import Any
+from typing import Any, Collection
 
 import aiofiles
 import aiofiles.ospath
@@ -389,11 +389,11 @@ class UsersRepository(UsersRepositoryInterface):
         jsonContents = await self.__readJsonAsync()
         return self.__findAndCreateUser(handle, jsonContents)
 
-    def getUsers(self) -> list[User]:
+    def getUsers(self) -> Collection[User]:
         jsonContents = self.__readJson()
         return self.__createUsers(jsonContents)
 
-    async def getUsersAsync(self) -> list[User]:
+    async def getUsersAsync(self) -> Collection[User]:
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
 

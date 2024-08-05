@@ -1,6 +1,5 @@
 from abc import abstractmethod
-from collections.abc import Sequence
-from typing import Any
+from typing import Any, Collection
 
 from .userInterface import UserInterface
 from .userJsonConstant import UserJsonConstant
@@ -30,11 +29,11 @@ class UsersRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    def getUsers(self) -> Sequence[UserInterface]:
+    def getUsers(self) -> Collection[UserInterface]:
         pass
 
     @abstractmethod
-    async def getUsersAsync(self) -> Sequence[UserInterface]:
+    async def getUsersAsync(self) -> Collection[UserInterface]:
         pass
 
     @abstractmethod
