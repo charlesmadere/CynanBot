@@ -35,3 +35,11 @@ class TriviaQuestionCompilerInterface(ABC):
         htmlUnescape: bool = False
     ) -> list[str]:
         pass
+
+    @abstractmethod
+    async def findAllWordsInQuestion(
+        self,
+        category: str | None,
+        question: str
+    ) -> frozenset[str]:
+        pass

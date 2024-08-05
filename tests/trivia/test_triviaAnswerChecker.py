@@ -1157,6 +1157,30 @@ class TestTriviaAnswerChecker:
         result = await self.triviaAnswerChecker.checkAnswer('wally world', question)
         assert result is TriviaAnswerCheckResult.INCORRECT
 
+    @pytest.mark.asyncio
+    async def test_findWords_with_categoryHelloWorld_questionHelloWorld(self):
+        result = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = 'hello world',
+            question = 'Hello, World!'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 2
+        assert 'hello' in result
+        assert 'world' in result
+
+    @pytest.mark.asyncio
+    async def test_findWords_with_categoryNone_questionHelloWorld(self):
+        result = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = None,
+            question = 'Hello, World!'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 2
+        assert 'hello' in result
+        assert 'world' in result
+
     def test_sanity(self):
         assert self.triviaAnswerChecker is not None
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerCheckerInterface)

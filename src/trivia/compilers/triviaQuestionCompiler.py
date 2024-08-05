@@ -23,6 +23,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         self.__timber: TimberInterface = timber
 
         self.__ellipsisRegEx: Pattern = re.compile(r'(\.){3,}', re.IGNORECASE)
+        self.__findWordsRegEx: Pattern = re.compile(r'[\w|-]{2,}', re.IGNORECASE)
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
         self.__tagRemovalRegEx: Pattern = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
         self.__underscoreRegEx: Pattern = re.compile(r'_{2,}', re.IGNORECASE)
@@ -149,3 +150,41 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
             return text
         else:
             return ''
+
+    async def findAllWordsInQuestion(
+        self,
+        category: str | None,
+        question: str
+    ) -> frozenset[str]:
+        if category is not None and not isinstance(category, str):
+            raise TypeError(f'category argument is malformed: \"{category}\"')
+        elif not utils.isValidStr(question):
+            raise TypeError(f'question argument is malformed: \"{question}\"')
+
+        allWords: set[str] = set()
+        await self.__findAndAddWords(allWords, category)
+        await self.__findAndAddWords(allWords, question)
+
+        return frozenset(allWords)
+
+    async def __findAndAddWords(
+        self,
+        allWords: set[str],
+        string: str | None
+    ):
+        if not isinstance(allWords, set):
+            raise TypeError(f'allWords argument is malformed: \"{allWords}\"')
+        elif string is not None and not isinstance(string, str):
+            raise TypeError(f'string argument is malformed: \"{string}\"')
+
+        if not utils.isValidStr(string):
+            return
+
+        foundWords = self.__findWordsRegEx.findall(string)
+
+        if foundWords is None or len(foundWords) == 0:
+            return
+
+        for foundWord in foundWords:
+            if utils.isValidStr(foundWord):
+                allWords.add(foundWord.casefold())
