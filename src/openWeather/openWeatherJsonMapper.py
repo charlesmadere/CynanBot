@@ -200,7 +200,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
                 description = await self.parseMomentDescription(descriptionEntryJson)
 
                 if description is None:
-                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"weather\" data: ({jsonContents=})')
+                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"weather\" field in JSON data: ({jsonContents=})')
                 else:
                     descriptions.append(description)
 

@@ -52,7 +52,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
                 url = f'http://api.openweathermap.org/data/2.5/air_pollution?appid={openWeatherApiKey}&lat={location.latitude}&lon={location.longitude}'
             )
         except GenericNetworkException as e:
-            self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
+            self.__timber.log('OpenWeatherApiService', f'Encountered network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'OpenWeatherApiService encountered network error when fetching weather ({location=}): {e}')
 
         responseStatusCode = response.statusCode
