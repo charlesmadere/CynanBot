@@ -106,7 +106,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
         # TODO In the future, we will also check some additional fields (`formatted_answer` and
-        # `format_type`). These will assist in providing computer-readable answer logic.
+        #  `format_type`). These will assist in providing computer-readable answer logic.
 
         return QuestionAnswerTriviaQuestion(
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
