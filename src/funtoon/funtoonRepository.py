@@ -2,6 +2,7 @@ import traceback
 from typing import Any
 
 from .exceptions import NoFuntoonTokenException
+from .funtoonApiServiceInterface import FuntoonApiServiceInterface
 from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from .funtoonPkmnCatchType import FuntoonPkmnCatchType
 from .funtoonRepositoryInterface import FuntoonRepositoryInterface
@@ -16,15 +17,18 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
     def __init__(
         self,
+        funtoonApiService: FuntoonApiServiceInterface,
         funtoonJsonMapper: FuntoonJsonMapperInterface,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
         funtoonApiUrl: str = 'https://funtoon.party/api'
     ):
-        if not isinstance(funtoonJsonMapper, FuntoonJsonMapperInterface):
+        if not isinstance(funtoonApiService, FuntoonApiServiceInterface):
+            raise TypeError(f'funtoonApiService argument is malformed: \"{funtoonApiService}\"')
+        elif not isinstance(funtoonJsonMapper, FuntoonJsonMapperInterface):
             raise TypeError(f'funtoonJsonMapper argument is malformed: \"{funtoonJsonMapper}\"')
-        if not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
+        elif not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -33,6 +37,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         elif not utils.isValidUrl(funtoonApiUrl):
             raise TypeError(f'funtoonApiUrl argument is malformed: \"{funtoonApiUrl}\"')
 
+        self.__funtoonApiService: FuntoonApiServiceInterface = funtoonApiService
         self.__funtoonJsonMapper: FuntoonJsonMapperInterface = funtoonJsonMapper
         self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
@@ -43,21 +48,14 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
 
-        clientSession = await self.__networkClientProvider.get()
+        successfullyBanned = False
 
         try:
-            response = await clientSession.get(f'{self.__funtoonApiUrl}/trivia/review/{triviaId}')
+            successfullyBanned = await self.__funtoonApiService.banTriviaQuestion(triviaId = triviaId)
         except GenericNetworkException as e:
-            self.__timber.log('FuntoonRepository', f'Encountered network error when banning a trivia question ({triviaId=}): {e}', e, traceback.format_exc())
-            return False
+            self.__timber.log('FuntoonRepository', f'Encountered network error when banning trivia question ({triviaId=}): {e}', e, traceback.format_exc())
 
-        responseStatus: int | None = None
-
-        if response is not None:
-            responseStatus = response.statusCode
-            await response.close()
-
-        return utils.isValidInt(responseStatus) and responseStatus == 200
+        return successfullyBanned
 
     async def __hitFuntoon(
         self,

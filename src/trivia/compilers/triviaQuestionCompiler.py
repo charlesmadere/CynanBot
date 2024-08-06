@@ -176,15 +176,14 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
             raise TypeError(f'allWords argument is malformed: \"{allWords}\"')
         elif string is not None and not isinstance(string, str):
             raise TypeError(f'string argument is malformed: \"{string}\"')
-
-        if not utils.isValidStr(string):
+        elif not utils.isValidStr(string):
             return
 
-        foundWords = self.__findWordsRegEx.findall(string)
+        foundWords = self.__findWordsRegEx.findall(string.casefold())
 
         if foundWords is None or len(foundWords) == 0:
             return
 
         for foundWord in foundWords:
             if utils.isValidStr(foundWord):
-                allWords.add(foundWord.casefold())
+                allWords.add(foundWord)

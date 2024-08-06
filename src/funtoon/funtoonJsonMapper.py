@@ -1,8 +1,33 @@
+from typing import Any
+
 from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from .funtoonPkmnCatchType import FuntoonPkmnCatchType
+from .funtoonTriviaQuestion import FuntoonTriviaQuestion
+from ..misc import utils as utils
 
 
 class FuntoonJsonMapper(FuntoonJsonMapperInterface):
+
+    async def parseTriviaQuestion(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> FuntoonTriviaQuestion | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        categoryId = utils.getIntFromDict(jsonContents, 'categoryId')
+        triviaId = utils.getIntFromDict(jsonContents, 'id')
+        answer = utils.getStrFromDict(jsonContents, 'answer')
+        category = utils.getStrFromDict(jsonContents, 'category')
+        clue = utils.getStrFromDict(jsonContents, 'clue')
+
+        return FuntoonTriviaQuestion(
+            categoryId = categoryId,
+            triviaId = triviaId,
+            answer = answer,
+            category = category,
+            clue = clue,
+        )
 
     async def serializePkmnCatchType(
         self,

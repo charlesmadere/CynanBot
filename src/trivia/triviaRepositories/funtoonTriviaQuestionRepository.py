@@ -9,12 +9,11 @@ from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
-from ..triviaExceptions import GenericTriviaNetworkException, MalformedTriviaJsonException
+from ..triviaExceptions import GenericTriviaNetworkException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ...misc import utils as utils
+from ...funtoon.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from ...network.exceptions import GenericNetworkException
-from ...network.networkClientProvider import NetworkClientProvider
 from ...timber.timberInterface import TimberInterface
 
 
@@ -23,18 +22,20 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
     def __init__(
         self,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
-        networkClientProvider: NetworkClientProvider,
+        funtoonApiService: FuntoonApiServiceInterface,
         timber: TimberInterface,
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+        elif not isinstance(funtoonApiService, FuntoonApiServiceInterface):
+            raise TypeError(f'funtoonApiService argument is malformed: \"{funtoonApiService}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
@@ -43,7 +44,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
+        self.__funtoonApiService: FuntoonApiServiceInterface = funtoonApiService
         self.__timber: TimberInterface = timber
         self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
@@ -54,40 +55,19 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         self.__timber.log('FuntoonTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
-        clientSession = await self.__networkClientProvider.get()
-
         try:
-            response = await clientSession.get(f'https://funtoon.party/api/trivia/random')
+            funtoonQuestion = await self.__funtoonApiService.fetchTriviaQuestion()
         except GenericNetworkException as e:
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.triviaSource, e)
 
-        if response.statusCode != 200:
-            self.__timber.log('FuntoonTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.statusCode}\"')
-            raise GenericTriviaNetworkException(self.triviaSource)
-
-        jsonResponse = await response.json()
-        await response.close()
-
-        if await self._triviaSettingsRepository.isDebugLoggingEnabled():
-            self.__timber.log('FuntoonTriviaQuestionRepository', f'{jsonResponse}')
-
-        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('FuntoonTriviaQuestionRepository', f'Rejecting Funtoon\'s JSON data due to null/empty contents: {jsonResponse}')
-            raise MalformedTriviaJsonException(f'Rejecting Funtoon\'s JSON data due to null/empty contents: {jsonResponse}')
-
-        category = utils.getStrFromDict(jsonResponse, 'category', fallback = '')
-        category = await self.__triviaQuestionCompiler.compileCategory(category)
-
-        categoryId = utils.getStrFromDict(jsonResponse, 'category_id')
-
-        question = utils.getStrFromDict(jsonResponse, 'clue')
-        question = await self.__triviaQuestionCompiler.compileQuestion(question)
-
-        triviaId = utils.getStrFromDict(jsonResponse, 'id')
+        categoryId = str(funtoonQuestion.categoryId)
+        triviaId = str(funtoonQuestion.triviaId)
+        category = await self.__triviaQuestionCompiler.compileCategory(funtoonQuestion.category)
+        question = await self.__triviaQuestionCompiler.compileQuestion(funtoonQuestion.clue)
 
         originalCorrectAnswers: list[str] = list()
-        originalCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
+        originalCorrectAnswers.append(funtoonQuestion.answer)
 
         correctAnswers: list[str] = list()
         correctAnswers.extend(originalCorrectAnswers)
@@ -110,7 +90,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__timber.log('FuntoonTriviaQuestionRepository', f'All words found in question ({question=}) and category ({category=}) ({triviaId=}): ({allWords=})')
 
         compiledCorrectAnswers: list[str] = list()
-        compiledCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
+        compiledCorrectAnswers.append(funtoonQuestion.answer)
 
         await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
             currentAnswers = compiledCorrectAnswers,

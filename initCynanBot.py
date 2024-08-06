@@ -69,6 +69,8 @@ from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
 from src.emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
+from src.funtoon.funtoonApiService import FuntoonApiService
+from src.funtoon.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from src.funtoon.funtoonJsonMapper import FuntoonJsonMapper
 from src.funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from src.funtoon.funtoonRepository import FuntoonRepository
@@ -563,7 +565,14 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
 
 funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
 
+funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
+    funtoonJsonMapper = funtoonJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
 funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
+    funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
     networkClientProvider = networkClientProvider,
@@ -968,7 +977,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     ),
     funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        networkClientProvider = networkClientProvider,
+        funtoonApiService = funtoonApiService,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaQuestionCompiler = triviaQuestionCompiler,
