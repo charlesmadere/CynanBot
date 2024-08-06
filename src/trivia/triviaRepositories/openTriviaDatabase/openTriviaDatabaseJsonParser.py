@@ -1,9 +1,10 @@
 from typing import Any
 
-from .absOpenTriviaDatabaseQuestion import AbsOpenTriviaDatabaseQuestion
 from .booleanOpenTriviaDatabaseQuestion import BooleanOpenTriviaDatabaseQuestion
 from .multipleOpenTriviaDatabaseQuestion import MultipleOpenTriviaDatabaseQuestion
 from .openTriviaDatabaseJsonParserInterface import OpenTriviaDatabaseJsonParserInterface
+from .openTriviaDatabaseQuestion import OpenTriviaDatabaseQuestion
+from .openTriviaDatabaseSessionToken import OpenTriviaDatabaseSessionToken
 from ...misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from ...misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from ...questions.triviaQuestionType import TriviaQuestionType
@@ -85,10 +86,27 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
             difficulty = difficulty
         )
 
+    async def parseSessionToken(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenTriviaDatabaseSessionToken | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        responseCode = utils.getIntFromDict(jsonContents, 'response_code')
+        responseMessage = utils.getStrFromDict(jsonContents, 'response_message')
+        token = utils.getStrFromDict(jsonContents, 'token')
+
+        return OpenTriviaDatabaseSessionToken(
+            responseCode = responseCode,
+            responseMessage = responseMessage,
+            token = token
+        )
+
     async def parseTriviaQuestion(
         self,
         jsonContents: dict[str, Any] | Any | None
-    ) -> AbsOpenTriviaDatabaseQuestion | None:
+    ) -> OpenTriviaDatabaseQuestion | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 

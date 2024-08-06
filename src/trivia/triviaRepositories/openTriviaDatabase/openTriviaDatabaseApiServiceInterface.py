@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .absOpenTriviaDatabaseQuestion import AbsOpenTriviaDatabaseQuestion
+from .openTriviaDatabaseQuestion import OpenTriviaDatabaseQuestion
 
 
 class OpenTriviaDatabaseApiServiceInterface(ABC):
@@ -9,5 +9,5 @@ class OpenTriviaDatabaseApiServiceInterface(ABC):
     async def fetchTriviaQuestion(
         self,
         twitchChannelId: str | None
-    ) -> AbsOpenTriviaDatabaseQuestion:
+    ) -> OpenTriviaDatabaseQuestion:
         pass

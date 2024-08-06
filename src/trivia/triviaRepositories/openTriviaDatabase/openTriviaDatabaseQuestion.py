@@ -5,7 +5,7 @@ from ...triviaDifficulty import TriviaDifficulty
 from ....misc import utils as utils
 
 
-class AbsOpenTriviaDatabaseQuestion(ABC):
+class OpenTriviaDatabaseQuestion(ABC):
 
     def __init__(
         self,

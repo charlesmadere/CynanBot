@@ -1,11 +1,11 @@
-from .absOpenTriviaDatabaseQuestion import AbsOpenTriviaDatabaseQuestion
+from .openTriviaDatabaseQuestion import OpenTriviaDatabaseQuestion
 
 from ...questions.triviaQuestionType import TriviaQuestionType
 from ...triviaDifficulty import TriviaDifficulty
 from ....misc import utils as utils
 
 
-class MultipleOpenTriviaDatabaseQuestion(AbsOpenTriviaDatabaseQuestion):
+class MultipleOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
 
     def __init__(
         self,
