@@ -10,6 +10,16 @@ class TestFuntoonJsonMapper:
     jsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
 
     @pytest.mark.asyncio
+    async def test_parseTriviaQuestion_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseTriviaQuestion(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTriviaQuestion_withNone(self):
+        result = await self.jsonMapper.parseTriviaQuestion(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_serializePkmnCatchType_withGreat(self):
         result = await self.jsonMapper.serializePkmnCatchType(FuntoonPkmnCatchType.GREAT)
         assert result == 'great'

@@ -1,19 +1,18 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+
+from ....misc.clearable import Clearable
 
 
-class OpenTriviaDatabaseSessionTokenRepositoryInterface(ABC):
+class OpenTriviaDatabaseSessionTokenRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def get(
-        self,
-        twitchChannelId: str
-    ) -> str | None:
+    async def get(self, twitchChannelId: str) -> str | None:
         pass
 
     @abstractmethod
-    async def set(
-        self,
-        sessionToken: str | None,
-        twitchChannelId: str
-    ):
+    async def remove(self, twitchChannelId: str):
+        pass
+
+    @abstractmethod
+    async def update(self, sessionToken: str | None, twitchChannelId: str):
         pass

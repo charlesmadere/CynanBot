@@ -4,6 +4,8 @@ from .booleanOpenTriviaDatabaseQuestion import BooleanOpenTriviaDatabaseQuestion
 from .multipleOpenTriviaDatabaseQuestion import MultipleOpenTriviaDatabaseQuestion
 from .openTriviaDatabaseJsonParserInterface import OpenTriviaDatabaseJsonParserInterface
 from .openTriviaDatabaseQuestion import OpenTriviaDatabaseQuestion
+from .openTriviaDatabaseQuestionsResponse import OpenTriviaDatabaseQuestionsResponse
+from .openTriviaDatabaseResponseCode import OpenTriviaDatabaseResponseCode
 from .openTriviaDatabaseSessionToken import OpenTriviaDatabaseSessionToken
 from ...misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from ...misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
@@ -37,10 +39,10 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
     ) -> BooleanOpenTriviaDatabaseQuestion:
         category: str | None = None
         if 'category' in jsonContents and utils.isValidStr(jsonContents.get('category')):
-            category = utils.getStrFromDict(jsonContents, 'category')
+            category = utils.getStrFromDict(jsonContents, 'category', htmlUnescape = True)
 
         correctAnswer = utils.getBoolFromDict(jsonContents, 'correct_answer')
-        question = utils.getStrFromDict(jsonContents, 'question')
+        question = utils.getStrFromDict(jsonContents, 'question', htmlUnescape = True)
         difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
 
         return BooleanOpenTriviaDatabaseQuestion(
@@ -62,7 +64,7 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
         incorrectAnswers: list[str] = list()
         for index, incorrectAnswer in enumerate(incorrectAnswersArray):
             if utils.isValidStr(incorrectAnswer):
-                incorrectAnswers.append(incorrectAnswer)
+                incorrectAnswers.append(utils.cleanStr(incorrectAnswer, htmlUnescape = True))
             else:
                 self.__timber.log('OpenTriviaDatabaseJsonParser', f'Encountered malformed value at index {index} for \"incorrect_answers\" field in JSON data: ({jsonContents=}) ({incorrectAnswer=})')
 
@@ -72,10 +74,10 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
 
         category: str | None = None
         if 'category' in jsonContents and utils.isValidStr(jsonContents.get('category')):
-            category = utils.getStrFromDict(jsonContents, 'category')
+            category = utils.getStrFromDict(jsonContents, 'category', htmlUnescape = True)
 
-        correctAnswer = utils.getStrFromDict(jsonContents, 'correct_answer')
-        question = utils.getStrFromDict(jsonContents, 'question')
+        correctAnswer = utils.getStrFromDict(jsonContents, 'correct_answer', htmlUnescape = True)
+        question = utils.getStrFromDict(jsonContents, 'question', htmlUnescape = True)
         difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
 
         return MultipleOpenTriviaDatabaseQuestion(
@@ -86,6 +88,58 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
             difficulty = difficulty
         )
 
+    async def parseQuestionsResponse(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenTriviaDatabaseQuestionsResponse | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        responseCode = await self.requireResponseCode(utils.getIntFromDict(jsonContents, 'response_code'))
+
+        if responseCode is not OpenTriviaDatabaseResponseCode.SUCCESS:
+            return OpenTriviaDatabaseQuestionsResponse(
+                results = None,
+                responseCode = responseCode
+            )
+
+        resultsArray: list[dict[str, Any] | None] | None = jsonContents.get('results')
+        results: list[OpenTriviaDatabaseQuestion] | None = None
+
+        if isinstance(resultsArray, list) and len(resultsArray) >= 1:
+            results = list()
+
+            for index, resultEntryJson in enumerate(resultsArray):
+                triviaQuestion = await self.parseTriviaQuestion(resultEntryJson)
+
+                if triviaQuestion is None:
+                    self.__timber.log('OpenTriviaDatabaseJsonParser', f'Unable to parse value at index {index} for \"results\" field in JSON data: ({jsonContents=})')
+                else:
+                    results.append(triviaQuestion)
+
+        return OpenTriviaDatabaseQuestionsResponse(
+            results = results,
+            responseCode = responseCode
+        )
+
+    async def parseResponseCode(
+        self,
+        responseCode: int | Any | None
+    ) -> OpenTriviaDatabaseResponseCode | None:
+        if not utils.isValidInt(responseCode):
+            return None
+
+        match responseCode:
+            case 0: return OpenTriviaDatabaseResponseCode.SUCCESS
+            case 1: return OpenTriviaDatabaseResponseCode.NO_RESULTS
+            case 2: return OpenTriviaDatabaseResponseCode.INVALID_PARAMETER
+            case 3: return OpenTriviaDatabaseResponseCode.TOKEN_NOT_FOUND
+            case 4: return OpenTriviaDatabaseResponseCode.TOKEN_EMPTY
+            case 5: return OpenTriviaDatabaseResponseCode.RATE_LIMIT
+            case _:
+                self.__timber.log('OpenTriviaDatabaseJsonParser', f'Encountered unknown OpenTriviaDatabaseResponseCode value: \"{responseCode}\"')
+                return None
+
     async def parseSessionToken(
         self,
         jsonContents: dict[str, Any] | Any | None
@@ -93,7 +147,7 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        responseCode = utils.getIntFromDict(jsonContents, 'response_code')
+        responseCode = await self.requireResponseCode(utils.getIntFromDict(jsonContents, 'response_code'))
         responseMessage = utils.getStrFromDict(jsonContents, 'response_message')
         token = utils.getStrFromDict(jsonContents, 'token')
 
@@ -122,3 +176,14 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
             case _:
                 self.__timber.log('OpenTriviaDatabaseJsonParser', f'Encountered unexpected TriviaQuestionType when trying to parse AbsOpenTriviaDatabaseQuestion ({questionType=}) ({jsonContents=})')
                 return None
+
+    async def requireResponseCode(
+        self,
+        responseCode: int | Any | None
+    ) -> OpenTriviaDatabaseResponseCode:
+        result = await self.parseResponseCode(responseCode)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{responseCode}\" into OpenTriviaDatabaseResponseCode value!')
+
+        return result
