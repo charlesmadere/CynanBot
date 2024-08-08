@@ -219,6 +219,8 @@ from src.trivia.gameController.triviaGameGlobalControllersRepositoryInterface im
     TriviaGameGlobalControllersRepositoryInterface
 from src.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from src.trivia.games.triviaGameStore import TriviaGameStore
+from src.trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
+from src.trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
 from src.trivia.misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from src.trivia.score.triviaScoreRepository import TriviaScoreRepository
@@ -249,6 +251,20 @@ from src.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface impo
 from src.trivia.triviaRepositories.jServiceTriviaQuestionRepository import JServiceTriviaQuestionRepository
 from src.trivia.triviaRepositories.lotrTriviaQuestionsRepository import LotrTriviaQuestionRepository
 from src.trivia.triviaRepositories.millionaireTriviaQuestionRepository import MillionaireTriviaQuestionRepository
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseApiService import OpenTriviaDatabaseApiService
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseApiServiceInterface import \
+    OpenTriviaDatabaseApiServiceInterface
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseJsonParser import OpenTriviaDatabaseJsonParser
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseJsonParserInterface import \
+    OpenTriviaDatabaseJsonParserInterface
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseQuestionFetcher import \
+    OpenTriviaDatabaseQuestionFetcher
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseQuestionFetcherInterface import \
+    OpenTriviaDatabaseQuestionFetcherInterface
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepository import \
+    OpenTriviaDatabaseSessionTokenRepository
+from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
+    OpenTriviaDatabaseSessionTokenRepositoryInterface
 from src.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
 from src.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import OpenTriviaQaTriviaQuestionRepository
@@ -889,6 +905,8 @@ triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInte
     userIdsRepository = userIdsRepository
 )
 
+triviaDifficultyParser: TriviaDifficultyParserInterface = TriviaDifficultyParser()
+
 triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = TriviaQuestionTypeParser()
 
 triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryRepository(
@@ -927,12 +945,35 @@ if authSnapshot.hasQuizApiKey():
         triviaSettingsRepository = triviaSettingsRepository
     )
 
-openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
-    backingDatabase = backingDatabase,
+openTriviaDatabaseJsonParser: OpenTriviaDatabaseJsonParserInterface = OpenTriviaDatabaseJsonParser(
+    timber = timber,
+    triviaDifficultyParser = triviaDifficultyParser,
+    triviaQuestionTypeParser = triviaQuestionTypeParser
+)
+
+openTriviaDatabaseApiService: OpenTriviaDatabaseApiServiceInterface = OpenTriviaDatabaseApiService(
     networkClientProvider = networkClientProvider,
+    openTriviaDatabaseJsonParser = openTriviaDatabaseJsonParser,
+    timber = timber
+)
+
+openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface = OpenTriviaDatabaseSessionTokenRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+openTriviaDatabaseQuestionFetcher: OpenTriviaDatabaseQuestionFetcherInterface = OpenTriviaDatabaseQuestionFetcher(
+    openTriviaDatabaseApiService = openTriviaDatabaseApiService,
+    openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
+    timber = timber
+)
+
+openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
+    openTriviaDatabaseQuestionFetcher = openTriviaDatabaseQuestionFetcher,
     timber = timber,
     triviaIdGenerator = triviaIdGenerator,
     triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaQuestionTypeParser = triviaQuestionTypeParser,
     triviaSettingsRepository = triviaSettingsRepository
 )
 
@@ -1281,9 +1322,9 @@ ttsManager: TtsManagerInterface | None = TtsManager(
 )
 
 
-#################################################
-## Stream Alerts Manager intialization section ##
-#################################################
+##################################################
+## Stream Alerts Manager initialization section ##
+##################################################
 
 streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
     settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')

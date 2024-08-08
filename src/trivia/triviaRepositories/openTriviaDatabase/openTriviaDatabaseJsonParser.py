@@ -148,7 +148,11 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
             return None
 
         responseCode = await self.requireResponseCode(utils.getIntFromDict(jsonContents, 'response_code'))
-        responseMessage = utils.getStrFromDict(jsonContents, 'response_message')
+
+        responseMessage: str | None = None
+        if 'response_message' in jsonContents and utils.isValidStr(jsonContents.get('response_message')):
+            responseMessage = utils.getStrFromDict(jsonContents, 'response_message')
+
         token = utils.getStrFromDict(jsonContents, 'token')
 
         return OpenTriviaDatabaseSessionToken(

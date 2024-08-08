@@ -38,5 +38,5 @@ class OpenTriviaDatabaseQuestion(ABC):
 
     @property
     @abstractmethod
-    def questionType(self) -> TriviaQuestionType:
+    def triviaType(self) -> TriviaQuestionType:
         pass

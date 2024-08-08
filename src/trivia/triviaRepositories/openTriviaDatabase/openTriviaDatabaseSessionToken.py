@@ -6,5 +6,5 @@ from .openTriviaDatabaseResponseCode import OpenTriviaDatabaseResponseCode
 @dataclass(frozen = True)
 class OpenTriviaDatabaseSessionToken:
     responseCode: OpenTriviaDatabaseResponseCode
-    responseMessage: str
+    responseMessage: str | None
     token: str

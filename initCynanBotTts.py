@@ -723,9 +723,9 @@ if mostRecentAnivMessageRepository is not None:
     )
 
 
-#################################################
-## Stream Alerts Manager intialization section ##
-#################################################
+##################################################
+## Stream Alerts Manager initialization section ##
+##################################################
 
 streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
     settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')

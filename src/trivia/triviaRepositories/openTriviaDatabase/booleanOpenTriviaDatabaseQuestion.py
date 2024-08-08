@@ -30,5 +30,5 @@ class BooleanOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
         return self.__correctAnswer
 
     @property
-    def questionType(self) -> TriviaQuestionType:
+    def triviaType(self) -> TriviaQuestionType:
         return TriviaQuestionType.TRUE_FALSE

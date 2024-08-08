@@ -38,5 +38,5 @@ class MultipleOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
         return self.__incorrectAnswers
 
     @property
-    def questionType(self) -> TriviaQuestionType:
+    def triviaType(self) -> TriviaQuestionType:
         return TriviaQuestionType.MULTIPLE_CHOICE

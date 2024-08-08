@@ -11,5 +11,9 @@ class OpenTriviaDatabaseApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchTriviaQuestion(self, twitchChannelId: str) -> OpenTriviaDatabaseQuestion:
+    async def fetchTriviaQuestion(
+        self,
+        sessionToken: str | None,
+        twitchChannelId: str
+    ) -> OpenTriviaDatabaseQuestion:
         pass

@@ -53,8 +53,6 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('FuntoonTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
-
         try:
             funtoonQuestion = await self.__funtoonApiService.fetchTriviaQuestion()
         except GenericNetworkException as e:
