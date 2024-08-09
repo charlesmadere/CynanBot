@@ -15,7 +15,7 @@ class FuntoonJsonMapper(FuntoonJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        categoryId = utils.getIntFromDict(jsonContents, 'categoryId')
+        categoryId = utils.getIntFromDict(jsonContents, 'category_id')
         triviaId = utils.getIntFromDict(jsonContents, 'id')
         answer = utils.getStrFromDict(jsonContents, 'answer')
         category = utils.getStrFromDict(jsonContents, 'category')
