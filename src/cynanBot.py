@@ -151,8 +151,8 @@ from .trivia.triviaEventListener import TriviaEventListener
 from .trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from .trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
+from .trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
+    OpenTriviaDatabaseSessionTokenRepositoryInterface
 from .trivia.triviaRepositories.triviaRepositoryInterface import TriviaRepositoryInterface
 from .trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .trivia.triviaUtilsInterface import TriviaUtilsInterface
@@ -246,7 +246,7 @@ class CynanBot(
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
-        openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
+        openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
         pokepediaRepository: PokepediaRepositoryInterface | None,
         recurringActionsHelper: RecurringActionsHelperInterface | None,
         recurringActionsMachine: RecurringActionsMachineInterface | None,
@@ -374,8 +374,8 @@ class CynanBot(
             raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
-            raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
+        elif openTriviaDatabaseSessionTokenRepository is not None and not isinstance(openTriviaDatabaseSessionTokenRepository, OpenTriviaDatabaseSessionTokenRepositoryInterface):
+            raise TypeError(f'openTriviaDatabaseSessionTokenRepository argument is malformed: \"{openTriviaDatabaseSessionTokenRepository}\"')
         elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif recurringActionsHelper is not None and not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
@@ -514,7 +514,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, cheerActionSettingsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, supStreamerRepository, timber, timeoutCheerActionHistoryRepository, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -1116,7 +1116,7 @@ class CynanBot(
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
-            newCuteness = event.getCutenessResult(),
+            newCuteness = event.cutenessResult,
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
             userName = event.getUserName(),

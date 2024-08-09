@@ -51,9 +51,6 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = triviaQuestionTypeParser
 
-        self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, str | None] = dict()
-
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -66,15 +63,8 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.triviaSource, e)
 
-        category = await self.__triviaQuestionCompiler.compileCategory(
-            category = openTriviaQuestion.category,
-            htmlUnescape = True
-        )
-
-        question = await self.__triviaQuestionCompiler.compileQuestion(
-            question = openTriviaQuestion.question,
-            htmlUnescape = True
-        )
+        category = await self.__triviaQuestionCompiler.compileCategory(openTriviaQuestion.category)
+        question = await self.__triviaQuestionCompiler.compileQuestion(openTriviaQuestion.question)
 
         triviaId = await self.__triviaIdGenerator.generateQuestionId(
             question = openTriviaQuestion.question,

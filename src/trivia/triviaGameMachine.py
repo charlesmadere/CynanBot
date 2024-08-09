@@ -526,6 +526,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = action.actionId,
             answer = action.requireAnswer(),
+            celebratoryTwitchEmote = None,
             emote = state.getEmote(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),

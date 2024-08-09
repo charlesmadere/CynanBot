@@ -5,7 +5,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     def __init__(
         self,
-        charlesUserId: str | None = None
+        charlesUserId: str | None = '74350217'
     ):
         if charlesUserId is not None and not isinstance(charlesUserId, str):
             raise TypeError(f'charlesUserId argument is malformed: \"{charlesUserId}\"')

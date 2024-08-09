@@ -5,8 +5,7 @@ from .triviaEventType import TriviaEventType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..score.triviaScoreResult import TriviaScoreResult
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from ..specialStatus.toxicTriviaPunishmentResult import \
-    ToxicTriviaPunishmentResult
+from ..specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from ...cuteness.cutenessResult import CutenessResult
 from ...misc import utils as utils
 
@@ -23,6 +22,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
         answer: str,
+        celebratoryTwitchEmote: str | None,
         emote: str,
         eventId: str,
         gameId: str,
@@ -55,6 +55,8 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not utils.isValidStr(answer):
             raise TypeError(f'answer argument is malformed: \"{answer}\"')
+        elif celebratoryTwitchEmote is not None and not isinstance(celebratoryTwitchEmote, str):
+            raise TypeError(f'celebratoryTwitchEmote argument is malformed: \"{celebratoryTwitchEmote}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
@@ -77,6 +79,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         self.__toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = toxicTriviaPunishmentResult
         self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
         self.__answer: str = answer
+        self.__celebratoryTwitchEmote: str | None = celebratoryTwitchEmote
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
@@ -85,8 +88,17 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         self.__userName: str = userName
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
 
-    def getAnswer(self) -> str:
+    @property
+    def answer(self) -> str:
         return self.__answer
+
+    @property
+    def celebratoryTwitchEmote(self) -> str | None:
+        return self.__celebratoryTwitchEmote
+
+    @property
+    def cutenessResult(self) -> CutenessResult:
+        return self.__cutenessResult
 
     def getCutenessResult(self) -> CutenessResult:
         return self.__cutenessResult

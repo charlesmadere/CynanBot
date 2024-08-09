@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .twitchApiScope import TwitchApiScope
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBroadcasterType import TwitchBroadcasterType
@@ -246,7 +248,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             self.__timber.log('TwitchJsonMapper', f'Encountered missing/invalid \"data\" field in JSON data: ({jsonResponse=})')
             return None
 
-        emoteData: list[TwitchEmoteDetails] = list()
+        emoteData: FrozenList[TwitchEmoteDetails] = FrozenList()
         for index, emoteDetailsJson in enumerate(data):
             emoteDetails = await self.parseEmoteDetails(emoteDetailsJson)
 
@@ -254,6 +256,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({emoteDetailsJson=}) ({jsonResponse=})')
             else:
                 emoteData.append(emoteDetails)
+
+        emoteData.freeze()
 
         if len(emoteData) == 0:
             self.__timber.log('TwitchJsonMapper', f'Encountered missing/invalid \"data\" field in JSON data: ({jsonResponse=})')

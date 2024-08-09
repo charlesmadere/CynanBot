@@ -20,8 +20,8 @@ from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlaye
 from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
-from ..trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
+from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
+    OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -53,7 +53,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         locationsRepository: LocationsRepositoryInterface | None,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
-        openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
+        openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
@@ -96,8 +96,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
-            raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
+        elif openTriviaDatabaseSessionTokenRepository is not None and not isinstance(openTriviaDatabaseSessionTokenRepository, OpenTriviaDatabaseSessionTokenRepositoryInterface):
+            raise TypeError(f'openTriviaDatabaseSessionTokenRepository argument is malformed: \"{openTriviaDatabaseSessionTokenRepository}\"')
         elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -148,7 +148,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(locationsRepository)
         self.__clearables.append(mostRecentAnivMessageRepository)
         self.__clearables.append(mostRecentChatsRepository)
-        self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
+        self.__clearables.append(openTriviaDatabaseSessionTokenRepository)
         self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(supStreamerRepository)

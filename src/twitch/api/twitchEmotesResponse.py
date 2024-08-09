@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .twitchEmoteDetails import TwitchEmoteDetails
 
 
 @dataclass(frozen = True)
 class TwitchEmotesResponse:
-    emoteData: list[TwitchEmoteDetails]
+    emoteData: FrozenList[TwitchEmoteDetails]
     template: str

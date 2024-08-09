@@ -1,12 +1,12 @@
 from frozenlist import FrozenList
 
-from .openTriviaDatabaseQuestion import OpenTriviaDatabaseQuestion
+from .bongoTriviaQuestion import BongoTriviaQuestion
 from ...questions.triviaQuestionType import TriviaQuestionType
 from ...triviaDifficulty import TriviaDifficulty
 from ....misc import utils as utils
 
 
-class MultipleOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
+class MultipleBongoTriviaQuestion(BongoTriviaQuestion):
 
     def __init__(
         self,
@@ -14,11 +14,13 @@ class MultipleOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
         category: str | None,
         correctAnswer: str,
         question: str,
+        triviaId: str,
         difficulty: TriviaDifficulty
     ):
         super().__init__(
             category = category,
             question = question,
+            triviaId = triviaId,
             difficulty = difficulty
         )
 

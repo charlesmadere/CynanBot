@@ -243,6 +243,10 @@ from src.trivia.triviaIdGenerator import TriviaIdGenerator
 from src.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from src.trivia.triviaQuestionPresenter import TriviaQuestionPresenter
 from src.trivia.triviaQuestionPresenterInterface import TriviaQuestionPresenterInterface
+from src.trivia.triviaRepositories.bongo.bongoApiService import BongoApiService
+from src.trivia.triviaRepositories.bongo.bongoApiServiceInterface import BongoApiServiceInterface
+from src.trivia.triviaRepositories.bongo.bongoJsonParser import BongoJsonParser
+from src.trivia.triviaRepositories.bongo.bongoJsonParserInterface import BongoJsonParserInterface
 from src.trivia.triviaRepositories.bongoTriviaQuestionRepository import BongoTriviaQuestionRepository
 from src.trivia.triviaRepositories.funtoonTriviaQuestionRepository import FuntoonTriviaQuestionRepository
 from src.trivia.triviaRepositories.glacialTriviaQuestionRepository import GlacialTriviaQuestionRepository
@@ -935,6 +939,25 @@ triviaUtils: TriviaUtilsInterface = TriviaUtils(
     usersRepository = usersRepository
 )
 
+bongoJsonParser: BongoJsonParserInterface = BongoJsonParser(
+    timber = timber,
+    triviaDifficultyParser = triviaDifficultyParser,
+    triviaQuestionTypeParser = triviaQuestionTypeParser
+)
+
+bongoApiService: BongoApiServiceInterface = BongoApiService(
+    networkClientProvider = networkClientProvider,
+    bongoJsonParser = bongoJsonParser,
+    timber = timber
+)
+
+bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
+    bongoApiService = bongoApiService,
+    timber = timber,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository | None = None
 if authSnapshot.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
@@ -1009,13 +1032,7 @@ triviaScraper: TriviaScraperInterface = TriviaScraper(
 
 triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
-    bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    bongoTriviaQuestionRepository = bongoTriviaQuestionRepository,
     funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         funtoonApiService = funtoonApiService,
@@ -1584,7 +1601,7 @@ cynanBot = CynanBot(
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
-    openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
+    openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     pokepediaRepository = pokepediaRepository,
     recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
