@@ -328,7 +328,7 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidInt(points):
             raise TypeError(f'points argument is malformed: \"{points}\"')
-        elif celebratoryEmote is not None and not isinstace(celebratoryEmote, str):
+        elif celebratoryEmote is not None and not isinstance(celebratoryEmote, str):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
