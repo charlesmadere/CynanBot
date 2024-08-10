@@ -70,12 +70,6 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
     def getUserId(self) -> str:
         return self.__userId
 
@@ -91,3 +85,11 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.INCORRECT_SUPER_ANSWER
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
