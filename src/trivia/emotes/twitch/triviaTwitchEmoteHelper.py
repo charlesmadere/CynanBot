@@ -19,7 +19,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        celebratoryEmote: str | None = 'samusNerdge',
+        celebratoryEmote: str | None = 'samusHype',
         cacheTimeBuffer: timedelta = timedelta(hours = 2)
     ):
         if not isinstance(timber, TimberInterface):
