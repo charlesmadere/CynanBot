@@ -106,7 +106,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
             twitchChannelId = twitchEmoteChannelId
         )
 
-        emoteIsAvailable = emoteText in validEmoteNames
+        emoteIsAvailable = emoteText in viableEmoteNames
         self.__isAvailableCache[emoteType] = emoteIsAvailable
         self.__timeCache[emoteType] = datetime.now(self.__timeZoneRepository.getDefault())
 
