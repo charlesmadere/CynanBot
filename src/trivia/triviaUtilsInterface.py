@@ -70,6 +70,7 @@ class TriviaUtilsInterface(ABC):
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
         points: int,
+        celebratoryEmote: str | None,
         emote: str,
         userName: str,
         twitchUser: UserInterface,

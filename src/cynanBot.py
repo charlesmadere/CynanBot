@@ -1118,6 +1118,7 @@ class CynanBot(
             question = event.getTriviaQuestion(),
             newCuteness = event.cutenessResult,
             points = event.getPointsForWinning(),
+            celebratoryEmote = event.celebratoryTwitchEmote,
             emote = event.getEmote(),
             userName = event.getUserName(),
             twitchUser = twitchUser,

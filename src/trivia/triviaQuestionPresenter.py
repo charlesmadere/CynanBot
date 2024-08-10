@@ -1,11 +1,8 @@
 from .questions.absTriviaQuestion import AbsTriviaQuestion
-from .questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
-from .questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from .questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
+from .questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from .questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from .triviaQuestionPresenterInterface import \
-    TriviaQuestionPresenterInterface
+from .triviaQuestionPresenterInterface import TriviaQuestionPresenterInterface
 from ..misc import utils as utils
 
 

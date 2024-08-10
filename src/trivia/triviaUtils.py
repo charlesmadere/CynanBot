@@ -47,7 +47,8 @@ class TriviaUtils(TriviaUtilsInterface):
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
+        celebratoryEmote: str = '🎉'
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -67,6 +68,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not utils.isValidStr(celebratoryEmote):
+            raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
@@ -77,6 +80,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__celebratoryEmote: str = celebratoryEmote
 
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
         if not utils.isValidInt(numberOfGamesRemoved):
@@ -311,6 +315,7 @@ class TriviaUtils(TriviaUtilsInterface):
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
         points: int,
+        celebratoryEmote: str | None,
         emote: str,
         userName: str,
         twitchUser: UserInterface,
@@ -323,6 +328,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidInt(points):
             raise TypeError(f'points argument is malformed: \"{points}\"')
+        elif celebratoryEmote is not None and not isinstace(celebratoryEmote, str):
+            raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userName):
@@ -352,7 +359,10 @@ class TriviaUtils(TriviaUtilsInterface):
             delimiter = delimiter
         )
 
-        return f'{prefix} 🎉 {infix} 🎉 {correctAnswers}'.strip()
+        if not utils.isValidStr(celebratoryEmote):
+            celebratoryEmote = self.__celebratoryEmote
+
+        return f'{prefix} {celebratoryEmote} {infix} {celebratoryEmote} {correctAnswers}'.strip()
 
     async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> str | None:
         if not utils.isValidInt(remainingQueueSize):
