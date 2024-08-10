@@ -91,7 +91,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         cachedTime = self.__timeCache.get(emoteType, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if cachedTime + self.__cacheTimeBuffer >= now:
+        if cachedTime is not None and cachedTime + self.__cacheTimeBuffer >= now:
             if isAvailable is True:
                 return emoteText
             else:
