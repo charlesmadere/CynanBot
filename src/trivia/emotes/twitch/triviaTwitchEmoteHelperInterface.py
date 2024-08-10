@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from ...misc.clearable import Clearable
+from ....misc.clearable import Clearable
 
 
 class TriviaTwitchEmoteHelperInterface(Clearable):
