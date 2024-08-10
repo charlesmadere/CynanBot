@@ -471,7 +471,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = 'https://api.twitch.tv/helix/chat/emotes',
+                url = f'https://api.twitch.tv/helix/chat/emotes?broadcaster_id={broadcasterId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId
@@ -485,11 +485,18 @@ class TwitchApiService(TwitchApiServiceInterface):
         jsonResponse = await response.json()
         await response.close()
 
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})'
+            )
+
         emotesResponse = await self.__twitchJsonMapper.parseEmotesResponse(jsonResponse)
 
         if emotesResponse is None:
-            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=}) ({emotesResponse=})')
-            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=}) ({emotesResponse=})')
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({emotesResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({emotesResponse=})')
 
         return emotesResponse
 
