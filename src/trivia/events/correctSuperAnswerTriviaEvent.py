@@ -100,17 +100,12 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def cutenessResult(self) -> CutenessResult:
         return self.__cutenessResult
 
-    def getCutenessResult(self) -> CutenessResult:
-        return self.__cutenessResult
-
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
     def getGameId(self) -> str:
         return self.__gameId
-
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
 
     def getPointsForWinningStr(self) -> str:
         return locale.format_string("%d", self.__pointsForWinning, grouping = True)
@@ -126,9 +121,6 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
 
     def getToxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
         return self.__toxicTriviaPunishmentResult
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
 
     def getTriviaScoreResult(self) -> TriviaScoreResult:
         return self.__triviaScoreResult
@@ -149,8 +141,16 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.SUPER_GAME_CORRECT_ANSWER
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
 
     @property
     def twitchChannel(self) -> str:
