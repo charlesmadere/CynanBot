@@ -184,9 +184,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             return None
 
         tier = await self.parseSubscriberTier(jsonResponse.get('tier'))
-        if tier is None:
-            self.__timber.log('TwitchJsonMapper', f'Unable to parse value for \"tier\" data ({jsonResponse=})')
-            return None
 
         return TwitchEmoteDetails(
             images = images,

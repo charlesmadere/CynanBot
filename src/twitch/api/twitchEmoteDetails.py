@@ -17,4 +17,4 @@ class TwitchEmoteDetails:
     emoteSetId: str
     name: str
     emoteType: TwitchEmoteType
-    tier: TwitchSubscriberTier
+    tier: TwitchSubscriberTier | None
