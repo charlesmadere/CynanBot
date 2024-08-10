@@ -20,15 +20,13 @@ class AbsTriviaEvent(ABC):
         self.__actionId: str = actionId
         self.__eventId: str = eventId
 
-    def getActionId(self) -> str:
+    @property
+    def actionId(self) -> str:
         return self.__actionId
 
-    def getEventId(self) -> str:
+    @property
+    def eventId(self) -> str:
         return self.__eventId
-
-    @abstractmethod
-    def getTriviaEventType(self) -> TriviaEventType:
-        pass
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -38,5 +36,10 @@ class AbsTriviaEvent(ABC):
         return {
             'actionId': self.__actionId,
             'eventId': self.__eventId,
-            'triviaEventType': self.getTriviaEventType()
+            'triviaEventType': self.triviaEventType
         }
+
+    @property
+    @abstractmethod
+    def triviaEventType(self) -> TriviaEventType:
+        pass

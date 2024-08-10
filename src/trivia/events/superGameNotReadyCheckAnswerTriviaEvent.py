@@ -40,9 +40,6 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
     def getAnswer(self) -> str | None:
         return self.__answer
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.SUPER_GAME_NOT_READY
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
@@ -54,3 +51,7 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
 
     def getUserName(self) -> str:
         return self.__userName
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.SUPER_GAME_NOT_READY

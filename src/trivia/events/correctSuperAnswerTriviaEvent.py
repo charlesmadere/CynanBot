@@ -136,9 +136,6 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def getTriviaScoreResult(self) -> TriviaScoreResult:
         return self.__triviaScoreResult
 
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
     def getTwitchChannelId(self) -> str:
         return self.__twitchChannelId
 
@@ -156,3 +153,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
 
     def isToxic(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel

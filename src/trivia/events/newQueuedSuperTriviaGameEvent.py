@@ -61,11 +61,12 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
     def getShinyMultiplier(self) -> int:
         return self.__shinyMultiplier
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.NEW_QUEUED_SUPER_GAME
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
     def getTwitchChannelId(self) -> str:
         return self.__twitchChannelId
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.NEW_QUEUED_SUPER_GAME

@@ -1026,7 +1026,7 @@ class CynanBot(
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
             numberOfGamesRemoved = event.getNumberOfGamesRemoved()
@@ -1111,8 +1111,8 @@ class CynanBot(
         ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.getTriviaQuestion(),

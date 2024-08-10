@@ -59,9 +59,6 @@ class WrongUserCheckAnswerTriviaEvent(AbsTriviaEvent):
     def getGameId(self) -> str:
         return self.__gameId
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.WRONG_USER
-
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
@@ -76,3 +73,7 @@ class WrongUserCheckAnswerTriviaEvent(AbsTriviaEvent):
 
     def getUserName(self) -> str:
         return self.__userName
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.WRONG_USER

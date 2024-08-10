@@ -51,11 +51,14 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
     def getPreviousQueueSizeStr(self) -> str:
         return locale.format_string("%d", self.__previousQueueSize, grouping = True)
 
-    def getTriviaEventType(self) -> TriviaEventType:
+    @property
+    def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE
 
-    def getTwitchChannel(self) -> str:
+    @property
+    def twitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def getTwitchChannelId(self) -> str:
+    @property
+    def twitchChannelId(self) -> str:
         return self.__twitchChannelId

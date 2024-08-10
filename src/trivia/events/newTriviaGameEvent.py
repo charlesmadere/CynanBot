@@ -82,9 +82,6 @@ class NewTriviaGameEvent(AbsTriviaEvent):
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.NEW_GAME
-
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
@@ -102,3 +99,7 @@ class NewTriviaGameEvent(AbsTriviaEvent):
 
     def isToxic(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.NEW_GAME

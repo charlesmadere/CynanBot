@@ -79,9 +79,6 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.GAME_OUT_OF_TIME
-
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
@@ -105,3 +102,7 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
 
     def isToxic(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.GAME_OUT_OF_TIME

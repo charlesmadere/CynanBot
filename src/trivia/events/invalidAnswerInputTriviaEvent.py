@@ -66,9 +66,6 @@ class InvalidAnswerInputTriviaEvent(AbsTriviaEvent):
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.INVALID_ANSWER_INPUT
-
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
@@ -86,3 +83,7 @@ class InvalidAnswerInputTriviaEvent(AbsTriviaEvent):
 
     def isToxic(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.INVALID_ANSWER_INPUT

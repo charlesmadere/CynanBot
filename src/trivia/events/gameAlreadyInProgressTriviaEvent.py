@@ -40,9 +40,6 @@ class GameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
     def getGameId(self) -> str:
         return self.__gameId
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.GAME_ALREADY_IN_PROGRESS
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
@@ -54,3 +51,7 @@ class GameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
 
     def getUserName(self) -> str:
         return self.__userName
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.GAME_ALREADY_IN_PROGRESS

@@ -25,11 +25,12 @@ class FailedToFetchQuestionSuperTriviaEvent(AbsTriviaEvent):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
     def getTwitchChannelId(self) -> str:
         return self.__twitchChannelId
+
+    @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION
