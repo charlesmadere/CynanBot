@@ -6,5 +6,5 @@ from ...misc.clearable import Clearable
 class TriviaTwitchChannelEmoteHelperInterface(Clearable):
 
     @abstractmethod
-    async def getCelebratoryEmote(self) -> str | None:
+    async def getCelebratoryEmote(self, twitchChannelId: str) -> str | None:
         pass
