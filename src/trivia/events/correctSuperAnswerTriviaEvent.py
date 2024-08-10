@@ -104,35 +104,9 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
-    def getRemainingQueueSize(self) -> int:
-        return self.__remainingQueueSize
-
-    def getRemainingQueueSizeStr(self) -> str:
-        return locale.format_string("%d", self.__remainingQueueSize, grouping = True)
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getToxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
-        return self.__toxicTriviaPunishmentResult
-
-    def getTriviaScoreResult(self) -> TriviaScoreResult:
-        return self.__triviaScoreResult
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
-
-    def hasToxicTriviaPunishmentResult(self) -> bool:
-        return self.__toxicTriviaPunishmentResult is not None
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -145,6 +119,26 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__pointsForWinning
 
     @property
+    def pointsForWinningStr(self) -> str:
+        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+
+    @property
+    def remainingQueueSize(self) -> int:
+        return self.__remainingQueueSize
+
+    @property
+    def remainingQueueSizeStr(self) -> str:
+        return locale.format_string("%d", self.__remainingQueueSize, grouping = True)
+
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
+    def toxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
+        return self.__toxicTriviaPunishmentResult
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.SUPER_GAME_CORRECT_ANSWER
 
@@ -153,9 +147,21 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__triviaQuestion
 
     @property
+    def triviaScoreResult(self) -> TriviaScoreResult:
+        return self.__triviaScoreResult
+
+    @property
     def twitchChannel(self) -> str:
         return self.__twitchChannel
 
     @property
     def twitchChannelId(self) -> str:
         return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName
