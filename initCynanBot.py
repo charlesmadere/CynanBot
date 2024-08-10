@@ -212,6 +212,8 @@ from src.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
 from src.trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from src.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
 from src.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
+from src.trivia.emotes.twitch.triviaTwitchEmoteHelper import TriviaTwitchEmoteHelper
+from src.trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from src.trivia.gameController.triviaGameControllersRepository import TriviaGameControllersRepository
 from src.trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from src.trivia.gameController.triviaGameGlobalControllersRepository import TriviaGameGlobalControllersRepository
@@ -328,6 +330,8 @@ from src.twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInte
 from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFollowingStatusRepository
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
     TwitchFollowingStatusRepositoryInterface
+from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
+from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
@@ -547,6 +551,8 @@ chatLogger: ChatLoggerInterface = ChatLogger(
 #####################################
 
 cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvider()
+
+twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
 
 
 #####################################
@@ -1107,6 +1113,14 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     )
 )
 
+triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = TriviaTwitchEmoteHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchEmotesHelper = twitchEmotesHelper,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+    twitchTokensUtils = twitchTokensUtils
+)
+
 triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
@@ -1134,6 +1148,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
+    triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )

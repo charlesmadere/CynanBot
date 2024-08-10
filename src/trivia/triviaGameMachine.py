@@ -7,62 +7,44 @@ from typing import Any
 
 from .actions.absTriviaAction import AbsTriviaAction
 from .actions.checkAnswerTriviaAction import CheckAnswerTriviaAction
-from .actions.checkSuperAnswerTriviaAction import \
-    CheckSuperAnswerTriviaAction
-from .actions.clearSuperTriviaQueueTriviaAction import \
-    ClearSuperTriviaQueueTriviaAction
-from .actions.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
+from .actions.checkSuperAnswerTriviaAction import CheckSuperAnswerTriviaAction
+from .actions.clearSuperTriviaQueueTriviaAction import ClearSuperTriviaQueueTriviaAction
+from .actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from .actions.startNewTriviaGameAction import StartNewTriviaGameAction
 from .actions.triviaActionType import TriviaActionType
-from .emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
+from .emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from .emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from .events.absTriviaEvent import AbsTriviaEvent
-from .events.clearedSuperTriviaQueueTriviaEvent import \
-    ClearedSuperTriviaQueueTriviaEvent
+from .events.clearedSuperTriviaQueueTriviaEvent import ClearedSuperTriviaQueueTriviaEvent
 from .events.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
-from .events.correctSuperAnswerTriviaEvent import \
-    CorrectSuperAnswerTriviaEvent
-from .events.failedToFetchQuestionSuperTriviaEvent import \
-    FailedToFetchQuestionSuperTriviaEvent
-from .events.failedToFetchQuestionTriviaEvent import \
-    FailedToFetchQuestionTriviaEvent
-from .events.gameAlreadyInProgressTriviaEvent import \
-    GameAlreadyInProgressTriviaEvent
-from .events.gameNotReadyCheckAnswerTriviaEvent import \
-    GameNotReadyCheckAnswerTriviaEvent
+from .events.correctSuperAnswerTriviaEvent import CorrectSuperAnswerTriviaEvent
+from .events.failedToFetchQuestionSuperTriviaEvent import FailedToFetchQuestionSuperTriviaEvent
+from .events.failedToFetchQuestionTriviaEvent import FailedToFetchQuestionTriviaEvent
+from .events.gameAlreadyInProgressTriviaEvent import GameAlreadyInProgressTriviaEvent
+from .events.gameNotReadyCheckAnswerTriviaEvent import GameNotReadyCheckAnswerTriviaEvent
 from .events.incorrectAnswerTriviaEvent import IncorrectAnswerTriviaEvent
-from .events.incorrectSuperAnswerTriviaEvent import \
-    IncorrectSuperAnswerTriviaEvent
-from .events.invalidAnswerInputTriviaEvent import \
-    InvalidAnswerInputTriviaEvent
-from .events.newQueuedSuperTriviaGameEvent import \
-    NewQueuedSuperTriviaGameEvent
+from .events.incorrectSuperAnswerTriviaEvent import IncorrectSuperAnswerTriviaEvent
+from .events.invalidAnswerInputTriviaEvent import InvalidAnswerInputTriviaEvent
+from .events.newQueuedSuperTriviaGameEvent import NewQueuedSuperTriviaGameEvent
 from .events.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
 from .events.newTriviaGameEvent import NewTriviaGameEvent
 from .events.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
 from .events.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
-from .events.superGameNotReadyCheckAnswerTriviaEvent import \
-    SuperGameNotReadyCheckAnswerTriviaEvent
-from .events.wrongUserCheckAnswerTriviaEvent import \
-    WrongUserCheckAnswerTriviaEvent
+from .events.superGameNotReadyCheckAnswerTriviaEvent import SuperGameNotReadyCheckAnswerTriviaEvent
+from .events.wrongUserCheckAnswerTriviaEvent import WrongUserCheckAnswerTriviaEvent
 from .games.absTriviaGameState import AbsTriviaGameState
-from .games.queuedTriviaGameStoreInterface import \
-    QueuedTriviaGameStoreInterface
+from .games.queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from .games.superTriviaGameState import SuperTriviaGameState
 from .games.triviaGameState import TriviaGameState
 from .games.triviaGameStoreInterface import TriviaGameStoreInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
-from .score.triviaScoreRepositoryInterface import \
-    TriviaScoreRepositoryInterface
+from .score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from .specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from .specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
-from .specialStatus.toxicTriviaPunishmentResult import \
-    ToxicTriviaPunishmentResult
-from .superTriviaCooldownHelperInterface import \
-    SuperTriviaCooldownHelperInterface
+from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
+from .superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
 from .triviaAnswerCheckResult import TriviaAnswerCheckResult
 from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .triviaEventListener import TriviaEventListener
@@ -71,17 +53,14 @@ from .triviaExceptions import (TooManyTriviaFetchAttemptsException,
                                UnknownTriviaGameTypeException)
 from .triviaGameMachineInterface import TriviaGameMachineInterface
 from .triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .triviaRepositories.triviaRepositoryInterface import \
-    TriviaRepositoryInterface
-from .triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from .triviaRepositories.triviaRepositoryInterface import TriviaRepositoryInterface
+from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -104,6 +83,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaRepository: TriviaRepositoryInterface,
         triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         sleepTimeSeconds: float = 0.5,
@@ -139,6 +119,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
+            raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -167,6 +149,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaRepository: TriviaRepositoryInterface = triviaRepository
         self.__triviaScoreRepository: TriviaScoreRepositoryInterface = triviaScoreRepository
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = triviaTwitchEmoteHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
@@ -517,6 +500,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userId = action.getUserId()
         )
 
+        celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote(
+            twitchChannelId = action.getTwitchChannelId()
+        )
+
         await self.__submitEvent(CorrectSuperAnswerTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),
             cutenessResult = cutenessResult,
@@ -526,7 +513,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = action.actionId,
             answer = action.requireAnswer(),
-            celebratoryTwitchEmote = None,
+            celebratoryTwitchEmote = celebratoryTwitchEmote,
             emote = state.getEmote(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from .triviaTwitchEmoteHelperInterface import TriviaTwitchChannelEmoteHelperInterface
+from .triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from .triviaTwitchEmoteType import TriviaTwitchEmoteType
 from ....location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ....misc import utils as utils
@@ -10,7 +10,7 @@ from ....twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFrie
 from ....twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 
 
-class TriviaTwitchEmoteHelper(TriviaTwitchChannelEmoteHelperInterface):
+class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
     def __init__(
         self,
