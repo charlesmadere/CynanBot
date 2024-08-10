@@ -19,6 +19,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
         answer: str,
+        celebratoryTwitchEmote: str | None,
         emote: str,
         eventId: str,
         gameId: str,
@@ -45,6 +46,8 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not utils.isValidStr(answer):
             raise TypeError(f'answer argument is malformed: \"{answer}\"')
+        elif celebratoryTwitchEmote is not None and not isinstance(celebratoryTwitchEmote, str):
+            raise TypeError(f'celebratoryTwitchEmote argument is malformed: \"{celebratoryTwitchEmote}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
@@ -65,6 +68,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         self.__pointsForWinning: int = pointsForWinning
         self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
         self.__answer: str = answer
+        self.__celebratoryTwitchEmote: str | None = celebratoryTwitchEmote
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
@@ -72,6 +76,10 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         self.__userId: str = userId
         self.__userName: str = userName
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
+
+    @property
+    def celebratoryTwitchEmote(self) -> str | None:
+        return self.__celebratoryTwitchEmote
 
     def getAnswer(self) -> str:
         return self.__answer

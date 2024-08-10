@@ -379,6 +379,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userId = action.getUserId()
         )
 
+        celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote(
+            twitchChannelId = action.getTwitchChannelId()
+        )
+
         await self.__submitEvent(CorrectAnswerTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),
             cutenessResult = cutenessResult,
@@ -386,6 +390,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = action.actionId,
             answer = action.requireAnswer(),
+            celebratoryTwitchEmote = celebratoryTwitchEmote,
             emote = state.getEmote(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),
