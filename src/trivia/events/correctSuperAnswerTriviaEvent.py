@@ -127,17 +127,11 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def getToxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
         return self.__toxicTriviaPunishmentResult
 
-    def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.SUPER_GAME_CORRECT_ANSWER
-
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
     def getTriviaScoreResult(self) -> TriviaScoreResult:
         return self.__triviaScoreResult
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId
@@ -155,5 +149,13 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def triviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.SUPER_GAME_CORRECT_ANSWER
+
+    @property
     def twitchChannel(self) -> str:
         return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
