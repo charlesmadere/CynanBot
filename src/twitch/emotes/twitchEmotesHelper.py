@@ -30,7 +30,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
 
-        self.__cache: TimedDict[set[str]] = TimedDict(cacheTimeDelta)
+        self.__cache: TimedDict[frozenset[str]] = TimedDict(cacheTimeDelta)
 
     async def clearCaches(self):
         self.__cache.clear()
