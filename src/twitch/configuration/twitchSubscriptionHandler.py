@@ -15,6 +15,7 @@ from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface
 from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -196,7 +197,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     twitchChannelId = broadcasterUserId
                 )
                 validEmotesSet.update(additionalValidEmotes)
-            except Exception as e:
+            except GenericNetworkException as e:
                 self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({user=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
 
         validEmotesList: list[str] = list(validEmotesSet)
