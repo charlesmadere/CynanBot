@@ -3,6 +3,8 @@ from typing import Any
 
 from .twitchApiScope import TwitchApiScope
 from .twitchBanRequest import TwitchBanRequest
+from .twitchBroadcasterSubscriptions import TwitchBroadcasterSubscriptions
+from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
 from .twitchEmoteDetails import TwitchEmoteDetails
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -26,6 +28,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         apiScope: str | None
     ) -> TwitchApiScope | None:
+        pass
+
+    @abstractmethod
+    async def parseBroadcasterSubscription(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBroadcasterSubscription | None:
+        pass
+
+    @abstractmethod
+    async def parseBroadcasterSubscriptions(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBroadcasterSubscriptions | None:
         pass
 
     @abstractmethod

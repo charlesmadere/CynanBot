@@ -5,6 +5,8 @@ from frozenlist import FrozenList
 
 from .twitchApiScope import TwitchApiScope
 from .twitchBanRequest import TwitchBanRequest
+from .twitchBroadcasterSubscriptions import TwitchBroadcasterSubscriptions
+from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
 from .twitchEmoteDetails import TwitchEmoteDetails
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -90,6 +92,78 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
+
+    async def parseBroadcasterSubscription(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBroadcasterSubscription | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        isGift = utils.getBoolFromDict(jsonResponse, 'is_gift')
+
+        broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
+        broadcasterLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_login')
+        broadcasterName = utils.getStrFromDict(jsonResponse, 'broadcaster_name')
+
+        gifterId: str | None = None
+        if 'gifter_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_id')):
+            gifterId = utils.getStrFromDict(jsonResponse, 'gifter_id')
+
+        gifterLogin: str | None = None
+        if 'gifter_login' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_login')):
+            gifterLogin = utils.getStrFromDict(jsonResponse, 'gifter_login')
+
+        gifterName: str | None = None
+        if 'gifter_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_name')):
+            gifterName = utils.getStrFromDict(jsonResponse, 'gifter_name')
+
+        planName: str | None = None
+        if 'plan_name' in jsonResponse and utils.isValidStr(jsonResponse.get('plan_name')):
+            planName = utils.getStrFromDict(jsonResponse, 'plan_name')
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        tier = await self.parseSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
+
+        return TwitchBroadcasterSubscription(
+            isGift = isGift,
+            broadcasterId = broadcasterId,
+            broadcasterLogin = broadcasterLogin,
+            broadcasterName = broadcasterName,
+            gifterId = gifterId,
+            gifterLogin = gifterLogin,
+            gifterName = gifterName,
+            planName = planName,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName,
+            tier = tier
+        )
+
+    async def parseBroadcasterSubscriptions(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBroadcasterSubscriptions | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        subscription: TwitchBroadcasterSubscription | None = None
+
+        if isinstance(data, list) and len(data) >= 1:
+            subscription = await self.parseBroadcasterSubscription(data[0])
+
+        points = utils.getIntFromDict(jsonResponse, 'points', fallback = 0)
+        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
+
+        return TwitchBroadcasterSubscriptions(
+            points = points,
+            total = total,
+            subscription = subscription
+        )
 
     async def parseBroadcasterType(
         self,
