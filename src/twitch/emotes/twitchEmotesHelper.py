@@ -62,7 +62,6 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(response)
         self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({response=})')
-
         self.__cache[twitchChannelId] = viableEmoteNames
         return viableEmoteNames
 
