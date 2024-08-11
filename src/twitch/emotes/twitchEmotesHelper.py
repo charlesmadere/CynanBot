@@ -78,11 +78,11 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         if response is None or len(response.emoteData) == 0:
             return viableEmoteNames
 
-        allThemeModes = set(TwitchThemeMode)
+        allThemeModes = frozenset(TwitchThemeMode)
 
         for emote in response.emoteData:
             if emote.emoteType is not TwitchEmoteType.SUBSCRIPTIONS:
-                break
+                continue
 
             foundThemeModes: set[TwitchThemeMode] = set()
             add = True
