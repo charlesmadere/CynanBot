@@ -103,7 +103,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
             self.__cachedTime[emoteType] = now
             return None
 
-        viableEmoteNames = await self.__twitchEmotesHelper.fetchViableEmoteNamesFor(
+        viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchEmoteChannelId
         )

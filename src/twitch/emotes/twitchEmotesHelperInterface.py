@@ -6,9 +6,9 @@ from ...misc.clearable import Clearable
 class TwitchEmotesHelperInterface(Clearable):
 
     @abstractmethod
-    async def fetchViableEmoteNamesFor(
+    async def fetchViableSubscriptionEmoteNames(
         self,
         twitchAccessToken: str,
         twitchChannelId: str
-    ) -> set[str]:
+    ) -> frozenset[str]:
         pass

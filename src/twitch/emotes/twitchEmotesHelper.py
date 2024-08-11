@@ -36,11 +36,11 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         self.__cache.clear()
         self.__timber.log('TwitchEmotesHelper', 'Caches cleared')
 
-    async def fetchViableEmoteNamesFor(
+    async def fetchViableSubscriptionEmoteNames(
         self,
         twitchAccessToken: str,
         twitchChannelId: str
-    ) -> set[str]:
+    ) -> frozenset[str]:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -67,7 +67,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
     async def __processTwitchResponseIntoViableSubscriptionEmotes(
         self,
         response: TwitchEmotesResponse | None
-    ) -> set[str]:
+    ) -> frozenset[str]:
         if response is not None and not isinstance(response, TwitchEmotesResponse):
             raise TypeError(f'response argument is malformed: \"{response}\"')
 
@@ -96,4 +96,4 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
             if add:
                 viableEmoteNames.add(emote.name)
 
-        return viableEmoteNames
+        return frozenset(viableEmoteNames)
