@@ -61,6 +61,8 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
             self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching emotes ({twitchAccessToken=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(response)
+        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({response=})')
+
         self.__cache[twitchChannelId] = viableEmoteNames
         return viableEmoteNames
 
