@@ -32,7 +32,7 @@ python {
     pip 'iniconfig:2.0.0'
     pip 'iso8601:2.1.0'
     pip 'lru-dict:1.3.0'
-    pip 'lxml:5.2.2'
+    pip 'lxml:5.3.0'
     pip 'mccabe:0.7.0'
     pip 'mock:5.1.0'
     pip 'multidict:6.0.5'
