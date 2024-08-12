@@ -33,18 +33,22 @@ class FailedToFetchQuestionTriviaEvent(AbsTriviaEvent):
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
-
     @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

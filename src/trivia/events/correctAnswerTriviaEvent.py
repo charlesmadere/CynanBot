@@ -87,7 +87,8 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
     def getCutenessResult(self) -> CutenessResult:
         return self.__cutenessResult
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
     def getGameId(self) -> str:
@@ -102,23 +103,8 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
     def getTriviaScoreResult(self) -> TriviaScoreResult:
         return self.__triviaScoreResult
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -129,3 +115,23 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
     @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.CORRECT_ANSWER
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

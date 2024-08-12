@@ -39,16 +39,20 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
-    def getNumberOfGamesRemoved(self) -> int:
+    @property
+    def numberOfGamesRemoved(self) -> int:
         return self.__numberOfGamesRemoved
 
-    def getNumberOfGamesRemovedStr(self) -> str:
+    @property
+    def numberOfGamesRemovedStr(self) -> str:
         return locale.format_string("%d", self.__numberOfGamesRemoved, grouping = True)
 
-    def getPreviousQueueSize(self) -> int:
+    @property
+    def previousQueueSize(self) -> int:
         return self.__previousQueueSize
 
-    def getPreviousQueueSizeStr(self) -> str:
+    @property
+    def previousQueueSizeStr(self) -> str:
         return locale.format_string("%d", self.__previousQueueSize, grouping = True)
 
     @property

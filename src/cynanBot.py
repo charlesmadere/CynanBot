@@ -1029,28 +1029,28 @@ class CynanBot(
         twitchChannel = await self.__getChannel(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
-            numberOfGamesRemoved = event.getNumberOfGamesRemoved()
+            numberOfGamesRemoved = event.numberOfGamesRemoved
         ))
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getCorrectAnswerReveal(
-            question = event.getTriviaQuestion(),
+            question = event.triviaQuestion,
             newCuteness = event.getCutenessResult(),
-            emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName(),
+            emote = event.emote,
+            userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
         await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch trivia question')
 
     async def __handleFailedToFetchQuestionSuperTriviaEvent(self, event: FailedToFetchQuestionSuperTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
         await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch super trivia question')
 
     async def __handleGameOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
