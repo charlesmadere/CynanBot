@@ -58,6 +58,9 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     def isAuthorVip(self) -> bool:
         return self.__author.isVip()
 
+    async def isMessageReply(self) -> bool:
+        return await self.__message.isReply()
+
     async def send(self, message: str):
         await self.__context.send(message)
 

@@ -40,6 +40,10 @@ class TwitchContext(TwitchMessageable):
         pass
 
     @abstractmethod
+    async def isMessageReply(self) -> bool:
+        pass
+
+    @abstractmethod
     async def send(self, message: str):
         pass
 
