@@ -1038,11 +1038,11 @@ class CynanBot(
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.triviaQuestion,
-            newCuteness = event.getCutenessResult(),
+            newCuteness = event.cutenessResult,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
     async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):

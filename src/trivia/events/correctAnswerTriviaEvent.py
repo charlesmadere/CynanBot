@@ -78,33 +78,24 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
 
     @property
+    def answer(self) -> str:
+        return self.__answer
+
+    @property
     def celebratoryTwitchEmote(self) -> str | None:
         return self.__celebratoryTwitchEmote
 
-    def getAnswer(self) -> str:
-        return self.__answer
-
-    def getCutenessResult(self) -> CutenessResult:
+    @property
+    def cutenessResult(self) -> CutenessResult:
         return self.__cutenessResult
 
     @property
     def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getTriviaScoreResult(self) -> TriviaScoreResult:
-        return self.__triviaScoreResult
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -113,12 +104,28 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
+    def pointsForWinningStr(self) -> str:
+        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.CORRECT_ANSWER
 
     @property
     def triviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
+
+    @property
+    def triviaScoreResult(self) -> TriviaScoreResult:
+        return self.__triviaScoreResult
 
     @property
     def twitchChannel(self) -> str:
