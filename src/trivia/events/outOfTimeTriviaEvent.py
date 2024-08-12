@@ -64,38 +64,13 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         self.__userName: str = userName
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
-    def getTriviaScoreResult(self) -> TriviaScoreResult:
-        return self.__triviaScoreResult
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -104,5 +79,41 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
+    def pointsForWinningStr(self) -> str:
+        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.GAME_OUT_OF_TIME
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
+
+    @property
+    def triviaScoreResult(self) -> TriviaScoreResult:
+        return self.__triviaScoreResult
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

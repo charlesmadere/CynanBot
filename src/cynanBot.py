@@ -1054,20 +1054,20 @@ class CynanBot(
         await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch super trivia question')
 
     async def __handleGameOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getOutOfTimeAnswerReveal(
-            question = event.getTriviaQuestion(),
-            emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName(),
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            question = event.triviaQuestion,
+            emote = event.emote,
+            userNameThatRedeemed = event.userName,
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
     async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getIncorrectAnswerReveal(
-            question = event.getTriviaQuestion(),
+            question = event.triviaQuestion,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             specialTriviaStatus = event.specialTriviaStatus
