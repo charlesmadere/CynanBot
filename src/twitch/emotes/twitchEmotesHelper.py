@@ -18,7 +18,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         self,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        cacheTimeDelta: timedelta = timedelta(hours = 1)
+        cacheTimeDelta: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

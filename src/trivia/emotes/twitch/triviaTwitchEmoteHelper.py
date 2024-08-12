@@ -22,7 +22,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         celebratoryEmote: str | None = 'samusHype',
         outOfTimeEmote: str | None = 'samusShrug',
         wrongAnswerEmote: str | None = 'samusBad',
-        cacheTimeBuffer: timedelta = timedelta(hours = 2)
+        cacheTimeBuffer: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -91,7 +91,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         cachedTime = self.__timeCache.get(emoteType, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if cachedTime is not None and cachedTime + self.__cacheTimeBuffer >= now:
+        if cachedTime is not None and cachedTime >= now:
             if isAvailable is True:
                 return emoteText
             else:
@@ -100,7 +100,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(twitchChannelId)
         if not utils.isValidStr(twitchAccessToken):
             self.__isAvailableCache[emoteType] = False
-            self.__cachedTime[emoteType] = now
+            self.__cachedTime[emoteType] = now + self.__cacheTimeBuffer
             return None
 
         viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
@@ -110,7 +110,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
         emoteIsAvailable = emoteText in viableEmoteNames
         self.__isAvailableCache[emoteType] = emoteIsAvailable
-        self.__timeCache[emoteType] = datetime.now(self.__timeZoneRepository.getDefault())
+        self.__timeCache[emoteType] = datetime.now(self.__timeZoneRepository.getDefault()) + self.__cacheTimeBuffer
 
         if emoteIsAvailable:
             self.__timber.log('TriviaTwitchEmoteHelper', f'Emote is available ({emoteText=}) ({twitchChannelId=}) ({twitchEmoteChannelId=}) ({emoteType=})')
