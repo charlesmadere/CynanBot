@@ -19,6 +19,7 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         emote: str,
         eventId: str,
         gameId: str,
+        outOfTimeEmote: str | None,
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
@@ -42,6 +43,8 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
             raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
+        elif outOfTimeEmote is not None and not isinstance(outOfTimeEmote, str):
+            raise TypeError(f'outOfTimeEmote argument is malformed: \"{outOfTimeEmote}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -58,6 +61,7 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
         self.__emote: str = emote
         self.__gameId: str = gameId
+        self.__outOfTimeEmote: str | None = outOfTimeEmote
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
@@ -77,6 +81,10 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
 
     def isToxic(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
+
+    @property
+    def outOfTimeEmote(self) -> str | None:
+        return self.__outOfTimeEmote
 
     @property
     def pointsForWinning(self) -> int:

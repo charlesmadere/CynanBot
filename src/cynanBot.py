@@ -1143,8 +1143,8 @@ class CynanBot(
             await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
 
     async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),

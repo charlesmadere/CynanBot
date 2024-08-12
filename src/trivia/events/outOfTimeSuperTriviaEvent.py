@@ -4,8 +4,7 @@ from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from ..specialStatus.toxicTriviaPunishmentResult import \
-    ToxicTriviaPunishmentResult
+from ..specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from ...misc import utils as utils
 
 
@@ -22,6 +21,7 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         emote: str,
         eventId: str,
         gameId: str,
+        outOfTimeEmote: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ):
@@ -48,6 +48,8 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
             raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
+        elif outOfTimeEmote is not None and not isinstance(outOfTimeEmote, str):
+            raise TypeError(f'outOfTimeEmote argument is malformed: \"{outOfTimeEmote}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -60,6 +62,7 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         self.__toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = toxicTriviaPunishmentResult
         self.__emote: str = emote
         self.__gameId: str = gameId
+        self.__outOfTimeEmote: str | None = outOfTimeEmote
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
@@ -90,12 +93,6 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
 
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
 
@@ -103,5 +100,17 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def outOfTimeEmote(self) -> str | None:
+        return self.__outOfTimeEmote
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.SUPER_GAME_OUT_OF_TIME
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
