@@ -1147,14 +1147,14 @@ class CynanBot(
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
-            question = event.getTriviaQuestion(),
-            emote = event.getEmote(),
+            question = event.triviaQuestion,
+            emote = event.emote,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
-            emote = event.getEmote(),
+            emote = event.emote,
             twitchUser = twitchUser
         )
 
@@ -1162,7 +1162,7 @@ class CynanBot(
             await self.__twitchUtils.safeSend(twitchChannel, toxicTriviaPunishmentPrompt)
 
         launchpadPrompt = await self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
-            remainingQueueSize = event.getRemainingQueueSize()
+            remainingQueueSize = event.remainingQueueSize
         )
 
         if utils.isValidStr(launchpadPrompt):

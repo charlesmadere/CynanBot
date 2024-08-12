@@ -66,7 +66,8 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
     def getGameId(self) -> str:
@@ -78,9 +79,6 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     def getPointsForWinningStr(self) -> str:
         return locale.format_string("%d", self.__pointsForWinning, grouping = True)
 
-    def getRemainingQueueSize(self) -> int:
-        return self.__remainingQueueSize
-
     def getRemainingQueueSizeStr(self) -> str:
         return locale.format_string("%d", self.__remainingQueueSize, grouping = True)
 
@@ -89,9 +87,6 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
 
     def getToxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
         return self.__toxicTriviaPunishmentResult
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -104,8 +99,16 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         return self.__outOfTimeEmote
 
     @property
+    def remainingQueueSize(self) -> int:
+        return self.__remainingQueueSize
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.SUPER_GAME_OUT_OF_TIME
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
 
     @property
     def twitchChannel(self) -> str:
