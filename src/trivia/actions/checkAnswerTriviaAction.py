@@ -36,10 +36,6 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
     def getAnswer(self) -> str | None:
         return self.__answer
 
-    @property
-    def triviaActionType(self) -> TriviaActionType:
-        return TriviaActionType.CHECK_ANSWER
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
@@ -59,3 +55,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
             raise ValueError(f'no answer value is available: \"{answer}\"')
 
         return answer
+
+    @property
+    def triviaActionType(self) -> TriviaActionType:
+        return TriviaActionType.CHECK_ANSWER

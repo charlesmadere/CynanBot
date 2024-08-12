@@ -21,6 +21,7 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
         twitchChannelId: str,
         userId: str,
         userName: str,
+        wrongAnswerEmote: str | None,
         triviaScoreResult: TriviaScoreResult
     ):
         super().__init__(
@@ -46,6 +47,8 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
+        elif wrongAnswerEmote is not None and not isinstance(wrongAnswerEmote, str):
+            raise TypeError(f'wrongAnswerEmote argument is malformed: \"{wrongAnswerEmote}\"')
         elif not isinstance(triviaScoreResult, TriviaScoreResult):
             raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
@@ -58,37 +61,20 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
         self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
         self.__userName: str = userName
+        self.__wrongAnswerEmote: str | None = wrongAnswerEmote
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
 
-    def getAnswer(self) -> str | None:
+    @property
+    def answer(self) -> str | None:
         return self.__answer
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
-    def getTriviaScoreResult(self) -> TriviaScoreResult:
-        return self.__triviaScoreResult
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -97,5 +83,33 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.INCORRECT_ANSWER
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
+
+    @property
+    def triviaScoreResult(self) -> TriviaScoreResult:
+        return self.__triviaScoreResult
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

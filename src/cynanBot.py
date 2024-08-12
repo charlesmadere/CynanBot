@@ -1068,9 +1068,9 @@ class CynanBot(
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.getTriviaQuestion(),
-            emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName(),
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            emote = event.emote,
+            userNameThatRedeemed = event.userName,
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
     async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):

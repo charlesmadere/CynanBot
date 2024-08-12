@@ -328,6 +328,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
         if checkResult is TriviaAnswerCheckResult.INCORRECT:
+            wrongAnswerEmote = self.__triviaTwitchEmoteHelper.getWrongAnswerEmote(
+                twitchChannelId = action.getTwitchChannelId()
+            )
+
             triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaLosses(
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
@@ -346,6 +350,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName(),
+                wrongAnswerEmote = wrongAnswerEmote,
                 triviaScoreResult = triviaScoreResult
             ))
             return
