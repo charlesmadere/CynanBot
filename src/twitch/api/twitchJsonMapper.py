@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchApiScope import TwitchApiScope
 from .twitchBanRequest import TwitchBanRequest
-from .twitchBroadcasterSubscriptions import TwitchBroadcasterSubscriptions
+from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
 from .twitchEmoteDetails import TwitchEmoteDetails
@@ -143,10 +143,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             tier = tier
         )
 
-    async def parseBroadcasterSubscriptions(
+    async def parseBroadcasterSubscriptionResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBroadcasterSubscriptions | None:
+    ) -> TwitchBroadcasterSubscriptionResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
@@ -159,7 +159,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         points = utils.getIntFromDict(jsonResponse, 'points', fallback = 0)
         total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
 
-        return TwitchBroadcasterSubscriptions(
+        return TwitchBroadcasterSubscriptionResponse(
             points = points,
             total = total,
             subscription = subscription

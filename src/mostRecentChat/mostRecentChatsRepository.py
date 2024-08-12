@@ -6,8 +6,7 @@ from datetime import datetime
 from lru import LRU
 
 from .mostRecentChat import MostRecentChat
-from .mostRecentChatsRepositoryInterface import \
-    MostRecentChatsRepositoryInterface
+from .mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase

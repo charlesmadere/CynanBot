@@ -4,7 +4,7 @@ from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 
 
 @dataclass(frozen = True)
-class TwitchBroadcasterSubscriptions:
+class TwitchBroadcasterSubscriptionResponse:
     points: int
     total: int
     subscription: TwitchBroadcasterSubscription | None
