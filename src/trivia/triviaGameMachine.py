@@ -328,7 +328,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
         if checkResult is TriviaAnswerCheckResult.INCORRECT:
-            wrongAnswerEmote = self.__triviaTwitchEmoteHelper.getWrongAnswerEmote(
+            wrongAnswerEmote = await self.__triviaTwitchEmoteHelper.getWrongAnswerEmote(
                 twitchChannelId = action.getTwitchChannelId()
             )
 
