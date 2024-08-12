@@ -140,6 +140,7 @@ class TriviaUtils(TriviaUtilsInterface):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
+        wrongAnswerEmote: str | None,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
@@ -149,6 +150,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise TypeError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif wrongAnswerEmote is not None and not isinstance(wrongAnswerEmote, str):
+            raise TypeError(f'wrongAnswerEmote argument is malformed: \"{wrongAnswerEmote}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
@@ -160,7 +163,10 @@ class TriviaUtils(TriviaUtilsInterface):
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
+        if not utils.isValidStr(wrongAnswerEmote):
+            wrongAnswerEmote = utils.getRandomSadEmoji()
+
+        prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s incorrect. {wrongAnswerEmote}'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,

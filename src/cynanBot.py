@@ -1070,6 +1070,7 @@ class CynanBot(
             question = event.triviaQuestion,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
+            wrongAnswerEmote = event.wrongAnswerEmote,
             specialTriviaStatus = event.specialTriviaStatus
         ))
 

@@ -38,6 +38,7 @@ class TriviaUtilsInterface(ABC):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
+        wrongAnswerEmote: str | None,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
