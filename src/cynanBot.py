@@ -1075,13 +1075,13 @@ class CynanBot(
         ))
 
     async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getInvalidAnswerInputPrompt(
-            question = event.getTriviaQuestion(),
-            emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName(),
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            question = event.triviaQuestion,
+            emote = event.emote,
+            userNameThatRedeemed = event.userName,
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
@@ -1149,11 +1149,11 @@ class CynanBot(
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
+            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             emote = event.emote,
             twitchUser = twitchUser
         )

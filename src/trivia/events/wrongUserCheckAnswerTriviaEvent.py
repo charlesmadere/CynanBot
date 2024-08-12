@@ -50,30 +50,38 @@ class WrongUserCheckAnswerTriviaEvent(AbsTriviaEvent):
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getAnswer(self) -> str | None:
+    @property
+    def answer(self) -> str | None:
         return self.__answer
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
 
     @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.WRONG_USER
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

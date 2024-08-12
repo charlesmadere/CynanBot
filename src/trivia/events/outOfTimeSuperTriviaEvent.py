@@ -70,23 +70,17 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
 
-    def getPointsForWinning(self) -> int:
+    @property
+    def pointsForWinning(self) -> int:
         return self.__pointsForWinning
 
-    def getPointsForWinningStr(self) -> str:
+    @property
+    def pointsForWinningStr(self) -> str:
         return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
-    def getRemainingQueueSizeStr(self) -> str:
-        return locale.format_string("%d", self.__remainingQueueSize, grouping = True)
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getToxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
-        return self.__toxicTriviaPunishmentResult
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -101,6 +95,18 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     @property
     def remainingQueueSize(self) -> int:
         return self.__remainingQueueSize
+
+    @property
+    def remainingQueueSizeStr(self) -> str:
+        return locale.format_string("%d", self.__remainingQueueSize, grouping = True)
+
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
+    def toxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
+        return self.__toxicTriviaPunishmentResult
 
     @property
     def triviaEventType(self) -> TriviaEventType:
