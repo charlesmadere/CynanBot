@@ -2,6 +2,7 @@ from typing import Any
 
 from twitchio import Message
 
+from .exceptions import TwitchIoHasMalformedTagsException, TwitchIoTagsIsMissingRoomIdException
 from .twitchIoAuthor import TwitchIoAuthor
 from .twitchIoChannel import TwitchIoChannel
 from ..twitchAuthor import TwitchAuthor
@@ -57,11 +58,11 @@ class TwitchIoMessage(TwitchMessage):
 
         tags: dict[Any, Any] | Any | None = self.__message.tags
         if not isinstance(tags, dict) or len(tags) == 0:
-            raise RuntimeError(f'Error trying to retrieve twitchChannelId ({twitchChannelId}) from tags ({tags}) ({self=})')
+            raise TwitchIoHasMalformedTagsException(f'Encountered malformed \"tags\" value when trying to retrieve twitchChannelId ({twitchChannelId=}) from tags ({tags=}) ({self=})')
 
         twitchChannelId = tags.get('room-id')
         if not utils.isValidStr(twitchChannelId):
-            raise RuntimeError(f'Error trying to retrieve twitchChannelId ({twitchChannelId=}) from tags ({tags=}) ({self=})')
+            raise TwitchIoTagsIsMissingRoomIdException(f'Encoutnered malformed twitchChannelId ({twitchChannelId=}) value when trying to retrieve \"room-id\" from tags ({tags=}) ({self=})')
 
         self.__twitchChannelId = twitchChannelId
         return twitchChannelId
