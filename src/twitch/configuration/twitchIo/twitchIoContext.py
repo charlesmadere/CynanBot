@@ -44,7 +44,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
         return self.__author.getName()
 
     def getMessageContent(self) -> str | None:
-        return self.__context.message.content
+        return self.__message.getContent()
 
     async def getTwitchChannelId(self) -> str:
         return await self.__message.getTwitchChannelId()
