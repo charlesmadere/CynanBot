@@ -503,7 +503,6 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return broadcasterSubscriptionResponse
 
-
     async def fetchEmotes(
         self,
         broadcasterId: str,
