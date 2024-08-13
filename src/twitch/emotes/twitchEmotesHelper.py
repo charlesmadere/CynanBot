@@ -7,6 +7,7 @@ from ..api.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscri
 from ..api.twitchEmoteType import TwitchEmoteType
 from ..api.twitchEmotesResponse import TwitchEmotesResponse
 from ..api.twitchThemeMode import TwitchThemeMode
+from ..exceptions import TwitchStatusCodeException
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils
 from ...misc.timedDict import TimedDict
@@ -74,7 +75,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchAccessToken
             )
-        except GenericNetworkException as e:
+        except (GenericNetworkException, TwitchStatusCodeException) as e:
             self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({broadcasterSubscription=}) ({emotesResponse=}): {e}', e, traceback.format_exc())
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(
