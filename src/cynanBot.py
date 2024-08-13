@@ -1059,6 +1059,7 @@ class CynanBot(
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
+            outOfTimeEmote = event.outOfTimeEmote,
             userNameThatRedeemed = event.userName,
             specialTriviaStatus = event.specialTriviaStatus
         ))
@@ -1085,30 +1086,30 @@ class CynanBot(
         ))
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getTriviaGameQuestionPrompt(
-            triviaQuestion = event.getTriviaQuestion(),
-            delaySeconds = event.getSecondsToLive(),
-            points = event.getPointsForWinning(),
-            emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName(),
+            triviaQuestion = event.triviaQuestion,
+            delaySeconds = event.secondsToLive,
+            points = event.pointsForWinning,
+            emote = event.emote,
+            userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
-            triviaQuestion = event.getTriviaQuestion(),
-            delaySeconds = event.getSecondsToLive(),
-            points = event.getPointsForWinning(),
-            emote = event.getEmote(),
+            triviaQuestion = event.triviaQuestion,
+            delaySeconds = event.secondsToLive,
+            points = event.pointsForWinning,
+            emote = event.emote,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.getSpecialTriviaStatus()
+            specialTriviaStatus = event.specialTriviaStatus
         ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
@@ -1149,6 +1150,7 @@ class CynanBot(
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
+            outOfTimeEmote = event.outOfTimeEmote,
             specialTriviaStatus = event.specialTriviaStatus
         ))
 

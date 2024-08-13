@@ -11,8 +11,9 @@ from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
-from src.twitch.api.twitchUserType import TwitchUserType
+from src.twitch.api.twitchPollStatus import TwitchPollStatus
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from src.twitch.api.twitchUserType import TwitchUserType
 
 
 class TestTwitchJsonMapper:
@@ -309,6 +310,51 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseEmoteType_withWhitespaceString(self):
         result = await self.jsonMapper.parseEmoteType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withActive(self):
+        result = await self.jsonMapper.parsePollStatus('active')
+        assert result is TwitchPollStatus.ACTIVE
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withArchived(self):
+        result = await self.jsonMapper.parsePollStatus('archived')
+        assert result is TwitchPollStatus.ARCHIVED
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withCompleted(self):
+        result = await self.jsonMapper.parsePollStatus('completed')
+        assert result is TwitchPollStatus.COMPLETED
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withEmptyString(self):
+        result = await self.jsonMapper.parsePollStatus('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withInvalid(self):
+        result = await self.jsonMapper.parsePollStatus('invalid')
+        assert result is TwitchPollStatus.INVALID
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withModerated(self):
+        result = await self.jsonMapper.parsePollStatus('moderated')
+        assert result is TwitchPollStatus.MODERATED
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withNone(self):
+        result = await self.jsonMapper.parsePollStatus(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withTerminated(self):
+        result = await self.jsonMapper.parsePollStatus('terminated')
+        assert result is TwitchPollStatus.TERMINATED
+
+    @pytest.mark.asyncio
+    async def test_parsePollStatus_withWhitespaceString(self):
+        result = await self.jsonMapper.parsePollStatus(' ')
         assert result is None
 
     @pytest.mark.asyncio

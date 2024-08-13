@@ -99,7 +99,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             return None
 
         self.__timber.log('UserIdsRepository', f'User ID for username \"{userName}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
-        userDetails: TwitchUserDetails | None = None
 
         try:
             userDetails = await self.__twitchApiService.fetchUserDetailsWithUserName(
@@ -186,7 +185,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             return None
 
         self.__timber.log('UserIdsRepository', f'Username for user ID \"{userId}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
-        userDetails: TwitchUserDetails | None = None
 
         try:
             userDetails = await self.__twitchApiService.fetchUserDetailsWithUserId(

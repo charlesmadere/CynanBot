@@ -57,35 +57,13 @@ class NewSuperTriviaGameEvent(AbsTriviaEvent):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
-    def getSecondsToLive(self) -> int:
-        return self.__secondsToLive
-
-    def getSecondsToLiveStr(self) -> str:
-        return locale.format_string("%d", self.__secondsToLive, grouping = True)
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -94,5 +72,37 @@ class NewSuperTriviaGameEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
+    def pointsForWinningStr(self) -> str:
+        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+
+    @property
+    def secondsToLive(self) -> int:
+        return self.__secondsToLive
+
+    @property
+    def secondsToLiveStr(self) -> str:
+        return locale.format_string("%d", self.__secondsToLive, grouping = True)
+
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.NEW_SUPER_GAME
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId

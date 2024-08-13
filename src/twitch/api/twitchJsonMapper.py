@@ -14,6 +14,7 @@ from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
+from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchStreamType import TwitchStreamType
@@ -356,6 +357,26 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteType value: \"{emoteType}\"')
+                return None
+
+    async def parsePollStatus(
+        self,
+        pollStatus: str | Any | None
+    ) -> TwitchPollStatus | None:
+        if not utils.isValidStr(pollStatus):
+            return None
+
+        pollStatus = pollStatus.lower()
+
+        match pollStatus:
+            case 'active': return TwitchPollStatus.ACTIVE
+            case 'archived': return TwitchPollStatus.ARCHIVED
+            case 'completed': return TwitchPollStatus.COMPLETED
+            case 'invalid': return TwitchPollStatus.INVALID
+            case 'moderated': return TwitchPollStatus.MODERATED
+            case 'terminated': return TwitchPollStatus.TERMINATED
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchPollStatus value: \"{pollStatus}\"')
                 return None
 
     async def parseSendChatDropReason(

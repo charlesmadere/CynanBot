@@ -20,6 +20,7 @@ class NewTriviaGameEvent(AbsTriviaEvent):
         eventId: str,
         gameId: str,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
@@ -46,6 +47,8 @@ class NewTriviaGameEvent(AbsTriviaEvent):
             raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -58,41 +61,17 @@ class NewTriviaGameEvent(AbsTriviaEvent):
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
-
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
-    def getSecondsToLive(self) -> int:
-        return self.__secondsToLive
-
-    def getSecondsToLiveStr(self) -> str:
-        return locale.format_string("%d", self.__secondsToLive, grouping = True)
-
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
@@ -101,5 +80,45 @@ class NewTriviaGameEvent(AbsTriviaEvent):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
+    def pointsForWinningStr(self) -> str:
+        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+
+    @property
+    def secondsToLive(self) -> int:
+        return self.__secondsToLive
+
+    @property
+    def secondsToLiveStr(self) -> str:
+        return locale.format_string("%d", self.__secondsToLive, grouping = True)
+
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
+    @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.NEW_GAME
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

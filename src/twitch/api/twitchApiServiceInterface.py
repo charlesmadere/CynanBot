@@ -4,6 +4,7 @@ from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
 from .twitchBannedUserRequest import TwitchBannedUserRequest
 from .twitchBannedUsersResponse import TwitchBannedUsersResponse
+from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse
@@ -52,6 +53,15 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         bannedUserRequest: TwitchBannedUserRequest
     ) -> TwitchBannedUsersResponse:
+        pass
+
+    @abstractmethod
+    async def fetchBroadcasterSubscription(
+        self,
+        broadcasterId: str,
+        chatterUserId: str,
+        twitchAccessToken: str
+    ) -> TwitchBroadcasterSubscriptionResponse:
         pass
 
     @abstractmethod

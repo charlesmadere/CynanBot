@@ -59,6 +59,7 @@ class TriviaUtilsInterface(ABC):
         self,
         question: AbsTriviaQuestion,
         emote: str,
+        outOfTimeEmote: str | None,
         userNameThatRedeemed: str,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
@@ -89,6 +90,7 @@ class TriviaUtilsInterface(ABC):
         self,
         question: AbsTriviaQuestion,
         emote: str,
+        outOfTimeEmote: str | None,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:

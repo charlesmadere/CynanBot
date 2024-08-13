@@ -507,7 +507,9 @@ twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    userIdsRepository = userIdsRepository
 )
 
 twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = TwitchFollowingStatusRepository(

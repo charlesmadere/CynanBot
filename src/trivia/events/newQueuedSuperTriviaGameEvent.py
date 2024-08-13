@@ -49,24 +49,30 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
 
-    def getNumberOfGames(self) -> int:
+    @property
+    def numberOfGames(self) -> int:
         return self.__numberOfGames
 
-    def getPointsForWinning(self) -> int:
+    @property
+    def pointsForWinning(self) -> int:
         return self.__pointsForWinning
 
-    def getSecondsToLive(self) -> int:
+    @property
+    def secondsToLive(self) -> int:
         return self.__secondsToLive
 
-    def getShinyMultiplier(self) -> int:
+    @property
+    def shinyMultiplier(self) -> int:
         return self.__shinyMultiplier
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
 
     @property
     def triviaEventType(self) -> TriviaEventType:
         return TriviaEventType.NEW_QUEUED_SUPER_GAME
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId

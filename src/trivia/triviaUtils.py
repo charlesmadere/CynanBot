@@ -3,13 +3,10 @@ import traceback
 from collections import defaultdict
 
 from .banned.bannedTriviaGameController import BannedTriviaGameController
-from .banned.bannedTriviaGameControllersRepositoryInterface import \
-    BannedTriviaGameControllersRepositoryInterface
+from .banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from .gameController.triviaGameController import TriviaGameController
-from .gameController.triviaGameControllersRepositoryInterface import \
-    TriviaGameControllersRepositoryInterface
-from .gameController.triviaGameGlobalController import \
-    TriviaGameGlobalController
+from .gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
+from .gameController.triviaGameGlobalController import TriviaGameGlobalController
 from .gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
@@ -17,18 +14,15 @@ from .questions.triviaQuestionType import TriviaQuestionType
 from .score.triviaScoreResult import TriviaScoreResult
 from .specialStatus.shinyTriviaResult import ShinyTriviaResult
 from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from .specialStatus.toxicTriviaPunishmentResult import \
-    ToxicTriviaPunishmentResult
+from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
-from .triviaQuestionPresenterInterface import \
-    TriviaQuestionPresenterInterface
+from .triviaQuestionPresenterInterface import TriviaQuestionPresenterInterface
 from .triviaUtilsInterface import TriviaUtilsInterface
 from ..cuteness.cutenessResult import CutenessResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
@@ -199,7 +193,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
-        suffix = ''
+        suffix: str
         if question.triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             suffix = 'Please answer using A, B, C, …'
         elif question.triviaType is TriviaQuestionType.TRUE_FALSE:
@@ -251,6 +245,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self,
         question: AbsTriviaQuestion,
         emote: str,
+        outOfTimeEmote: str | None,
         userNameThatRedeemed: str,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
@@ -259,6 +254,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
+        elif outOfTimeEmote is not None and not isinstance(outOfTimeEmote, str):
+            raise TypeError(f'outOfTimeEmote argument is malformed: \"{outOfTimeEmote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise TypeError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
@@ -272,7 +269,10 @@ class TriviaUtils(TriviaUtilsInterface):
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
+        if not utils.isValidStr(outOfTimeEmote):
+            outOfTimeEmote = utils.getRandomSadEmoji()
+
+        prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {outOfTimeEmote}'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
@@ -386,6 +386,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self,
         question: AbsTriviaQuestion,
         emote: str,
+        outOfTimeEmote: str | None,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
@@ -393,6 +394,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
+        elif outOfTimeEmote is not None and not isinstance(outOfTimeEmote, str):
+            raise TypeError(f'outOfTimeEmote argument is malformed: \"{outOfTimeEmote}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
@@ -404,7 +407,10 @@ class TriviaUtils(TriviaUtilsInterface):
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()}'
+        if not utils.isValidStr(outOfTimeEmote):
+            outOfTimeEmote = utils.getRandomSadEmoji()
+
+        prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {outOfTimeEmote}'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,

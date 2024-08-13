@@ -645,6 +645,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName()
         ))

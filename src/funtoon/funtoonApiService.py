@@ -1,4 +1,5 @@
 import traceback
+from typing import Any
 
 from .funtoonApiServiceInterface import FuntoonApiServiceInterface
 from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
@@ -50,6 +51,25 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         else:
             self.__timber.log('FuntoonApiService', f'Encountered non-200 HTTP status code when banning trivia question ({triviaId=}) ({responseStatusCode=}) ({response=})')
             return False
+
+    async def customEvent(
+        self,
+        data: dict[str, Any] | str | None,
+        event: str,
+        funtoonToken: str,
+        twitchChannel: str,
+    ) -> bool:
+        if data is not None and not isinstance(data, dict) and not isinstance(data, str):
+            raise TypeError(f'data argument is malformed: \"{data}\"')
+        elif not utils.isValidStr(event):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
+        elif not utils.isValidStr(funtoonToken):
+            raise TypeError(f'funtoonToken argument is malformed: \"{funtoonToken}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        # TODO
+        return False
 
     async def fetchTriviaQuestion(self) -> FuntoonTriviaQuestion:
         self.__timber.log('FuntoonApiService', f'Fetching random trivia question from Funtoon...')

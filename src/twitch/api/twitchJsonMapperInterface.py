@@ -11,6 +11,7 @@ from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
+from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchStreamType import TwitchStreamType
@@ -84,6 +85,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         emoteType: str | None
     ) -> TwitchEmoteType | None:
+        pass
+
+    @abstractmethod
+    async def parsePollStatus(
+        self,
+        pollStatus: str | Any | None
+    ) -> TwitchPollStatus | None:
         pass
 
     @abstractmethod
