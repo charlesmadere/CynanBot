@@ -9,6 +9,7 @@ from .multipleBongoTriviaQuestion import MultipleBongoTriviaQuestion
 from ...misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from ...misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from ...questions.triviaQuestionType import TriviaQuestionType
+from ...triviaDifficulty import TriviaDifficulty
 from ....misc import utils as utils
 from ....timber.timberInterface import TimberInterface
 
@@ -43,7 +44,10 @@ class BongoJsonParser(BongoJsonParserInterface):
         correctAnswer = utils.getBoolFromDict(jsonContents, 'correct_answer')
         question = utils.getStrFromDict(jsonContents, 'question', clean = True, htmlUnescape = True)
         triviaId = utils.getStrFromDict(jsonContents, 'id')
-        difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
+
+        difficulty = TriviaDifficulty.UNKNOWN
+        if 'difficulty' in jsonContents and utils.isValidStr(jsonContents.get('difficulty')):
+            difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
 
         return BooleanBongoTriviaQuestion(
             correctAnswer = correctAnswer,
@@ -82,7 +86,10 @@ class BongoJsonParser(BongoJsonParserInterface):
         correctAnswer = utils.getStrFromDict(jsonContents, 'correct_answer', clean = True, htmlUnescape = True)
         question = utils.getStrFromDict(jsonContents, 'question', clean = True, htmlUnescape = True)
         triviaId = utils.getStrFromDict(jsonContents, 'id')
-        difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
+
+        difficulty = TriviaDifficulty.UNKNOWN
+        if 'difficulty' in jsonContents and utils.isValidStr(jsonContents.get('difficulty')):
+            difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
 
         return MultipleBongoTriviaQuestion(
             incorrectAnswers = incorrectAnswers,
