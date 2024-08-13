@@ -96,7 +96,7 @@ class OpenTriviaDatabaseApiService(OpenTriviaDatabaseApiServiceInterface):
         elif questionsResponse.responseCode is not OpenTriviaDatabaseResponseCode.SUCCESS:
             self.__timber.log('OpenTriviaDatabaseApiService', f'Encountered bad response code in response data ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({questionsResponse=}) ({sessionToken=}) ({twitchChannelId=})')
             raise GenericNetworkException(f'OpenTriviaDatabaseApiService encountered bad response code in response data ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({questionsResponse=}) ({sessionToken=}) ({twitchChannelId=})')
-        elif questionsResponse.responseCode is None or len(questionsResponse.results) == 0:
+        elif questionsResponse.results is None or len(questionsResponse.results) == 0:
             self.__timber.log('OpenTriviaDatabaseApiService', f'Encountered empty/missing results in response data ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({questionsResponse=}) ({sessionToken=}) ({twitchChannelId=})')
             raise GenericNetworkException(f'OpenTriviaDatabaseApiService encountered empty/missing results in response data ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({questionsResponse=}) ({sessionToken=}) ({twitchChannelId=})')
 
