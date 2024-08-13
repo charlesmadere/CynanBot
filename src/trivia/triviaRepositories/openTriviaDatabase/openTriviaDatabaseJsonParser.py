@@ -121,7 +121,7 @@ class OpenTriviaDatabaseJsonParser(OpenTriviaDatabaseJsonParserInterface):
                 else:
                     results.append(triviaQuestion)
 
-        results.freeze()
+            results.freeze()
 
         return OpenTriviaDatabaseQuestionsResponse(
             results = results,
