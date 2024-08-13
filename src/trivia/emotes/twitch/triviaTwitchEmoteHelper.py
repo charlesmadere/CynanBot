@@ -100,7 +100,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(twitchChannelId)
         if not utils.isValidStr(twitchAccessToken):
             self.__isAvailableCache[emoteType] = False
-            self.__cachedTime[emoteType] = now + self.__cacheTimeBuffer
+            self.__timeCache[emoteType] = now + self.__cacheTimeBuffer
             return None
 
         viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
