@@ -353,6 +353,7 @@ twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 

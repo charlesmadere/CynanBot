@@ -188,17 +188,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
 
         allViableEmotes: set[str] = { 'KomodoHype' }
-        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(broadcasterUserId)
 
-        if utils.isValidStr(twitchAccessToken):
-            try:
-                channelSpecificViableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-                    twitchAccessToken = twitchAccessToken,
-                    twitchChannelId = broadcasterUserId
-                )
-                allViableEmotes.update(channelSpecificViableEmotes)
-            except GenericNetworkException as e:
-                self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({user=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+        try:
+            channelSpecificViableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
+                twitchChannelId = broadcasterUserId
+            )
+            allViableEmotes.update(channelSpecificViableEmotes)
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({user=}): {e}', e, traceback.format_exc())
 
         validEmotesList: list[str] = list(allViableEmotes)
         emoji1 = random.choice(validEmotesList)

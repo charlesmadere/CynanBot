@@ -509,6 +509,7 @@ twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 
@@ -1119,8 +1120,7 @@ triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = TriviaTwitchEmoteHel
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchEmotesHelper = twitchEmotesHelper,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchTokensUtils = twitchTokensUtils
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
 triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(

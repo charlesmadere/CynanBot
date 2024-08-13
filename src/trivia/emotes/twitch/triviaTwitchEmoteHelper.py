@@ -7,7 +7,6 @@ from ....misc import utils as utils
 from ....timber.timberInterface import TimberInterface
 from ....twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ....twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from ....twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 
 
 class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
@@ -18,7 +17,6 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
-        twitchTokensUtils: TwitchTokensUtilsInterface,
         celebratoryEmote: str | None = 'samusHype',
         outOfTimeEmote: str | None = 'samusShrug',
         wrongAnswerEmote: str | None = 'samusBad',
@@ -32,8 +30,6 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif celebratoryEmote is not None and not isinstance(celebratoryEmote, str):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
         elif outOfTimeEmote is not None and not isinstance(outOfTimeEmote, str):
@@ -47,7 +43,6 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
-        self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__celebratoryEmote: str | None = celebratoryEmote
         self.__outOfTimeEmote: str | None = outOfTimeEmote
         self.__wrongAnswerEmote: str | None = wrongAnswerEmote
@@ -97,14 +92,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
             else:
                 return None
 
-        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(twitchChannelId)
-        if not utils.isValidStr(twitchAccessToken):
-            self.__isAvailableCache[emoteType] = False
-            self.__timeCache[emoteType] = now + self.__cacheTimeBuffer
-            return None
-
         viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-            twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchEmoteChannelId
         )
 

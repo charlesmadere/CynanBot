@@ -9,6 +9,7 @@ from ..api.twitchEmotesResponse import TwitchEmotesResponse
 from ..api.twitchThemeMode import TwitchThemeMode
 from ..exceptions import TwitchStatusCodeException
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...misc import utils as utils
 from ...misc.timedDict import TimedDict
 from ...network.exceptions import GenericNetworkException
@@ -23,6 +24,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         cacheTimeDelta: timedelta = timedelta(hours = 3)
     ):
@@ -32,12 +34,15 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(cacheTimeDelta, timedelta):
             raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
         self.__cache: TimedDict[frozenset[str]] = TimedDict(cacheTimeDelta)
@@ -48,19 +53,19 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
 
     async def fetchViableSubscriptionEmoteNames(
         self,
-        twitchAccessToken: str,
         twitchChannelId: str
     ) -> frozenset[str]:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         viableEmoteNames = self.__cache[twitchChannelId]
         if viableEmoteNames is not None:
             return viableEmoteNames
 
-        twitchId = await self.__getTwitchId(twitchAccessToken)
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
+
         broadcasterSubscription: TwitchBroadcasterSubscriptionResponse | None = None
         emotesResponse: TwitchEmotesResponse | None = None
 
