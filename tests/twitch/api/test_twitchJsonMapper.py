@@ -88,6 +88,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchApiScope.CHANNEL_READ_SUBSCRIPTIONS
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelSubscriptionsString(self):
+        result = await self.jsonMapper.parseApiScope('channel_subscriptions')
+        assert result is TwitchApiScope.CHANNEL_SUBSCRIPTIONS
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withChatEditString(self):
         result = await self.jsonMapper.parseApiScope('chat:edit')
         assert result is TwitchApiScope.CHAT_EDIT

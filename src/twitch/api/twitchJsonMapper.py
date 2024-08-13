@@ -73,6 +73,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:read:redemptions': return TwitchApiScope.CHANNEL_READ_REDEMPTIONS
             case 'channel:read:subscriptions': return TwitchApiScope.CHANNEL_READ_SUBSCRIPTIONS
             case 'channel_editor': return TwitchApiScope.CHANNEL_EDITOR
+            case 'channel_subscriptions': return TwitchApiScope.CHANNEL_SUBSCRIPTIONS
             case 'chat:edit': return TwitchApiScope.CHAT_EDIT
             case 'chat:read': return TwitchApiScope.CHAT_READ
             case 'moderation:read': return TwitchApiScope.MODERATION_READ

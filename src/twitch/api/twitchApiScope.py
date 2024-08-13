@@ -15,6 +15,7 @@ class TwitchApiScope(Enum):
     CHANNEL_READ_PREDICTIONS = auto()
     CHANNEL_READ_REDEMPTIONS = auto()
     CHANNEL_READ_SUBSCRIPTIONS = auto()
+    CHANNEL_SUBSCRIPTIONS = auto()
     CHAT_EDIT = auto()
     CHAT_READ = auto()
     MODERATION_READ = auto()
