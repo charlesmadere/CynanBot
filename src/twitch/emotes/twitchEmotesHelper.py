@@ -110,11 +110,10 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         elif emotesResponse is not None and not isinstance(emotesResponse, TwitchEmotesResponse):
             raise TypeError(f'emotesResponse argument is malformed: \"{emotesResponse}\"')
 
-        viableEmoteNames: set[str] = set()
-
         if broadcasterSubscription is None or broadcasterSubscription.subscription is None or emotesResponse is None or len(emotesResponse.emoteData) == 0:
-            return frozenset(viableEmoteNames)
+            return frozenset()
 
+        viableEmoteNames: set[str] = set()
         allThemeModes = frozenset(TwitchThemeMode)
 
         for emote in emotesResponse.emoteData:
