@@ -21,8 +21,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         funtoonJsonMapper: FuntoonJsonMapperInterface,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface,
         networkClientProvider: NetworkClientProvider,
-        timber: TimberInterface,
-        funtoonApiUrl: str = 'https://funtoon.party/api'
+        timber: TimberInterface
     ):
         if not isinstance(funtoonApiService, FuntoonApiServiceInterface):
             raise TypeError(f'funtoonApiService argument is malformed: \"{funtoonApiService}\"')
@@ -34,15 +33,12 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidUrl(funtoonApiUrl):
-            raise TypeError(f'funtoonApiUrl argument is malformed: \"{funtoonApiUrl}\"')
 
         self.__funtoonApiService: FuntoonApiServiceInterface = funtoonApiService
         self.__funtoonJsonMapper: FuntoonJsonMapperInterface = funtoonJsonMapper
         self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
-        self.__funtoonApiUrl: str = funtoonApiUrl
 
     async def banTriviaQuestion(self, triviaId: str) -> bool:
         if not utils.isValidStr(triviaId):
@@ -56,59 +52,6 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             self.__timber.log('FuntoonRepository', f'Encountered network error when banning trivia question ({triviaId=}): {e}', e, traceback.format_exc())
 
         return successfullyBanned
-
-    async def __hitFuntoon(
-        self,
-        event: str,
-        funtoonToken: str,
-        twitchChannel: str,
-        twitchChannelId: str,
-        data: dict[str, Any] | str | None = None
-    ) -> bool:
-        if not utils.isValidStr(event):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not utils.isValidStr(funtoonToken):
-            raise TypeError(f'funtoonToken argument is malformed: \"{funtoonToken}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        url = f'{self.__funtoonApiUrl}/events/custom'
-
-        jsonPayload = {
-            'channel': twitchChannel,
-            'data': data,
-            'event': event
-        }
-
-        self.__timber.log('FuntoonRepository', f'Hitting Funtoon API \"{url}\" ({event=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=})')
-        clientSession = await self.__networkClientProvider.get()
-
-        try:
-            response = await clientSession.post(
-                url = url,
-                headers = {
-                    'Authorization': funtoonToken,
-                    'Content-Type': 'application/json'
-                },
-                json = jsonPayload
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('FuntoonRepository', f'Encountered network error ({url=}) ({event=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
-            return False
-
-        responseStatusCode: int | None = None
-        if response is not None:
-            responseStatusCode = response.statusCode
-            await response.close()
-
-        if responseStatusCode == 200:
-            self.__timber.log('FuntoonRepository', f'Successfully hit Funtoon API ({url=}) ({event=}) ({twitchChannel=}) ({twitchChannelId=})')
-            return True
-        else:
-            self.__timber.log('FuntoonRepository', f'Error when hitting Funtoon API ({url=}) ({event=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=}) ({funtoonToken=}) ({response=}) ({responseStatusCode=})')
-            return False
 
     async def pkmnBattle(
         self,
@@ -134,15 +77,15 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnBattle as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
             return False
 
-        return await self.__hitFuntoon(
-            event = 'battle',
-            funtoonToken = funtoonToken,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
+        return await self.__funtoonApiService.customEvent(
             data = {
                 'player': userThatRedeemed,
                 'opponent': userToBattle
-            }
+            },
+            event = 'battle',
+            funtoonToken = funtoonToken,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
     async def pkmnCatch(
@@ -181,12 +124,12 @@ class FuntoonRepository(FuntoonRepositoryInterface):
                 'catchType': catchType
             }
 
-        return await self.__hitFuntoon(
+        return await self.__funtoonApiService.customEvent(
+            data = data,
             event = 'catch',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            data = data
+            twitchChannelId = twitchChannelId
         )
 
     async def pkmnGiveEvolve(
@@ -210,12 +153,12 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnGiveEvolve as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
             return False
 
-        return await self.__hitFuntoon(
+        return await self.__funtoonApiService.customEvent(
+            data = userThatRedeemed,
             event = 'giveFreeEvolve',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            data = userThatRedeemed
+            twitchChannelId = twitchChannelId
         )
 
     async def pkmnGiveShiny(
@@ -239,10 +182,10 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnGiveShiny as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
             return False
 
-        return await self.__hitFuntoon(
+        return await self.__funtoonApiService.customEvent(
+            data = userThatRedeemed,
             event = 'giveFreeShiny',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            data = userThatRedeemed
+            twitchChannelId = twitchChannelId
         )

@@ -58,6 +58,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         event: str,
         funtoonToken: str,
         twitchChannel: str,
+        twitchChannelId: str
     ) -> bool:
         if data is not None and not isinstance(data, dict) and not isinstance(data, str):
             raise TypeError(f'data argument is malformed: \"{data}\"')
@@ -67,9 +68,39 @@ class FuntoonApiService(FuntoonApiServiceInterface):
             raise TypeError(f'funtoonToken argument is malformed: \"{funtoonToken}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
-        return False
+        jsonPayload: dict[str, Any] = {
+            'channel': twitchChannel,
+            'data': data,
+            'event': event
+        }
+
+        self.__timber.log('FuntoonApiService', f'Sending custom event... ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=})')
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.post(
+                url = 'https://funtoon.party/api/events/custom',
+                headers = {
+                    'Authorization': funtoonToken,
+                    'Content-Type': 'application/json'
+                },
+                json = jsonPayload
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('FuntoonApiService', f'Encountered network error when sending custom event ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=}): {e}', e, traceback.format_exc())
+            return False
+
+        responseStatusCode = response.statusCode
+        await response.close()
+
+        if responseStatusCode == 200:
+            return True
+        else:
+            self.__timber.log('FuntoonRepository', f'Error sending custom event ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=}) ({response=}) ({responseStatusCode=})')
+            return False
 
     async def fetchTriviaQuestion(self) -> FuntoonTriviaQuestion:
         self.__timber.log('FuntoonApiService', f'Fetching random trivia question from Funtoon...')

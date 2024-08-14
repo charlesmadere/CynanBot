@@ -17,6 +17,7 @@ class FuntoonApiServiceInterface(ABC):
         event: str,
         funtoonToken: str,
         twitchChannel: str,
+        twitchChannelId: str
     ) -> bool:
         pass
 
