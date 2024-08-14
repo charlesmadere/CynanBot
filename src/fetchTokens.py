@@ -24,21 +24,29 @@ if not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CLIENT_SEC
     raise ValueError(f'All variables must be set: {TWITCH_CLIENT_ID=}, {TWITCH_CLIENT_SECRET=}, {TWITCH_CODE_SECRET=}')
 
 url = f'https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}&client_secret={TWITCH_CLIENT_SECRET}&code={TWITCH_CODE_SECRET}&grant_type=authorization_code&redirect_uri=http://localhost'
+print(f'Contacting Twitch API URL: \"{url}\"...')
 
 jsonResponse: dict[str, Any] | None = None
 
 try:
     rawResponse = requests.post(url)
     jsonResponse = rawResponse.json()
-except Exception as e:
-    print(f'Encountered exception ({e=}) ({TWITCH_CLIENT_ID=}) ({TWITCH_CLIENT_SECRET}) ({TWITCH_CODE_SECRET=})')
-
-print(f'All Twitch JSON: {jsonResponse}')
+except BaseException as e:
+    print(f'Encountered exception ({e=}) ({TWITCH_CLIENT_ID=}) ({TWITCH_CLIENT_SECRET=}) ({TWITCH_CODE_SECRET=}) ({jsonResponse=})')
 
 if isinstance(jsonResponse, dict):
-    accessToken: str | None = jsonResponse.get('access_token')
-    refreshToken: str | None = jsonResponse.get('refresh_token')
+    accessToken: str | None = jsonResponse.get('access_token', None)
+    refreshToken: str | None = jsonResponse.get('refresh_token', None)
+
     print(f'Twitch accessToken: \"{accessToken}\"')
     print(f'Twitch refreshToken: \"{refreshToken}\"')
+    print('\n\n\n')
+    print('===========================')
+    print('==== Begin Twitch JSON ====')
+    print('===========================')
+    print(str(jsonResponse))
+    print('===========================')
+    print('===== End Twitch JSON =====')
+    print('===========================')
 else:
     print(f'jsonResponse is unknown type: \"{jsonResponse}\"')
