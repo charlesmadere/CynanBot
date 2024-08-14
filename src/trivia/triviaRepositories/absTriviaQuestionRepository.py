@@ -42,7 +42,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
             add = True
 
             for filteredResponse in filteredMultipleChoiceResponses:
-                if cleanedResponse.lower() == filteredResponse.lower():
+                if cleanedResponse.casefold() == filteredResponse.casefold():
                     add = False
                     break
 
