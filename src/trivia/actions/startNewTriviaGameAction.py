@@ -58,12 +58,6 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         self.__userName: str = userName
         self.__triviaFetchOptions: TriviaFetchOptions = triviaFetchOptions
 
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
     def getSecondsToLive(self) -> int:
         return self.__secondsToLive
 
@@ -75,13 +69,6 @@ class StartNewTriviaGameAction(AbsTriviaAction):
 
     def getShinyMultiplierStr(self) -> str:
         return locale.format_string("%d", self.__shinyMultiplier, grouping = True)
-
-    @property
-    def triviaActionType(self) -> TriviaActionType:
-        return TriviaActionType.START_NEW_GAME
-
-    def getTriviaFetchOptions(self) -> TriviaFetchOptions:
-        return self.__triviaFetchOptions
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
@@ -97,3 +84,19 @@ class StartNewTriviaGameAction(AbsTriviaAction):
 
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled
+
+    @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
+    def pointsForWinningStr(self) -> str:
+        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+
+    @property
+    def triviaActionType(self) -> TriviaActionType:
+        return TriviaActionType.START_NEW_GAME
+
+    @property
+    def triviaFetchOptions(self) -> TriviaFetchOptions:
+        return self.__triviaFetchOptions

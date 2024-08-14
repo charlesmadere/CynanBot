@@ -419,7 +419,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if state is None:
             await self.__submitEvent(SuperGameNotReadyCheckAnswerTriviaEvent(
                 actionId = action.actionId,
-                answer = action.getAnswer(),
+                answer = action.answer,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
@@ -434,7 +434,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         state.incrementAnswerCount(action.getUserId())
 
         checkResult = await self.__checkAnswer(
-            answer = action.getAnswer(),
+            answer = action.answer,
             triviaQuestion = state.getTriviaQuestion(),
             extras = {
                 'actionId': action.actionId,
@@ -541,18 +541,18 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CLEAR_SUPER_TRIVIA_QUEUE}: \"{action.triviaActionType}\"')
 
         result = await self.__queuedTriviaGameStore.clearQueuedSuperGames(
-            twitchChannelId = action.getTwitchChannelId()
+            twitchChannelId = action.twitchChannelId
         )
 
-        self.__timber.log('TriviaGameMachine', f'Cleared Super Trivia game queue for \"{action.getTwitchChannel()}\" ({action.actionId=}): {result}')
+        self.__timber.log('TriviaGameMachine', f'Cleared Super Trivia game queue for \"{action.twitchChannel}\" ({action.actionId=}): {result}')
 
         await self.__submitEvent(ClearedSuperTriviaQueueTriviaEvent(
             numberOfGamesRemoved = result.amountRemoved,
             previousQueueSize = result.oldQueueSize,
             actionId = action.actionId,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId()
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId
         ))
 
     async def __handleActionStartNewTriviaGame(self, action: StartNewTriviaGameAction):
@@ -587,7 +587,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         try:
             triviaQuestion = await self.__triviaRepository.fetchTrivia(
                 emote = emote,
-                triviaFetchOptions = action.getTriviaFetchOptions()
+                triviaFetchOptions = action.triviaFetchOptions
             )
         except TooManyTriviaFetchAttemptsException as e:
             self.__timber.log('TriviaGameMachine', f'Reached limit on trivia fetch attempts without being able to successfully retrieve a trivia question for \"{action.getTwitchChannel()}\": {e}', e, traceback.format_exc())
@@ -604,7 +604,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         specialTriviaStatus: SpecialTriviaStatus | None = None
-        pointsForWinning = action.getPointsForWinning()
+        pointsForWinning = action.pointsForWinning
 
         if action.isShinyTriviaEnabled() and await self.__shinyTriviaHelper.isShinyTriviaQuestion(
             twitchChannel = action.getTwitchChannel(),
@@ -620,7 +620,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         state = TriviaGameState(
             triviaQuestion = triviaQuestion,
             endTime = endTime,
-            basePointsForWinning = action.getPointsForWinning(),
+            basePointsForWinning = action.pointsForWinning,
             pointsForWinning = pointsForWinning,
             secondsToLive = action.getSecondsToLive(),
             specialTriviaStatus = specialTriviaStatus,
@@ -661,7 +661,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds()
         )
 
-        if action.getCreationTime() + superTriviaFirstQuestionDelay >= now:
+        if action.creationTime + superTriviaFirstQuestionDelay >= now:
             # Let's re-add this action back into the queue to try processing again later, as this action
             # was created too recently. We don't want super trivia questions to start instantaneously, as
             # it could mean that some people in chat are not ready to answer at first. So this minor delay

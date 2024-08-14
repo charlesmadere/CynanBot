@@ -69,7 +69,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                 oldQueueSize = oldQueueSize
             )
 
-        numberOfGames = action.getNumberOfGames()
+        numberOfGames = action.numberOfGames
 
         if not isSuperTriviaGameCurrentlyInProgress:
             numberOfGames = numberOfGames - 1

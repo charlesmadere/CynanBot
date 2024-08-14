@@ -17,11 +17,6 @@ class AbsTriviaAction(ABC):
     def actionId(self) -> str:
         return self.__actionId
 
-    @property
-    @abstractmethod
-    def triviaActionType(self) -> TriviaActionType:
-        pass
-
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
@@ -31,3 +26,8 @@ class AbsTriviaAction(ABC):
             'actionId': self.__actionId,
             'triviaActionType': self.triviaActionType
         }
+
+    @property
+    @abstractmethod
+    def triviaActionType(self) -> TriviaActionType:
+        pass

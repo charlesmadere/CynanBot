@@ -33,12 +33,9 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getAnswer(self) -> str | None:
-        return self.__answer
-
     @property
-    def triviaActionType(self) -> TriviaActionType:
-        return TriviaActionType.CHECK_SUPER_ANSWER
+    def answer(self) -> str | None:
+        return self.__answer
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
@@ -59,3 +56,7 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
             raise ValueError(f'no answer value is available: \"{answer}\"')
 
         return answer
+
+    @property
+    def triviaActionType(self) -> TriviaActionType:
+        return TriviaActionType.CHECK_SUPER_ANSWER

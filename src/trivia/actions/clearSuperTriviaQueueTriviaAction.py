@@ -25,8 +25,10 @@ class ClearSuperTriviaQueueTriviaAction(AbsTriviaAction):
     def triviaActionType(self) -> TriviaActionType:
         return TriviaActionType.CLEAR_SUPER_TRIVIA_QUEUE
 
-    def getTwitchChannel(self) -> str:
+    @property
+    def twitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def getTwitchChannelId(self) -> str:
+    @property
+    def twitchChannelId(self) -> str:
         return self.__twitchChannelId

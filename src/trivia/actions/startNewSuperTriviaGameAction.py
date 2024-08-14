@@ -94,14 +94,9 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def consumeQueueAction(self):
         self.__isQueueActionConsumed = True
 
-    def getCreationTime(self) -> SimpleDateTime:
+    @property
+    def creationTime(self) -> SimpleDateTime:
         return self.__creationTime
-
-    def getNumberOfGames(self) -> int:
-        return self.__numberOfGames
-
-    def getNumberOfGamesStr(self) -> str:
-        return locale.format_string("%d", self.__numberOfGames, grouping = True)
 
     def getPerUserAttempts(self) -> int:
         return self.__perUserAttempts
@@ -142,10 +137,6 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def getToxicTriviaPunishmentMultiplierStr(self) -> str:
         return locale.format_string("%d", self.__toxicTriviaPunishmentMultiplier, grouping = True)
 
-    @property
-    def triviaActionType(self) -> TriviaActionType:
-        return TriviaActionType.START_NEW_SUPER_GAME
-
     def getTriviaFetchOptions(self) -> TriviaFetchOptions:
         return self.__triviaFetchOptions
 
@@ -163,3 +154,15 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
 
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled
+
+    @property
+    def numberOfGames(self) -> int:
+        return self.__numberOfGames
+
+    @property
+    def numberOfGamesStr(self) -> str:
+        return locale.format_string("%d", self.__numberOfGames, grouping = True)
+
+    @property
+    def triviaActionType(self) -> TriviaActionType:
+        return TriviaActionType.START_NEW_SUPER_GAME
