@@ -56,10 +56,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         self.__timeCache.clear()
         self.__timber.log('TriviaTwitchEmoteHelper', 'Caches cleared')
 
-    async def getCelebratoryEmote(self, twitchChannelId: str) -> str | None:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
+    async def getCelebratoryEmote(self) -> str | None:
         celebratoryEmote = self.__celebratoryEmote
         if not utils.isValidStr(celebratoryEmote):
             return None
@@ -70,7 +67,6 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
         return await self.__getEmote(
             emoteText = celebratoryEmote,
-            twitchChannelId = twitchChannelId,
             twitchEmoteChannelId = charlesUserId,
             emoteType = TriviaTwitchEmoteType.CELEBRATORY
         )
@@ -78,7 +74,6 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
     async def __getEmote(
         self,
         emoteText: str,
-        twitchChannelId: str,
         twitchEmoteChannelId: str,
         emoteType: TriviaTwitchEmoteType
     ) -> str | None:
@@ -98,19 +93,16 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
         emoteIsAvailable = emoteText in viableEmoteNames
         self.__isAvailableCache[emoteType] = emoteIsAvailable
-        self.__timeCache[emoteType] = datetime.now(self.__timeZoneRepository.getDefault()) + self.__cacheTimeBuffer
+        self.__timeCache[emoteType] = now + self.__cacheTimeBuffer
 
         if emoteIsAvailable:
-            self.__timber.log('TriviaTwitchEmoteHelper', f'Emote is available ({emoteText=}) ({twitchChannelId=}) ({twitchEmoteChannelId=}) ({emoteType=})')
+            self.__timber.log('TriviaTwitchEmoteHelper', f'Emote is available ({emoteText=}) ({twitchEmoteChannelId=}) ({emoteType=})')
             return emoteText
         else:
-            self.__timber.log('TriviaTwitchEmoteHelper', f'Emote isn\'t available ({emoteText=}) ({twitchChannelId=}) ({twitchEmoteChannelId=}) ({emoteType=})')
+            self.__timber.log('TriviaTwitchEmoteHelper', f'Emote isn\'t available ({emoteText=}) ({twitchEmoteChannelId=}) ({emoteType=})')
             return None
 
-    async def getOutOfTimeEmote(self, twitchChannelId: str) -> str | None:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
+    async def getOutOfTimeEmote(self) -> str | None:
         outOfTimeEmote = self.__outOfTimeEmote
         if not utils.isValidStr(outOfTimeEmote):
             return None
@@ -121,15 +113,11 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
         return await self.__getEmote(
             emoteText = outOfTimeEmote,
-            twitchChannelId = twitchChannelId,
             twitchEmoteChannelId = charlesUserId,
             emoteType = TriviaTwitchEmoteType.OUT_OF_TIME
         )
 
-    async def getWrongAnswerEmote(self, twitchChannelId: str) -> str | None:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
+    async def getWrongAnswerEmote(self) -> str | None:
         wrongAnswerEmote = self.__wrongAnswerEmote
         if not utils.isValidStr(wrongAnswerEmote):
             return None
@@ -140,7 +128,6 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
         return await self.__getEmote(
             emoteText = wrongAnswerEmote,
-            twitchChannelId = twitchChannelId,
             twitchEmoteChannelId = charlesUserId,
             emoteType = TriviaTwitchEmoteType.WRONG_ANSWER
         )

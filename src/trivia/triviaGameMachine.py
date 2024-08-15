@@ -328,9 +328,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
         if checkResult is TriviaAnswerCheckResult.INCORRECT:
-            wrongAnswerEmote = await self.__triviaTwitchEmoteHelper.getWrongAnswerEmote(
-                twitchChannelId = action.getTwitchChannelId()
-            )
+            wrongAnswerEmote = await self.__triviaTwitchEmoteHelper.getWrongAnswerEmote()
 
             triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaLosses(
                 twitchChannel = action.getTwitchChannel(),
@@ -384,9 +382,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userId = action.getUserId()
         )
 
-        celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote(
-            twitchChannelId = action.getTwitchChannelId()
-        )
+        celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote()
 
         await self.__submitEvent(CorrectAnswerTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),
@@ -510,9 +506,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userId = action.getUserId()
         )
 
-        celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote(
-            twitchChannelId = action.getTwitchChannelId()
-        )
+        celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote()
 
         await self.__submitEvent(CorrectSuperAnswerTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),
@@ -804,9 +798,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userId = state.getUserId()
         )
 
-        outOfTimeEmote = await self.__triviaTwitchEmoteHelper.getOutOfTimeEmote(
-            twitchChannelId = state.getTwitchChannelId()
-        )
+        outOfTimeEmote = await self.__triviaTwitchEmoteHelper.getOutOfTimeEmote()
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaLosses(
             twitchChannel = state.getTwitchChannel(),
@@ -854,9 +846,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannelId = state.getTwitchChannelId()
         )
 
-        outOfTimeEmote = await self.__triviaTwitchEmoteHelper.getOutOfTimeEmote(
-            twitchChannelId = state.getTwitchChannelId()
-        )
+        outOfTimeEmote = await self.__triviaTwitchEmoteHelper.getOutOfTimeEmote()
 
         await self.__submitEvent(OutOfTimeSuperTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),

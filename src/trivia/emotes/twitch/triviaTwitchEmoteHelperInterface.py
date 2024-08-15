@@ -6,13 +6,13 @@ from ....misc.clearable import Clearable
 class TriviaTwitchEmoteHelperInterface(Clearable):
 
     @abstractmethod
-    async def getCelebratoryEmote(self, twitchChannelId: str) -> str | None:
+    async def getCelebratoryEmote(self) -> str | None:
         pass
 
     @abstractmethod
-    async def getOutOfTimeEmote(self, twitchChannelId: str) -> str | None:
+    async def getOutOfTimeEmote(self) -> str | None:
         pass
 
     @abstractmethod
-    async def getWrongAnswerEmote(self, twitchChannelId: str) -> str | None:
+    async def getWrongAnswerEmote(self) -> str | None:
         pass
