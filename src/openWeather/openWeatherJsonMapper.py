@@ -1,6 +1,8 @@
 from datetime import datetime, tzinfo
 from typing import Any
 
+from frozendict import frozendict
+
 from .openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
 from .openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
 from .openWeatherAlert import OpenWeatherAlert
@@ -30,9 +32,9 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__descriptionIdToEmoji: dict[str, str | None] = self.__createDescriptionIdToEmojiDictionary()
+        self.__descriptionIdToEmoji: frozendict[str, str | None] = self.__createDescriptionIdToEmojiDictionary()
 
-    def __createDescriptionIdToEmojiDictionary(self) -> dict[str, str | None]:
+    def __createDescriptionIdToEmojiDictionary(self) -> frozendict[str, str | None]:
         dictionary: dict[str, str | None] = dict()
         dictionary['200'] = '⛈️'
         dictionary['201'] = dictionary['200']
@@ -73,7 +75,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         dictionary['803'] = dictionary['801']
         dictionary['804'] = dictionary['801']
 
-        return dictionary
+        return frozendict(dictionary)
 
     async def parseAirPollutionIndex(
         self,

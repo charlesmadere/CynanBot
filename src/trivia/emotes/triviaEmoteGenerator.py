@@ -1,5 +1,8 @@
 import random
 
+from frozendict import frozendict
+from frozenlist import FrozenList
+
 from .triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from .triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 from ...misc import utils as utils
@@ -21,10 +24,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         self.__timber: TimberInterface = timber
         self.__triviaEmoteRepository: TriviaEmoteRepositoryInterface = triviaEmoteRepository
 
-        self.__emotesDict: dict[str, set[str] | None] = self.__createEmotesDict()
-        self.__emotesList: list[str] = list(self.__emotesDict)
+        self.__emojiToEquivalents: frozendict[str, set[str] | None] = self.__createEmojiToEquivalentsDictionary()
+        self.__emojiEquivalents: FrozenList[str] = FrozenList(self.__emojiToEquivalents)
+        self.__emojiEquivalents.freeze()
 
-    def __createEmotesDict(self) -> dict[str, set[str] | None]:
+    def __createEmojiToEquivalentsDictionary(self) -> frozendict[str, set[str] | None]:
         # Creates and returns a dictionary of emojis, with a set of emojis that should be
         # considered equivalent. For example: 👨‍🔬 (man scientist) and 👩‍🔬 (woman scientist)
         # should both be considered equivalents of the primary "root" 🧑‍🔬 (scientist) emoji.
@@ -133,14 +137,14 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🌊'] = { '💧', '💦' }
         emotesDict['🐋'] = { '🐳' }
 
-        return emotesDict
+        return frozendict(emotesDict)
 
     async def getCurrentEmoteFor(self, twitchChannelId: str) -> str:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannelId)
-        return self.__emotesList[emoteIndex]
+        return self.__emojiEquivalents[emoteIndex]
 
     async def __getCurrentEmoteIndexFor(self, twitchChannelId: str) -> int:
         if not utils.isValidStr(twitchChannelId):
@@ -148,7 +152,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         emoteIndex = await self.__triviaEmoteRepository.getEmoteIndexFor(twitchChannelId)
 
-        if not utils.isValidInt(emoteIndex) or emoteIndex < 0 or emoteIndex >= len(self.__emotesList):
+        if not utils.isValidInt(emoteIndex) or emoteIndex < 0 or emoteIndex >= len(self.__emojiEquivalents):
             self.__timber.log('TriviaEmoteGenerator', f'emoteIndex value for {twitchChannelId=} is out of bounds or uninitialized ({emoteIndex=})')
             emoteIndex = 0
 
@@ -159,17 +163,17 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         currentEmoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannelId)
-        newEmoteIndex = (currentEmoteIndex + 1) % len(self.__emotesList)
+        newEmoteIndex = (currentEmoteIndex + 1) % len(self.__emojiEquivalents)
 
         await self.__triviaEmoteRepository.setEmoteIndexFor(
             emoteIndex = newEmoteIndex,
             twitchChannelId = twitchChannelId
         )
 
-        return self.__emotesList[newEmoteIndex]
+        return self.__emojiEquivalents[newEmoteIndex]
 
     def getRandomEmote(self) -> str:
-        return random.choice(self.__emotesList)
+        return random.choice(self.__emojiEquivalents)
 
     async def getValidatedAndNormalizedEmote(self, emote: str | None) -> str | None:
         if emote is not None and not isinstance(emote, str):
@@ -178,10 +182,10 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         if not utils.isValidStr(emote):
             return None
 
-        if emote in self.__emotesDict:
+        if emote in self.__emojiToEquivalents:
             return emote
 
-        for emoteKey, equivalentEmotes in self.__emotesDict.items():
+        for emoteKey, equivalentEmotes in self.__emojiToEquivalents.items():
             if equivalentEmotes is not None and len(equivalentEmotes) >= 1 and emote in equivalentEmotes:
                 return emoteKey
 
