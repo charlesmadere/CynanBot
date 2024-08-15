@@ -567,7 +567,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userId = action.getUserId()
         )
 
-        if state is not None and state.getEndTime() >= now:
+        if state is not None and state.endTime >= now:
             await self.__submitEvent(GameAlreadyInProgressTriviaEvent(
                 gameId = state.getGameId(),
                 actionId = action.actionId,
@@ -673,7 +673,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannelId = action.getTwitchChannelId()
         )
 
-        isSuperTriviaGameCurrentlyInProgress = state is not None and state.getEndTime() >= now
+        isSuperTriviaGameCurrentlyInProgress = state is not None and state.endTime >= now
 
         queueResult = await self.__queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = isSuperTriviaGameCurrentlyInProgress,
@@ -784,7 +784,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         gameStatesToRemove: list[AbsTriviaGameState] = list()
 
         for state in gameStates:
-            if state.getEndTime() < now:
+            if state.endTime < now:
                 gameStatesToRemove.append(state)
 
         for state in gameStatesToRemove:

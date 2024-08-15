@@ -68,23 +68,22 @@ class AbsTriviaGameState(ABC):
     def actionId(self) -> str:
         return self.__actionId
 
-    def getBasePointsForWinning(self) -> int:
+    @property
+    def basePointsForWinning(self) -> int:
         return self.__basePointsForWinning
+
+    @property
+    def endTime(self) -> datetime:
+        return self.__endTime
 
     def getEmote(self) -> str:
         return self.__emote
-
-    def getEndTime(self) -> datetime:
-        return self.__endTime
 
     def getGameId(self) -> str:
         return self.__gameId
 
     def getPointsForWinning(self) -> int:
         return self.__pointsForWinning
-
-    def getSecondsToLive(self) -> int:
-        return self.__secondsToLive
 
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
@@ -107,3 +106,7 @@ class AbsTriviaGameState(ABC):
 
     def isToxic(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
+
+    @property
+    def secondsToLive(self) -> int:
+        return self.__secondsToLive
