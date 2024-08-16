@@ -87,7 +87,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         if not isinstance(pkmnCatchBoosterPack, PkmnCatchBoosterPack):
             raise TypeError(f'pkmnCatchBoosterPack argument is malformed: \"{pkmnCatchBoosterPack}\"')
 
-        match pkmnCatchBoosterPack:
+        match pkmnCatchBoosterPack.catchType:
             case PkmnCatchType.GREAT: return FuntoonPkmnCatchType.GREAT
             case PkmnCatchType.NORMAL: return FuntoonPkmnCatchType.NORMAL
             case PkmnCatchType.ULTRA: return FuntoonPkmnCatchType.ULTRA
