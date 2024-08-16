@@ -359,6 +359,8 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
+from src.users.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
+from src.users.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -520,11 +522,16 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     userIdsRepository = userIdsRepository
 )
 
+pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
+    timber = timber
+)
+
 soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
+    pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository

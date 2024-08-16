@@ -136,7 +136,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
-        if user.isSubGiftThankingEnabled:
+        if user.isSubGiftThankingEnabled and subGift is not None:
             await self.__processCynanBotAsGiftRecipient(
                 broadcasterUserId = broadcasterUserId,
                 subGift = subGift,
@@ -173,12 +173,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     async def __processCynanBotAsGiftRecipient(
         self,
         broadcasterUserId: str,
-        subGift: TwitchSubGift | None,
+        subGift: TwitchSubGift,
         user: UserInterface
     ):
         if not user.isSubGiftThankingEnabled:
-            return
-        elif subGift is None:
             return
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
@@ -195,11 +193,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             )
             allViableEmotes.update(channelSpecificViableEmotes)
         except GenericNetworkException as e:
-            self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({user=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({subGift=}) ({user=}): {e}', e, traceback.format_exc())
 
-        validEmotesList: list[str] = list(allViableEmotes)
-        emoji1 = random.choice(validEmotesList)
-        emoji2 = random.choice(validEmotesList)
+        viableEmotesList: list[str] = list(allViableEmotes)
+        emoji1 = random.choice(viableEmotesList)
+        emoji2 = random.choice(viableEmotesList)
 
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
         await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')

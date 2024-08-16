@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from datetime import tzinfo
 
+from frozendict import frozendict
+
+from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 
@@ -52,16 +55,17 @@ class UserInterface(ABC):
     def areTimeoutCheerActionsEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def cutenessBoosterPacks(self) -> frozendict[str, CutenessBoosterPack] | None:
+        pass
+
     @abstractmethod
     def getCasualGamePollRewardId(self) -> str | None:
         pass
 
     @abstractmethod
     def getCasualGamePollUrl(self) -> str | None:
-        pass
-
-    @abstractmethod
-    def getCutenessBoosterPacks(self) -> list[CutenessBoosterPack] | None:
         pass
 
     @abstractmethod
@@ -106,10 +110,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def getSpeedrunProfile(self) -> str | None:
-        pass
-
-    @abstractmethod
-    def getSoundAlertRedemptions(self) -> dict[str, SoundAlertRedemption] | None:
         pass
 
     @abstractmethod
@@ -186,10 +186,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def getWaitForTriviaAnswerDelay(self) -> int | None:
-        pass
-
-    @abstractmethod
-    def hasCutenessBoosterPacks(self) -> bool:
         pass
 
     @abstractmethod
@@ -346,7 +342,17 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack]:
+        pass
+
+    @property
+    @abstractmethod
     def shizaMessageRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
+    def soundAlertRedemptions(self) -> dict[str, SoundAlertRedemption] | None:
         pass
 
     @property

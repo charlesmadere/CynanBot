@@ -1,5 +1,7 @@
 from datetime import tzinfo
 
+from frozendict import frozendict
+
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .userInterface import UserInterface
@@ -93,9 +95,9 @@ class User(UserInterface):
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
         twitterUrl: str,
-        soundAlertRedemptions: dict[str, SoundAlertRedemption] | None,
-        cutenessBoosterPacks: list[CutenessBoosterPack] | None,
-        pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None,
+        cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
+        pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
+        soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
         timeZones: list[tzinfo] | None
     ):
         if not utils.isValidBool(areBeanChancesEnabled):
@@ -258,12 +260,12 @@ class User(UserInterface):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif twitterUrl is not None and not isinstance(twitterUrl, str):
             raise TypeError(f'twitterUrl argument is malformed: \"{twitterUrl}\"')
-        elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, dict):
-            raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
-        elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, list):
+        elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
             raise TypeError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
-        elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, list):
+        elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, frozendict):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
+        elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
+            raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
         elif timeZones is not None and not isinstance(timeZones, list):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
@@ -349,9 +351,9 @@ class User(UserInterface):
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__twitterUrl: str | None = twitterUrl
-        self.__soundAlertRedemptions: dict[str, SoundAlertRedemption] | None = soundAlertRedemptions
-        self.__cutenessBoosterPacks: list[CutenessBoosterPack] | None = cutenessBoosterPacks
-        self.__pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
+        self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
+        self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
+        self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
         self.__timeZones: list[tzinfo] | None = timeZones
 
     @property
@@ -390,14 +392,15 @@ class User(UserInterface):
     def areTimeoutCheerActionsEnabled(self) -> bool:
         return self.__areTimeoutCheerActionsEnabled
 
+    @property
+    def cutenessBoosterPacks(self) -> frozendict[str, CutenessBoosterPack] | None:
+        return self.__cutenessBoosterPacks
+
     def getCasualGamePollRewardId(self) -> str | None:
         return self.__casualGamePollRewardId
 
     def getCasualGamePollUrl(self) -> str | None:
         return self.__casualGamePollUrl
-
-    def getCutenessBoosterPacks(self) -> list[CutenessBoosterPack] | None:
-        return self.__cutenessBoosterPacks
 
     def getDiscordUrl(self) -> str | None:
         return self.__discord
@@ -423,9 +426,6 @@ class User(UserInterface):
     def getPkmnBattleRewardId(self) -> str | None:
         return self.__pkmnBattleRewardId
 
-    def getPkmnCatchBoosterPacks(self) -> list[PkmnCatchBoosterPack] | None:
-        return self.__pkmnCatchBoosterPacks
-
     def getPkmnEvolveRewardId(self) -> str | None:
         return self.__pkmnEvolveRewardId
 
@@ -434,9 +434,6 @@ class User(UserInterface):
 
     def getRandomSoundAlertRewardId(self) -> str | None:
         return self.__randomSoundAlertRewardId
-
-    def getSoundAlertRedemptions(self) -> dict[str, SoundAlertRedemption] | None:
-        return self.__soundAlertRedemptions
 
     def getSoundAlertRewardId(self) -> str | None:
         return self.__soundAlertRewardId
@@ -500,9 +497,6 @@ class User(UserInterface):
 
     def getWaitForTriviaAnswerDelay(self) -> int | None:
         return self.__waitForTriviaAnswerDelay
-
-    def hasCutenessBoosterPacks(self) -> bool:
-        return utils.hasItems(self.__cutenessBoosterPacks)
 
     def hasDiscord(self) -> bool:
         return utils.isValidUrl(self.__discord)
@@ -649,12 +643,20 @@ class User(UserInterface):
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
 
+    @property
+    def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack] | None:
+        return self.__pkmnCatchBoosterPacks
+
     def __repr__(self) -> str:
         return self.__handle
 
     @property
     def shizaMessageRewardId(self) -> str | None:
         return self.__shizaMessageRewardId
+
+    @property
+    def soundAlertRedemptions(self) -> frozendict[str, SoundAlertRedemption] | None:
+        return self.__soundAlertRedemptions
 
     @property
     def timeoutCheerActionFollowShieldDays(self) -> int | None:

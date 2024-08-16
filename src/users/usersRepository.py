@@ -5,10 +5,12 @@ from typing import Any, Collection
 
 import aiofiles
 import aiofiles.ospath
+from frozendict import frozendict
 
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmnCatchType import PkmnCatchType
+from .pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from .soundAlertRedemption import SoundAlertRedemption
 from .user import User
 from .userJsonConstant import UserJsonConstant
@@ -24,12 +26,15 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
+        pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface,
         soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         usersFile: str = 'usersRepository.json'
     ):
-        if not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
+        if not isinstance(pkmnCatchTypeJsonMapper, PkmnCatchTypeJsonMapperInterface):
+            raise TypeError(f'pkmnCatchTypeJsonMapper argument is malformed: \"{pkmnCatchTypeJsonMapper}\"')
+        elif not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
             raise TypeError(f'soundAlertJsonMapper argument is malformed: \"{soundAlertJsonMapper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -38,6 +43,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
+        self.__pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = pkmnCatchTypeJsonMapper
         self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -186,7 +192,7 @@ class UsersRepository(UsersRepositoryInterface):
             timeZones = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
-        cutenessBoosterPacks: list[CutenessBoosterPack] | None = None
+        cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = None
         if isCutenessEnabled:
             cutenessBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
@@ -237,7 +243,7 @@ class UsersRepository(UsersRepositoryInterface):
         pkmnBattleRewardId: str | None = None
         pkmnEvolveRewardId: str | None = None
         pkmnShinyRewardId: str | None = None
-        pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None = None
+        pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = None
         if isPkmnEnabled:
             pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
             pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
@@ -245,7 +251,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnCatchBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
-        soundAlertRedemptions: dict[str, SoundAlertRedemption] | None = None
+        soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = None
         if areSoundAlertsEnabled:
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
@@ -333,9 +339,9 @@ class UsersRepository(UsersRepositoryInterface):
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             twitterUrl = twitterUrl,
-            soundAlertRedemptions = soundAlertRedemptions,
             cutenessBoosterPacks = cutenessBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
+            soundAlertRedemptions = soundAlertRedemptions,
             timeZones = timeZones
         )
 
@@ -468,31 +474,31 @@ class UsersRepository(UsersRepositoryInterface):
     def __parseCutenessBoosterPacksFromJson(
         self,
         jsonList: list[dict[str, Any]] | None
-    ) -> list[CutenessBoosterPack] | None:
-        if jsonList is not None and not isinstance(jsonList, list):
-            raise TypeError(f'jsonList argument is malformed: \"{jsonList}\"')
-        elif jsonList is None:
+    ) -> frozendict[str, CutenessBoosterPack] | None:
+        if not isinstance(jsonList, list) or len(jsonList) == 0:
             return None
 
-        cutenessBoosterPacks: list[CutenessBoosterPack] = list()
+        boosterPacks: dict[str, CutenessBoosterPack] = dict()
 
         for cutenessBoosterPackJson in jsonList:
-            cutenessBoosterPacks.append(CutenessBoosterPack(
-                amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount'),
-                rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
-            ))
+            amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount')
+            rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
 
-        cutenessBoosterPacks.sort(key = lambda pack: pack.amount)
-        return cutenessBoosterPacks
+            boosterPacks[rewardId] = CutenessBoosterPack(
+                amount = amount,
+                rewardId = rewardId
+            )
+
+        return frozendict(boosterPacks)
 
     def __parsePkmnCatchBoosterPacksFromJson(
         self,
         jsonList: list[dict[str, Any]] | None
-    ) -> list[PkmnCatchBoosterPack] | None:
+    ) -> frozendict[str, PkmnCatchBoosterPack] | None:
         if not isinstance(jsonList, list) or len(jsonList) == 0:
             return None
 
-        pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] = list()
+        boosterPacks: dict[str, PkmnCatchBoosterPack] = dict()
 
         for pkmnCatchBoosterPackJson in jsonList:
             pkmnCatchTypeStr = utils.getStrFromDict(
@@ -503,19 +509,21 @@ class UsersRepository(UsersRepositoryInterface):
 
             catchType: PkmnCatchType | None = None
             if utils.isValidStr(pkmnCatchTypeStr):
-                catchType = PkmnCatchType.fromStr(pkmnCatchTypeStr)
+                catchType = self.__pkmnCatchTypeJsonMapper.require(pkmnCatchTypeStr)
 
-            pkmnCatchBoosterPacks.append(PkmnCatchBoosterPack(
+            rewardId = utils.getStrFromDict(pkmnCatchBoosterPackJson, 'rewardId')
+
+            boosterPacks[rewardId] = PkmnCatchBoosterPack(
                 catchType = catchType,
-                rewardId = utils.getStrFromDict(pkmnCatchBoosterPackJson, 'rewardId')
-            ))
+                rewardId = rewardId
+            )
 
-        return pkmnCatchBoosterPacks
+        return frozendict(boosterPacks)
 
     def __parseSoundAlertRedemptionsFromJson(
         self,
         jsonList: list[dict[str, Any]] | None
-    ) -> dict[str, SoundAlertRedemption] | None:
+    ) -> frozendict[str, SoundAlertRedemption] | None:
         if not isinstance(jsonList, list) or len(jsonList) == 0:
             return None
 
@@ -543,7 +551,7 @@ class UsersRepository(UsersRepositoryInterface):
                 rewardId = rewardId
             )
 
-        return redemptions
+        return frozendict(redemptions)
 
     def __readJson(self) -> dict[str, Any]:
         if self.__jsonCache is not None:

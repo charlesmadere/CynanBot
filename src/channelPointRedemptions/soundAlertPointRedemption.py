@@ -40,8 +40,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        soundAlertRedemptions = user.getSoundAlertRedemptions()
-
+        soundAlertRedemptions = user.soundAlertRedemptions
         if soundAlertRedemptions is None or len(soundAlertRedemptions) == 0:
             return None
 

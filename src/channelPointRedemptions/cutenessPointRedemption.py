@@ -1,7 +1,6 @@
 import traceback
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
-from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
@@ -38,17 +37,11 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         if not twitchUser.isCutenessEnabled():
             return False
 
-        cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks()
+        cutenessBoosterPacks = twitchUser.cutenessBoosterPacks
         if cutenessBoosterPacks is None or len(cutenessBoosterPacks) == 0:
             return False
 
-        cutenessBoosterPack: CutenessBoosterPack | None = None
-
-        for cbp in cutenessBoosterPacks:
-            if twitchChannelPointsMessage.getRewardId() == cbp.rewardId:
-                cutenessBoosterPack = cbp
-                break
-
+        cutenessBoosterPack = cutenessBoosterPacks.get(twitchChannelPointsMessage.getRewardId(), None)
         if cutenessBoosterPack is None:
             return False
 

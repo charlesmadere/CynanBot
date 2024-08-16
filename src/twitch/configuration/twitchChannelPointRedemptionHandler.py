@@ -137,7 +137,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.isCutenessEnabled() and user.hasCutenessBoosterPacks():
+        if user.isCutenessEnabled():
             if await self.__cutenessPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage

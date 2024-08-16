@@ -289,7 +289,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        tokensDetails: TwitchTokensDetails | None = None
+        tokensDetails: TwitchTokensDetails | None
 
         if twitchChannelId in self.__cache:
             tokensDetails = self.__cache.get(twitchChannelId, None)
@@ -519,7 +519,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         except GenericNetworkException as e:
             self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}')
-        except TwitchStatusCodeException as e:
+        except TwitchStatusCodeException:
             # this is an expected error
             pass
 
