@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchApiScope import TwitchApiScope
 from .twitchBanRequest import TwitchBanRequest
+from .twitchBannedUser import TwitchBannedUser
 from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
@@ -94,6 +95,51 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
+
+    async def parseBannedUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBannedUser | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        if not isinstance(data, list) or len(data) == 0:
+            return None
+
+        dataEntry: dict[str, Any] | Any | None = data[0]
+        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
+            return None
+
+        createdAt = utils.getDateTimeFromDict(dataEntry, 'created_at')
+
+        expiresAt: datetime | None = None
+        if 'expires_at' in dataEntry and utils.isValidStr(dataEntry.get('expires_at')):
+            expiresAt = utils.getDateTimeFromDict(dataEntry, 'expires_at')
+
+        moderatorId = utils.getStrFromDict(dataEntry, 'moderator_id')
+        moderatorLogin = utils.getStrFromDict(dataEntry, 'moderator_login')
+        moderatorName = utils.getStrFromDict(dataEntry, 'moderator_name')
+
+        reason: str | None = None
+        if 'reason' in dataEntry and utils.isValidStr(dataEntry.get('reason')):
+            reason = utils.getStrFromDict(dataEntry, 'reason')
+
+        userId = utils.getStrFromDict(dataEntry, 'user_id')
+        userLogin = utils.getStrFromDict(dataEntry, 'user_login')
+        userName = utils.getStrFromDict(dataEntry, 'user_name')
+
+        return TwitchBannedUser(
+            createdAt = createdAt,
+            expiresAt = expiresAt,
+            moderatorId = moderatorId,
+            moderatorLogin = moderatorLogin,
+            moderatorName = moderatorName,
+            reason = reason,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName
+        )
 
     async def parseBroadcasterSubscription(
         self,

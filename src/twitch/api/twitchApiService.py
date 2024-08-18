@@ -6,9 +6,6 @@ from .twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
 from .twitchBannedUser import TwitchBannedUser
-from .twitchBannedUserRequest import TwitchBannedUserRequest
-from .twitchBannedUsersPageResponse import TwitchBannedUsersPageResponse
-from .twitchBannedUsersResponse import TwitchBannedUsersResponse
 from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
@@ -17,7 +14,6 @@ from .twitchFollower import TwitchFollower
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .twitchLiveUserDetails import TwitchLiveUserDetails
 from .twitchModUser import TwitchModUser
-from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchTokensDetails import TwitchTokensDetails
@@ -40,7 +36,6 @@ from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider
-from ...network.networkHandle import NetworkHandle
 from ...timber.timberInterface import TimberInterface
 
 
@@ -305,155 +300,53 @@ class TwitchApiService(TwitchApiServiceInterface):
             transport = transport
         )
 
-    async def fetchBannedUsers(
+    async def fetchBannedUser(
         self,
-        twitchAccessToken: str,
-        bannedUserRequest: TwitchBannedUserRequest
-    ) -> TwitchBannedUsersResponse:
-        if not utils.isValidStr(twitchAccessToken):
+        broadcasterId: str,
+        chatterUserId: str,
+        twitchAccessToken: str
+    ) -> TwitchBannedUser:
+        if not utils.isValidStr(broadcasterId):
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+        elif not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not isinstance(bannedUserRequest, TwitchBannedUserRequest):
-            raise TypeError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
 
-        self.__timber.log('TwitchApiService', f'Fetching banned users... {bannedUserRequest=}')
+        self.__timber.log('TwitchApiService', f'Fetching banned user... ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
-        firstFetch = True
-        currentPagination: TwitchPaginationResponse | None = None
-        pages: list[TwitchBannedUsersPageResponse] = list()
-
-        while firstFetch or currentPagination is not None:
-            if firstFetch:
-                firstFetch = False
-
-            page = await self.__fetchBannedUsers(
-                clientSession = clientSession,
-                twitchAccessToken = twitchAccessToken,
-                twitchClientId = twitchClientId,
-                bannedUserRequest = bannedUserRequest,
-                currentPagination = currentPagination
-            )
-
-            if page is None:
-                currentPagination = None
-            else:
-                pages.append(page)
-                currentPagination = page.pagination
-
-        allUsers: list[TwitchBannedUser] = list()
-
-        for page in pages:
-            usersPage = page.users
-
-            if usersPage is not None and len(usersPage) >= 1:
-                allUsers.extend(usersPage)
-
-        allUsers.sort(key = lambda user: user.userLogin.casefold())
-
-        return TwitchBannedUsersResponse(
-            users = allUsers,
-            broadcasterId = bannedUserRequest.broadcasterId,
-            requestedUserId = bannedUserRequest.requestedUserId
-        )
-
-    async def __fetchBannedUsers(
-        self,
-        clientSession: NetworkHandle,
-        twitchAccessToken: str,
-        twitchClientId: str,
-        bannedUserRequest: TwitchBannedUserRequest,
-        currentPagination: TwitchPaginationResponse | None
-    ) -> TwitchBannedUsersPageResponse:
-        if not isinstance(clientSession, NetworkHandle):
-            raise TypeError(f'clientSession argument is malformed: \"{clientSession}\"')
-        elif not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(twitchClientId):
-            raise TypeError(f'twitchClientId argument is malformed: \"{twitchClientId}\"')
-        elif not isinstance(bannedUserRequest, TwitchBannedUserRequest):
-            raise TypeError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
-        elif currentPagination is not None and not isinstance(currentPagination, TwitchPaginationResponse):
-            raise TypeError(f'currentPagination argument is malformed: \"{currentPagination}\"')
-
-        url = f'https://api.twitch.tv/helix/moderation/banned?broadcaster_id={bannedUserRequest.broadcasterId}&first=100'
-
-        if utils.isValidStr(bannedUserRequest.requestedUserId):
-            url = f'{url}&user_id={bannedUserRequest.requestedUserId}'
-
-        if currentPagination is not None:
-            url = f'{url}&first={currentPagination.cursor}'
-
         try:
             response = await clientSession.get(
-                url = url,
+                url = f'https://api.twitch.tv/helix/moderation/banned?broadcaster_id={broadcasterId}&user_id={chatterUserId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId
                 }
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}): {e}')
 
         responseStatusCode = response.statusCode
-        jsonResponse: dict[str, Any] | Any | None = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty/invalid JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
-            self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-            raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-        elif responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {responseStatusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {responseStatusCode}')
-
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
-        if not utils.hasItems(data):
-            return TwitchBannedUsersPageResponse(
-                users = None,
-                pagination = None
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
             )
 
-        users: list[TwitchBannedUser] = list()
+        twitchBannedUser = await self.__twitchJsonMapper.parseBannedUser(jsonResponse)
 
-        for bannedUserJson in data:
-            expiresAt: datetime | None = None
-            if 'expires_at' in bannedUserJson and utils.isValidStr(bannedUserJson.get('expires_at')):
-                expiresAt = datetime.fromisoformat(utils.getStrFromDict(bannedUserJson, 'expires_at'))
+        if twitchBannedUser is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUser=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUser=})')
 
-            reason: str | None = None
-            if 'reason' in bannedUserJson and utils.isValidStr(bannedUserJson.get('reason')):
-                reason = utils.getStrFromDict(bannedUserJson, 'reason')
-
-            users.append(TwitchBannedUser(
-                createdAt = datetime.fromisoformat(utils.getStrFromDict(bannedUserJson, 'created_at')),
-                expiresAt = expiresAt,
-                moderatorId = utils.getStrFromDict(bannedUserJson, 'moderator_id'),
-                moderatorLogin = utils.getStrFromDict(bannedUserJson, 'moderator_login'),
-                moderatorName = utils.getStrFromDict(bannedUserJson, 'moderator_name'),
-                reason = reason,
-                userId = utils.getStrFromDict(bannedUserJson, 'user_id'),
-                userLogin = utils.getStrFromDict(bannedUserJson, 'user_login'),
-                userName = utils.getStrFromDict(bannedUserJson, 'user_name')
-            ))
-
-        users.sort(key = lambda user: user.userLogin.casefold())
-
-        paginationJson: dict[str, Any] | None = jsonResponse.get('pagination')
-        pagination: TwitchPaginationResponse | None = None
-
-        if isinstance(paginationJson, dict) and utils.isValidStr(paginationJson.get('cursor')):
-            pagination = TwitchPaginationResponse(
-                cursor = utils.getStrFromDict(paginationJson, 'cursor')
-            )
-
-        return TwitchBannedUsersPageResponse(
-            users = users,
-            pagination = pagination
-        )
+        return twitchBannedUser
 
     async def fetchBroadcasterSubscription(
         self,
@@ -489,10 +382,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})')
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})'
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
             )
 
         broadcasterSubscriptionResponse = await self.__twitchJsonMapper.parseBroadcasterSubscriptionResponse(jsonResponse)
