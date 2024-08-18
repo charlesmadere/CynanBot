@@ -69,7 +69,6 @@ from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
-from .chatCommands.viableEmotesChatCommand import ViableEmotesChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -532,7 +531,6 @@ class CynanBot(
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
-        self.__viableEmotesChatCommand: AbsChatCommand = ViableEmotesChatCommand(timber, twitchEmotesHelper, twitchFriendsUserIdRepository, twitchUtils, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -1490,11 +1488,6 @@ class CynanBot(
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionCommand.handleCommand(context)
-
-    @commands.command(name = 'viableemotes', aliases = [ 'viableEmotes' ])
-    async def command_viableemotes(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__viableEmotesChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):
