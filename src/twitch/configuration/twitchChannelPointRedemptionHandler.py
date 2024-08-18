@@ -145,19 +145,18 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 return
 
         if user.isPkmnEnabled():
-            if channelPointsMessage.getRewardId() == user.getPkmnBattleRewardId():
+            if channelPointsMessage.getRewardId() == user.pkmnBattleRewardId:
                 if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-            if user.hasPkmnCatchBoosterPacks():
-                if await self.__pkmnCatchPointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
-                ):
-                    return
+            if await self.__pkmnCatchPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
 
             if channelPointsMessage.getRewardId() == user.getPkmnEvolveRewardId():
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(

@@ -93,10 +93,6 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def getPkmnBattleRewardId(self) -> str | None:
-        pass
-
-    @abstractmethod
     def getPkmnEvolveRewardId(self) -> str | None:
         pass
 
@@ -194,10 +190,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def hasLocationId(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasPkmnCatchBoosterPacks(self) -> bool:
         pass
 
     @abstractmethod
@@ -342,7 +334,12 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack]:
+    def pkmnBattleRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
+    def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack] | None:
         pass
 
     @property

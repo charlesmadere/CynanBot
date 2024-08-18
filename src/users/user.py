@@ -423,9 +423,6 @@ class User(UserInterface):
     def getMinimumTtsCheerAmount(self) -> int | None:
         return self.__minimumTtsCheerAmount
 
-    def getPkmnBattleRewardId(self) -> str | None:
-        return self.__pkmnBattleRewardId
-
     def getPkmnEvolveRewardId(self) -> str | None:
         return self.__pkmnEvolveRewardId
 
@@ -509,9 +506,6 @@ class User(UserInterface):
 
     def hasMastodonUrl(self) -> bool:
         return utils.isValidUrl(self.__mastodonUrl)
-
-    def hasPkmnCatchBoosterPacks(self) -> bool:
-        return utils.hasItems(self.__pkmnCatchBoosterPacks)
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
@@ -642,6 +636,10 @@ class User(UserInterface):
 
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
+
+    @property
+    def pkmnBattleRewardId(self) -> str | None:
+        return self.__pkmnBattleRewardId
 
     @property
     def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack] | None:

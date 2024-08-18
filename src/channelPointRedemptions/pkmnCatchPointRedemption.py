@@ -41,13 +41,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.getTwitchUser()
-
-        if not isinstance(twitchUser, User):
-            # dumb hack, idk what to do about this for now. regardless this should never ever
-            # happen under the current codebase
-            self.__timber.log('PkmnCatchRedemption', f'Received a UserInterface instance that was not a User instance: \"{twitchUser}\"')
-            return False
-        elif not twitchUser.isPkmnEnabled() or not twitchUser.hasPkmnCatchBoosterPacks():
+        if not twitchUser.isPkmnEnabled():
             return False
 
         pkmnCatchBoosterPacks = twitchUser.pkmnCatchBoosterPacks
