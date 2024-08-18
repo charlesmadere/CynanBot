@@ -69,6 +69,7 @@ from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
+from .chatCommands.viableEmotesChatCommand import ViableEmotesChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -180,6 +181,7 @@ from .twitch.configuration.twitchPredictionHandler import TwitchPredictionHandle
 from .twitch.configuration.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from .twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
@@ -283,6 +285,7 @@ class CynanBot(
         twitchConfiguration: TwitchConfiguration,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
+        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -448,6 +451,8 @@ class CynanBot(
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
+        elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
+            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif twitchTimeoutRemodHelper is not None and not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
@@ -527,6 +532,7 @@ class CynanBot(
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
+        self.__viableEmotesChatCommand: AbsChatCommand = ViableEmotesChatCommand(timber, twitchEmotesHelper, twitchFriendsUserIdRepository, twitchUtils, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -1484,6 +1490,11 @@ class CynanBot(
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionCommand.handleCommand(context)
+
+    @commands.command(name = 'viableemotes', aliases = [ 'viableEmotes' ])
+    async def command_viableemotes(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__viableEmotesChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):

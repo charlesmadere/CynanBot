@@ -171,6 +171,8 @@ from src.twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
 from src.twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFollowingStatusRepository
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
+from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
@@ -405,6 +407,8 @@ chatLogger: ChatLoggerInterface = ChatLogger(
 #####################################
 
 cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvider()
+
+twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
 
 
 #####################################
@@ -975,6 +979,7 @@ cynanBot = CynanBot(
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
