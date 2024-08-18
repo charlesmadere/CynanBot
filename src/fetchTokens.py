@@ -17,7 +17,7 @@ TWITCH_CLIENT_ID: str | None = None
 TWITCH_CLIENT_SECRET: str | None = None
 
 # This code is derived from clicking this URL and then authenticating:
-# https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=CLIENT_ID_HERE&redirect_uri=http://localhost&scope=channel:bot+chat:read+user:read:chat+user:bot+user:write:chat+chat:edit+channel_editor+channel:read:redemptions+channel:manage:redemptions+channel:read:subscriptions+channel:read:polls+channel:read:predictions+channel:manage:predictions+channel_subscriptions+moderator:read:chatters+user:read:chat+bits:read+moderator:read:followers+moderator:manage:banned_users+channel:manage:moderators+moderation:read+channel:manage:polls
+# https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=CLIENT_ID_HERE&redirect_uri=http://localhost&scope=channel:bot+chat:read+user:read:chat+user:bot+user:write:chat+chat:edit+channel_editor+channel:read:redemptions+channel:manage:redemptions+channel:read:subscriptions+channel:read:polls+channel:read:predictions+channel:manage:predictions+channel_subscriptions+moderator:read:chatters+user:read:chat+bits:read+moderator:read:followers+moderator:manage:banned_users+channel:manage:moderators+moderation:read+channel:manage:polls+user:read:subscriptions
 TWITCH_CODE_SECRET: str | None = None
 
 if not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CODE_SECRET, str):
