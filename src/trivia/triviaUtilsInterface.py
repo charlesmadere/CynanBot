@@ -24,6 +24,7 @@ class TriviaUtilsInterface(ABC):
         self,
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
+        celebratoryEmote: str | None,
         emote: str,
         userNameThatRedeemed: str,
         twitchUser: UserInterface,

@@ -1043,6 +1043,7 @@ class CynanBot(
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,
+            celebratoryEmote = event.celebratoryTwitchEmote,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,

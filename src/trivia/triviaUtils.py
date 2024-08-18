@@ -89,6 +89,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self,
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
+        celebratoryEmote: str | None,
         emote: str,
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
@@ -99,6 +100,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not isinstance(newCuteness, CutenessResult):
             raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
+        elif celebratoryEmote is not None and not isinstance(celebratoryEmote, str):
+            raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
@@ -118,6 +121,9 @@ class TriviaUtils(TriviaUtilsInterface):
 
         prefix = f'{emotePrompt} Congratulations @{userNameThatRedeemed}, that\'s correct!'
 
+        if not utils.isValidStr(celebratoryEmote):
+            celebratoryEmote = self.__celebratoryEmote
+
         infix = ''
         if twitchUser.isCutenessEnabled():
             infix = f'Your new cuteness is {newCuteness.cutenessStr}.'
@@ -127,7 +133,7 @@ class TriviaUtils(TriviaUtilsInterface):
             delimiter = delimiter
         )
 
-        return f'{prefix} 🎉 {infix} 🎉 {correctAnswers}'.strip()
+        return f'{prefix} {celebratoryEmote} {infix} {celebratoryEmote} {correctAnswers}'.strip()
 
     async def getIncorrectAnswerReveal(
         self,
