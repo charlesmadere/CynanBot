@@ -1,18 +1,13 @@
 import traceback
 from datetime import datetime, timedelta
 
-from .timeoutImmuneUserIdsRepositoryInterface import \
-    TimeoutImmuneUserIdsRepositoryInterface
-from .twitchTimeoutHelperInterface import \
-    TwitchTimeoutHelperInterface
+from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
+from .twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
-from .twitchTimeoutRemodHelperInterface import \
-    TwitchTimeoutRemodHelperInterface
+from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutResult import TwitchTimeoutResult
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..api.twitchBanRequest import TwitchBanRequest
-from ..api.twitchBannedUserRequest import TwitchBannedUserRequest
-from ..api.twitchBannedUsersResponse import TwitchBannedUsersResponse
 from ..api.twitchModUser import TwitchModUser
 from ..twitchConstantsInterface import TwitchConstantsInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
