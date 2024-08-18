@@ -91,6 +91,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'user:read:follows': return TwitchApiScope.USER_READ_FOLLOWS
             case 'user:read:subscriptions': return TwitchApiScope.USER_READ_SUBSCRIPTIONS
             case 'user:write:chat': return TwitchApiScope.USER_WRITE_CHAT
+            case 'user_subscriptions': return TwitchApiScope.USER_SUBSCRIPTIONS
             case 'whispers:edit': return TwitchApiScope.WHISPERS_EDIT
             case 'whispers:read': return TwitchApiScope.WHISPERS_READ
             case _:

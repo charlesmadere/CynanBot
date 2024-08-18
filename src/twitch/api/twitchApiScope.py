@@ -30,6 +30,7 @@ class TwitchApiScope(Enum):
     USER_READ_EMOTES = auto()
     USER_READ_FOLLOWS = auto()
     USER_READ_SUBSCRIPTIONS = auto()
+    USER_SUBSCRIPTIONS = auto()
     USER_WRITE_CHAT = auto()
     WHISPERS_EDIT = auto()
     WHISPERS_READ = auto()
