@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
 from .twitchBannedUser import TwitchBannedUser
-from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse
@@ -15,7 +14,7 @@ from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchTokensDetails import TwitchTokensDetails
 from .twitchUnbanRequest import TwitchUnbanRequest
 from .twitchUserDetails import TwitchUserDetails
-from .twitchUserSubscriptionDetails import TwitchUserSubscriptionDetails
+from .twitchUserSubscription import TwitchUserSubscription
 from .twitchValidationResponse import TwitchValidationResponse
 
 
@@ -53,15 +52,6 @@ class TwitchApiServiceInterface(ABC):
         chatterUserId: str,
         twitchAccessToken: str
     ) -> TwitchBannedUser:
-        pass
-
-    @abstractmethod
-    async def fetchBroadcasterSubscription(
-        self,
-        broadcasterId: str,
-        chatterUserId: str,
-        twitchAccessToken: str
-    ) -> TwitchBroadcasterSubscriptionResponse:
         pass
 
     @abstractmethod
@@ -119,12 +109,12 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchUserSubscriptionDetails(
+    async def fetchUserSubscription(
         self,
         broadcasterId: str,
-        twitchAccessToken: str,
-        userId: str
-    ) -> TwitchUserSubscriptionDetails | None:
+        chatterUserId: str,
+        twitchAccessToken: str
+    ) -> TwitchUserSubscription:
         pass
 
     @abstractmethod

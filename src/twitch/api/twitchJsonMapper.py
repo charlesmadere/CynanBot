@@ -22,6 +22,7 @@ from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchThemeMode import TwitchThemeMode
 from .twitchTokensDetails import TwitchTokensDetails
+from .twitchUserSubscription import TwitchUserSubscription
 from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -305,7 +306,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             self.__timber.log('TwitchJsonMapper', f'Unable to parse value for \"emote_type\" data ({jsonResponse=})')
             return None
 
-        tier = await self.parseSubscriberTier(jsonResponse.get('tier'))
+        tier: TwitchSubscriberTier | None = None
+        if 'tier' in jsonResponse and utils.isValidStr(jsonResponse.get('tier')):
+            tier = await self.parseSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
 
         return TwitchEmoteDetails(
             images = images,
@@ -543,6 +546,51 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             expirationTime = expirationTime,
             accessToken = accessToken,
             refreshToken = refreshToken
+        )
+
+    async def parseUserSubscription(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchUserSubscription | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        if not isinstance(data, list) or len(data) == 0:
+            return None
+
+        dataEntry: dict[str, Any] | Any | None = data[0]
+        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
+            return None
+
+        isGift = utils.getBoolFromDict(dataEntry, 'is_gift', fallback = False)
+        broadcasterId = utils.getStrFromDict(dataEntry, 'broadcaster_id')
+        broadcasterLogin = utils.getStrFromDict(dataEntry, 'broadcaster_login')
+        broadcasterName = utils.getStrFromDict(dataEntry, 'broadcaster_name')
+
+        gifterId: str | None = None
+        if 'gifter_id' in dataEntry and utils.isValidStr(dataEntry.get('gifter_id')):
+            gifterId = utils.getStrFromDict(dataEntry, 'gifter_id')
+
+        gifterLogin: str | None = None
+        if 'gifter_login' in dataEntry and utils.isValidStr(dataEntry.get('gifter_login')):
+            gifterLogin = utils.getStrFromDict(dataEntry, 'gifter_login')
+
+        gifterName: str | None = None
+        if 'gifter_name' in dataEntry and utils.isValidStr(dataEntry.get('gifter_name')):
+            gifterName = utils.getStrFromDict(dataEntry, 'gifter_name')
+
+        tier = await self.parseSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
+
+        return TwitchUserSubscription(
+            isGift = isGift,
+            broadcasterId = broadcasterId,
+            broadcasterLogin = broadcasterLogin,
+            broadcasterName = broadcasterName,
+            gifterId = gifterId,
+            gifterLogin = gifterLogin,
+            gifterName = gifterName,
+            tier = tier
         )
 
     async def parseUserType(

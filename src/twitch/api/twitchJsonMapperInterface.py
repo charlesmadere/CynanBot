@@ -19,6 +19,7 @@ from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchThemeMode import TwitchThemeMode
 from .twitchTokensDetails import TwitchTokensDetails
+from .twitchUserSubscription import TwitchUserSubscription
 from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
 
@@ -142,6 +143,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchTokensDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseUserSubscription(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchUserSubscription | None:
         pass
 
     @abstractmethod

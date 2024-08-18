@@ -3,11 +3,11 @@ from datetime import timedelta
 
 from .twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from ..api.twitchEmoteType import TwitchEmoteType
 from ..api.twitchEmotesResponse import TwitchEmotesResponse
 from ..api.twitchThemeMode import TwitchThemeMode
-from ..exceptions import TwitchStatusCodeException
+from ..api.twitchUserSubscription import TwitchUserSubscription
+from ..exceptions import TwitchStatusCodeException, TwitchJsonException
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...misc import utils as utils
@@ -66,29 +66,29 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
 
-        broadcasterSubscription: TwitchBroadcasterSubscriptionResponse | None = None
         emotesResponse: TwitchEmotesResponse | None = None
+        userSubscription: TwitchUserSubscription | None = None
 
         try:
-            broadcasterSubscription = await self.__twitchApiService.fetchBroadcasterSubscription(
-                broadcasterId = twitchChannelId,
-                chatterUserId = twitchId,
-                twitchAccessToken = twitchAccessToken
-            )
-
             emotesResponse = await self.__twitchApiService.fetchEmotes(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchAccessToken
             )
-        except (GenericNetworkException, TwitchStatusCodeException) as e:
-            self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({broadcasterSubscription=}) ({emotesResponse=}): {e}', e, traceback.format_exc())
+
+            userSubscription = await self.__twitchApiService.fetchUserSubscription(
+                broadcasterId = twitchChannelId,
+                chatterUserId = twitchId,
+                twitchAccessToken = twitchAccessToken
+            )
+        except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
+            self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({emotesResponse=}) ({userSubscription=}): {e}', e, traceback.format_exc())
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(
-            broadcasterSubscription = broadcasterSubscription,
-            emotesResponse = emotesResponse
+            emotesResponse = emotesResponse,
+            userSubscription = userSubscription
         )
 
-        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({broadcasterSubscription=}) ({emotesResponse=})')
+        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({emotesResponse=}) ({userSubscription=})')
         self.__cache[twitchChannelId] = viableEmoteNames
         return viableEmoteNames
 
@@ -102,15 +102,15 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
 
     async def __processTwitchResponseIntoViableSubscriptionEmotes(
         self,
-        broadcasterSubscription: TwitchBroadcasterSubscriptionResponse | None,
-        emotesResponse: TwitchEmotesResponse | None
+        emotesResponse: TwitchEmotesResponse | None,
+        userSubscription: TwitchUserSubscription | None
     ) -> frozenset[str]:
-        if broadcasterSubscription is not None and not isinstance(broadcasterSubscription, TwitchBroadcasterSubscriptionResponse):
-            raise TypeError(f'broadcasterSubscription argument is malformed: \"{broadcasterSubscription}\"')
-        elif emotesResponse is not None and not isinstance(emotesResponse, TwitchEmotesResponse):
+        if emotesResponse is not None and not isinstance(emotesResponse, TwitchEmotesResponse):
             raise TypeError(f'emotesResponse argument is malformed: \"{emotesResponse}\"')
+        elif userSubscription is not None and not isinstance(userSubscription, TwitchUserSubscription):
+            raise TypeError(f'userSubscription argument is malformed: \"{userSubscription}\"')
 
-        if broadcasterSubscription is None or broadcasterSubscription.subscription is None or emotesResponse is None or len(emotesResponse.emoteData) == 0:
+        if userSubscription is None or emotesResponse is None or len(emotesResponse.emoteData) == 0:
             return frozenset()
 
         viableEmoteNames: set[str] = set()

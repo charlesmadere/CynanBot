@@ -459,7 +459,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         tier: TwitchSubscriberTier | None = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
-            tier = await self.__twitchJsonMapper.parseSubscriberTier(utils.getStrFromDict(eventJson, 'tier'))
+            tier = await self.__twitchJsonMapper.parseSubscriberTier(eventJson.get('tier'))
 
         channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
         if 'channel_points_voting' in eventJson:
