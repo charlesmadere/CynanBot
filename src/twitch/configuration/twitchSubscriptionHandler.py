@@ -39,7 +39,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
-        twitchChannelProvider: TwitchChannelProvider,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
@@ -54,8 +53,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
@@ -71,12 +68,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
-        self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __isRedundantSubscriptionAlert(
         self,
@@ -179,6 +177,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if not user.isSubGiftThankingEnabled:
             return
 
+        twitchChannelProvider = self.__twitchChannelProvider
+        if twitchChannelProvider is None:
+            return
+
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
 
@@ -199,7 +201,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         emoji1 = random.choice(viableEmotesList)
         emoji2 = random.choice(viableEmotesList)
 
-        twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')
         self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.getHandle()} for a gifted sub!')
 
@@ -372,3 +374,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             twitchChannelId = broadcasterUserId,
             ttsEvent = ttsEvent
         ))
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__twitchChannelProvider = provider

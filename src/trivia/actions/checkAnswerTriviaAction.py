@@ -33,7 +33,8 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getAnswer(self) -> str | None:
+    @property
+    def answer(self) -> str | None:
         return self.__answer
 
     def getTwitchChannel(self) -> str:

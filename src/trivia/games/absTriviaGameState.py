@@ -76,7 +76,8 @@ class AbsTriviaGameState(ABC):
     def endTime(self) -> datetime:
         return self.__endTime
 
-    def getEmote(self) -> str:
+    @property
+    def emote(self) -> str:
         return self.__emote
 
     def getGameId(self) -> str:

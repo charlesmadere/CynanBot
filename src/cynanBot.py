@@ -885,9 +885,10 @@ class CynanBot(
 
             followHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
                 timber = self.__timber,
-                twitchChannelProvider = self,
                 twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
             )
+
+            followHandler.setTwitchChannelProvider(self)
 
             pollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
                 streamAlertsManager = self.__streamAlertsManager,
@@ -909,13 +910,14 @@ class CynanBot(
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,
-                twitchChannelProvider = self,
                 twitchEmotesHelper = self.__twitchEmotesHelper,
                 twitchHandleProvider = self.__authRepository,
                 twitchTokensUtils = self.__twitchTokensUtils,
                 twitchUtils = self.__twitchUtils,
                 userIdsRepository = self.__userIdsRepository
             )
+
+            subscriptionHandler.setTwitchChannelProvider(self)
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = channelPointRedemptionHandler,

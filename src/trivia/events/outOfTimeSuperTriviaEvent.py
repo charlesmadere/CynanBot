@@ -82,12 +82,6 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     def pointsForWinningStr(self) -> str:
         return locale.format_string("%d", self.__pointsForWinning, grouping = True)
 
-    def isShiny(self) -> bool:
-        return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY
-
-    def isToxic(self) -> bool:
-        return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
-
     @property
     def outOfTimeEmote(self) -> str | None:
         return self.__outOfTimeEmote

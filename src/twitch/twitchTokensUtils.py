@@ -24,21 +24,25 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        if await self.__twitchTokensRepository.hasAccessToken(twitchChannel):
-            return await self.__twitchTokensRepository.getAccessToken(twitchChannel)
-        else:
-            administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-            return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
+        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchChannel)
+
+        if utils.isValidStr(twitchChannelAccessToken):
+            return twitchChannelAccessToken
+
+        administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+        return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
 
     async def getAccessTokenByIdOrFallback(self, twitchChannelId: str) -> str | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if await self.__twitchTokensRepository.hasAccessTokenById(twitchChannelId):
-            return await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
-        else:
-            administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-            return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
+        twitchChannelAccessToken =  await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
+
+        if utils.isValidStr(twitchChannelAccessToken):
+            return twitchChannelAccessToken
+
+        administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+        return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
 
     async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):

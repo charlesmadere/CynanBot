@@ -14,19 +14,17 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
     def __init__(
         self,
         timber: TimberInterface,
-        twitchChannelProvider: TwitchChannelProvider,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None = twitchFollowingStatusRepository
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def onNewFollow(
         self,
@@ -75,3 +73,9 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
             twitchChannelId = broadcasterUserId,
             userId = followerUserId
         )
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__twitchChannelProvider = provider
