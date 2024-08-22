@@ -63,14 +63,42 @@ class WillFryTriviaJsonParser(WillFryTriviaJsonParserInterface):
 
         isNiche = utils.getBoolFromDict(jsonContents, 'isNiche', fallback = False)
 
-        incorrectAnswers: FrozenList[str] = FrozenList()
-        incorrectAnswers.freeze()
+        incorrectAnswersArray: list[str] | Any | None = jsonContents.get('incorrectAnswers')
+        incorrectAnswers: list[str] = list()
 
-        regions: FrozenList[str] = FrozenList()
-        regions.freeze()
+        if isinstance(incorrectAnswersArray, list) and len(incorrectAnswersArray) >= 1:
+            for index, incorrectAnswer in enumerate(incorrectAnswersArray):
+                if utils.isValidStr(incorrectAnswer):
+                    incorrectAnswers.append(incorrectAnswer)
+                else:
+                    self.__timber.log('WillFryTriviaJsonParser', f'Encountered invalid string at index {index} for \"incorrectAnswers\" field in JSON data: ({jsonContents=})')
 
-        tags: FrozenList[str] = FrozenList()
-        tags.freeze()
+        if len(incorrectAnswers) == 0:
+            return None
+
+        incorrectAnswers.sort(key = lambda incorrectAnswer: incorrectAnswer.casefold())
+        frozenIncorrectAnswers: FrozenList[str] = FrozenList(incorrectAnswers)
+        frozenIncorrectAnswers.freeze()
+
+        regionsArray: list[str] | Any | None = jsonContents.get('regions')
+        regions: set[str] = set()
+
+        if isinstance(regionsArray, list) and len(regionsArray) >= 1:
+            for index, region in enumerate(regionsArray):
+                if utils.isValidStr(region):
+                    regions.add(region)
+                else:
+                    self.__timber.log('WillFryTriviaJsonParser', f'Encountered invalid string at index {index} for \"regions\" field in JSON data: ({jsonContents=})')
+
+        tagsArray: list[str] | Any | None = jsonContents.get('tags')
+        tags: set[str] = set()
+
+        if isinstance(tagsArray, list) and len(tagsArray) >= 1:
+            for index, tag in enumerate(tagsArray):
+                if utils.isValidStr(tag):
+                    tags.add(tag)
+                else:
+                    self.__timber.log('WillFryTriviaJsonParser', f'Encountered invalid string at index {index} for \"tags\" field in JSON data: ({jsonContents=})')
 
         category: str | None = None
         if 'category' in jsonContents and utils.isValidStr(jsonContents.get('category')):
@@ -84,9 +112,9 @@ class WillFryTriviaJsonParser(WillFryTriviaJsonParserInterface):
 
         return WillFryTriviaQuestion(
             isNiche = isNiche,
-            incorrectAnswers = incorrectAnswers,
-            regions = regions,
-            tags = tags,
+            incorrectAnswers = frozenIncorrectAnswers,
+            regions = frozenset(regions),
+            tags = frozenset(tags),
             category = category,
             correctAnswer = correctAnswer,
             triviaId = triviaId,
@@ -103,6 +131,14 @@ class WillFryTriviaJsonParser(WillFryTriviaJsonParserInterface):
             return None
 
         questions: FrozenList[WillFryTriviaQuestion] = FrozenList()
-        questions.freeze()
 
+        for index, questionJson in enumerate(jsonContents):
+            question = await self.parseTriviaQuestion(questionJson)
+
+            if question is None:
+                self.__timber.log('WillFryTriviaJsonParser', f'Encountered invalid trivia question at index {index} in JSON data: ({jsonContents=})')
+            else:
+                questions.append(question)
+
+        questions.freeze()
         return questions

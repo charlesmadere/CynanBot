@@ -281,6 +281,10 @@ from src.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository
     TriviaQuestionCompanyTriviaQuestionRepository
 from src.trivia.triviaRepositories.triviaRepository import TriviaRepository
 from src.trivia.triviaRepositories.triviaRepositoryInterface import TriviaRepositoryInterface
+from src.trivia.triviaRepositories.willFry.willFryTriviaApiService import WillFryTriviaApiService
+from src.trivia.triviaRepositories.willFry.willFryTriviaApiServiceInterface import WillFryTriviaApiServiceInterface
+from src.trivia.triviaRepositories.willFry.willFryTriviaJsonParser import WillFryTriviaJsonParser
+from src.trivia.triviaRepositories.willFry.willFryTriviaJsonParserInterface import WillFryTriviaJsonParserInterface
 from src.trivia.triviaRepositories.willFryTriviaQuestionRepository import WillFryTriviaQuestionRepository
 from src.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import WwtbamTriviaQuestionRepository
 from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
@@ -1016,6 +1020,24 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+willFryTriviaJsonParser: WillFryTriviaJsonParserInterface = WillFryTriviaJsonParser(
+    timber = timber,
+    triviaDifficultyParser = triviaDifficultyParser
+)
+
+willFryTriviaApiService: WillFryTriviaApiServiceInterface = WillFryTriviaApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber,
+    willFryTriviaJsonParser = willFryTriviaJsonParser
+)
+
+willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
+    timber = timber,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository,
+    willFryTriviaApiService = willFryTriviaApiService
+)
+
 glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = GlacialTriviaQuestionRepository(
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     timber = timber,
@@ -1109,13 +1131,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     triviaVerifier = triviaVerifier,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository,
-    willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    willFryTriviaQuestionRepository = willFryTriviaQuestionRepository,
     wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
         timber = timber,
         triviaQuestionCompiler = triviaQuestionCompiler,

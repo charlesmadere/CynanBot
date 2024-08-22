@@ -11,8 +11,8 @@ from ...triviaDifficulty import TriviaDifficulty
 class WillFryTriviaQuestion:
     isNiche: bool
     incorrectAnswers: FrozenList[str]
-    regions: FrozenList[str]
-    tags: FrozenList[str]
+    regions: frozenset[str]
+    tags: frozenset[str]
     category: str | None
     correctAnswer: str
     triviaId: str

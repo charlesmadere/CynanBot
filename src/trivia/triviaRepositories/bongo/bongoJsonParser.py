@@ -66,18 +66,20 @@ class BongoJsonParser(BongoJsonParserInterface):
             self.__timber.log('BongoJsonParser', f'Encountered missing/invalid \"incorrect_answers\" field in JSON data: ({jsonContents=})')
             return None
 
-        incorrectAnswers: FrozenList[str] = FrozenList()
+        incorrectAnswers: list[str] = list()
         for index, incorrectAnswer in enumerate(incorrectAnswersArray):
             if utils.isValidStr(incorrectAnswer):
                 incorrectAnswers.append(utils.cleanStr(incorrectAnswer, htmlUnescape = True))
             else:
                 self.__timber.log('BongoJsonParser', f'Encountered malformed value at index {index} for \"incorrect_answers\" field in JSON data: ({jsonContents=}) ({incorrectAnswer=})')
 
-        incorrectAnswers.freeze()
-
         if len(incorrectAnswers) == 0:
             self.__timber.log('BongoJsonParser', f'Unable to build up any incorrect answers from JSON data: ({jsonContents=})')
             return None
+
+        incorrectAnswers.sort(key = lambda incorrectAnswer: incorrectAnswer.casefold())
+        frozenIncorrectAnswers: FrozenList[str] = FrozenList(incorrectAnswers)
+        frozenIncorrectAnswers.freeze()
 
         category: str | None = None
         if 'category' in jsonContents and utils.isValidStr(jsonContents.get('category')):
@@ -92,7 +94,7 @@ class BongoJsonParser(BongoJsonParserInterface):
             difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
 
         return MultipleBongoTriviaQuestion(
-            incorrectAnswers = incorrectAnswers,
+            incorrectAnswers = frozenIncorrectAnswers,
             category = category,
             correctAnswer = correctAnswer,
             question = question,
