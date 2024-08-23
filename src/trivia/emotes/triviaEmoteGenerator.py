@@ -51,6 +51,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🫐'] = None
         emotesDict['📚'] = None
         emotesDict['💼'] = None
+        emotesDict['🥦'] = None
         emotesDict['🚌'] = None
         emotesDict['🐪'] = { '🐫' }
         emotesDict['🍬'] = { '🍭' }
@@ -60,6 +61,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🥕'] = None
         emotesDict['🧀'] = None
         emotesDict['🍒'] = None
+        emotesDict['🥢'] = None
         emotesDict['🏛️'] = { '🏦' }
         emotesDict['📋'] = None
         emotesDict['💽'] = { '📀', '💿' }
@@ -108,11 +110,12 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🍍'] = None
         emotesDict['🍕'] = None
         emotesDict['🍿'] = { '🌽' }
-        emotesDict['🧩'] = None
         emotesDict['🥔'] = None
+        emotesDict['🥨'] = None
+        emotesDict['🧩'] = None
+        emotesDict['🌈'] = None
         emotesDict['🍎'] = None
         emotesDict['🏮'] = None
-        emotesDict['🌈'] = None
         emotesDict['🍙'] = None
         emotesDict['🍠'] = None
         emotesDict['🤖'] = None
@@ -120,6 +123,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🎢'] = None
         emotesDict['🏫'] = None
         emotesDict['🦐'] = { '🍤' }
+        emotesDict['🧦'] = None
         emotesDict['🐚'] = None
         emotesDict['🦑'] = { '🐙' }
         emotesDict['📏'] = None

@@ -184,6 +184,8 @@ from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.systemCommandHelper.systemCommandHelper import SystemCommandHelper
 from src.systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
+from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
+from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.transparent.transparentApiService import TransparentApiService
@@ -276,6 +278,9 @@ from src.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository im
 from src.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import OpenTriviaQaTriviaQuestionRepository
 from src.trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
 from src.trivia.triviaRepositories.quizApiTriviaQuestionRepository import QuizApiTriviaQuestionRepository
+from src.trivia.triviaRepositories.triviaDatabase.triviaDatabaseQuestionStorage import TriviaDatabaseQuestionStorage
+from src.trivia.triviaRepositories.triviaDatabase.triviaDatabaseQuestionStorageInterface import \
+    TriviaDatabaseQuestionStorageInterface
 from src.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import TriviaDatabaseTriviaQuestionRepository
 from src.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
@@ -590,6 +595,13 @@ cutenessUtils: CutenessUtilsInterface = CutenessUtils()
 nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider()
 
 
+###################################
+## Tangia initialization section ##
+###################################
+
+tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = TangiaBotUserIdProvider()
+
+
 ####################################
 ## Funtoon initialization section ##
 ####################################
@@ -710,6 +722,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     nightbotUserIdProvider = nightbotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
+    tangiaBotUserIdProvider = tangiaBotUserIdProvider,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository
 )
@@ -1020,6 +1033,18 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+triviaDatabaseQuestionStorage: TriviaDatabaseQuestionStorageInterface = TriviaDatabaseQuestionStorage(
+    timber = timber,
+    triviaDifficultyParser = triviaDifficultyParser,
+    triviaQuestionTypeParser = triviaQuestionTypeParser
+)
+
+triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
+    triviaDatabaseQuestionStorage = triviaDatabaseQuestionStorage,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 willFryTriviaJsonParser: WillFryTriviaJsonParserInterface = WillFryTriviaJsonParser(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser
@@ -1115,11 +1140,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
-    triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
-        timber = timber,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    triviaDatabaseTriviaQuestionRepository = triviaDatabaseTriviaQuestionRepository,
     triviaQuestionCompanyTriviaQuestionRepository = TriviaQuestionCompanyTriviaQuestionRepository(
         timber = timber,
         triviaQuestionCompiler = triviaQuestionCompiler,

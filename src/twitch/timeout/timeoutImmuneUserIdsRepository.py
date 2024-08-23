@@ -6,6 +6,7 @@ from ...misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInte
 from ...nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from ...streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from ...streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
+from ...tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -18,6 +19,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         nightbotUserIdProvider: NightbotUserIdProviderInterface,
         streamElementsUserIdProvider: StreamElementsUserIdProviderInterface,
         streamLabsUserIdProvider: StreamLabsUserIdProviderInterface,
+        tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         additionalImmuneUserIds: set[str] | None = None
@@ -32,6 +34,8 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'streamElementsUserIdProvider argument is malformed: \"{streamElementsUserIdProvider}\"')
         elif not isinstance(streamLabsUserIdProvider, StreamLabsUserIdProviderInterface):
             raise TypeError(f'streamLabsUserIdProvider argument is malformed: \"{streamLabsUserIdProvider}\"')
+        elif not isinstance(tangiaBotUserIdProvider, TangiaBotUserIdProviderInterface):
+            raise TypeError(f'tangiaBotUserIdProvider argument is malformed: \"{tangiaBotUserIdProvider}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -44,6 +48,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__nightbotUserIdProvider: NightbotUserIdProviderInterface = nightbotUserIdProvider
         self.__streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = streamElementsUserIdProvider
         self.__streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = streamLabsUserIdProvider
+        self.__tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = tangiaBotUserIdProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__additionalImmuneUserIds: set[str] | None = additionalImmuneUserIds
@@ -86,6 +91,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         streamLabsUserId = await self.__streamLabsUserIdProvider.getStreamLabsUserId()
         if utils.isValidStr(streamLabsUserId):
             immuneUserIds.add(streamLabsUserId)
+
+        tangiaBotUserId = await self.__tangiaBotUserIdProvider.getTangiaBotUserId()
+        if utils.isValidStr(tangiaBotUserId):
+            immuneUserIds.add(tangiaBotUserId)
 
         cachedImmuneUserIds = frozenset(immuneUserIds)
         self.__cachedImmuneUserIds = cachedImmuneUserIds

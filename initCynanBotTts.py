@@ -130,6 +130,8 @@ from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.systemCommandHelper.systemCommandHelper import SystemCommandHelper
 from src.systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
+from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
+from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
@@ -418,6 +420,13 @@ twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFr
 nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider()
 
 
+###################################
+## Tangia initialization section ##
+###################################
+
+tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = TangiaBotUserIdProvider()
+
+
 ####################################
 ## Funtoon initialization section ##
 ####################################
@@ -528,6 +537,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     nightbotUserIdProvider = nightbotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
+    tangiaBotUserIdProvider = tangiaBotUserIdProvider,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository
 )

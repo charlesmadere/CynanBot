@@ -118,6 +118,7 @@ class NoTriviaQuestionException(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
+
 class TooManyAdditionalTriviaAnswersException(Exception):
 
     def __init__(
@@ -135,10 +136,12 @@ class TooManyTriviaFetchAttemptsException(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
+
 class UnavailableTriviaSourceException(Exception):
 
     def __init__(self, message: str):
         super().__init__(message)
+
 
 class UnknownTriviaActionTypeException(Exception):
 
