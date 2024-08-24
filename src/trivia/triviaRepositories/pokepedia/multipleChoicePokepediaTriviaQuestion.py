@@ -13,13 +13,11 @@ class MultipleChoicePokepediaTriviaQuestion(PokepediaTriviaQuestion):
         incorrectAnswers: FrozenList[str],
         pokepediaTriviaType: PokepediaTriviaQuestionType,
         correctAnswer: str,
-        question: str,
-        triviaId: str
+        question: str
     ):
         super().__init__(
             pokepediaTriviaType = pokepediaTriviaType,
-            question = question,
-            triviaId = triviaId
+            question = question
         )
 
         if not isinstance(incorrectAnswers, FrozenList):

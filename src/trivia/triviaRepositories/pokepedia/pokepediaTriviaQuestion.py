@@ -10,19 +10,15 @@ class PokepediaTriviaQuestion(ABC):
     def __init__(
         self,
         pokepediaTriviaType: PokepediaTriviaQuestionType,
-        question: str,
-        triviaId: str
+        question: str
     ):
         if not isinstance(pokepediaTriviaType, PokepediaTriviaQuestionType):
             raise TypeError(f'pokepediaTriviaType argument is malformed: \"{pokepediaTriviaType}\"')
         elif not utils.isValidStr(question):
             raise TypeError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidStr(triviaId):
-            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
 
         self.__pokepediaTriviaType: PokepediaTriviaQuestionType = pokepediaTriviaType
         self.__question: str = question
-        self.__triviaId: str = triviaId
 
     @property
     def pokepediaTriviaType(self) -> PokepediaTriviaQuestionType:
@@ -31,10 +27,6 @@ class PokepediaTriviaQuestion(ABC):
     @property
     def question(self) -> str:
         return self.__question
-
-    @property
-    def triviaId(self) -> str:
-        return self.__triviaId
 
     @property
     @abstractmethod

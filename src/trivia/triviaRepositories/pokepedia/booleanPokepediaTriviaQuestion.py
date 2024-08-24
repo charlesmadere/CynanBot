@@ -10,13 +10,11 @@ class BooleanPokepediaTriviaQuestion(PokepediaTriviaQuestion):
         self,
         correctAnswer: bool,
         pokepediaTriviaType: PokepediaTriviaQuestionType,
-        question: str,
-        triviaId: str
+        question: str
     ):
         super().__init__(
             pokepediaTriviaType = pokepediaTriviaType,
-            question = question,
-            triviaId = triviaId
+            question = question
         )
 
         if not utils.isValidBool(correctAnswer):

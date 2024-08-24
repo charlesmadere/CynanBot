@@ -1,6 +1,9 @@
 import random
 
+from frozenlist import FrozenList
+
 from .exceptions import UnsupportedPokepediaTriviaQuestionType
+from .multipleChoicePokepediaTriviaQuestion import MultipleChoicePokepediaTriviaQuestion
 from .pokepediaTriviaQuestion import PokepediaTriviaQuestion
 from .pokepediaTriviaQuestionGeneratorInterface import PokepediaTriviaQuestionGeneratorInterface
 from .pokepediaTriviaQuestionType import PokepediaTriviaQuestionType
@@ -44,6 +47,51 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         self.__enabledQuestionTypes: frozenset[PokepediaTriviaQuestionType] = enabledQuestionTypes
         self.__maxGeneration: PokepediaGeneration = maxGeneration
 
+    async def __createMoveContestTypeQuestion(self, move: PokepediaMove) -> PokepediaTriviaQuestion | None:
+        if not isinstance(move, PokepediaMove):
+            raise TypeError(f'move argument is malformed: \"{move}\"')
+
+        contestType = move.getContestType()
+        if contestType is None:
+            return None
+
+        falseContestTypes = await self.__selectRandomFalseContestTypes(contestType)
+        falseContestTypeStrs: list[str] = list()
+
+        for falseContestType in falseContestTypes:
+            falseContestTypeStrs.append(falseContestType.toStr())
+
+        falseContestTypeStrs.sort(key = lambda falseContestType: falseContestTypes.casefold())
+        frozenFalseContestTypeStrs: FrozenList[str] = FrozenList(falseContestTypeStrs)
+        frozenFalseContestTypeStrs.freeze()
+
+        return MultipleChoicePokepediaTriviaQuestion(
+            incorrectAnswers = frozenFalseContestTypeStrs,
+            pokepediaTriviaType = PokepediaTriviaQuestionType.MOVE,
+            correctAnswer = contestType.toStr(),
+            question = f'In Pokémon, what is the contest type of {move.getName()}?'
+        )
+
+    async def __createMoveDamageClassQuestion(self, move: PokepediaMove) -> PokepediaTriviaQuestion:
+        if not isinstance(move, PokepediaMove):
+            raise TypeError(f'move argument is malformed: \"{move}\"')
+
+        damageClassStrs: list[str] = list()
+
+        for damageClass in PokepediaDamageClass:
+            damageClassStrs.append(damageClass.toStr())
+
+        damageClassStrs.sort(key = lambda damageClass: damageClass.casefold())
+        frozenDamageClassStrs: FrozenList[str] = FrozenList(damageClassStrs)
+        frozenDamageClassStrs.freeze()
+
+        return MultipleChoicePokepediaTriviaQuestion(
+            incorrectAnswers = frozenDamageClassStrs,
+            pokepediaTriviaType = PokepediaTriviaQuestionType.DAMAGE_CLASS,
+            correctAnswer = move.getDamageClass().toStr(),
+            question = f'In Pokémon, the move {move.getName()} has which damage class?'
+        )
+
     async def __determinePokepediaTriviaType(self) -> PokepediaTriviaQuestionType:
         # TODO this should be weighted
         enabledQuestionTypes = list(self.__enabledQuestionTypes)
@@ -66,7 +114,9 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
                 pass
 
             case _:
-                raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaType=})')
+                pass
+
+        raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaType=})')
 
     async def __selectRandomFalseBerryFlavors(
         self,
