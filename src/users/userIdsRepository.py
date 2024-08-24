@@ -13,7 +13,6 @@ from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType
 from ..timber.timberInterface import TimberInterface
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitch.api.twitchUserDetails import TwitchUserDetails
 from ..twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
 
 
