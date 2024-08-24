@@ -1,5 +1,6 @@
 import random
 
+from .exceptions import UnsupportedPokepediaTriviaQuestionType
 from .pokepediaTriviaQuestion import PokepediaTriviaQuestion
 from .pokepediaTriviaQuestionGeneratorInterface import PokepediaTriviaQuestionGeneratorInterface
 from .pokepediaTriviaQuestionType import PokepediaTriviaQuestionType
@@ -64,15 +65,15 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             case PokepediaTriviaQuestionType.STAT_OR_NATURE:
                 pass
 
-        # TODO
-        raise RuntimeError()
+            case _:
+                raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaType=})')
 
     async def __selectRandomFalseBerryFlavors(
         self,
         actualFlavor: PokepediaBerryFlavor | None
-    ) -> set[PokepediaBerryFlavor]:
+    ) -> frozenset[PokepediaBerryFlavor]:
         if actualFlavor is not None and not isinstance(actualFlavor, PokepediaBerryFlavor):
-            raise ValueError(f'actualFlavor argument is malformed: \"{actualFlavor}\"')
+            raise TypeError(f'actualFlavor argument is malformed: \"{actualFlavor}\"')
 
         allFlavors: list[PokepediaBerryFlavor] = list(PokepediaBerryFlavor)
         falseFlavors: set[PokepediaBerryFlavor] = set()
@@ -88,12 +89,12 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             if randomFlavor is not actualFlavor:
                 falseFlavors.add(randomFlavor)
 
-        return falseFlavors
+        return frozenset(falseFlavors)
 
     async def __selectRandomFalseContestTypes(
         self,
         actualType: PokepediaContestType
-    ) -> set[PokepediaContestType]:
+    ) -> frozenset[PokepediaContestType]:
         if not isinstance(actualType, PokepediaContestType):
             raise TypeError(f'actualType argument is malformed: \"{actualType}\"')
 
@@ -111,13 +112,13 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             if randomType is not actualType:
                 falseTypes.add(randomType)
 
-        return falseTypes
+        return frozenset(falseTypes)
 
     async def __selectRandomFalseElementTypes(
         self,
         actualTypes: list[PokepediaElementType]
-    ) -> set[PokepediaElementType]:
-        if not utils.hasItems(actualTypes):
+    ) -> frozenset[PokepediaElementType]:
+        if not isinstance(actualTypes, list) or len(actualTypes) == 0:
             raise TypeError(f'actualTypes argument is malformed: \"{actualTypes}\"')
 
         allTypes: list[PokepediaElementType] = list(PokepediaElementType)
@@ -134,13 +135,13 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             if randomType not in actualTypes and randomType is not PokepediaElementType.UNKNOWN:
                 falseTypes.add(randomType)
 
-        return falseTypes
+        return frozenset(falseTypes)
 
     async def __selectRandomFalseMachineNumbers(
         self,
         actualMachineNumber: int,
         actualMachineType: PokepediaMachineType
-    ) -> set[int]:
+    ) -> frozenset[int]:
         if not utils.isValidInt(actualMachineNumber):
             raise TypeError(f'actualMachineNumber argument is malformed: \"{actualMachineNumber}\"')
         elif not isinstance(actualMachineType, PokepediaMachineType):
@@ -159,7 +160,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             if randomInt != actualMachineNumber:
                 falseMachineNumbers.add(randomInt)
 
-        return falseMachineNumbers
+        return frozenset(falseMachineNumbers)
 
     async def __selectRandomGeneration(
         self,
@@ -173,6 +174,6 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         indexOfMin = allGenerations.index(initialGeneration)
 
         if indexOfMax < indexOfMin:
-            raise RuntimeError(f'indexOfMax ({indexOfMax}) or indexOfMin ({indexOfMin}) is incompatible with an initial generation of {initialGeneration}! (maxGeneration={self.__maxGeneration})')
+            raise RuntimeError(f'indexOfMax ({indexOfMax}) or indexOfMin ({indexOfMin}) is incompatible with an initial generation of {initialGeneration}! ({self.__maxGeneration=})')
 
         return allGenerations[random.randint(indexOfMin, indexOfMax)]
