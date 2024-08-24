@@ -2,6 +2,7 @@ import re
 from re import Match
 from typing import Pattern
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .anivContentCode import AnivContentCode
@@ -28,16 +29,16 @@ class AnivContentScanner(AnivContentScannerInterface):
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
 
-        self.__parens: dict[str, str] = {
+        self.__parens: frozendict[str, str] = frozendict({
             '[': ']',
             '(': ')',
             '{': '}'
-        }
+        })
 
-        self.__quotes: dict[str, str] = {
+        self.__quotes: frozendict[str, str] = frozendict({
             '“': '”',
             '「': '」'
-        }
+        })
 
         self.__twitchEmojiPatterns: FrozenList[Pattern] = FrozenList([
             re.compile(r'^[BR:;]-?[\)]$'),
@@ -75,10 +76,10 @@ class AnivContentScanner(AnivContentScannerInterface):
 
     async def __containsMatchingCharacterPairs(
         self,
-        characterPairs: dict[str, str],
+        characterPairs: frozendict[str, str],
         message: str
     ) -> bool:
-        if not isinstance(characterPairs, dict):
+        if not isinstance(characterPairs, frozendict):
             raise TypeError(f'characterPairs argument is malformed: \"{characterPairs}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -86,7 +87,8 @@ class AnivContentScanner(AnivContentScannerInterface):
         stack: Stack[str] = Stack()
         keys: frozenset[str] = frozenset(set(characterPairs.keys()))
         values: frozenset[str] = frozenset(set(characterPairs.values()))
-        items: list[tuple[str, str]] = list(characterPairs.items())
+        items: FrozenList[tuple[str, str]] = FrozenList(characterPairs.items())
+        items.freeze()
 
         try:
             for character in message:
