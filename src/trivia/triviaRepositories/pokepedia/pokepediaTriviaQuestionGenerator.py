@@ -92,6 +92,46 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             question = f'In Pokémon, the move {move.getName()} has which damage class?'
         )
 
+    async def __createNatureBerryFlavorQuestion(
+        self,
+        nature: PokepediaNature,
+        berryFlavor: PokepediaBerryFlavor | None,
+        likeOrDislikeStr: str
+    ) -> PokepediaTriviaQuestion:
+        if not isinstance(nature, PokepediaNature):
+            raise TypeError(f'nature argument is malformed: \"{nature}\"')
+        elif berryFlavor is not None and not isinstance(berryFlavor, PokepediaBerryFlavor):
+            raise TypeError(f'berryFlavor argument is malformed: \"{berryFlavor}\"')
+        elif not utils.isValidStr(likeOrDislikeStr):
+            raise TypeError(f'likeOrDislikeStr argument is malformed: \"{likeOrDislikeStr}\"')
+
+        randomFlavors = await self.__selectRandomFalseBerryFlavors(berryFlavor)
+        flavorStrs: list[str] = list()
+
+        for randomFlavor in randomFlavors:
+            flavorStrs.append(randomFlavor.toStr())
+
+        flavorStrs.sort(key = lambda flavor: flavor.casefold())
+
+        noneOfThese = 'None of these'
+        flavorStrs.append(noneOfThese)
+
+        frozenFlavorStrs: FrozenList[str] = FrozenList(flavorStrs)
+        frozenFlavorStrs.freeze()
+
+        correctAnswer: str
+        if berryFlavor is None:
+            correctAnswer = noneOfThese
+        else:
+            correctAnswer = berryFlavor.toStr()
+
+        return MultipleChoicePokepediaTriviaQuestion(
+            incorrectAnswers = frozenFlavorStrs,
+            pokepediaTriviaType = TriviaQuestionType.MULTIPLE_CHOICE,
+            correctAnswer = correctAnswer,
+            question = f'Pokémon with the {nature.toStr()} nature {likeOrDislikeStr} ONE of the following flavors.'
+        )
+
     async def __determinePokepediaTriviaType(self) -> PokepediaTriviaQuestionType:
         # TODO this should be weighted
         enabledQuestionTypes = list(self.__enabledQuestionTypes)
