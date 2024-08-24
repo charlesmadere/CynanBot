@@ -38,7 +38,7 @@ class TimeChatCommand(AbsChatCommand):
         if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        timeZones = user.getTimeZones()
+        timeZones = user.timeZones
         if timeZones is None or len(timeZones) == 0:
             return
 

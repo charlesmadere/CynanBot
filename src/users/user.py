@@ -1,6 +1,7 @@
 from datetime import tzinfo
 
 from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
@@ -98,7 +99,7 @@ class User(UserInterface):
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
-        timeZones: list[tzinfo] | None
+        timeZones: FrozenList[tzinfo] | None
     ):
         if not utils.isValidBool(areBeanChancesEnabled):
             raise TypeError(f'areBeanChancesEnabled argument is malformed: \"{areBeanChancesEnabled}\"')
@@ -266,7 +267,7 @@ class User(UserInterface):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
-        elif timeZones is not None and not isinstance(timeZones, list):
+        elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
         self.__areBeanChancesEnabled: bool = areBeanChancesEnabled
@@ -354,7 +355,7 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
-        self.__timeZones: list[tzinfo] | None = timeZones
+        self.__timeZones: FrozenList[tzinfo] | None = timeZones
 
     @property
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:
@@ -470,9 +471,6 @@ class User(UserInterface):
 
     def getSupStreamerMessage(self) -> str | None:
         return self.__supStreamerMessage
-
-    def getTimeZones(self) -> list[tzinfo] | None:
-        return self.__timeZones
 
     def getTriviaGamePoints(self) -> int | None:
         return self.__triviaGamePoints
@@ -659,3 +657,7 @@ class User(UserInterface):
     @property
     def timeoutCheerActionFollowShieldDays(self) -> int | None:
         return self.__timeoutCheerActionFollowShieldDays
+
+    @property
+    def timeZones(self) -> FrozenList[tzinfo] | None:
+        return self.__timeZones

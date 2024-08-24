@@ -6,6 +6,7 @@ from typing import Any, Collection
 import aiofiles
 import aiofiles.ospath
 from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
@@ -185,12 +186,13 @@ class UsersRepository(UsersRepositoryInterface):
             if 'minimumTtsCheerAmount' in userJson and utils.isValidInt(userJson.get('minimumTtsCheerAmount')):
                 minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount')
 
-        timeZones: list[tzinfo] | None = None
+        timeZones: FrozenList[tzinfo] | None = None
         if 'timeZones' in userJson:
             timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
         elif 'timeZone' in userJson:
-            timeZones = list()
+            timeZones = FrozenList()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
+            timeZones.freeze()
 
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = None
         if isCutenessEnabled:

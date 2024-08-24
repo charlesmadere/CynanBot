@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import tzinfo
 
 from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
@@ -154,10 +155,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def getSupStreamerMessage(self) -> str | None:
-        pass
-
-    @abstractmethod
-    def getTimeZones(self) -> list[tzinfo] | None:
         pass
 
     @abstractmethod
@@ -355,4 +352,9 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def timeoutCheerActionFollowShieldDays(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
+    def timeZones(self) -> FrozenList[tzinfo] | None:
         pass

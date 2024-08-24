@@ -1,6 +1,8 @@
 from datetime import timezone, tzinfo
+from typing import Collection
 
 import pytz
+from frozenlist import FrozenList
 
 from .timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -31,11 +33,11 @@ class TimeZoneRepository(TimeZoneRepositoryInterface):
         self.__timeZones[timeZoneStr] = newTimeZone
         return newTimeZone
 
-    def getTimeZones(self, timeZoneStrs: list[str]) -> list[tzinfo]:
-        if not isinstance(timeZoneStrs, list):
+    def getTimeZones(self, timeZoneStrs: Collection[str]) -> FrozenList[tzinfo]:
+        if not isinstance(timeZoneStrs, Collection):
             raise TypeError(f'timeZoneStrs argument is malformed: \"{timeZoneStrs}\"')
 
-        timeZones: list[tzinfo] = list()
+        timeZones: FrozenList[tzinfo] = FrozenList()
 
         for timeZoneStr in timeZoneStrs:
             if not utils.isValidStr(timeZoneStr):
@@ -44,4 +46,5 @@ class TimeZoneRepository(TimeZoneRepositoryInterface):
             newTimeZone = self.getTimeZone(timeZoneStr)
             timeZones.append(newTimeZone)
 
+        timeZones.freeze()
         return timeZones
