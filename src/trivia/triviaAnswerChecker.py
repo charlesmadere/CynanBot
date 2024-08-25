@@ -598,6 +598,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'canadian football league'
         if word == 'fifa':
             yield 'federation internationale de football association'
+        if word == 'ko':
+            yield 'knock out'
         if word == 'mlb':
             yield 'major league baseball'
         if word == 'mls':
