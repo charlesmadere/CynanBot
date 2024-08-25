@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
-from .twitchBannedUser import TwitchBannedUser
+from .twitchBannedUserResponse import TwitchBannedUserResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse
@@ -51,7 +51,7 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         chatterUserId: str,
         twitchAccessToken: str
-    ) -> TwitchBannedUser:
+    ) -> TwitchBannedUserResponse:
         pass
 
     @abstractmethod

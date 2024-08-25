@@ -71,7 +71,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         try:
-            bannedUser = await self.__twitchApiService.fetchBannedUser(
+            bannedUserResponse = await self.__twitchApiService.fetchBannedUser(
                 broadcasterId = twitchChannelId,
                 chatterUserId = userIdToTimeout,
                 twitchAccessToken = twitchChannelAccessToken
@@ -80,13 +80,16 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Failed to verify if the given user ID can be timed out ({twitchChannelAccessToken=}) ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
             return False
 
-        if bannedUser is None:
+        if bannedUserResponse is None or bannedUserResponse.bannedUser is None:
             return False
-        elif bannedUser.expiresAt is None:
-            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is permanently banned: ({bannedUser=}) ({twitchChannelId=}) ({userIdToTimeout=})')
+
+        bannedUser = bannedUserResponse.bannedUser
+
+        if bannedUser.expiresAt is None:
+            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is permanently banned: ({bannedUserResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
         else:
-            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is already timed out: ({bannedUser=}) ({twitchChannelId=}) ({userIdToTimeout=})')
+            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is already timed out: ({bannedUserResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
 
     async def __isMod(

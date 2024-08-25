@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .twitchApiScope import TwitchApiScope
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBannedUser import TwitchBannedUser
+from .twitchBannedUserResponse import TwitchBannedUserResponse
 from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
@@ -98,16 +99,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
 
-    async def parseBannedUser(
+    async def parseBannedUserResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBannedUser | None:
+    ) -> TwitchBannedUserResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
         data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        if not isinstance(data, list) or len(data) == 0:
+
+        if not isinstance(data, list):
             return None
+        elif len(data) == 0:
+            return TwitchBannedUserResponse()
 
         dataEntry: dict[str, Any] | Any | None = data[0]
         if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
@@ -131,7 +135,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         userLogin = utils.getStrFromDict(dataEntry, 'user_login')
         userName = utils.getStrFromDict(dataEntry, 'user_name')
 
-        return TwitchBannedUser(
+        bannedUser = TwitchBannedUser(
             createdAt = createdAt,
             expiresAt = expiresAt,
             moderatorId = moderatorId,
@@ -141,6 +145,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName
+        )
+
+        return TwitchBannedUserResponse(
+            bannedUser = bannedUser
         )
 
     async def parseBroadcasterSubscription(

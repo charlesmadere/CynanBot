@@ -5,7 +5,7 @@ from typing import Any
 from .twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
-from .twitchBannedUser import TwitchBannedUser
+from .twitchBannedUserResponse import TwitchBannedUserResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse
@@ -304,7 +304,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         broadcasterId: str,
         chatterUserId: str,
         twitchAccessToken: str
-    ) -> TwitchBannedUser:
+    ) -> TwitchBannedUserResponse:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(chatterUserId):
@@ -339,13 +339,13 @@ class TwitchApiService(TwitchApiServiceInterface):
                 message = f'TwitchApiService encountered non-200 HTTP status code when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
             )
 
-        twitchBannedUser = await self.__twitchJsonMapper.parseBannedUser(jsonResponse)
+        twitchBannedUserResponse = await self.__twitchJsonMapper.parseBannedUserResponse(jsonResponse)
 
-        if twitchBannedUser is None:
-            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUser=})')
-            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUser=})')
+        if twitchBannedUserResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUserResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUserResponse=})')
 
-        return twitchBannedUser
+        return twitchBannedUserResponse
 
     async def fetchEmotes(
         self,
