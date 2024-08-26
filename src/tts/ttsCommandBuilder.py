@@ -247,14 +247,14 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
                 donation = donation
             )
         elif isinstance(donation, TtsSubscriptionDonation):
-            return await self.__processSubcriptionDonationPrefix(
+            return await self.__processSubscriptionDonationPrefix(
                 event = event,
                 donation = donation
             )
         else:
             raise RuntimeError(f'donation type is unknown: \"{type(donation)=}\"')
 
-    async def __processSubcriptionDonationPrefix(
+    async def __processSubscriptionDonationPrefix(
         self,
         event: TtsEvent,
         donation: TtsSubscriptionDonation
@@ -268,15 +268,21 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?
 
-        if donation.giftType is TtsSubscriptionDonationGiftType.GIVER:
-            if donation.isAnonymous:
-                return 'anonymous gifted a sub!'
-            else:
-                return f'{event.userName} gifted a sub!'
-        elif donation.giftType is TtsSubscriptionDonationGiftType.RECEIVER:
-            return f'{event.userName} received a sub gift!'
-        else:
-            return f'{event.userName} subscribed!'
+        match donation.giftType:
+            case TtsSubscriptionDonationGiftType.GIVER:
+                if donation.isAnonymous:
+                    return 'anonymous gifted a sub!'
+                else:
+                    return f'{event.userName} gifted a sub!'
+
+            case TtsSubscriptionDonationGiftType.RECEIVER:
+                if utils.isValidStr(donation.subGiftGiverDisplayName) and not donation.isAnonymous:
+                    return f'{event.userName} received a sub gift from {donation.subGiftGiverDisplayName}!'
+                else:
+                    return f'{event.userName} received a sub gift!'
+
+            case _:
+                return f'{event.userName} subscribed!'
 
     async def __purgeCheers(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):

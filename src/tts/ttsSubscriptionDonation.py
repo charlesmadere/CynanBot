@@ -9,6 +9,9 @@ from ..twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 @dataclass(frozen = True)
 class TtsSubscriptionDonation(TtsDonation):
     isAnonymous: bool
+    cumulativeMonths: int | None
+    durationMonths: int | None
+    subGiftGiverDisplayName: str | None
     giftType: TtsSubscriptionDonationGiftType | None
     tier: TwitchSubscriberTier
 

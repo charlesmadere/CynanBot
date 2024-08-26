@@ -324,7 +324,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             actualMessage = userInput
 
         if isAnonymous is None:
-            isAnonymous = False
+            if resub is not None and resub.gifterIsAnonymous is True:
+                isAnonymous = True
+            else:
+                isAnonymous = False
 
         actualUserId = userId
         actualUserName = userName
@@ -351,8 +354,22 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
             giftType = TtsSubscriptionDonationGiftType.GIVER
 
+        cumulativeMonths: int | None = None
+        durationMonths: int | None = None
+        subGiftGiverDisplayName: str | None = None
+
+        if resub is not None:
+            cumulativeMonths = resub.cumulativeMonths
+            durationMonths = resub.durationMonths
+
+            if giftType is TtsSubscriptionDonationGiftType.RECEIVER and not isAnonymous and utils.isValidStr(resub.gifterUserId) and utils.isValidStr(resub.gifterUserName) and actualUserId != resub.gifterUserId:
+                subGiftGiverDisplayName = resub.gifterUserName
+
         donation: TtsDonation = TtsSubscriptionDonation(
             isAnonymous = isAnonymous,
+            cumulativeMonths = cumulativeMonths,
+            durationMonths = durationMonths,
+            subGiftGiverDisplayName = subGiftGiverDisplayName,
             giftType = giftType,
             tier = tier
         )
