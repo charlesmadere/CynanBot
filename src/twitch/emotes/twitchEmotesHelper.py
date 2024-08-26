@@ -88,7 +88,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
             userSubscription = userSubscription
         )
 
-        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({emotesResponse=}) ({userSubscription=})')
+        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({userSubscription=})')
         self.__cache[twitchChannelId] = viableEmoteNames
         return viableEmoteNames
 
