@@ -119,6 +119,29 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
         return moderatorInfo is not None
 
+    async def __removeMod(
+        self,
+        twitchChannelAccessToken: str,
+        twitchChannelId: str,
+        userIdToTimeout: str
+    ) -> bool:
+        if not utils.isValidStr(twitchChannelAccessToken):
+            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userIdToTimeout):
+            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
+
+        try:
+            return await self.__twitchApiService.removeModerator(
+                broadcasterId = twitchChannelId,
+                moderatorId = userIdToTimeout,
+                twitchAccessToken = twitchChannelAccessToken
+            )
+        except Exception as e:
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to remove Twitch moderator for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
+            return False
+
     async def timeout(
         self,
         durationSeconds: int,
@@ -173,11 +196,19 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             twitchAccessToken = twitchAccessToken
         )
 
-        mustRemod = await self.__isMod(
+        isMod = await self.__isMod(
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout
         )
+
+        if isMod and not await self.__removeMod(
+            twitchChannelAccessToken = twitchChannelAccessToken,
+            twitchChannelId = twitchChannelId,
+            userIdToTimeout = userIdToTimeout
+        ):
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            return TwitchTimeoutResult.CANT_UNMOD
 
         if not await self.__timeout(
             durationSeconds = durationSeconds,
@@ -192,7 +223,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return TwitchTimeoutResult.API_CALL_FAILED
 
-        if mustRemod:
+        if isMod:
             remodDateTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = durationSeconds)
 
             await self.__twitchTimeoutRemodHelper.submitRemodData(TwitchTimeoutRemodData(

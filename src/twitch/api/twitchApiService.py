@@ -854,6 +854,49 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return tokensDetails
 
+    async def removeModerator(
+        self,
+        broadcasterId: str,
+        moderatorId: str,
+        twitchAccessToken: str
+    ) -> bool:
+        if not utils.isValidStr(broadcasterId):
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+        elif not utils.isValidStr(moderatorId):
+            raise TypeError(f'moderatorId argument is malformed: \"{moderatorId}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        self.__timber.log('TwitchApiService', f'Removing moderator... ({broadcasterId=}) ({moderatorId=}) ({twitchAccessToken=})')
+
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.delete(
+                url = f'https://api.twitch.tv/helix/moderation/moderators?broadcaster_id={broadcasterId}&user_id={moderatorId}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({twitchAccessToken=}): {e}')
+
+        responseStatusCode = response.statusCode
+        await response.close()
+
+        if responseStatusCode == 204:
+            # means that the given user ID has had their moderator status removed
+            return True
+        elif responseStatusCode == 400:
+            # probably means that the given user ID was not a moderator
+            return False
+
+        self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({twitchAccessToken=}) ({response=}): {responseStatusCode}')
+        raise GenericNetworkException(f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({twitchAccessToken=}) ({response=}): {responseStatusCode}')
+
     async def sendChatMessage(
         self,
         twitchAccessToken: str,
@@ -864,8 +907,8 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif not isinstance(chatRequest, TwitchSendChatMessageRequest):
             raise TypeError(f'chatRequest argument is malformed: \"{chatRequest}\"')
 
-        clientSession = await self.__networkClientProvider.get()
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
 
         try:
             response = await clientSession.post(

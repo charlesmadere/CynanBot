@@ -122,6 +122,15 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
+    async def removeModerator(
+        self,
+        broadcasterId: str,
+        moderatorId: str,
+        twitchAccessToken: str
+    ) -> bool:
+        pass
+
+    @abstractmethod
     async def sendChatMessage(
         self,
         twitchAccessToken: str,
