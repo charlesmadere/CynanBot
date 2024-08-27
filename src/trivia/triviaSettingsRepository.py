@@ -1,8 +1,7 @@
 from typing import Any
 
 from .questions.triviaSource import TriviaSource
-from .triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..storage.jsonReaderInterface import JsonReaderInterface
 
