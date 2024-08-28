@@ -802,8 +802,7 @@ timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterfac
     backingDatabase = backingDatabase,
     timber = timber,
     timeoutCheerActionJsonMapper = timeoutCheerActionJsonMapper,
-    timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository
+    timeZoneRepository = timeZoneRepository
 )
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
