@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 
-from .crowdControlInput import CrowdControlInput
-from .crowdControlInputHandler import CrowdControlInputHandler
+from .actions.crowdControlAction import CrowdControlAction
+from .crowdControlActionHandler import CrowdControlActionHandler
 
 
 class CrowdControlMachineInterface(ABC):
 
     @abstractmethod
-    def setInputHandler(self, inputHandler: CrowdControlInputHandler | None):
+    def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
         pass
 
     @abstractmethod
@@ -15,5 +15,5 @@ class CrowdControlMachineInterface(ABC):
         pass
 
     @abstractmethod
-    def submitInput(self, input: CrowdControlInput):
+    def submitAction(self, input: CrowdControlAction):
         pass

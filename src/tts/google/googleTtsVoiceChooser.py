@@ -1,7 +1,8 @@
 import random
 
-from .googleTtsVoiceChooserInterface import \
-    GoogleTtsVoiceChooserInterface
+from frozendict import frozendict
+
+from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ...google.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
@@ -9,21 +10,19 @@ class GoogleTtsVoiceChooser(GoogleTtsVoiceChooserInterface):
 
     def __init__(
         self,
-        languageCodeToNames: dict[str, set[str]] = {
-            'en-AU': { 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D', 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' },
-            'en-GB': { 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' },
-            'en-US': { 'en-US-Casual-K', 'en-US-Journey-F', 'en-US-Studio-O', 'en-US-Studio-Q' },
-            'fr-CA': { 'fr-CA-Neural2-A', 'fr-CA-Neural2-B', 'fr-CA-Neural2-C', 'fr-CA-Neural2-D' },
-            'ja-JP': { 'ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D' },
-            'sv-SE': { 'sv-SE-Standard-A', 'sv-SE-Standard-B', 'sv-SE-Standard-C', 'sv-SE-Standard-D', 'sv-SE-Standard-E' }
-        }
+        languageCodeToNames: frozendict[str, frozenset[str]] = frozendict({
+            'en-AU': frozenset({ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' }),
+            'en-GB': frozenset({ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' }),
+            'en-US': frozenset({ 'en-US-Casual-K', 'en-US-Journey-F', 'en-US-Studio-O', 'en-US-Studio-Q' }),
+            'fr-CA': frozenset({ 'fr-CA-Neural2-A', 'fr-CA-Neural2-B', 'fr-CA-Neural2-C', 'fr-CA-Neural2-D' })
+        })
     ):
-        if not isinstance(languageCodeToNames, dict):
+        if not isinstance(languageCodeToNames, frozendict):
             raise TypeError(f'languageCodeToVoiceNames argument is malformed: \"{languageCodeToNames}\"')
         elif len(languageCodeToNames) == 0:
             raise ValueError(f'languageCodeToNames argument is empty: \"{languageCodeToNames}\"')
 
-        self.__languageCodeToNames: dict[str, set[str]] = languageCodeToNames
+        self.__languageCodeToNames: frozendict[str, frozenset[str]] = languageCodeToNames
 
     async def choose(self) -> GoogleVoiceSelectionParams:
         languageCodes = self.__languageCodeToNames.keys()

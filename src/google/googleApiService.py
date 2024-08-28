@@ -95,17 +95,22 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         return accessToken
 
+    async def __requireGoogleProjectId(self) -> str:
+        googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
+
+        if not utils.isValidStr(googleProjectId):
+            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
+
+        return googleProjectId
+
     async def textToSpeech(self, request: GoogleTextSynthesizeRequest) -> GoogleTextSynthesisResponse:
         if not isinstance(request, GoogleTextSynthesizeRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
         self.__timber.log('GoogleApiService', f'Fetching text-to-speech from Google... ({request=})')
+
         clientSession = await self.__networkClientProvider.get()
-
-        googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
-        if not utils.isValidStr(googleProjectId):
-            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
-
+        googleProjectId = await self.__requireGoogleProjectId()
         googleAccessToken = await self.__fetchGoogleAccessToken()
 
         try:
@@ -148,12 +153,9 @@ class GoogleApiService(GoogleApiServiceInterface):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
         self.__timber.log('GoogleApiService', f'Fetching translation from Google... ({request=})')
+
         clientSession = await self.__networkClientProvider.get()
-
-        googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
-        if not utils.isValidStr(googleProjectId):
-            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
-
+        googleProjectId = await self.__requireGoogleProjectId()
         googleAccessToken = await self.__fetchGoogleAccessToken()
 
         try:
@@ -163,7 +165,7 @@ class GoogleApiService(GoogleApiServiceInterface):
                     'Accept': self.__contentType,
                     'Authorization': f'Bearer {googleAccessToken.accessToken}',
                     'Content-Type': self.__contentType,
-                    'x-goog-user-project': googleProjectId,
+                    'x-goog-user-project': googleProjectId
                 },
                 json = await self.__googleJsonMapper.serializeTranslationRequest(request)
             )

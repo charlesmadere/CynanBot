@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .timeoutCheerActionEntry import TimeoutCheerActionEntry
 
 
@@ -10,7 +12,7 @@ class TimeoutCheerActionJsonMapperInterface(ABC):
     async def parseTimeoutCheerActionEntriesString(
         self,
         jsonString: str | Any | None
-    ) -> list[TimeoutCheerActionEntry] | None:
+    ) -> FrozenList[TimeoutCheerActionEntry] | None:
         pass
 
     @abstractmethod

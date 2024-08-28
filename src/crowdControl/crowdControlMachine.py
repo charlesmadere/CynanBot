@@ -4,9 +4,11 @@ import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
-from .crowdControlInput import CrowdControlInput
-from .crowdControlInputHandler import CrowdControlInputHandler
-from .crowdControlInputResult import CrowdControlInputResult
+from .actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
+from .actions.crowdControlAction import CrowdControlAction
+from .actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
+from .crowdControlActionHandleResult import CrowdControlActionHandleResult
+from .crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -45,48 +47,55 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
         self.__isStarted: bool = False
-        self.__inputHandler: CrowdControlInputHandler | None = None
-        self.__inputQueue: SimpleQueue[CrowdControlInput] = SimpleQueue()
+        self.__actionHandler: CrowdControlActionHandler | None = None
+        self.__actionQueue: SimpleQueue[CrowdControlAction] = SimpleQueue()
 
-    async def __handleInput(
+    async def __handleAction(
         self,
-        input: CrowdControlInput,
-        inputHandler: CrowdControlInputHandler
-    ) -> CrowdControlInputResult:
-        if not isinstance(input, CrowdControlInput):
-            raise TypeError(f'input argument is malformed: \"{input}\"')
-        elif not isinstance(inputHandler, CrowdControlInputHandler):
-            raise TypeError(f'inputHandler argument is malformed: \"{inputHandler}\"')
+        action: CrowdControlAction,
+        actionHandler: CrowdControlActionHandler
+    ) -> CrowdControlActionHandleResult:
+        if not isinstance(action, CrowdControlAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+        elif not isinstance(actionHandler, CrowdControlActionHandler):
+            raise TypeError(f'actionHandler argument is malformed: \"{actionHandler}\"')
 
-        input.incrementHandleAttempts()
-        if input.handleAttempts >= await self.__crowdControlSettingsRepository.getMaxHandleAttempts():
-            self.__timber.log('CrowdControlMachine', f'Abandoning input due to too many handle attempts ({input=})')
-            return CrowdControlInputResult.ABANDON
+        action.incrementHandleAttempts()
+        if action.handleAttempts >= await self.__crowdControlSettingsRepository.getMaxHandleAttempts():
+            self.__timber.log('CrowdControlMachine', f'Abandoning action due to too many handle attempts ({action=})')
+            return CrowdControlActionHandleResult.ABANDON
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
-        if now > input.dateTime + timedelta(seconds = await self.__crowdControlSettingsRepository.getSecondsToLive()):
-            self.__timber.log('CrowdControlMachine', f'Abandoning input due to age exceeding time to live ({input=})')
-            return CrowdControlInputResult.ABANDON
+        if now > action.dateTime + timedelta(seconds = await self.__crowdControlSettingsRepository.getSecondsToLive()):
+            self.__timber.log('CrowdControlMachine', f'Abandoning action due to age exceeding time to live ({action=})')
+            return CrowdControlActionHandleResult.ABANDON
 
-        handled: bool
+        handled = False
 
-        try:
-            handled = await inputHandler.handleInput(input)
-        except Exception as e:
-            self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling input ({input=}): {e}', e, traceback.format_exc())
-            handled = False
+        if isinstance(action, ButtonPressCrowdControlAction):
+            try:
+                handled = await actionHandler.handleButtonPressAction(action)
+            except Exception as e:
+                self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling button press action ({action=}): {e}', e, traceback.format_exc())
+        elif isinstance(action, GameShuffleCrowdControlAction):
+            try:
+                handled = await actionHandler.handleGameShuffleAction(action)
+            except Exception as e:
+                self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
+        else:
+            raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
         if handled:
-            return CrowdControlInputResult.OK
+            return CrowdControlActionHandleResult.OK
 
-        self.__timber.log('CrowdControlMachine', f'Failed to handle input ({input=}), will potentially retry')
-        return CrowdControlInputResult.RETRY
+        self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}), will potentially retry')
+        return CrowdControlActionHandleResult.RETRY
 
-    def setInputHandler(self, inputHandler: CrowdControlInputHandler | None):
-        if inputHandler is not None and not isinstance(inputHandler, CrowdControlInputHandler):
-            raise TypeError(f'inputHandler argument is malformed: \"{inputHandler}\"')
+    def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
+        if actionHandler is not None and not isinstance(actionHandler, CrowdControlActionHandler):
+            raise TypeError(f'actionHandler argument is malformed: \"{actionHandler}\"')
 
-        self.__inputHandler = inputHandler
+        self.__actionHandler = actionHandler
 
     def start(self):
         if self.__isStarted:
@@ -95,38 +104,38 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__isStarted = True
         self.__timber.log('CrowdControlMachine', 'Starting CrowdControlMachine...')
-        self.__backgroundTaskHelper.createTask(self.__startInputLoop())
+        self.__backgroundTaskHelper.createTask(self.__startActionLoop())
 
-    async def __startInputLoop(self):
+    async def __startActionLoop(self):
         while True:
-            inputHandler = self.__inputHandler
+            actionHandler = self.__actionHandler
 
-            if inputHandler is not None:
-                input: CrowdControlInput | None = None
+            if actionHandler is not None:
+                action: CrowdControlAction | None = None
 
                 try:
-                    if not self.__inputQueue.empty():
-                        input = self.__inputQueue.get_nowait()
+                    if not self.__actionQueue.empty():
+                        action = self.__actionQueue.get_nowait()
                 except queue.Empty as e:
-                    self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing input (queue size: {self.__inputQueue.qsize()}) ({input=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing action (queue size: {self.__actionQueue.qsize()}) ({action=}): {e}', e, traceback.format_exc())
 
-                if input is not None:
-                    result = await self.__handleInput(
-                        input = input,
-                        inputHandler = inputHandler
+                if action is not None:
+                    result = await self.__handleAction(
+                        action = action,
+                        actionHandler = actionHandler
                     )
 
-                    if result is CrowdControlInputResult.RETRY:
-                        self.submitInput(input)
+                    if result is CrowdControlActionHandleResult.RETRY:
+                        self.submitAction(action)
 
-            inputCooldownSeconds = await self.__crowdControlSettingsRepository.getInputCooldownSeconds()
-            await asyncio.sleep(inputCooldownSeconds)
+            actionCooldownSeconds = await self.__crowdControlSettingsRepository.getActionCooldownSeconds()
+            await asyncio.sleep(actionCooldownSeconds)
 
-    def submitInput(self, input: CrowdControlInput):
-        if not isinstance(input, CrowdControlInput):
-            raise TypeError(f'input argument is malformed: \"{input}\"')
+    def submitAction(self, action: CrowdControlAction):
+        if not isinstance(action, CrowdControlAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         try:
-            self.__inputQueue.put(input, block = True, timeout = self.__queueTimeoutSeconds)
+            self.__actionQueue.put(action, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new input ({input}) into the input queue (queue size: {self.__inputQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()}): {e}', e, traceback.format_exc())

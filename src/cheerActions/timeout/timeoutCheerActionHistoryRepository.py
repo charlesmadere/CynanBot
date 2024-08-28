@@ -3,23 +3,19 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import datetime
 
+from frozenlist import FrozenList
 from lru import LRU
 
-from .timeoutCheerActionEntry import \
-    TimeoutCheerActionEntry
-from .timeoutCheerActionHistory import \
-    TimeoutCheerActionHistory
-from .timeoutCheerActionHistoryRepositoryInterface import \
-    TimeoutCheerActionHistoryRepositoryInterface
-from .timeoutCheerActionJsonMapperInterface import \
-    TimeoutCheerActionJsonMapperInterface
+from .timeoutCheerActionEntry import TimeoutCheerActionEntry
+from .timeoutCheerActionHistory import TimeoutCheerActionHistory
+from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
+from .timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInterface):
@@ -30,7 +26,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         timber: TimberInterface,
         timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
         cacheSize: int = 32,
         maximumHistoryEntriesSize: int = 5
     ):
@@ -42,8 +37,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             raise TypeError(f'timeoutCheerActionJsonMapper argument is malformed: \"{timeoutCheerActionJsonMapper}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
@@ -57,7 +50,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         self.__timber: TimberInterface = timber
         self.__timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = timeoutCheerActionJsonMapper
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__maximumHistoryEntriesSize: int = maximumHistoryEntriesSize
 
         self.__isDatabaseReady: bool = False
@@ -122,11 +114,13 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         while len(historyEntries) > self.__maximumHistoryEntriesSize:
             del historyEntries[len(historyEntries) - 1]
 
+        frozenHistoryEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList(historyEntries)
+        frozenHistoryEntries.freeze()
+
         self.__caches[twitchChannelId][chatterUserId] = TimeoutCheerActionHistory(
             totalTimeouts = totalTimeouts,
-            entries = historyEntries,
+            entries = frozenHistoryEntries,
             chatterUserId = history.chatterUserId,
-            chatterUserName = history.chatterUserName,
             twitchChannel = history.twitchChannel,
             twitchChannelId = twitchChannelId
         )
@@ -184,11 +178,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
 
         await connection.close()
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
-            userId = chatterUserId,
-            twitchAccessToken = twitchAccessToken
-        )
-
         timeoutCheerActionHistory: TimeoutCheerActionHistory
 
         if record is None or len(record) == 0:
@@ -196,7 +185,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
                 totalTimeouts = 0,
                 entries = None,
                 chatterUserId = chatterUserId,
-                chatterUserName = chatterUserName,
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
@@ -209,7 +197,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
                 totalTimeouts = record[0],
                 entries = entries,
                 chatterUserId = record[1],
-                chatterUserName = chatterUserName,
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )

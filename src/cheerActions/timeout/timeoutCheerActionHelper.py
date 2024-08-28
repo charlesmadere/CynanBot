@@ -137,6 +137,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             return False
         elif userIdToTimeout == broadcasterUserId:
             userIdToTimeout = cheerUserId
+            userNameToTimeout = cheerUserName
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout the broadcaster themself from {cheerUserName}:{cheerUserId} in {user.getHandle()}, so will instead time out the user: ({message=}) ({timeoutAction=})')
 
         return await self.__timeoutUser(
@@ -146,6 +147,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
             userIdToTimeout = userIdToTimeout,
+            userNameToTimeout = userNameToTimeout,
             userTwitchAccessToken = userTwitchAccessToken,
             action = timeoutAction,
             user = user
@@ -205,6 +207,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         moderatorUserId: str,
         twitchChannelId: str,
         userIdToTimeout: str,
+        userNameToTimeout: str,
         userTwitchAccessToken: str,
         action: TimeoutCheerAction,
         user: UserInterface
@@ -221,6 +224,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
+        elif not utils.isValidStr(userNameToTimeout):
+            raise TypeError(f'userNameToTimeout argument is malformed: \"{userNameToTimeout}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(action, TimeoutCheerAction):
@@ -233,11 +238,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         if twitchChannelProvider is not None:
             twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-
-        userNameToTimeout = await self.__userIdsRepository.requireUserName(
-            userId = userIdToTimeout,
-            twitchAccessToken = userTwitchAccessToken
-        )
 
         if not await self.__verifyStreamStatus(
             twitchChannelId = twitchChannelId,

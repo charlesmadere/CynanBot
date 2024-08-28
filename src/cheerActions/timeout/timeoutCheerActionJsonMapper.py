@@ -3,10 +3,10 @@ import traceback
 from json import JSONDecodeError
 from typing import Any
 
-from .timeoutCheerActionEntry import \
-    TimeoutCheerActionEntry
-from .timeoutCheerActionJsonMapperInterface import \
-    TimeoutCheerActionJsonMapperInterface
+from frozenlist import FrozenList
+
+from .timeoutCheerActionEntry import TimeoutCheerActionEntry
+from .timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -22,11 +22,11 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
     async def parseTimeoutCheerActionEntriesString(
         self,
         jsonString: str | Any | None
-    ) -> list[TimeoutCheerActionEntry] | None:
+    ) -> FrozenList[TimeoutCheerActionEntry] | None:
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: list[dict[str, Any] | Any | None] | Any | None = None
+        jsonContents: list[dict[str, Any] | Any | None] | Any | None
 
         try:
             jsonContents = json.loads(jsonString)
@@ -49,7 +49,10 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
             return None
 
         entries.sort(key = lambda entry: entry.timedOutAtDateTime, reverse = True)
-        return entries
+        frozenEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList()
+        frozenEntries.freeze()
+
+        return frozenEntries
 
     async def parseTimeoutCheerActionEntry(
         self,

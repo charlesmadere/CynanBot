@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class CrowdControlInputResult(Enum):
+class CrowdControlActionHandleResult(Enum):
 
     ABANDON = auto()
     OK = auto()

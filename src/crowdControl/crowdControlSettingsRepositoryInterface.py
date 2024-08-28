@@ -6,7 +6,7 @@ from ..misc.clearable import Clearable
 class CrowdControlSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def getInputCooldownSeconds(self) -> float:
+    async def getActionCooldownSeconds(self) -> float:
         pass
 
     @abstractmethod

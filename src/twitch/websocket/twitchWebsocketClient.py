@@ -45,7 +45,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.25,
         websocketSleepTimeSeconds: float = 3,
-        subscriptionTypes: set[TwitchWebsocketSubscriptionType] = {
+        subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
@@ -60,7 +60,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
-        },
+        }),
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
         maxMessageAge: timedelta = timedelta(minutes = 3)
     ):
@@ -94,7 +94,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'websocketSleepTimeSeconds argument is malformed: \"{websocketSleepTimeSeconds}\"')
         elif websocketSleepTimeSeconds < 3 or websocketSleepTimeSeconds > 15:
             raise ValueError(f'websocketSleepTimeSeconds argument is out of bounds: {websocketSleepTimeSeconds}')
-        elif not isinstance(subscriptionTypes, set):
+        elif not isinstance(subscriptionTypes, frozenset):
             raise TypeError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
         elif not utils.isValidUrl(twitchWebsocketUrl):
             raise TypeError(f'twitchWebsocketUrl argument is malformed: \"{twitchWebsocketUrl}\"')
@@ -112,7 +112,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
-        self.__subscriptionTypes: set[TwitchWebsocketSubscriptionType] = subscriptionTypes
+        self.__subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
 
         self.__isStarted: bool = False

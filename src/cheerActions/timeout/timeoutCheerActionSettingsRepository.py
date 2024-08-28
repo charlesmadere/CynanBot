@@ -1,11 +1,11 @@
 from typing import Any
 
-from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from .timeoutCheerActionSettingsRepositoryInterface import TimeoutCheerActionSettingsRepositoryInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
-class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
+class TimeoutCheerActionSettingsRepository(TimeoutCheerActionSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
@@ -18,21 +18,17 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
     async def clearCaches(self):
         self.__cache = None
 
-    async def getActionCooldownSeconds(self) -> float:
+    async def getBullyTimeToLiveDays(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'actionCooldownSeconds', 0.5)
+        return utils.getIntFromDict(jsonContents, 'bullyTimeToLiveDays', 14)
 
-    async def getMaxHandleAttempts(self) -> int:
+    async def getFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maxHandleAttempts', 3)
+        return utils.getFloatFromDict(jsonContents, 'failureProbability', 0.05)
 
-    async def getSecondsToLive(self) -> int:
+    async def getReverseProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'secondsToLive', 30)
-
-    async def isEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'enabled', False)
+        return utils.getFloatFromDict(jsonContents, 'reverseProbability', 0.01)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
@@ -46,7 +42,7 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
             jsonContents = dict()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from crowd control settings file: {self.__settingsJsonReader}')
+            raise IOError(f'Error reading from timeout cheer action settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents
         return jsonContents
