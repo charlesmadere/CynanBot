@@ -72,6 +72,7 @@ from .chatCommands.ttsChatCommand import TtsChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
+from .cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
@@ -226,6 +227,7 @@ class CynanBot(
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
+        beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
         chatActionsManager: ChatActionsManagerInterface | None,
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
@@ -336,6 +338,8 @@ class CynanBot(
             raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+        elif beanChanceCheerActionHelper is not None and not isinstance(beanChanceCheerActionHelper, BeanChanceCheerActionHelperInterface):
+            raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
             raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
@@ -483,6 +487,7 @@ class CynanBot(
         self.__twitchRaidHandler: AbsTwitchRaidHandler | None = twitchRaidHandler
         self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = addOrRemoveUserDataHelper
         self.__authRepository: AuthRepository = authRepository
+        self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__cutenessPresenter: CutenessPresenterInterface | None = cutenessPresenter
@@ -837,6 +842,9 @@ class CynanBot(
         if self.__streamAlertsManager is not None:
             self.__streamAlertsManager.start()
 
+        if self.__beanChanceCheerActionHelper is not None:
+            self.__beanChanceCheerActionHelper.setTwitchChannelProvider(self)
+
         if self.__timeoutCheerActionHelper is not None:
             self.__timeoutCheerActionHelper.setTwitchChannelProvider(self)
 
@@ -892,8 +900,11 @@ class CynanBot(
 
             pollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
                 streamAlertsManager = self.__streamAlertsManager,
-                timber = self.__timber
+                timber = self.__timber,
+                twitchUtils = self.__twitchUtils
             )
+
+            pollHandler.setTwitchChannelProvider(self)
 
             predictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHandler(
                 streamAlertsManager = self.__streamAlertsManager,

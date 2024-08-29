@@ -14,5 +14,13 @@ class TimeoutCheerActionSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getMaxBullyFailureOccurrences(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getMaxBullyFailureProbability(self) -> float:
+        pass
+
+    @abstractmethod
     async def getReverseProbability(self) -> float:
         pass

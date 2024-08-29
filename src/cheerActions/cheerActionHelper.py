@@ -96,8 +96,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             return False
 
         if self.__beanChanceCheerActionHelper is not None and await self.__beanChanceCheerActionHelper.handleBeanChanceCheerAction(
-            bits = bits,
             actions = actions,
+            bits = bits,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
@@ -110,8 +110,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             return True
 
         if self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
-            bits = bits,
             actions = actions,
+            bits = bits,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
@@ -124,8 +124,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             return True
 
         if self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
-            bits = bits,
             actions = actions,
+            bits = bits,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,

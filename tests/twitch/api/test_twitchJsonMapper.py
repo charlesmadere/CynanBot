@@ -13,6 +13,7 @@ from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.twitchUserType import TwitchUserType
@@ -342,6 +343,26 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseEmoteType_withWhitespaceString(self):
         result = await self.jsonMapper.parseEmoteType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePaginationResponse(self):
+        jsonResponse: dict[str, Any] = {
+            'cursor': 'abc123'
+        }
+
+        result = await self.jsonMapper.parsePaginationResponse(jsonResponse)
+        assert isinstance(result, TwitchPaginationResponse)
+        assert result.cursor == 'abc123'
+
+    @pytest.mark.asyncio
+    async def test_parsePaginationResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parsePaginationResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePaginationResponse_withNone(self):
+        result = await self.jsonMapper.parsePaginationResponse(None)
         assert result is None
 
     @pytest.mark.asyncio

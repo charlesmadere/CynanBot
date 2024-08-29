@@ -3,13 +3,14 @@ from abc import ABC, abstractmethod
 from frozenlist import FrozenList
 
 from ..absCheerAction import AbsCheerAction
+from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
 
 
-class SoundAlertCheerActionHelperInterface(ABC):
+class CrowdControlCheerActionHelperInterface(ABC):
 
     @abstractmethod
-    async def handleSoundAlertCheerAction(
+    async def handleCrowdControlCheerAction(
         self,
         actions: FrozenList[AbsCheerAction],
         bits: int,
@@ -22,4 +23,8 @@ class SoundAlertCheerActionHelperInterface(ABC):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
+        pass
+
+    @abstractmethod
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

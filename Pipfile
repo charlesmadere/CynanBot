@@ -29,7 +29,7 @@ rich = "13.7.1"
 roman = "4.2"
 twitchio = "2.10.0"
 typing_extensions = "4.12.2"
-websockets = "13.0"
+websockets = "13.0.1"
 xmltodict = "0.13.0"
 
 [dev-packages]

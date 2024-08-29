@@ -226,6 +226,11 @@ class UserInterface(ABC):
     def isChatLoggingEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isCrowdControlEnabled(self) -> bool:
+        pass
+
     @abstractmethod
     def isCutenessEnabled(self) -> bool:
         pass
@@ -295,6 +300,21 @@ class UserInterface(ABC):
 
     @abstractmethod
     def isSupStreamerEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isTimeoutCheerActionIncreasedBullyFailureEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isTimeoutCheerActionFailureEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isTimeoutCheerActionReverseEnabled(self) -> bool:
         pass
 
     @abstractmethod

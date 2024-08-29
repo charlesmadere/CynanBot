@@ -27,7 +27,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         cacheSize: int = 32,
-        maximumHistoryEntriesSize: int = 5
+        maximumHistoryEntriesSize: int = 16
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -43,7 +43,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
         elif not utils.isValidInt(maximumHistoryEntriesSize):
             raise TypeError(f'maximumHistoryEntriesSize argument is malformed: \"{maximumHistoryEntriesSize}\"')
-        elif maximumHistoryEntriesSize < 3 or maximumHistoryEntriesSize > 8:
+        elif maximumHistoryEntriesSize < 1 or maximumHistoryEntriesSize > 32:
             raise ValueError(f'maximumHistoryEntriesSize argument is out of bounds: {maximumHistoryEntriesSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -61,7 +61,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         durationSeconds: int,
         chatterUserId: str,
         timedOutByUserId: str,
-        twitchAccessToken: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ):
@@ -77,8 +76,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(timedOutByUserId):
             raise TypeError(f'timedOutByUserId argument is malformed: \"{timedOutByUserId}\"')
-        elif twitchAccessToken is not None and not isinstance(twitchAccessToken, str):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -86,7 +83,6 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
 
         history = await self.get(
             chatterUserId = chatterUserId,
-            twitchAccessToken = twitchAccessToken,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
@@ -148,14 +144,11 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
     async def get(
         self,
         chatterUserId: str,
-        twitchAccessToken: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> TimeoutCheerActionHistory:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif twitchAccessToken is not None and not isinstance(twitchAccessToken, str):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .deepLTranslationResponse import DeepLTranslationResponse
 
 
 @dataclass(frozen = True)
 class DeepLTranslationResponses:
-    translations: list[DeepLTranslationResponse] | None = None
+    translations: FrozenList[DeepLTranslationResponse] | None = None

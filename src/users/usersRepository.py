@@ -118,6 +118,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
+        isCrowdControlEnabled = utils.getBoolFromDict(userJson, 'crowdControlEnabled', False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
         isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
@@ -140,6 +141,9 @@ class UsersRepository(UsersRepositoryInterface):
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isSupStreamerEnabled = utils.getBoolFromDict(userJson, 'supStreamerEnabled', False)
+        isTimeoutCheerActionIncreasedBullyFailureEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionIncreasedBullyFailureEnabled', True)
+        isTimeoutCheerActionFailureEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionFailureEnabled', True)
+        isTimeoutCheerActionReverseEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionReverseEnabled', True)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
@@ -271,6 +275,7 @@ class UsersRepository(UsersRepositoryInterface):
             isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
+            isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isCynanSourceEnabled = isCynanSourceEnabled,
             isDeerForceMessageEnabled = isDeerForceMessageEnabled,
@@ -295,6 +300,9 @@ class UsersRepository(UsersRepositoryInterface):
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
             isSupStreamerEnabled = isSupStreamerEnabled,
+            isTimeoutCheerActionIncreasedBullyFailureEnabled = isTimeoutCheerActionIncreasedBullyFailureEnabled,
+            isTimeoutCheerActionFailureEnabled = isTimeoutCheerActionFailureEnabled,
+            isTimeoutCheerActionReverseEnabled = isTimeoutCheerActionReverseEnabled,
             isToxicTriviaEnabled = isToxicTriviaEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,

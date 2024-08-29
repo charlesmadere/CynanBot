@@ -26,6 +26,7 @@ class User(UserInterface):
         isChannelPredictionChartEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
+        isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
         isCynanSourceEnabled: bool,
         isDeerForceMessageEnabled: bool,
@@ -50,6 +51,9 @@ class User(UserInterface):
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
         isSupStreamerEnabled: bool,
+        isTimeoutCheerActionIncreasedBullyFailureEnabled: bool,
+        isTimeoutCheerActionFailureEnabled: bool,
+        isTimeoutCheerActionReverseEnabled: bool,
         isToxicTriviaEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaGameEnabled: bool,
@@ -125,6 +129,8 @@ class User(UserInterface):
             raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
             raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
+        elif not utils.isValidBool(isCrowdControlEnabled):
+            raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
         elif not utils.isValidBool(isCynanSourceEnabled):
@@ -173,6 +179,12 @@ class User(UserInterface):
             raise TypeError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
         elif not utils.isValidBool(isSupStreamerEnabled):
             raise TypeError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
+        elif not utils.isValidBool(isTimeoutCheerActionIncreasedBullyFailureEnabled):
+            raise TypeError(f'isTimeoutCheerActionIncreasedBullyFailureEnabled argument is malformed: \"{isTimeoutCheerActionIncreasedBullyFailureEnabled}\"')
+        elif not utils.isValidBool(isTimeoutCheerActionFailureEnabled):
+            raise TypeError(f'isTimeoutCheerActionFailureEnabled argument is malformed: \"{isTimeoutCheerActionFailureEnabled}\"')
+        elif not utils.isValidBool(isTimeoutCheerActionReverseEnabled):
+            raise TypeError(f'isTimeoutCheerActionReverseEnabled argument is malformed: \"{isTimeoutCheerActionReverseEnabled}\"')
         elif not utils.isValidBool(isToxicTriviaEnabled):
             raise TypeError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -282,6 +294,7 @@ class User(UserInterface):
         self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
+        self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isCynanSourceEnabled: bool = isCynanSourceEnabled
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
@@ -306,6 +319,9 @@ class User(UserInterface):
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
         self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
+        self.__isTimeoutCheerActionIncreasedBullyFailureEnabled: bool = isTimeoutCheerActionIncreasedBullyFailureEnabled
+        self.__isTimeoutCheerActionFailureEnabled: bool = isTimeoutCheerActionFailureEnabled
+        self.__isTimeoutCheerActionReverseEnabled: bool = isTimeoutCheerActionReverseEnabled
         self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
@@ -536,6 +552,10 @@ class User(UserInterface):
     def isChatLoggingEnabled(self) -> bool:
         return self.__isChatLoggingEnabled
 
+    @property
+    def isCrowdControlEnabled(self) -> bool:
+        return self.__isCrowdControlEnabled
+
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
 
@@ -610,6 +630,18 @@ class User(UserInterface):
 
     def isSupStreamerEnabled(self) -> bool:
         return self.__isSupStreamerEnabled
+
+    @property
+    def isTimeoutCheerActionIncreasedBullyFailureEnabled(self) -> bool:
+        return self.__isTimeoutCheerActionIncreasedBullyFailureEnabled
+
+    @property
+    def isTimeoutCheerActionFailureEnabled(self) -> bool:
+        return self.__isTimeoutCheerActionFailureEnabled
+
+    @property
+    def isTimeoutCheerActionReverseEnabled(self) -> bool:
+        return self.__isTimeoutCheerActionReverseEnabled
 
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled

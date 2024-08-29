@@ -16,6 +16,7 @@ from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
+from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -417,6 +418,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteType value: \"{emoteType}\"')
                 return None
+
+    async def parsePaginationResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchPaginationResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+        elif 'cursor' not in jsonResponse or not utils.isValidStr(jsonResponse.get('cursor')):
+            return None
+
+        cursor = utils.getStrFromDict(jsonResponse, 'cursor')
+
+        return TwitchPaginationResponse(
+            cursor = cursor
+        )
 
     async def parsePollStatus(
         self,

@@ -70,7 +70,7 @@ class DeepLTranslationApi(TranslationApi):
         try:
             response = await self.__deepLApiService.translate(request)
         except DeepLAuthKeyUnavailableException as e:
-            self.__timber.log('DeepLTranslationApi', f'No DeepL authentication key is unavailable ({request=})')
+            self.__timber.log('DeepLTranslationApi', f'No DeepL authentication key is unavailable ({request=}): {e}', e, traceback.format_exc())
 
             raise TranslationException(
                 message = f'No DeepL authentication key is available',

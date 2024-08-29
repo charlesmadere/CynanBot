@@ -50,6 +50,9 @@ from src.cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface impor
     TimeoutCheerActionHistoryRepositoryInterface
 from src.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
 from src.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
+from src.cheerActions.timeout.timeoutCheerActionSettingsRepository import TimeoutCheerActionSettingsRepository
+from src.cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import \
+    TimeoutCheerActionSettingsRepositoryInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -354,6 +357,8 @@ from src.twitch.timeout.twitchTimeoutRemodRepositoryInterface import TwitchTimeo
 from src.twitch.twitchAnonymousUserIdProvider import TwitchAnonymousUserIdProvider
 from src.twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchTokensRepository import TwitchTokensRepository
 from src.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -1483,6 +1488,10 @@ timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutChe
     timber = timber
 )
 
+timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface = TimeoutCheerActionSettingsRepository(
+    settingsJsonReader = JsonFileReader('timeoutCheerActionSettings.json')
+)
+
 timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface = TimeoutCheerActionHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -1490,13 +1499,17 @@ timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterfac
     timeZoneRepository = timeZoneRepository
 )
 
+twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
+    timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
@@ -1640,6 +1653,7 @@ cynanBot = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
+    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,

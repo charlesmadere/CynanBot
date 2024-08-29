@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class CrowdControlButton(Enum):
+class CrowdControlInputType(Enum):
 
     BUTTON_A = auto()
     BUTTON_B = auto()
@@ -11,6 +11,7 @@ class CrowdControlButton(Enum):
     DPAD_LEFT = auto()
     DPAD_RIGHT = auto()
     DPAD_UP = auto()
+    GAME_SHUFFLE = auto()
     SELECT = auto()
     START = auto()
     TRIGGER_LEFT = auto()

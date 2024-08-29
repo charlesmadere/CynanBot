@@ -1,5 +1,7 @@
 from abc import abstractmethod
 
+from frozenlist import FrozenList
+
 from .absCheerAction import AbsCheerAction
 from .editCheerActionResult.editCheerActionResult import EditCheerActionResult
 from ..misc.clearable import Clearable
@@ -24,7 +26,7 @@ class CheerActionsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def getActions(self, twitchChannelId: str) -> list[AbsCheerAction]:
+    async def getActions(self, twitchChannelId: str) -> FrozenList[AbsCheerAction]:
         pass
 
     @abstractmethod

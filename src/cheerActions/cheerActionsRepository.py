@@ -1,5 +1,7 @@
 import traceback
 
+from frozenlist import FrozenList
+
 from .absCheerAction import AbsCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
@@ -44,7 +46,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, list[AbsCheerAction] | None] = dict()
+        self.__cache: dict[str, FrozenList[AbsCheerAction] | None] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -77,6 +79,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         match actionType:
             case CheerActionType.BEAN_CHANCE:
                 return await self.__cheerActionJsonMapper.parseBeanChanceCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId
+                )
+
+            case CheerActionType.CROWD_CONTROL:
+                return await self.__cheerActionJsonMapper.parseCrowdControlCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
@@ -239,14 +250,14 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         return None
 
-    async def getActions(self, twitchChannelId: str) -> list[AbsCheerAction]:
+    async def getActions(self, twitchChannelId: str) -> FrozenList[AbsCheerAction]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        actions: list[AbsCheerAction] | None = self.__cache.get(twitchChannelId, None)
+        cachedActions: FrozenList[AbsCheerAction] | None = self.__cache.get(twitchChannelId, None)
 
-        if actions is not None:
-            return actions
+        if cachedActions is not None:
+            return cachedActions
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -259,7 +270,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         )
 
         await connection.close()
-        actions = list()
+        actions: list[AbsCheerAction] = list()
 
         if records is not None and len(records) >= 1:
             for record in records:
@@ -280,8 +291,12 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
                 actions.append(cheerAction)
 
-        self.__cache[twitchChannelId] = actions
-        return actions
+        actions.sort(key = lambda action: action.bits, reverse = True)
+        frozenActions = FrozenList(actions)
+        frozenActions.freeze()
+
+        self.__cache[twitchChannelId] = frozenActions
+        return frozenActions
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -346,7 +361,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         )
 
         if existingAction is not None:
-            raise CheerActionAlreadyExistsException(f'Attempted to add new cheer action for {action.twitchChannelId=} but they already have a cheer action that requires the given bit amount ({action.bits=}) ({action=})')
+            raise CheerActionAlreadyExistsException(f'Attempted to add new cheer action for {action.twitchChannelId=} but they already have a cheer action that requires the given bit amount ({existingAction=}) ({action=})')
 
         isEnabled = utils.numToBool(action.isEnabled)
         actionTypeString = await self.__cheerActionJsonMapper.serializeCheerActionType(action.actionType)

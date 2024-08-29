@@ -1,5 +1,7 @@
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .deepLJsonMapperInterface import DeepLJsonMapperInterface
 from .deepLTranslationRequest import DeepLTranslationRequest
 from .deepLTranslationResponse import DeepLTranslationResponse
@@ -66,7 +68,7 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
         if not isinstance(translationsJson, list) or len(translationsJson) == 0:
             return None
 
-        translations: list[DeepLTranslationResponse] = list()
+        translations: FrozenList[DeepLTranslationResponse] = FrozenList()
 
         for translationJson in translationsJson:
             translationResponse = await self.parseTranslationResponse(translationJson)
@@ -76,6 +78,8 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
 
         if len(translations) == 0:
             return None
+
+        translations.freeze()
 
         return DeepLTranslationResponses(
             translations = translations

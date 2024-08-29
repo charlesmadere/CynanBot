@@ -1,5 +1,5 @@
-from src.crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
-from src.crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
+from ..actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
+from ..actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
 from ..crowdControlActionHandler import CrowdControlActionHandler
 from ...timber.timberInterface import TimberInterface
 

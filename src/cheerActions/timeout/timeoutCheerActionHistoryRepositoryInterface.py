@@ -1,7 +1,6 @@
 from abc import abstractmethod
 
-from .timeoutCheerActionHistory import \
-    TimeoutCheerActionHistory
+from .timeoutCheerActionHistory import TimeoutCheerActionHistory
 from ...misc.clearable import Clearable
 
 
@@ -14,7 +13,6 @@ class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
         durationSeconds: int,
         chatterUserId: str,
         timedOutByUserId: str,
-        twitchAccessToken: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ):
@@ -24,8 +22,7 @@ class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
     async def get(
         self,
         chatterUserId: str,
-        twitchAccessToken: str | None,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TimeoutCheerActionHistory | None:
+    ) -> TimeoutCheerActionHistory:
         pass

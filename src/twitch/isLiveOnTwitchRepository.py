@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from frozendict import frozendict
+
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .api.twitchStreamType import TwitchStreamType
 from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
@@ -38,14 +40,14 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
         self.__cache: TimedDict[bool] = TimedDict(cacheTimeDelta)
 
-    async def areLive(self, twitchChannelIds: set[str]) -> dict[str, bool]:
+    async def areLive(self, twitchChannelIds: set[str]) -> frozendict[str, bool]:
         if not isinstance(twitchChannelIds, set):
             raise TypeError(f'twitchChannelIds argument is malformed: \"{twitchChannelIds}\"')
 
         twitchChannelIdToLiveStatus: dict[str, bool] = dict()
 
         if len(twitchChannelIds) == 0:
-            return twitchChannelIdToLiveStatus
+            return frozendict(twitchChannelIdToLiveStatus)
 
         await self.__populateFromCache(
             twitchChannelIds = twitchChannelIds,
@@ -57,7 +59,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
             twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus
         )
 
-        return twitchChannelIdToLiveStatus
+        return frozendict(twitchChannelIdToLiveStatus)
 
     async def clearCaches(self):
         self.__cache.clear()

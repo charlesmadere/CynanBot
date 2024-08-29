@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ..soundAlertCheerAction import SoundAlertCheerAction
@@ -34,8 +36,8 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
     async def handleSoundAlertCheerAction(
         self,
+        actions: FrozenList[AbsCheerAction],
         bits: int,
-        actions: list[AbsCheerAction],
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
@@ -45,12 +47,12 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not utils.isValidInt(bits):
+        if not isinstance(actions, FrozenList):
+            raise TypeError(f'actions argument is malformed: \"{actions}\"')
+        elif not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not isinstance(actions, list):
-            raise TypeError(f'actions argument is malformed: \"{actions}\"')
         elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):

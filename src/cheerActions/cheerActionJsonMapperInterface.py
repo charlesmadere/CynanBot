@@ -4,6 +4,8 @@ from .absCheerAction import AbsCheerAction
 from .beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
+from .crowdControl.crowdControlCheerAction import CrowdControlCheerAction
+from .crowdControl.crowdControlCheerActionType import CrowdControlCheerActionType
 from .soundAlertCheerAction import SoundAlertCheerAction
 from .timeoutCheerAction import TimeoutCheerAction
 
@@ -33,6 +35,24 @@ class CheerActionJsonMapperInterface(ABC):
         self,
         jsonString: str | None
     ) -> CheerActionStreamStatusRequirement | None:
+        pass
+
+    @abstractmethod
+    async def parseCrowdControlCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> CrowdControlCheerAction | None:
+        pass
+
+    @abstractmethod
+    async def parseCrowdControlCheerActionType(
+        self,
+        jsonString: str | None
+    ) -> CrowdControlCheerActionType | None:
         pass
 
     @abstractmethod
@@ -72,6 +92,13 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireCrowdControlCheerActionType(
+        self,
+        jsonString: str | None
+    ) -> CrowdControlCheerActionType:
+        pass
+
+    @abstractmethod
     async def serializeAbsCheerAction(
         self,
         cheerAction: AbsCheerAction
@@ -89,5 +116,12 @@ class CheerActionJsonMapperInterface(ABC):
     async def serializeCheerActionType(
         self,
         actionType: CheerActionType
+    ) -> str:
+        pass
+
+    @abstractmethod
+    async def serializeCrowdControlCheerActionType(
+        self,
+        actionType: CrowdControlCheerActionType
     ) -> str:
         pass

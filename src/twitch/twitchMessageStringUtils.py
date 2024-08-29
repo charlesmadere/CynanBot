@@ -7,7 +7,6 @@ from ..misc import utils as utils
 
 class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
 
-
     def __init__(self):
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
 

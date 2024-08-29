@@ -480,6 +480,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
                 if len(choices) == 0:
                     choices = None
+                else:
+                    choices.sort(key = lambda choice: choice.votes, reverse = True)
 
         pollStatus: TwitchPollStatus | None = None
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
@@ -510,6 +512,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
                 if len(outcomes) == 0:
                     outcomes = None
+                else:
+                    outcomes.sort(key = lambda outcome: outcome.channelPoints, reverse = True)
 
         resub: TwitchResub | None = None
         if 'resub' in eventJson:

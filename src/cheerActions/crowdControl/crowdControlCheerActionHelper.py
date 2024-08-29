@@ -1,14 +1,14 @@
 from frozenlist import FrozenList
 
-from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
+from .crowdControlCheerAction import CrowdControlCheerAction
+from .crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
-from ..beanChanceCheerAction import BeanChanceCheerAction
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
 
 
-class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
+class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def handleBeanChanceCheerAction(
+    async def handleCrowdControlCheerAction(
         self,
         actions: FrozenList[AbsCheerAction],
         bits: int,
@@ -34,17 +34,17 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not user.areCheerActionsEnabled or not user.areBeanChancesEnabled:
+        if not user.areCheerActionsEnabled or not user.isCrowdControlEnabled:
             return False
 
-        beanAction: BeanChanceCheerAction | None = None
+        crowdControlAction: CrowdControlCheerAction | None = None
 
         for action in actions:
-            if isinstance(action, BeanChanceCheerAction) and action.isEnabled and action.bits == bits:
-                beanAction = action
+            if isinstance(action, CrowdControlCheerAction) and action.isEnabled and action.bits == bits:
+                crowdControlAction = action
                 break
 
-        if beanAction is None:
+        if crowdControlAction is None:
             return False
 
         # TODO

@@ -84,6 +84,9 @@ class GeneralSettingsRepositorySnapshot:
     def isCommandsChatCommandEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'commandsChatCommandEnabled', True)
 
+    def isCrowdControlEnabled(self) -> bool:
+        return utils.getBoolFromDict(self.__jsonContents, 'crowdControlEnabled', False)
+
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
 
