@@ -1,25 +1,14 @@
 import pytest
 
 from src.crowdControl.actions.crowdControlButton import CrowdControlButton
-from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
-from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
-from src.crowdControl.mapper.crowdControlBoosterPackMapper import CrowdControlBoosterPackMapper
-from src.crowdControl.mapper.crowdControlBoosterPackMapperInterface import CrowdControlBoosterPackMapperInterface
-from src.location.timeZoneRepository import TimeZoneRepository
-from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.crowdControl.mapper.crowdControlInputTypeMapper import CrowdControlInputTypeMapper
+from src.crowdControl.mapper.crowdControlInputTypeMapperInterface import CrowdControlInputTypeMapperInterface
 from src.users.crowdControl.crowdControlInputType import CrowdControlInputType
 
 
-class TestCrowdControlBoosterPackMapper:
+class TestCrowdControlInputTypeMapper:
 
-    crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
-
-    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
-
-    mapper: CrowdControlBoosterPackMapperInterface = CrowdControlBoosterPackMapper(
-        crowdControlIdGenerator = crowdControlIdGenerator,
-        timeZoneRepository = timeZoneRepository
-    )
+    mapper: CrowdControlInputTypeMapperInterface = CrowdControlInputTypeMapper()
 
     @pytest.mark.asyncio
     async def test_toButton_withButtonA(self):
@@ -71,6 +60,11 @@ class TestCrowdControlBoosterPackMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_toButton_withNone(self):
+        result = await self.mapper.toButton(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_toButton_withSelect(self):
         result = await self.mapper.toButton(CrowdControlInputType.SELECT)
         assert result is CrowdControlButton.SELECT
@@ -89,3 +83,12 @@ class TestCrowdControlBoosterPackMapper:
     async def test_toButton_withTriggerRight(self):
         result = await self.mapper.toButton(CrowdControlInputType.TRIGGER_RIGHT)
         assert result is CrowdControlButton.TRIGGER_RIGHT
+
+    @pytest.mark.asyncio
+    async def test_toButton_withUserInputButton(self):
+        result: CrowdControlButton | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.toButton(CrowdControlInputType.USER_INPUT_BUTTON)
+
+        assert result is None

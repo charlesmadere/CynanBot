@@ -16,3 +16,4 @@ class CrowdControlInputType(Enum):
     START = auto()
     TRIGGER_LEFT = auto()
     TRIGGER_RIGHT = auto()
+    USER_INPUT_BUTTON = auto()

@@ -17,6 +17,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('cheer')
         assert result is SoundAlert.CHEER
 
+    def test_parseSoundAlert_withClickNavigationString(self):
+        result = self.jsonMapper.parseSoundAlert('click_navigation')
+        assert result is SoundAlert.CLICK_NAVIGATION
+
     def test_parseSoundAlert_withEmptyString(self):
         result = self.jsonMapper.parseSoundAlert('')
         assert result is None

@@ -3,7 +3,8 @@ from datetime import tzinfo
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
+from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .userInterface import UserInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -85,6 +86,8 @@ class User(UserInterface):
         waitForTriviaAnswerDelay: int | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
+        crowdControlButtonPressRewardId: str | None,
+        crowdControlGameShuffleRewardId: str | None,
         discord: str | None,
         handle: str,
         instagram: str | None,
@@ -100,6 +103,7 @@ class User(UserInterface):
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
         twitterUrl: str,
+        crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
@@ -245,6 +249,10 @@ class User(UserInterface):
             raise TypeError(f'casualGamePollRewardId argument is malformed: \"{casualGamePollRewardId}\"')
         elif casualGamePollUrl is not None and not isinstance(casualGamePollUrl, str):
             raise TypeError(f'casualGamePollUrl argument is malformed: \"{casualGamePollUrl}\"')
+        elif crowdControlButtonPressRewardId is not None and not isinstance(crowdControlButtonPressRewardId, str):
+            raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
+        elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
+            raise TypeError(f'crowdControlGameShuffleRewardId argument is malformed: \"{crowdControlGameShuffleRewardId}\"')
         elif discord is not None and not isinstance(discord, str):
             raise TypeError(f'discord argument is malformed: \"{discord}\"')
         elif not utils.isValidStr(handle):
@@ -273,6 +281,8 @@ class User(UserInterface):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif twitterUrl is not None and not isinstance(twitterUrl, str):
             raise TypeError(f'twitterUrl argument is malformed: \"{twitterUrl}\"')
+        elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
+            raise TypeError(f'crowdControlBoosterPacks argument is malformed: \"{crowdControlBoosterPacks}\"')
         elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
             raise TypeError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
         elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, frozendict):
@@ -353,6 +363,8 @@ class User(UserInterface):
         self.__waitForSuperTriviaAnswerDelay: int | None = waitForSuperTriviaAnswerDelay
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
+        self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
+        self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
         self.__discord: str | None = discord
         self.__handle: str = handle
         self.__instagram: str | None = instagram
@@ -368,6 +380,7 @@ class User(UserInterface):
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__twitterUrl: str | None = twitterUrl
+        self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
@@ -408,6 +421,18 @@ class User(UserInterface):
     @property
     def areTimeoutCheerActionsEnabled(self) -> bool:
         return self.__areTimeoutCheerActionsEnabled
+
+    @property
+    def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
+        return self.__crowdControlBoosterPacks
+
+    @property
+    def crowdControlButtonPressRewardId(self) -> str | None:
+        return self.__crowdControlButtonPressRewardId
+
+    @property
+    def crowdControlGameShuffleRewardId(self) -> str | None:
+        return self.__crowdControlGameShuffleRewardId
 
     @property
     def cutenessBoosterPacks(self) -> frozendict[str, CutenessBoosterPack] | None:

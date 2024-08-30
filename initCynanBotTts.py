@@ -207,8 +207,10 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
-from src.users.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
-from src.users.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
+from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
+from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
+from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -375,6 +377,8 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     userIdsRepository = userIdsRepository
 )
 
+crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
+
 pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
     timber = timber
 )
@@ -384,6 +388,7 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
 )
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
+    crowdControlJsonParser = crowdControlJsonParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,

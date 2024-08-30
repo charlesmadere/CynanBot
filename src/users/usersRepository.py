@@ -8,10 +8,12 @@ import aiofiles.ospath
 from frozendict import frozendict
 from frozenlist import FrozenList
 
+from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
+from .crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
-from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from .pkmnCatchType import PkmnCatchType
-from .pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from .pkmn.pkmnCatchType import PkmnCatchType
+from .pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from .soundAlertRedemption import SoundAlertRedemption
 from .user import User
 from .userJsonConstant import UserJsonConstant
@@ -27,13 +29,16 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
+        crowdControlJsonParser: CrowdControlJsonParserInterface,
         pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface,
         soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         usersFile: str = 'usersRepository.json'
     ):
-        if not isinstance(pkmnCatchTypeJsonMapper, PkmnCatchTypeJsonMapperInterface):
+        if not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
+            raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
+        elif not isinstance(pkmnCatchTypeJsonMapper, PkmnCatchTypeJsonMapperInterface):
             raise TypeError(f'pkmnCatchTypeJsonMapper argument is malformed: \"{pkmnCatchTypeJsonMapper}\"')
         elif not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
             raise TypeError(f'soundAlertJsonMapper argument is malformed: \"{soundAlertJsonMapper}\"')
@@ -44,6 +49,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
+        self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
         self.__pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = pkmnCatchTypeJsonMapper
         self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
@@ -107,7 +113,7 @@ class UsersRepository(UsersRepositoryInterface):
             if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
                 timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
 
-        areBeanChancesEnabled = utils.getBoolFromDict(userJson, 'beanChancesEnabled', False)
+        areBeanChancesEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_CHANCES_ENABLED.jsonKey, False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
@@ -118,7 +124,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
-        isCrowdControlEnabled = utils.getBoolFromDict(userJson, 'crowdControlEnabled', False)
+        isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
         isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
@@ -262,6 +268,15 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
 
+        crowdControlButtonPressRewardId: str | None = None
+        crowdControlGameShuffleRewardId: str | None = None
+        crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = None
+        if isCrowdControlEnabled:
+            crowdControlButtonPressRewardId = userJson.get('crowdControlButtonPressRewardId')
+            crowdControlGameShuffleRewardId = userJson.get('crowdControlGameShuffleRewardId')
+            crowdControlBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('crowdControlBoosterPacks')
+            crowdControlBoosterPacks = self.__crowdControlJsonParser.parseBoosterPacks(crowdControlBoosterPacksJson)
+
         user = User(
             areBeanChancesEnabled = areBeanChancesEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
@@ -334,6 +349,8 @@ class UsersRepository(UsersRepositoryInterface):
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
+            crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
+            crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discord = discord,
             handle = handle,
             instagram = instagram,
@@ -349,6 +366,7 @@ class UsersRepository(UsersRepositoryInterface):
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             twitterUrl = twitterUrl,
+            crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
@@ -358,7 +376,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__userCache[handle.casefold()] = user
         return user
 
-    def __createUsers(self, jsonContents: dict[str, Any]) -> list[User]:
+    def __createUsers(self, jsonContents: dict[str, Any]) -> FrozenList[User]:
         if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
@@ -372,7 +390,10 @@ class UsersRepository(UsersRepositoryInterface):
             raise NoUsersException(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
         users.sort(key = lambda user: user.getHandle().casefold())
-        return users
+        frozenUsers: FrozenList[User] = FrozenList(users)
+        frozenUsers.freeze()
+
+        return frozenUsers
 
     def __findAndCreateUser(self, handle: str, jsonContents: dict[str, Any]) -> User:
         if not utils.isValidStr(handle):

@@ -2,9 +2,9 @@ import pytest
 
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from src.users.pkmnCatchType import PkmnCatchType
-from src.users.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
-from src.users.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.pkmn.pkmnCatchType import PkmnCatchType
+from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
+from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 
 
 class TestPkmnCatchTypeJsonMapper:

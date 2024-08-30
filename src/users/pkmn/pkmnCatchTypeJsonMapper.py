@@ -2,8 +2,8 @@ from typing import Any
 
 from .pkmnCatchType import PkmnCatchType
 from .pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class PkmnCatchTypeJsonMapper(PkmnCatchTypeJsonMapperInterface):

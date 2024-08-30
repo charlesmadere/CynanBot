@@ -1,3 +1,5 @@
+from typing import Any
+
 from .twitchConfigurationType import TwitchConfigurationType
 from ...misc import utils as utils
 from ...users.userInterface import UserInterface
@@ -51,6 +53,21 @@ class TwitchChannelPointsMessage:
 
     def getUserName(self) -> str:
         return self.__userName
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'eventId': self.__eventId,
+            'redemptionMessage': self.__redemptionMessage,
+            'rewardId': self.__rewardId,
+            'twitchConfigurationType': self.twitchConfigurationType,
+            'twitchUser': self.__twitchUser,
+            'userId': self.__userId,
+            'userName': self.__userName
+        }
 
     @property
     def twitchConfigurationType(self) -> TwitchConfigurationType:

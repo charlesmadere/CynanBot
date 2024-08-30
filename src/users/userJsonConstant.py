@@ -8,6 +8,7 @@ class UserJsonConstant(Enum):
     BEAN_CHANCES_ENABLED = auto()
     CAT_JAM_MESSAGE_ENABLED = auto()
     CHEER_ACTIONS_ENABLED = auto()
+    CROWD_CONTROL_ENABLED = auto()
     CUTENESS_ENABLED = auto()
     CYNAN_SOURCE_ENABLED = auto()
     ENABLED = auto()
@@ -31,6 +32,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.BEAN_CHANCES_ENABLED: return 'beanChancesEnabled'
             case UserJsonConstant.CAT_JAM_MESSAGE_ENABLED: return 'catJamMessageEnabled'
             case UserJsonConstant.CHEER_ACTIONS_ENABLED: return 'cheerActionsEnabled'
+            case UserJsonConstant.CROWD_CONTROL_ENABLED: return 'crowdControlEnabled'
             case UserJsonConstant.CUTENESS_ENABLED: return 'cutenessEnabled'
             case UserJsonConstant.CYNAN_SOURCE_ENABLED: return 'cynanSourceEnabled'
             case UserJsonConstant.ENABLED: return 'enabled'

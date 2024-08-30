@@ -4,12 +4,10 @@ from ..funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
+from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from ..users.pkmnCatchType import PkmnCatchType
-from ..users.user import User
+from ..users.pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from ..users.pkmn.pkmnCatchType import PkmnCatchType
 
 
 class PkmnCatchPointRedemption(AbsChannelPointRedemption):

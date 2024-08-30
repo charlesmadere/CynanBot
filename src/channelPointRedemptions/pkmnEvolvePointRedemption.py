@@ -1,11 +1,9 @@
-from .absChannelPointRedemption import \
-    AbsChannelPointRedemption
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
+from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 

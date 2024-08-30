@@ -4,7 +4,8 @@ from datetime import tzinfo
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
+from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 
@@ -54,6 +55,21 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def areTimeoutCheerActionsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def crowdControlButtonPressRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
+    def crowdControlGameShuffleRewardId(self) -> str | None:
         pass
 
     @property

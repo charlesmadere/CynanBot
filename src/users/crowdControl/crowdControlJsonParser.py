@@ -63,4 +63,5 @@ class CrowdControlJsonParser(CrowdControlJsonParserInterface):
             case 'start': return CrowdControlInputType.START
             case 'trigger_left': return CrowdControlInputType.TRIGGER_LEFT
             case 'trigger_right': return CrowdControlInputType.TRIGGER_RIGHT
+            case 'user_input_button': return CrowdControlInputType.USER_INPUT_BUTTON
             case _: raise ValueError(f'Encountered unknown CrowdControlInputType: \"{inputType}\"')

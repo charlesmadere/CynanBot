@@ -6,6 +6,10 @@ from ..misc.clearable import Clearable
 class CrowdControlSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
+    async def areSoundsEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def getActionCooldownSeconds(self) -> float:
         pass
 

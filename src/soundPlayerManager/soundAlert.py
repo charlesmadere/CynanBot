@@ -4,6 +4,7 @@ from enum import Enum, auto
 class SoundAlert(Enum):
 
     CHEER = auto()
+    CLICK_NAVIGATION = auto()
     POINT_REDEMPTION_01 = auto()
     POINT_REDEMPTION_02 = auto()
     POINT_REDEMPTION_03 = auto()

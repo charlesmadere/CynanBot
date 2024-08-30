@@ -108,3 +108,7 @@ class TestCrowdControlJsonParser:
     def test_parseInputType_withTriggerRight(self):
         result = self.jsonParser.parseInputType('trigger_right')
         assert result is CrowdControlInputType.TRIGGER_RIGHT
+
+    def test_parseInputType_withUserInputButton(self):
+        result = self.jsonParser.parseInputType('user_input_button')
+        assert result is CrowdControlInputType.USER_INPUT_BUTTON

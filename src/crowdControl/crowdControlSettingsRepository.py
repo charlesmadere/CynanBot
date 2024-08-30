@@ -15,6 +15,10 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
 
         self.__cache: dict[str, Any] | None = None
 
+    async def areSoundsEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'soundsEnabled', True)
+
     async def clearCaches(self):
         self.__cache = None
 
@@ -28,7 +32,7 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
 
     async def getSecondsToLive(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'secondsToLive', 30)
+        return utils.getIntFromDict(jsonContents, 'secondsToLive', 300)
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()

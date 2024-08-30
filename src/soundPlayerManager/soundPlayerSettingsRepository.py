@@ -38,6 +38,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Cheer Alert.mp3'
                 )
 
+            case SoundAlert.CLICK_NAVIGATION:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'clickNavigationFilePath',
+                    fallback = 'Click Navigation.mp3'
+                )
+
             case SoundAlert.POINT_REDEMPTION_01:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,

@@ -14,6 +14,8 @@ from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsReposit
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
+from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
 
 
@@ -23,6 +25,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface,
+        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         queueTimeoutSeconds: int = 3
@@ -31,6 +34,8 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
+        elif not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
+            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
@@ -42,6 +47,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = crowdControlSettingsRepository
+        self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
@@ -90,6 +96,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
         if handled:
+            if await self.__crowdControlSettingsRepository.areSoundsEnabled():
+                await self.__immediateSoundPlayerManager.playSoundAlert(SoundAlert.CLICK_NAVIGATION)
+
             return CrowdControlActionHandleResult.OK
 
         self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}), will potentially retry')

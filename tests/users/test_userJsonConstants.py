@@ -23,6 +23,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey
         assert result == 'cheerActionsEnabled'
 
+    def test_jsonKey_withCrowdControlEnabled(self):
+        result = UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey
+        assert result == 'crowdControlEnabled'
+
     def test_jsonKey_withCutenessEnabled(self):
         result = UserJsonConstant.CUTENESS_ENABLED.jsonKey
         assert result == 'cutenessEnabled'
