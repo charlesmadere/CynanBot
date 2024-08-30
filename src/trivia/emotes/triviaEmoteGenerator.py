@@ -24,18 +24,18 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         self.__timber: TimberInterface = timber
         self.__triviaEmoteRepository: TriviaEmoteRepositoryInterface = triviaEmoteRepository
 
-        self.__emojiToEquivalents: frozendict[str, set[str] | None] = self.__createEmojiToEquivalentsDictionary()
+        self.__emojiToEquivalents: frozendict[str, frozenset[str] | None] = self.__createEmojiToEquivalentsDictionary()
         self.__emojiEquivalents: FrozenList[str] = FrozenList(self.__emojiToEquivalents)
         self.__emojiEquivalents.freeze()
 
-    def __createEmojiToEquivalentsDictionary(self) -> frozendict[str, set[str] | None]:
+    def __createEmojiToEquivalentsDictionary(self) -> frozendict[str, frozenset[str] | None]:
         # Creates and returns a dictionary of emojis, with a set of emojis that should be
         # considered equivalent. For example: 👨‍🔬 (man scientist) and 👩‍🔬 (woman scientist)
         # should both be considered equivalents of the primary "root" 🧑‍🔬 (scientist) emoji.
         #
         # If a set is either None or empty, then the given emoji has no equivalent.
 
-        emotesDict: dict[str, set[str] | None] = dict()
+        emotesDict: dict[str, frozenset[str] | None] = dict()
         emotesDict['🧮'] = None
         emotesDict['👽'] = None
         emotesDict['👾'] = None
@@ -44,72 +44,72 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🎒'] = None
         emotesDict['🍌'] = None
         emotesDict['📊'] = None
-        emotesDict['🏖️'] = { '⛱️', '☂️', '☔' }
+        emotesDict['🏖️'] = frozenset({ '⛱️', '☂️', '☔' })
         emotesDict['🫑'] = None
-        emotesDict['🐦'] = { '🐤' }
-        emotesDict['🎂'] = { '🍰' }
+        emotesDict['🐦'] = frozenset({ '🐤' })
+        emotesDict['🎂'] = frozenset({ '🍰' })
         emotesDict['🫐'] = None
         emotesDict['📚'] = None
         emotesDict['💼'] = None
         emotesDict['🥦'] = None
         emotesDict['🚌'] = None
-        emotesDict['🐪'] = { '🐫' }
-        emotesDict['🍬'] = { '🍭' }
+        emotesDict['🐪'] = frozenset({ '🐫' })
+        emotesDict['🍬'] = frozenset({ '🍭' })
         emotesDict['📇'] = None
         emotesDict['🎏'] = None
-        emotesDict['🖼️'] = { '🏞️' }
+        emotesDict['🖼️'] = frozenset({ '🏞️' })
         emotesDict['🥕'] = None
         emotesDict['🧀'] = None
         emotesDict['🍒'] = None
         emotesDict['🥢'] = None
-        emotesDict['🏛️'] = { '🏦' }
+        emotesDict['🏛️'] = frozenset({ '🏦' })
         emotesDict['📋'] = None
-        emotesDict['💽'] = { '📀', '💿' }
-        emotesDict['🍪'] = { '🥠' }
-        emotesDict['🐄'] = { '🐮', '🐂', '🐃' }
+        emotesDict['💽'] = frozenset({ '📀', '💿' })
+        emotesDict['🍪'] = frozenset({ '🥠' })
+        emotesDict['🐄'] = frozenset({ '🐮', '🐂', '🐃' })
         emotesDict['🦀'] = None
         emotesDict['🖍️'] = None
         emotesDict['🧁'] = None
         emotesDict['🍛'] = None
-        emotesDict['🖥️'] = { '💻' }
+        emotesDict['🖥️'] = frozenset({ '💻' })
         emotesDict['🧬'] = None
         emotesDict['🐬'] = None
-        emotesDict['🐉'] = { '🐲', '🦖' }
-        emotesDict['🔌'] = { '⚡' }
+        emotesDict['🐉'] = frozenset({ '🐲', '🦖' })
+        emotesDict['🔌'] = frozenset({ '⚡' })
         emotesDict['🐘'] = None
         emotesDict['🧐'] = None
         emotesDict['🚒'] = None
-        emotesDict['🐟'] = { '🐡', '🎣', '🐠' }
+        emotesDict['🐟'] = frozenset({ '🐡', '🎣', '🐠' })
         emotesDict['💾'] = None
         emotesDict['🐸'] = None
-        emotesDict['💎'] = { '💍' }
+        emotesDict['💎'] = frozenset({ '💍' })
         emotesDict['👻'] = None
         emotesDict['🍇'] = None
         emotesDict['🍏'] = None
         emotesDict['🚁'] = None
-        emotesDict['🐎'] = { '🐴' }
+        emotesDict['🐎'] = frozenset({ '🐴' })
         emotesDict['🌶️'] = None
         emotesDict['🎃'] = None
-        emotesDict['📒'] = { '📔', '🗒️' }
+        emotesDict['📒'] = frozenset({ '📔', '🗒️' })
         emotesDict['💡'] = None
         emotesDict['🦁'] = None
         emotesDict['🕰️'] = None
-        emotesDict['🍈'] = { '🍉' }
-        emotesDict['🔬'] = { '⚗️' }
+        emotesDict['🍈'] = frozenset({ '🍉' })
+        emotesDict['🔬'] = frozenset({ '⚗️' })
         emotesDict['🗿'] = None
-        emotesDict['🐒'] = { '🐵' }
+        emotesDict['🐒'] = frozenset({ '🐵' })
         emotesDict['🍄'] = None
         emotesDict['🤓'] = None
         emotesDict['📓'] = None
-        emotesDict['📦'] = { '🪤' }
+        emotesDict['📦'] = frozenset({ '🪤' })
         emotesDict['📎'] = None
         emotesDict['🍐'] = None
         emotesDict['🐧'] = None
         emotesDict['🥧'] = None
-        emotesDict['🐖'] = { '🐷', '🐗' }
+        emotesDict['🐖'] = frozenset({ '🐷', '🐗' })
         emotesDict['🍍'] = None
         emotesDict['🍕'] = None
-        emotesDict['🍿'] = { '🌽' }
+        emotesDict['🍿'] = frozenset({ '🌽' })
         emotesDict['🥔'] = None
         emotesDict['🥨'] = None
         emotesDict['🧩'] = None
@@ -122,24 +122,24 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🚀'] = None
         emotesDict['🎢'] = None
         emotesDict['🏫'] = None
-        emotesDict['🦐'] = { '🍤' }
+        emotesDict['🦐'] = frozenset({ '🍤' })
         emotesDict['🧦'] = None
         emotesDict['🐚'] = None
-        emotesDict['🦑'] = { '🐙' }
+        emotesDict['🦑'] = frozenset({ '🐙' })
         emotesDict['📏'] = None
         emotesDict['🍓'] = None
         emotesDict['🍊'] = None
         emotesDict['🔭'] = None
         emotesDict['🤔'] = None
         emotesDict['💭'] = None
-        emotesDict['🐅'] = { '🐯' }
+        emotesDict['🐅'] = frozenset({ '🐯' })
         emotesDict['🎩'] = None
         emotesDict['📐'] = None
-        emotesDict['🎺'] = { '📯' }
-        emotesDict['🌷'] = { '🌹' }
+        emotesDict['🎺'] = frozenset({ '📯' })
+        emotesDict['🌷'] = frozenset({ '🌹' })
         emotesDict['🐢'] = None
-        emotesDict['🌊'] = { '💧', '💦' }
-        emotesDict['🐋'] = { '🐳' }
+        emotesDict['🌊'] = frozenset({ '💧', '💦' })
+        emotesDict['🐋'] = frozenset({ '🐳' })
 
         return frozendict(emotesDict)
 
