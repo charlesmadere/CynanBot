@@ -26,6 +26,7 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
             CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'trigger_right', 'trigger right' })
         })
 
+        self.__cheerRegEx: Pattern = re.compile(r'^cheer\d+\s+', re.IGNORECASE)
         self.__extraWhitespaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def parseButtonFromUserInput(
@@ -36,6 +37,7 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
             return None
 
         userInput = userInput.strip().lower()
+        userInput = self.__cheerRegEx.sub('', userInput).strip()
         userInput = self.__extraWhitespaceRegEx.sub(' ', userInput).strip()
 
         for button, userInputs in self.__buttonToUserInputs.items():
