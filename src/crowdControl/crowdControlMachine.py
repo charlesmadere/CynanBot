@@ -80,35 +80,35 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             self.__timber.log('CrowdControlMachine', f'Retrying action due to Crowd Control being disabled ({action=})')
             return CrowdControlActionHandleResult.RETRY
 
-        handled: bool
+        handleResult: CrowdControlActionHandleResult
 
         if isinstance(action, ButtonPressCrowdControlAction):
-            handled = await self.__handleButtonPressAction(
+            handleResult = await self.__handleButtonPressAction(
                 action = action,
                 actionHandler = actionHandler
             )
         elif isinstance(action, GameShuffleCrowdControlAction):
-            handled = await self.__handleGameShuffleAction(
+            handleResult = await self.__handleGameShuffleAction(
                 action = action,
                 actionHandler = actionHandler
             )
         else:
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
-        if handled:
+        if handleResult is CrowdControlActionHandleResult.OK:
             if await self.__crowdControlSettingsRepository.areSoundsEnabled():
                 await self.__immediateSoundPlayerManager.playSoundAlert(SoundAlert.CLICK_NAVIGATION)
 
             return CrowdControlActionHandleResult.OK
 
-        self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}), will potentially retry')
-        return CrowdControlActionHandleResult.RETRY
+        self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}) ({handleResult=})')
+        return handleResult
 
     async def __handleButtonPressAction(
         self,
         action: ButtonPressCrowdControlAction,
         actionHandler: CrowdControlActionHandler
-    ) -> bool:
+    ) -> CrowdControlActionHandleResult:
         if not isinstance(action, ButtonPressCrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not isinstance(actionHandler, CrowdControlActionHandler):
@@ -118,13 +118,13 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             return await actionHandler.handleButtonPressAction(action)
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling button press action ({action=}): {e}', e, traceback.format_exc())
-            return False
+            return CrowdControlActionHandleResult.RETRY
 
     async def __handleGameShuffleAction(
         self,
         action: GameShuffleCrowdControlAction,
         actionHandler: CrowdControlActionHandler
-    ) -> bool:
+    ) -> CrowdControlActionHandleResult:
         if not isinstance(action, GameShuffleCrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not isinstance(actionHandler, CrowdControlActionHandler):
@@ -134,7 +134,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             return await actionHandler.handleGameShuffleAction(action)
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
-            return False
+            return CrowdControlActionHandleResult.RETRY
 
     def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
         if actionHandler is not None and not isinstance(actionHandler, CrowdControlActionHandler):

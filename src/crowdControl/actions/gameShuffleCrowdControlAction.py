@@ -24,5 +24,6 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
             twitchChannelId = twitchChannelId
         )
 
+    @property
     def actionType(self) -> CrowdControlActionType:
         return CrowdControlActionType.GAME_SHUFFLE

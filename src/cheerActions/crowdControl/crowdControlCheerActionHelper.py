@@ -1,9 +1,15 @@
+from datetime import datetime
+
 from frozenlist import FrozenList
 
 from .crowdControlCheerAction import CrowdControlCheerAction
 from .crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
+from ...crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
+from ...crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
+from ...crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 from ...crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
@@ -14,16 +20,28 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
     def __init__(
         self,
+        crowdControlIdGenerator: CrowdControlIdGeneratorInterface,
+        crowdControlMachine: CrowdControlMachineInterface,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
-        if not isinstance(crowdControlUserInputUtils, CrowdControlUserInputUtilsInterface):
+        if not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
+            raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
+        elif not isinstance(crowdControlMachine, CrowdControlMachineInterface):
+            raise TypeError(f'crowdControlMachine argument is malformed: \"{crowdControlMachine}\"')
+        elif not isinstance(crowdControlUserInputUtils, CrowdControlUserInputUtilsInterface):
             raise TypeError(f'crowdControlUserInputUtils argument is malformed: \"{crowdControlUserInputUtils}\"')
-        if not isinstance(timber, TimberInterface):
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
+        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
+        self.__crowdControlMachine: CrowdControlMachineInterface = crowdControlMachine
         self.__crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = crowdControlUserInputUtils
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
@@ -91,8 +109,20 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         if button is None:
             return False
 
-        # TODO
-        return False
+        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        actionId = await self.__crowdControlIdGenerator.generateActionId()
+
+        self.__crowdControlMachine.submitAction(ButtonPressCrowdControlAction(
+            button = button,
+            dateTime = dateTime,
+            actionId = actionId,
+            chatterUserId = cheerUserId,
+            chatterUserName = cheerUserName,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
+        ))
+
+        return True
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

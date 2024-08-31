@@ -20,7 +20,7 @@ python {
     pip 'aiosqlite:0.20.0'
     pip 'asyncpg:0.29.0'
     pip 'attrs:23.2.0'
-    pip 'certifi:2024.6.2'
+    pip 'certifi:2024.8.30'
     pip 'cffi:1.16.0'
     pip 'charset-normalizer:3.3.2'
     pip 'cryptography:43.0.0'
@@ -58,5 +58,5 @@ python {
     pip 'urllib3:2.2.2'
     pip 'websockets:13.0.1'
     pip 'xmltodict:0.13.0'
-    pip 'yarl:1.9.4'
+    pip 'yarl:1.9.6'
 }

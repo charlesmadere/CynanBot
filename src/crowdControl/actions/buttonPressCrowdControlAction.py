@@ -31,8 +31,10 @@ class ButtonPressCrowdControlAction(CrowdControlAction):
 
         self.__button: CrowdControlButton = button
 
+    @property
     def actionType(self) -> CrowdControlActionType:
         return CrowdControlActionType.BUTTON_PRESS
 
+    @property
     def button(self) -> CrowdControlButton:
         return self.__button
