@@ -42,7 +42,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         pollChoices: list[TwitchPollChoice],
         broadcasterUserId: str,
         title: str,
-        pollStatus: TwitchPollStatus,
+        pollStatus: TwitchPollStatus | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
@@ -52,7 +52,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
-        elif not isinstance(pollStatus, TwitchPollStatus):
+        elif pollStatus is not None and not isinstance(pollStatus, TwitchPollStatus):
             raise TypeError(f'pollStatus argument is malformed: \"{pollStatus}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
@@ -135,10 +135,9 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         broadcasterUserId = event.broadcasterUserId
         title = event.title
         choices = event.choices
-        pollStatus = event.pollStatus
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(choices, list) or len(choices) == 0 or pollStatus is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=}) ({pollStatus=})')
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(choices, list) or len(choices) == 0:
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 
         subscriptionType = payload.requireSubscription().subscriptionType
@@ -156,7 +155,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             pollChoices = choices,
             broadcasterUserId = broadcasterUserId,
             title = title,
-            pollStatus = pollStatus,
+            pollStatus = event.pollStatus,
             subscriptionType = subscriptionType,
             user = user
         )
