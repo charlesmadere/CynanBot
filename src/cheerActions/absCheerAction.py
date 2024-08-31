@@ -62,9 +62,22 @@ class AbsCheerAction(ABC):
     def printOut(self) -> str:
         pass
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     @property
     def streamStatusRequirement(self) -> CheerActionStreamStatusRequirement:
         return self.__streamStatusRequirement
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'actionType': self.actionType,
+            'bits': self.__bits,
+            'isEnabled': self.__isEnabled,
+            'streamStatusRequirement': self.__streamStatusRequirement,
+            'twitchChannelId': self.__twitchChannelId
+        }
 
     @property
     def twitchChannelId(self) -> str:
