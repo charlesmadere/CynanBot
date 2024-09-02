@@ -1,9 +1,12 @@
+import json
 import pytest
 
+from src.cheerActions.absCheerAction import AbsCheerAction
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from src.cheerActions.cheerActionType import CheerActionType
+from src.cheerActions.crowdControl.crowdControlCheerAction import CrowdControlCheerAction
 from src.cheerActions.crowdControl.crowdControlCheerActionType import CrowdControlCheerActionType
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
@@ -173,6 +176,25 @@ class TestCheerActionJsonMapper:
             result = await self.jsonMapper.requireCrowdControlCheerActionType(' ')
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withCrowdControlCheerAction(self):
+        cheerAction: AbsCheerAction = CrowdControlCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            crowdControlCheerActionType = CrowdControlCheerActionType.GAME_SHUFFLE,
+            bits = 50,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 1
+
+        assert dictionary['crowdControlCheerActionType'] == 'game_shuffle'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):

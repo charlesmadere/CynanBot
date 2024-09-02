@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..api.twitchOutcome import TwitchOutcome
-from ..api.twitchOutcomeColor import TwitchOutcomeColor
 from ..api.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.twitchPollChoice import TwitchPollChoice
 from ..api.twitchPollStatus import TwitchPollStatus
@@ -368,6 +369,42 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'started_at' in eventJson and utils.isValidStr(eventJson.get('started_at')):
             startedAt = utils.getDateTimeFromDict(eventJson, 'started_at')
 
+        frozenOutcomes: FrozenList[TwitchOutcome] | None = None
+        if 'outcomes' in eventJson:
+            outcomesItem: Any = eventJson.get('outcomes')
+
+            if isinstance(outcomesItem, list) and len(outcomesItem) >= 1:
+                outcomes: list[TwitchOutcome] = list()
+
+                for outcomeItem in outcomesItem:
+                    outcome = await self.parseTwitchOutcome(outcomeItem)
+
+                    if outcome is not None:
+                        outcomes.append(outcome)
+
+                if len(outcomes) >= 1:
+                    outcomes.sort(key = lambda element: element.channelPoints, reverse = True)
+                    frozenOutcomes = FrozenList(outcomes)
+                    frozenOutcomes.freeze()
+
+        frozenChoices: FrozenList[TwitchPollChoice] | None = None
+        if 'choices' in eventJson:
+            choicesItem: Any = eventJson.get('choices')
+
+            if isinstance(choicesItem, list) and len(choicesItem) >= 1:
+                choices: list[TwitchPollChoice] = list()
+
+                for choiceItem in choicesItem:
+                    choice = await self.parseWebsocketPollChoice(choiceItem)
+
+                    if choice is not None:
+                        choices.append(choice)
+
+                if len(choices) >= 1:
+                    choices.sort(key = lambda element: element.votes, reverse = True)
+                    frozenChoices = FrozenList(choices)
+                    frozenChoices.freeze()
+
         broadcasterUserId: str | None = None
         if 'broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('broadcaster_user_id')):
             broadcasterUserId = utils.getStrFromDict(eventJson, 'broadcaster_user_id')
@@ -465,24 +502,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
-        choices: list[TwitchPollChoice] | None = None
-        if 'choices' in eventJson:
-            choicesItem: Any = eventJson.get('choices')
-
-            if isinstance(choicesItem, list) and len(choicesItem) >= 1:
-                choices = list()
-
-                for choiceItem in choicesItem:
-                    choice = await self.parseWebsocketPollChoice(choiceItem)
-
-                    if choice is not None:
-                        choices.append(choice)
-
-                if len(choices) == 0:
-                    choices = None
-                else:
-                    choices.sort(key = lambda choice: choice.votes, reverse = True)
-
         pollStatus: TwitchPollStatus | None = None
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
@@ -496,24 +515,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         noticeType: TwitchWebsocketNoticeType | None = None
         if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
             noticeType = TwitchWebsocketNoticeType.fromStr(utils.getStrFromDict(eventJson, 'notice_type'))
-
-        outcomes: list[TwitchOutcome] | None = None
-        if 'outcomes' in eventJson:
-            outcomesItem: Any = eventJson.get('outcomes')
-
-            if isinstance(outcomesItem, list) and len(outcomesItem) >= 1:
-                outcomes = list()
-
-                for outcomeItem in outcomesItem:
-                    outcome = await self.parseTwitchOutcome(outcomeItem)
-
-                    if outcome is not None:
-                        outcomes.append(outcome)
-
-                if len(outcomes) == 0:
-                    outcomes = None
-                else:
-                    outcomes.sort(key = lambda outcome: outcome.channelPoints, reverse = True)
 
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
@@ -537,6 +538,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             locksAt = locksAt,
             redeemedAt = redeemedAt,
             startedAt = startedAt,
+            outcomes = frozenOutcomes,
+            choices = frozenChoices,
             bits = bits,
             cumulativeMonths = cumulativeMonths,
             total = total,
@@ -563,14 +566,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userName = userName,
             winningOutcomeId = winningOutcomeId,
             channelPointsVoting = channelPointsVoting,
-            choices = choices,
             tier = tier,
             pollStatus = pollStatus,
             resub = resub,
             rewardRedemptionStatus = rewardRedemptionStatus,
             communitySubGift = communitySubGift,
             noticeType = noticeType,
-            outcomes = outcomes,
             reward = reward,
             subGift = subGift
         )
@@ -586,9 +587,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         users = utils.getIntFromDict(outcomeJson, 'users', fallback = 0)
         outcomeId = utils.getStrFromDict(outcomeJson, 'id')
         title = utils.getStrFromDict(outcomeJson, 'title')
-        color = TwitchOutcomeColor.fromStr(utils.getStrFromDict(outcomeJson, 'color'))
+        color = await self.__twitchJsonMapper.requireOutcomeColor(utils.getStrFromDict(outcomeJson, 'color'))
 
-        topPredictors: list[TwitchOutcomePredictor] | None = None
+        frozenTopPredictors: FrozenList[TwitchOutcomePredictor] | None = None
         if 'top_predictors' in outcomeJson:
             topPredictorsItem: Any = outcomeJson.get('top_predictors')
 
@@ -601,16 +602,18 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                     if topPredictor is not None:
                         topPredictors.append(topPredictor)
 
-                if len(topPredictors) == 0:
-                    topPredictors = None
+                if len(topPredictors) >= 1:
+                    topPredictors.sort(key = lambda element: element.votes, reverse = True)
+                    frozenTopPredictors = FrozenList(topPredictors)
+                    frozenTopPredictors.freeze()
 
         return TwitchOutcome(
+            topPredictors = frozenTopPredictors,
             channelPoints = channelPoints,
             users = users,
             outcomeId = outcomeId,
             title = title,
-            color = color,
-            topPredictors = topPredictors
+            color = color
         )
 
     async def parseTwitchOutcomePredictor(

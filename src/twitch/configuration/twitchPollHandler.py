@@ -1,5 +1,7 @@
 import locale
 
+from frozenlist import FrozenList
+
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchPollHandler import AbsTwitchPollHandler
 from ..api.twitchPollChoice import TwitchPollChoice
@@ -37,16 +39,16 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def __notifyChatOfPollWinner(
+    async def __notifyChatOfPollResults(
         self,
-        pollChoices: list[TwitchPollChoice],
+        pollChoices: FrozenList[TwitchPollChoice],
         broadcasterUserId: str,
         title: str,
         pollStatus: TwitchPollStatus | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
-        if not isinstance(pollChoices, list):
+        if not isinstance(pollChoices, FrozenList):
             raise TypeError(f'pollChoices argument is malformed: \"{pollChoices}\"')
         elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
@@ -63,11 +65,13 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         if twitchChannelProvider is None:
             return
-        elif pollChoices is None or len(pollChoices) == 0:
+        elif len(pollChoices) == 0:
             return
         elif pollStatus is not TwitchPollStatus.COMPLETED:
             return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
+            return
+        elif not user.isNotifyOfPollResultsEnabled:
             return
 
         largestVoteCount = utils.getIntMinSafeSize()
@@ -136,7 +140,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         title = event.title
         choices = event.choices
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(choices, list) or len(choices) == 0:
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or choices is None or len(choices) == 0:
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 
@@ -151,7 +155,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             user = user
         )
 
-        await self.__notifyChatOfPollWinner(
+        await self.__notifyChatOfPollResults(
             pollChoices = choices,
             broadcasterUserId = broadcasterUserId,
             title = title,

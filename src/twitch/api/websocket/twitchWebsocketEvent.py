@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from frozenlist import FrozenList
+
 from .twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from .twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..twitchCommunitySubGift import TwitchCommunitySubGift
@@ -25,6 +27,8 @@ class TwitchWebsocketEvent:
     locksAt: datetime | None = None
     redeemedAt: datetime | None = None
     startedAt: datetime | None = None
+    outcomes: FrozenList[TwitchOutcome] | None = None
+    choices: FrozenList[TwitchPollChoice] | None = None
     bits: int | None = None
     cumulativeMonths: int | None = None
     total: int | None = None
@@ -52,12 +56,10 @@ class TwitchWebsocketEvent:
     winningOutcomeId: str | None = None
     tier: TwitchSubscriberTier | None = None
     channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
-    choices: list[TwitchPollChoice] | None = None
     pollStatus: TwitchPollStatus | None = None
     resub: TwitchResub | None = None
     rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
     communitySubGift: TwitchCommunitySubGift | None = None
     noticeType: TwitchWebsocketNoticeType | None = None
-    outcomes: list[TwitchOutcome] | None = None
     reward: TwitchReward | None = None
     subGift: TwitchSubGift | None = None

@@ -35,20 +35,21 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] | None = json.loads(jsonString)
 
+        maximumPerDay = utils.getIntFromDict(
+            d = jsonContents,
+            key = 'maximumPerDay'
+        )
+
         randomChance = utils.getIntFromDict(
             d = jsonContents,
             key = 'randomChance',
-            fallback = 0
         )
-
-        if randomChance < 0 or randomChance > 100:
-            self.__timber.log('CheerActionJsonMapper', f'Unable to read in \"randomChance\" value from bean chance cheer action JSON ({randomChance=}) ({jsonContents=})')
-            return None
 
         return BeanChanceCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
+            maximumPerDay = maximumPerDay,
             randomChance = randomChance,
             twitchChannelId = twitchChannelId
         )
@@ -101,14 +102,9 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] | None = json.loads(jsonString)
 
-        crowdControlCheerActionTypeStringFallback = await self.serializeCrowdControlCheerActionType(
-            actionType = CrowdControlCheerActionType.GAME_SHUFFLE
-        )
-
         crowdControlCheerActionTypeString = utils.getStrFromDict(
             d = jsonContents,
             key = 'crowdControlCheerActionType',
-            fallback = crowdControlCheerActionTypeStringFallback
         )
 
         crowdControlCheerActionType = await self.requireCrowdControlCheerActionType(
@@ -243,6 +239,8 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         if isinstance(cheerAction, BeanChanceCheerAction):
             return await self.__serializeBeanChanceCheerAction(cheerAction)
+        elif isinstance(cheerAction, CrowdControlCheerAction):
+            return await self.__serializeCrowdControlCheerAction(cheerAction)
         elif isinstance(cheerAction, SoundAlertCheerAction):
             return await self.__serializeSoundAlertCheerAction(cheerAction)
         elif isinstance(cheerAction, TimeoutCheerAction):
@@ -258,6 +256,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
+            'maximumPerDay': cheerAction.maximumPerDay,
             'randomChance': cheerAction.randomChance
         }
 
@@ -289,6 +288,23 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             case CheerActionType.SOUND_ALERT: return 'sound_alert'
             case CheerActionType.TIMEOUT: return 'timeout'
             case _: raise ValueError(f'The given CheerActionType value is unknown: \"{actionType}\"')
+
+    async def __serializeCrowdControlCheerAction(
+        self,
+        cheerAction: CrowdControlCheerAction
+    ) -> str:
+        if not isinstance(cheerAction, CrowdControlCheerAction):
+            raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
+
+        crowdControlCheerActionType = await self.serializeCrowdControlCheerActionType(
+            actionType = cheerAction.crowdControlCheerActionType
+        )
+
+        jsonContents: dict[str, Any] = {
+            'crowdControlCheerActionType': crowdControlCheerActionType
+        }
+
+        return json.dumps(jsonContents)
 
     async def serializeCrowdControlCheerActionType(
         self,

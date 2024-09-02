@@ -16,6 +16,7 @@ from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
+from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
@@ -419,6 +420,22 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteType value: \"{emoteType}\"')
                 return None
 
+    async def parseOutcomeColor(
+        self,
+        outcomeColor: str | None
+    ) -> TwitchOutcomeColor | None:
+        if not utils.isValidStr(outcomeColor):
+            return None
+
+        outcomeColor = outcomeColor.lower()
+
+        match outcomeColor:
+            case 'blue': return TwitchOutcomeColor.BLUE
+            case 'pink': return TwitchOutcomeColor.PINK
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchOutcomeColor value: \"{outcomeColor}\"')
+                return None
+
     async def parsePaginationResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -669,14 +686,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId
         )
 
-    async def requireBroadcasterType(
+    async def requireOutcomeColor(
         self,
-        broadcasterType: str | None
-    ) -> TwitchBroadcasterType:
-        result = await self.parseBroadcasterType(broadcasterType)
+        outcomeColor: str | None
+    ) -> TwitchOutcomeColor:
+        result = await self.parseOutcomeColor(outcomeColor)
 
         if result is None:
-            raise ValueError(f'Unable to parse \"{broadcasterType}\" into TwitchBroadcasterType value!')
+            raise ValueError(f'Unable to parse \"{outcomeColor}\" into TwitchOutcomeColor value!')
 
         return result
 

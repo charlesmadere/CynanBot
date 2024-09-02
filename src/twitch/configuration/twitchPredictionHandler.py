@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from ..api.twitchOutcome import TwitchOutcome
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
@@ -65,7 +67,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         title = event.title
         outcomes = event.outcomes
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(outcomes, list) or len(outcomes) == 0:
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or outcomes is None or len(outcomes) == 0:
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 
@@ -134,13 +136,13 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
     async def __processWebsocketEvent(
         self,
-        outcomes: list[TwitchOutcome],
+        outcomes: FrozenList[TwitchOutcome],
         title: str,
         user: UserInterface,
         event: TwitchWebsocketEvent,
         subscriptionType: TwitchWebsocketSubscriptionType
     ):
-        if not isinstance(outcomes, list):
+        if not isinstance(outcomes, FrozenList):
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
         elif not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')

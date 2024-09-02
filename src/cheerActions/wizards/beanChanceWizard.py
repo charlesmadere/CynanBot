@@ -20,6 +20,7 @@ class BeanChanceWizard(AbsWizard):
 
         self.__steps = BeanChanceSteps()
         self.__bits: int | None = None
+        self.__maximumPerDay: int | None = None
         self.__randomChance: int | None = None
 
     @property
@@ -29,8 +30,12 @@ class BeanChanceWizard(AbsWizard):
     def getSteps(self) -> BeanChanceSteps:
         return self.__steps
 
+    @property
+    def maximumPerDay(self) -> int | None:
+        return self.__maximumPerDay
+
     def printOut(self) -> str:
-        return f'{self.__bits=}, {self.__randomChance=}'
+        return f'{self.__bits=}, {self.__maximumPerDay=}, {self.__randomChance=}'
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -60,6 +65,14 @@ class BeanChanceWizard(AbsWizard):
 
         self.__bits = bits
 
+    def setMaximumPerDay(self, maximumPerDay: int | None):
+        if maximumPerDay is not None and not utils.isValidInt(maximumPerDay):
+            raise TypeError(f'maximumPerDay argument is malformed: \"{maximumPerDay}\"')
+        elif maximumPerDay is not None and (maximumPerDay < 1 or maximumPerDay > utils.getIntMaxSafeSize()):
+            raise ValueError(f'maximumPerDay argument is out of bounds: {maximumPerDay}')
+
+        self.__maximumPerDay = maximumPerDay
+
     def setRandomChance(self, randomChance: int):
         if not utils.isValidInt(randomChance):
             raise TypeError(f'randomChance argument is malformed: \"{randomChance}\"')
@@ -71,6 +84,7 @@ class BeanChanceWizard(AbsWizard):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'maximumPerDay': self.__maximumPerDay,
             'randomChance': self.__randomChance,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,

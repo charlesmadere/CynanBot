@@ -13,6 +13,7 @@ from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
@@ -346,6 +347,31 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseOutcomeColor_withBlue(self):
+        result = await self.jsonMapper.parseOutcomeColor('blue')
+        assert result is TwitchOutcomeColor.BLUE
+
+    @pytest.mark.asyncio
+    async def test_parseOutcomeColor_withEmptyString(self):
+        result = await self.jsonMapper.parseOutcomeColor('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseOutcomeColor_withNone(self):
+        result = await self.jsonMapper.parseOutcomeColor(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseOutcomeColor_withPink(self):
+        result = await self.jsonMapper.parseOutcomeColor('pink')
+        assert result is TwitchOutcomeColor.PINK
+
+    @pytest.mark.asyncio
+    async def test_parseOutcomeColor_withWhitespaceString(self):
+        result = await self.jsonMapper.parseOutcomeColor(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parsePaginationResponse(self):
         jsonResponse: dict[str, Any] = {
             'cursor': 'abc123'
@@ -474,6 +500,43 @@ class TestTwitchJsonMapper:
     async def test_parseUserType_withWhitespaceString(self):
         result = await self.jsonMapper.parseUserType(' ')
         assert result is TwitchUserType.NORMAL
+
+    @pytest.mark.asyncio
+    async def test_requireOutcomeColor_withBlue(self):
+        result = await self.jsonMapper.requireOutcomeColor('blue')
+        assert result is TwitchOutcomeColor.BLUE
+
+    @pytest.mark.asyncio
+    async def test_requireOutcomeColor_withEmptyString(self):
+        result: TwitchOutcomeColor | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireOutcomeColor('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireOutcomeColor_withNone(self):
+        result: TwitchOutcomeColor | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireOutcomeColor(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireOutcomeColor_withPink(self):
+        result = await self.jsonMapper.requireOutcomeColor('pink')
+        assert result is TwitchOutcomeColor.PINK
+
+    @pytest.mark.asyncio
+    async def test_requireOutcomeColor_withWhitespaceString(self):
+        result: TwitchOutcomeColor | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireOutcomeColor(' ')
+
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_requireSubscriberTier_withPrimeString(self):

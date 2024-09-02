@@ -276,6 +276,11 @@ class UserInterface(ABC):
     def isLoremIpsumEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isNotifyOfPollResultsEnabled(self) -> bool:
+        pass
+
     @abstractmethod
     def isPkmnEnabled(self) -> bool:
         pass

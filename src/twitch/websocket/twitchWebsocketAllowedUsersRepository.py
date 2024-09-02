@@ -69,10 +69,10 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
 
         return enabledUsers
 
-    async def getUsers(self) -> set[TwitchWebsocketUser]:
+    async def getUsers(self) -> frozenset[TwitchWebsocketUser]:
         enabledUserNames = await self.__getEnabledUserNames()
         users = await self.__buildTwitchWebsocketUsers(enabledUserNames)
 
         self.__timber.log('TwitchWebsocketAllowedUsersRepository', f'Built up a list of {len(users)} user(s) that are eligible for websocket connections')
 
-        return users
+        return frozenset(users)

@@ -12,6 +12,7 @@ from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
+from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
@@ -98,6 +99,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseOutcomeColor(
+        self,
+        outcomeColor: str | None
+    ) -> TwitchOutcomeColor | None:
+        pass
+
+    @abstractmethod
     async def parsePaginationResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -172,6 +180,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchValidationResponse | None:
+        pass
+
+    @abstractmethod
+    async def requireOutcomeColor(
+        self,
+        outcomeColor: str | None
+    ) -> TwitchOutcomeColor:
         pass
 
     @abstractmethod

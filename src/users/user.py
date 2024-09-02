@@ -38,6 +38,7 @@ class User(UserInterface):
         isJamCatMessageEnabled: bool,
         isJishoEnabled: bool,
         isLoremIpsumEnabled: bool,
+        isNotifyOfPollResultsEnabled: bool,
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
@@ -155,6 +156,8 @@ class User(UserInterface):
             raise TypeError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
             raise TypeError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
+        elif not utils.isValidBool(isNotifyOfPollResultsEnabled):
+            raise TypeError(f'isNotifyOfPollResultsEnabled argument is malformed: \"{isNotifyOfPollResultsEnabled}\"')
         elif not utils.isValidBool(isPkmnEnabled):
             raise TypeError(f'isPkmnEnabled argument is malformed: \"{isPkmnEnabled}\"')
         elif not utils.isValidBool(isPokepediaEnabled):
@@ -315,6 +318,7 @@ class User(UserInterface):
         self.__isJamCatMessageEnabled: bool = isJamCatMessageEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
+        self.__isNotifyOfPollResultsEnabled: bool = isNotifyOfPollResultsEnabled
         self.__isPkmnEnabled: bool = isPkmnEnabled
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
         self.__isRaceEnabled: bool = isRaceEnabled
@@ -611,6 +615,10 @@ class User(UserInterface):
 
     def isLoremIpsumEnabled(self) -> bool:
         return self.__isLoremIpsumEnabled
+
+    @property
+    def isNotifyOfPollResultsEnabled(self) -> bool:
+        return self.__isNotifyOfPollResultsEnabled
 
     def isPkmnEnabled(self) -> bool:
         return self.__isPkmnEnabled

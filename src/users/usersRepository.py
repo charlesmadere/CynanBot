@@ -106,14 +106,8 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
-        areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', False)
-
-        timeoutCheerActionFollowShieldDays: int | None = None
-        if areCheerActionsEnabled:
-            if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
-                timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
-
         areBeanChancesEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_CHANCES_ENABLED.jsonKey, False)
+        areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
@@ -135,6 +129,7 @@ class UsersRepository(UsersRepositoryInterface):
         isJamCatMessageEnabled = utils.getBoolFromDict(userJson, 'jamCatMessageEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
+        isNotifyOfPollResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollResultsEnabled', True)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
@@ -169,6 +164,11 @@ class UsersRepository(UsersRepositoryInterface):
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
+
+        timeoutCheerActionFollowShieldDays: int | None = None
+        if areCheerActionsEnabled:
+            if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
+                timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
 
         anivMessageCopyTimeoutProbability: float | None = None
         anivMessageCopyMaxAgeSeconds: int | None = None
@@ -301,6 +301,7 @@ class UsersRepository(UsersRepositoryInterface):
             isJamCatMessageEnabled = isJamCatMessageEnabled,
             isJishoEnabled = isJishoEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
+            isNotifyOfPollResultsEnabled = isNotifyOfPollResultsEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
@@ -389,7 +390,7 @@ class UsersRepository(UsersRepositoryInterface):
         if len(users) == 0:
             raise NoUsersException(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
-        users.sort(key = lambda user: user.getHandle().casefold())
+        users.sort(key = lambda element: element.getHandle().casefold())
         frozenUsers: FrozenList[User] = FrozenList(users)
         frozenUsers.freeze()
 

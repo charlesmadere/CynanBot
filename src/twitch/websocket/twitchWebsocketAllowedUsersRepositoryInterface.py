@@ -6,5 +6,5 @@ from .twitchWebsocketUser import TwitchWebsocketUser
 class TwitchWebsocketAllowedUsersRepositoryInterface(ABC):
 
     @abstractmethod
-    async def getUsers(self) -> set[TwitchWebsocketUser]:
+    async def getUsers(self) -> frozenset[TwitchWebsocketUser]:
         pass
