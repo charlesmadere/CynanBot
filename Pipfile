@@ -29,7 +29,7 @@ rich = "13.8.0"
 roman = "4.2"
 twitchio = "2.10.0"
 typing_extensions = "4.12.2"
-yarl = "1.9.6"
+yarl = "1.9.7"
 websockets = "13.0.1"
 xmltodict = "0.13.0"
 
