@@ -15,7 +15,7 @@ class ChatterBeanStats:
     twitchChannelId: str
 
     @property
-    def failedBeanAttempts(self) -> str:
+    def failedBeanAttemptsStr(self) -> str:
         return locale.format_string("%d", self.failedBeanAttempts, grouping = True)
 
     @property
