@@ -9,6 +9,7 @@ from ..twitchAuthor import TwitchAuthor
 from ..twitchChannel import TwitchChannel
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchMessage import TwitchMessage
+from ..twitchMessageReplyData import TwitchMessageReplyData
 from ....misc import utils as utils
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -32,8 +33,9 @@ class TwitchIoMessage(TwitchMessage):
             userIdsRepository = userIdsRepository
         )
 
-        self.__isReply: bool | None = None
+        self.__checkedForReplyData: bool = False
         self.__twitchChannelId: str | None = None
+        self.__replyData: TwitchMessageReplyData | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -49,6 +51,37 @@ class TwitchIoMessage(TwitchMessage):
 
     def getContent(self) -> str | None:
         return self.__message.content
+
+    async def getReplyData(self) -> TwitchMessageReplyData | None:
+        if self.__checkedForReplyData:
+            return self.__replyData
+
+        self.__checkedForReplyData = True
+        tags: dict[Any, Any] | Any | None = self.__message.tags
+
+        if not isinstance(tags, dict) or len(tags) == 0:
+            return None
+
+        replyParentMsgBody: str | Any | None = tags.get('reply-parent-msg-body', None)
+        replyParentMsgId: str | Any | None = tags.get('reply-parent-msg-id', None)
+        replyParentUserId: str | Any | None = tags.get('reply-parent-user-id', None)
+        replyParentUserLogin: str | Any | None = tags.get('reply-parent-user-login', None)
+
+        if not utils.isValidStr(replyParentMsgBody) \
+                or not utils.isValidStr(replyParentMsgId) \
+                or not utils.isValidStr(replyParentUserId) \
+                or not utils.isValidStr(replyParentUserLogin):
+            return None
+
+        replyData = TwitchMessageReplyData(
+            msgBody = replyParentMsgBody,
+            msgsId = replyParentMsgId,
+            userId = replyParentUserId,
+            userLogin = replyParentUserLogin
+        )
+
+        self.__replyData = replyData
+        return replyData
 
     async def getTwitchChannelId(self) -> str:
         twitchChannelId = self.__twitchChannelId
@@ -75,27 +108,7 @@ class TwitchIoMessage(TwitchMessage):
         return self.__message.echo
 
     async def isReply(self) -> bool:
-        isReply = self.__isReply
-
-        if isReply is not None:
-            return isReply
-
-        isReply = False
-        tags: dict[Any, Any] | Any | None = self.__message.tags
-
-        if isinstance(tags, dict) and len(tags) >= 1:
-            replyParentMsgBody: str | Any | None = tags.get('reply-parent-msg-body')
-            replyParentMsgId: str | Any | None = tags.get('reply-parent-msg-id')
-            replyParentUserId: str | Any | None = tags.get('reply-parent-user-id')
-            replyParentUserLogin: str | Any | None = tags.get('reply-parent-user-login')
-
-            isReply = utils.isValidStr(replyParentMsgBody) and \
-                utils.isValidStr(replyParentMsgId) and \
-                utils.isValidStr(replyParentUserId) and \
-                utils.isValidStr(replyParentUserLogin)
-
-        self.__isReply = isReply
-        return isReply
+        return await self.getReplyData() is not None
 
     @property
     def twitchConfigurationType(self) -> TwitchConfigurationType:
