@@ -7,6 +7,7 @@ from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.twitch.api.twitchApiScope import TwitchApiScope
+from src.twitch.api.twitchBanRequest import TwitchBanRequest
 from src.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 from src.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -16,6 +17,7 @@ from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
+from src.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.twitchUserType import TwitchUserType
 
@@ -594,3 +596,118 @@ class TestTwitchJsonMapper:
     async def test_parseValidationResponse_withNone(self):
         result = await self.jsonMapper.parseValidationResponse(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_serializeBanRequest(self):
+        request = TwitchBanRequest(
+            duration = None,
+            broadcasterUserId = 'abc123',
+            moderatorUserId = 'def456',
+            reason = None,
+            userIdToBan = 'xyz'
+        )
+
+        result = await self.jsonMapper.serializeBanRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 1
+        assert 'data' in result and isinstance(result['data'], dict)
+
+        data: dict[str, Any] = result['data']
+        assert len(data) == 1
+        assert data['user_id'] == request.userIdToBan
+
+    @pytest.mark.asyncio
+    async def test_serializeBanRequest_withDuration(self):
+        request = TwitchBanRequest(
+            duration = 60,
+            broadcasterUserId = 'abc123',
+            moderatorUserId = 'def456',
+            reason = None,
+            userIdToBan = 'xyz'
+        )
+
+        result = await self.jsonMapper.serializeBanRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 1
+        assert 'data' in result and isinstance(result['data'], dict)
+
+        data: dict[str, Any] = result['data']
+        assert len(data) == 2
+        assert data['duration'] == request.duration
+        assert data['user_id'] == request.userIdToBan
+
+    @pytest.mark.asyncio
+    async def test_serializeBanRequest_withDurationAndReason(self):
+        request = TwitchBanRequest(
+            duration = 60,
+            broadcasterUserId = 'abc123',
+            moderatorUserId = 'def456',
+            reason = 'Hello, World!',
+            userIdToBan = 'xyz'
+        )
+
+        result = await self.jsonMapper.serializeBanRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 1
+        assert 'data' in result and isinstance(result['data'], dict)
+
+        data: dict[str, Any] = result['data']
+        assert len(data) == 3
+        assert data['duration'] == request.duration
+        assert data['reason'] == request.reason
+        assert data['user_id'] == request.userIdToBan
+
+    @pytest.mark.asyncio
+    async def test_serializeBanRequest_withReason(self):
+        request = TwitchBanRequest(
+            duration = None,
+            broadcasterUserId = 'abc123',
+            moderatorUserId = 'def456',
+            reason = 'Hello, World!',
+            userIdToBan = 'xyz'
+        )
+
+        result = await self.jsonMapper.serializeBanRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 1
+        assert 'data' in result and isinstance(result['data'], dict)
+
+        data: dict[str, Any] = result['data']
+        assert len(data) == 2
+        assert data['reason'] == request.reason
+        assert data['user_id'] == request.userIdToBan
+
+    @pytest.mark.asyncio
+    async def test_serializeSendChatMessageRequest(self):
+        request = TwitchSendChatMessageRequest(
+            broadcasterId = 'abc123',
+            message = 'Hello, World!',
+            replyParentMessageId = None,
+            senderId = 'def456'
+        )
+
+        result = await self.jsonMapper.serializeSendChatMessageRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 3
+
+        assert result['broadcaster_id'] == request.broadcasterId
+        assert result['message'] == request.message
+        assert result['sender_id'] == request.senderId
+
+    @pytest.mark.asyncio
+    async def test_serializeSendChatMessageRequest_withReplyParentMessageId(self):
+        request = TwitchSendChatMessageRequest(
+            broadcasterId = 'abc123',
+            message = 'Hello, World!',
+            replyParentMessageId = 'xyz',
+            senderId = 'def456'
+        )
+
+        result = await self.jsonMapper.serializeSendChatMessageRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 4
+
+        assert result['broadcaster_id'] == request.broadcasterId
+        assert result['message'] == request.message
+        assert result['reply_parent_message_id'] == request.replyParentMessageId
+        assert result['sender_id'] == request.senderId

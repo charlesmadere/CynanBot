@@ -20,6 +20,7 @@ from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
+from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
@@ -728,3 +729,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return {
             'data': data
         }
+
+    async def serializeSendChatMessageRequest(
+        self,
+        chatRequest: TwitchSendChatMessageRequest
+    ) -> dict[str, Any]:
+        if not isinstance(chatRequest, TwitchSendChatMessageRequest):
+            raise TypeError(f'chatRequest argument is malformed: \"{chatRequest}\"')
+
+        dictionary: dict[str, Any] = {
+            'broadcaster_id': chatRequest.broadcasterId,
+            'message': chatRequest.message,
+            'sender_id': chatRequest.senderId
+        }
+
+        if utils.isValidStr(chatRequest.replyParentMessageId):
+            dictionary['reply_parent_message_id'] = chatRequest.replyParentMessageId
+
+        return dictionary

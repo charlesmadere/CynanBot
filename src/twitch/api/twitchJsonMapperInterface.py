@@ -16,6 +16,7 @@ from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
+from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .twitchStreamType import TwitchStreamType
 from .twitchSubscriberTier import TwitchSubscriberTier
@@ -200,5 +201,12 @@ class TwitchJsonMapperInterface(ABC):
     async def serializeBanRequest(
         self,
         banRequest: TwitchBanRequest
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeSendChatMessageRequest(
+        self,
+        chatRequest: TwitchSendChatMessageRequest
     ) -> dict[str, Any]:
         pass

@@ -10,9 +10,9 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             raise TypeError(f'score argument is malformed: \"{score}\"')
 
         if score.dodgeScore == 0 and score.timeoutScore == 0:
-            return f'ⓘ @{score.chatterUserName} has no aniv timeouts'
+            return f'@{score.chatterUserName} has no aniv timeouts'
 
-        dodgesString: str 
+        dodgesString: str
         if score.dodgeScore == 1:
             dodgesString = f'{score.dodgeScoreStr} dodge'
         else:

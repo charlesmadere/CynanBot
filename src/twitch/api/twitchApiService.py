@@ -918,11 +918,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                     'Client-Id': twitchClientId,
                     'Content-Type': 'application/json'
                 },
-                json = {
-                    'broadcaster_id': chatRequest.broadcasterId,
-                    'message': chatRequest.message,
-                    'sender_id': chatRequest.senderId
-                }
+                json = await self.__twitchJsonMapper.serializeSendChatMessageRequest(chatRequest)
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when sending chat message ({chatRequest=}): {e}', e, traceback.format_exc())
