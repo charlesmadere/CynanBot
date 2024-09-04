@@ -450,6 +450,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             elif isinstance(messageItem, dict) and utils.isValidStr(messageItem.get('text')):
                 message = utils.getStrFromDict(messageItem, 'text', clean = True)
 
+        messageId: str | None = None
+        if 'message_id' in eventJson and utils.isValidStr(eventJson.get('message_id')):
+            messageId = utils.getStrFromDict(eventJson, 'message_id')
+
         rewardId: str | None = None
         if 'reward_id' in eventJson and utils.isValidStr(eventJson.get('reward_id')):
             rewardId = utils.getStrFromDict(eventJson, 'reward_id')
@@ -554,6 +558,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             fromBroadcasterUserLogin = fromBroadcasterUserLogin,
             fromBroadcasterUserName = fromBroadcasterUserName,
             message = message,
+            messageId = messageId,
             rewardId = rewardId,
             text = text,
             title = title,

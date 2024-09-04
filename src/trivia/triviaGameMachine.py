@@ -317,6 +317,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 gameId = state.getGameId(),
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
+                twitchChatMessageId = action.twitchChatMessageId,
                 userId = action.getUserId(),
                 userName = action.getUserName()
             ))
@@ -346,6 +347,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 gameId = state.getGameId(),
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
+                twitchChatMessageId = action.twitchChatMessageId,
                 userId = action.getUserId(),
                 userName = action.getUserName(),
                 wrongAnswerEmote = wrongAnswerEmote,
@@ -397,6 +399,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             gameId = state.getGameId(),
             twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId(),
+            twitchChatMessageId = action.twitchChatMessageId,
             userId = action.getUserId(),
             userName = action.getUserName(),
             triviaScoreResult = triviaScoreResult
@@ -523,6 +526,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             gameId = state.getGameId(),
             twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId(),
+            twitchChatMessageId = action.twitchChatMessageId,
             userId = action.getUserId(),
             userName = action.getUserName(),
             triviaScoreResult = triviaScoreResult

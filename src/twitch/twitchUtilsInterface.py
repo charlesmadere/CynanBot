@@ -12,7 +12,7 @@ class TwitchUtilsInterface(TwitchConstantsInterface):
         messageable: TwitchMessageable,
         message: str | None,
         maxMessages: int = 3,
-        perMessageMaxSize: int = 494
+        replyMessageId: str | None = None
     ):
         pass
 

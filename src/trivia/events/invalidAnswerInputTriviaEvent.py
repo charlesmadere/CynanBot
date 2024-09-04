@@ -18,6 +18,7 @@ class InvalidAnswerInputTriviaEvent(AbsTriviaEvent):
         gameId: str,
         twitchChannel: str,
         twitchChannelId: str,
+        twitchChatMessageId: str,
         userId: str,
         userName: str
     ):
@@ -40,6 +41,8 @@ class InvalidAnswerInputTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(twitchChatMessageId):
+            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -52,6 +55,7 @@ class InvalidAnswerInputTriviaEvent(AbsTriviaEvent):
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
+        self.__twitchChatMessageId: str = twitchChatMessageId
         self.__userId: str = userId
         self.__userName: str = userName
 
@@ -92,6 +96,10 @@ class InvalidAnswerInputTriviaEvent(AbsTriviaEvent):
     @property
     def twitchChannelId(self) -> str:
         return self.__twitchChannelId
+
+    @property
+    def twitchChatMessageId(self) -> str:
+        return self.__twitchChatMessageId
 
     @property
     def userId(self) -> str:

@@ -132,7 +132,7 @@ class TwitchUtils(TwitchUtilsInterface):
         messageable: TwitchMessageable,
         message: str | None,
         maxMessages: int = 3,
-        perMessageMaxSize: int = 494
+        replyMessageId: str | None = None
     ):
         if not isinstance(messageable, TwitchMessageable):
             raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
@@ -142,12 +142,8 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'maxMessages argument is malformed: \"{maxMessages}\"')
         elif maxMessages < 1 or maxMessages > 5:
             raise ValueError(f'maxMessages is out of bounds: {maxMessages}')
-        elif not utils.isValidInt(perMessageMaxSize):
-            raise TypeError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
-        elif perMessageMaxSize < 300:
-            raise ValueError(f'perMessageMaxSize is too small: {perMessageMaxSize}')
-        elif perMessageMaxSize > self.maxMessageSize:
-            raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {self.maxMessageSize})')
+        elif replyMessageId is not None and not isinstance(replyMessageId, str):
+            raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
 
         if not utils.isValidStr(message):
             return
@@ -155,38 +151,44 @@ class TwitchUtils(TwitchUtilsInterface):
         if len(message) < self.maxMessageSize:
             await self.__safeSend(
                 messageable = messageable,
-                message = message
+                message = message,
+                replyMessageId = replyMessageId
             )
             return
 
         messages = utils.splitLongStringIntoMessages(
             maxMessages = maxMessages,
-            perMessageMaxSize = perMessageMaxSize,
+            perMessageMaxSize = self.maxMessageSize,
             message = message
         )
 
         for m in messages:
             await self.__safeSend(
                 messageable = messageable,
-                message = m
+                message = m,
+                replyMessageId = replyMessageId
             )
 
     async def __safeSend(
         self,
         messageable: TwitchMessageable,
-        message: str
+        message: str,
+        replyMessageId: str | None
     ):
         if not isinstance(messageable, TwitchMessageable):
             raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif replyMessageId is not None and not isinstance(replyMessageId, str):
+            raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
 
         generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
         isTwitchChatApiEnabled = generalSettingsSnapshot.isTwitchChatApiEnabled()
 
         if isTwitchChatApiEnabled and await self.__safeSendViaTwitchChatApi(
             messageable = messageable,
-            message = message
+            message = message,
+            replyMessageId = replyMessageId
         ):
             return
 
@@ -223,12 +225,15 @@ class TwitchUtils(TwitchUtilsInterface):
     async def __safeSendViaTwitchChatApi(
         self,
         messageable: TwitchMessageable,
-        message: str
+        message: str,
+        replyMessageId: str | None
     ) -> bool:
         if not isinstance(messageable, TwitchMessageable):
             raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif replyMessageId is not None and not isinstance(replyMessageId, str):
+            raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
 
         generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
         if not generalSettingsSnapshot.isTwitchChatApiEnabled():
@@ -240,6 +245,13 @@ class TwitchUtils(TwitchUtilsInterface):
         numberOfRetries = 0
         successfullySent = False
 
+        chatRequest = TwitchSendChatMessageRequest(
+            broadcasterId = twitchChannelId,
+            message = message,
+            replyParentMessageId = replyMessageId,
+            senderId = senderId
+        )
+
         while numberOfRetries <= 1 and not successfullySent:
             response: TwitchSendChatMessageResponse | None = None
             exception: Exception | None = None
@@ -247,12 +259,7 @@ class TwitchUtils(TwitchUtilsInterface):
             try:
                 response = await self.__twitchApiService.sendChatMessage(
                     twitchAccessToken = twitchAccessToken,
-                    chatRequest = TwitchSendChatMessageRequest(
-                        broadcasterId = twitchChannelId,
-                        message = message,
-                        replyParentMessageId = None,
-                        senderId = senderId
-                    )
+                    chatRequest = chatRequest
                 )
             except Exception as e:
                 exception = e

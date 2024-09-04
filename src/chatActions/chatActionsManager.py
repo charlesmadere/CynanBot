@@ -15,6 +15,7 @@ from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -26,6 +27,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         anivCheckChatAction: AnivCheckChatAction | None,
         catJamChatAction: CatJamChatAction | None,
         chatLoggerChatAction: ChatLoggerChatAction | None,
@@ -44,7 +46,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
             raise TypeError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
         elif catJamChatAction is not None and not isinstance(catJamChatAction, CatJamChatAction):
             raise TypeError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
@@ -79,6 +83,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__anivCheckChatAction: AbsChatAction | None = anivCheckChatAction
         self.__catJamChatAction: AbsChatAction | None = catJamChatAction
         self.__chatLoggerChatAction: AbsChatAction | None = chatLoggerChatAction
@@ -134,6 +139,12 @@ class ChatActionsManager(ChatActionsManagerInterface):
     async def handleMessage(self, message: TwitchMessage):
         if not isinstance(message, TwitchMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        await self.__activeChattersRepository.add(
+            chatterUserId = message.getAuthorId(),
+            chatterUserName = message.getAuthorName(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
 
         mostRecentChat = await self.__mostRecentChatsRepository.get(
             chatterUserId = message.getAuthorId(),

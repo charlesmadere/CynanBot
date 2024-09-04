@@ -86,23 +86,26 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-        if not user.areCheerActionsEnabled or not await self.__processCheerAction(
+        if user.areCheerActionsEnabled and await self.__processCheerAction(
             bits = bits,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserLogin = cheerUserLogin,
             message = message,
+            messageId = event.messageId,
             user = user
         ):
-            if user.isTtsEnabled():
-                await self.__processTtsEvent(
-                    bits = bits,
-                    broadcasterUserId = broadcasterUserId,
-                    message = message,
-                    cheerUserId = cheerUserId,
-                    cheerUserLogin = cheerUserLogin,
-                    user = user
-                )
+            return
+
+        if user.isTtsEnabled():
+            await self.__processTtsEvent(
+                bits = bits,
+                broadcasterUserId = broadcasterUserId,
+                message = message,
+                cheerUserId = cheerUserId,
+                cheerUserLogin = cheerUserLogin,
+                user = user
+            )
 
     async def __processCheerAction(
         self,
@@ -111,6 +114,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         cheerUserId: str,
         cheerUserLogin: str,
         message: str | None,
+        messageId: str | None,
         user: UserInterface
     ) -> bool:
         if not utils.isValidInt(bits):
@@ -125,6 +129,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             raise TypeError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif messageId is not None and not isinstance(messageId, str):
+            raise TypeError(f'messageId argument is malformed: \"{messageId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -139,6 +145,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserLogin,
             message = message,
+            twitchChatMessageId = messageId,
             user =  user
         )
 

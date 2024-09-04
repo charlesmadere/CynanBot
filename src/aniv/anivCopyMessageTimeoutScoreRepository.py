@@ -78,7 +78,10 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        await self.__userIdsRepository.setUser(userId = chatterUserId, userName = chatterUserName)
+        await self.__userIdsRepository.setUser(
+            userId = chatterUserId,
+            userName = chatterUserName
+        )
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(

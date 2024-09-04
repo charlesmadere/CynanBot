@@ -78,6 +78,7 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from .cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from .cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
@@ -235,6 +236,7 @@ class CynanBot(
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         cheerActionsWizard: CheerActionsWizardInterface | None,
+        crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         cutenessPresenter: CutenessPresenterInterface | None,
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
@@ -354,6 +356,8 @@ class CynanBot(
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cheerActionsWizard is not None and not isinstance(cheerActionsWizard, CheerActionsWizardInterface):
             raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
+        elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
+            raise TypeError(f'crowdControlCheerActionHelper argument is malformed: \"{crowdControlCheerActionHelper}\"')
         elif cutenessPresenter is not None and not isinstance(cutenessPresenter, CutenessPresenterInterface):
             raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
@@ -490,6 +494,7 @@ class CynanBot(
         self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None = crowdControlCheerActionHelper
         self.__cutenessPresenter: CutenessPresenterInterface | None = cutenessPresenter
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
@@ -845,6 +850,9 @@ class CynanBot(
         if self.__beanChanceCheerActionHelper is not None:
             self.__beanChanceCheerActionHelper.setTwitchChannelProvider(self)
 
+        if self.__crowdControlCheerActionHelper is not None:
+            self.__crowdControlCheerActionHelper.setTwitchChannelProvider(self)
+
         if self.__timeoutCheerActionHelper is not None:
             self.__timeoutCheerActionHelper.setTwitchChannelProvider(self)
 
@@ -1050,10 +1058,9 @@ class CynanBot(
         ))
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getCorrectAnswerReveal(
+        message = await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,
             celebratoryEmote = event.celebratoryTwitchEmote,
@@ -1061,7 +1068,15 @@ class CynanBot(
             userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,
             specialTriviaStatus = event.specialTriviaStatus
-        ))
+        )
+
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId
+        )
 
     async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
@@ -1083,25 +1098,37 @@ class CynanBot(
         ))
 
     async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getIncorrectAnswerReveal(
+        message = await self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             wrongAnswerEmote = event.wrongAnswerEmote,
             specialTriviaStatus = event.specialTriviaStatus
-        ))
+        )
 
-    async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getInvalidAnswerInputPrompt(
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId
+        )
+
+    async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
+        message = await self.__triviaUtils.getInvalidAnswerInputPrompt(
             question = event.triviaQuestion,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             specialTriviaStatus = event.specialTriviaStatus
-        ))
+        )
+
+        twitchChannel = await self.__getChannel(event.twitchChannel)
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId
+        )
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
@@ -1134,7 +1161,7 @@ class CynanBot(
         twitchChannel = await self.__getChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
+        message = await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,
             points = event.pointsForWinning,
@@ -1143,7 +1170,13 @@ class CynanBot(
             userName = event.userName,
             twitchUser = twitchUser,
             specialTriviaStatus = event.specialTriviaStatus
-        ))
+        )
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId
+        )
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,

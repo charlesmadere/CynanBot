@@ -43,6 +43,7 @@ class TwitchWebsocketEvent:
     fromBroadcasterUserLogin: str | None = None
     fromBroadcasterUserName: str | None = None
     message: str | None = None
+    messageId: str | None = None
     rewardId: str | None = None
     text: str | None = None
     title: str | None = None

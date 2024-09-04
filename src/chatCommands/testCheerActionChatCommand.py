@@ -65,6 +65,7 @@ class TestCheerActionChatCommand(AbsChatCommand):
                 cheerUserId = ctx.getAuthorId(),
                 cheerUserName = ctx.getAuthorName(),
                 message = ' '.join(splits),
+                twitchChatMessageId = await ctx.getMessageId(),
                 user = user
             )
         except Exception as e:

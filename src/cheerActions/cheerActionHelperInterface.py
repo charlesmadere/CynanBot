@@ -13,6 +13,7 @@ class CheerActionHelperInterface(ABC):
         cheerUserId: str,
         cheerUserName: str,
         message: str,
+        twitchChatMessageId: str | None,
         user: UserInterface
     ) -> bool:
         pass

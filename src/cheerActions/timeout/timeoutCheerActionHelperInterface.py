@@ -20,6 +20,7 @@ class TimeoutCheerActionHelperInterface(ABC):
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChatMessageId: str | None,
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:

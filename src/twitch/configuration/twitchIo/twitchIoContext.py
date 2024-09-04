@@ -6,6 +6,7 @@ from ..twitchAuthor import TwitchAuthor
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchContext import TwitchContext
 from ..twitchMessage import TwitchMessage
+from ..twitchMessageReplyData import TwitchMessageReplyData
 from ..twitchMessageable import TwitchMessageable
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -45,6 +46,15 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
 
     def getMessageContent(self) -> str | None:
         return self.__message.getContent()
+
+    async def getMessageId(self) -> str:
+        return await self.__message.getMessageId()
+
+    async def getMessageReplyData(self) -> TwitchMessageReplyData | None:
+        return await self.__message.getReplyData()
+
+    async def getMessageReplyId(self) -> str | None:
+        return await self.__message.getReplyMessageId()
 
     async def getTwitchChannelId(self) -> str:
         return await self.__message.getTwitchChannelId()

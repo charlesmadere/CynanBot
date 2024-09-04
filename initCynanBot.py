@@ -328,6 +328,8 @@ from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
+from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
@@ -1536,6 +1538,10 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ## Chat Actions initialization section ##
 #########################################
 
+activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+    timeZoneRepository = timeZoneRepository
+)
+
 catJamChatAction = CatJamChatAction(
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
@@ -1584,6 +1590,7 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = AnivCheckChatAction(
         anivContentScanner = anivContentScanner,
         anivUserIdProvider = anivUserIdProvider,
@@ -1666,6 +1673,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    crowdControlCheerActionHelper = None,
     cutenessPresenter = cutenessPresenter,
     cutenessRepository = cutenessRepository,
     cutenessUtils = cutenessUtils,

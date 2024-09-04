@@ -56,6 +56,7 @@ class AnswerChatCommand(AbsChatCommand):
             answer = answer,
             twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChatMessageId = await ctx.getMessageId(),
             userId = ctx.getAuthorId(),
             userName = ctx.getAuthorName()
         ))

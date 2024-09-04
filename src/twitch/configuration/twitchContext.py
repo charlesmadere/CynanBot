@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 from .twitchAuthor import TwitchAuthor
 from .twitchConfigurationType import TwitchConfigurationType
+from .twitchMessageReplyData import TwitchMessageReplyData
 from .twitchMessageable import TwitchMessageable
 
 
@@ -25,6 +26,18 @@ class TwitchContext(TwitchMessageable):
 
     @abstractmethod
     def getMessageContent(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getMessageId(self) -> str:
+        pass
+
+    @abstractmethod
+    async def getMessageReplyData(self) -> TwitchMessageReplyData | None:
+        pass
+
+    @abstractmethod
+    async def getMessageReplyId(self) -> str | None:
         pass
 
     @abstractmethod

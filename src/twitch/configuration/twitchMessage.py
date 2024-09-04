@@ -29,7 +29,15 @@ class TwitchMessage(ABC):
         pass
 
     @abstractmethod
+    async def getMessageId(self) -> str:
+        pass
+
+    @abstractmethod
     async def getReplyData(self) -> TwitchMessageReplyData | None:
+        pass
+
+    @abstractmethod
+    async def getReplyMessageId(self) -> str | None:
         pass
 
     @abstractmethod

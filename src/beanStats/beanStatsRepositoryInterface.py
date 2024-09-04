@@ -1,13 +1,12 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .chatterBeanStats import ChatterBeanStats
-from ..misc.clearable import Clearable
 
 
-class BeanStatsRepositoryInterface(Clearable):
+class BeanStatsRepositoryInterface(ABC):
 
     @abstractmethod
-    async def get(
+    async def getStats(
         self,
         chatterUserId: str,
         chatterUserName: str,
