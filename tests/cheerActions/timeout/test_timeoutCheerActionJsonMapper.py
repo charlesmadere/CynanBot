@@ -4,15 +4,11 @@ from typing import Any
 
 import pytest
 
-from src.cheerActions.timeout.timeoutCheerActionEntry import \
-    TimeoutCheerActionEntry
-from src.cheerActions.timeout.timeoutCheerActionJsonMapper import \
-    TimeoutCheerActionJsonMapper
-from src.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import \
-    TimeoutCheerActionJsonMapperInterface
+from src.cheerActions.timeout.timeoutCheerActionEntry import TimeoutCheerActionEntry
+from src.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
+from src.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
 from src.location.timeZoneRepository import TimeZoneRepository
-from src.location.timeZoneRepositoryInterface import \
-    TimeZoneRepositoryInterface
+from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
@@ -53,7 +49,7 @@ class TestTimeoutCheerActionJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_serializeTimeoutCheerActionEntriesToJsonString(self):
+    async def test_serializeTimeoutCheerActionEntriesToJsonString_with1Entry(self):
         entry = TimeoutCheerActionEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
             bitAmount = 100,
@@ -61,13 +57,9 @@ class TestTimeoutCheerActionJsonMapper:
             timedOutByUserId = 'abc123'
         )
 
-        entries: list[TimeoutCheerActionEntry] = list()
-        entries.append(entry)
-
+        entries: list[TimeoutCheerActionEntry] = [ entry ]
         jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
         assert isinstance(jsonString, str)
-        assert len(jsonString) != 0
-        assert jsonString.isspace() is False
 
         jsonList: list[dict[str, Any]] = json.loads(jsonString)
         assert isinstance(jsonList, list)
@@ -76,6 +68,42 @@ class TestTimeoutCheerActionJsonMapper:
         jsonEntry = jsonList[0]
         assert isinstance(jsonEntry, dict)
         assert len(jsonEntry) == 4
+
+        assert jsonEntry['bitAmount'] == entry.bitAmount
+        assert jsonEntry['durationSeconds'] == entry.durationSeconds
+        assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
+        assert jsonEntry['timedOutByUserId'] == entry.timedOutByUserId
+
+    @pytest.mark.asyncio
+    async def test_serializeTimeoutCheerActionEntriesToJsonString_with2Entries(self):
+        entry = TimeoutCheerActionEntry(
+            timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
+            bitAmount = 50,
+            durationSeconds = 60,
+            timedOutByUserId = 'abc123'
+        )
+
+        entries: list[TimeoutCheerActionEntry] = [ entry, entry ]
+        jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
+        assert isinstance(jsonString, str)
+
+        jsonList: list[dict[str, Any]] = json.loads(jsonString)
+        assert isinstance(jsonList, list)
+        assert len(jsonList) == 2
+
+        jsonEntry = jsonList[0]
+        assert isinstance(jsonEntry, dict)
+        assert len(jsonEntry) == 4
+
+        assert jsonEntry['bitAmount'] == entry.bitAmount
+        assert jsonEntry['durationSeconds'] == entry.durationSeconds
+        assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
+        assert jsonEntry['timedOutByUserId'] == entry.timedOutByUserId
+
+        jsonEntry = jsonList[1]
+        assert isinstance(jsonEntry, dict)
+        assert len(jsonEntry) == 4
+
         assert jsonEntry['bitAmount'] == entry.bitAmount
         assert jsonEntry['durationSeconds'] == entry.durationSeconds
         assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
@@ -105,6 +133,7 @@ class TestTimeoutCheerActionJsonMapper:
         result = await self.jsonMapper.serializeTimeoutCheerActionEntry(entry)
         assert isinstance(result, dict)
         assert len(result) == 4
+
         assert result['bitAmount'] == 50
         assert result['durationSeconds'] == 120
         assert result['timedOutAtDateTime'] == now.isoformat()
