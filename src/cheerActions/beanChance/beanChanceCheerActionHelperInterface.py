@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-
-from frozenlist import FrozenList
+from typing import Collection
 
 from ..absCheerAction import AbsCheerAction
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
@@ -12,7 +11,7 @@ class BeanChanceCheerActionHelperInterface(ABC):
     @abstractmethod
     async def handleBeanChanceCheerAction(
         self,
-        actions: FrozenList[AbsCheerAction],
+        actions: Collection[AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,

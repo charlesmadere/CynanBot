@@ -12,7 +12,8 @@ class TestBeanStatsPresenter:
     @pytest.mark.asyncio
     async def test_toString_with0Successes0FailsStats(self):
         beanStats = ChatterBeanStats(
-            mostRecentBean = None,
+            mostRecentFail = None,
+            mostRecentSuccess = None,
             failedBeanAttempts = 0,
             successfulBeans = 0,
             chatterUserId = 'abc123',

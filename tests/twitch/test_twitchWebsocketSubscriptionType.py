@@ -36,6 +36,10 @@ class TestTwitchWebsocketSubscriptionType:
         result = TwitchWebsocketSubscriptionType.fromStr('channel.prediction.progress')
         assert result is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
 
+    def test_fromStr_withChannelChatMessageString(self):
+        result = TwitchWebsocketSubscriptionType.fromStr('channel.chat.message')
+        assert result is TwitchWebsocketSubscriptionType.CHAT_MESSAGE
+
     def test_fromStr_withChannelCheerString(self):
         result = TwitchWebsocketSubscriptionType.fromStr('channel.cheer')
         assert result is TwitchWebsocketSubscriptionType.CHEER
@@ -112,6 +116,10 @@ class TestTwitchWebsocketSubscriptionType:
         version = TwitchWebsocketSubscriptionType.CHANNEL_UPDATE.getVersion()
         assert version == '2'
 
+    def test_getVersion_withChatMessage(self):
+        version = TwitchWebsocketSubscriptionType.CHAT_MESSAGE.getVersion()
+        assert version == '1'
+
     def test_getVersion_withCheer(self):
         version = TwitchWebsocketSubscriptionType.CHEER.getVersion()
         assert version == '1'
@@ -167,6 +175,10 @@ class TestTwitchWebsocketSubscriptionType:
     def test_toStr_withChannelPredictionProgress(self):
         string = TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS.toStr()
         assert string == 'channel.prediction.progress'
+
+    def test_fromStr_withChatMessage(self):
+        result = TwitchWebsocketSubscriptionType.CHAT_MESSAGE.toStr()
+        assert result == 'channel.chat.message'
 
     def test_toStr_withCheer(self):
         string = TwitchWebsocketSubscriptionType.CHEER.toStr()

@@ -6,7 +6,8 @@ from datetime import datetime
 
 @dataclass(frozen = True)
 class ChatterBeanStats:
-    mostRecentBean: datetime | None
+    mostRecentFail: datetime | None
+    mostRecentSuccess: datetime | None
     failedBeanAttempts: int
     successfulBeans: int
     chatterUserId: str

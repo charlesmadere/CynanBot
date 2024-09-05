@@ -4,7 +4,7 @@ class TwitchIoHasMalformedTagsException(Exception):
         super().__init__(message)
 
 
-class TwitchIoTagsIsMissingMsgIdException(Exception):
+class TwitchIoTagsIsMissingMessageIdException(Exception):
 
     def __init__(self, message: str):
         super().__init__(message)

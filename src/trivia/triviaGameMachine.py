@@ -550,7 +550,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             actionId = action.actionId,
             eventId = await self.__triviaIdGenerator.generateEventId(),
             twitchChannel = action.twitchChannel,
-            twitchChannelId = action.twitchChannelId
+            twitchChannelId = action.twitchChannelId,
+            twitchChatMessageId = action.twitchChatMessageId
         ))
 
     async def __handleActionStartNewTriviaGame(self, action: StartNewTriviaGameAction):

@@ -5,6 +5,6 @@ from typing import Any
 
 @dataclass(frozen = True)
 class ActiveChatter:
-    mostRecentMessage: datetime
+    mostRecentChat: datetime
     chatterUserId: str
     chatterUserName: str

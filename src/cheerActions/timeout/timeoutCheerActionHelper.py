@@ -1,7 +1,6 @@
 import random
 from datetime import datetime, timedelta
-
-from frozenlist import FrozenList
+from typing import Collection
 
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
@@ -83,7 +82,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def handleTimeoutCheerAction(
         self,
-        actions: FrozenList[AbsCheerAction],
+        actions: Collection[AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -95,7 +94,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not isinstance(actions, FrozenList):
+        if not isinstance(actions, Collection):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
         elif not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')

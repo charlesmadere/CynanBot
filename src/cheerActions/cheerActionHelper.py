@@ -1,6 +1,7 @@
 from .beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from .timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from ..misc import utils as utils
@@ -17,6 +18,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self,
         beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface,
+        crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timber: TimberInterface,
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
@@ -28,6 +30,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
+            raise TypeError(f'crowdControlCheerActionHelper argument is malformed: \"{crowdControlCheerActionHelper}\"')
         elif soundAlertCheerActionHelper is not None and not isinstance(soundAlertCheerActionHelper, SoundAlertCheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
@@ -43,6 +47,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None = crowdControlCheerActionHelper
         self.__soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = soundAlertCheerActionHelper
         self.__timber: TimberInterface = timber
         self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper

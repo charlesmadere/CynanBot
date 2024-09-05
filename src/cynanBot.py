@@ -1053,9 +1053,15 @@ class CynanBot(
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
+        message = await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
             numberOfGamesRemoved = event.numberOfGamesRemoved
-        ))
+        )
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId
+        )
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)

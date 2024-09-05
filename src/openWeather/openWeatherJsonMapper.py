@@ -2,6 +2,7 @@ from datetime import datetime, tzinfo
 from typing import Any
 
 from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
 from .openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
@@ -187,16 +188,11 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         pressure = utils.getIntFromDict(jsonContents, 'pressure')
         summary = utils.getStrFromDict(jsonContents, 'summary')
 
-        feelsLike = await self.parseFeelsLike(jsonContents.get('feels_like'))
-        if feelsLike is None:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"feels_like\" field in JSON data: ({jsonContents=})')
-            return None
-
         descriptionsArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
-        descriptions: list[OpenWeatherMomentDescription] | None = None
+        descriptions: FrozenList[OpenWeatherMomentDescription] | None = None
 
         if isinstance(descriptionsArray, list) and len(descriptionsArray) >= 1:
-            descriptions = list()
+            descriptions = FrozenList()
 
             for index, descriptionEntryJson in enumerate(descriptionsArray):
                 description = await self.parseMomentDescription(descriptionEntryJson)
@@ -205,6 +201,13 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
                     self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"weather\" field in JSON data: ({jsonContents=})')
                 else:
                     descriptions.append(description)
+
+            descriptions.freeze()
+
+        feelsLike = await self.parseFeelsLike(jsonContents.get('feels_like'))
+        if feelsLike is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"feels_like\" field in JSON data: ({jsonContents=})')
+            return None
 
         temperature = await self.parseTemperature(jsonContents.get('temp'))
         if temperature is None:
@@ -221,9 +224,9 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             moonPhase = moonPhase,
             uvIndex = uvIndex,
             windSpeed = windSpeed,
+            descriptions = descriptions,
             humidity = humidity,
             pressure = pressure,
-            descriptions = descriptions,
             feelsLike = feelsLike,
             temperature = temperature,
             summary = summary

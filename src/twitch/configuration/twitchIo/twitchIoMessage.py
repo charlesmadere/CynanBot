@@ -1,16 +1,17 @@
 from typing import Any
 
+from frozendict import frozendict
 from twitchio import Message
 
-from .exceptions import TwitchIoHasMalformedTagsException, TwitchIoTagsIsMissingRoomIdException, \
-    TwitchIoTagsIsMissingMsgIdException
+from .exceptions import TwitchIoHasMalformedTagsException, TwitchIoTagsIsMissingMessageIdException, \
+    TwitchIoTagsIsMissingRoomIdException
 from .twitchIoAuthor import TwitchIoAuthor
 from .twitchIoChannel import TwitchIoChannel
 from ..twitchAuthor import TwitchAuthor
 from ..twitchChannel import TwitchChannel
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchMessage import TwitchMessage
-from ..twitchMessageReplyData import TwitchMessageReplyData
+from ..twitchMessageTags import TwitchMessageTags
 from ....misc import utils as utils
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -37,7 +38,7 @@ class TwitchIoMessage(TwitchMessage):
         self.__checkedForReplyData: bool = False
         self.__messageId: str | None = None
         self.__twitchChannelId: str | None = None
-        self.__replyData: TwitchMessageReplyData | None = None
+        self.__tags: TwitchMessageTags | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -55,70 +56,46 @@ class TwitchIoMessage(TwitchMessage):
         return self.__message.content
 
     async def getMessageId(self) -> str:
-        messageId = self.__messageId
+        tags = await self.getTags()
+        return tags.messageId
 
-        if messageId is not None:
-            return messageId
+    async def getTags(self) -> TwitchMessageTags:
+        tags = self.__tags
 
-        tags = await self.__requireTags()
-        messageId = tags.get('id', None)
+        if tags is not None:
+            return tags
 
-        if not isinstance(messageId, str) or not utils.isValidStr(messageId):
-            raise TwitchIoTagsIsMissingMsgIdException(f'Encountered malformed messageId ({messageId=}) value when trying to retrieve \"id\" from tags ({tags=}) ({self=})')
+        rawTagsDictionary = await self.__requireRawTagsDictionary()
 
-        self.__messageId = messageId
-        return messageId
+        messageId: str | Any | None = rawTagsDictionary.get('id', None)
+        if not utils.isValidStr(messageId):
+            raise TwitchIoTagsIsMissingMessageIdException(f'Twitch message tags are missing \"id\" value ({messageId=}) ({tags=})')
 
-    async def getReplyData(self) -> TwitchMessageReplyData | None:
-        if self.__checkedForReplyData:
-            return self.__replyData
+        roomId: str | Any | None = rawTagsDictionary.get('room-id', None)
+        if not utils.isValidStr(roomId):
+            raise TwitchIoTagsIsMissingRoomIdException(f'Twitch message tags are missing \"room-id\" value ({roomId=}) ({tags=})')
 
-        self.__checkedForReplyData = True
-        tags = await self.__requireTags()
+        replyParentMsgBody: str | Any | None = rawTagsDictionary.get('reply-parent-msg-body', None)
+        replyParentMsgId: str | Any | None = rawTagsDictionary.get('reply-parent-msg-id', None)
+        replyParentUserId: str | Any | None = rawTagsDictionary.get('reply-parent-user-id', None)
+        replyParentUserLogin: str | Any | None = rawTagsDictionary.get('reply-parent-user-login', None)
 
-        replyParentMsgBody: str | Any | None = tags.get('reply-parent-msg-body', None)
-        replyParentMsgId: str | Any | None = tags.get('reply-parent-msg-id', None)
-        replyParentUserId: str | Any | None = tags.get('reply-parent-user-id', None)
-        replyParentUserLogin: str | Any | None = tags.get('reply-parent-user-login', None)
-
-        if not utils.isValidStr(replyParentMsgBody) \
-                or not utils.isValidStr(replyParentMsgId) \
-                or not utils.isValidStr(replyParentUserId) \
-                or not utils.isValidStr(replyParentUserLogin):
-            return None
-
-        replyData = TwitchMessageReplyData(
-            msgBody = replyParentMsgBody,
-            msgId = replyParentMsgId,
-            userId = replyParentUserId,
-            userLogin = replyParentUserLogin
+        tags = TwitchMessageTags(
+            rawTags = frozendict(rawTagsDictionary),
+            messageId = messageId,
+            replyParentMsgBody = replyParentMsgBody,
+            replyParentMsgId = replyParentMsgId,
+            replyParentUserId = replyParentUserId,
+            replyParentUserLogin = replyParentUserLogin,
+            twitchChannelId = roomId
         )
 
-        self.__replyData = replyData
-        return replyData
-
-    async def getReplyMessageId(self) -> str | None:
-        replyData = await self.getReplyData()
-
-        if replyData is None:
-            return None
-        else:
-            return replyData.msgId
+        self.__tags = tags
+        return tags
 
     async def getTwitchChannelId(self) -> str:
-        twitchChannelId = self.__twitchChannelId
-
-        if twitchChannelId is not None:
-            return twitchChannelId
-
-        tags = await self.__requireTags()
-        twitchChannelId = tags.get('room-id', None)
-
-        if not isinstance(twitchChannelId, str) or not utils.isValidStr(twitchChannelId):
-            raise TwitchIoTagsIsMissingRoomIdException(f'Encountered malformed twitchChannelId ({twitchChannelId=}) value when trying to retrieve \"room-id\" from tags ({tags=}) ({self=})')
-
-        self.__twitchChannelId = twitchChannelId
-        return twitchChannelId
+        tags = await self.getTags()
+        return tags.twitchChannelId
 
     def getTwitchChannelName(self) -> str:
         return self.__channel.getTwitchChannelName()
@@ -128,9 +105,10 @@ class TwitchIoMessage(TwitchMessage):
         return self.__message.echo
 
     async def isReply(self) -> bool:
-        return await self.getReplyData() is not None
+        tags = await self.getTags()
+        return utils.isValidStr(tags.replyParentMsgId)
 
-    async def __requireTags(self) -> dict[Any, Any]:
+    async def __requireRawTagsDictionary(self) -> dict[Any, Any]:
         tags: dict[Any, Any] | Any | None = self.__message.tags
 
         if not isinstance(tags, dict) or len(tags) == 0:

@@ -1,4 +1,5 @@
 import traceback
+from typing import Collection
 
 from frozenlist import FrozenList
 
@@ -250,7 +251,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         return None
 
-    async def getActions(self, twitchChannelId: str) -> FrozenList[AbsCheerAction]:
+    async def getActions(self, twitchChannelId: str) -> Collection[AbsCheerAction]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 

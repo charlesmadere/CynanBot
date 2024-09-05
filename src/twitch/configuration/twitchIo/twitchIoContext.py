@@ -6,7 +6,7 @@ from ..twitchAuthor import TwitchAuthor
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchContext import TwitchContext
 from ..twitchMessage import TwitchMessage
-from ..twitchMessageReplyData import TwitchMessageReplyData
+from ..twitchMessageTags import TwitchMessageTags
 from ..twitchMessageable import TwitchMessageable
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -24,13 +24,15 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__context: Context = context
-        self.__author: TwitchAuthor = TwitchIoAuthor(context.author)
+
+        self.__author: TwitchAuthor = TwitchIoAuthor(
+            author = context.author
+        )
+
         self.__message: TwitchMessage = TwitchIoMessage(
             message = context.message,
             userIdsRepository = userIdsRepository
         )
-
-        self.__twitchChannelId: str | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -50,11 +52,8 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     async def getMessageId(self) -> str:
         return await self.__message.getMessageId()
 
-    async def getMessageReplyData(self) -> TwitchMessageReplyData | None:
-        return await self.__message.getReplyData()
-
-    async def getMessageReplyId(self) -> str | None:
-        return await self.__message.getReplyMessageId()
+    async def getMessageTags(self) -> TwitchMessageTags:
+        return await self.__message.getTags()
 
     async def getTwitchChannelId(self) -> str:
         return await self.__message.getTwitchChannelId()

@@ -60,7 +60,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         activeChatter = ActiveChatter(
-            mostRecentMessage = now,
+            mostRecentChat = now,
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName
         )
@@ -77,14 +77,14 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         now: datetime,
         activeChatters: list[ActiveChatter]
     ):
-        activeChatters.sort(key = lambda element: element.mostRecentMessage, reverse = True)
+        activeChatters.sort(key = lambda element: element.mostRecentChat, reverse = True)
 
         while len(activeChatters) > self.__maxActiveChattersSize:
             del activeChatters[len(activeChatters) - 1]
 
         index = len(activeChatters) - 1
 
-        while index >= 0 and activeChatters[index].mostRecentMessage + self.__maxActiveChattersTimeToLive < now:
+        while index >= 0 and activeChatters[index].mostRecentChat + self.__maxActiveChattersTimeToLive < now:
             del activeChatters[index]
             index = index - 1
 

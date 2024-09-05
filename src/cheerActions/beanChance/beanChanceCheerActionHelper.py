@@ -1,4 +1,4 @@
-from frozenlist import FrozenList
+from typing import Collection
 
 from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
@@ -23,7 +23,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
     async def handleBeanChanceCheerAction(
         self,
-        actions: FrozenList[AbsCheerAction],
+        actions: Collection[AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,

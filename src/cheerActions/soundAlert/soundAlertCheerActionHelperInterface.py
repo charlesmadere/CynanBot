@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-
-from frozenlist import FrozenList
+from typing import Collection
 
 from ..absCheerAction import AbsCheerAction
 from ...users.userInterface import UserInterface
@@ -11,7 +10,7 @@ class SoundAlertCheerActionHelperInterface(ABC):
     @abstractmethod
     async def handleSoundAlertCheerAction(
         self,
-        actions: FrozenList[AbsCheerAction],
+        actions: Collection[AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,

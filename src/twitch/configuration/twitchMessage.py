@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .twitchAuthor import TwitchAuthor
 from .twitchChannel import TwitchChannel
 from .twitchConfigurationType import TwitchConfigurationType
-from .twitchMessageReplyData import TwitchMessageReplyData
+from .twitchMessageTags import TwitchMessageTags
 
 
 class TwitchMessage(ABC):
@@ -33,11 +33,7 @@ class TwitchMessage(ABC):
         pass
 
     @abstractmethod
-    async def getReplyData(self) -> TwitchMessageReplyData | None:
-        pass
-
-    @abstractmethod
-    async def getReplyMessageId(self) -> str | None:
+    async def getTags(self) -> TwitchMessageTags:
         pass
 
     @abstractmethod
