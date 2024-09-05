@@ -116,8 +116,8 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         self.__caches[twitchChannelId][chatterUserId] = TimeoutCheerActionHistory(
             totalTimeouts = totalTimeouts,
             entries = frozenHistoryEntries,
-            chatterUserId = history.chatterUserId,
-            twitchChannel = history.twitchChannel,
+            chatterUserId = chatterUserId,
+            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
