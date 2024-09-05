@@ -26,30 +26,32 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: list[dict[str, Any] | Any | None] | Any | None
+        jsonList: list[dict[str, Any] | Any | None] | Any | None
 
         try:
-            jsonContents = json.loads(jsonString)
+            jsonList = json.loads(jsonString)
         except JSONDecodeError as e:
             self.__timber.log('TimeoutCheerActionJsonMapper', f'Encountered JSON decode exception when parsing timeout cheer action entries string into JSON ({jsonString=}): {e}', e, traceback.format_exc())
             return None
 
+        if not isinstance(jsonList, list) or len(jsonList) == 0:
+            return None
+
         entries: list[TimeoutCheerActionEntry] = list()
 
-        if isinstance(jsonContents, list) and len(jsonContents) >= 1:
-            for index, entryJson in enumerate(jsonContents):
-                entry = await self.parseTimeoutCheerActionEntry(entryJson)
+        for index, entryJson in enumerate(jsonList):
+            entry = await self.parseTimeoutCheerActionEntry(entryJson)
 
-                if entry is None:
-                    self.__timber.log('TimeoutCheerActionJsonMapper', f'Unable to parse timeout cheer action entry value at index {index}: ({entryJson=})')
-                else:
-                    entries.append(entry)
+            if entry is None:
+                self.__timber.log('TimeoutCheerActionJsonMapper', f'Unable to parse timeout cheer action entry value at index {index}: ({entryJson=})')
+            else:
+                entries.append(entry)
 
         if len(entries) == 0:
             return None
 
         entries.sort(key = lambda entry: entry.timedOutAtDateTime, reverse = True)
-        frozenEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList()
+        frozenEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList(entries)
         frozenEntries.freeze()
 
         return frozenEntries

@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 
+from frozenlist import FrozenList
 from src.cheerActions.timeout.timeoutCheerActionEntry import TimeoutCheerActionEntry
 from src.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
 from src.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
@@ -22,6 +23,27 @@ class TestTimeoutCheerActionJsonMapper:
     jsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutCheerActionJsonMapper(
         timber = timber
     )
+
+    @pytest.mark.asyncio
+    async def test_parseTimeoutCheerActionEntriesString_with1Entry(self):
+        entry = TimeoutCheerActionEntry(
+            timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
+            bitAmount = 100,
+            durationSeconds = 60,
+            timedOutByUserId = 'abc123'
+        )
+
+        entries: list[TimeoutCheerActionEntry] = [ entry ]
+        jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
+        assert isinstance(jsonString, str)
+
+        result = await self.jsonMapper.parseTimeoutCheerActionEntriesString(jsonString)
+        assert isinstance(result, FrozenList)
+        assert len(result) == 1
+
+        newEntry = result[0]
+        assert isinstance(newEntry, TimeoutCheerActionEntry)
+        assert newEntry == entry
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntriesString_withEmptyString(self):
