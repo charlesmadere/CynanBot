@@ -840,6 +840,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
+    crowdControlCheerActionHelper = None,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
