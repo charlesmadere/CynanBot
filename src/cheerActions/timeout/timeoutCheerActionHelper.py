@@ -112,7 +112,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
-        elif twitchChatMessageId is None and not isinstance(twitchChatMessageId, str):
+        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
@@ -344,7 +344,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif twitchChatMessageId is None and not isinstance(twitchChatMessageId, str):
+        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
