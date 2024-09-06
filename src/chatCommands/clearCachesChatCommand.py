@@ -7,7 +7,11 @@ from ..cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSet
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
+from ..cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import \
+    TimeoutCheerActionSettingsRepositoryInterface
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
+from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
+from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from ..funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -18,12 +22,16 @@ from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from ..storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
+from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
@@ -45,8 +53,10 @@ class ClearCachesChatCommand(AbsChatCommand):
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
+        bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
+        crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
@@ -54,12 +64,16 @@ class ClearCachesChatCommand(AbsChatCommand):
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
+        psqlCredentialsProvider: PsqlCredentialsProviderInterface | None,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
+        timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
+        triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface | None,
+        ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepository | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface | None,
@@ -80,10 +94,14 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+        elif bizhawkSettingsRepository is not None and not isinstance(bizhawkSettingsRepository, BizhawkSettingsRepositoryInterface):
+            raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
         elif cheerActionSettingsRepository is not None and not isinstance(cheerActionSettingsRepository, CheerActionSettingsRepositoryInterface):
             raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif crowdControlSettingsRepository is not None and not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
+            raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -98,6 +116,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseSessionTokenRepository is not None and not isinstance(openTriviaDatabaseSessionTokenRepository, OpenTriviaDatabaseSessionTokenRepositoryInterface):
             raise TypeError(f'openTriviaDatabaseSessionTokenRepository argument is malformed: \"{openTriviaDatabaseSessionTokenRepository}\"')
+        elif psqlCredentialsProvider is not None and not isinstance(psqlCredentialsProvider, PsqlCredentialsProviderInterface):
+            raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
         elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -108,8 +128,14 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif timeoutCheerActionHistoryRepository is not None and not isinstance(timeoutCheerActionHistoryRepository, TimeoutCheerActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
+        elif timeoutCheerActionSettingsRepository is not None and not isinstance(timeoutCheerActionSettingsRepository, TimeoutCheerActionSettingsRepositoryInterface):
+            raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutCheerActionSettingsRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif triviaTwitchEmoteHelper is not None and not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
+            raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
+        elif ttsMonsterApiTokensRepository is not None and not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
+            raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
@@ -140,8 +166,10 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(anivSettingsRepository)
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)
+        self.__clearables.append(bizhawkSettingsRepository)
         self.__clearables.append(cheerActionSettingsRepository)
         self.__clearables.append(cheerActionsRepository)
+        self.__clearables.append(crowdControlSettingsRepository)
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(isLiveOnTwitchRepository)
@@ -149,11 +177,15 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(mostRecentAnivMessageRepository)
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseSessionTokenRepository)
+        self.__clearables.append(psqlCredentialsProvider)
         self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(supStreamerRepository)
         self.__clearables.append(timeoutCheerActionHistoryRepository)
+        self.__clearables.append(timeoutCheerActionSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
+        self.__clearables.append(triviaTwitchEmoteHelper)
+        self.__clearables.append(ttsMonsterApiTokensRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchFollowingStatusRepository)
         self.__clearables.append(twitchTokensRepository)
@@ -163,6 +195,14 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(websocketConnectionServer)
         self.__clearables.append(wordOfTheDayRepository)
         self.__clearables.freeze()
+
+        badIndices: list[int] = list()
+        for index, clearable in enumerate(self.__clearables):
+            if clearable is not None and not isinstance(clearable, Clearable):
+                badIndices.append(index)
+
+        if len(badIndices) >= 1:
+            raise TypeError(f'Encountered {len(badIndices)} instance(s) in clearables list that aren\'t Clearable: {badIndices}')
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

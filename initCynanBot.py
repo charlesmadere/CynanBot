@@ -16,6 +16,10 @@ from src.aniv.mostRecentAnivMessageRepository import MostRecentAnivMessageReposi
 from src.aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
 from src.aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from src.beanStats.beanStatsPresenter import BeanStatsPresenter
+from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
+from src.beanStats.beanStatsRepository import BeanStatsRepository
+from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.catJamChatAction import CatJamChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
@@ -173,6 +177,7 @@ from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
 from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
@@ -428,13 +433,17 @@ generalSettingsRepository = GeneralSettingsRepository(
 generalSettingsSnapshot = generalSettingsRepository.getAll()
 
 backingDatabase: BackingDatabase
+psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
+
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
+        psqlCredentialsProvider = PsqlCredentialsProvider(
+            credentialsJsonReader = JsonFileReader('psqlCredentials.json')
+        )
+
         backingDatabase = BackingPsqlDatabase(
             eventLoop = eventLoop,
-            psqlCredentialsProvider = PsqlCredentialsProvider(
-                credentialsJsonReader = JsonFileReader('psqlCredentials.json')
-            ),
+            psqlCredentialsProvider = psqlCredentialsProvider,
             timber = timber
         )
 
@@ -1307,6 +1316,20 @@ recurringActionsWizard: RecurringActionsWizardInterface = RecurringActionsWizard
 )
 
 
+#################################
+## Bean initialization section ##
+#################################
+
+beanStatsPresenter: BeanStatsPresenterInterface = BeanStatsPresenter()
+
+beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    userIdsRepository = userIdsRepository
+)
+
+
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -1667,6 +1690,9 @@ cynanBot = CynanBot(
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    beanStatsPresenter = beanStatsPresenter,
+    beanStatsRepository = beanStatsRepository,
+    bizhawkSettingsRepository = None,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
@@ -1674,7 +1700,10 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    crowdControlActionHandler = None,
     crowdControlCheerActionHelper = None,
+    crowdControlMachine = None,
+    crowdControlSettingsRepository = None,
     cutenessPresenter = cutenessPresenter,
     cutenessRepository = cutenessRepository,
     cutenessUtils = cutenessUtils,
@@ -1691,6 +1720,7 @@ cynanBot = CynanBot(
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     pokepediaRepository = pokepediaRepository,
+    psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
     recurringActionsRepository = recurringActionsRepository,
@@ -1705,6 +1735,7 @@ cynanBot = CynanBot(
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
+    timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,
     triviaBanHelper = triviaBanHelper,
@@ -1718,8 +1749,10 @@ cynanBot = CynanBot(
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
+    triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     triviaUtils = triviaUtils,
     ttsJsonMapper = ttsJsonMapper,
+    ttsMonsterApiTokensRepository = None,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

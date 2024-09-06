@@ -16,6 +16,10 @@ from src.aniv.mostRecentAnivMessageRepository import MostRecentAnivMessageReposi
 from src.aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
 from src.aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from src.beanStats.beanStatsPresenter import BeanStatsPresenter
+from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
+from src.beanStats.beanStatsRepository import BeanStatsRepository
+from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
@@ -52,6 +56,14 @@ from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
+from src.crowdControl.bizhawk.bizhawkActionHandler import BizhawkActionHandler
+from src.crowdControl.bizhawk.bizhawkKeyMapper import BizhawkKeyMapper
+from src.crowdControl.bizhawk.bizhawkKeyMapperInterface import BizhawkKeyMapperInterface
+from src.crowdControl.bizhawk.bizhawkSettingsRepository import BizhawkSettingsRepository
+from src.crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
+from src.crowdControl.crowdControlActionHandler import CrowdControlActionHandler
+from src.crowdControl.crowdControlSettingsRepository import CrowdControlSettingsRepository
+from src.crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from src.cynanBot import CynanBot
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
@@ -119,6 +131,7 @@ from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
 from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
@@ -161,6 +174,8 @@ from src.tts.ttsManager import TtsManager
 from src.tts.ttsManagerInterface import TtsManagerInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
+from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -260,13 +275,17 @@ generalSettingsRepository = GeneralSettingsRepository(
 generalSettingsSnapshot = generalSettingsRepository.getAll()
 
 backingDatabase: BackingDatabase
+psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
+
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
+        psqlCredentialsProvider = PsqlCredentialsProvider(
+            credentialsJsonReader = JsonFileReader('psqlCredentials.json')
+        )
+
         backingDatabase = BackingPsqlDatabase(
             eventLoop = eventLoop,
-            psqlCredentialsProvider = PsqlCredentialsProvider(
-                credentialsJsonReader = JsonFileReader('psqlCredentials.json')
-            ),
+            psqlCredentialsProvider = psqlCredentialsProvider,
             timber = timber
         )
 
@@ -608,6 +627,20 @@ if generalSettingsSnapshot.isEventSubEnabled():
     )
 
 
+#################################
+## Bean initialization section ##
+#################################
+
+beanStatsPresenter: BeanStatsPresenterInterface = BeanStatsPresenter()
+
+beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    userIdsRepository = userIdsRepository
+)
+
+
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -703,6 +736,11 @@ googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
+ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
 ttsManager: TtsManagerInterface | None = TtsManager(
     decTalkManager = decTalkManager,
     googleTtsManager = googleTtsManager,
@@ -757,6 +795,29 @@ if mostRecentAnivMessageRepository is not None:
         twitchTokensRepository = twitchTokensRepository,
         twitchUtils = twitchUtils
     )
+
+
+##########################################
+## Crowd Control initialization section ##
+##########################################
+
+bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
+    timber = timber
+)
+
+bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsRepository(
+    bizhawkKeyMapper = bizhawkKeyMapper,
+    settingsJsonReader = JsonFileReader('bizhawkSettingsRepository.json')
+)
+
+crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
+    settingsJsonReader = JsonFileReader('crowdControlSettingsRepository.json')
+)
+
+crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
+    bizhawkSettingsRepository = bizhawkSettingsRepository,
+    timber = timber
+)
 
 
 ##################################################
@@ -957,6 +1018,9 @@ cynanBot = CynanBot(
     bannedTriviaGameControllersRepository = None,
     bannedWordsRepository = bannedWordsRepository,
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    beanStatsPresenter = beanStatsPresenter,
+    beanStatsRepository = beanStatsRepository,
+    bizhawkSettingsRepository = bizhawkSettingsRepository,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
@@ -964,7 +1028,10 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    crowdControlActionHandler = crowdControlActionHandler,
     crowdControlCheerActionHelper = None,
+    crowdControlMachine = None,
+    crowdControlSettingsRepository = None,
     cutenessPresenter = None,
     cutenessRepository = None,
     cutenessUtils = None,
@@ -981,6 +1048,7 @@ cynanBot = CynanBot(
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = None,
     pokepediaRepository = None,
+    psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsHelper = None,
     recurringActionsMachine = None,
     recurringActionsRepository = None,
@@ -995,6 +1063,7 @@ cynanBot = CynanBot(
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
+    timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,
     triviaBanHelper = None,
@@ -1008,8 +1077,10 @@ cynanBot = CynanBot(
     triviaRepository = None,
     triviaScoreRepository = None,
     triviaSettingsRepository = None,
+    triviaTwitchEmoteHelper = None,
     triviaUtils = None,
     ttsJsonMapper = ttsJsonMapper,
+    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

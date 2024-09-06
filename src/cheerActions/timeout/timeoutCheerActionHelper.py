@@ -448,7 +448,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         )
 
-        await self.__send(twitchChannel, f'RIPBOZO @{userNameToTimeout} RIPBOZO')
+        if isReverse:
+            await self.__send(twitchChannel, f'Uh oh, @{userNameToTimeout} got hit with a reverse! RIPBOZO')
+        else:
+            await self.__send(twitchChannel, f'RIPBOZO @{userNameToTimeout} RIPBOZO', twitchChatMessageId)
+
         return True
 
     async def __tts(
@@ -466,7 +470,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         message: str
         if isReverse:
-            message = f'Uh oh! {cheerUserName} got themselves timed out for {action.durationSeconds}! rip bozo!'
+            message = f'Oh no, whoops! {cheerUserName} got themselves timed out for {action.durationSeconds}! That\'s a rip bozo!'
         else:
             message = f'{cheerUserName} timed out {userNameToTimeout} for {action.durationSecondsStr} seconds! rip bozo!'
 

@@ -7,13 +7,17 @@ from .multipleChoicePokepediaTriviaQuestion import MultipleChoicePokepediaTrivia
 from .pokepediaTriviaQuestion import PokepediaTriviaQuestion
 from .pokepediaTriviaQuestionGeneratorInterface import PokepediaTriviaQuestionGeneratorInterface
 from .pokepediaTriviaQuestionType import PokepediaTriviaQuestionType
+from ...questions.triviaQuestionType import TriviaQuestionType
 from ...triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ....misc import utils as utils
 from ....pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
 from ....pkmn.pokepediaContestType import PokepediaContestType
+from ....pkmn.pokepediaDamageClass import PokepediaDamageClass
 from ....pkmn.pokepediaElementType import PokepediaElementType
 from ....pkmn.pokepediaGeneration import PokepediaGeneration
 from ....pkmn.pokepediaMachineType import PokepediaMachineType
+from ....pkmn.pokepediaMove import PokepediaMove
+from ....pkmn.pokepediaNature import PokepediaNature
 from ....pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from ....timber.timberInterface import TimberInterface
 
@@ -61,7 +65,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         for falseContestType in falseContestTypes:
             falseContestTypeStrs.append(falseContestType.toStr())
 
-        falseContestTypeStrs.sort(key = lambda falseContestType: falseContestTypes.casefold())
+        falseContestTypeStrs.sort(key = lambda falseContestType: falseContestType.casefold())
         frozenFalseContestTypeStrs: FrozenList[str] = FrozenList(falseContestTypeStrs)
         frozenFalseContestTypeStrs.freeze()
 

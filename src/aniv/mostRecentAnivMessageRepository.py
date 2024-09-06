@@ -80,6 +80,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             '''
                 SELECT datetime, message FROM mostrecentanivmessages
                 WHERE twitchchannelid = $1
+                LIMIT 1
             ''',
             twitchChannelId
         )
@@ -173,7 +174,8 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
                 message = message,
                 twitchChannelId = twitchChannelId
             )
+
+            self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message in \"{twitchChannelId}\"')
         else:
             await self.__deleteMessage(twitchChannelId = twitchChannelId)
-
-        self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message in \"{twitchChannelId}\"')
+            self.__timber.log('MostRecentAnivMessageRepository', f'Removed most recent aniv message in \"{twitchChannelId}\"')

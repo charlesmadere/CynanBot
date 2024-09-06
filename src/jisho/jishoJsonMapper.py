@@ -118,7 +118,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 sense = await self.parseSense(senseEntryJson)
 
                 if sense is None:
-                    self.__timber.log('JishoJsonMapper', f'Unable to parse value for \"senses\" data: ({jsonContents=})')
+                    self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"senses\" data: ({jsonContents=})')
                 else:
                     senses.append(sense)
 

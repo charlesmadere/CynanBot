@@ -6,7 +6,7 @@ import asyncpg
 from .backingDatabase import BackingDatabase
 from .databaseConnection import DatabaseConnection
 from .databaseType import DatabaseType
-from .psqlCredentialsProvider import PsqlCredentialsProvider
+from .psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from .psqlDatabaseConnection import PsqlDatabaseConnection
 from ..timber.timberInterface import TimberInterface
 
@@ -16,18 +16,18 @@ class BackingPsqlDatabase(BackingDatabase):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        psqlCredentialsProvider: PsqlCredentialsProvider,
+        psqlCredentialsProvider: PsqlCredentialsProviderInterface,
         timber: TimberInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(psqlCredentialsProvider, PsqlCredentialsProvider):
+        elif not isinstance(psqlCredentialsProvider, PsqlCredentialsProviderInterface):
             raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__psqlCredentialsProvider: PsqlCredentialsProvider = psqlCredentialsProvider
+        self.__psqlCredentialsProvider: PsqlCredentialsProviderInterface = psqlCredentialsProvider
         self.__timber: TimberInterface = timber
 
         self.__connectionPool: asyncpg.Pool | None = None

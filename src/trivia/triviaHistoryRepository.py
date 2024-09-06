@@ -4,7 +4,6 @@ from .content.triviaContentCode import TriviaContentCode
 from .misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .questions.triviaQuestionReference import TriviaQuestionReference
-from .questions.triviaQuestionType import TriviaQuestionType
 from .questions.triviaSource import TriviaSource
 from .triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface

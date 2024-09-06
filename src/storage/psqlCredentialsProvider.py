@@ -1,11 +1,11 @@
 from typing import Any
 
 from .jsonReaderInterface import JsonReaderInterface
+from .psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from ..misc import utils as utils
-from ..misc.clearable import Clearable
 
 
-class PsqlCredentialsProvider(Clearable):
+class PsqlCredentialsProvider(PsqlCredentialsProviderInterface):
 
     def __init__(self, credentialsJsonReader: JsonReaderInterface):
         if not isinstance(credentialsJsonReader, JsonReaderInterface):
