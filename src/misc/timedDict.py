@@ -5,6 +5,7 @@ from . import utils as utils
 
 T = TypeVar('T')
 
+
 class TimedDict(Generic[T]):
 
     def __init__(
