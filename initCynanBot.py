@@ -266,6 +266,9 @@ from src.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface impo
     GlacialTriviaQuestionRepositoryInterface
 from src.trivia.triviaRepositories.jServiceTriviaQuestionRepository import JServiceTriviaQuestionRepository
 from src.trivia.triviaRepositories.lotrTriviaQuestionsRepository import LotrTriviaQuestionRepository
+from src.trivia.triviaRepositories.millionaire.millionaireTriviaQuestionStorage import MillionaireTriviaQuestionStorage
+from src.trivia.triviaRepositories.millionaire.millionaireTriviaQuestionStorageInterface import \
+    MillionaireTriviaQuestionStorageInterface
 from src.trivia.triviaRepositories.millionaireTriviaQuestionRepository import MillionaireTriviaQuestionRepository
 from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseApiService import OpenTriviaDatabaseApiService
 from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseApiServiceInterface import \
@@ -1115,6 +1118,16 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     userIdsRepository = userIdsRepository
 )
 
+millionaireTriviaQuestionStorage: MillionaireTriviaQuestionStorageInterface = MillionaireTriviaQuestionStorage(
+    timber = timber
+)
+
+millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
+    millionaireTriviaQuestionStorage = millionaireTriviaQuestionStorage,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     funtoonRepository = funtoonRepository,
@@ -1163,11 +1176,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
-        timber = timber,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    millionaireTriviaQuestionRepository = millionaireTriviaQuestionRepository,
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     openTriviaQaTriviaQuestionRepository = openTriviaQaTriviaQuestionRepository,
     pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
