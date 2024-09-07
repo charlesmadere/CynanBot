@@ -283,6 +283,12 @@ from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionT
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from src.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
+from src.trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionStorage import OpenTriviaQaQuestionStorage
+from src.trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionStorageInterface import \
+    OpenTriviaQaQuestionStorageInterface
+from src.trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionTypeParser import OpenTriviaQaQuestionTypeParser
+from src.trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionTypeParserInterface import \
+    OpenTriviaQaQuestionTypeParserInterface
 from src.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import OpenTriviaQaTriviaQuestionRepository
 from src.trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
 from src.trivia.triviaRepositories.quizApiTriviaQuestionRepository import QuizApiTriviaQuestionRepository
@@ -1054,6 +1060,21 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+openTriviaQaQuestionTypeParser: OpenTriviaQaQuestionTypeParserInterface = OpenTriviaQaQuestionTypeParser(
+    timber = timber
+)
+
+openTriviaQaQuestionStorage: OpenTriviaQaQuestionStorageInterface = OpenTriviaQaQuestionStorage(
+    questionTypeParser = openTriviaQaQuestionTypeParser,
+    timber = timber
+)
+
+openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
+    openTriviaQaQuestionStorage = openTriviaQaQuestionStorage,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 triviaDatabaseQuestionStorage: TriviaDatabaseQuestionStorageInterface = TriviaDatabaseQuestionStorage(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
@@ -1148,11 +1169,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
-    openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
-        timber = timber,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    openTriviaQaTriviaQuestionRepository = openTriviaQaTriviaQuestionRepository,
     pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
         pokepediaRepository = pokepediaRepository,
         timber = timber,

@@ -32,7 +32,9 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')

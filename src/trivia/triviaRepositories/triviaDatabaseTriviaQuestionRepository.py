@@ -21,7 +21,9 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(triviaDatabaseQuestionStorage, TriviaDatabaseQuestionStorageInterface):
             raise TypeError(f'triviaDatabaseQuestionStorage argument is malformed: \"{triviaDatabaseQuestionStorage}\"')

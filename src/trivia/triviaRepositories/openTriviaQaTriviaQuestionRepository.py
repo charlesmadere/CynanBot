@@ -1,10 +1,7 @@
-from typing import Any
-
-import aiofiles
-import aiofiles.ospath
-import aiosqlite
-
 from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
+from .openTriviaQa.booleanOpenTriviaQaTriviaQuestion import BooleanOpenTriviaQaTriviaQuestion
+from .openTriviaQa.multipleChoiceOpenTriviaQaTriviaQuestion import MultipleChoiceOpenTriviaQaTriviaQuestion
+from .openTriviaQa.openTriviaQaQuestionStorageInterface import OpenTriviaQaQuestionStorageInterface
 from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
@@ -15,133 +12,82 @@ from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ...misc import utils as utils
-from ...timber.timberInterface import TimberInterface
 
 
 class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     def __init__(
         self,
-        timber: TimberInterface,
+        openTriviaQaQuestionStorage: OpenTriviaQaQuestionStorageInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = 'openTriviaQaTriviaQuestionDatabase.sqlite'
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        if not isinstance(openTriviaQaQuestionStorage, OpenTriviaQaQuestionStorageInterface):
+            raise TypeError(f'openTriviaQaQuestionStorage argument is malformed: \"{openTriviaQaQuestionStorage}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
-        elif not utils.isValidStr(triviaDatabaseFile):
-            raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__openTriviaQaQuestionStorage: OpenTriviaQaQuestionStorageInterface = openTriviaQaQuestionStorage
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
-        self.__triviaDatabaseFile: str = triviaDatabaseFile
-
-        self.__hasQuestionSetAvailable: bool | None = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('OpenTriviaQaTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
+        openTriviaQaQuestion = await self.__openTriviaQaQuestionStorage.fetchTriviaQuestion()
 
-        triviaDict = await self.__fetchTriviaQuestionDict()
+        category = await self.__triviaQuestionCompiler.compileCategory(openTriviaQaQuestion.category)
+        question = await self.__triviaQuestionCompiler.compileQuestion(openTriviaQaQuestion.question)
 
-        if await self._triviaSettingsRepository.isDebugLoggingEnabled():
-            self.__timber.log('OpenTriviaQaTriviaQuestionRepository', f'{triviaDict}')
+        if isinstance(openTriviaQaQuestion, BooleanOpenTriviaQaTriviaQuestion):
+            return TrueFalseTriviaQuestion(
+                correctAnswer = openTriviaQaQuestion.correctAnswer,
+                category = category,
+                categoryId = None,
+                question = question,
+                triviaId = openTriviaQaQuestion.questionId,
+                triviaDifficulty = TriviaDifficulty.UNKNOWN,
+                originalTriviaSource = None,
+                triviaSource = self.triviaSource
+            )
 
-        triviaId = utils.getStrFromDict(triviaDict, 'questionId')
-        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaDict, 'questionType'))
+        elif isinstance(openTriviaQaQuestion, MultipleChoiceOpenTriviaQaTriviaQuestion):
+            correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
+                response = openTriviaQaQuestion.correctAnswer
+            )
+            correctAnswers: list[str] = list()
+            correctAnswers.append(correctAnswer)
 
-        category = utils.getStrFromDict(triviaDict, 'category')
-        category = await self.__triviaQuestionCompiler.compileCategory(category)
-
-        question = utils.getStrFromDict(triviaDict, 'question')
-        question = await self.__triviaQuestionCompiler.compileQuestion(question)
-
-        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            correctAnswer = utils.getStrFromDict(triviaDict, 'correctAnswer')
-            correctAnswer = await self.__triviaQuestionCompiler.compileResponse(correctAnswer)
-
-            correctAnswerStrings: list[str] = list()
-            correctAnswerStrings.append(correctAnswer)
-
-            responses = await self.__triviaQuestionCompiler.compileResponses(triviaDict['responses'])
+            incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
+                responses = openTriviaQaQuestion.incorrectAnswers
+            )
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswerStrings,
-                multipleChoiceResponses = responses
+                correctAnswers = correctAnswers,
+                multipleChoiceResponses = incorrectAnswers
             )
 
             return MultipleChoiceTriviaQuestion(
-                correctAnswers = correctAnswerStrings,
+                correctAnswers = correctAnswers,
                 multipleChoiceResponses = multipleChoiceResponses,
                 category = category,
                 categoryId = None,
                 question = question,
-                triviaId = triviaId,
-                triviaDifficulty = TriviaDifficulty.UNKNOWN,
-                originalTriviaSource = None,
-                triviaSource = self.triviaSource
-            )
-        elif triviaType is TriviaQuestionType.TRUE_FALSE:
-            correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
-
-            return TrueFalseTriviaQuestion(
-                correctAnswer = correctAnswer,
-                category = category,
-                categoryId = None,
-                question = question,
-                triviaId = triviaId,
+                triviaId = openTriviaQaQuestion.questionId,
                 triviaDifficulty = TriviaDifficulty.UNKNOWN,
                 originalTriviaSource = None,
                 triviaSource = self.triviaSource
             )
 
-        raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for OpenTriviaQaTriviaQuestionRepository: {triviaDict}')
-
-    async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
-        if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
-            raise FileNotFoundError(f'Open Trivia QA trivia database file not found: \"{self.__triviaDatabaseFile}\"')
-
-        connection = await aiosqlite.connect(self.__triviaDatabaseFile)
-        cursor = await connection.execute(
-            '''
-                SELECT correctAnswer, newCategory, question, questionId, questionType, response1, response2, response3, response4 FROM triviaQuestions
-                ORDER BY RANDOM()
-                LIMIT 1
-            '''
-        )
-
-        row = await cursor.fetchone()
-        if not utils.hasItems(row) or len(row) != 9:
-            raise RuntimeError(f'Received malformed data from OpenTriviaQaTriviaQuestion database: {row}')
-
-        triviaQuestionDict: dict[str, Any] = {
-            'category': row[1],
-            'correctAnswer': row[0],
-            'question': row[2],
-            'questionId': row[3],
-            'questionType': row[4],
-            'responses': [ row[5], row[6], row[7], row[8] ]
-        }
-
-        await cursor.close()
-        await connection.close()
-        return triviaQuestionDict
+        else:
+            raise UnsupportedTriviaTypeException(f'triviaType \"{openTriviaQaQuestion.questionType}\" is not supported for OpenTriviaQaTriviaQuestionRepository: {openTriviaQaQuestion}')
 
     async def hasQuestionSetAvailable(self) -> bool:
-        if self.__hasQuestionSetAvailable is not None:
-            return self.__hasQuestionSetAvailable
-
-        hasQuestionSetAvailable = await aiofiles.ospath.exists(self.__triviaDatabaseFile)
-        self.__hasQuestionSetAvailable = hasQuestionSetAvailable
-
-        return hasQuestionSetAvailable
+        return await self.__openTriviaQaQuestionStorage.hasQuestionSetAvailable()
 
     @property
     def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
