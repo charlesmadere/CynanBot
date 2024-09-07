@@ -145,10 +145,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         if not utils.isValidStr(userIdToTimeout):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{userNameToTimeout}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
             return False
-        elif userIdToTimeout == broadcasterUserId:
-            userIdToTimeout = cheerUserId
-            userNameToTimeout = cheerUserName
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout the broadcaster themself from {cheerUserName}:{cheerUserId} in {user.getHandle()}, so will instead time out the user: ({message=}) ({timeoutAction=})')
 
         return await self.__timeoutUser(
             cheerUserId = cheerUserId,
@@ -299,6 +295,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         reverseProbability = await self.__timeoutCheerActionSettingsRepository.getReverseProbability()
         return randomNumber <= reverseProbability
 
+    async def __isTryingToTimeoutTheStreamer(
+        self,
+        twitchChannelId: str,
+        userIdToTimeout: str
+    ) -> bool:
+        return twitchChannelId == userIdToTimeout
+
     async def __send(
         self,
         twitchChannel: TwitchMessageable | None,
@@ -387,7 +390,15 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         randomNumber = random.random()
         isReverse = False
 
-        if await self.__isReverseTimeout(
+        if await self.__isTryingToTimeoutTheStreamer(
+            twitchChannelId = twitchChannelId,
+            userIdToTimeout = userIdToTimeout
+        ):
+            isReverse = True
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID {userIdToTimeout} is the streamer, so they will be hit with a reverse ({action=})')
+            userIdToTimeout = cheerUserId
+            userNameToTimeout = cheerUserName
+        elif await self.__isReverseTimeout(
             randomNumber = randomNumber,
             user = user
         ):
