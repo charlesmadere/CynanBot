@@ -5,6 +5,7 @@ from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from ..apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 from ..apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
+from ..streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
@@ -17,6 +18,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         timber: TimberInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface,
+        ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface,
         returnCharacterUsage: bool = True
     ):
         if not isinstance(timber, TimberInterface):
@@ -25,12 +27,15 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterApiService argument is malformed: \"{ttsMonsterApiService}\"')
         elif not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
+        elif not isinstance(ttsMonsterStreamerVoicesRepository, TtsMonsterStreamerVoicesRepositoryInterface):
+            raise TypeError(f'ttsMonsterStreamerVoicesRepository argument is malformed: \"{ttsMonsterStreamerVoicesRepository}\"')
         elif not utils.isValidBool(returnCharacterUsage):
             raise TypeError(f'returnCharacterUsage argument is malformed: \"{returnCharacterUsage}\"')
 
         self.__timber: TimberInterface = timber
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
         self.__ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = ttsMonsterApiTokensRepository
+        self.__ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface = ttsMonsterStreamerVoicesRepository
         self.__returnCharacterUsage: bool = returnCharacterUsage
 
     async def __chooseRandomVoiceId(self, apiToken: str) -> str | None:
@@ -72,6 +77,15 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         apiToken = await self.__ttsMonsterApiTokensRepository.get(twitchChannelId = twitchChannelId)
         if not utils.isValidStr(apiToken):
             self.__timber.log('TtsMonsterHelper', f'No TTS Monster API token is available for this user ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=})')
+            return None
+
+        voices = await self.__ttsMonsterStreamerVoicesRepository.fetchVoices(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        if len(voices) == 0:
+            self.__timber.log('TtsMonsterHelper', f'No TTS Monster voices are available for this user ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({voices=})')
             return None
 
         voiceId = await self.__chooseRandomVoiceId(apiToken = apiToken)
