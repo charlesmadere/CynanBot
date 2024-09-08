@@ -7,17 +7,25 @@ from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
+from ..nameFixer.ttsMonsterNameFixerInterface import TtsMonsterNameFixerInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
 class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+        nameFixer: TtsMonsterNameFixerInterface
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(nameFixer, TtsMonsterNameFixerInterface):
+            raise TypeError(f'nameFixer argument is malformed: \"{nameFixer}\"')
 
         self.__timber: TimberInterface = timber
+        self.__nameFixer: TtsMonsterNameFixerInterface = nameFixer
 
     async def parseTtsResponse(
         self,
@@ -61,13 +69,15 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
             sample = utils.getStrFromDict(jsonContents, 'sample')
 
         voiceId = utils.getStrFromDict(jsonContents, 'voice_id')
+        websiteName = await self.__nameFixer.getWebsiteName(voiceId)
 
         return TtsMonsterVoice(
             language = language,
             metadata = metadata,
             name = name,
             sample = sample,
-            voiceId = voiceId
+            voiceId = voiceId,
+            websiteName = websiteName
         )
 
     async def parseVoicesResponse(

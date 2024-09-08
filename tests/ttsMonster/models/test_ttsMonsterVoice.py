@@ -8,15 +8,17 @@ class TestTtsMonsterVoice:
         metadata = None,
         name = 'Pirate',
         sample = None,
-        voiceId = 'pirateId'
+        voiceId = 'pirateId',
+        websiteName = 'Pirate'
     )
 
     shadow = TtsMonsterVoice(
         language = None,
         metadata = None,
-        name = 'Shadow',
+        name = 'Shade',
         sample = None,
-        voiceId = 'shadowId'
+        voiceId = 'shadowId',
+        websiteName = 'Shadow'
     )
 
     def test_equals_withPirate(self):
@@ -34,7 +36,8 @@ class TestTtsMonsterVoice:
             metadata = 'metadata',
             name = 'Shadow the Hedgehog',
             sample = None,
-            voiceId = 'shadowId'
+            voiceId = 'shadowId',
+            websiteName = 'Shadow'
         )
 
         assert similarShadow == self.shadow
@@ -54,7 +57,8 @@ class TestTtsMonsterVoice:
             metadata = 'metadata',
             name = 'Jack Sparrow',
             sample = None,
-            voiceId = 'pirateId'
+            voiceId = 'pirateId',
+            websiteName = 'Pirate'
         )
 
         assert hash(similarPirate) == hash(self.pirate)

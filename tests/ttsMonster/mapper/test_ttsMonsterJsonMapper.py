@@ -8,14 +8,19 @@ from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
 from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
 from src.ttsMonster.models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from src.ttsMonster.models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
+from src.ttsMonster.nameFixer.ttsMonsterNameFixer import TtsMonsterNameFixer
+from src.ttsMonster.nameFixer.ttsMonsterNameFixerInterface import TtsMonsterNameFixerInterface
 
 
 class TestTtsMonsterJsonMapper:
 
     timber: TimberInterface = TimberStub()
 
+    nameFixer: TtsMonsterNameFixerInterface = TtsMonsterNameFixer()
+
     mapper: TtsMonsterJsonMapperInterface = TtsMonsterJsonMapper(
-        timber = timber
+        timber = timber,
+        nameFixer = nameFixer
     )
 
     @pytest.mark.asyncio

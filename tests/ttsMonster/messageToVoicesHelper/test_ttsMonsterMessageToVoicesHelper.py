@@ -18,7 +18,8 @@ class TestTtsMonsterMessageToVoicesHelper:
         metadata = None,
         name = 'Brian',
         sample = None,
-        voiceId = 'brianId'
+        voiceId = 'brianId',
+        websiteName = 'Brian'
     )
 
     pirate = TtsMonsterVoice(
@@ -26,15 +27,17 @@ class TestTtsMonsterMessageToVoicesHelper:
         metadata = None,
         name = 'Pirate',
         sample = None,
-        voiceId = 'pirateId'
+        voiceId = 'pirateId',
+        websiteName = 'Pirate'
     )
 
     shadow = TtsMonsterVoice(
         language = None,
         metadata = None,
-        name = 'Shadow',
+        name = 'Shade',
         sample = None,
-        voiceId = 'shadowId'
+        voiceId = 'shadowId',
+        websiteName = 'Shadow'
     )
 
     @pytest.mark.asyncio

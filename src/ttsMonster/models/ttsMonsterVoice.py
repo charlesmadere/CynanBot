@@ -9,6 +9,7 @@ class TtsMonsterVoice:
     name: str
     sample: str | None
     voiceId: str
+    websiteName: str | None
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, TtsMonsterVoice):
