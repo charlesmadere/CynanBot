@@ -1,6 +1,7 @@
 from typing import Collection
 
 import pytest
+from frozenlist import FrozenList
 
 from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import TtsMonsterMessageToVoicesHelper
 from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import \
@@ -51,6 +52,54 @@ class TestTtsMonsterMessageToVoicesHelper:
         entry = result[0]
         assert entry.message == 'Hello, World!'
         assert entry.voice == self.brian
+
+    @pytest.mark.asyncio
+    async def test_build_withBasicBrianMessageButNoBrianVoiceIsAvailable(self):
+        voices: list[TtsMonsterVoice] = [ self.pirate ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Brian: Hello, World!'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_build_withBlankChunkMessages1(self):
+        voices: list[TtsMonsterVoice] = [ self.brian, self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Brian: Shadow: Hello, World! Brian: Hello shadow: pirate: metroid'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 3
+
+        entry = result[0]
+        assert entry.message == 'Hello, World!'
+        assert entry.voice == self.shadow
+
+        entry = result[1]
+        assert entry.message == 'Hello'
+        assert entry.voice == self.brian
+
+        entry = result[2]
+        assert entry.message == 'metroid'
+        assert entry.voice == self.pirate
+
+    @pytest.mark.asyncio
+    async def test_build_withBlankChunkMessages2(self):
+        voices: list[TtsMonsterVoice] = [ self.brian, self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Brian: Shadow: Brian: shadow: pirate:'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_build_withEmptyMessage(self):

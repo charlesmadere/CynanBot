@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Collection, Pattern
+from typing import Collection, Match, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -20,8 +20,7 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         voice: TtsMonsterVoice
 
     def __init__(self):
-        self.__voicePatternRegEx: Pattern = re.compile(r'(^|\s+)(\w+):\s+', re.IGNORECASE)
-        self.__whiteSpaceRegEx: Pattern = re.compile('\s+', re.IGNORECASE)
+        self.__voicePatternRegEx: Pattern = re.compile(r'(^|\s+)(\w+):', re.IGNORECASE)
 
     async def build(
         self,
@@ -52,21 +51,38 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
             voicePairs.freeze()
             return voicePairs
 
+        await self.__buildMessagePairs(
+            voicePairs = voicePairs,
+            voiceMessageHeaders = voiceMessageHeaders,
+            message = message
+        )
+
+        voicePairs.freeze()
+        return voicePairs
+
+    async def __buildMessagePairs(
+        self,
+        voicePairs: FrozenList[TtsMonsterMessageToVoicePair],
+        voiceMessageHeaders: FrozenList[VoiceMessageHeader],
+        message: str
+    ) -> FrozenList[TtsMonsterMessageToVoicePair]:
         sectionStart: int | None = None
         sectionVoice: TtsMonsterVoice | None = None
 
-        for voiceMessageHeader in voiceMessageHeaders:
+        for index, voiceMessageHeader in enumerate(voiceMessageHeaders):
             if sectionStart is None or sectionVoice is None:
                 sectionStart = voiceMessageHeader.end
                 sectionVoice = voiceMessageHeader.voice
                 continue
 
             sectionEnd = voiceMessageHeader.start
+            sectionMessage = message[sectionStart:sectionEnd].strip()
 
-            voicePairs.append(TtsMonsterMessageToVoicePair(
-                message = message[sectionStart:sectionEnd].strip(),
-                voice = sectionVoice
-            ))
+            if len(sectionMessage) >= 1:
+                voicePairs.append(TtsMonsterMessageToVoicePair(
+                    message = sectionMessage,
+                    voice = sectionVoice
+                ))
 
             sectionStart = voiceMessageHeader.end
             sectionVoice = voiceMessageHeader.voice
@@ -75,13 +91,15 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
             voicePairs.freeze()
             return voicePairs
 
-        voicePairs.append(TtsMonsterMessageToVoicePair(
-            message = message[sectionStart:len(message)].strip(),
-            voice = sectionVoice
-        ))
+        sectionMessage = message[sectionStart:len(message)].strip()
+
+        if len(sectionMessage) >= 1:
+            voicePairs.append(TtsMonsterMessageToVoicePair(
+                message = sectionMessage,
+                voice = sectionVoice
+            ))
 
         voicePairs.freeze()
-        return voicePairs
 
     async def __buildVoiceNamesToVoiceDictionary(
         self,
@@ -103,15 +121,20 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         message: str
     ) -> FrozenList[VoiceMessageHeader]:
         locations: FrozenList[TtsMonsterMessageToVoicesHelper.VoiceMessageHeader] = FrozenList()
-        occurrences = self.__voicePatternRegEx.finditer(message)
+        occurrencesIterator = self.__voicePatternRegEx.finditer(message)
 
-        if occurrences is None:
+        if occurrencesIterator is None:
             locations.freeze()
             return locations
 
-        for occurrence in occurrences:
+        occurrences: list[Match] = list(occurrencesIterator)
+
+        for index, occurrence in enumerate(occurrences):
             voiceName = occurrence.group(2).casefold()
             voice = voiceNamesToVoice.get(voiceName, None)
+
+            if voice is None:
+                continue
 
             start = occurrence.start()
             end = occurrence.end()
