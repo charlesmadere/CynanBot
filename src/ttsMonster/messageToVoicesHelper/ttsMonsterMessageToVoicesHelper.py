@@ -14,9 +14,10 @@ from ...misc import utils as utils
 class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
     @dataclass(frozen = True)
-    class VoiceLocation:
+    class VoiceMessageHeader:
         start: int
         end: int
+        voice: TtsMonsterVoice
 
     def __init__(self):
         self.__voicePatternRegEx: Pattern = re.compile(r'(^|\s+)(\w+):\s+', re.IGNORECASE)
@@ -42,13 +43,42 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
             voices = voices
         )
 
-        voicePatternLocations = await self.__buildVoicePatternLocations(
-            voiceNames = frozenset(voiceNamesToVoice.keys()),
+        voiceMessageHeaders = await self.__buildVoiceMessageHeaders(
+            voiceNamesToVoice = voiceNamesToVoice,
             message = message
         )
 
-        # TODO
-        pass
+        if len(voiceMessageHeaders) == 0:
+            voicePairs.freeze()
+            return voicePairs
+
+        sectionStart: int | None = None
+        sectionVoice: TtsMonsterVoice | None = None
+
+        for voiceMessageHeader in voiceMessageHeaders:
+            if sectionStart is None or sectionVoice is None:
+                sectionStart = voiceMessageHeader.end
+                sectionVoice = voiceMessageHeader.voice
+                continue
+
+            sectionEnd = voiceMessageHeader.start
+
+            voicePairs.append(TtsMonsterMessageToVoicePair(
+                message = message[sectionStart:sectionEnd].strip(),
+                voice = sectionVoice
+            ))
+
+            sectionStart = voiceMessageHeader.end
+            sectionVoice = voiceMessageHeader.voice
+
+        if sectionStart is None or sectionVoice is None:
+            voicePairs.freeze()
+            return voicePairs
+
+        voicePairs.append(TtsMonsterMessageToVoicePair(
+            message = message[sectionStart:len(message)].strip(),
+            voice = sectionVoice
+        ))
 
         voicePairs.freeze()
         return voicePairs
@@ -67,12 +97,12 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
         return frozendict(voiceNamesToVoiceDictionary)
 
-    async def __buildVoicePatternLocations(
+    async def __buildVoiceMessageHeaders(
         self,
-        voiceNames: frozenset[str],
+        voiceNamesToVoice: frozendict[str, TtsMonsterVoice],
         message: str
-    ) -> FrozenList[VoiceLocation]:
-        locations: FrozenList[TtsMonsterMessageToVoicesHelper.VoiceLocation] = FrozenList()
+    ) -> FrozenList[VoiceMessageHeader]:
+        locations: FrozenList[TtsMonsterMessageToVoicesHelper.VoiceMessageHeader] = FrozenList()
         occurrences = self.__voicePatternRegEx.finditer(message)
 
         if occurrences is None:
@@ -80,8 +110,8 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
             return locations
 
         for occurrence in occurrences:
-            if occurrence.group(2) not in voiceNames:
-                continue
+            voiceName = occurrence.group(2).casefold()
+            voice = voiceNamesToVoice.get(voiceName, None)
 
             start = occurrence.start()
             end = occurrence.end()
@@ -89,9 +119,10 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
             while message[start].isspace():
                 start = start + 1
 
-            locations.append(TtsMonsterMessageToVoicesHelper.VoiceLocation(
+            locations.append(TtsMonsterMessageToVoicesHelper.VoiceMessageHeader(
                 start = start,
-                end = end
+                end = end,
+                voice = voice
             ))
 
         locations.freeze()

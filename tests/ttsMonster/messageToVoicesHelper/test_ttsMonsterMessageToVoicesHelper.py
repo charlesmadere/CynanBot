@@ -12,6 +12,14 @@ class TestTtsMonsterMessageToVoicesHelper:
 
     helper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper()
 
+    brian = TtsMonsterVoice(
+        language = None,
+        metadata = None,
+        name = 'Brian',
+        sample = None,
+        voiceId = 'brianId'
+    )
+
     pirate = TtsMonsterVoice(
         language = None,
         metadata = None,
@@ -29,28 +37,20 @@ class TestTtsMonsterMessageToVoicesHelper:
     )
 
     @pytest.mark.asyncio
-    async def test_build_bgram(self):
-        # TODO this is a work in progress
+    async def test_build_withBasicBrianMessage(self):
+        voices: list[TtsMonsterVoice] = [ self.brian ]
 
-        # voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
-        #
-        # result = await self.helper.build(
-        #     voices = voices,
-        #     message = 'shadow: bgram shadow: bgram'
-        # )
-        #
-        # assert isinstance(result, Collection)
-        # assert len(result) == 2
-        #
-        # entry = result[0]
-        # assert entry.message == 'bgram'
-        # assert entry.voice == self.shadow
-        #
-        # entry = result[1]
-        # assert entry.message == 'bgram'
-        # assert entry.voice == self.shadow
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Brian: Hello, World!'
+        )
 
-        pass
+        assert isinstance(result, Collection)
+        assert len(result) == 1
+
+        entry = result[0]
+        assert entry.message == 'Hello, World!'
+        assert entry.voice == self.brian
 
     @pytest.mark.asyncio
     async def test_build_withEmptyMessage(self):
@@ -83,3 +83,71 @@ class TestTtsMonsterMessageToVoicesHelper:
 
         assert isinstance(result, Collection)
         assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_build_withJohnnyMessageButNoJohnnyVoiceAvailable(self):
+        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Johnny: Hello, World!'
+        )
+
+        assert isinstance(result, Collection)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_build_withRandomNoiseText1(self):
+        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'qXV3Lbsdvi5Tj41STSKIA9qdZbtkc6vrSO1U1bgdk1D0XZmkG9dMtWwFwRi1S0B'
+        )
+
+        assert isinstance(result, Collection)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_build_withRandomNoiseText2(self):
+        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'OrVniSn8oglwzVqD0tfal5n2ggBKVqsGljXZzAncZulyJvJzAmOX3vpIZhrXGJW'
+        )
+
+        assert isinstance(result, Collection)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_build_withRandomNoiseText3(self):
+        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'OrVniSn8oglwzVqD0shadow:n2ggBpirate:shadow:cZulyJvJzAmOX3vpIZhrXGJWshadow:'
+        )
+
+        assert isinstance(result, Collection)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_build_withShadowBgram(self):
+        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'shadow: bgram Shadow: bgram'
+        )
+
+        assert isinstance(result, Collection)
+        assert len(result) == 2
+
+        entry = result[0]
+        assert entry.message == 'bgram'
+        assert entry.voice == self.shadow
+
+        entry = result[1]
+        assert entry.message == 'bgram'
+        assert entry.voice == self.shadow

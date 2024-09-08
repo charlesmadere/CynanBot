@@ -47,3 +47,14 @@ class TestTtsMonsterVoice:
 
     def test_hash_withShadow(self):
         assert hash(self.shadow.voiceId) == hash(self.shadow)
+
+    def test_hash_withSimilarPirate(self):
+        similarPirate = TtsMonsterVoice(
+            language = 'en',
+            metadata = 'metadata',
+            name = 'Jack Sparrow',
+            sample = None,
+            voiceId = 'pirateId'
+        )
+
+        assert hash(similarPirate) == hash(self.pirate)
