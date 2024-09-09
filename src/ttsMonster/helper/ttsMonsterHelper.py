@@ -1,5 +1,7 @@
+import asyncio
 import traceback
 from dataclasses import dataclass
+from typing import Any, Coroutine
 
 from frozenlist import FrozenList
 
@@ -63,11 +65,14 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
     async def __fetchTtsUrl(
         self,
+        index: int,
         apiToken: str,
         message: str,
         voiceId: str
-    ) -> str:
-        if not utils.isValidStr(apiToken):
+    ) -> TtsResponseEntry:
+        if not utils.isValidInt(index):
+            raise TypeError(f'index argument is malformed: \"{index}\"')
+        elif not utils.isValidStr(apiToken):
             raise TypeError(f'apiToken argument is malformed: \"{apiToken}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -85,7 +90,10 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             request = ttsRequest
         )
 
-        return ttsResponse.url
+        return TtsMonsterHelper.TtsResponseEntry(
+            index = index,
+            url = ttsResponse.url
+        )
 
     async def __generateMultiVoiceTts(
         self,
@@ -102,22 +110,29 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
                 messageToVoicePair = messageToVoicePair
             ))
 
+        ttsResponseCoroutines: list[Coroutine[Any, Any, TtsMonsterHelper.TtsResponseEntry]] = list()
+
+        for ttsRequest in ttsRequests:
+            ttsResponseCoroutines.append(self.__fetchTtsUrl(
+                index = ttsRequest.index,
+                apiToken = apiToken,
+                message = ttsRequest.messageToVoicePair.message,
+                voiceId = ttsRequest.messageToVoicePair.voice.voiceId
+            ))
+
         ttsResponses: list[TtsMonsterHelper.TtsResponseEntry] = list()
 
         try:
-            for ttsRequest in ttsRequests:
-                ttsUrl = await self.__fetchTtsUrl(
-                    apiToken = apiToken,
-                    message = ttsRequest.messageToVoicePair.message,
-                    voiceId = ttsRequest.messageToVoicePair.voice.voiceId
-                )
-
-                ttsResponses.append(TtsMonsterHelper.TtsResponseEntry(
-                    index = ttsRequest.index,
-                    url = ttsUrl
-                ))
+            ttsResponses.extend(await asyncio.gather(*ttsResponseCoroutines, return_exceptions = True))
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterHelper', f'Encountered network error when generating TTS from TTS Monster ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
+            return None
+        except Exception as e:
+            self.__timber.log('TtsMonsterHelper', f'Encountered unknown error when generating TTS from TTS Monster ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
+            return None
+
+        if len(ttsResponses) == 0:
+            self.__timber.log('TtsMonsterHelper', f'Encountered unknown issue when generating TTS from TTS Monster ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=})')
             return None
 
         ttsResponses.sort(key = lambda element: element.index)
@@ -139,7 +154,8 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         twitchChannelId: str
     ) -> FrozenList[str] | None:
         try:
-            ttsUrl = await self.__fetchTtsUrl(
+            ttsResponse = await self.__fetchTtsUrl(
+                index = 0,
                 apiToken = apiToken,
                 message = message,
                 voiceId = self.__defaultVoice.voiceId
@@ -149,7 +165,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             return None
 
         ttsUrls: FrozenList[str] = FrozenList()
-        ttsUrls.append(ttsUrl)
+        ttsUrls.append(ttsResponse.url)
         ttsUrls.freeze()
 
         return ttsUrls
