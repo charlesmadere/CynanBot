@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Collection
 
 from frozenlist import FrozenList
 
@@ -12,7 +11,7 @@ class TtsMonsterMessageToVoicesHelperInterface(ABC):
     @abstractmethod
     async def build(
         self,
-        voices: Collection[TtsMonsterVoice],
+        voices: frozenset[TtsMonsterVoice],
         message: str
-    ) -> FrozenList[TtsMonsterMessageToVoicePair]:
+    ) -> FrozenList[TtsMonsterMessageToVoicePair] | None:
         pass

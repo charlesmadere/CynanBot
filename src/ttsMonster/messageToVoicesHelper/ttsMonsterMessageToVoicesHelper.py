@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Collection, Match, Pattern
+from typing import Match, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -24,19 +24,16 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
     async def build(
         self,
-        voices: Collection[TtsMonsterVoice],
+        voices: frozenset[TtsMonsterVoice],
         message: str
-    ) -> FrozenList[TtsMonsterMessageToVoicePair]:
-        if not isinstance(voices, Collection):
+    ) -> FrozenList[TtsMonsterMessageToVoicePair] | None:
+        if not isinstance(voices, frozenset):
             raise TypeError(f'voices argument is malformed: \"{voices}\"')
         elif not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        voicePairs: FrozenList[TtsMonsterMessageToVoicePair] = FrozenList()
-
         if len(voices) == 0 or not utils.isValidStr(message):
-            voicePairs.freeze()
-            return voicePairs
+            return None
 
         voiceNamesToVoice = await self.__buildVoiceNamesToVoiceDictionary(
             voices = voices
@@ -48,24 +45,20 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         )
 
         if len(voiceMessageHeaders) == 0:
-            voicePairs.freeze()
-            return voicePairs
+            return None
 
-        await self.__buildMessagePairs(
-            voicePairs = voicePairs,
+        return await self.__buildMessagePairs(
             voiceMessageHeaders = voiceMessageHeaders,
             message = message
         )
 
-        voicePairs.freeze()
-        return voicePairs
-
     async def __buildMessagePairs(
         self,
-        voicePairs: FrozenList[TtsMonsterMessageToVoicePair],
         voiceMessageHeaders: FrozenList[VoiceMessageHeader],
         message: str
-    ) -> FrozenList[TtsMonsterMessageToVoicePair]:
+    ) -> FrozenList[TtsMonsterMessageToVoicePair] | None:
+        voicePairs: FrozenList[TtsMonsterMessageToVoicePair] = FrozenList()
+
         sectionStart: int | None = None
         sectionVoice: TtsMonsterVoice | None = None
 
@@ -99,19 +92,24 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
                 voice = sectionVoice
             ))
 
+        if len(voicePairs) == 0:
+            return None
+
         voicePairs.freeze()
+        return voicePairs
 
     async def __buildVoiceNamesToVoiceDictionary(
         self,
-        voices: Collection[TtsMonsterVoice]
+        voices: frozenset[TtsMonsterVoice]
     ) -> frozendict[str, TtsMonsterVoice]:
-        if not isinstance(voices, Collection):
+        if not isinstance(voices, frozenset):
             raise TypeError(f'voices argument is malformed: \"{voices}\"')
 
         voiceNamesToVoiceDictionary: dict[str, TtsMonsterVoice] = dict()
 
         for voice in voices:
-            voiceNamesToVoiceDictionary[voice.name.casefold()] = voice
+            if voice.websiteVoice is not None:
+                voiceNamesToVoiceDictionary[voice.requireWebsiteVoice().websiteName.casefold()] = voice
 
         return frozendict(voiceNamesToVoiceDictionary)
 

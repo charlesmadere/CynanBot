@@ -47,6 +47,7 @@ from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueue
 from .chatCommands.commandsChatCommand import CommandsChatCommand
 from .chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from .chatCommands.cutenessChatCommand import CutenessChatCommand
+from .chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from .chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
@@ -88,11 +89,11 @@ from .cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
     TimeoutCheerActionHistoryRepositoryInterface
 from .cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import \
     TimeoutCheerActionSettingsRepositoryInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CutenessHistoryCommand, CynanSourceCommand,
-                       DiscordCommand, LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
-                       PkMoveCommand, RaceCommand, RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
-                       SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TriviaInfoCommand, TwitchInfoCommand,
-                       TwitterCommand, UnbanTriviaQuestionCommand)
+from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, DiscordCommand,
+                       LoremIpsumCommand, MyCutenessHistoryCommand, PbsCommand, PkMonCommand, PkMoveCommand,
+                       RaceCommand, RemoveTriviaControllerCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
+                       StubCommand, SwQuoteCommand, TriviaInfoCommand, TwitchInfoCommand, TwitterCommand,
+                       UnbanTriviaQuestionCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
@@ -679,13 +680,13 @@ class CynanBot(
         if cutenessPresenter is None or cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
             self.__cutenessCommand: AbsChatCommand = StubChatCommand()
             self.__cutenessChampionsCommand: AbsChatCommand = StubChatCommand()
-            self.__cutenessHistoryCommand: AbsCommand = StubCommand()
+            self.__cutenessHistoryCommand: AbsChatCommand = StubChatCommand()
             self.__giveCutenessCommand: AbsChatCommand = StubChatCommand()
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsChatCommand = CutenessChatCommand(cutenessPresenter, cutenessRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsChatCommand = CutenessChampionsChatCommand(cutenessPresenter, cutenessRepository, timber, twitchUtils, usersRepository)
-            self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__cutenessHistoryCommand: AbsChatCommand = CutenessHistoryChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsChatCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
 
@@ -1391,7 +1392,7 @@ class CynanBot(
     @commands.command(name = 'cutenesshistory')
     async def command_cutenesshistory(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__cutenessHistoryCommand.handleCommand(context)
+        await self.__cutenessHistoryCommand.handleChatCommand(context)
 
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):

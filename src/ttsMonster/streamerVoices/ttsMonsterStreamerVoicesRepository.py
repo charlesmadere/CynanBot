@@ -1,6 +1,5 @@
 import traceback
 from datetime import datetime, timedelta
-from typing import Collection
 
 from .ttsMonsterStreamerVoicesCache import TtsMonsterStreamerVoicesCache
 from .ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
@@ -48,7 +47,7 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> Collection[TtsMonsterVoice]:
+    ) -> frozenset[TtsMonsterVoice]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -66,8 +65,8 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         )
 
         voicesCache = TtsMonsterStreamerVoicesCache(
-            voices = allVoices,
             expirationDateTime = now + self.__cacheTimeToLive,
+            voices = allVoices,
             twitchChannelId = twitchChannelId
         )
 

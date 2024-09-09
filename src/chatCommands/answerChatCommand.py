@@ -20,15 +20,15 @@ class AnswerChatCommand(AbsChatCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber

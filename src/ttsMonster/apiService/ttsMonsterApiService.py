@@ -73,6 +73,9 @@ class TtsMonsterApiService(TtsMonsterApiServiceInterface):
         if ttsMonsterTtsResponse is None:
             self.__timber.log('TtsMonsterApiService', f'Unable to parse JSON response when generating TTS ({apiToken=}) ({request=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({ttsMonsterTtsResponse=})')
             raise GenericNetworkException(f'TtsMonsterApiService unable to parse JSON response when generating TTS ({apiToken=}) ({request=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({ttsMonsterTtsResponse=})')
+        elif ttsMonsterTtsResponse.status != 200:
+            self.__timber.log('TtsMonsterApiService', f'Generated TTS but the API service responded with a bad \"status\" value in its JSON response ({apiToken=}) ({request=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({ttsMonsterTtsResponse=})')
+            raise GenericNetworkException(f'TtsMonsterApiService generated TTS but the API service responded with a bad \"status\" value in its JSON response ({apiToken=}) ({request=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({ttsMonsterTtsResponse=})')
 
         return ttsMonsterTtsResponse
 

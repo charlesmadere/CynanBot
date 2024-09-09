@@ -1,4 +1,5 @@
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
+from src.ttsMonster.models.ttsMonsterWebsiteVoice import TtsMonsterWebsiteVoice
 
 
 class TestTtsMonsterVoice:
@@ -9,7 +10,7 @@ class TestTtsMonsterVoice:
         name = 'Pirate',
         sample = None,
         voiceId = 'pirateId',
-        websiteName = 'Pirate'
+        websiteVoice = None
     )
 
     shadow = TtsMonsterVoice(
@@ -18,7 +19,7 @@ class TestTtsMonsterVoice:
         name = 'Shade',
         sample = None,
         voiceId = 'shadowId',
-        websiteName = 'Shadow'
+        websiteVoice = TtsMonsterWebsiteVoice.SHADOW
     )
 
     def test_equals_withPirate(self):
@@ -37,7 +38,7 @@ class TestTtsMonsterVoice:
             name = 'Shadow the Hedgehog',
             sample = None,
             voiceId = 'shadowId',
-            websiteName = 'Shadow'
+            websiteVoice = TtsMonsterWebsiteVoice.SHADOW
         )
 
         assert similarShadow == self.shadow
@@ -58,7 +59,7 @@ class TestTtsMonsterVoice:
             name = 'Jack Sparrow',
             sample = None,
             voiceId = 'pirateId',
-            websiteName = 'Pirate'
+            websiteVoice = None
         )
 
         assert hash(similarPirate) == hash(self.pirate)

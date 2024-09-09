@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 
 class TtsMonsterHelperInterface(ABC):
 
@@ -9,5 +11,5 @@ class TtsMonsterHelperInterface(ABC):
         message: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> str | None:
+    ) -> FrozenList[str] | None:
         pass

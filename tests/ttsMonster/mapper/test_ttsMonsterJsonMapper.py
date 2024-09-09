@@ -6,21 +6,21 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
 from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
 from src.ttsMonster.models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from src.ttsMonster.models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
-from src.ttsMonster.nameFixer.ttsMonsterNameFixer import TtsMonsterNameFixer
-from src.ttsMonster.nameFixer.ttsMonsterNameFixerInterface import TtsMonsterNameFixerInterface
 
 
 class TestTtsMonsterJsonMapper:
 
     timber: TimberInterface = TimberStub()
 
-    nameFixer: TtsMonsterNameFixerInterface = TtsMonsterNameFixer()
+    websiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
 
     mapper: TtsMonsterJsonMapperInterface = TtsMonsterJsonMapper(
         timber = timber,
-        nameFixer = nameFixer
+        websiteVoiceMapper = websiteVoiceMapper
     )
 
     @pytest.mark.asyncio

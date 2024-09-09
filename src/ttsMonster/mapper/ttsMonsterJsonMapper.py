@@ -3,11 +3,11 @@ from typing import Any
 from frozenlist import FrozenList
 
 from .ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
+from .ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
-from ..nameFixer.ttsMonsterNameFixerInterface import TtsMonsterNameFixerInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -17,15 +17,15 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        nameFixer: TtsMonsterNameFixerInterface
+        websiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(nameFixer, TtsMonsterNameFixerInterface):
-            raise TypeError(f'nameFixer argument is malformed: \"{nameFixer}\"')
+        elif not isinstance(websiteVoiceMapper, TtsMonsterWebsiteVoiceMapperInterface):
+            raise TypeError(f'websiteVoiceMapper argument is malformed: \"{websiteVoiceMapper}\"')
 
         self.__timber: TimberInterface = timber
-        self.__nameFixer: TtsMonsterNameFixerInterface = nameFixer
+        self.__websiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = websiteVoiceMapper
 
     async def parseTtsResponse(
         self,
@@ -69,7 +69,7 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
             sample = utils.getStrFromDict(jsonContents, 'sample')
 
         voiceId = utils.getStrFromDict(jsonContents, 'voice_id')
-        websiteName = await self.__nameFixer.getWebsiteName(voiceId)
+        websiteVoice = await self.__websiteVoiceMapper.map(voiceId)
 
         return TtsMonsterVoice(
             language = language,
@@ -77,7 +77,7 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
             name = name,
             sample = sample,
             voiceId = voiceId,
-            websiteName = websiteName
+            websiteVoice = websiteVoice
         )
 
     async def parseVoicesResponse(

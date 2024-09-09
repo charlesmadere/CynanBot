@@ -31,25 +31,25 @@ class TriviaScoreChatCommand(AbsChatCommand):
         cooldown: timedelta = timedelta(seconds = 2)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
-            raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
+            raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
-            raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
+            raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
-            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+            raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
@@ -86,7 +86,7 @@ class TriviaScoreChatCommand(AbsChatCommand):
         userId: str | None
 
         # this means that a user is querying for another user's trivia score
-        if userName.lower() != ctx.getAuthorName().lower():
+        if userName.casefold() != ctx.getAuthorName().casefold():
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
@@ -114,11 +114,17 @@ class TriviaScoreChatCommand(AbsChatCommand):
             userId = userId
         )
 
-        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaScoreMessage(
+        message = await self.__triviaUtils.getTriviaScoreMessage(
             shinyResult = shinyResult,
             userName = userName,
             toxicResult = toxicResult,
             triviaResult = triviaResult
-        ))
+        )
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = message,
+            replyMessageId = await ctx.getMessageId()
+        )
 
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

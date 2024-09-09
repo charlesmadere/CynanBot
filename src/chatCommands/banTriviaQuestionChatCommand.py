@@ -96,5 +96,10 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             triviaSource = reference.triviaSource
         )
 
-        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()} — {reference.triviaId}')
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()} — {reference.triviaId}',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.triviaSource.toStr()}:{reference.triviaId} was banned)')

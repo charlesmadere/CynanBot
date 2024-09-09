@@ -1,5 +1,3 @@
-from typing import Collection
-
 import pytest
 from frozenlist import FrozenList
 
@@ -7,6 +5,7 @@ from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import
 from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import \
     TtsMonsterMessageToVoicesHelperInterface
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
+from src.ttsMonster.models.ttsMonsterWebsiteVoice import TtsMonsterWebsiteVoice
 
 
 class TestTtsMonsterMessageToVoicesHelper:
@@ -19,37 +18,37 @@ class TestTtsMonsterMessageToVoicesHelper:
         name = 'Brian',
         sample = None,
         voiceId = 'brianId',
-        websiteName = 'Brian'
+        websiteVoice = TtsMonsterWebsiteVoice.BRIAN
     )
 
-    pirate = TtsMonsterVoice(
+    kkona = TtsMonsterVoice(
         language = None,
         metadata = None,
-        name = 'Pirate',
+        name = 'KKona',
         sample = None,
-        voiceId = 'pirateId',
-        websiteName = 'Pirate'
+        voiceId = 'kkonaId',
+        websiteVoice = TtsMonsterWebsiteVoice.KKONA
     )
 
     shadow = TtsMonsterVoice(
         language = None,
         metadata = None,
-        name = 'Shade',
+        name = 'Spectre',
         sample = None,
         voiceId = 'shadowId',
-        websiteName = 'Shadow'
+        websiteVoice = TtsMonsterWebsiteVoice.SHADOW
     )
 
     @pytest.mark.asyncio
     async def test_build_withBasicBrianMessage(self):
-        voices: list[TtsMonsterVoice] = [ self.brian ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian })
 
         result = await self.helper.build(
             voices = voices,
             message = 'Brian: Hello, World!'
         )
 
-        assert isinstance(result, Collection)
+        assert isinstance(result, FrozenList)
         assert len(result) == 1
 
         entry = result[0]
@@ -58,23 +57,22 @@ class TestTtsMonsterMessageToVoicesHelper:
 
     @pytest.mark.asyncio
     async def test_build_withBasicBrianMessageButNoBrianVoiceIsAvailable(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.kkona })
 
         result = await self.helper.build(
             voices = voices,
             message = 'Brian: Hello, World!'
         )
 
-        assert isinstance(result, FrozenList)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withBlankChunkMessages1(self):
-        voices: list[TtsMonsterVoice] = [ self.brian, self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
-            message = 'Brian: Shadow: Hello, World! Brian: Hello shadow: pirate: metroid'
+            message = 'Brian: Shadow: Hello, World! Brian: Hello shadow: kkona: metroid'
         )
 
         assert isinstance(result, FrozenList)
@@ -90,110 +88,102 @@ class TestTtsMonsterMessageToVoicesHelper:
 
         entry = result[2]
         assert entry.message == 'metroid'
-        assert entry.voice == self.pirate
+        assert entry.voice == self.kkona
 
     @pytest.mark.asyncio
     async def test_build_withBlankChunkMessages2(self):
-        voices: list[TtsMonsterVoice] = [ self.brian, self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
-            message = 'Brian: Shadow: Brian: shadow: pirate:'
+            message = 'Brian: Shadow: Brian: shadow: kkona:'
         )
 
-        assert isinstance(result, FrozenList)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withEmptyMessage(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.kkona, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
             message = ''
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withEmptyVoicesAndEmptyMessage(self):
         result = await self.helper.build(
-            voices = list(),
+            voices = frozenset(),
             message = ''
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withEmptyVoicesAndWhitespaceMessage(self):
         result = await self.helper.build(
-            voices = list(),
+            voices = frozenset(),
             message = ' '
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withJohnnyMessageButNoJohnnyVoiceAvailable(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
             message = 'Johnny: Hello, World!'
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withRandomNoiseText1(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
             message = 'qXV3Lbsdvi5Tj41STSKIA9qdZbtkc6vrSO1U1bgdk1D0XZmkG9dMtWwFwRi1S0B'
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withRandomNoiseText2(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
             message = 'OrVniSn8oglwzVqD0tfal5n2ggBKVqsGljXZzAncZulyJvJzAmOX3vpIZhrXGJW'
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withRandomNoiseText3(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.kkona, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
             message = 'OrVniSn8oglwzVqD0shadow:n2ggBpirate:shadow:cZulyJvJzAmOX3vpIZhrXGJWshadow:'
         )
 
-        assert isinstance(result, Collection)
-        assert len(result) == 0
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_build_withShadowBgram(self):
-        voices: list[TtsMonsterVoice] = [ self.pirate, self.shadow ]
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
             message = 'shadow: bgram Shadow: bgram'
         )
 
-        assert isinstance(result, Collection)
+        assert isinstance(result, FrozenList)
         assert len(result) == 2
 
         entry = result[0]
