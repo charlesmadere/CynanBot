@@ -47,6 +47,7 @@ class TtsMonsterWebsiteVoice(Enum):
             case TtsMonsterWebsiteVoice.BRIAN: return 'brian'
             case TtsMonsterWebsiteVoice.GERALT: return 'geralt'
             case TtsMonsterWebsiteVoice.HAL_9000: return 'hal9000'
+            case TtsMonsterWebsiteVoice.JOHNNY: return 'johnny'
             case TtsMonsterWebsiteVoice.KKONA: return 'kkona'
             case TtsMonsterWebsiteVoice.MEGAN: return 'megan'
             case TtsMonsterWebsiteVoice.NARRATOR: return 'narrator'
