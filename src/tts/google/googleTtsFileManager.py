@@ -9,10 +9,8 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
-from .googleFileExtensionHelperInterface import \
-    GoogleFileExtensionHelperInterface
-from .googleTtsFileManagerInterface import \
-    GoogleTtsFileManagerInterface
+from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
+from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface

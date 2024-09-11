@@ -371,20 +371,16 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(voiceAudioEncoding, GoogleVoiceAudioEncoding):
             raise TypeError(f'voiceAudioEncoding argument is malformed: \"{voiceAudioEncoding}\"')
 
-        if voiceAudioEncoding is GoogleVoiceAudioEncoding.ALAW:
-            return 'ALAW'
-        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.LINEAR_16:
-            return 'LINEAR16'
-        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MP3:
-            return 'MP3'
-        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MULAW:
-            return 'MULAW'
-        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.OGG_OPUS:
-            return 'OGG_OPUS'
-        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.UNSPECIFIED:
-            raise ValueError(f'The given GoogleVoiceAudioEncoding value is unsupported: \"{voiceAudioEncoding}\"')
-        else:
-            raise ValueError(f'The given GoogleVoiceAudioEncoding value is unknown: \"{voiceAudioEncoding}\"')
+        match voiceAudioEncoding:
+            case GoogleVoiceAudioEncoding.ALAW: return 'ALAW'
+            case GoogleVoiceAudioEncoding.LINEAR_16: return 'LINEAR16'
+            case GoogleVoiceAudioEncoding.MP3: return 'MP3'
+            case GoogleVoiceAudioEncoding.MULAW: return 'MULAW'
+            case GoogleVoiceAudioEncoding.OGG_OPUS: return 'OGG_OPUS'
+            case GoogleVoiceAudioEncoding.UNSPECIFIED:
+                raise ValueError(f'The given GoogleVoiceAudioEncoding value is unsupported: \"{voiceAudioEncoding}\"')
+            case _:
+                raise ValueError(f'The given GoogleVoiceAudioEncoding value is unknown: \"{voiceAudioEncoding}\"')
 
     async def serializeVoiceGender(
         self,
