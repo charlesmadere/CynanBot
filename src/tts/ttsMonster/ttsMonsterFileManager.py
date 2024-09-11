@@ -1,5 +1,6 @@
 import re
 import uuid
+from dataclasses import dataclass
 from typing import Pattern, Collection
 
 import aiofiles
@@ -13,6 +14,12 @@ from ...timber.timberInterface import TimberInterface
 
 
 class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
+
+    @dataclass(frozen = True)
+    class FetchAndSaveSoundDataTask:
+        index: int
+        fileName: str
+        ttsUrl: str
 
     def __init__(
         self,
@@ -32,6 +39,13 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         self.__fileExtension: str = fileExtension
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+
+    async def __fetchTtsSoundData(self, ttsUrl: str):
+        if not utils.isValidStr(ttsUrl):
+            raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
+
+        # TODO
+        return None
 
     async def __generateFileNames(self, size: int) -> FrozenList[str]:
         if not utils.isValidInt(size):
@@ -80,6 +94,22 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
 
         fileNames = await self.__generateFileNames(len(frozenTtsUrls))
 
+        for index, ttsUrl in enumerate(frozenTtsUrls):
+            soundData = await self.__fetchTtsSoundData(ttsUrl)
+
+            await self.__writeTtsSoundDataToLocalFile(
+                soundData = soundData,
+                fileName = fileNames[index]
+            )
+
         # TODO fetch files and save them to the above file names
 
-        return None
+        return fileNames
+
+    async def __writeTtsSoundDataToLocalFile(
+        self,
+        soundData,
+        fileName: str
+    ):
+        # TODO
+        pass
