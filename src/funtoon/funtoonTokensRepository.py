@@ -1,8 +1,7 @@
 import traceback
 
 from .exceptions import NoFuntoonTokenException
-from .funtoonTokensRepositoryInterface import \
-    FuntoonTokensRepositoryInterface
+from .funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection

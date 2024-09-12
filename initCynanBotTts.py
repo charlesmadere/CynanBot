@@ -740,7 +740,9 @@ googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
 
 ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    seedFileReader = JsonFileReader('ttsMonsterApiTokensRepositorySeedFile.json')
 )
 
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(

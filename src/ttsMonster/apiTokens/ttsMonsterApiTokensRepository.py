@@ -1,9 +1,13 @@
+import traceback
+
 from .ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
+from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...timber.timberInterface import TimberInterface
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
@@ -11,15 +15,23 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timber: TimberInterface
+        timber: TimberInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
+        seedFileReader: JsonReaderInterface | None = None
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
+            raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__seedFileReader: JsonReaderInterface | None = seedFileReader
 
         self.__isDatabaseReady: bool = False
         self.__cache: dict[str, str | None] = dict()
@@ -27,6 +39,41 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
     async def clearCaches(self):
         self.__cache.clear()
         self.__timber.log('TtsMonsterApiTokensRepository', f'Caches cleared')
+
+    async def __consumeSeedFile(self):
+        seedFileReader = self.__seedFileReader
+
+        if seedFileReader is None:
+            return
+
+        self.__seedFileReader = None
+
+        if not await seedFileReader.fileExistsAsync():
+            self.__timber.log('TtsMonsterApiTokensRepository', f'Seed file (\"{seedFileReader}\") does not exist')
+            return
+
+        jsonContents: dict[str, str] | None = await seedFileReader.readJsonAsync()
+        await seedFileReader.deleteFileAsync()
+
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            self.__timber.log('TtsMonsterApiTokensRepository', f'Seed file (\"{seedFileReader}\") is empty')
+            return
+
+        self.__timber.log('TtsMonsterApiTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
+
+        for twitchChannel, apiToken in jsonContents.items():
+            try:
+                twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
+            except Exception as e:
+                self.__timber.log('TtsMonsterApiTokensRepository', f'Failed to fetch Twitch channel ID for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                continue
+
+            await self.set(
+                apiToken = apiToken,
+                twitchChannelId = twitchChannelId
+            )
+
+        self.__timber.log('TtsMonsterApiTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
 
     async def get(self, twitchChannelId: str) -> str | None:
         if not utils.isValidStr(twitchChannelId):
@@ -75,6 +122,7 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
                 raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
         await connection.close()
+        await self.__consumeSeedFile()
 
     async def __readFromDatabase(self, twitchChannelId: str) -> str | None:
         if not utils.isValidStr(twitchChannelId):
