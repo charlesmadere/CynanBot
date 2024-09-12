@@ -176,6 +176,7 @@ from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
 from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
@@ -745,7 +746,10 @@ ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonst
     seedFileReader = JsonFileReader('ttsMonsterApiTokensRepositorySeedFile.json')
 )
 
+ttsMonsterWebsiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapperInterface()
+
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+    ttsMonsterWebsiteVoiceMapper = ttsMonsterWebsiteVoiceMapper,
     settingsJsonReader = JsonFileReader('ttsMonsterSettingsRepository.json')
 )
 
