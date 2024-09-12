@@ -76,11 +76,16 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         if not utils.isValidStr(ttsUrl):
             raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
 
-        fileNames = await self.__generateFileNames(1)
+        ttsUrls: FrozenList[str] = FrozenList()
+        ttsUrls.append(ttsUrl)
+        ttsUrls.freeze()
 
-        # TODO fetch file and save it to the above file name
+        ttsFileNames = await self.saveTtsUrlsToNewFiles(ttsUrls)
 
-        return None
+        if ttsFileNames is None or len(ttsFileNames) == 0:
+            return None
+
+        return ttsFileNames[0]
 
     async def saveTtsUrlsToNewFiles(self, ttsUrls: Collection[str]) -> FrozenList[str] | None:
         if not isinstance(ttsUrls, Collection):
@@ -104,7 +109,7 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
 
         # TODO fetch files and save them to the above file names
 
-        return fileNames
+        return None
 
     async def __writeTtsSoundDataToLocalFile(
         self,

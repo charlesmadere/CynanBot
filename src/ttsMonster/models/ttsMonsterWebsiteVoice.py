@@ -14,20 +14,6 @@ class TtsMonsterWebsiteVoice(Enum):
     ZERO_TWO = auto()
 
     @property
-    def isEnabled(self):
-        match self:
-            case TtsMonsterWebsiteVoice.BRIAN: return True
-            case TtsMonsterWebsiteVoice.GERALT: return False
-            case TtsMonsterWebsiteVoice.HAL_9000: return False
-            case TtsMonsterWebsiteVoice.JOHNNY: return False
-            case TtsMonsterWebsiteVoice.KKONA: return True
-            case TtsMonsterWebsiteVoice.MEGAN: return True
-            case TtsMonsterWebsiteVoice.NARRATOR: return False
-            case TtsMonsterWebsiteVoice.SHADOW: return True
-            case TtsMonsterWebsiteVoice.ZERO_TWO: return True
-            case _: raise RuntimeError(f'unknown TtsMonsterWebsiteVoice: \"{self}\"')
-
-    @property
     def voiceId(self) -> str:
         match self:
             case TtsMonsterWebsiteVoice.BRIAN: return '0993f688-6719-4cf6-9769-fee7b77b1df5'

@@ -1779,6 +1779,7 @@ cynanBot = CynanBot(
     triviaUtils = triviaUtils,
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterApiTokensRepository = None,
+    ttsMonsterSettingsRepository = None,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

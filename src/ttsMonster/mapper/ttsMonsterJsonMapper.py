@@ -69,7 +69,7 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
             sample = utils.getStrFromDict(jsonContents, 'sample')
 
         voiceId = utils.getStrFromDict(jsonContents, 'voice_id')
-        websiteVoice = await self.__websiteVoiceMapper.map(voiceId)
+        websiteVoice = await self.__websiteVoiceMapper.fromApiVoiceId(voiceId)
 
         return TtsMonsterVoice(
             language = language,

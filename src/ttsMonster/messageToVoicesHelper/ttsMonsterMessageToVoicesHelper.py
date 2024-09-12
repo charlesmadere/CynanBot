@@ -8,6 +8,7 @@ from frozenlist import FrozenList
 from .ttsMonsterMessageToVoicePair import TtsMonsterMessageToVoicePair
 from .ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
 from ..models.ttsMonsterVoice import TtsMonsterVoice
+from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...misc import utils as utils
 
 
@@ -19,7 +20,15 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         end: int
         voice: TtsMonsterVoice
 
-    def __init__(self):
+    def __init__(
+        self,
+        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface
+    ):
+        if not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
+            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
+
+        self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
+
         self.__voicePatternRegEx: Pattern = re.compile(r'(^|\s+)(\w+):', re.IGNORECASE)
 
     async def build(
@@ -108,8 +117,10 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         voiceNamesToVoiceDictionary: dict[str, TtsMonsterVoice] = dict()
 
         for voice in voices:
-            if voice.websiteVoice is not None:
-                voiceNamesToVoiceDictionary[voice.requireWebsiteVoice().websiteName.casefold()] = voice
+            if voice.websiteVoice is None:
+                continue
+            elif await self.__ttsMonsterSettingsRepository.isWebsiteVoiceEnabled(voice.websiteVoice):
+                voiceNamesToVoiceDictionary[voice.websiteVoice.websiteName.casefold()] = voice
 
         return frozendict(voiceNamesToVoiceDictionary)
 

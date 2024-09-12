@@ -11,7 +11,7 @@ from ..apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiToke
 from ..messageToVoicesHelper.ttsMonsterMessageToVoicePair import TtsMonsterMessageToVoicePair
 from ..messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
-from ..models.ttsMonsterWebsiteVoice import TtsMonsterWebsiteVoice
+from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -36,9 +36,8 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface,
         ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface,
-        ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface,
-        returnCharacterUsage: bool = True,
-        defaultVoice: TtsMonsterWebsiteVoice = TtsMonsterWebsiteVoice.BRIAN
+        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
+        ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -48,20 +47,17 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif not isinstance(ttsMonsterMessageToVoicesHelper, TtsMonsterMessageToVoicesHelperInterface):
             raise TypeError(f'ttsMonsterMessageToVoicesHelper argument is malformed: \"{ttsMonsterMessageToVoicesHelper}\"')
+        elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
+            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsMonsterStreamerVoicesRepository, TtsMonsterStreamerVoicesRepositoryInterface):
             raise TypeError(f'ttsMonsterStreamerVoicesRepository argument is malformed: \"{ttsMonsterStreamerVoicesRepository}\"')
-        elif not utils.isValidBool(returnCharacterUsage):
-            raise TypeError(f'returnCharacterUsage argument is malformed: \"{returnCharacterUsage}\"')
-        elif not isinstance(defaultVoice, TtsMonsterWebsiteVoice):
-            raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
         self.__timber: TimberInterface = timber
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
         self.__ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = ttsMonsterApiTokensRepository
         self.__ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = ttsMonsterMessageToVoicesHelper
+        self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface = ttsMonsterStreamerVoicesRepository
-        self.__returnCharacterUsage: bool = returnCharacterUsage
-        self.__defaultVoice: TtsMonsterWebsiteVoice = defaultVoice
 
     async def __fetchTtsUrl(
         self,
@@ -80,7 +76,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'voiceId argument is malformed: \"{voiceId}\"')
 
         ttsRequest = TtsMonsterTtsRequest(
-            returnUsage = self.__returnCharacterUsage,
+            returnUsage = await self.__ttsMonsterSettingsRepository.isReturnCharacterUsageEnabled(),
             message = message,
             voiceId = voiceId
         )
@@ -153,12 +149,14 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         twitchChannel: str,
         twitchChannelId: str
     ) -> FrozenList[str] | None:
+        defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+
         try:
             ttsResponse = await self.__fetchTtsUrl(
                 index = 0,
                 apiToken = apiToken,
                 message = message,
-                voiceId = self.__defaultVoice.voiceId
+                voiceId = defaultVoice.voiceId
             )
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterHelper', f'Encountered network error when generating TTS from TTS Monster ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())

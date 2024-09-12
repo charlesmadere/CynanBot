@@ -52,11 +52,11 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
         deleteRetries: list[TtsTempFile] = list()
 
         for tempFile in tempFilesToDelete:
-            if await self.__removeFile(tempFile.getFileName()):
+            if await self.__removeFile(tempFile.fileName):
                 successes = successes + 1
             else:
                 tempFile.incrementDeletionAttempts()
-                fails = fails = 1
+                fails = fails + 1
                 deleteRetries.append(tempFile)
 
         if len(deleteRetries) >= 1:
@@ -70,9 +70,9 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         for tempFile in self.__tempFiles:
-            if tempFile.getDeletionAttempts() > self.__maxDeletionAttempts:
+            if tempFile.deletionAttempts > self.__maxDeletionAttempts:
                 tempFilesToDrop.append(tempFile)
-            elif (tempFile.getCreationDateTime() + self.__timeToLive) <= now:
+            elif (tempFile.creationDateTime + self.__timeToLive) <= now:
                 tempFilesToDelete.append(tempFile)
 
         for tempFileToDrop in tempFilesToDrop:

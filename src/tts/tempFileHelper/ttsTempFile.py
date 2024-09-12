@@ -20,13 +20,16 @@ class TtsTempFile:
 
         self.__deletionAttempts: int = 0
 
-    def getCreationDateTime(self) -> datetime:
+    @property
+    def creationDateTime(self) -> datetime:
         return self.__creationDateTime
 
-    def getDeletionAttempts(self) -> int:
+    @property
+    def deletionAttempts(self) -> int:
         return self.__deletionAttempts
 
-    def getFileName(self) -> str:
+    @property
+    def fileName(self) -> str:
         return self.__fileName
 
     def incrementDeletionAttempts(self):

@@ -176,6 +176,8 @@ from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
 from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
+from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
+from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -741,6 +743,10 @@ ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonst
     timber = timber
 )
 
+ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+    settingsJsonReader = JsonFileReader('ttsMonsterSettingsRepository.json')
+)
+
 ttsManager: TtsManagerInterface | None = TtsManager(
     decTalkManager = decTalkManager,
     googleTtsManager = googleTtsManager,
@@ -1081,6 +1087,7 @@ cynanBot = CynanBot(
     triviaUtils = None,
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

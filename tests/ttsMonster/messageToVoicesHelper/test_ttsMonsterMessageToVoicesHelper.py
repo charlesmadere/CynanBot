@@ -1,16 +1,34 @@
 import pytest
 from frozenlist import FrozenList
 
+from src.storage.jsonStaticReader import JsonStaticReader
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
 from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import TtsMonsterMessageToVoicesHelper
 from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import \
     TtsMonsterMessageToVoicesHelperInterface
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from src.ttsMonster.models.ttsMonsterWebsiteVoice import TtsMonsterWebsiteVoice
+from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
+from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 
 
 class TestTtsMonsterMessageToVoicesHelper:
 
-    helper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper()
+    websiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
+
+    settingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+        settingsJsonReader = JsonStaticReader({
+            f'is_{TtsMonsterWebsiteVoice.BRIAN.websiteName}_enabled': True,
+            f'is_{TtsMonsterWebsiteVoice.KKONA.websiteName}_enabled': True,
+            f'is_{TtsMonsterWebsiteVoice.SHADOW.websiteName}_enabled': True
+        }),
+        ttsMonsterWebsiteVoiceMapper = websiteVoiceMapper
+    )
+
+    helper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
+        ttsMonsterSettingsRepository = settingsRepository
+    )
 
     brian = TtsMonsterVoice(
         language = None,
@@ -193,3 +211,23 @@ class TestTtsMonsterMessageToVoicesHelper:
         entry = result[1]
         assert entry.message == 'bgram'
         assert entry.voice == self.shadow
+
+    @pytest.mark.asyncio
+    async def test_build_withTrickyShadowMessage(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona, self.shadow })
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'shadow: brian:pirate:kkona: bgram kkona:hello'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 2
+
+        entry = result[0]
+        assert entry.message == 'pirate:kkona: bgram'
+        assert entry.voice == self.brian
+
+        entry = result[1]
+        assert entry.message == 'hello'
+        assert entry.voice == self.kkona

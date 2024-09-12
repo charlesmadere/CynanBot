@@ -6,5 +6,9 @@ from ..models.ttsMonsterWebsiteVoice import TtsMonsterWebsiteVoice
 class TtsMonsterWebsiteVoiceMapperInterface(ABC):
 
     @abstractmethod
-    async def map(self, apiVoiceId: str) -> TtsMonsterWebsiteVoice | None:
+    async def fromApiVoiceId(self, apiVoiceId: str) -> TtsMonsterWebsiteVoice | None:
+        pass
+
+    @abstractmethod
+    async def fromWebsiteName(self, websiteName: str) -> TtsMonsterWebsiteVoice:
         pass
