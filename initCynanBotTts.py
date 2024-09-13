@@ -829,7 +829,8 @@ crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdC
 
 crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
     bizhawkSettingsRepository = bizhawkSettingsRepository,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 
