@@ -112,6 +112,21 @@ class CheerActionHelper(CheerActionHelperInterface):
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChatMessageId = twitchChatMessageId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user
+        ):
+            return True
+
+        if self.__crowdControlCheerActionHelper is not None and await self.__crowdControlCheerActionHelper.handleCrowdControlCheerAction(
+            actions = actions,
+            bits = bits,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user
         ):

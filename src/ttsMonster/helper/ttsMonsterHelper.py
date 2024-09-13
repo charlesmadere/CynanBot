@@ -11,6 +11,7 @@ from ..apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiToke
 from ..messageToVoicesHelper.ttsMonsterMessageToVoicePair import TtsMonsterMessageToVoicePair
 from ..messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
+from ..models.ttsMonsterUrls import TtsMonsterUrls
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
 from ...misc import utils as utils
@@ -27,6 +28,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
     @dataclass(frozen = True)
     class TtsResponseEntry:
+        characterUsage: int | None
         index: int
         url: str
 
@@ -87,6 +89,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         )
 
         return TtsMonsterHelper.TtsResponseEntry(
+            characterUsage = ttsResponse.characterUsage,
             index = index,
             url = ttsResponse.url
         )
@@ -97,7 +100,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         apiToken: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> FrozenList[str] | None:
+    ) -> TtsMonsterUrls | None:
         ttsRequests: list[TtsMonsterHelper.TtsRequestEntry] = list()
 
         for index, messageToVoicePair in enumerate(messages):
@@ -140,7 +143,17 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         frozenTtsUrls: FrozenList[str] = FrozenList(ttsUrls)
         frozenTtsUrls.freeze()
 
-        return frozenTtsUrls
+        characterUsage: int | None = None
+        for ttsResponse in ttsResponses:
+            if not utils.isValidInt(ttsResponse.characterUsage):
+                continue
+            elif characterUsage is None or ttsResponse.characterUsage > characterUsage:
+                characterUsage = ttsResponse.characterUsage
+
+        return TtsMonsterUrls(
+            urls = frozenTtsUrls,
+            characterUsage = characterUsage
+        )
 
     async def __generateSingleVoiceTts(
         self,
@@ -148,7 +161,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         message: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> FrozenList[str] | None:
+    ) -> TtsMonsterUrls | None:
         defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
 
         try:
@@ -166,14 +179,17 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         ttsUrls.append(ttsResponse.url)
         ttsUrls.freeze()
 
-        return ttsUrls
+        return TtsMonsterUrls(
+            urls = ttsUrls,
+            characterUsage = ttsResponse.characterUsage
+        )
 
     async def generateTts(
         self,
         message: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> FrozenList[str] | None:
+    ) -> TtsMonsterUrls | None:
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):

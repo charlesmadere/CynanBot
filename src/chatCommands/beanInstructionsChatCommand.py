@@ -73,6 +73,7 @@ class BeanInstructionsChatCommand(AbsChatCommand):
 
     async def __toString(self, beanCheerAction: BeanChanceCheerAction) -> str:
         bits: str
+
         if beanCheerAction.bits == 1:
             bits = 'bit'
         else:

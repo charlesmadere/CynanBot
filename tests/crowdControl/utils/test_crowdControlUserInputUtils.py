@@ -20,6 +20,11 @@ class TestCrowdControlUserInputUtils:
         assert result is CrowdControlButton.BUTTON_B
 
     @pytest.mark.asyncio
+    async def test_parseButtonFromUserInput_withC(self):
+        result = await self.utils.parseButtonFromUserInput('c')
+        assert result is CrowdControlButton.BUTTON_C
+
+    @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withCheer0Up(self):
         result = await self.utils.parseButtonFromUserInput('cheer0 up')
         assert result is CrowdControlButton.DPAD_UP
@@ -112,6 +117,9 @@ class TestCrowdControlUserInputUtils:
 
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withLeftDpad(self):
+        result = await self.utils.parseButtonFromUserInput('left_dpad')
+        assert result is CrowdControlButton.DPAD_LEFT
+
         result = await self.utils.parseButtonFromUserInput('left dpad')
         assert result is CrowdControlButton.DPAD_LEFT
 
@@ -140,6 +148,9 @@ class TestCrowdControlUserInputUtils:
 
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withRightDpad(self):
+        result = await self.utils.parseButtonFromUserInput('right_dpad')
+        assert result is CrowdControlButton.DPAD_RIGHT
+
         result = await self.utils.parseButtonFromUserInput('right dpad')
         assert result is CrowdControlButton.DPAD_RIGHT
 
@@ -206,6 +217,11 @@ class TestCrowdControlUserInputUtils:
     async def test_parseButtonFromUserInput_withY(self):
         result = await self.utils.parseButtonFromUserInput('y')
         assert result is CrowdControlButton.BUTTON_Y
+
+    @pytest.mark.asyncio
+    async def test_parseButtonFromUserInput_withZ(self):
+        result = await self.utils.parseButtonFromUserInput('z')
+        assert result is CrowdControlButton.BUTTON_Z
 
     def test_sanity(self):
         assert self.utils is not None

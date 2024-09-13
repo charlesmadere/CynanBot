@@ -17,8 +17,10 @@ class CrowdControlInputTypeMapper(CrowdControlInputTypeMapperInterface):
         match inputType:
             case CrowdControlInputType.BUTTON_A: return CrowdControlButton.BUTTON_A
             case CrowdControlInputType.BUTTON_B: return CrowdControlButton.BUTTON_B
+            case CrowdControlInputType.BUTTON_C: return CrowdControlButton.BUTTON_C
             case CrowdControlInputType.BUTTON_X: return CrowdControlButton.BUTTON_X
             case CrowdControlInputType.BUTTON_Y: return CrowdControlButton.BUTTON_Y
+            case CrowdControlInputType.BUTTON_Z: return CrowdControlButton.BUTTON_Z
             case CrowdControlInputType.DPAD_DOWN: return CrowdControlButton.DPAD_DOWN
             case CrowdControlInputType.DPAD_LEFT: return CrowdControlButton.DPAD_LEFT
             case CrowdControlInputType.DPAD_RIGHT: return CrowdControlButton.DPAD_RIGHT

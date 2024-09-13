@@ -9,6 +9,7 @@ import aiofiles.ospath
 from frozenlist import FrozenList
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
+from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -24,17 +25,21 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
     def __init__(
         self,
         timber: TimberInterface,
+        ttsTempFileHelper: TtsTempFileHelperInterface,
         directory: str = 'temp',
         fileExtension: str = 'wav'
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
+            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
         self.__timber: TimberInterface = timber
+        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
         self.__directory: str = directory
         self.__fileExtension: str = fileExtension
 

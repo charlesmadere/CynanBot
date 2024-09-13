@@ -35,11 +35,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] | None = json.loads(jsonString)
 
-        maximumPerDay = utils.getIntFromDict(
-            d = jsonContents,
-            key = 'maximumPerDay'
-        )
-
         randomChance = utils.getIntFromDict(
             d = jsonContents,
             key = 'randomChance',
@@ -49,7 +44,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            maximumPerDay = maximumPerDay,
             randomChance = randomChance,
             twitchChannelId = twitchChannelId
         )
@@ -256,7 +250,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
-            'maximumPerDay': cheerAction.maximumPerDay,
             'randomChance': cheerAction.randomChance
         }
 

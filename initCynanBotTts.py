@@ -870,7 +870,10 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
-    timber = timber
+    timber = timber,
+    twitchEmotesHelper = twitchEmotesHelper,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+    twitchUtils = twitchUtils
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(

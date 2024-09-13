@@ -65,6 +65,10 @@ class TestCrowdControlJsonParser:
         result = self.jsonParser.parseInputType('button_b')
         assert result is CrowdControlInputType.BUTTON_B
 
+    def test_parseInputType_withButtonC(self):
+        result = self.jsonParser.parseInputType('button_c')
+        assert result is CrowdControlInputType.BUTTON_C
+
     def test_parseInputType_withButtonX(self):
         result = self.jsonParser.parseInputType('button_x')
         assert result is CrowdControlInputType.BUTTON_X
@@ -72,6 +76,10 @@ class TestCrowdControlJsonParser:
     def test_parseInputType_withButtonY(self):
         result = self.jsonParser.parseInputType('button_y')
         assert result is CrowdControlInputType.BUTTON_Y
+
+    def test_parseInputType_withButtonZ(self):
+        result = self.jsonParser.parseInputType('button_z')
+        assert result is CrowdControlInputType.BUTTON_Z
 
     def test_parseInputType_withDpadDown(self):
         result = self.jsonParser.parseInputType('dpad_down')

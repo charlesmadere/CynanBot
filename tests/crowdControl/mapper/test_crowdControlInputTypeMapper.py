@@ -21,6 +21,11 @@ class TestCrowdControlInputTypeMapper:
         assert result is CrowdControlButton.BUTTON_B
 
     @pytest.mark.asyncio
+    async def test_toButton_withButtonC(self):
+        result = await self.mapper.toButton(CrowdControlInputType.BUTTON_C)
+        assert result is CrowdControlButton.BUTTON_C
+
+    @pytest.mark.asyncio
     async def test_toButton_withButtonX(self):
         result = await self.mapper.toButton(CrowdControlInputType.BUTTON_X)
         assert result is CrowdControlButton.BUTTON_X
@@ -29,6 +34,11 @@ class TestCrowdControlInputTypeMapper:
     async def test_toButton_withButtonY(self):
         result = await self.mapper.toButton(CrowdControlInputType.BUTTON_Y)
         assert result is CrowdControlButton.BUTTON_Y
+
+    @pytest.mark.asyncio
+    async def test_toButton_withButtonZ(self):
+        result = await self.mapper.toButton(CrowdControlInputType.BUTTON_Z)
+        assert result is CrowdControlButton.BUTTON_Z
 
     @pytest.mark.asyncio
     async def test_toButton_withDpadDown(self):

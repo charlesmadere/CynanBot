@@ -53,6 +53,13 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
                     fallback = ''
                 )
 
+            case CrowdControlButton.BUTTON_C:
+                keyBindString = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'keyBindButtonC',
+                    fallback = ''
+                )
+
             case CrowdControlButton.BUTTON_X:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
@@ -64,6 +71,13 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonY',
+                    fallback = ''
+                )
+
+            case CrowdControlButton.BUTTON_Z:
+                keyBindString = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'keyBindButtonZ',
                     fallback = ''
                 )
 
@@ -141,6 +155,15 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
             return None
 
         return await self.__bizhawkKeyMapper.fromString(keyBindString)
+
+    async def getProcessName(self) -> str:
+        jsonContents = await self.__readJson()
+
+        return utils.getStrFromDict(
+            d = jsonContents,
+            key = 'processName',
+            fallback = 'EmuHawk'
+        )
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

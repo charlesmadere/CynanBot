@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-
 from frozenlist import FrozenList
+
 from src.cheerActions.timeout.timeoutCheerActionEntry import TimeoutCheerActionEntry
 from src.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
 from src.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface

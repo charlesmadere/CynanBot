@@ -71,16 +71,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
-            case BeanChanceStep.MAXIMUM_PER_DAY:
-                try:
-                    maximumPerDay = int(content)
-                    wizard.setMaximumPerDay(maximumPerDay)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumPerDay value for Bean Chance wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
             case BeanChanceStep.RANDOM_CHANCE:
                 try:
                     randomChance = int(content)
@@ -107,7 +97,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
-                    maximumPerDay = wizard.maximumPerDay,
                     randomChance = wizard.requireRandomChance(),
                     twitchChannelId = wizard.twitchChannelId
                 ))
@@ -131,10 +120,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                return True
-
-            case BeanChanceStep.MAXIMUM_PER_DAY:
-                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the maximum number of beans you\'re willing to eat in a single day. This value must be an integer from 1 to 50 (decimals aren\'t allowed).')
                 return True
 
             case BeanChanceStep.RANDOM_CHANCE:

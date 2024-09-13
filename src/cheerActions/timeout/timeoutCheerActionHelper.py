@@ -16,7 +16,6 @@ from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
 from ...tts.ttsProvider import TtsProvider
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from ...twitch.configuration.twitchMessageable import TwitchMessageable
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
@@ -146,6 +145,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{userNameToTimeout}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
             return False
 
+        twitchChannelProvider = self.__twitchChannelProvider
+        if twitchChannelProvider is None:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{userNameToTimeout}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but no TwitchChannelProvider has been set: ({twitchChannelProvider=}) ({message=}) ({timeoutAction=})')
+            return False
+
         return await self.__timeoutUser(
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
@@ -157,6 +161,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userNameToTimeout = userNameToTimeout,
             userTwitchAccessToken = userTwitchAccessToken,
             action = timeoutAction,
+            twitchChannelProvider = twitchChannelProvider,
             user = user
         )
 
@@ -302,21 +307,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     ) -> bool:
         return twitchChannelId == userIdToTimeout
 
-    async def __send(
-        self,
-        twitchChannel: TwitchMessageable | None,
-        message: str,
-        twitchChatMessageId: str | None = None
-    ):
-        if twitchChannel is None:
-            return
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = twitchChatMessageId
-        )
-
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
@@ -335,6 +325,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         userNameToTimeout: str,
         userTwitchAccessToken: str,
         action: TimeoutCheerAction,
+        twitchChannelProvider: TwitchChannelProvider,
         user: UserInterface
     ) -> bool:
         if not utils.isValidStr(cheerUserId):
@@ -357,14 +348,12 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(action, TimeoutCheerAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
+        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
+            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        twitchChannelProvider = self.__twitchChannelProvider
-        twitchChannel: TwitchMessageable | None = None
-
-        if twitchChannelProvider is not None:
-            twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
 
         if not await self.__verifyStreamStatus(
             twitchChannelId = twitchChannelId,
@@ -384,7 +373,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userIdToTimeout = userIdToTimeout
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but this user is a new follower ({action=})')
-            await self.__send(twitchChannel, f'ⓘ Sorry @{cheerUserName}, but @{userNameToTimeout} has the new follower shield', twitchChatMessageId)
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'ⓘ Sorry @{cheerUserName}, but @{userNameToTimeout} has the new follower shield',
+                replyMessageId = twitchChatMessageId
+            )
             return False
 
         randomNumber = random.random()
@@ -417,7 +410,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the failure RNG ({randomNumber=}) ({action=})')
-            await self.__send(twitchChannel, f'ⓘ Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed 🎲 🎰', twitchChatMessageId)
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'ⓘ Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed 🎲 🎰',
+                replyMessageId = twitchChatMessageId
+            )
             return False
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -432,7 +429,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         if timeoutResult is TwitchTimeoutResult.IMMUNE_USER:
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they are immune ({randomNumber=}) ({timeoutResult=}) ({action=})')
-            await self.__send(twitchChannel, f'⚠️ Sorry @{cheerUserName}, but @{userNameToTimeout} is immune', twitchChatMessageId)
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'⚠️ Sorry @{cheerUserName}, but @{userNameToTimeout} is immune',
+                replyMessageId = twitchChatMessageId
+            )
             return False
         elif timeoutResult is not TwitchTimeoutResult.SUCCESS:
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but an error occurred ({randomNumber=}) ({timeoutResult=}) ({action=})')
@@ -460,9 +461,16 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         if isReverse:
-            await self.__send(twitchChannel, f'Uh oh, @{userNameToTimeout} got hit with a reverse! RIPBOZO')
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'Uh oh, @{userNameToTimeout} got hit with a reverse! RIPBOZO'
+            )
         else:
-            await self.__send(twitchChannel, f'RIPBOZO @{userNameToTimeout} RIPBOZO', twitchChatMessageId)
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'RIPBOZO @{userNameToTimeout} RIPBOZO',
+                replyMessageId = twitchChatMessageId
+            )
 
         return True
 

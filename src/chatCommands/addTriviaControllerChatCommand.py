@@ -75,18 +75,20 @@ class AddTriviaControllerChatCommand(AbsChatCommand):
             userName = userName
         )
 
+        replyMessageId = await ctx.getMessageId()
+
         match result:
             case AddTriviaGameControllerResult.ADDED:
-                await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller')
+                await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller', replyMessageId = replyMessageId)
 
             case AddTriviaGameControllerResult.ALREADY_EXISTS:
-                await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one')
+                await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one', replyMessageId = replyMessageId)
 
             case AddTriviaGameControllerResult.ERROR:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!', replyMessageId = replyMessageId)
 
             case _:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!', replyMessageId = replyMessageId)
                 self.__timber.log('AddTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
                 raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 

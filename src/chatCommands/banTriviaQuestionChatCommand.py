@@ -85,9 +85,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
+        replyMessageId = await ctx.getMessageId()
+
         if reference is None:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")', replyMessageId = replyMessageId)
             return
 
         await self.__triviaBanHelper.ban(
@@ -99,7 +101,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()} — {reference.triviaId}',
-            replyMessageId = await ctx.getMessageId()
+            replyMessageId = replyMessageId
         )
 
         self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.triviaSource.toStr()}:{reference.triviaId} was banned)')

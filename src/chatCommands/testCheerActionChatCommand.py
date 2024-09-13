@@ -55,6 +55,7 @@ class TestCheerActionChatCommand(AbsChatCommand):
             self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} specified an invalid bit amount ({splits=}) ({bits=})')
             return
 
+        message = (f'cheer{bits} ' + ' '.join(splits[2:])).strip()
         result: bool | None = None
         exception: Exception | None = None
 
@@ -64,13 +65,13 @@ class TestCheerActionChatCommand(AbsChatCommand):
                 broadcasterUserId = twitchChannelId,
                 cheerUserId = ctx.getAuthorId(),
                 cheerUserName = ctx.getAuthorName(),
-                message = ' '.join(splits),
+                message = message,
                 twitchChatMessageId = await ctx.getMessageId(),
                 user = user
             )
         except Exception as e:
             exception = e
-            self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform cheer action test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}: {e}', e, traceback.format_exc())
+            self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform cheer action test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({bits=}) ({message=}): {e}', e, traceback.format_exc())
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Cheer Action test results ({bits=}) ({result=}) ({exception=})')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Cheer Action test results ({bits=}) ({message=}) ({result=}) ({exception=})')
         self.__timber.log('TestCheerActionChatCommand', f'Handled !testcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({result=})')

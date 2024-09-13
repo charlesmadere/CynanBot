@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import locale
+from dataclasses import dataclass
 
 from .pokepediaDamageClass import PokepediaDamageClass
 from .pokepediaElementType import PokepediaElementType

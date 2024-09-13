@@ -17,3 +17,7 @@ class BizhawkSettingsRepositoryInterface(Clearable):
     @abstractmethod
     async def getGameShuffleKeyBind(self) -> BizhawkKey | None:
         pass
+
+    @abstractmethod
+    async def getProcessName(self) -> str:
+        pass

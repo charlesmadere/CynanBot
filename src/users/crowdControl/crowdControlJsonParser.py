@@ -52,8 +52,10 @@ class CrowdControlJsonParser(CrowdControlJsonParserInterface):
         match inputType:
             case 'button_a': return CrowdControlInputType.BUTTON_A
             case 'button_b': return CrowdControlInputType.BUTTON_B
+            case 'button_c': return CrowdControlInputType.BUTTON_C
             case 'button_x': return CrowdControlInputType.BUTTON_X
             case 'button_y': return CrowdControlInputType.BUTTON_Y
+            case 'button_z': return CrowdControlInputType.BUTTON_Z
             case 'dpad_down': return CrowdControlInputType.DPAD_DOWN
             case 'dpad_left': return CrowdControlInputType.DPAD_LEFT
             case 'dpad_right': return CrowdControlInputType.DPAD_RIGHT

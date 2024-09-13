@@ -16,10 +16,6 @@ class BeanChanceSteps(AbsSteps):
 
         match currentStep:
             case BeanChanceStep.BITS:
-                self.__step = BeanChanceStep.MAXIMUM_PER_DAY
-                return StepResult.NEXT
-
-            case BeanChanceStep.MAXIMUM_PER_DAY:
                 self.__step = BeanChanceStep.RANDOM_CHANCE
                 return StepResult.NEXT
 

@@ -1,6 +1,5 @@
 from datetime import datetime
-
-from frozenlist import FrozenList
+from typing import Collection
 
 from .crowdControlCheerAction import CrowdControlCheerAction
 from .crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
@@ -49,7 +48,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
     async def handleCrowdControlCheerAction(
         self,
-        actions: FrozenList[AbsCheerAction],
+        actions: Collection[AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,

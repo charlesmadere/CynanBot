@@ -1,10 +1,15 @@
+import random
 from typing import Collection
 
 from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ..beanChanceCheerAction import BeanChanceCheerAction
+from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ...twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
+from ...twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userInterface import UserInterface
 
 
@@ -12,14 +17,56 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
     def __init__(
         self,
-        timber: TimberInterface
+        timber: TimberInterface,
+        twitchEmotesHelper: TwitchEmotesHelperInterface,
+        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
+        twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
+            raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
+        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
+            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__timber: TimberInterface = timber
+        self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
+        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
+
+    async def __getHypeEmote(self) -> str:
+        charlesUserId = await self.__twitchFriendsUserIdRepository.getCharlesUserId()
+
+        if not utils.isValidStr(charlesUserId):
+            return '🎉'
+
+        viableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
+            twitchChannelId = charlesUserId
+        )
+
+        if 'samusHype' in viableEmotes:
+            return 'samusHype'
+        else:
+            return '🎉'
+
+    async def __getSadEmote(self) -> str:
+        charlesUserId = await self.__twitchFriendsUserIdRepository.getCharlesUserId()
+
+        if not utils.isValidStr(charlesUserId):
+            return utils.getRandomSadEmoji()
+
+        viableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
+            twitchChannelId = charlesUserId
+        )
+
+        if 'samusBad' in viableEmotes:
+            return 'samusBad'
+        else:
+            return utils.getRandomSadEmoji()
 
     async def handleBeanChanceCheerAction(
         self,
@@ -31,6 +78,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChatMessageId: str | None,
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
@@ -47,8 +95,70 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         if beanAction is None:
             return False
 
-        # TODO
-        return False
+        twitchChannelProvider = self.__twitchChannelProvider
+        if twitchChannelProvider is None:
+            return False
+
+        return await self.__rollBeanChance(
+            action = beanAction,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            twitchChannelId = broadcasterUserId,
+            twitchChatMessageId = twitchChatMessageId,
+            twitchChannelProvider = twitchChannelProvider,
+            user = user
+        )
+
+    async def __rollBeanChance(
+        self,
+        action: BeanChanceCheerAction,
+        cheerUserId: str,
+        cheerUserName: str,
+        twitchChannelId: str,
+        twitchChatMessageId: str | None,
+        twitchChannelProvider: TwitchChannelProvider,
+        user: UserInterface
+    ) -> bool:
+        if not isinstance(action, BeanChanceCheerAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+        elif not utils.isValidStr(cheerUserId):
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserName):
+            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
+            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
+        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
+            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        randomNumber = int(round(random.random() * float(100)))
+
+        if randomNumber < action.randomChance:
+            self.__timber.log('BeanChanceCheerActionHelper', f'Attempt to bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} but got a bad roll ({randomNumber=}) ({action=})')
+            emote = await self.__getSadEmote()
+
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'{emote} Sorry, no bean (you rolled a {randomNumber}, but you needed a roll greater than or equal to {action.randomChance})',
+                replyMessageId = twitchChatMessageId
+            )
+
+            return False
+        else:
+            self.__timber.log('BeanChanceCheerActionHelper', f'Successful bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} ({randomNumber=}) ({action=})')
+            emote = await self.__getHypeEmote()
+
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'{emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote}',
+                replyMessageId = twitchChatMessageId
+            )
+
+            return True
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

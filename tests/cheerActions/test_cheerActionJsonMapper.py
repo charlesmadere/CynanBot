@@ -1,7 +1,9 @@
 import json
+
 import pytest
 
 from src.cheerActions.absCheerAction import AbsCheerAction
+from src.cheerActions.beanChanceCheerAction import BeanChanceCheerAction
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
@@ -176,6 +178,25 @@ class TestCheerActionJsonMapper:
             result = await self.jsonMapper.requireCrowdControlCheerActionType(' ')
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withBeanChanceCheerAction(self):
+        cheerAction: AbsCheerAction = BeanChanceCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            bits = 50,
+            randomChance = 70,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 1
+
+        assert dictionary['randomChance'] == 70
 
     @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withCrowdControlCheerAction(self):

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from frozenlist import FrozenList
+from ..models.ttsMonsterUrls import TtsMonsterUrls
 
 
 class TtsMonsterHelperInterface(ABC):
@@ -11,5 +11,5 @@ class TtsMonsterHelperInterface(ABC):
         message: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> FrozenList[str] | None:
+    ) -> TtsMonsterUrls | None:
         pass

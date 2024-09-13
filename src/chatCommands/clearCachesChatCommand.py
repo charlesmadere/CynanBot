@@ -34,6 +34,7 @@ from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTo
 from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -77,6 +78,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepository | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
+        twitchEmotesHelper: TwitchEmotesHelperInterface | None,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface | None,
         twitchUtils: TwitchUtilsInterface,
@@ -142,6 +144,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif twitchEmotesHelper is not None and not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
+            raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -192,6 +196,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(ttsMonsterApiTokensRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
+        self.__clearables.append(twitchEmotesHelper)
         self.__clearables.append(twitchFollowingStatusRepository)
         self.__clearables.append(twitchTokensRepository)
         self.__clearables.append(userIdsRepository)
