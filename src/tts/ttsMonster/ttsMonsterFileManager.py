@@ -1,5 +1,7 @@
 import re
+import traceback
 import uuid
+from asyncio import AbstractEventLoop
 from dataclasses import dataclass
 from typing import Pattern, Collection
 
@@ -12,6 +14,7 @@ from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 
 
 class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
@@ -24,13 +27,19 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         timber: TimberInterface,
+        ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsTempFileHelper: TtsTempFileHelperInterface,
         directory: str = 'temp',
         fileExtension: str = 'wav'
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsMonsterApiService, TtsMonsterApiServiceInterface):
+            raise TypeError(f'ttsMonsterApiService argument is malformed: \"{ttsMonsterApiService}\"')
         elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
             raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
         elif not utils.isValidStr(directory):
@@ -38,19 +47,22 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         elif not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__timber: TimberInterface = timber
+        self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
         self.__directory: str = directory
         self.__fileExtension: str = fileExtension
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
-    async def __fetchTtsSoundData(self, ttsUrl: str):
+    async def __fetchTtsSoundData(self, ttsUrl: str) -> bytes:
         if not utils.isValidStr(ttsUrl):
             raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
 
-        # TODO
-        return None
+        return await self.__ttsMonsterApiService.fetchGeneratedTts(
+            ttsUrl = ttsUrl
+        )
 
     async def __generateFileNames(self, size: int) -> FrozenList[str]:
         if not utils.isValidInt(size):
@@ -112,14 +124,28 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
                 fileName = fileNames[index]
             )
 
-        # TODO fetch files and save them to the above file names
-
-        return None
+        return fileNames
 
     async def __writeTtsSoundDataToLocalFile(
         self,
-        soundData,
+        soundData: bytes,
         fileName: str
     ):
-        # TODO
-        pass
+        if not isinstance(soundData, bytes):
+            raise TypeError(f'soundData argument is malformed: \"{soundData}\"')
+        elif not utils.isValidStr(fileName):
+            raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
+
+        try:
+            async with aiofiles.open(
+                file = fileName,
+                mode = 'wb',
+                loop = self.__eventLoop
+            ) as file:
+                await file.write(soundData)
+                await file.flush()
+        except Exception as e:
+            self.__timber.log('TtsMonsterFileManager', f'Encountered exception when trying to write TTS Monster sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
+            raise e
+
+        await self.__ttsTempFileHelper.registerTempFile(fileName)

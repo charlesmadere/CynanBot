@@ -34,6 +34,29 @@ class TtsMonsterApiService(TtsMonsterApiServiceInterface):
         self.__ttsMonsterJsonMapper: TtsMonsterJsonMapperInterface = ttsMonsterJsonMapper
         self.__contentType: str = contentType
 
+    async def fetchGeneratedTts(self, ttsUrl: str) -> bytes:
+        if not utils.isValidUrl(ttsUrl):
+            raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
+
+        self.__timber.log('TtsMonsterApiService', f'Fetching generated TTS... ({ttsUrl=})')
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.get(url = ttsUrl)
+        except GenericNetworkException as e:
+            self.__timber.log('TtsMonsterApiService', f'Encountered network error when fetching generated TTS ({ttsUrl=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TtsMonsterApiService encountered network error when fetching generated TTS ({ttsUrl=}): {e}')
+
+        responseStatusCode = response.statusCode
+        generatedTtsBytes = await response.read()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TtsMonsterApiService', f'Encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
+            raise GenericNetworkException(f'TtsMonsterApiService encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})', responseStatusCode)
+
+        return generatedTtsBytes
+
     async def generateTts(
         self,
         apiToken: str,

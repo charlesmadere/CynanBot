@@ -8,6 +8,10 @@ from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
 class TtsMonsterApiServiceInterface(ABC):
 
     @abstractmethod
+    async def fetchGeneratedTts(self, ttsUrl: str) -> bytes:
+        pass
+
+    @abstractmethod
     async def generateTts(
         self,
         apiToken: str,
