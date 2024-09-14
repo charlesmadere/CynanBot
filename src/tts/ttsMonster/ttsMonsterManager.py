@@ -106,7 +106,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         )
 
         self.__timber.log('TtsMonsterManager', f'Playing {len(ttsFileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        # TODO send sound event(s) to the sound player manager
+        await self.__soundPlayerManager.playPlaylist(ttsFileNames)
         self.__isLoading = False
 
         return True

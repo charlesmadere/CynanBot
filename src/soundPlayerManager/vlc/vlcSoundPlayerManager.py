@@ -1,8 +1,9 @@
 import traceback
-from typing import Any
+from typing import Any, Collection
 
 import aiofiles.ospath
 import vlc
+from frozenlist import FrozenList
 
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -36,6 +37,28 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
     async def isPlaying(self) -> bool:
         mediaPlayer = self.__mediaPlayer
         return mediaPlayer is not None and mediaPlayer.is_playing()
+
+    async def playPlaylist(self, filePaths: Collection[str]) -> bool:
+        if not isinstance(filePaths, Collection):
+            raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
+
+        frozenFilePaths: FrozenList[str] = FrozenList(filePaths)
+        frozenFilePaths.freeze()
+
+        if len(frozenFilePaths) == 0:
+            self.__timber.log('VlcSoundPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
+            return False
+
+        for index, filePath in enumerate(frozenFilePaths):
+            if not await aiofiles.ospath.exists(filePath):
+                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} does not exist: \"{filePath}\"')
+                return False
+            elif not await aiofiles.ospath.isfile(filePath):
+                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a file: \"{filePath}\"')
+                return False
+
+        # TODO VLC has some functionality for playlists, so let's look into that and add that here
+        return False
 
     async def playSoundAlert(self, alert: SoundAlert) -> bool:
         if not isinstance(alert, SoundAlert):
@@ -79,6 +102,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         try:
             media = vlc.Media(filePath)
+            vlc.MediaListPlayer
         except Exception as e:
             exception = e
 
