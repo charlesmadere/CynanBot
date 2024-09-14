@@ -1,9 +1,9 @@
+import asyncio
 import re
 import traceback
 import uuid
 from asyncio import AbstractEventLoop
-from dataclasses import dataclass
-from typing import Pattern, Collection
+from typing import Any, Collection, Coroutine, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -18,12 +18,6 @@ from ...ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApi
 
 
 class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
-
-    @dataclass(frozen = True)
-    class FetchAndSaveSoundDataTask:
-        index: int
-        fileName: str
-        ttsUrl: str
 
     def __init__(
         self,
@@ -56,13 +50,36 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
-    async def __fetchTtsSoundData(self, ttsUrl: str) -> bytes:
-        if not utils.isValidStr(ttsUrl):
+    async def __fetchAndSaveSoundData(
+        self,
+        index: int,
+        fileName: str,
+        ttsUrl: str
+    ):
+        if not utils.isValidInt(index):
+            raise TypeError(f'index argument is malformed: \"{index}\"')
+        elif index < 0 or index > utils.getIntMaxSafeSize():
+            raise ValueError(f'index argument is out of bounds: {index}')
+        elif not utils.isValidStr(fileName):
+            raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
+        elif not utils.isValidStr(ttsUrl):
             raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
 
-        return await self.__ttsMonsterApiService.fetchGeneratedTts(
-            ttsUrl = ttsUrl
-        )
+        soundData = await self.__ttsMonsterApiService.fetchGeneratedTts(ttsUrl)
+
+        try:
+            async with aiofiles.open(
+                file = fileName,
+                mode = 'wb',
+                loop = self.__eventLoop
+            ) as file:
+                await file.write(soundData)
+                await file.flush()
+        except Exception as e:
+            self.__timber.log('TtsMonsterFileManager', f'Encountered exception when trying to write TTS Monster sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
+            raise e
+
+        await self.__ttsTempFileHelper.registerTempFile(fileName)
 
     async def __generateFileNames(self, size: int) -> FrozenList[str]:
         if not utils.isValidInt(size):
@@ -90,7 +107,7 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         return frozenFileNames
 
     async def saveTtsUrlToNewFile(self, ttsUrl: str) -> str | None:
-        if not utils.isValidStr(ttsUrl):
+        if not utils.isValidUrl(ttsUrl):
             raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
 
         ttsUrls: FrozenList[str] = FrozenList()
@@ -108,44 +125,33 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         if not isinstance(ttsUrls, Collection):
             raise TypeError(f'ttsUrls argument is malformed: \"{ttsUrls}\"')
 
-        frozenTtsUrls: FrozenList[str] = FrozenList(ttsUrls)
+        frozenTtsUrls: FrozenList[str] = FrozenList()
+
+        for index, ttsUrl in enumerate(ttsUrls):
+            if not utils.isValidUrl(ttsUrl):
+                raise TypeError(f'Encountered bad TTS URL at index {index}: \"{ttsUrl}\"')
+
+            frozenTtsUrls.append(ttsUrl)
+
         frozenTtsUrls.freeze()
 
         if len(frozenTtsUrls) == 0:
             return None
 
         fileNames = await self.__generateFileNames(len(frozenTtsUrls))
+        fetchAndSaveCoroutines: list[Coroutine[Any, Any, Any]] = list()
 
-        for index, ttsUrl in enumerate(frozenTtsUrls):
-            soundData = await self.__fetchTtsSoundData(ttsUrl)
-
-            await self.__writeTtsSoundDataToLocalFile(
-                soundData = soundData,
-                fileName = fileNames[index]
-            )
-
-        return fileNames
-
-    async def __writeTtsSoundDataToLocalFile(
-        self,
-        soundData: bytes,
-        fileName: str
-    ):
-        if not isinstance(soundData, bytes):
-            raise TypeError(f'soundData argument is malformed: \"{soundData}\"')
-        elif not utils.isValidStr(fileName):
-            raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
+        for index in range(len(frozenTtsUrls)):
+            fetchAndSaveCoroutines.append(self.__fetchAndSaveSoundData(
+                index = index,
+                fileName = fileNames[index],
+                ttsUrl = frozenTtsUrls[index]
+            ))
 
         try:
-            async with aiofiles.open(
-                file = fileName,
-                mode = 'wb',
-                loop = self.__eventLoop
-            ) as file:
-                await file.write(soundData)
-                await file.flush()
+            await asyncio.gather(*fetchAndSaveCoroutines, return_exceptions = True)
         except Exception as e:
-            self.__timber.log('TtsMonsterFileManager', f'Encountered exception when trying to write TTS Monster sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
-            raise e
+            self.__timber.log('TtsMonsterHelper', f'Encountered unknown error when fetching and saving TTS files ({ttsUrls=}): {e}', e, traceback.format_exc())
+            return None
 
-        await self.__ttsTempFileHelper.registerTempFile(fileName)
+        return fileNames
