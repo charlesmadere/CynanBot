@@ -2,11 +2,10 @@ from typing import Any
 
 from .decTalk.decTalkManager import DecTalkManager
 from .google.googleTtsManager import GoogleTtsManager
-from .tempFileHelper.ttsTempFileHelperInterface import \
-    TtsTempFileHelperInterface
+from .tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from .ttsEvent import TtsEvent
 from .ttsManagerInterface import TtsManagerInterface
-from .ttsMonster.ttsMonsterManager import TtsMonsterManager
+from .ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from .ttsProvider import TtsProvider
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
@@ -19,7 +18,7 @@ class TtsManager(TtsManagerInterface):
         decTalkManager: DecTalkManager | None,
         googleTtsManager: GoogleTtsManager | None,
         timber: TimberInterface,
-        ttsMonsterManager: TtsMonsterManager | None,
+        ttsMonsterManager: TtsMonsterManagerInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         ttsTempFileHelper: TtsTempFileHelperInterface
     ):
@@ -29,8 +28,8 @@ class TtsManager(TtsManagerInterface):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterManager):
-            raise TypeError(f'ttsMonsterManager argument is malformed: \"{googleTtsManager}\"')
+        elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterManagerInterface):
+            raise TypeError(f'ttsMonsterManager argument is malformed: \"{ttsMonsterManager}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
@@ -39,7 +38,7 @@ class TtsManager(TtsManagerInterface):
         self.__decTalkManager: TtsManagerInterface | None = decTalkManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__timber: TimberInterface = timber
-        self.__ttsMonsterManager: TtsMonsterManager | None = ttsMonsterManager
+        self.__ttsMonsterManager: TtsMonsterManagerInterface | None = ttsMonsterManager
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 

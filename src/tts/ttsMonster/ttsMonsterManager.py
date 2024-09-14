@@ -1,5 +1,6 @@
 import locale
 import math
+from queue import SimpleQueue
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
@@ -49,14 +50,21 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
+        self.__isLoading: bool = False
+        self.__currentPlaylist: SimpleQueue[str] = SimpleQueue()
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def isPlaying(self) -> bool:
+        if self.__isLoading:
+            return True
+        elif not self.__currentPlaylist.empty():
+            return True
+
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
         #  to be playing media, but it could be media that is completely unrelated to TTS Monster,
-        #  and yet in this scenario, this method would still return true. So for the fix for this
-        #  is probably a way to check if SoundPlayerManager is currently playing, AND also a check
-        #  to see specifically what media it is currently playing.
+        #  and yet in this scenario, this method would still return true. So the fix for this is
+        #  to check if SoundPlayerManager is currently playing, AND also a check to see
+        #  specifically what media it is currently playing.
         return await self.__soundPlayerManager.isPlaying()
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
@@ -69,29 +77,39 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             self.__timber.log('TtsMonsterManager', f'There is already an ongoing TTS Monster event!')
             return False
 
-        ttsMessages = await self.__ttsMonsterHelper.generateTts(
+        self.__isLoading = True
+
+        ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
             message = event.message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )
 
-        if ttsMessages is None or len(ttsMessages.urls) == 0:
-            self.__timber.log('TtsMonsterManager', f'Failed to generate any TTS messages ({event=}) ({ttsMessages=})')
+        if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
+            self.__timber.log('TtsMonsterManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterUrls=})')
+            self.__isLoading = False
             return False
 
-        ttsFileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMessages.urls)
+        ttsFileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
 
         if ttsFileNames is None or len(ttsFileNames) == 0:
-            self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMessages=}) ({ttsFileNames=})')
+            self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({ttsFileNames=})')
+            self.__isLoading = False
             return False
 
+        for ttsFileName in ttsFileNames:
+            self.__currentPlaylist.put_nowait(ttsFileName)
+
         await self.__reportCharacterUsage(
-            characterUsage = ttsMessages.characterUsage,
+            characterUsage = ttsMonsterUrls.characterUsage,
             twitchChannel = event.twitchChannel
         )
 
-        # TODO
-        return False
+        self.__timber.log('TtsMonsterManager', f'Playing {len(ttsFileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
+        # TODO send sound event(s) to the sound player manager
+        self.__isLoading = False
+
+        return True
 
     async def __reportCharacterUsage(self, characterUsage: int | None, twitchChannel: str):
         if not utils.isValidInt(characterUsage) or self.__twitchChannelProvider is None:
