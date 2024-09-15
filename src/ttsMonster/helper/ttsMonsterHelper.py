@@ -6,6 +6,7 @@ from typing import Any, Coroutine
 from frozenlist import FrozenList
 
 from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 from ..apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..messageToVoicesHelper.ttsMonsterMessageToVoicePair import TtsMonsterMessageToVoicePair
@@ -38,6 +39,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface,
         ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface,
+        ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface
     ):
@@ -49,6 +51,8 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif not isinstance(ttsMonsterMessageToVoicesHelper, TtsMonsterMessageToVoicesHelperInterface):
             raise TypeError(f'ttsMonsterMessageToVoicesHelper argument is malformed: \"{ttsMonsterMessageToVoicesHelper}\"')
+        elif ttsMonsterPrivateApiHelper is not None and not isinstance(ttsMonsterPrivateApiHelper, TtsMonsterPrivateApiHelperInterface):
+            raise TypeError(f'ttsMonsterPrivateApiHelper argument is malformed: \"{ttsMonsterPrivateApiHelper}\"')
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsMonsterStreamerVoicesRepository, TtsMonsterStreamerVoicesRepositoryInterface):
@@ -58,6 +62,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
         self.__ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = ttsMonsterApiTokensRepository
         self.__ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = ttsMonsterMessageToVoicesHelper
+        self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface | None = ttsMonsterPrivateApiHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface = ttsMonsterStreamerVoicesRepository
 
@@ -219,7 +224,15 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         if ttsMonsterUser.characterUsage >= ttsMonsterUser.characterAllowance:
             self.__timber.log('TtsMonsterHelper', f'This TTS Monster user is beyond their character allowance ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
-            return None
+
+            if await self.__ttsMonsterSettingsRepository.isUsePrivateApiEnabled():
+                return await self.__generateTtsUsingPrivateApi(
+                    message = message,
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+            else:
+                return None
 
         messages = await self.__ttsMonsterMessageToVoicesHelper.build(
             voices = voices,
@@ -240,3 +253,25 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
+
+    async def __generateTtsUsingPrivateApi(
+        self,
+        message: str,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> TtsMonsterUrls | None:
+        if not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if self.__ttsMonsterPrivateApiHelper is None:
+            return None
+
+        return await self.__ttsMonsterPrivateApiHelper.generateTts(
+            message = message,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )

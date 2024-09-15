@@ -15,5 +15,9 @@ class TtsMonsterSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def isUsePrivateApiEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def isWebsiteVoiceEnabled(self, websiteVoice: TtsMonsterWebsiteVoice) -> bool:
         pass

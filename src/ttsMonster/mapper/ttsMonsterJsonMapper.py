@@ -4,6 +4,7 @@ from frozenlist import FrozenList
 
 from .ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
 from .ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
+from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
 from ..models.ttsMonsterUser import TtsMonsterUser
@@ -27,6 +28,19 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
         self.__websiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = websiteVoiceMapper
+
+    async def parseFromPrivateTtsResponse(
+        self,
+        privateTtsResponse: TtsMonsterPrivateApiTtsResponse
+    ) -> TtsMonsterTtsResponse:
+        if not isinstance(privateTtsResponse, TtsMonsterPrivateApiTtsResponse):
+            raise TypeError(f'privateTtsResponse argument is malformed: \"{privateTtsResponse}\"')
+
+        return TtsMonsterTtsResponse(
+            characterUsage = None,
+            status = privateTtsResponse.status,
+            url = privateTtsResponse.data.link
+        )
 
     async def parseTtsResponse(
         self,

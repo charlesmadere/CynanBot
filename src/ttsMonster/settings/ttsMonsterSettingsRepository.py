@@ -44,7 +44,11 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
     async def isReturnCharacterUsageEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'is_return_character_usage_enabled', True)
+        return utils.getBoolFromDict(jsonContents, 'is_return_character_usage_enabled', fallback = True)
+
+    async def isUsePrivateApiEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'is_use_private_api_enabled', fallback = True)
 
     async def isWebsiteVoiceEnabled(self, websiteVoice: TtsMonsterWebsiteVoice) -> bool:
         if not isinstance(websiteVoice, TtsMonsterWebsiteVoice):

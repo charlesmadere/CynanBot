@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
 from ..models.ttsMonsterUser import TtsMonsterUser
@@ -9,6 +10,13 @@ from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
 
 
 class TtsMonsterJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseFromPrivateTtsResponse(
+        self,
+        privateTtsResponse: TtsMonsterPrivateApiTtsResponse
+    ) -> TtsMonsterTtsResponse:
+        pass
 
     @abstractmethod
     async def parseTtsResponse(
