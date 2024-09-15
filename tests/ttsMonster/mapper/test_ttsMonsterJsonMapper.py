@@ -68,6 +68,16 @@ class TestTtsMonsterJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseUser_withEmptyDictionary(self):
+        result = await self.mapper.parseUser(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUser_withNone(self):
+        result = await self.mapper.parseUser(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withEmptyDictionary(self):
         result = await self.mapper.parseVoice(dict())
         assert result is None

@@ -3,6 +3,7 @@ from typing import Any
 
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
+from ..models.ttsMonsterUser import TtsMonsterUser
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
 
@@ -14,6 +15,13 @@ class TtsMonsterJsonMapperInterface(ABC):
         self,
         jsonContents: dict[str, Any] | Any | None
     ) -> TtsMonsterTtsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseUser(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> TtsMonsterUser | None:
         pass
 
     @abstractmethod

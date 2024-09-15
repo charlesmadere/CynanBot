@@ -4,6 +4,7 @@ from .ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 from ..mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
+from ..models.ttsMonsterUser import TtsMonsterUser
 from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -101,6 +102,40 @@ class TtsMonsterApiService(TtsMonsterApiServiceInterface):
             raise GenericNetworkException(f'TtsMonsterApiService generated TTS but the API service responded with a bad \"status\" value in its JSON response ({apiToken=}) ({request=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({ttsMonsterTtsResponse=})')
 
         return ttsMonsterTtsResponse
+
+    async def getUser(self, apiToken: str) -> TtsMonsterUser:
+        if not utils.isValidStr(apiToken):
+            raise TypeError(f'apiToken argument is malformed: \"{apiToken}\"')
+
+        self.__timber.log('TtsMonsterApiService', f'Getting user... ({apiToken=})')
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.post(
+                url = 'https://api.console.tts.monster/user',
+                headers = {
+                    'Authorization': apiToken,
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TtsMonsterApiService', f'Encountered network error when getting user ({apiToken=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TtsMonsterApiService encountered network error when getting user ({apiToken=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TtsMonsterApiService', f'Encountered non-200 HTTP status code when getting user ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'TtsMonsterApiService encountered non-200 HTTP status code when getting user ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})', responseStatusCode)
+
+        user = await self.__ttsMonsterJsonMapper.parseUser(jsonResponse)
+
+        if user is None:
+            self.__timber.log('TtsMonsterApiService', f'Unable to parse JSON response when getting user ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({user=})')
+            raise GenericNetworkException(f'TtsMonsterApiService unable to parse JSON response when getting user ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({user=})')
+
+        return user
 
     async def getVoices(self, apiToken: str) -> TtsMonsterVoicesResponse:
         if not utils.isValidStr(apiToken):

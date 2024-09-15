@@ -83,10 +83,7 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        apiToken = await self.__ttsMonsterApiTokens.get(
-            twitchChannelId = twitchChannelId
-        )
-
+        apiToken = await self.__ttsMonsterApiTokens.get(twitchChannelId = twitchChannelId)
         if not utils.isValidStr(apiToken):
             self.__timber.log('TtsMonsterStreamerVoicesRepository', f'Can\'t fetch TTS Monster voices as no API token is available ({twitchChannel=}) ({twitchChannelId=}) ({apiToken=})')
             return frozenset()

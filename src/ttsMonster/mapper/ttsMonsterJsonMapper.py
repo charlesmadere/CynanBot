@@ -6,6 +6,7 @@ from .ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
 from .ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterTtsResponse import TtsMonsterTtsResponse
+from ..models.ttsMonsterUser import TtsMonsterUser
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..models.ttsMonsterVoicesResponse import TtsMonsterVoicesResponse
 from ...misc import utils as utils
@@ -45,6 +46,28 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
             characterUsage = characterUsage,
             status = status,
             url = url
+        )
+
+    async def parseUser(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> TtsMonsterUser | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        currentPlan: str | None = None
+        if 'current_plan' in jsonContents and utils.isValidStr(currentPlan):
+            currentPlan = utils.getStrFromDict(jsonContents, 'current_plan')
+
+        characterAllowance = utils.getIntFromDict(jsonContents, 'character_allowance')
+        characterUsage = utils.getIntFromDict(jsonContents, 'character_usage')
+        status = utils.getStrFromDict(jsonContents, 'status')
+
+        return TtsMonsterUser(
+            characterAllowance = characterAllowance,
+            characterUsage = characterUsage,
+            currentPlan = currentPlan,
+            status = status
         )
 
     async def parseVoice(
