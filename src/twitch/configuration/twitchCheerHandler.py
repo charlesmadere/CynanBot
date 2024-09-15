@@ -234,10 +234,14 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             return
 
         donation: TtsDonation = TtsCheerDonation(bits = bits)
-        provider = TtsProvider.DEC_TALK
+        provider: TtsProvider
 
-        if utils.isValidInt(minimumTtsCheerAmount) and bits >= int(round(minimumTtsCheerAmount * 1.5)):
+        if bits >= 111:
+            provider = TtsProvider.TTS_MONSTER
+        elif bits >= 100:
             provider = TtsProvider.GOOGLE
+        else:
+            provider = TtsProvider.DEC_TALK
 
         streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,
