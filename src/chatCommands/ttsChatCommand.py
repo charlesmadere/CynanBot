@@ -82,10 +82,10 @@ class TtsChatCommand(AbsChatCommand):
         ttsProvider: TtsProvider = TtsProvider.DEC_TALK
         ttsProviderMatch = self.__ttsProviderRegEx.fullmatch(message.split()[0])
 
-        if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)):
+        if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)) and len(splits) >= 3:
             try:
                 ttsProvider = await self.__ttsJsonMapper.requireProvider(ttsProviderMatch.group(1))
-                message = message[1:].strip()
+                message = ' '.join(splits[2:])
             except ValueError:
                 ttsProviderStrings = await self.__getTtsProviderStrings()
                 ttsProviderString = ', '.join(ttsProviderStrings)
