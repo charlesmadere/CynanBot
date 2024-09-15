@@ -127,7 +127,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         ttsResponses: list[TtsMonsterHelper.TtsResponseEntry] = list()
 
         try:
-            ttsResponses.extend(await asyncio.gather(*ttsResponseCoroutines, return_exceptions = True))
+            ttsResponses.extend(await asyncio.gather(*ttsResponseCoroutines, return_exceptions = False))
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterHelper', f'Encountered network error when generating TTS from TTS Monster ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
             return None

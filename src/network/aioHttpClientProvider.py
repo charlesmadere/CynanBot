@@ -16,7 +16,7 @@ class AioHttpClientProvider(NetworkClientProvider):
         self,
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
-        timeoutSeconds: int = 8
+        timeoutSeconds: int = 12
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
