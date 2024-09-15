@@ -208,7 +208,17 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         )
 
         if len(voices) == 0:
-            self.__timber.log('TtsMonsterHelper', f'No TTS Monster voices are available for this user ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({voices=})')
+            self.__timber.log('TtsMonsterHelper', f'No TTS Monster voices are available for this user ({twitchChannel=}) ({twitchChannelId=}) ({voices=})')
+            return None
+
+        try:
+            ttsMonsterUser = await self.__ttsMonsterApiService.getUser(apiToken = apiToken)
+        except GenericNetworkException as e:
+            self.__timber.log('TtsMonsterHelper', f'Encountered network exception when fetching TTS Monster user details ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
+            return None
+
+        if ttsMonsterUser.characterUsage >= ttsMonsterUser.characterAllowance:
+            self.__timber.log('TtsMonsterHelper', f'This TTS Monster user is beyond their character allowance ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
             return None
 
         messages = await self.__ttsMonsterMessageToVoicesHelper.build(
