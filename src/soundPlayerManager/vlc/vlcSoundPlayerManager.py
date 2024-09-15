@@ -105,7 +105,6 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         try:
             media = vlc.Media(filePath)
-            vlc.MediaListPlayer
         except Exception as e:
             exception = e
 
