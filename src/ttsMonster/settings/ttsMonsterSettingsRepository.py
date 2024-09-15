@@ -44,7 +44,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 40)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 48)
 
     async def isReturnCharacterUsageEnabled(self) -> bool:
         jsonContents = await self.__readJson()
