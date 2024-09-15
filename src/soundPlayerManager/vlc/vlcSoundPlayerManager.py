@@ -1,4 +1,6 @@
+import asyncio
 import traceback
+from enum import Enum, auto
 from typing import Any, Collection
 
 import aiofiles.ospath
@@ -15,11 +17,43 @@ from ...timber.timberInterface import TimberInterface
 
 class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
+    class PlaybackState(Enum):
+        ERROR = auto()
+        PLAYING = auto()
+        STOPPED = auto()
+
+        @classmethod
+        def fromVlcState(cls, state: vlc.State):
+            if not isinstance(state, vlc.State):
+                return VlcSoundPlayerManager.PlaybackState.ERROR
+
+            # VLC State documentation:
+            # 0 is "NothingSpecial"
+            # 1 is "Opening"
+            # 2 is "Buffering"
+            # 3 is "Playing"
+            # 4 is "Paused"
+            # 5 is "Stopped"
+            # 6 is "Ended"
+            # 7 is "Error"
+
+            match state:
+                case 0: return VlcSoundPlayerManager.PlaybackState.STOPPED
+                case 1: return VlcSoundPlayerManager.PlaybackState.PLAYING
+                case 2: return VlcSoundPlayerManager.PlaybackState.PLAYING
+                case 3: return VlcSoundPlayerManager.PlaybackState.PLAYING
+                case 4: return VlcSoundPlayerManager.PlaybackState.STOPPED
+                case 5: return VlcSoundPlayerManager.PlaybackState.STOPPED
+                case 6: return VlcSoundPlayerManager.PlaybackState.STOPPED
+                case 7: return VlcSoundPlayerManager.PlaybackState.ERROR
+                case _: raise ValueError(f'Encountered unexpected vlc.State value: \"{state}\"')
+
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        playlistSleepTimeSeconds: float = 0.15
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -27,12 +61,17 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(playlistSleepTimeSeconds):
+            raise TypeError(f'playlistSleepTimeSeconds argument is malformed: \"{playlistSleepTimeSeconds}\"')
+        elif playlistSleepTimeSeconds < 0.1 or playlistSleepTimeSeconds > 8:
+            raise ValueError(f'playlistSleepTimeSeconds argument is out of bounds: {playlistSleepTimeSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__playlistSleepTimeSeconds: float = playlistSleepTimeSeconds
 
-        self.__mediaPlayer: vlc.MediaListPlayer | None = None
+        self.__mediaPlayer: vlc.MediaPlayer | None = None
 
     async def isPlaying(self) -> bool:
         mediaPlayer = self.__mediaPlayer
@@ -85,12 +124,10 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         mediaPlayer = await self.__retrieveMediaPlayer()
 
-        try:
-            mediaPlayer.set_media_list(mediaList)
-            mediaPlayer.play()
-        except Exception as e:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sounds from file paths: \"{filePaths}\" ({mediaList=}) ({mediaPlayer=}) ({exception=})', exception, traceback.format_exc())
-            return False
+        self.__backgroundTaskHelper.createTask(self.__progressThroughPlaylist(
+            playlistFilePaths = frozenFilePaths,
+            mediaPlayer = mediaPlayer
+        ))
 
         self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({filePaths=}) ({mediaList=}) ({mediaPlayer=})')
         return True
@@ -129,19 +166,62 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         return await self.playPlaylist(filePaths)
 
+    async def __progressThroughPlaylist(
+        self,
+        playlistFilePaths: FrozenList[str],
+        mediaPlayer: vlc.MediaPlayer
+    ):
+        if not isinstance(playlistFilePaths, FrozenList) or len(playlistFilePaths) == 0:
+            raise TypeError(f'playlist argument is malformed: \"{playlistFilePaths}\"')
+        elif not isinstance(mediaPlayer, vlc.MediaPlayer):
+            raise TypeError(f'mediaPlayer argument is malformed: \"{mediaPlayer}\"')
+
+        currentPlaylistIndex: int | None = -1
+
+        try:
+            while currentPlaylistIndex != None and currentPlaylistIndex < len(playlistFilePaths):
+                mediaPlayerState = VlcSoundPlayerManager.PlaybackState.fromVlcState(mediaPlayer.get_state())
+                print(f'{mediaPlayerState=} {currentPlaylistIndex=}')
+
+                match mediaPlayerState:
+                    case VlcSoundPlayerManager.PlaybackState.ERROR:
+                        currentPlaylistIndex = None
+
+                    case VlcSoundPlayerManager.PlaybackState.PLAYING:
+                        # intentionally empty
+                        pass
+
+                    case VlcSoundPlayerManager.PlaybackState.STOPPED:
+                        currentPlaylistIndex += 1
+
+                        if currentPlaylistIndex >= len(playlistFilePaths):
+                            currentPlaylistIndex = None
+                        else:
+                            currentFilePath = playlistFilePaths[currentPlaylistIndex]
+                            mediaPlayer.set_media(vlc.Media(currentFilePath))
+                            playbackResult = mediaPlayer.play()
+
+                            if playbackResult != 0:
+                                currentPlaylistIndex = None
+
+                if currentPlaylistIndex is not None:
+                    await asyncio.sleep(self.__playlistSleepTimeSeconds)
+        except Exception as e:
+            self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playlistFilePaths=}) ({mediaPlayer=}) ({currentPlaylistIndex=}): {e}', e, traceback.format_exc())
+
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    async def __retrieveMediaPlayer(self) -> vlc.MediaListPlayer:
+    async def __retrieveMediaPlayer(self) -> vlc.MediaPlayer:
         mediaPlayer = self.__mediaPlayer
 
         if mediaPlayer is None:
-            mediaPlayer = vlc.MediaListPlayer()
+            mediaPlayer = vlc.MediaPlayer()
             self.__mediaPlayer = mediaPlayer
             self.__timber.log('VlcSoundPlayerManager', f'Created new vlc.MediaPlayer instance: \"{mediaPlayer}\"')
 
-        if not isinstance(mediaPlayer, vlc.MediaListPlayer):
+        if not isinstance(mediaPlayer, vlc.MediaPlayer):
             # this scenario should definitely be impossible, but the Python type checking was
             # getting angry without this check
             exception = RuntimeError(f'Failed to instantiate vlc.MediaPlayer: \"{mediaPlayer}\"')
