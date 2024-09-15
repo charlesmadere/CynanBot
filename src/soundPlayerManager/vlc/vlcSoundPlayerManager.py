@@ -71,9 +71,13 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self.__timber: TimberInterface = timber
         self.__playlistSleepTimeSeconds: float = playlistSleepTimeSeconds
 
+        self.__isProgressingThroughPlaylist: bool = False
         self.__mediaPlayer: vlc.MediaPlayer | None = None
 
     async def isPlaying(self) -> bool:
+        if self.__isProgressingThroughPlaylist:
+            return True
+
         mediaPlayer = self.__mediaPlayer
         return mediaPlayer is not None and mediaPlayer.is_playing()
 
@@ -176,12 +180,12 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         elif not isinstance(mediaPlayer, vlc.MediaPlayer):
             raise TypeError(f'mediaPlayer argument is malformed: \"{mediaPlayer}\"')
 
+        self.__isProgressingThroughPlaylist = True
         currentPlaylistIndex: int | None = -1
 
         try:
             while currentPlaylistIndex != None and currentPlaylistIndex < len(playlistFilePaths):
                 mediaPlayerState = VlcSoundPlayerManager.PlaybackState.fromVlcState(mediaPlayer.get_state())
-                print(f'{mediaPlayerState=} {currentPlaylistIndex=}')
 
                 match mediaPlayerState:
                     case VlcSoundPlayerManager.PlaybackState.ERROR:
@@ -209,6 +213,8 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                     await asyncio.sleep(self.__playlistSleepTimeSeconds)
         except Exception as e:
             self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playlistFilePaths=}) ({mediaPlayer=}) ({currentPlaylistIndex=}): {e}', e, traceback.format_exc())
+
+        self.__isProgressingThroughPlaylist = False
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
