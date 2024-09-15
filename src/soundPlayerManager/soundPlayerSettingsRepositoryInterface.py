@@ -15,6 +15,10 @@ class SoundPlayerSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getMediaPlayerVolume(self) -> int:
+        pass
+
+    @abstractmethod
     async def getShinyProbability(self) -> float:
         pass
 

@@ -202,6 +202,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                             playbackResult = mediaPlayer.play()
 
                             if playbackResult != 0:
+                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index {currentPlaylistIndex}: \"{currentFilePath}\"')
                                 currentPlaylistIndex = None
 
                 if currentPlaylistIndex is not None:
@@ -228,6 +229,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'Failed to instantiate vlc.MediaPlayer: \"{mediaPlayer}\" ({exception=})', exception, traceback.format_exc())
             raise exception
 
+        mediaPlayer.audio_set_volume(await self.__soundPlayerSettingsRepository.getMediaPlayerVolume())
         return mediaPlayer
 
     def toDictionary(self) -> dict[str, Any]:
