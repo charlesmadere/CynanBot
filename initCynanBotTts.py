@@ -172,12 +172,34 @@ from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.ttsManager import TtsManager
 from src.tts.ttsManagerInterface import TtsManagerInterface
+from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
+from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
+from src.tts.ttsMonster.ttsMonsterManager import TtsMonsterManager
+from src.tts.ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
+from src.ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
+from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
+from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
 from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
+from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
+from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
+from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
+from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepository import TtsMonsterKeyAndUserIdRepository
+from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
+    TtsMonsterKeyAndUserIdRepositoryInterface
+from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
+from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
+from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
+from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
 from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
+from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import TtsMonsterMessageToVoicesHelper
+from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import \
+    TtsMonsterMessageToVoicesHelperInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
@@ -752,6 +774,66 @@ ttsMonsterWebsiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonster
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
     ttsMonsterWebsiteVoiceMapper = ttsMonsterWebsiteVoiceMapper,
     settingsJsonReader = JsonFileReader('ttsMonsterSettingsRepository.json')
+)
+
+ttsMonsterJsonMapper: TtsMonsterJsonMapperInterface = TtsMonsterJsonMapper(
+    timber = timber,
+    websiteVoiceMapper = ttsMonsterWebsiteVoiceMapper
+)
+
+ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber,
+    ttsMonsterJsonMapper = ttsMonsterJsonMapper
+)
+
+ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
+    eventLoop = eventLoop,
+    timber = timber,
+    ttsMonsterApiService = ttsMonsterApiService,
+    ttsTempFileHelper = ttsTempFileHelper
+)
+
+ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
+)
+
+ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = TtsMonsterKeyAndUserIdRepository(
+    settingsJsonReader = JsonFileReader('ttsMonsterKeyAndUserIdRepository.json')
+)
+
+ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper()
+
+ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber,
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+)
+
+ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
+    timber = timber,
+    ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
+    ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
+)
+
+ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+    timber = timber,
+    ttsMonsterApiService = ttsMonsterApiService,
+    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
+    ttsMonsterMessageToVoicesHelper = ttsMonsterMessageToVoicesHelper,
+    ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
+    ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository
+)
+
+ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
+    soundPlayerManager = soundPlayerManager,
+    timber = timber,
+    ttsMonsterFileManager = ttsMonsterFileManager,
+    ttsMonsterHelper = ttsMonsterHelper,
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsTempFileHelper = ttsTempFileHelper,
+    twitchUtils = twitchUtils
 )
 
 ttsManager: TtsManagerInterface | None = TtsManager(

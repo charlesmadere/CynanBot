@@ -4,16 +4,9 @@ from .ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMap
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from ...misc import utils as utils
-from ...timber.timberInterface import TimberInterface
 
 
 class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
-
-    def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-
-        self.__timber: TimberInterface = timber
 
     async def parseTtsData(
         self,
