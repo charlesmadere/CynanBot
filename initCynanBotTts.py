@@ -202,6 +202,9 @@ from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterfa
     TtsMonsterMessageToVoicesHelperInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepository import TtsMonsterStreamerVoicesRepository
+from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import \
+    TtsMonsterStreamerVoicesRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -814,6 +817,13 @@ ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPriv
     timber = timber,
     ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
+)
+
+ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface = TtsMonsterStreamerVoicesRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    ttsMonsterApiService = ttsMonsterApiService,
+    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository
 )
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(

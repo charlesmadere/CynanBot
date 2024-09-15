@@ -19,22 +19,22 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
-        ttsMonsterApiTokens: TtsMonsterApiTokensRepositoryInterface,
+        ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface,
         cacheTimeToLive: timedelta(hours = 3)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(ttsMonsterApiTokens, TtsMonsterApiTokensRepositoryInterface):
-            raise TypeError(f'ttsMonsterApiTokens argument is malformed: \"{ttsMonsterApiTokens}\"')
+        elif not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
+            raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif not isinstance(cacheTimeToLive, timedelta):
             raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
 
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
-        self.__ttsMonsterApiTokens: TtsMonsterApiTokensRepositoryInterface = ttsMonsterApiTokens
+        self.__ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = ttsMonsterApiTokensRepository
         self.__cacheTimeToLive: timedelta = cacheTimeToLive
 
         self.__cache: dict[str, TtsMonsterStreamerVoicesCache | None] = dict()
@@ -83,7 +83,7 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        apiToken = await self.__ttsMonsterApiTokens.get(twitchChannelId = twitchChannelId)
+        apiToken = await self.__ttsMonsterApiTokensRepository.get(twitchChannelId = twitchChannelId)
         if not utils.isValidStr(apiToken):
             self.__timber.log('TtsMonsterStreamerVoicesRepository', f'Can\'t fetch TTS Monster voices as no API token is available ({twitchChannel=}) ({twitchChannelId=}) ({apiToken=})')
             return frozenset()
