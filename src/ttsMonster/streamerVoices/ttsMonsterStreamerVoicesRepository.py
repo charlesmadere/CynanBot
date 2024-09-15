@@ -20,7 +20,7 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface,
-        cacheTimeToLive: timedelta(hours = 3)
+        cacheTimeToLive: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
