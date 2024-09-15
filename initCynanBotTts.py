@@ -851,7 +851,7 @@ ttsManager: TtsManagerInterface | None = TtsManager(
     decTalkManager = decTalkManager,
     googleTtsManager = googleTtsManager,
     timber = timber,
-    ttsMonsterManager = None,
+    ttsMonsterManager = ttsMonsterManager,
     ttsSettingsRepository = ttsSettingsRepository,
     ttsTempFileHelper = ttsTempFileHelper
 )
