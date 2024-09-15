@@ -13,7 +13,10 @@ class TimberStub(TimberInterface):
         exception: Exception | None = None,
         traceback: str | None = None
     ):
-        print(f'{tag} — {msg}')
+        if exception is None:
+            print(f'{tag} — {msg}')
+        else:
+            print(f'{tag} — {msg} — {exception}')
 
     def start(self):
         pass
