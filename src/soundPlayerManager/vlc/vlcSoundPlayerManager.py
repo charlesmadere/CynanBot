@@ -32,7 +32,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
-        self.__mediaPlayer: vlc.MediaPlayer | None = None
+        self.__mediaPlayer: vlc.MediaListPlayer | None = None
 
     async def isPlaying(self) -> bool:
         mediaPlayer = self.__mediaPlayer
@@ -61,13 +61,16 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 return False
 
         mediaList: vlc.MediaList | None = None
+        addResults: dict[str, int] = dict()
         exception: Exception | None = None
 
         try:
             mediaList = vlc.MediaList()
+            mediaList.lock()
 
             for filePath in frozenFilePaths:
-                mediaList.add_media(filePath)
+                addResult = mediaList.add_media(filePath)
+                addResults[filePath] = addResult
         except Exception as e:
             exception = e
 
@@ -75,19 +78,21 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'Failed to load sounds from file paths: \"{filePaths}\" ({mediaList=}) ({exception=})', exception, traceback.format_exc())
             return False
 
+        for filePath, addResult in addResults.items():
+            if addResult != 0:
+                self.__timber.log('VlcSoundPlayerManager', f'Encountered bad result code ({addResult}) when trying to add sound \"{filePath}\" from file paths: \"{filePaths}\" ({mediaList=}) ({exception=})', exception, traceback.format_exc())
+                return False
+
         mediaPlayer = await self.__retrieveMediaPlayer()
-        playbackResult: int | None = None
 
         try:
-            mediaPlayer.set_media(mediaList)
-            playbackResult = mediaPlayer.play()
+            mediaPlayer.set_media_list(mediaList)
+            mediaPlayer.play()
         except Exception as e:
-            exception = e
-
-        if playbackResult != 0 or exception is not None:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sounds from file paths: \"{filePaths}\" ({mediaList=}) ({mediaPlayer=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sounds from file paths: \"{filePaths}\" ({mediaList=}) ({mediaPlayer=}) ({exception=})', exception, traceback.format_exc())
             return False
 
+        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({filePaths=}) ({mediaList=}) ({mediaPlayer=})')
         return True
 
     async def playSoundAlert(self, alert: SoundAlert) -> bool:
@@ -118,56 +123,25 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
             return False
 
-        filePath = utils.cleanPath(filePath)
+        filePaths: FrozenList[str] = FrozenList()
+        filePaths.append(filePath)
+        filePaths.freeze()
 
-        if not await aiofiles.ospath.exists(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'The given file path does not exist ({filePath=})')
-            return False
-        elif not await aiofiles.ospath.isfile(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'The given file path is not a file ({filePath=})')
-            return False
-
-        media: vlc.Media | None = None
-        exception: Exception | None = None
-
-        try:
-            media = vlc.Media(filePath)
-        except Exception as e:
-            exception = e
-
-        if media is None or exception is not None:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to load sound from file path: \"{filePath}\" ({media=}) ({exception=})', exception, traceback.format_exc())
-            return False
-
-        mediaPlayer = await self.__retrieveMediaPlayer()
-        playbackResult: int | None = None
-
-        try:
-            mediaPlayer.set_media(media)
-            playbackResult = mediaPlayer.play()
-        except Exception as e:
-            exception = e
-
-        if playbackResult != 0 or exception is not None:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sound from file path: \"{filePath}\" ({media=}) ({mediaPlayer=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
-            return False
-
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing sound ({filePath=}) ({media=}) ({playbackResult=})')
-        return True
+        return await self.playPlaylist(filePaths)
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    async def __retrieveMediaPlayer(self) -> vlc.MediaPlayer:
+    async def __retrieveMediaPlayer(self) -> vlc.MediaListPlayer:
         mediaPlayer = self.__mediaPlayer
 
         if mediaPlayer is None:
-            mediaPlayer = vlc.MediaPlayer()
+            mediaPlayer = vlc.MediaListPlayer()
             self.__mediaPlayer = mediaPlayer
             self.__timber.log('VlcSoundPlayerManager', f'Created new vlc.MediaPlayer instance: \"{mediaPlayer}\"')
 
-        if not isinstance(mediaPlayer, vlc.MediaPlayer):
+        if not isinstance(mediaPlayer, vlc.MediaListPlayer):
             # this scenario should definitely be impossible, but the Python type checking was
             # getting angry without this check
             exception = RuntimeError(f'Failed to instantiate vlc.MediaPlayer: \"{mediaPlayer}\"')
