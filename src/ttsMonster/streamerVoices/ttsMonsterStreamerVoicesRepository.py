@@ -53,7 +53,7 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        voicesCache = self.__cache[twitchChannelId]
+        voicesCache = self.__cache.get(twitchChannelId, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if voicesCache is not None and voicesCache.expirationDateTime >= now:
