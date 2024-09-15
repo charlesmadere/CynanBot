@@ -50,7 +50,10 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             return False
 
         for index, filePath in enumerate(frozenFilePaths):
-            if not await aiofiles.ospath.exists(filePath):
+            if not utils.isValidStr(filePath):
+                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a valid string: \"{filePath}\"')
+                return False
+            elif not await aiofiles.ospath.exists(filePath):
                 self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} does not exist: \"{filePath}\"')
                 return False
             elif not await aiofiles.ospath.isfile(filePath):
