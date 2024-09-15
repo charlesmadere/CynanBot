@@ -85,6 +85,7 @@ class TtsChatCommand(AbsChatCommand):
         if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)):
             try:
                 ttsProvider = await self.__ttsJsonMapper.requireProvider(ttsProviderMatch.group(1))
+                message = message[1:].strip()
             except ValueError:
                 ttsProviderStrings = await self.__getTtsProviderStrings()
                 ttsProviderString = ', '.join(ttsProviderStrings)
