@@ -98,10 +98,12 @@ class TtsMonsterStreamerVoicesRepository(TtsMonsterStreamerVoicesRepositoryInter
 
         voices: set[TtsMonsterVoice] = set()
 
-        for voice in voicesResponse.voices:
-            voices.add(voice)
+        if voicesResponse.voices is not None and len(voicesResponse.voices) >= 1:
+            for voice in voicesResponse.voices:
+                voices.add(voice)
 
-        for customVoice in voicesResponse.customVoices:
-            voices.add(customVoice)
+        if voicesResponse.customVoices is not None and len(voicesResponse.customVoices) >= 1:
+            for customVoice in voicesResponse.customVoices:
+                voices.add(customVoice)
 
         return frozenset(voices)
