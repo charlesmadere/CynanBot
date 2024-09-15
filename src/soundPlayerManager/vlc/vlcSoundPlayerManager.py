@@ -60,8 +60,35 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a file: \"{filePath}\"')
                 return False
 
-        # TODO VLC has some functionality for playlists, so let's look into that and add that here
-        return False
+        mediaList: vlc.MediaList | None = None
+        exception: Exception | None = None
+
+        try:
+            mediaList = vlc.MediaList()
+
+            for filePath in frozenFilePaths:
+                mediaList.add_media(filePath)
+        except Exception as e:
+            exception = e
+
+        if mediaList is None or exception is not None:
+            self.__timber.log('VlcSoundPlayerManager', f'Failed to load sounds from file paths: \"{filePaths}\" ({mediaList=}) ({exception=})', exception, traceback.format_exc())
+            return False
+
+        mediaPlayer = await self.__retrieveMediaPlayer()
+        playbackResult: int | None = None
+
+        try:
+            mediaPlayer.set_media(mediaList)
+            playbackResult = mediaPlayer.play()
+        except Exception as e:
+            exception = e
+
+        if playbackResult != 0 or exception is not None:
+            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sounds from file paths: \"{filePaths}\" ({mediaList=}) ({mediaPlayer=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
+            return False
+
+        return True
 
     async def playSoundAlert(self, alert: SoundAlert) -> bool:
         if not isinstance(alert, SoundAlert):
