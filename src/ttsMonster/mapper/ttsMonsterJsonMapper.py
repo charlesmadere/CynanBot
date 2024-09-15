@@ -127,7 +127,7 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
         customVoicesArray: list[dict[str, Any]] | Any | None = jsonContents.get('customVoices', None)
         customVoices: list[TtsMonsterVoice] = list()
 
-        if isinstance(customVoicesArray, list) and len(customVoices) >= 1:
+        if isinstance(customVoicesArray, list) and len(customVoicesArray) >= 1:
             for index, customVoiceJson in enumerate(customVoicesArray):
                 customVoice = await self.parseVoice(customVoiceJson)
 
@@ -146,7 +146,7 @@ class TtsMonsterJsonMapper(TtsMonsterJsonMapperInterface):
         voicesArray: list[dict[str, Any]] | Any | None = jsonContents.get('voices', None)
         voices: list[TtsMonsterVoice] = list()
 
-        if isinstance(voicesArray, list) and len(voices) >= 1:
+        if isinstance(voicesArray, list) and len(voicesArray) >= 1:
             for index, voiceJson in enumerate(voicesArray):
                 voice = await self.parseVoice(voiceJson)
 

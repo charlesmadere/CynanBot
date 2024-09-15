@@ -166,10 +166,10 @@ class TtsMonsterApiService(TtsMonsterApiServiceInterface):
         voicesResponse = await self.__ttsMonsterJsonMapper.parseVoicesResponse(jsonResponse)
 
         if voicesResponse is None:
-            self.__timber.log('TtsMonsterApiService', f'Unable to parse JSON response when getting voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
-            raise GenericNetworkException(f'TtsMonsterApiService unable to parse JSON response when getting voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
+            self.__timber.log('TtsMonsterApiService', f'Unable to parse JSON response when getting TTS Monster voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
+            raise GenericNetworkException(f'TtsMonsterApiService unable to parse JSON response when getting TTS Monster voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
         elif (voicesResponse.voices is None or len(voicesResponse.voices) == 0) and (voicesResponse.customVoices is None or len(voicesResponse.customVoices) == 0):
-            self.__timber.log('TtsMonsterApiService', f'Received empty voices response when getting voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
-            raise GenericNetworkException(f'TtsMonsterApiService received empty voices response when getting voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
+            self.__timber.log('TtsMonsterApiService', f'Received empty voices response when getting TTS Monster voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
+            raise GenericNetworkException(f'TtsMonsterApiService received empty voices response when getting TTS Monster voices ({apiToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({voicesResponse=})')
 
         return voicesResponse
