@@ -81,9 +81,15 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         mediaPlayer = self.__mediaPlayer
         return mediaPlayer is not None and mediaPlayer.is_playing()
 
-    async def playPlaylist(self, filePaths: Collection[str]) -> bool:
+    async def playPlaylist(
+        self,
+        filePaths: Collection[str],
+        volume: int | None = None
+    ) -> bool:
         if not isinstance(filePaths, Collection):
             raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
+        elif volume is not None and not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
 
         frozenFilePaths: FrozenList[str] = FrozenList(filePaths)
         frozenFilePaths.freeze()
@@ -128,6 +134,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         mediaPlayer = await self.__retrieveMediaPlayer()
 
+        if volume is not None:
+            mediaPlayer.audio_set_volume(volume)
+
         self.__backgroundTaskHelper.createTask(self.__progressThroughPlaylist(
             playlistFilePaths = frozenFilePaths,
             mediaPlayer = mediaPlayer
@@ -136,9 +145,15 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({filePaths=}) ({mediaList=}) ({mediaPlayer=})')
         return True
 
-    async def playSoundAlert(self, alert: SoundAlert) -> bool:
+    async def playSoundAlert(
+        self,
+        alert: SoundAlert,
+        volume: int | None = None
+    ) -> bool:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
+        elif volume is not None and not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
             return False
@@ -152,13 +167,23 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
             return False
 
-        return await self.playSoundFile(filePath)
+        return await self.playSoundFile(
+            filePath = filePath,
+            volume = volume
+        )
 
-    async def playSoundFile(self, filePath: str | None) -> bool:
+    async def playSoundFile(
+        self,
+        filePath: str | None,
+        volume: int | None = None
+    ) -> bool:
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'filePath argument is malformed: \"{filePath}\"')
             return False
-        elif not await self.__soundPlayerSettingsRepository.isEnabled():
+        elif volume is not None and not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
+
+        if not await self.__soundPlayerSettingsRepository.isEnabled():
             return False
         elif await self.isPlaying():
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
@@ -168,7 +193,10 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         filePaths.append(filePath)
         filePaths.freeze()
 
-        return await self.playPlaylist(filePaths)
+        return await self.playPlaylist(
+            filePaths = filePaths,
+            volume = volume
+        )
 
     async def __progressThroughPlaylist(
         self,

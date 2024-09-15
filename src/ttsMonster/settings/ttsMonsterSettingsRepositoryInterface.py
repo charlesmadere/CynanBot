@@ -11,6 +11,10 @@ class TtsMonsterSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getMediaPlayerVolume(self) -> int | None:
+        pass
+
+    @abstractmethod
     async def isReturnCharacterUsageEnabled(self) -> bool:
         pass
 

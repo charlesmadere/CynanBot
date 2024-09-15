@@ -11,6 +11,7 @@ from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
@@ -23,6 +24,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         timber: TimberInterface,
         ttsMonsterFileManager: TtsMonsterFileManagerInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
+        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         ttsTempFileHelper: TtsTempFileHelperInterface,
         twitchUtils: TwitchUtilsInterface
@@ -35,6 +37,8 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             raise TypeError(f'ttsMonsterFileManager argument is malformed: \"{ttsMonsterFileManager}\"')
         elif not isinstance(ttsMonsterHelper, TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
+        elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
+            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
@@ -46,6 +50,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__timber: TimberInterface = timber
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
+        self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -106,7 +111,12 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         )
 
         self.__timber.log('TtsMonsterManager', f'Playing {len(ttsFileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        await self.__soundPlayerManager.playPlaylist(ttsFileNames)
+
+        await self.__soundPlayerManager.playPlaylist(
+            filePaths = ttsFileNames,
+            volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
+        )
+
         self.__isLoading = False
 
         return True

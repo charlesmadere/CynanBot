@@ -841,6 +841,7 @@ ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
     ttsMonsterHelper = ttsMonsterHelper,
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     ttsTempFileHelper = ttsTempFileHelper,
     twitchUtils = twitchUtils

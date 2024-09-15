@@ -181,7 +181,7 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 50)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 100)
 
     async def getShinyProbability(self) -> float:
         jsonContents = await self.__readJson()
