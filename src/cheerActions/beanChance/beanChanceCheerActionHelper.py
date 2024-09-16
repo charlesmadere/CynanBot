@@ -143,7 +143,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,
-                message = f'{emote} Sorry, no bean (you rolled a {randomNumber}, but you needed a roll greater than or equal to {action.randomChance})',
+                message = f'{emote} Sorry, no 🫘 (you rolled a {randomNumber}, but you needed a roll greater than or equal to {action.randomChance})',
                 replyMessageId = twitchChatMessageId
             )
 
