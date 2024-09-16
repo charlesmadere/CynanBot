@@ -127,7 +127,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
 
         remainingCharacters = 10000 - characterUsage
         usagePercent = str(int(math.ceil((float(characterUsage) / float(10000)) * float(100)))) + '%'
-        self.__timber.log('TtsMonsterManager', f'TTS Monster character usage in \"{twitchChannel}\" is currently {characterUsage} ({remainingCharacters=}) ({usagePercent=})')
+        self.__timber.log('TtsMonsterManager', f'ⓘ TTS Monster character usage in \"{twitchChannel}\" is currently {characterUsage} ({remainingCharacters=}) ({usagePercent=})')
 
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(twitchChannel)
         characterUsageStr = locale.format_string("%d", characterUsage, grouping = True)
