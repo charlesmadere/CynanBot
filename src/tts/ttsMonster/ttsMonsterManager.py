@@ -1,6 +1,5 @@
 import locale
 import math
-from queue import SimpleQueue
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
@@ -56,13 +55,10 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__isLoading: bool = False
-        self.__currentPlaylist: SimpleQueue[str] = SimpleQueue()
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
-            return True
-        elif not self.__currentPlaylist.empty():
             return True
 
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
@@ -101,9 +97,6 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({ttsFileNames=})')
             self.__isLoading = False
             return False
-
-        for ttsFileName in ttsFileNames:
-            self.__currentPlaylist.put_nowait(ttsFileName)
 
         await self.__reportCharacterUsage(
             characterAllowance = ttsMOnsterUrls.characterAllowance,
