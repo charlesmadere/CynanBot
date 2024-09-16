@@ -101,6 +101,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
     async def __generateMultiVoiceTts(
         self,
+        characterAllowance: int | None,
         messages: FrozenList[TtsMonsterMessageToVoicePair],
         apiToken: str,
         twitchChannel: str,
@@ -157,11 +158,13 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         return TtsMonsterUrls(
             urls = frozenTtsUrls,
+            characterAllowance = characterAllowance,
             characterUsage = characterUsage
         )
 
     async def __generateSingleVoiceTts(
         self,
+        characterAllowance: int | None,
         apiToken: str,
         message: str,
         twitchChannel: str,
@@ -186,6 +189,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         return TtsMonsterUrls(
             urls = ttsUrls,
+            characterAllowance = characterAllowance,
             characterUsage = ttsResponse.characterUsage
         )
 
@@ -241,6 +245,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         if messages is None or len(messages) == 0:
             return await self.__generateSingleVoiceTts(
+                characterAllowance = ttsMonsterUser.characterAllowance,
                 apiToken = apiToken,
                 message = message,
                 twitchChannel = twitchChannel,
@@ -248,6 +253,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             )
         else:
             return await self.__generateMultiVoiceTts(
+                characterAllowance = ttsMonsterUser.characterAllowance,
                 messages = messages,
                 apiToken = apiToken,
                 twitchChannel = twitchChannel,

@@ -60,5 +60,6 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
 
         return TtsMonsterUrls(
             urls = urls,
+            characterAllowance = None,
             characterUsage = None
         )

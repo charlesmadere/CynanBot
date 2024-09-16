@@ -106,6 +106,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             self.__currentPlaylist.put_nowait(ttsFileName)
 
         await self.__reportCharacterUsage(
+            characterAllowance = ttsMOnsterUrls.characterAllowance,
             characterUsage = ttsMonsterUrls.characterUsage,
             twitchChannel = event.twitchChannel
         )
@@ -121,22 +122,33 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
 
         return True
 
-    async def __reportCharacterUsage(self, characterUsage: int | None, twitchChannel: str):
+    async def __reportCharacterUsage(
+        self,
+        characterAllowance: int | None,
+        characterUsage: int | None,
+        twitchChannel: str
+    ):
         if not utils.isValidInt(characterUsage) or self.__twitchChannelProvider is None:
             return
 
-        remainingCharacters = 10000 - characterUsage
-        usagePercent = str(int(math.ceil((float(characterUsage) / float(10000)) * float(100)))) + '%'
-        self.__timber.log('TtsMonsterManager', f'ⓘ TTS Monster character usage in \"{twitchChannel}\" is currently {characterUsage} ({remainingCharacters=}) ({usagePercent=})')
+        remainingCharactersString = ''
+        usagePercentString = ''
+        if utils.isValidInt(characterAllowance):
+            remainingCharacters = locale.format_string("%d", characterAllowance - characterUsage, grouping = True)
+            remainingCharactersString = f'(remaining characters: {remainingCharacters})'
 
+            usagePercent = str(int(math.ceil((float(characterUsage) / float(characterAllowance)) * float(100)))) + '%'
+            usagePercentString = f'(usage percent: {usagePercent})'
+
+        self.__timber.log('TtsMonsterManager', f'Current TTS Monster character usage stats in \"{twitchChannel}\": ({characterUsage=}) ({characterAllowance=}) ({usagePercentString=})')
+
+        characterUsageString = locale.format_string("%d", characterUsage, grouping = True)
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(twitchChannel)
-        characterUsageStr = locale.format_string("%d", characterUsage, grouping = True)
-        remainingCharactersStr = locale.format_string("%d", remainingCharacters, grouping = True)
 
         await self.__twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = 5,
-            message = f'TTS Monster character usage is currently {characterUsageStr} (remaining characters: {remainingCharactersStr}) (usage percent: {usagePercent})'
+            message = f'ⓘ TTS Monster character usage is currently {characterUsageString} {remainingCharactersString} {usagePercentString}'.strip()
         )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
