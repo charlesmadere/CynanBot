@@ -195,16 +195,19 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
     async def generateTts(
         self,
-        message: str,
+        message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> TtsMonsterUrls | None:
-        if not utils.isValidStr(message):
+        if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if not utils.isValidStr(message):
+            return None
 
         apiToken = await self.__ttsMonsterApiTokensRepository.get(twitchChannelId = twitchChannelId)
         if not utils.isValidStr(apiToken):

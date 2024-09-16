@@ -8,7 +8,7 @@ class TtsMonsterHelperInterface(ABC):
     @abstractmethod
     async def generateTts(
         self,
-        message: str,
+        message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> TtsMonsterUrls | None:

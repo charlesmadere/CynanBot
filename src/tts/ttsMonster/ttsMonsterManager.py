@@ -136,11 +136,11 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__timber.log('TtsMonsterManager', f'Current TTS Monster character usage stats in \"{twitchChannel}\": ({characterUsage=}) ({characterAllowance=}) ({usagePercentString=})')
 
         characterUsageString = locale.format_string("%d", characterUsage, grouping = True)
-        twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(twitchChannel)
+        messageable = await self.__twitchChannelProvider.getTwitchChannel(twitchChannel)
 
         await self.__twitchUtils.waitThenSend(
-            messageable = twitchChannel,
-            delaySeconds = 5,
+            messageable = messageable,
+            delaySeconds = 3,
             message = f'ⓘ TTS Monster character usage is currently {characterUsageString} {remainingCharactersString} {usagePercentString}'.strip()
         )
 
