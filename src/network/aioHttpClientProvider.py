@@ -1,6 +1,8 @@
 from asyncio import AbstractEventLoop
 
 import aiohttp
+from aiohttp import DummyCookieJar
+from aiohttp.abc import AbstractCookieJar
 
 from .aioHttpHandle import AioHttpHandle
 from .networkClientProvider import NetworkClientProvider
@@ -16,7 +18,8 @@ class AioHttpClientProvider(NetworkClientProvider):
         self,
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
-        timeoutSeconds: int = 12
+        cookieJar: AbstractCookieJar = DummyCookieJar(),
+        timeoutSeconds: int = 16
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -24,11 +27,14 @@ class AioHttpClientProvider(NetworkClientProvider):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(timeoutSeconds):
             raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
+        elif not isinstance(cookieJar, AbstractCookieJar):
+            raise TypeError(f'cookieJar argument is malformed: \"{cookieJar}\"')
         elif timeoutSeconds < 3 or timeoutSeconds > 16:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__timber: TimberInterface = timber
+        self.__cookieJar: AbstractCookieJar = cookieJar
         self.__timeoutSeconds: int = timeoutSeconds
 
         self.__clientSession: aiohttp.ClientSession | None = None
@@ -39,7 +45,7 @@ class AioHttpClientProvider(NetworkClientProvider):
         if clientSession is None:
             clientSession = aiohttp.ClientSession(
                 loop = self.__eventLoop,
-                cookie_jar = aiohttp.DummyCookieJar(),
+                cookie_jar = self.__cookieJar,
                 timeout = aiohttp.ClientTimeout(total = self.__timeoutSeconds)
             )
 
