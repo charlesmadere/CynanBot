@@ -99,7 +99,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             return False
 
         await self.__reportCharacterUsage(
-            characterAllowance = ttsMOnsterUrls.characterAllowance,
+            characterAllowance = ttsMonsterUrls.characterAllowance,
             characterUsage = ttsMonsterUrls.characterUsage,
             twitchChannel = event.twitchChannel
         )
