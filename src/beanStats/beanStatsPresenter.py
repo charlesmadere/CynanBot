@@ -33,4 +33,4 @@ class BeanStatsPresenter(BeanStatsPresenterInterface):
             successPercent = round((float(beanStats.successfulBeans) / float(totalSuccessesAndFails)) * float(100), 2)
             successPercentString = f'{successPercent}%'
 
-        return (f'@{beanStats.chatterUserName}\'s bean scores — {successesString} and {failsString} (that\'s a {successPercentString} success rate)')
+        return f'@{beanStats.chatterUserName}\'s bean scores — {successesString} and {failsString} (that\'s a {successPercentString} success rate)'

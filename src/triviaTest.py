@@ -85,8 +85,8 @@ from trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from trivia.triviaVerifier import TriviaVerifier
 from twitch.api.twitchApiService import TwitchApiService
 from twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from twitch.twitchAnonymousUserIdProvider import TwitchAnonymousUserIdProvider
-from twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
+from twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
+from twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from twitch.twitchTokensRepository import TwitchTokensRepository
 from twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -113,11 +113,11 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
     twitchCredentialsProvider = authRepository
 )
-twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
+officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
-    twitchAnonymousUserIdProvider = twitchAnonymousUserIdProvider,
     twitchApiService = twitchApiService
 )
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(

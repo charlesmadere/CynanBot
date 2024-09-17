@@ -226,6 +226,8 @@ from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserId
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
+from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
 from src.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from src.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
@@ -234,8 +236,6 @@ from src.twitch.timeout.twitchTimeoutRemodHelper import TwitchTimeoutRemodHelper
 from src.twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from src.twitch.timeout.twitchTimeoutRemodRepository import TwitchTimeoutRemodRepository
 from src.twitch.timeout.twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
-from src.twitch.twitchAnonymousUserIdProvider import TwitchAnonymousUserIdProvider
-from src.twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
 from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
@@ -365,12 +365,12 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
+officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
-    twitchAnonymousUserIdProvider = twitchAnonymousUserIdProvider,
     twitchApiService = twitchApiService
 )
 
@@ -595,6 +595,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
@@ -690,7 +691,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
     timber = timber
 )
 
-soundPlayerManager: SoundPlayerManagerInterface | None = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
+soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
 
 immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -964,6 +965,8 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
+    beanStatsRepository = beanStatsRepository,
+    soundPlayerManager = soundPlayerManager,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -995,6 +998,7 @@ timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterfac
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
+    anivUserIdProvider = anivUserIdProvider,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,

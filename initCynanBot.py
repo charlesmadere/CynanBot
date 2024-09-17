@@ -167,7 +167,7 @@ from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandom
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from src.soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
 from src.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
-from src.soundPlayerManager.vlc.vlcSoundPlayerManagerProvider import VlcSoundPlayerManagerProvider
+from src.soundPlayerManager.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
 from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
 from src.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from src.storage.backingDatabase import BackingDatabase
@@ -316,30 +316,8 @@ from src.trivia.triviaUtils import TriviaUtils
 from src.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from src.trivia.triviaVerifier import TriviaVerifier
 from src.trivia.triviaVerifierInterface import TriviaVerifierInterface
-from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
-from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
-from src.tts.decTalk.decTalkManager import DecTalkManager
-from src.tts.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
-from src.tts.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
-from src.tts.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
-from src.tts.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
-from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
-from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
-from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
-from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
-from src.tts.google.googleTtsManager import GoogleTtsManager
-from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
-from src.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
-from src.tts.tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
-from src.tts.ttsCommandBuilder import TtsCommandBuilder
-from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from src.tts.ttsJsonMapper import TtsJsonMapper
-from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.ttsManager import TtsManager
+from src.tts.stub.stubTtsManager import StubTtsManager
 from src.tts.ttsManagerInterface import TtsManagerInterface
-from src.tts.ttsSettingsRepository import TtsSettingsRepository
-from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -362,6 +340,8 @@ from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserId
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
+from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
 from src.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from src.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
@@ -370,8 +350,6 @@ from src.twitch.timeout.twitchTimeoutRemodHelper import TwitchTimeoutRemodHelper
 from src.twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from src.twitch.timeout.twitchTimeoutRemodRepository import TwitchTimeoutRemodRepository
 from src.twitch.timeout.twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
-from src.twitch.twitchAnonymousUserIdProvider import TwitchAnonymousUserIdProvider
-from src.twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
 from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
@@ -503,12 +481,12 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
+officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
-    twitchAnonymousUserIdProvider = twitchAnonymousUserIdProvider,
     twitchApiService = twitchApiService
 )
 
@@ -750,6 +728,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
@@ -1370,13 +1349,9 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
     timber = timber
 )
 
-soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber
-)
+soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
 
-soundPlayerManager: SoundPlayerManagerInterface | None = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
+soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
 
 immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -1388,77 +1363,7 @@ immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSou
 ## TTS initialization section ##
 ################################
 
-ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
-    timber = timber
-)
-
-ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    googleJsonMapper = googleJsonMapper,
-    settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
-)
-
-ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
-    contentScanner = contentScanner,
-    emojiHelper = emojiHelper,
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
-decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber
-)
-
-decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
-
-decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
-    decTalkVoiceMapper = decTalkVoiceMapper
-)
-
-decTalkManager: DecTalkManager | None = DecTalkManager(
-    decTalkFileManager = decTalkFileManager,
-    decTalkVoiceChooser = decTalkVoiceChooser,
-    timber = timber,
-    ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
-)
-
-googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
-
-googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
-    eventLoop = eventLoop,
-    googleFileExtensionHelper = googleFileExtensionHelper,
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
-
-googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
-    googleApiService = googleApiService,
-    googleTtsFileManager = googleTtsFileManager,
-    googleTtsVoiceChooser = googleTtsVoiceChooser,
-    soundPlayerManager = soundPlayerManager,
-    timber = timber,
-    ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
-)
-
-ttsManager: TtsManagerInterface | None = TtsManager(
-    decTalkManager = decTalkManager,
-    googleTtsManager = googleTtsManager,
-    timber = timber,
-    ttsMonsterManager = None,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
-)
+ttsManager: TtsManagerInterface = StubTtsManager()
 
 
 ##################################################
@@ -1530,6 +1435,8 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
+    beanStatsRepository = beanStatsRepository,
+    soundPlayerManager = soundPlayerManager,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1561,6 +1468,7 @@ timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterfac
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
+    anivUserIdProvider = anivUserIdProvider,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -1780,11 +1688,11 @@ cynanBot = CynanBot(
     triviaSettingsRepository = triviaSettingsRepository,
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     triviaUtils = triviaUtils,
-    ttsJsonMapper = ttsJsonMapper,
+    ttsJsonMapper = None,
     ttsMonsterApiTokensRepository = None,
     ttsMonsterManager = None,
     ttsMonsterSettingsRepository = None,
-    ttsSettingsRepository = ttsSettingsRepository,
+    ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,

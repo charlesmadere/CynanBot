@@ -1,8 +1,7 @@
 import asyncio
 import locale
-import time
-from asyncio import AbstractEventLoop, InvalidStateError
-from requests import get
+from asyncio import AbstractEventLoop
+
 from rich.console import Console
 from rich.table import Table
 
@@ -18,10 +17,10 @@ from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requestsClientProvider import RequestsClientProvider
-from src.storage.databaseType import DatabaseType
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.backingPsqlDatabase import BackingPsqlDatabase
 from src.storage.backingSqliteDatabase import BackingSqliteDatabase
+from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.storageJsonMapper import StorageJsonMapper
@@ -45,8 +44,8 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
-from src.twitch.twitchAnonymousUserIdProvider import TwitchAnonymousUserIdProvider
-from src.twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
+from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
+from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.twitchTokensRepository import TwitchTokensRepository
 from src.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -153,12 +152,12 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
+officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
-    twitchAnonymousUserIdProvider = twitchAnonymousUserIdProvider,
     twitchApiService = twitchApiService
 )
 

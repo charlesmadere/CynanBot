@@ -23,6 +23,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
         jsonString = jsonString.lower()
 
         match jsonString:
+            case 'bean': return SoundAlert.BEAN
             case 'cheer': return SoundAlert.CHEER
             case 'click_navigation': return SoundAlert.CLICK_NAVIGATION
             case 'point_redemption_01': return SoundAlert.POINT_REDEMPTION_01

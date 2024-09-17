@@ -31,6 +31,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
         filePath: str | None = None
 
         match soundAlert:
+            case SoundAlert.BEAN:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'beanFilePath',
+                    fallback = 'Bean Alert.mp3'
+                )
+
             case SoundAlert.CHEER:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,

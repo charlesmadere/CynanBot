@@ -4,9 +4,14 @@ from typing import Collection
 from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ..beanChanceCheerAction import BeanChanceCheerAction
+from ...beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
+from ...beanStats.chatterBeanStats import ChatterBeanStats
 from ...misc import utils as utils
+from ...soundPlayerManager.soundAlert import SoundAlert
+from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ...twitch.configuration.twitchMessageable import TwitchMessageable
 from ...twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ...twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -17,12 +22,18 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
     def __init__(
         self,
+        beanStatsRepository: BeanStatsRepositoryInterface,
+        soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(beanStatsRepository, BeanStatsRepositoryInterface):
+            raise TypeError(f'beanStatsRepository argument is malformed: \"{beanStatsRepository}\"')
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+            raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
@@ -31,12 +42,20 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__beanStatsRepository: BeanStatsRepositoryInterface = beanStatsRepository
+        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
+
+    async def __beanStatsToString(self, beanStats: ChatterBeanStats) -> str:
+        if not isinstance(beanStats, ChatterBeanStats):
+            raise TypeError(f'beanStats argument is malformed: \"{beanStats}\"')
+
+        return f'(bean stats: {beanStats.successfulBeansStr}W - {beanStats.failedBeanAttemptsStr}L)'
 
     async def __getHypeEmote(self) -> str:
         charlesUserId = await self.__twitchFriendsUserIdRepository.getCharlesUserId()
@@ -109,6 +128,66 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             user = user
         )
 
+    async def __handleFailRoll(
+        self,
+        action: BeanChanceCheerAction,
+        randomNumber: int,
+        cheerUserId: str,
+        cheerUserName: str,
+        twitchChannelId: str,
+        twitchChatMessageId: str | None,
+        twitchChannel: TwitchMessageable,
+        user: UserInterface
+    ):
+        self.__timber.log('BeanChanceCheerActionHelper', f'Attempt to bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} but got a bad roll ({randomNumber=}) ({action=})')
+
+        newBeanStats = await self.__beanStatsRepository.incrementFails(
+            chatterUserId = cheerUserId,
+            chatterUserName = cheerUserName,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
+        )
+
+        beanStatsMessage = await self.__beanStatsToString(newBeanStats)
+        emote = await self.__getSadEmote()
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'{emote} Sorry, no 🫘! (you rolled a 🎲 {randomNumber} 🎲, but you needed a roll greater than or equal to {action.randomChance}) {beanStatsMessage}',
+            replyMessageId = twitchChatMessageId
+        )
+
+    async def __handleSuccessRoll(
+        self,
+        action: BeanChanceCheerAction,
+        randomNumber: int,
+        cheerUserId: str,
+        cheerUserName: str,
+        twitchChannelId: str,
+        twitchChatMessageId: str | None,
+        twitchChannel: TwitchMessageable,
+        user: UserInterface
+    ):
+        self.__timber.log('BeanChanceCheerActionHelper', f'Successful bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} ({randomNumber=}) ({action=})')
+
+        newBeanStats = await self.__beanStatsRepository.incrementSuccesses(
+            chatterUserId = cheerUserId,
+            chatterUserName = cheerUserName,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
+        )
+
+        beanStatsMessage = await self.__beanStatsToString(newBeanStats)
+        emote = await self.__getHypeEmote()
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'{emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} {beanStatsMessage}',
+            replyMessageId = twitchChatMessageId
+        )
+
+        await self.__soundPlayerManager.playSoundAlert(SoundAlert.BEAN)
+
     async def __rollBeanChance(
         self,
         action: BeanChanceCheerAction,
@@ -138,24 +217,28 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         randomNumber = int(round(random.random() * float(100)))
 
         if randomNumber < action.randomChance:
-            self.__timber.log('BeanChanceCheerActionHelper', f'Attempt to bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} but got a bad roll ({randomNumber=}) ({action=})')
-            emote = await self.__getSadEmote()
-
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'{emote} Sorry, no 🫘 (you rolled a {randomNumber}, but you needed a roll greater than or equal to {action.randomChance})',
-                replyMessageId = twitchChatMessageId
+            await self.__handleFailRoll(
+                action = action,
+                randomNumber = randomNumber,
+                cheerUserId = cheerUserId,
+                cheerUserName = cheerUserName,
+                twitchChannelId = twitchChannelId,
+                twitchChatMessageId = twitchChatMessageId,
+                twitchChannel = twitchChannel,
+                user = user
             )
 
             return False
         else:
-            self.__timber.log('BeanChanceCheerActionHelper', f'Successful bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} ({randomNumber=}) ({action=})')
-            emote = await self.__getHypeEmote()
-
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'{emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote}',
-                replyMessageId = twitchChatMessageId
+            await self.__handleSuccessRoll(
+                action = action,
+                randomNumber = randomNumber,
+                cheerUserId = cheerUserId,
+                cheerUserName = cheerUserName,
+                twitchChannelId = twitchChannelId,
+                twitchChatMessageId = twitchChatMessageId,
+                twitchChannel = twitchChannel,
+                user = user
             )
 
             return True

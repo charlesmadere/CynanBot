@@ -205,7 +205,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             self.__timber.log('TriviaAnswerChecker', f'Unable to convert true false answer to bool: ({answer=}): {e}', e, traceback.format_exc())
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        if answerBool is triviaQuestion.correctAnswer:
+        if answerBool == triviaQuestion.correctAnswer:
             return TriviaAnswerCheckResult.CORRECT
         else:
             return TriviaAnswerCheckResult.INCORRECT
@@ -335,7 +335,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'george washington'
         if word == 'jakob':
             yield 'jacob'
-        if word in ('jo', 'joey', 'joseph'):
+        if word in ('jo', 'joey', 'josef', 'joseph'):
             yield 'joe'
         if word in ('jon', 'jhon'):
             yield 'john'
@@ -353,7 +353,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'sarah'
         if word in ('steph', 'stephan', 'steven'):
             yield 'steve'
-        if word in ('tom', 'tommy', 'tony'):
+        if word in ('thom', 'tom', 'tommy', 'tony'):
             yield 'thomas'
         if word == 'toni':
             yield 'tony'
@@ -942,6 +942,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'entrepreneur'
         if word in ('gage', 'guage'):
             yield 'gauge'
+        if word in ('garauntee', 'gaurantee'):
+            yield 'guarantee'
         if word in ('itinary', 'itinery'):
             yield 'itinerary'
         if word == 'layed':

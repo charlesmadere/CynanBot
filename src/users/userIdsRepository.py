@@ -13,7 +13,7 @@ from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType
 from ..timber.timberInterface import TimberInterface
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitch.twitchAnonymousUserIdProviderInterface import TwitchAnonymousUserIdProviderInterface
+from ..twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 
 
 class UserIdsRepository(UserIdsRepositoryInterface):
@@ -21,8 +21,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
+        officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         timber: TimberInterface,
-        twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface,
         twitchApiService: TwitchApiServiceInterface,
         cacheSize: int = 256
     ):
@@ -30,8 +30,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchAnonymousUserIdProvider, TwitchAnonymousUserIdProviderInterface):
-            raise TypeError(f'twitchAnonymousUserIdProvider argument is malformed: \"{twitchAnonymousUserIdProvider}\"')
+        elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
+            raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not utils.isValidInt(cacheSize):
@@ -40,8 +40,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = officialTwitchAccountUserIdProvider
         self.__timber: TimberInterface = timber
-        self.__twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = twitchAnonymousUserIdProvider
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
 
         self.__isDatabaseReady: bool = False
@@ -52,7 +52,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self.__timber.log('UserIdsRepository', 'Caches cleared')
 
     async def fetchAnonymousUserId(self) -> str:
-        return await self.__twitchAnonymousUserIdProvider.getTwitchAnonymousUserId()
+        return await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
 
     async def fetchAnonymousUserName(self, twitchAccessToken: str) -> str | None:
         if not utils.isValidStr(twitchAccessToken):

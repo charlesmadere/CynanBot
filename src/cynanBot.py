@@ -1,7 +1,6 @@
 import traceback
 from asyncio import AbstractEventLoop
 
-from src.tts.ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
@@ -173,6 +172,7 @@ from .trivia.triviaRepositories.triviaRepositoryInterface import TriviaRepositor
 from .trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from .tts.ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from .ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
@@ -1376,7 +1376,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__clearCachesCommand.handleChatCommand(context)
 
-    @commands.command(name = 'clearsupertriviaqueue')
+    @commands.command(name = 'clearsupertriviaqueue', aliases = [ 'cleartriviaqueue' ])
     async def command_clearsupertriviaqueue(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__clearSuperTriviaQueueCommand.handleChatCommand(context)
@@ -1556,7 +1556,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setTwitchCodeCommand.handleCommand(context)
 
-    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'SuperAnswer', 'Superanswer', 'sa', 'SA', 'sanswer', 'SANSWER' ])
+    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'SuperAnswer', 'Superanswer', 'sa', 'SA', 'Sa', 'sA', 'sanswer', 'SANSWER', 'Sanswer' ])
     async def command_superanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleChatCommand(context)

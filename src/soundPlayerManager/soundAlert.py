@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 class SoundAlert(Enum):
 
+    BEAN = auto()
     CHEER = auto()
     CLICK_NAVIGATION = auto()
     POINT_REDEMPTION_01 = auto()

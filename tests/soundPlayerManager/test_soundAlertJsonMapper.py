@@ -13,6 +13,10 @@ class TestSoundAlertJsonMapper:
         timber = timber
     )
 
+    def test_parseSoundAlert_withBeanString(self):
+        result = self.jsonMapper.parseSoundAlert('bean')
+        assert result is SoundAlert.BEAN
+
     def test_parseSoundAlert_withCheerString(self):
         result = self.jsonMapper.parseSoundAlert('cheer')
         assert result is SoundAlert.CHEER

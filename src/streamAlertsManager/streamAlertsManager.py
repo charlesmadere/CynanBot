@@ -20,7 +20,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        soundPlayerManager: SoundPlayerManagerInterface | None,
+        soundPlayerManager: SoundPlayerManagerInterface,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsManager: TtsManagerInterface | None,
@@ -29,7 +29,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif soundPlayerManager is not None and not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
             raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
@@ -47,7 +47,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__soundPlayerManager: SoundPlayerManagerInterface | None = soundPlayerManager
+        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = streamAlertsSettingsRepository
         self.__timber: TimberInterface = timber
         self.__ttsManager: TtsManagerInterface | None = ttsManager
@@ -64,17 +64,16 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         if currentAlert is None:
             return False
 
-        soundPlayerManager = self.__soundPlayerManager
         soundAlert = currentAlert.getSoundAlert()
         ttsManager = self.__ttsManager
         ttsEvent = currentAlert.getTtsEvent()
 
-        if (currentAlert.getAlertState() is StreamAlertState.NOT_STARTED or currentAlert.getAlertState() is StreamAlertState.SOUND_STARTED) and soundAlert is not None and soundPlayerManager is not None:
-            if await soundPlayerManager.isPlaying():
+        if (currentAlert.getAlertState() is StreamAlertState.NOT_STARTED or currentAlert.getAlertState() is StreamAlertState.SOUND_STARTED) and soundAlert is not None:
+            if await self.__soundPlayerManager.isPlaying():
                 return True
             elif currentAlert.getAlertState() is StreamAlertState.SOUND_STARTED:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
-            elif await soundPlayerManager.playSoundAlert(soundAlert):
+            elif await self.__soundPlayerManager.playSoundAlert(soundAlert):
                 currentAlert.setAlertState(StreamAlertState.SOUND_STARTED)
                 return True
             else:
