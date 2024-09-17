@@ -90,7 +90,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
         elif volume is not None and not utils.isValidInt(volume):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
-        elif volume < 0 or volume > 100:
+        elif volume is not None and (volume < 0 or volume > 100):
             raise ValueError(f'volume argument is out of bounds: {volume}')
 
         frozenFilePaths: FrozenList[str] = FrozenList(filePaths)
@@ -158,7 +158,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
         elif volume is not None and not utils.isValidInt(volume):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
-        elif volume < 0 or volume > 100:
+        elif volume is not None and (volume < 0 or volume > 100):
             raise ValueError(f'volume argument is out of bounds: {volume}')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
@@ -188,7 +188,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             return False
         elif volume is not None and not utils.isValidInt(volume):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
-        elif volume < 0 or volume > 100:
+        elif volume is not None and (volume < 0 or volume > 100):
             raise ValueError(f'volume argument is out of bounds: {volume}')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
