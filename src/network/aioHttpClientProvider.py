@@ -29,7 +29,7 @@ class AioHttpClientProvider(NetworkClientProvider):
             raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
         elif not isinstance(cookieJar, AbstractCookieJar):
             raise TypeError(f'cookieJar argument is malformed: \"{cookieJar}\"')
-        elif timeoutSeconds < 3 or timeoutSeconds > 16:
+        elif timeoutSeconds < 3 or timeoutSeconds > 60:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
