@@ -19,7 +19,7 @@ class AioHttpClientProvider(NetworkClientProvider):
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
         cookieJar: AbstractCookieJar = DummyCookieJar(),
-        timeoutSeconds: int = 16
+        timeoutSeconds: int = 24
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
