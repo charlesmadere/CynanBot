@@ -5,5 +5,5 @@ from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInte
 
 class StubSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
-    async def constructSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+    def constructSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
         return StubSoundPlayerManager()
