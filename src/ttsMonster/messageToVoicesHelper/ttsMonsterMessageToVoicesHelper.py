@@ -138,6 +138,29 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
         occurrences: list[Match] = list(occurrencesIterator)
 
+        if len(occurrences) == 0:
+            locations.freeze()
+            return locations
+
+        # check for a prefix chunk of text that has no written voice
+        prefixMessageChunk: str | None = message[0:occurrences[0].start()].strip()
+
+        if utils.isValidStr(prefixMessageChunk):
+            defaultWebsiteVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+            defaultVoice: TtsMonsterVoice | None = None
+
+            for voice in voiceNamesToVoice.values():
+                if voice.websiteVoice is defaultWebsiteVoice:
+                    defaultVoice = voice
+                    break
+
+            if defaultVoice is not None:
+                locations.append(TtsMonsterMessageToVoicesHelper.VoiceMessageHeader(
+                    start = 0,
+                    end = 0,
+                    voice = defaultVoice
+                ))
+
         for index, occurrence in enumerate(occurrences):
             voiceName = occurrence.group(2).casefold()
             voice = voiceNamesToVoice.get(voiceName, None)

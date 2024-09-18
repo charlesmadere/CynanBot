@@ -120,6 +120,26 @@ class TestTtsMonsterMessageToVoicesHelper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_build_withDefaultVoiceAndThenKkona(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona })
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Hello, World! kkona: tryin to start my tractor'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 2
+
+        entry = result[0]
+        assert entry.message == 'Hello, World!'
+        assert entry.voice == self.brian
+
+        entry = result[1]
+        assert entry.message == 'tryin to start my tractor'
+        assert entry.voice == self.kkona
+
+    @pytest.mark.asyncio
     async def test_build_withEmptyMessage(self):
         voices: frozenset[TtsMonsterVoice] = frozenset({ self.kkona, self.shadow })
 
