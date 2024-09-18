@@ -25,10 +25,10 @@ class AioHttpClientProvider(NetworkClientProvider):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(timeoutSeconds):
-            raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
         elif not isinstance(cookieJar, AbstractCookieJar):
             raise TypeError(f'cookieJar argument is malformed: \"{cookieJar}\"')
+        elif not utils.isValidInt(timeoutSeconds):
+            raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
         elif timeoutSeconds < 3 or timeoutSeconds > 60:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
