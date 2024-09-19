@@ -21,6 +21,7 @@ class UserJsonConstant(Enum):
     TIMEZONE = auto()
     TIMEZONES = auto()
     TTS_ENABLED = auto()
+    TTS_MONSTER_API_USAGE_REPORTING_ENABLED = auto()
     TWITTER_URL = auto()
     WEATHER_ENABLED = auto()
 
@@ -45,6 +46,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.TIMEZONE: return 'timeZone'
             case UserJsonConstant.TIMEZONES: return 'timeZones'
             case UserJsonConstant.TTS_ENABLED: return 'ttsEnabled'
+            case UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED: return 'ttsMonsterApiUsageReportingEnabled'
             case UserJsonConstant.TWITTER_URL: return 'twitterUrl'
             case UserJsonConstant.WEATHER_ENABLED: return 'weatherEnabled'
             case _: raise ValueError(f'unknown UserJsonConstant value: \"{self}\"')

@@ -117,7 +117,6 @@ from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPla
 from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from src.soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelper
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
@@ -691,8 +690,6 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
     timber = timber
 )
 
-soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
-
 immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber
@@ -759,7 +756,7 @@ googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     googleApiService = googleApiService,
     googleTtsFileManager = googleTtsFileManager,
     googleTtsVoiceChooser = googleTtsVoiceChooser,
-    soundPlayerManager = soundPlayerManager,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository,
@@ -838,7 +835,7 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
 )
 
 ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
-    soundPlayerManager = soundPlayerManager,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
     ttsMonsterHelper = ttsMonsterHelper,
@@ -938,7 +935,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 
 streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerManager = soundPlayerManager,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     timber = timber,
     ttsManager = ttsManager
@@ -966,7 +963,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
-    soundPlayerManager = soundPlayerManager,
+    immediateSoundPlayerManager = immediateSoundPlayerManager,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1173,6 +1170,7 @@ cynanBot = CynanBot(
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,
     streamAlertsManager = streamAlertsManager,
+    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
@@ -1195,8 +1193,10 @@ cynanBot = CynanBot(
     triviaUtils = None,
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
+    ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
     ttsMonsterManager = ttsMonsterManager,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
+    ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Match, Pattern
+from typing import Collection, Match, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -29,16 +29,17 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
 
+        self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
         self.__voicePatternRegEx: Pattern = re.compile(r'(^|\s+)(\w+):', re.IGNORECASE)
 
     async def build(
         self,
         voices: frozenset[TtsMonsterVoice],
-        message: str
+        message: str | None
     ) -> FrozenList[TtsMonsterMessageToVoicePair] | None:
         if not isinstance(voices, frozenset):
             raise TypeError(f'voices argument is malformed: \"{voices}\"')
-        elif not isinstance(message, str):
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         if len(voices) == 0 or not utils.isValidStr(message):
@@ -47,6 +48,8 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         voiceNamesToVoice = await self.__buildVoiceNamesToVoiceDictionary(
             voices = voices
         )
+
+        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         voiceMessageHeaders = await self.__buildVoiceMessageHeaders(
             voiceNamesToVoice = voiceNamesToVoice,
@@ -132,34 +135,41 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         locations: FrozenList[TtsMonsterMessageToVoicesHelper.VoiceMessageHeader] = FrozenList()
         occurrencesIterator = self.__voicePatternRegEx.finditer(message)
 
+        defaultVoice = await self.__getDefaultVoice(voiceNamesToVoice.values())
+
         if occurrencesIterator is None:
-            locations.freeze()
-            return locations
-
-        occurrences: list[Match] = list(occurrencesIterator)
-
-        if len(occurrences) == 0:
-            locations.freeze()
-            return locations
-
-        # check for a prefix chunk of text that has no written voice
-        prefixMessageChunk: str | None = message[0:occurrences[0].start()].strip()
-
-        if utils.isValidStr(prefixMessageChunk):
-            defaultWebsiteVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
-            defaultVoice: TtsMonsterVoice | None = None
-
-            for voice in voiceNamesToVoice.values():
-                if voice.websiteVoice is defaultWebsiteVoice:
-                    defaultVoice = voice
-                    break
-
             if defaultVoice is not None:
                 locations.append(TtsMonsterMessageToVoicesHelper.VoiceMessageHeader(
                     start = 0,
                     end = 0,
                     voice = defaultVoice
                 ))
+
+            locations.freeze()
+            return locations
+
+        occurrences: list[Match] = list(occurrencesIterator)
+
+        if len(occurrences) == 0:
+            if defaultVoice is not None:
+                locations.append(TtsMonsterMessageToVoicesHelper.VoiceMessageHeader(
+                    start = 0,
+                    end = 0,
+                    voice = defaultVoice
+                ))
+
+            locations.freeze()
+            return locations
+
+        # check for a prefix chunk of text that has no written voice
+        prefixMessageChunk: str | None = message[0:occurrences[0].start()].strip()
+
+        if utils.isValidStr(prefixMessageChunk) and defaultVoice is not None:
+            locations.append(TtsMonsterMessageToVoicesHelper.VoiceMessageHeader(
+                start = 0,
+                end = 0,
+                voice = defaultVoice
+            ))
 
         for index, occurrence in enumerate(occurrences):
             voiceName = occurrence.group(2).casefold()
@@ -182,3 +192,15 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
         locations.freeze()
         return locations
+
+    async def __getDefaultVoice(self, voices: Collection[TtsMonsterVoice]) -> TtsMonsterVoice | None:
+        if not isinstance(voices, Collection):
+            raise TypeError(f'voices argument is malformed: \"{voices}\"')
+
+        defaultWebsiteVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+
+        for voice in voices:
+            if voice.websiteVoice == defaultWebsiteVoice:
+                return voice
+
+        return None

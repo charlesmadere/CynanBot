@@ -169,6 +169,22 @@ class TestTtsMonsterMessageToVoicesHelper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_build_withHelloWorldMessage(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian })
+
+        result = await self.helper.build(
+            voices = voices,
+            message = 'Hello, World!'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 1
+
+        entry = result[0]
+        assert entry.message == 'Hello, World!'
+        assert entry.voice == self.brian
+
+    @pytest.mark.asyncio
     async def test_build_withJohnnyMessageButNoJohnnyVoiceAvailable(self):
         voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.shadow })
 
@@ -180,26 +196,49 @@ class TestTtsMonsterMessageToVoicesHelper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_build_withRandomNoiseText1(self):
-        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona, self.shadow })
+    async def test_build_withNoneMessage(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.kkona, self.shadow })
 
         result = await self.helper.build(
             voices = voices,
-            message = 'qXV3Lbsdvi5Tj41STSKIA9qdZbtkc6vrSO1U1bgdk1D0XZmkG9dMtWwFwRi1S0B'
+            message = None
         )
 
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_build_withRandomNoiseText2(self):
-        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.shadow })
+    async def test_build_withRandomNoiseText1(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.kkona, self.shadow })
+        message = 'qXV3Lbsdvi5Tj41STSKIA9qdZbtkc6vrSO1U1bgdk1D0XZmkG9dMtWwFwRi1S0B'
 
         result = await self.helper.build(
             voices = voices,
-            message = 'OrVniSn8oglwzVqD0tfal5n2ggBKVqsGljXZzAncZulyJvJzAmOX3vpIZhrXGJW'
+            message = message
         )
 
-        assert result is None
+        assert isinstance(result, FrozenList)
+        assert len(result) == 1
+
+        entry = result[0]
+        assert entry.message == message
+        assert entry.voice == self.brian
+
+    @pytest.mark.asyncio
+    async def test_build_withRandomNoiseText2(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian, self.shadow })
+        message = 'OrVniSn8oglwzVqD0tfal5n2ggBKVqsGljXZzAncZulyJvJzAmOX3vpIZhrXGJW'
+
+        result = await self.helper.build(
+            voices = voices,
+            message = message
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 1
+
+        entry = result[0]
+        assert entry.message == message
+        assert entry.voice == self.brian
 
     @pytest.mark.asyncio
     async def test_build_withRandomNoiseText3(self):
@@ -211,6 +250,22 @@ class TestTtsMonsterMessageToVoicesHelper:
         )
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_build_withRemovesExtraWhitespace(self):
+        voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian })
+
+        result = await self.helper.build(
+            voices = voices,
+            message = '  Lots     of extra   whitespace   here \n'
+        )
+
+        assert isinstance(result, FrozenList)
+        assert len(result) == 1
+
+        entry = result[0]
+        assert entry.message == 'Lots of extra whitespace here'
+        assert entry.voice == self.brian
 
     @pytest.mark.asyncio
     async def test_build_withShadowBgram(self):

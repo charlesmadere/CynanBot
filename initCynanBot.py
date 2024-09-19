@@ -161,7 +161,6 @@ from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPla
 from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from src.soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelper
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
@@ -180,10 +179,8 @@ from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
-from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
-from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
-from src.streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
+from src.streamAlertsManager.stub.StubStreamAlertsManager import StubStreamAlertsManager
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
@@ -1351,8 +1348,6 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
 
-soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManagerProvider.constructSoundPlayerManagerInstance()
-
 immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber
@@ -1370,17 +1365,7 @@ ttsManager: TtsManagerInterface = StubTtsManager()
 ## Stream Alerts Manager initialization section ##
 ##################################################
 
-streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
-    settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')
-)
-
-streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerManager = soundPlayerManager,
-    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
-    timber = timber,
-    ttsManager = ttsManager
-)
+streamAlertsManager: StreamAlertsManagerInterface | None = StubStreamAlertsManager()
 
 
 #############################################
@@ -1436,7 +1421,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
-    soundPlayerManager = soundPlayerManager,
+    immediateSoundPlayerManager = immediateSoundPlayerManager,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1668,6 +1653,7 @@ cynanBot = CynanBot(
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = starWarsQuotesRepository,
     streamAlertsManager = streamAlertsManager,
+    streamAlertsSettingsRepository = None,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
@@ -1690,8 +1676,10 @@ cynanBot = CynanBot(
     triviaUtils = triviaUtils,
     ttsJsonMapper = None,
     ttsMonsterApiTokensRepository = None,
+    ttsMonsterKeyAndUserIdRepository = None,
     ttsMonsterManager = None,
     ttsMonsterSettingsRepository = None,
+    ttsMonsterStreamerVoicesRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
     twitchChannelJoinHelper = twitchChannelJoinHelper,

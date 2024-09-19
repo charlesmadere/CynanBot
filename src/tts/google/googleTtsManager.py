@@ -129,7 +129,7 @@ class GoogleTtsManager(TtsManagerInterface):
         except Exception as e:
             exception = e
 
-        if response is None:
+        if response is None or exception is not None:
             self.__timber.log('GoogleTtsManager', f'Failed to utilize Google Text to Speech API for TTS event ({event=}) ({response=}): {exception}', exception, traceback.format_exc())
             return None
 

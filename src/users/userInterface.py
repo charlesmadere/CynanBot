@@ -358,6 +358,11 @@ class UserInterface(ABC):
     def isTtsEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
+        pass
+
     @abstractmethod
     def isWeatherEnabled(self) -> bool:
         pass

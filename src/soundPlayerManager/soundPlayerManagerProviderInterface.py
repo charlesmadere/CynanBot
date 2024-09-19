@@ -6,5 +6,9 @@ from .soundPlayerManagerInterface import SoundPlayerManagerInterface
 class SoundPlayerManagerProviderInterface(ABC):
 
     @abstractmethod
-    def constructSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+    def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+        pass
+
+    @abstractmethod
+    def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
         pass

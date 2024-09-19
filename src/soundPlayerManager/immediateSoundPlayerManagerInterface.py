@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Collection
 
 from .soundAlert import SoundAlert
 
@@ -6,9 +7,25 @@ from .soundAlert import SoundAlert
 class ImmediateSoundPlayerManagerInterface(ABC):
 
     @abstractmethod
-    async def playSoundAlert(self, alert: SoundAlert) -> bool:
+    async def playPlaylist(
+        self,
+        filePaths: Collection[str],
+        volume: int | None = None
+    ) -> bool:
         pass
 
     @abstractmethod
-    async def playSoundFile(self, filePath: str |  None) -> bool:
+    async def playSoundAlert(
+        self,
+        alert: SoundAlert,
+        volume: int | None = None
+    ) -> bool:
+        pass
+
+    @abstractmethod
+    async def playSoundFile(
+        self,
+        filePath: str |  None,
+        volume: int | None = None
+    ) -> bool:
         pass

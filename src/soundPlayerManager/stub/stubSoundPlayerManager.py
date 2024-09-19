@@ -7,6 +7,7 @@ from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
     async def isPlaying(self) -> bool:
+        # this method is intentionally empty
         return False
 
     async def playPlaylist(
@@ -14,6 +15,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
         filePaths: Collection[str],
         volume: int | None = None
     ) -> bool:
+        # this method is intentionally empty
         return False
 
     async def playSoundAlert(
@@ -21,6 +23,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
         alert: SoundAlert,
         volume: int | None = None
     ) -> bool:
+        # this method is intentionally empty
         return False
 
     async def playSoundFile(
@@ -28,4 +31,5 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
         filePath: str | None,
         volume: int | None = None
     ) -> bool:
+        # this method is intentionally empty
         return False

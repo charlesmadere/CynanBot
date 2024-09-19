@@ -12,6 +12,6 @@ class TtsMonsterMessageToVoicesHelperInterface(ABC):
     async def build(
         self,
         voices: frozenset[TtsMonsterVoice],
-        message: str
+        message: str | None
     ) -> FrozenList[TtsMonsterMessageToVoicePair] | None:
         pass

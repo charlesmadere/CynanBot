@@ -25,9 +25,19 @@ class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
-    def constructSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+        self.__soundPlayerManager: SoundPlayerManagerInterface | None = None
+
+    def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
         return VlcSoundPlayerManager(
             backgroundTaskHelper = self.__backgroundTaskHelper,
             soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
             timber = self.__timber
         )
+
+    def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+        soundPlayerManager = self.__soundPlayerManager
+
+        if soundPlayerManager is None:
+            soundPlayerManager = self.constructNewSoundPlayerManagerInstance()
+
+        return soundPlayerManager

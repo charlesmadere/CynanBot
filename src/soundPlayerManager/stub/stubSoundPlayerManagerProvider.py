@@ -5,5 +5,12 @@ from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInte
 
 class StubSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
-    def constructSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
-        return StubSoundPlayerManager()
+    def __init__(self):
+        self.__instance: SoundPlayerManagerInterface = StubSoundPlayerManager()
+
+    def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+        # this method kinda breaks contract, but it's fine in this case
+        return self.__instance
+
+    def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+        return self.__instance

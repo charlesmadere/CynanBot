@@ -23,6 +23,7 @@ from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsR
 from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
+from ..streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
@@ -32,7 +33,11 @@ from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryI
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
 from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
+from ..ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
+    TtsMonsterKeyAndUserIdRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ..ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import \
+    TtsMonsterStreamerVoicesRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
@@ -69,6 +74,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         psqlCredentialsProvider: PsqlCredentialsProviderInterface | None,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
+        streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
@@ -76,7 +82,9 @@ class ClearCachesChatCommand(AbsChatCommand):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface | None,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepository | None,
+        ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
+        ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchEmotesHelper: TwitchEmotesHelperInterface | None,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
@@ -126,6 +134,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
+        elif streamAlertsSettingsRepository is not None and not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
+            raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
         elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -140,8 +150,12 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
         elif ttsMonsterApiTokensRepository is not None and not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
+        elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
+            raise TypeError(f'ttsMonsterKeyAndUserIdRepository argument is malformed: \"{ttsMonsterKeyAndUserIdRepository}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
+        elif ttsMonsterStreamerVoicesRepository is not None and not isinstance(ttsMonsterStreamerVoicesRepository, TtsMonsterStreamerVoicesRepositoryInterface):
+            raise TypeError(f'ttsMonsterStreamerVoicesRepository argument is malformed: \"{ttsMonsterStreamerVoicesRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif twitchEmotesHelper is not None and not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
@@ -188,13 +202,16 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(psqlCredentialsProvider)
         self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
+        self.__clearables.append(streamAlertsSettingsRepository)
         self.__clearables.append(supStreamerRepository)
         self.__clearables.append(timeoutCheerActionHistoryRepository)
         self.__clearables.append(timeoutCheerActionSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(triviaTwitchEmoteHelper)
         self.__clearables.append(ttsMonsterApiTokensRepository)
+        self.__clearables.append(ttsMonsterKeyAndUserIdRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
+        self.__clearables.append(ttsMonsterStreamerVoicesRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchEmotesHelper)
         self.__clearables.append(twitchFollowingStatusRepository)

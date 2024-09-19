@@ -149,6 +149,7 @@ class UsersRepository(UsersRepositoryInterface):
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
+        isTtsMonsterApiUsageReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED.jsonKey, True)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWelcomeTtsEnabled = utils.getBoolFromDict(userJson, 'welcomeTtsEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
@@ -324,6 +325,7 @@ class UsersRepository(UsersRepositoryInterface):
             isTriviaGameEnabled = isTriviaGameEnabled,
             isTriviaScoreEnabled = isTriviaScoreEnabled,
             isTtsEnabled = isTtsEnabled,
+            isTtsMonsterApiUsageReportingEnabled = isTtsMonsterApiUsageReportingEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,

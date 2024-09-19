@@ -61,6 +61,7 @@ class User(UserInterface):
         isTriviaGameEnabled: bool,
         isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
+        isTtsMonsterApiUsageReportingEnabled: bool,
         isWeatherEnabled: bool,
         isWelcomeTtsEnabled: bool,
         isWordOfTheDayEnabled: bool,
@@ -202,6 +203,8 @@ class User(UserInterface):
             raise TypeError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
+        elif not utils.isValidBool(isTtsMonsterApiUsageReportingEnabled):
+            raise TypeError(f'isTtsMonsterApiUsageReportingEnabled argument is malformed: \"{isTtsMonsterApiUsageReportingEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
             raise TypeError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWelcomeTtsEnabled):
@@ -341,6 +344,7 @@ class User(UserInterface):
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
+        self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWelcomeTtsEnabled: bool = isWelcomeTtsEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
@@ -690,6 +694,10 @@ class User(UserInterface):
 
     def isTtsEnabled(self) -> bool:
         return self.__isTtsEnabled
+
+    @property
+    def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
+        return self.__isTtsMonsterApiUsageReportingEnabled
 
     def isWeatherEnabled(self) -> bool:
         return self.__isWeatherEnabled

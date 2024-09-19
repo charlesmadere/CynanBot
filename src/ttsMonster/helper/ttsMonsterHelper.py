@@ -1,4 +1,5 @@
 import asyncio
+import math
 import traceback
 from dataclasses import dataclass
 from typing import Any, Coroutine
@@ -13,6 +14,7 @@ from ..messageToVoicesHelper.ttsMonsterMessageToVoicePair import TtsMonsterMessa
 from ..messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
 from ..models.ttsMonsterTtsRequest import TtsMonsterTtsRequest
 from ..models.ttsMonsterUrls import TtsMonsterUrls
+from ..models.ttsMonsterUser import TtsMonsterUser
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
 from ...misc import utils as utils
@@ -99,7 +101,79 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             url = ttsResponse.url
         )
 
-    async def __generateMultiVoiceTts(
+    async def generateTts(
+        self,
+        message: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> TtsMonsterUrls | None:
+        if message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if not utils.isValidStr(message):
+            return None
+
+        apiToken = await self.__ttsMonsterApiTokensRepository.get(twitchChannelId = twitchChannelId)
+        if not utils.isValidStr(apiToken):
+            self.__timber.log('TtsMonsterHelper', f'No TTS Monster API token is available for this user ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=})')
+            return None
+
+        voices = await self.__ttsMonsterStreamerVoicesRepository.fetchVoices(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        if len(voices) == 0:
+            self.__timber.log('TtsMonsterHelper', f'No TTS Monster voices are available for this user ({twitchChannel=}) ({twitchChannelId=}) ({voices=})')
+            return None
+
+        try:
+            ttsMonsterUser = await self.__ttsMonsterApiService.getUser(apiToken = apiToken)
+        except GenericNetworkException as e:
+            self.__timber.log('TtsMonsterHelper', f'Encountered network exception when fetching TTS Monster user details ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
+            return None
+
+        if ttsMonsterUser.characterUsage >= ttsMonsterUser.characterAllowance:
+            self.__timber.log('TtsMonsterHelper', f'This TTS Monster user is beyond their character allowance ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
+
+            return await self.__generateTtsUsingPrivateApi(
+                message = message,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+
+        messages = await self.__ttsMonsterMessageToVoicesHelper.build(
+            voices = voices,
+            message = message
+        )
+
+        if messages is None or len(messages) == 0:
+            return None
+        elif await self.__messagesLengthIsBeyondCharacterAllowance(
+            messages = messages,
+            ttsMonsterUser = ttsMonsterUser
+        ):
+            self.__timber.log('TtsMonsterHelper', f'This TTS Monster user isn\'t yet beyond their character allowance, but this new message would surpass it ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
+
+            return await self.__generateTtsUsingPrivateApi(
+                message = message,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+        else:
+            return await self.__generateTtsUsingOfficialApi(
+                characterAllowance = ttsMonsterUser.characterAllowance,
+                messages = messages,
+                apiToken = apiToken,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+
+    async def __generateTtsUsingOfficialApi(
         self,
         characterAllowance: int | None,
         messages: FrozenList[TtsMonsterMessageToVoicePair],
@@ -162,107 +236,6 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             characterUsage = characterUsage
         )
 
-    async def __generateSingleVoiceTts(
-        self,
-        characterAllowance: int | None,
-        apiToken: str,
-        message: str,
-        twitchChannel: str,
-        twitchChannelId: str
-    ) -> TtsMonsterUrls | None:
-        defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
-
-        try:
-            ttsResponse = await self.__fetchTtsUrl(
-                index = 0,
-                apiToken = apiToken,
-                message = message,
-                voiceId = defaultVoice.voiceId
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('TtsMonsterHelper', f'Encountered network error when generating TTS from TTS Monster ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
-            return None
-
-        ttsUrls: FrozenList[str] = FrozenList()
-        ttsUrls.append(ttsResponse.url)
-        ttsUrls.freeze()
-
-        return TtsMonsterUrls(
-            urls = ttsUrls,
-            characterAllowance = characterAllowance,
-            characterUsage = ttsResponse.characterUsage
-        )
-
-    async def generateTts(
-        self,
-        message: str | None,
-        twitchChannel: str,
-        twitchChannelId: str
-    ) -> TtsMonsterUrls | None:
-        if message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        if not utils.isValidStr(message):
-            return None
-
-        apiToken = await self.__ttsMonsterApiTokensRepository.get(twitchChannelId = twitchChannelId)
-        if not utils.isValidStr(apiToken):
-            self.__timber.log('TtsMonsterHelper', f'No TTS Monster API token is available for this user ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=})')
-            return None
-
-        voices = await self.__ttsMonsterStreamerVoicesRepository.fetchVoices(
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
-        )
-
-        if len(voices) == 0:
-            self.__timber.log('TtsMonsterHelper', f'No TTS Monster voices are available for this user ({twitchChannel=}) ({twitchChannelId=}) ({voices=})')
-            return None
-
-        try:
-            ttsMonsterUser = await self.__ttsMonsterApiService.getUser(apiToken = apiToken)
-        except GenericNetworkException as e:
-            self.__timber.log('TtsMonsterHelper', f'Encountered network exception when fetching TTS Monster user details ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
-            return None
-
-        if ttsMonsterUser.characterUsage >= ttsMonsterUser.characterAllowance:
-            self.__timber.log('TtsMonsterHelper', f'This TTS Monster user is beyond their character allowance ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
-
-            if await self.__ttsMonsterSettingsRepository.isUsePrivateApiEnabled():
-                return await self.__generateTtsUsingPrivateApi(
-                    message = message,
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
-                )
-            else:
-                return None
-
-        messages = await self.__ttsMonsterMessageToVoicesHelper.build(
-            voices = voices,
-            message = message
-        )
-
-        if messages is None or len(messages) == 0:
-            return await self.__generateSingleVoiceTts(
-                characterAllowance = ttsMonsterUser.characterAllowance,
-                apiToken = apiToken,
-                message = message,
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
-        else:
-            return await self.__generateMultiVoiceTts(
-                characterAllowance = ttsMonsterUser.characterAllowance,
-                messages = messages,
-                apiToken = apiToken,
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
-
     async def __generateTtsUsingPrivateApi(
         self,
         message: str,
@@ -278,9 +251,32 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         if self.__ttsMonsterPrivateApiHelper is None:
             return None
+        elif not await self.__ttsMonsterSettingsRepository.isUsePrivateApiEnabled():
+            return None
 
         return await self.__ttsMonsterPrivateApiHelper.generateTts(
             message = message,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
+
+    async def __messagesLengthIsBeyondCharacterAllowance(
+        self,
+        messages: FrozenList[TtsMonsterMessageToVoicePair],
+        ttsMonsterUser: TtsMonsterUser,
+    ) -> bool:
+        if not isinstance(messages, FrozenList) or len(messages) == 0:
+            raise TypeError(f'messages argument is malformed: \"{messages}\"')
+        elif not isinstance(ttsMonsterUser, TtsMonsterUser):
+            raise TypeError(f'ttsMonsterUser argument is malformed: \"{ttsMonsterUser}\"')
+
+        totalMessagesLength = 0
+
+        for message in messages:
+            currentMessageLength = len(message.message)
+            currentMessageLength += int(math.ceil(float(currentMessageLength) * 0.02)) # add a few extra characters
+                                                                                       # just to be safe
+
+            totalMessagesLength = totalMessagesLength + currentMessageLength
+
+        return ttsMonsterUser.characterUsage + totalMessagesLength >= ttsMonsterUser.characterAllowance
