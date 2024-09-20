@@ -25,5 +25,6 @@ class BooleanPokepediaTriviaQuestion(PokepediaTriviaQuestion):
     def correctAnswer(self) -> bool:
         return self.__correctAnswer
 
+    @property
     def triviaType(self) -> TriviaQuestionType:
         return TriviaQuestionType.TRUE_FALSE

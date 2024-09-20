@@ -36,5 +36,6 @@ class MultipleChoicePokepediaTriviaQuestion(PokepediaTriviaQuestion):
     def incorrectAnswers(self) -> FrozenList[str]:
         return self.__incorrectAnswers
 
+    @property
     def triviaType(self) -> TriviaQuestionType:
         return TriviaQuestionType.MULTIPLE_CHOICE

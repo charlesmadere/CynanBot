@@ -133,7 +133,7 @@ class WillFryTriviaJsonParser(WillFryTriviaJsonParserInterface):
 
     async def parseTriviaQuestions(
         self,
-        jsonContents: list[dict[str, Any] | Any | None] | None
+        jsonContents: list[dict[str, Any] | Any | None] | Any | None
     ) -> FrozenList[WillFryTriviaQuestion] | None:
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None

@@ -34,6 +34,6 @@ class WillFryTriviaJsonParserInterface(ABC):
     @abstractmethod
     async def parseTriviaQuestions(
         self,
-        jsonContents: list[dict[str, Any] | Any | None] | None
+        jsonContents: list[dict[str, Any] | Any | None] | Any | None
     ) -> FrozenList[WillFryTriviaQuestion] | None:
         pass
