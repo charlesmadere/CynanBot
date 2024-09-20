@@ -25,16 +25,16 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
 
     async def getSpeech(
         self,
-        voice: StreamElementsVoice,
         text: str,
-        userKey: str
+        userKey: str,
+        voice: StreamElementsVoice
     ) -> bytes:
-        if not isinstance(voice, StreamElementsVoice):
-            raise TypeError(f'voice argument is malformed: \"{voice}\"')
-        elif not utils.isValidStr(text):
+        if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
         elif not utils.isValidStr(userKey):
             raise TypeError(f'userKey argument is malformed: \"{userKey}\"')
+        elif not isinstance(voice, StreamElementsVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         clientSession = await self.__networkClientProvider.get()
 

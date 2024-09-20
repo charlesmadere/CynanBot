@@ -8,8 +8,8 @@ class StreamElementsApiServiceInterface(ABC):
     @abstractmethod
     async def getSpeech(
         self,
-        voice: StreamElementsVoice,
         text: str,
-        userKey: str
+        userKey: str,
+        voice: StreamElementsVoice
     ) -> bytes:
         pass
