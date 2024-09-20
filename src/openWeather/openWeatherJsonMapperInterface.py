@@ -26,7 +26,7 @@ class OpenWeatherJsonMapperInterface(ABC):
     async def parseAirPollutionReport(
         self,
         jsonContents: dict[str, Any] | Any | None,
-        timeZone: tzinfo | None
+        timeZone: tzinfo
     ) -> OpenWeatherAirPollutionReport | None:
         pass
 
