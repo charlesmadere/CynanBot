@@ -51,7 +51,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
                 userId = keyAndUserId.userId
             )
         except GenericNetworkException as e:
-            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({key=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
             return None
 
         urls: FrozenList[str] = FrozenList()
