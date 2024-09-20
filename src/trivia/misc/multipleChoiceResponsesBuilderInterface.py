@@ -1,9 +1,10 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Collection
 
 
 class MultipleChoiceResponsesBuilderInterface(ABC):
 
+    @abstractmethod
     async def build(
         self,
         correctAnswers: Collection[str],
