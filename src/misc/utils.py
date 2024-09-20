@@ -351,20 +351,20 @@ T_Sized = TypeVar("T_Sized", bound=Sized)
 def hasItems(l: T_Sized | None) -> TypeGuard[T_Sized]:
     return l is not None and len(l) >= 1
 
-def isValidBool(b: bool | None) -> TypeGuard[bool]:
+def isValidBool(b: bool | Any | None) -> TypeGuard[bool]:
     return b is not None and isinstance(b, bool)
 
-def isValidInt(i: float | None) -> TypeGuard[int]:
+def isValidInt(i: float | Any | None) -> TypeGuard[int]:
     return isValidNum(i) and isinstance(i, int)
 
 def isValidNum(n: float | None) -> TypeGuard[float]:
     return n is not None and isinstance(n, (float, int)) and math.isfinite(n)
 
-def isValidStr(s: str | None) -> TypeGuard[str]:
+def isValidStr(s: str | Any | None) -> TypeGuard[str]:
     """ str len >= 1, not all space """
     return s is not None and isinstance(s, str) and len(s) >= 1 and not s.isspace()
 
-def isValidUrl(s: str | None) -> TypeGuard[str]:
+def isValidUrl(s: str | Any | None) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 
