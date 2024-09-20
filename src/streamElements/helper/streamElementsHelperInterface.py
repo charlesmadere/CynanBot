@@ -1,6 +1,13 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class StreamElementsHelperInterface(ABC):
 
-    pass
+    @abstractmethod
+    async def getSpeech(
+        self,
+        message: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> bytes | None:
+        pass

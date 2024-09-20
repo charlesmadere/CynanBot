@@ -36,6 +36,11 @@ class TestTtsJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseProvider_withStreamElementsString(self):
+        result = await self.jsonMapper.parseProvider('stream_elements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+    @pytest.mark.asyncio
     async def test_parseProvider_withTtsMonsterString(self):
         result = await self.jsonMapper.parseProvider('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
@@ -96,6 +101,11 @@ class TestTtsJsonMapper:
     async def test_serializeProvider_withGoogle(self):
         result = await self.jsonMapper.serializeProvider(TtsProvider.GOOGLE)
         assert result == 'google'
+
+    @pytest.mark.asyncio
+    async def test_serializeProvider_withStreamElements(self):
+        result = await self.jsonMapper.serializeProvider(TtsProvider.STREAM_ELEMENTS)
+        assert result == 'stream_elements'
 
     @pytest.mark.asyncio
     async def test_serializeProvider_withTtsMonster(self):

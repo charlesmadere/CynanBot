@@ -26,6 +26,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         match ttsProvider:
             case 'dec_talk': return TtsProvider.DEC_TALK
             case 'google': return TtsProvider.GOOGLE
+            case 'stream_elements': return TtsProvider.STREAM_ELEMENTS
             case 'tts_monster': return TtsProvider.TTS_MONSTER
             case _:
                 self.__timber.log('TtsJsonMapper', f'Encountered unknown TtsProvider value: \"{ttsProvider}\"')
@@ -52,6 +53,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         match ttsProvider:
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
+            case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
             case _:
                 raise ValueError(f'The given TtsProvider value is unknown: \"{ttsProvider}\"')
