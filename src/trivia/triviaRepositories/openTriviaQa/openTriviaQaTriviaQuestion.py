@@ -24,7 +24,7 @@ class OpenTriviaQaTriviaQuestion(ABC):
         self.__questionId: str = questionId
 
     @property
-    def category(self) -> str:
+    def category(self) -> str | None:
         return self.__category
 
     @property

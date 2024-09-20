@@ -107,8 +107,16 @@ class WillFryTriviaJsonParser(WillFryTriviaJsonParserInterface):
         correctAnswer = utils.getStrFromDict(jsonContents, 'correctAnswer')
         triviaId = utils.getStrFromDict(jsonContents, 'id')
         difficulty = await self.__triviaDifficultyParser.parse(utils.getStrFromDict(jsonContents, 'difficulty'))
+
         question = await self.parseQuestionText(jsonContents.get('question'))
+        if question is None:
+            self.__timber.log('WillFryTriviaJsonParser', f'Encountered invalid \"question\" field in JSON data: ({jsonContents=})')
+            return None
+
         questionType = await self.parseQuestionType(utils.getStrFromDict(jsonContents, 'type'))
+        if questionType is None:
+            self.__timber.log('WillFryTriviaJsonParser', f'Encountered invalid \"type\" field in JSON data: ({jsonContents=})')
+            return None
 
         return WillFryTriviaQuestion(
             isNiche = isNiche,
