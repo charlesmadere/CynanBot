@@ -113,6 +113,8 @@ from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
 from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
+from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
+from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
 from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPlayerManager
 from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
@@ -246,6 +248,8 @@ from src.twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from src.twitch.twitchUtils import TwitchUtils
 from src.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from src.twitch.websocket.twitchWebsocketAllowedUsersRepository import TwitchWebsocketAllowedUsersRepository
+from src.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \
+    TwitchWebsocketAllowedUsersRepositoryInterface
 from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -586,6 +590,8 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+seryBotUserIdProvider: SeryBotUserIdProviderInterface = SeryBotUserIdProvider()
+
 streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElementsUserIdProvider()
 
 streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
@@ -595,6 +601,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
+    seryBotUserIdProvider = seryBotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
@@ -638,6 +645,13 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     timber = timber
 )
 
+twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = TwitchWebsocketAllowedUsersRepository(
+    timber = timber,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository
+)
+
 twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
@@ -646,12 +660,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         timeZoneRepository = timeZoneRepository,
         twitchApiService = twitchApiService,
         twitchTokensRepository = twitchTokensRepository,
-        twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
-            timber = timber,
-            twitchTokensRepository = twitchTokensRepository,
-            userIdsRepository = userIdsRepository,
-            usersRepository = usersRepository
-        ),
+        twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
     )
 
@@ -933,7 +942,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
     settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')
 )
 
-streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
+streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,

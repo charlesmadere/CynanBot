@@ -1,3 +1,5 @@
+import traceback
+
 from .ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from ..mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
@@ -39,7 +41,7 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')
         elif not utils.isValidStr(message):
-            raise TypeError(f'message argument is malformed: \"{apiToken}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 

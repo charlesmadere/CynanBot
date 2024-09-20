@@ -5,6 +5,7 @@ from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInter
 from ...misc import utils as utils
 from ...misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from ...nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
+from ...seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
 from ...streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from ...streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from ...tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
@@ -19,6 +20,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         funtoonUserIdProvider: FuntoonUserIdProviderInterface,
         nightbotUserIdProvider: NightbotUserIdProviderInterface,
         officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
+        seryBotUserIdProvider: SeryBotUserIdProviderInterface,
         streamElementsUserIdProvider: StreamElementsUserIdProviderInterface,
         streamLabsUserIdProvider: StreamLabsUserIdProviderInterface,
         tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface,
@@ -34,6 +36,8 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'nightbotUserIdProvider argument is malformed: \"{nightbotUserIdProvider}\"')
         elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
             raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
+        elif not isinstance(seryBotUserIdProvider, SeryBotUserIdProviderInterface):
+            raise TypeError(f'seryBotUserIdProvider argument is malformed: \"{seryBotUserIdProvider}\"')
         elif not isinstance(streamElementsUserIdProvider, StreamElementsUserIdProviderInterface):
             raise TypeError(f'streamElementsUserIdProvider argument is malformed: \"{streamElementsUserIdProvider}\"')
         elif not isinstance(streamLabsUserIdProvider, StreamLabsUserIdProviderInterface):
@@ -51,6 +55,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__funtoonUserIdProvider: FuntoonUserIdProviderInterface = funtoonUserIdProvider
         self.__nightbotUserIdProvider: NightbotUserIdProviderInterface = nightbotUserIdProvider
         self.__officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = officialTwitchAccountUserIdProvider
+        self.__seryBotUserIdProvider: SeryBotUserIdProviderInterface = seryBotUserIdProvider
         self.__streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = streamElementsUserIdProvider
         self.__streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = streamLabsUserIdProvider
         self.__tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = tangiaBotUserIdProvider
@@ -88,6 +93,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         nightbotUserId = await self.__nightbotUserIdProvider.getNightbotUserId()
         if utils.isValidStr(nightbotUserId):
             immuneUserIds.add(nightbotUserId)
+
+        seryBotUserId = await self.__seryBotUserIdProvider.getSeryBotUserId()
+        if utils.isValidStr(seryBotUserId):
+            immuneUserIds.add(seryBotUserId)
 
         streamElementsUserId = await self.__streamElementsUserIdProvider.getStreamElementsUserId()
         if utils.isValidStr(streamElementsUserId):

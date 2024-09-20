@@ -2,12 +2,12 @@ import random
 
 from frozenlist import FrozenList
 
+from .booleanPokepediaTriviaQuestion import BooleanPokepediaTriviaQuestion
 from .exceptions import UnsupportedPokepediaTriviaQuestionType
 from .multipleChoicePokepediaTriviaQuestion import MultipleChoicePokepediaTriviaQuestion
 from .pokepediaTriviaQuestion import PokepediaTriviaQuestion
 from .pokepediaTriviaQuestionGeneratorInterface import PokepediaTriviaQuestionGeneratorInterface
 from .pokepediaTriviaQuestionType import PokepediaTriviaQuestionType
-from ...questions.triviaQuestionType import TriviaQuestionType
 from ...triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ....misc import utils as utils
 from ....pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
@@ -19,6 +19,7 @@ from ....pkmn.pokepediaMachineType import PokepediaMachineType
 from ....pkmn.pokepediaMove import PokepediaMove
 from ....pkmn.pokepediaNature import PokepediaNature
 from ....pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
+from ....pkmn.pokepediaStat import PokepediaStat
 from ....timber.timberInterface import TimberInterface
 
 
@@ -131,14 +132,103 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
 
         return MultipleChoicePokepediaTriviaQuestion(
             incorrectAnswers = frozenFlavorStrs,
-            pokepediaTriviaType = TriviaQuestionType.MULTIPLE_CHOICE,
+            pokepediaTriviaType = PokepediaTriviaQuestionType.STAT_OR_NATURE,
             correctAnswer = correctAnswer,
             question = f'Pokémon with the {nature.toStr()} nature {likeOrDislikeStr} ONE of the following flavors.'
         )
 
+    async def __createPhysicalOrSpecialDamageClassQuestion(self) -> PokepediaTriviaQuestion:
+        applicableDamageClasses: FrozenList[PokepediaDamageClass] = FrozenList([
+            PokepediaDamageClass.PHYSICAL, PokepediaDamageClass.SPECIAL
+        ])
+        applicableDamageClasses.freeze()
+
+        actualDamageClass = random.choice(applicableDamageClasses)
+
+        applicableElementTypes: FrozenList[PokepediaElementType] = FrozenList([
+            PokepediaElementType.BUG, PokepediaElementType.DARK, PokepediaElementType.DRAGON,
+            PokepediaElementType.ELECTRIC, PokepediaElementType.FIGHTING, PokepediaElementType.FIRE,
+            PokepediaElementType.FLYING, PokepediaElementType.GHOST, PokepediaElementType.GRASS,
+            PokepediaElementType.GROUND, PokepediaElementType.ICE, PokepediaElementType.NORMAL,
+            PokepediaElementType.POISON, PokepediaElementType.PSYCHIC, PokepediaElementType.ROCK,
+            PokepediaElementType.STEEL, PokepediaElementType.WATER
+        ])
+        applicableElementTypes.freeze()
+
+        actualElementType: PokepediaElementType | None = None
+        while actualElementType is None or PokepediaDamageClass.getTypeBasedDamageClass(actualElementType) is not actualDamageClass:
+            actualElementType = random.choice(applicableElementTypes)
+
+        minResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
+        maxResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
+        maxResponses = min(maxResponses, len(PokepediaElementType) - 1)
+        responses = random.randint(minResponses, maxResponses)
+
+        falseElementTypes: set[PokepediaElementType] = set()
+        while len(falseElementTypes) < responses:
+            falseElementType = random.choice(applicableElementTypes)
+
+            if PokepediaDamageClass.getTypeBasedDamageClass(falseElementType) is not actualDamageClass:
+                falseElementTypes.add(falseElementType)
+
+        falseElementTypesStrs: list[str] = list()
+        for falseElementType in falseElementTypes:
+            falseElementTypesStrs.append(falseElementType.toStr())
+
+        frozenFalseElementTypesStrs: FrozenList[str] = FrozenList(falseElementTypesStrs)
+        frozenFalseElementTypesStrs.freeze()
+
+        # It reads sort of strangely that the below question specifically mentions only Pokemon
+        # generations 1 through 3, however, this is intentional. This is because those generations
+        # of Pokemon games had their element types hard-coded to particular damage classes, which
+        # is the purpose of this trivia question.
+
+        return MultipleChoicePokepediaTriviaQuestion(
+            incorrectAnswers = frozenFalseElementTypesStrs,
+            pokepediaTriviaType = PokepediaTriviaQuestionType.STAT_OR_NATURE,
+            correctAnswer = actualElementType.toStr(),
+            question = f'In Pokémon generations 1 through 3, which of the following types has a {actualDamageClass.toStr().lower()} damage class?',
+        )
+
+    async def __createPokemonQuestion(self) -> PokepediaTriviaQuestion:
+        pokemon = await self.__pokepediaRepository.fetchRandomPokemon(maxGeneration = self.__maxGeneration)
+        randomGeneration = await self.__selectRandomGeneration(pokemon.getInitialGeneration())
+        correctTypes = pokemon.getCorrespondingGenerationElementTypes(randomGeneration)
+        correctType = random.choice(correctTypes)
+
+        falseTypes = await self.__selectRandomFalseElementTypes(correctTypes)
+
+        falseTypesStrs: FrozenList[str] = FrozenList()
+        for falseType in falseTypes:
+            falseTypesStrs.append(falseType.toStr())
+
+        falseTypesStrs.freeze()
+
+        return MultipleChoicePokepediaTriviaQuestion(
+            incorrectAnswers = falseTypesStrs,
+            correctAnswer = correctType.toStr(),
+            pokepediaTriviaType = PokepediaTriviaQuestionType.POKEMON,
+            question = f'In Pokémon {randomGeneration.toLongStr()}, {pokemon.getName()} is which of the following types?',
+        )
+
+    async def __createStatIncreasingNaturesQuestion(self, stat: PokepediaStat) -> PokepediaTriviaQuestion:
+        if not isinstance(stat, PokepediaStat):
+            raise TypeError(f'stat argument is malformed: \"{stat}\"')
+
+        increasingNatures = stat.increasingNatures
+        randomNature = random.choice(list(PokepediaNature))
+
+        return BooleanPokepediaTriviaQuestion(
+            correctAnswer = increasingNatures is not None and randomNature in increasingNatures,
+            pokepediaTriviaType = PokepediaTriviaQuestionType.STAT_OR_NATURE,
+            question = f'In Pokémon, the {stat.toStr()} stat is positively impacted by the {randomNature.toStr()} nature.'
+        )
+
     async def __determinePokepediaTriviaType(self) -> PokepediaTriviaQuestionType:
         # TODO this should be weighted
-        enabledQuestionTypes = list(self.__enabledQuestionTypes)
+        enabledQuestionTypes: FrozenList[PokepediaTriviaQuestionType] = FrozenList(self.__enabledQuestionTypes)
+        enabledQuestionTypes.freeze()
+
         return random.choice(enabledQuestionTypes)
 
     async def fetchTriviaQuestion(self) -> PokepediaTriviaQuestion:
@@ -152,13 +242,13 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
                 pass
 
             case PokepediaTriviaQuestionType.POKEMON:
-                pass
+                return await self.__createPokemonQuestion()
 
             case PokepediaTriviaQuestionType.STAT_OR_NATURE:
                 pass
 
             case _:
-                pass
+                return await self.__createPokemonQuestion()
 
         raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaType=})')
 
@@ -169,13 +259,15 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         if actualFlavor is not None and not isinstance(actualFlavor, PokepediaBerryFlavor):
             raise TypeError(f'actualFlavor argument is malformed: \"{actualFlavor}\"')
 
-        allFlavors: list[PokepediaBerryFlavor] = list(PokepediaBerryFlavor)
-        falseFlavors: set[PokepediaBerryFlavor] = set()
+        allFlavors: FrozenList[PokepediaBerryFlavor] = FrozenList(PokepediaBerryFlavor)
+        allFlavors.freeze()
 
         minResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
         maxResponses = min(maxResponses, len(PokepediaBerryFlavor) - 1)
         responses = random.randint(minResponses, maxResponses)
+
+        falseFlavors: set[PokepediaBerryFlavor] = set()
 
         while len(falseFlavors) < responses:
             randomFlavor = random.choice(allFlavors)
@@ -192,13 +284,15 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         if not isinstance(actualType, PokepediaContestType):
             raise TypeError(f'actualType argument is malformed: \"{actualType}\"')
 
-        allTypes: list[PokepediaContestType] = list(PokepediaContestType)
-        falseTypes: set[PokepediaContestType] = set()
+        allTypes: FrozenList[PokepediaContestType] = FrozenList(PokepediaContestType)
+        allTypes.freeze()
 
         minResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
         maxResponses = min(maxResponses, len(PokepediaContestType) - 1)
         responses = random.randint(minResponses, maxResponses)
+
+        falseTypes: set[PokepediaContestType] = set()
 
         while len(falseTypes) < responses:
             randomType = random.choice(allTypes)
@@ -215,13 +309,15 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         if not isinstance(actualTypes, list) or len(actualTypes) == 0:
             raise TypeError(f'actualTypes argument is malformed: \"{actualTypes}\"')
 
-        allTypes: list[PokepediaElementType] = list(PokepediaElementType)
-        falseTypes: set[PokepediaElementType] = set()
+        allTypes: FrozenList[PokepediaElementType] = FrozenList(PokepediaElementType)
+        allTypes.freeze()
 
         minResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
         maxResponses = min(maxResponses, len(PokepediaElementType) - 1)
         responses = random.randint(minResponses, maxResponses)
+
+        falseTypes: set[PokepediaElementType] = set()
 
         while len(falseTypes) < responses:
             randomType = random.choice(allTypes)

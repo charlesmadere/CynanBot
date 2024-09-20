@@ -45,8 +45,6 @@ from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
-from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHistoryRepository import TimeoutCheerActionHistoryRepository
@@ -157,16 +155,16 @@ from src.recurringActions.recurringActionsWizard import RecurringActionsWizard
 from src.recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
+from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
+from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
 from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPlayerManager
 from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelper
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
-from src.soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
-from src.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from src.soundPlayerManager.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
+from src.soundPlayerManager.stub.stubSoundPlayerRandomizerHelper import StubSoundPlayerRandomizerHelper
 from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
 from src.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from src.storage.backingDatabase import BackingDatabase
@@ -313,8 +311,6 @@ from src.trivia.triviaUtils import TriviaUtils
 from src.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from src.trivia.triviaVerifier import TriviaVerifier
 from src.trivia.triviaVerifierInterface import TriviaVerifierInterface
-from src.tts.stub.stubTtsManager import StubTtsManager
-from src.tts.ttsManagerInterface import TtsManagerInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -358,6 +354,8 @@ from src.twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from src.twitch.twitchUtils import TwitchUtils
 from src.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from src.twitch.websocket.twitchWebsocketAllowedUsersRepository import TwitchWebsocketAllowedUsersRepository
+from src.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \
+    TwitchWebsocketAllowedUsersRepositoryInterface
 from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -717,6 +715,8 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+seryBotUserIdProvider: SeryBotUserIdProviderInterface = SeryBotUserIdProvider()
+
 streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElementsUserIdProvider()
 
 streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
@@ -726,6 +726,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
+    seryBotUserIdProvider = seryBotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
@@ -818,6 +819,13 @@ translationHelper: TranslationHelperInterface | None = TranslationHelper(
     timber = timber
 )
 
+twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = TwitchWebsocketAllowedUsersRepository(
+    timber = timber,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository
+)
+
 twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
@@ -826,16 +834,14 @@ if generalSettingsSnapshot.isEventSubEnabled():
         timeZoneRepository = timeZoneRepository,
         twitchApiService = twitchApiService,
         twitchTokensRepository = twitchTokensRepository,
-        twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
-            timber = timber,
-            twitchTokensRepository = twitchTokensRepository,
-            userIdsRepository = userIdsRepository,
-            usersRepository = usersRepository
-        ),
+        twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
     )
 
-authSnapshot = authRepository.getAll()
+
+####################################
+## Weather initialization section ##
+####################################
 
 openWeatherJsonMapper: OpenWeatherJsonMapperInterface = OpenWeatherJsonMapper(
     timber = timber,
@@ -996,6 +1002,8 @@ bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
     triviaQuestionCompiler = triviaQuestionCompiler,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
+authSnapshot = authRepository.getAll()
 
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository | None = None
 if authSnapshot.hasQuizApiKey():
@@ -1336,15 +1344,7 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 ## Sound Player initialization section ##
 #########################################
 
-soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
-    settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
-)
-
-soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber
-)
+soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = StubSoundPlayerRandomizerHelper()
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
 
@@ -1354,18 +1354,11 @@ immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSou
 )
 
 
-################################
-## TTS initialization section ##
-################################
-
-ttsManager: TtsManagerInterface = StubTtsManager()
-
-
 ##################################################
 ## Stream Alerts Manager initialization section ##
 ##################################################
 
-streamAlertsManager: StreamAlertsManagerInterface | None = StubStreamAlertsManager()
+streamAlertsManager: StreamAlertsManagerInterface = StubStreamAlertsManager()
 
 
 #############################################
@@ -1428,13 +1421,6 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
     twitchUtils = twitchUtils
 )
 
-soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    timber = timber
-)
-
 timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutCheerActionJsonMapper(
     timber = timber
 )
@@ -1471,7 +1457,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
-    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
+    soundAlertCheerActionHelper = None,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     twitchHandleProvider = authRepository,
@@ -1650,7 +1636,7 @@ cynanBot = CynanBot(
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    soundPlayerSettingsRepository = None,
     starWarsQuotesRepository = starWarsQuotesRepository,
     streamAlertsManager = streamAlertsManager,
     streamAlertsSettingsRepository = None,

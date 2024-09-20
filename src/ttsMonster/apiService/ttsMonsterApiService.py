@@ -55,6 +55,9 @@ class TtsMonsterApiService(TtsMonsterApiServiceInterface):
         if responseStatusCode != 200:
             self.__timber.log('TtsMonsterApiService', f'Encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
             raise GenericNetworkException(f'TtsMonsterApiService encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})', responseStatusCode)
+        elif generatedTtsBytes is None:
+            self.__timber.log('TtsMonsterApiService', f'Unable to fetch generated TTS bytes ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
+            raise GenericNetworkException(f'TtsMonsterApiService unable to fetch generated TTS bytes ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
 
         return generatedTtsBytes
 

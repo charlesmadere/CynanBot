@@ -1,3 +1,4 @@
+import random
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Collection
@@ -66,17 +67,37 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         )
 
         activeChatters.insert(0, activeChatter)
+        await self.__clean(now = now, activeChatters = activeChatters)
 
-        await self.__clean(
-            now = now,
-            activeChatters = activeChatters
-        )
+    async def __chooseRandomActiveChatters(
+        self,
+        count: int,
+        activeChatters: list[ActiveChatter]
+    ) -> FrozenList[ActiveChatter]:
+        if not utils.isValidInt(count):
+            raise TypeError(f'count argument is malformed: \"{count}\"')
+        elif count is not None and (count < 1 or count > utils.getIntMaxSafeSize()):
+            raise ValueError(f'count argument is out of bounds: {count}')
+        elif not isinstance(activeChatters, list):
+            raise TypeError(f'activeChatters argument is malformed: \"{activeChatters}\"')
+
+        selectedChatters: set[ActiveChatter] = set()
+
+        while len(selectedChatters) < count and len(selectedChatters) < len(activeChatters):
+            selectedChatters.add(random.choice(activeChatters))
+
+        frozenSelectedChatters: FrozenList[ActiveChatter] = FrozenList(selectedChatters)
+        frozenSelectedChatters.freeze()
+        return frozenSelectedChatters
 
     async def __clean(
         self,
         now: datetime,
         activeChatters: list[ActiveChatter]
     ):
+        if len(activeChatters) == 0:
+            return
+
         activeChatters.sort(key = lambda element: element.mostRecentChat, reverse = True)
 
         while len(activeChatters) > self.__maxActiveChattersSize:
@@ -90,20 +111,29 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
+        count: int | None = None
     ) -> Collection[ActiveChatter]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidInt(count):
+            raise TypeError(f'count argument is malformed: \"{count}\"')
+        elif count is not None and (count < 1 or count > utils.getIntMaxSafeSize()):
+            raise ValueError(f'count argument is out of bounds: {count}')
 
         activeChatters = self.__twitchChannelIdToActiveChatters[twitchChannelId]
         now = datetime.now(self.__timeZoneRepository.getDefault())
+        await self.__clean(now = now, activeChatters = activeChatters)
 
-        await self.__clean(
-            now = now,
-            activeChatters = activeChatters
-        )
+        frozenActiveChatters: FrozenList[ActiveChatter]
 
-        frozenActiveChatters: FrozenList[ActiveChatter] = FrozenList(activeChatters)
-        frozenActiveChatters.freeze()
+        if count is None:
+            frozenActiveChatters = FrozenList(activeChatters)
+            frozenActiveChatters.freeze()
+        else:
+            frozenActiveChatters = await self.__chooseRandomActiveChatters(
+                activeChatters = activeChatters,
+                count = count
+            )
 
         return frozenActiveChatters

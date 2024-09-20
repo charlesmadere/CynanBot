@@ -18,6 +18,7 @@ class ActiveChattersRepositoryInterface(ABC):
     @abstractmethod
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
+        count: int | None = None
     ) -> Collection[ActiveChatter]:
         pass
