@@ -106,7 +106,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeTextSynthesisInput(
         self,
-        textSynthesisInput: GoogleTextSynthesisInput
+        synthesisInput: GoogleTextSynthesisInput
     ) -> dict[str, Any]:
         pass
 

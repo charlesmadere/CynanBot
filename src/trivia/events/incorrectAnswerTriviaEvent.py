@@ -123,5 +123,5 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
         return self.__userName
 
     @property
-    def wrongAnswerEmote(self) -> str:
+    def wrongAnswerEmote(self) -> str | None:
         return self.__wrongAnswerEmote

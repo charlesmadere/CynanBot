@@ -36,7 +36,8 @@ class MultipleChoiceResponsesBuilder(MultipleChoiceResponsesBuilderInterface):
         elif not isinstance(multipleChoiceResponses, Collection) or len(multipleChoiceResponses) == 0:
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
-        filteredMultipleChoiceResponses: list[str] = utils.copyList(correctAnswers)
+        filteredMultipleChoiceResponses: list[str] = list()
+        filteredMultipleChoiceResponses.extend(correctAnswers)
         maxMultipleChoiceResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
 
         # Annoyingly, I've encountered a few situations where we can have a question with more
