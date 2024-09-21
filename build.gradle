@@ -25,7 +25,7 @@ python {
     pip 'charset-normalizer:3.3.2'
     pip 'cryptography:43.0.1'
     pip 'docopt:0.6.2'
-    pip 'emoji:2.12.1'
+    pip 'emoji:2.13.0'
     pip 'flake8:7.1.1'
     pip 'frozendict:2.4.4'
     pip 'frozenlist:1.4.1'
