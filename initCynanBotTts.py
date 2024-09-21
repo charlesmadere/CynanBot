@@ -139,8 +139,21 @@ from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
 from src.streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
+from src.streamElements.apiService.streamElementsApiService import StreamElementsApiService
+from src.streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
+from src.streamElements.helper.streamElementsHelper import StreamElementsHelper
+from src.streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
+from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
+from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
+from src.streamElements.settings.streamElementsSettingsRepository import StreamElementsSettingsRepository
+from src.streamElements.settings.streamElementsSettingsRepositoryInterface import \
+    StreamElementsSettingsRepositoryInterface
+from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
+from src.streamElements.userKeyRepository.streamElementsUserKeyRepository import StreamElementsUserKeyRepository
+from src.streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import \
+    StreamElementsUserKeyRepositoryInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
 from src.streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from src.supStreamer.supStreamerRepository import SupStreamerRepository
@@ -165,6 +178,9 @@ from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInt
 from src.tts.google.googleTtsManager import GoogleTtsManager
 from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
+from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
+from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
+from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from src.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
 from src.tts.tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from src.tts.ttsCommandBuilder import TtsCommandBuilder
@@ -773,6 +789,49 @@ googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
+streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+streamElementsMessageCleaner = StreamElementsMessageCleaner()
+
+streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
+streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
+    settingsJsonReader = JsonFileReader('streamElementsSettingsRepository.json'),
+    streamElementsJsonParser = streamElementsJsonParser
+)
+
+streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = StreamElementsUserKeyRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    seedFileReader = JsonFileReader('streamElementsUserKeyRepositorySeedFile.json')
+)
+
+streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
+    streamElementsApiService = streamElementsApiService,
+    streamElementsMessageCleaner = streamElementsMessageCleaner,
+    streamElementsSettingsRepository = streamElementsSettingsRepository,
+    streamElementsUserKeyRepository = streamElementsUserKeyRepository,
+    timber = timber
+)
+
+streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
+    eventLoop = eventLoop,
+    timber = timber,
+    ttsTempFileHelper = ttsTempFileHelper
+)
+
+streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsManager(
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    streamElementsFileManager = streamElementsFileManager,
+    streamElementsHelper = streamElementsHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -861,6 +920,7 @@ ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
 ttsManager: TtsManagerInterface | None = TtsManager(
     decTalkManager = decTalkManager,
     googleTtsManager = googleTtsManager,
+    streamElementsTtsManager = streamElementsTtsManager,
     timber = timber,
     ttsMonsterManager = ttsMonsterManager,
     ttsSettingsRepository = ttsSettingsRepository,
@@ -1184,6 +1244,8 @@ cynanBot = CynanBot(
     starWarsQuotesRepository = None,
     streamAlertsManager = streamAlertsManager,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
+    streamElementsSettingsRepository = streamElementsSettingsRepository,
+    streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,

@@ -24,6 +24,10 @@ from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlaye
 from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from ..streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
+from ..streamElements.settings.streamElementsSettingsRepositoryInterface import \
+    StreamElementsSettingsRepositoryInterface
+from ..streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import \
+    StreamElementsUserKeyRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
@@ -75,6 +79,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface | None,
+        streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface | None,
+        streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
@@ -136,6 +142,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif streamAlertsSettingsRepository is not None and not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
             raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
+        elif streamElementsSettingsRepository is not None and not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
+            raise TypeError(f'streamElementsSettingsRepository argument is malformed: \"{streamElementsSettingsRepository}\"')
+        elif streamElementsUserKeyRepository is not None and not isinstance(streamElementsUserKeyRepository, StreamElementsUserKeyRepositoryInterface):
+            raise TypeError(f'streamElementsUserKeyRepository argument is malformed: \"{streamElementsUserKeyRepository}\"')
         elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -203,6 +213,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(streamAlertsSettingsRepository)
+        self.__clearables.append(streamElementsSettingsRepository)
+        self.__clearables.append(streamElementsUserKeyRepository)
         self.__clearables.append(supStreamerRepository)
         self.__clearables.append(timeoutCheerActionHistoryRepository)
         self.__clearables.append(timeoutCheerActionSettingsRepository)

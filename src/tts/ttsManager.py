@@ -2,6 +2,7 @@ from typing import Any
 
 from .decTalk.decTalkManager import DecTalkManager
 from .google.googleTtsManager import GoogleTtsManager
+from .streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from .tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from .ttsEvent import TtsEvent
 from .ttsManagerInterface import TtsManagerInterface
@@ -17,6 +18,7 @@ class TtsManager(TtsManagerInterface):
         self,
         decTalkManager: DecTalkManager | None,
         googleTtsManager: GoogleTtsManager | None,
+        streamElementsTtsManager: StreamElementsTtsManager | None,
         timber: TimberInterface,
         ttsMonsterManager: TtsMonsterManagerInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
@@ -26,6 +28,8 @@ class TtsManager(TtsManagerInterface):
             raise TypeError(f'decTalkManager argument is malformed: \"{decTalkManager}\"')
         elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManager):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
+        elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManager):
+            raise TypeError(f'streamElementsTtsManager argument is malformed: \"{streamElementsTtsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterManagerInterface):
@@ -37,6 +41,7 @@ class TtsManager(TtsManagerInterface):
 
         self.__decTalkManager: TtsManagerInterface | None = decTalkManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
+        self.__streamElementsTtsManager: StreamElementsTtsManager = streamElementsTtsManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterManager: TtsMonsterManagerInterface | None = ttsMonsterManager
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
@@ -60,6 +65,7 @@ class TtsManager(TtsManagerInterface):
 
         decTalkManager = self.__decTalkManager
         googleTtsManager = self.__googleTtsManager
+        streamElementsTtsManager = self.__streamElementsTtsManager
         ttsMonsterManager = self.__ttsMonsterManager
         proceed = False
 
@@ -70,6 +76,10 @@ class TtsManager(TtsManagerInterface):
         elif event.provider is TtsProvider.GOOGLE and googleTtsManager is not None:
             if await googleTtsManager.playTtsEvent(event):
                 self.__currentTtsManager = googleTtsManager
+                proceed = True
+        elif event.provider is TtsProvider.STREAM_ELEMENTS and streamElementsTtsManager is not None:
+            if await streamElementsTtsManager.playTtsEvent(event):
+                self.__currentTtsManager = streamElementsTtsManager
                 proceed = True
         elif event.provider is TtsProvider.TTS_MONSTER and ttsMonsterManager is not None:
             if await ttsMonsterManager.playTtsEvent(event):
