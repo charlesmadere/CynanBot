@@ -89,7 +89,13 @@ class TtsChatCommand(AbsChatCommand):
             except ValueError:
                 ttsProviderStrings = await self.__getTtsProviderStrings()
                 ttsProviderString = ', '.join(ttsProviderStrings)
-                await self.__twitchUtils.safeSend(ctx, f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!')
+
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
                 return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
