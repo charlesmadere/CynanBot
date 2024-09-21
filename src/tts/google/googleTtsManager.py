@@ -4,12 +4,9 @@ from typing import Any
 import aiofiles.ospath
 
 from .googleTtsChoice import GoogleTtsChoice
-from .googleTtsFileManagerInterface import \
-    GoogleTtsFileManagerInterface
-from .googleTtsVoiceChooserInterface import \
-    GoogleTtsVoiceChooserInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import \
-    TtsTempFileHelperInterface
+from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
+from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
+from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsManagerInterface import TtsManagerInterface
@@ -20,8 +17,7 @@ from ...google.googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from ...google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ...google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ...misc import utils as utils
-from ...soundPlayerManager.soundPlayerManagerInterface import \
-    SoundPlayerManagerInterface
+from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
 
