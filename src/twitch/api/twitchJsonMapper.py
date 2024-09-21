@@ -187,7 +187,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
         userName = utils.getStrFromDict(jsonResponse, 'user_name')
 
-        tier = await self.parseSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
+        tier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
 
         return TwitchBroadcasterSubscription(
             isGift = isGift,
