@@ -41,7 +41,7 @@ class TtsManager(TtsManagerInterface):
 
         self.__decTalkManager: TtsManagerInterface | None = decTalkManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
-        self.__streamElementsTtsManager: StreamElementsTtsManager = streamElementsTtsManager
+        self.__streamElementsTtsManager: StreamElementsTtsManager | None = streamElementsTtsManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterManager: TtsMonsterManagerInterface | None = ttsMonsterManager
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
