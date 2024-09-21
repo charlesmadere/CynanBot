@@ -236,10 +236,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         donation: TtsDonation = TtsCheerDonation(bits = bits)
         provider: TtsProvider
 
-        if bits >= 125:
+        if bits >= 150:
             provider = TtsProvider.TTS_MONSTER
         elif bits >= 100:
-            provider = TtsProvider.GOOGLE
+            provider = TtsProvider.STREAM_ELEMENTS
         else:
             provider = TtsProvider.DEC_TALK
 
