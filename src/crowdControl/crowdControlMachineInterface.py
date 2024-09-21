@@ -15,5 +15,5 @@ class CrowdControlMachineInterface(ABC):
         pass
 
     @abstractmethod
-    def submitAction(self, input: CrowdControlAction):
+    def submitAction(self, action: CrowdControlAction):
         pass
