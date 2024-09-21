@@ -206,6 +206,7 @@ from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMon
 from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepository import TtsMonsterStreamerVoicesRepository
 from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import \
     TtsMonsterStreamerVoicesRepositoryInterface
+from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -797,14 +798,10 @@ ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
     ttsMonsterJsonMapper = ttsMonsterJsonMapper
 )
 
-ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
-    eventLoop = eventLoop,
-    timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService,
-    ttsTempFileHelper = ttsTempFileHelper
-)
+ttsMonsterMessageCleaner = TtsMonsterMessageCleaner()
 
 ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
+    ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
 
@@ -841,6 +838,13 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository
+)
+
+ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
+    eventLoop = eventLoop,
+    timber = timber,
+    ttsMonsterApiService = ttsMonsterApiService,
+    ttsTempFileHelper = ttsTempFileHelper
 )
 
 ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(

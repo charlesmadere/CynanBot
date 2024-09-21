@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Any, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
+from frozenlist import FrozenList
 from typing_extensions import TypeGuard
 
 
@@ -401,6 +402,21 @@ def permuteSubArrays(array: list[Any], pos: int = 0) -> Generator[list[Any], Non
 
 def randomBool() -> bool:
     return bool(random.getrandbits(1))
+
+cheerRegExes: FrozenList[Pattern] = FrozenList([
+    re.compile(r'(^|\s+)cheer\d+(\s+|$)', re.IGNORECASE),
+    re.compile(r'(^|\s+)uni\d+(\s+|$)', re.IGNORECASE)
+])
+cheerRegExes.freeze()
+
+def removeCheerStrings(s: str) -> str:
+    if not isinstance(s, str):
+        raise TypeError(f's argument is malformed: \"{s}\"')
+
+    for cheerRegEx in cheerRegExes:
+        s = cheerRegEx.sub('', s.strip()).strip()
+
+    return s.strip()
 
 @overload
 def removePreceedingAt(s: None) -> None:

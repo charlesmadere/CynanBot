@@ -489,6 +489,18 @@ class TestUtils:
         result = utils.numToBool(0)
         assert result is False
 
+    def test_removeCheerStrings_withCheerAndHelloWorldString(self):
+        result = utils.removeCheerStrings('cheer100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    def test_removeCheerStrings_withHelloWorldString(self):
+        result = utils.removeCheerStrings('Hello, World!')
+        assert result == 'Hello, World!'
+
+    def test_removeCheerStrings_withUniAndHelloWorldString(self):
+        result = utils.removeCheerStrings('uni50 Hello, World!')
+        assert result == 'Hello, World!'
+
     def test_removePreceedingAt_withAtCharlesString(self):
         result = utils.removePreceedingAt('@charles')
         assert result == 'charles'

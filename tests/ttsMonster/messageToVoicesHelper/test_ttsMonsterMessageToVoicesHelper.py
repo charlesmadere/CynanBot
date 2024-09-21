@@ -11,9 +11,12 @@ from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from src.ttsMonster.models.ttsMonsterWebsiteVoice import TtsMonsterWebsiteVoice
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 
 
 class TestTtsMonsterMessageToVoicesHelper:
+
+    messageCleaner = TtsMonsterMessageCleaner()
 
     websiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
 
@@ -27,6 +30,7 @@ class TestTtsMonsterMessageToVoicesHelper:
     )
 
     helper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
+        ttsMonsterMessageCleaner = messageCleaner,
         ttsMonsterSettingsRepository = settingsRepository
     )
 

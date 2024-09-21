@@ -39,7 +39,6 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__cheerRegExes: list[Pattern] = self.__buildCheerStrings()
         self.__inlineCommandRegExes: list[Pattern] = self.__buildInlineCommandStrings()
         self.__inputFlagRegExes: list[Pattern] = self.__buildInputFlagStrings()
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
@@ -114,17 +113,6 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             message = message.encode().decode('windows-1252')
 
         return message
-
-    def __buildCheerStrings(self) -> list[Pattern]:
-        cheerStrings: list[Pattern] = list()
-
-        # purge "cheer100"
-        cheerStrings.append(re.compile(r'(^|\s+)cheer\d+(\s+|$)', re.IGNORECASE))
-
-        # purge "uni100"
-        cheerStrings.append(re.compile(r'(^|\s+)uni\d+(\s+|$)', re.IGNORECASE))
-
-        return cheerStrings
 
     def __buildInlineCommandStrings(self) -> list[Pattern]:
         inlineCommandStrings: list[Pattern] = list()
@@ -288,11 +276,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         if not utils.isValidStr(message):
             return None
 
-        for cheerRegEx in self.__cheerRegExes:
-            message = cheerRegEx.sub(' ', message)
-
-            if not utils.isValidStr(message):
-                return None
+        message = utils.removeCheerStrings(message)
 
         if not utils.isValidStr(message):
             return None
