@@ -66,6 +66,12 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
 
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('TwitchEmotesHelper', f'No Twitch access token is available to use for fetching viable subscription emotes ({twitchHandle=}) ({twitchId=}) ({twitchAccessToken=})')
+            emptySet = frozenset()
+            self.__cache[twitchChannelId] = emptySet
+            return emptySet
+
         emotesResponse: TwitchEmotesResponse | None = None
         userSubscription: TwitchUserSubscription | None = None
 
@@ -91,14 +97,6 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({userSubscription=})')
         self.__cache[twitchChannelId] = viableEmoteNames
         return viableEmoteNames
-
-    async def __getTwitchId(self, twitchAccessToken: str) -> str:
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-
-        return await self.__userIdsRepository.requireUserId(
-            userName = twitchHandle,
-            twitchAccessToken = twitchAccessToken
-        )
 
     async def __processTwitchResponseIntoViableSubscriptionEmotes(
         self,
