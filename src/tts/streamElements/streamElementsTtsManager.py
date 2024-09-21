@@ -90,7 +90,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         self.__timber.log('StreamElementsTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
 
         await self.__soundPlayerManager.playSoundFile(
-            fileName = fileName,
+            filePath = fileName,
             volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
         )
 
