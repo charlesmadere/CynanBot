@@ -9,3 +9,6 @@ class StubSoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
     async def chooseRandomSoundAlert(self) -> SoundAlert | None:
         return None
+
+    async def clearCaches(self):
+        pass
