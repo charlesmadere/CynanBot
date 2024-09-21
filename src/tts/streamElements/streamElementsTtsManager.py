@@ -17,7 +17,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         streamElementsFileManager: StreamElementsFileManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
-        timber: Timber,
+        timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
