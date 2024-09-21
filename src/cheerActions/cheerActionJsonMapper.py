@@ -191,6 +191,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             twitchChannelId = twitchChannelId
         )
 
+    async def requireBeanChanceCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> BeanChanceCheerAction:
+        action = await self.parseBeanChanceCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create BeanChanceCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
     async def requireCheerActionStreamStatusRequirement(
         self,
         jsonString: str | None
@@ -213,6 +234,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         return actionType
 
+    async def requireCrowdControlCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> CrowdControlCheerAction:
+        action = await self.parseCrowdControlCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create CrowdControlCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
     async def requireCrowdControlCheerActionType(
         self,
         jsonString: str | None
@@ -223,6 +265,48 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise ValueError(f'Unable to parse \"{jsonString}\" into CrowdControlCheerActionType value!')
 
         return actionType
+
+    async def requireSoundAlertCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> SoundAlertCheerAction:
+        action = await self.parseSoundAlertCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create SoundAlertCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
+    async def requireTimeoutCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> TimeoutCheerAction:
+        action = await self.parseTimeoutCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create TimeoutCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
 
     async def serializeAbsCheerAction(
         self,

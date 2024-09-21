@@ -79,7 +79,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         match actionType:
             case CheerActionType.BEAN_CHANCE:
-                return await self.__cheerActionJsonMapper.parseBeanChanceCheerAction(
+                return await self.__cheerActionJsonMapper.requireBeanChanceCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
@@ -88,7 +88,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 )
 
             case CheerActionType.CROWD_CONTROL:
-                return await self.__cheerActionJsonMapper.parseCrowdControlCheerAction(
+                return await self.__cheerActionJsonMapper.requireCrowdControlCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
@@ -97,7 +97,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 )
 
             case CheerActionType.SOUND_ALERT:
-                return await self.__cheerActionJsonMapper.parseSoundAlertCheerAction(
+                return await self.__cheerActionJsonMapper.requireSoundAlertCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
@@ -106,7 +106,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 )
 
             case CheerActionType.TIMEOUT:
-                return await self.__cheerActionJsonMapper.parseTimeoutCheerAction(
+                return await self.__cheerActionJsonMapper.requireTimeoutCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,

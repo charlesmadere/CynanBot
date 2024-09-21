@@ -78,6 +78,17 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireBeanChanceCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> BeanChanceCheerAction:
+        pass
+
+    @abstractmethod
     async def requireCheerActionStreamStatusRequirement(
         self,
         jsonString: str | None
@@ -92,10 +103,43 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireCrowdControlCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> CrowdControlCheerAction:
+        pass
+
+    @abstractmethod
     async def requireCrowdControlCheerActionType(
         self,
         jsonString: str | None
     ) -> CrowdControlCheerActionType:
+        pass
+
+    @abstractmethod
+    async def requireSoundAlertCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> SoundAlertCheerAction:
+        pass
+
+    @abstractmethod
+    async def requireTimeoutCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> TimeoutCheerAction:
         pass
 
     @abstractmethod
