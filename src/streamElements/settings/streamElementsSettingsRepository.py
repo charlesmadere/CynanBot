@@ -1,8 +1,8 @@
 from .streamElementsSettingsRepositoryInterface import StreamElementsSettingsRepositoryInterface
 from ..models.streamElementsVoice import StreamElementsVoice
 from ..parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
-from ..storage.jsonReaderInterface import JsonReaderInterface
 from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface):
