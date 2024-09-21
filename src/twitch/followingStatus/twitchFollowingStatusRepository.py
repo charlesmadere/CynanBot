@@ -219,11 +219,11 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
     async def persistFollowingStatus(
         self,
-        followedAt: datetime,
+        followedAt: datetime | None,
         twitchChannelId: str,
         userId: str
     ):
-        if not isinstance(followedAt, datetime):
+        if followedAt is not None and not isinstance(followedAt, datetime):
             raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -231,13 +231,23 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
-        await connection.execute(
-            '''
-                INSERT INTO twitchfollowingstatus (datetime, twitchchannelid, userid)
-                VALUES ($1, $2, $3)
-                ON CONFLICT (twitchchannelid, userid) DO UPDATE SET datetime = EXCLUDED.datetime
-            ''',
-            followedAt.isoformat(), twitchChannelId, userId
-        )
+
+        if followedAt is None:
+            await connection.execute(
+                '''
+                    DELETE FROM twitchfollowingstatus
+                    WHERE twitchchannelid = $1 AND userid = $2
+                ''',
+                twitchChannelId, userId
+            )
+        else:
+            await connection.execute(
+                '''
+                    INSERT INTO twitchfollowingstatus (datetime, twitchchannelid, userid)
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (twitchchannelid, userid) DO UPDATE SET datetime = EXCLUDED.datetime
+                ''',
+                followedAt.isoformat(), twitchChannelId, userId
+            )
 
         await connection.close()
