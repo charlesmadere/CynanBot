@@ -828,6 +828,7 @@ streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsMan
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
+    streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository
 )

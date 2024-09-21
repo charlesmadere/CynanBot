@@ -9,6 +9,8 @@ from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
+from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
+    StreamElementsSettingsRepositoryInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -19,16 +21,19 @@ class StreamElementsTtsManager(TtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         streamElementsFileManager: StreamElementsFileManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
+        streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
-        if not isinstance(streamElementsFileManager, StreamElementsFileManagerInterface):
+        elif not isinstance(streamElementsFileManager, StreamElementsFileManagerInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
-        if not isinstance(streamElementsHelper, StreamElementsHelperInterface):
+        elif not isinstance(streamElementsHelper, StreamElementsHelperInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
-        if not isinstance(timber, TimberInterface):
+        elif not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
+            raise TypeError(f'streamElementsSettingsRepository argument is malformed: \"{streamElementsSettingsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
@@ -36,6 +41,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamElementsFileManager: StreamElementsFileManagerInterface = streamElementsFileManager
         self.__streamElementsHelper: StreamElementsHelperInterface = streamElementsHelper
+        self.__streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = streamElementsSettingsRepository
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
@@ -82,7 +88,12 @@ class StreamElementsTtsManager(TtsManagerInterface):
             return False
 
         self.__timber.log('StreamElementsTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        await self.__soundPlayerManager.playSoundFile(fileName)
+
+        await self.__soundPlayerManager.playSoundFile(
+            fileName = fileName,
+            volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
+        )
+
         self.__isLoading = False
 
         return False
