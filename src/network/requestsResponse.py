@@ -55,7 +55,7 @@ class RequestsResponse(NetworkResponse):
     def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.REQUESTS
 
-    async def read(self) -> bytes:
+    async def read(self) -> bytes | None:
         self.__requireNotClosed()
         return self.__response.content
 

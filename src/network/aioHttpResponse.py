@@ -1,8 +1,10 @@
+import traceback
 from json import JSONDecodeError
 from typing import Any
 
 import aiohttp
 import xmltodict
+from aiohttp.client_exceptions import ContentTypeError
 
 from .exceptions import NetworkResponseIsClosedException
 from .networkClientType import NetworkClientType
@@ -47,17 +49,31 @@ class AioHttpResponse(NetworkResponse):
 
         try:
             return await self.__response.json()
+        except ContentTypeError as e:
+            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to read decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            return None
         except JSONDecodeError as e:
-            self.__timber.log('AioHttpResponse', f'Unable to decode response into JSON for url \"{self.__url}\"', e)
+            self.__timber.log('AioHttpResponse', f'Encountered JSON error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            return None
+        except Exception as e:
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
             return None
 
     @property
     def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.AIOHTTP
 
-    async def read(self) -> bytes:
+    async def read(self) -> bytes | None:
         self.__requireNotClosed()
-        return await self.__response.read()
+
+        try:
+            return await self.__response.read()
+        except ContentTypeError as e:
+            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to read response into bytes ({self}): {e}', e, traceback.format_exc())
+            return None
+        except Exception as e:
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to read response into bytes ({self}): {e}', e, traceback.format_exc())
+            return None
 
     def __requireNotClosed(self):
         if self.isClosed():
@@ -84,7 +100,8 @@ class AioHttpResponse(NetworkResponse):
         self.__requireNotClosed()
 
         try:
-            return xmltodict.parse(await self.read())
+            rawBytes = await self.read()
+            return xmltodict.parse(rawBytes)
         except Exception as e:
-            self.__timber.log('AioHttpResponse', f'Unable to decode response into XML for url \"{self.__url}\"', e)
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into XML ({self}): {e}', e, traceback.format_exc())
             return None

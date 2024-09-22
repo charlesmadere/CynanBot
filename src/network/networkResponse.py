@@ -24,7 +24,7 @@ class NetworkResponse(ABC):
         pass
 
     @abstractmethod
-    async def read(self) -> bytes:
+    async def read(self) -> bytes | None:
         pass
 
     def __repr__(self) -> str:
