@@ -17,6 +17,7 @@ from ..models.ttsMonsterUrls import TtsMonsterUrls
 from ..models.ttsMonsterUser import TtsMonsterUser
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
+from ..ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
@@ -40,6 +41,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         timber: TimberInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface,
+        ttsMonsterMessageCleaner: TtsMonsterMessageCleaner,
         ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface,
         ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
@@ -51,6 +53,8 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterApiService argument is malformed: \"{ttsMonsterApiService}\"')
         elif not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
+        elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleaner):
+            raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
         elif not isinstance(ttsMonsterMessageToVoicesHelper, TtsMonsterMessageToVoicesHelperInterface):
             raise TypeError(f'ttsMonsterMessageToVoicesHelper argument is malformed: \"{ttsMonsterMessageToVoicesHelper}\"')
         elif ttsMonsterPrivateApiHelper is not None and not isinstance(ttsMonsterPrivateApiHelper, TtsMonsterPrivateApiHelperInterface):
@@ -63,6 +67,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self.__timber: TimberInterface = timber
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
         self.__ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = ttsMonsterApiTokensRepository
+        self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleaner = ttsMonsterMessageCleaner
         self.__ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = ttsMonsterMessageToVoicesHelper
         self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface | None = ttsMonsterPrivateApiHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
@@ -114,6 +119,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        message = await self.__ttsMonsterMessageCleaner.clean(message)
         if not utils.isValidStr(message):
             return None
 

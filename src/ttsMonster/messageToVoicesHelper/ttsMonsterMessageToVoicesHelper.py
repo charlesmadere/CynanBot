@@ -9,7 +9,6 @@ from .ttsMonsterMessageToVoicePair import TtsMonsterMessageToVoicePair
 from .ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from ..ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from ...misc import utils as utils
 
 
@@ -23,15 +22,11 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
 
     def __init__(
         self,
-        ttsMonsterMessageCleaner: TtsMonsterMessageCleaner,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface
     ):
-        if not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleaner):
-            raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
-        elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
+        if not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
 
-        self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleaner = ttsMonsterMessageCleaner
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
 
         self.__voicePatternRegEx: Pattern = re.compile(r'(^|\s+)(\w+):', re.IGNORECASE)
@@ -46,11 +41,7 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        if len(voices) == 0:
-            return None
-
-        message = await self.__ttsMonsterMessageCleaner.clean(message)
-        if not utils.isValidStr(message):
+        if len(voices) == 0 or not utils.isValidStr(message):
             return None
 
         voiceNamesToVoice = await self.__buildVoiceNamesToVoiceDictionary(

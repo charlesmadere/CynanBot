@@ -30,7 +30,6 @@ class TestTtsMonsterMessageToVoicesHelper:
     )
 
     helper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
-        ttsMonsterMessageCleaner = messageCleaner,
         ttsMonsterSettingsRepository = settingsRepository
     )
 
@@ -258,10 +257,11 @@ class TestTtsMonsterMessageToVoicesHelper:
     @pytest.mark.asyncio
     async def test_build_withRemovesExtraWhitespace(self):
         voices: frozenset[TtsMonsterVoice] = frozenset({ self.brian })
+        message = await self.messageCleaner.clean('  Lots     of extra   whitespace   here \n')
 
         result = await self.helper.build(
             voices = voices,
-            message = '  Lots     of extra   whitespace   here \n'
+            message = message
         )
 
         assert isinstance(result, FrozenList)

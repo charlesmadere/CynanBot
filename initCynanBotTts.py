@@ -865,10 +865,7 @@ ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
     ttsMonsterJsonMapper = ttsMonsterJsonMapper
 )
 
-ttsMonsterMessageCleaner = TtsMonsterMessageCleaner()
-
 ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
-    ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
 
@@ -897,10 +894,13 @@ ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface 
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository
 )
 
+ttsMonsterMessageCleaner = TtsMonsterMessageCleaner()
+
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     timber = timber,
     ttsMonsterApiService = ttsMonsterApiService,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
+    ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterMessageToVoicesHelper = ttsMonsterMessageToVoicesHelper,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
