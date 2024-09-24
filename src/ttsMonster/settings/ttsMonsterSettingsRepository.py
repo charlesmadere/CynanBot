@@ -83,3 +83,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def usePrivateApiFirst(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'use_private_api_first', fallback = True)

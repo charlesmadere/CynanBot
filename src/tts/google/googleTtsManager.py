@@ -16,6 +16,7 @@ from ...google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ...google.googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from ...google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ...google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -26,6 +27,7 @@ class GoogleTtsManager(TtsManagerInterface):
     def __init__(
         self,
         googleApiService: GoogleApiServiceInterface,
+        googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsFileManager: GoogleTtsFileManagerInterface,
         googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
@@ -36,6 +38,8 @@ class GoogleTtsManager(TtsManagerInterface):
     ):
         if not isinstance(googleApiService, GoogleApiServiceInterface):
             raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}"')
+        elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+            raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsFileManager, GoogleTtsFileManagerInterface):
             raise TypeError(f'googleTtsFileManager argument is malformed: \"{googleTtsFileManager}\"')
         elif not isinstance(googleTtsVoiceChooser, GoogleTtsVoiceChooserInterface):
@@ -52,6 +56,7 @@ class GoogleTtsManager(TtsManagerInterface):
             raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__googleApiService: GoogleApiServiceInterface = googleApiService
+        self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsFileManager: GoogleTtsFileManagerInterface = googleTtsFileManager
         self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
@@ -92,7 +97,12 @@ class GoogleTtsManager(TtsManagerInterface):
             return False
 
         self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        await self.__soundPlayerManager.playSoundFile(fileName)
+
+        await self.__soundPlayerManager.playSoundFile(
+            filePath = fileName,
+            volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
+        )
+
         await self.__ttsTempFileHelper.registerTempFile(fileName)
         self.__isLoading = False
 

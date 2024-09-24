@@ -87,6 +87,8 @@ from src.google.googleJsonMapper import GoogleJsonMapper
 from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.googleJwtBuilder import GoogleJwtBuilder
 from src.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
+from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.location.locationsRepository import LocationsRepository
@@ -767,6 +769,10 @@ decTalkManager: DecTalkManager | None = DecTalkManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
+googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
+    settingsJsonReader = JsonFileReader('googleSettingsRepository.json')
+)
+
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
 googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
@@ -780,6 +786,7 @@ googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
 
 googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     googleApiService = googleApiService,
+    googleSettingsRepository = googleSettingsRepository,
     googleTtsFileManager = googleTtsFileManager,
     googleTtsVoiceChooser = googleTtsVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),

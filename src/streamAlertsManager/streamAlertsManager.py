@@ -24,7 +24,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsManager: TtsManagerInterface | None,
-        queueSleepTimeSeconds: float = 0.2,
+        queueSleepTimeSeconds: float = 0.25,
         queueTimeoutSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
