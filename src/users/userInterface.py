@@ -222,6 +222,12 @@ class UserInterface(ABC):
     def isAnivContentScanningEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isAnivMessageCopyTimeoutChatReportingEnabled(self) -> bool:
+        pass
+
+    @property
     @abstractmethod
     def isAnivMessageCopyTimeoutEnabled(self) -> bool:
         pass

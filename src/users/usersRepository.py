@@ -112,6 +112,7 @@ class UsersRepository(UsersRepositoryInterface):
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
+        isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, 'anivMessageCopyTimeoutChatReportingEnabled', True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
@@ -285,6 +286,7 @@ class UsersRepository(UsersRepositoryInterface):
             areSoundAlertsEnabled = areSoundAlertsEnabled,
             areTimeoutCheerActionsEnabled = areTimeoutCheerActionsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
+            isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
             isCasualGamePollEnabled = isCasualGamePollEnabled,

@@ -21,6 +21,7 @@ class User(UserInterface):
         areSoundAlertsEnabled: bool,
         areTimeoutCheerActionsEnabled: bool,
         isAnivContentScanningEnabled: bool,
+        isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
         isCatJamMessageEnabled: bool,
         isCasualGamePollEnabled: bool,
@@ -123,6 +124,8 @@ class User(UserInterface):
             raise TypeError(f'areTimeoutCheerActionsEnabled argument is malformed: \"{areTimeoutCheerActionsEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
+        elif not utils.isValidBool(isAnivMessageCopyTimeoutChatReportingEnabled):
+            raise TypeError(f'isAnivMessageCopyTimeoutChatReportingEnabled argument is malformed: \"{isAnivMessageCopyTimeoutChatReportingEnabled}\"')
         elif not utils.isValidBool(isAnivMessageCopyTimeoutEnabled):
             raise TypeError(f'isAnivMessageCopyTimeoutEnabled argument is malformed: \"{isAnivMessageCopyTimeoutEnabled}\"')
         elif not utils.isValidBool(isCasualGamePollEnabled):
@@ -304,6 +307,7 @@ class User(UserInterface):
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
         self.__areTimeoutCheerActionsEnabled: bool = areTimeoutCheerActionsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
+        self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
         self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
@@ -567,6 +571,11 @@ class User(UserInterface):
     def isAnivContentScanningEnabled(self) -> bool:
         return self.__isAnivContentScanningEnabled
 
+    @property
+    def isAnivMessageCopyTimeoutChatReportingEnabled(self) -> bool:
+        return self.__isAnivMessageCopyTimeoutChatReportingEnabled
+
+    @property
     def isAnivMessageCopyTimeoutEnabled(self) -> bool:
         return self.__isAnivMessageCopyTimeoutEnabled
 

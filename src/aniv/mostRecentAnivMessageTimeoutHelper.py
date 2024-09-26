@@ -83,7 +83,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchChannelId: str,
         user: UserInterface
     ) -> bool:
-        if not user.isAnivMessageCopyTimeoutEnabled():
+        if not user.isAnivMessageCopyTimeoutEnabled:
             return False
 
         anivUserId = await self.__anivUserIdProvider.getAnivUserId()
@@ -217,6 +217,9 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         chatterUserName: str,
         user: UserInterface
     ):
+        if not user.isAnivMessageCopyTimeoutChatReportingEnabled:
+            return
+
         twitchChannelProvider = self.__twitchChannelProvider
 
         if twitchChannelProvider is None:

@@ -50,7 +50,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.isAnivMessageCopyTimeoutEnabled():
+        if not user.isAnivMessageCopyTimeoutEnabled:
             return
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
