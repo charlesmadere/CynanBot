@@ -123,6 +123,21 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         if not utils.isValidStr(message):
             return None
 
+        result: TtsMonsterUrls = None
+        alreadyTriedPrivateApi = False
+
+        if await self.__ttsMonsterSettingsRepository.usePrivateApiFirst():
+            result = await self.__generateTtsUsingPrivateApi(
+                message = message,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+
+            alreadyTriedPrivateApi = True
+
+            if result is not None:
+                return result
+
         apiToken = await self.__ttsMonsterApiTokensRepository.get(twitchChannelId = twitchChannelId)
         if not utils.isValidStr(apiToken):
             self.__timber.log('TtsMonsterHelper', f'No TTS Monster API token is available for this user ({apiToken=}) ({twitchChannel=}) ({twitchChannelId=})')
@@ -163,13 +178,16 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             messages = messages,
             ttsMonsterUser = ttsMonsterUser
         ):
-            self.__timber.log('TtsMonsterHelper', f'This TTS Monster user isn\'t yet beyond their character allowance, but this new message would surpass it ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
+            if alreadyTriedPrivateApi:
+                return None
+            else:
+                self.__timber.log('TtsMonsterHelper', f'This TTS Monster user isn\'t yet beyond their character allowance, but this new message would surpass it ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
 
-            return await self.__generateTtsUsingPrivateApi(
-                message = message,
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
+                return await self.__generateTtsUsingPrivateApi(
+                    message = message,
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
         else:
             return await self.__generateTtsUsingOfficialApi(
                 characterAllowance = ttsMonsterUser.characterAllowance,
