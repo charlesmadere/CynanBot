@@ -7,6 +7,13 @@ class StreamElementsVoice(Enum):
     JOEY = auto()
 
     @property
+    def humanName(self) -> str:
+        match self:
+            case StreamElementsVoice.BRIAN: return 'Brian'
+            case StreamElementsVoice.JOEY: return 'Joey'
+            case _: raise RuntimeError(f'unknown StreamElementsVoice: \"{self}\"')
+
+    @property
     def jsonValue(self) -> str:
         match self:
             case StreamElementsVoice.BRIAN: return 'brian'

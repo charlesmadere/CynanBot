@@ -147,6 +147,9 @@ from src.streamElements.helper.streamElementsHelper import StreamElementsHelper
 from src.streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
+from src.streamElements.parser.streamElementsMessageVoiceParser import StreamElementsMessageVoiceParser
+from src.streamElements.parser.streamElementsMessageVoiceParserInterface import \
+    StreamElementsMessageVoiceParserInterface
 from src.streamElements.settings.streamElementsSettingsRepository import StreamElementsSettingsRepository
 from src.streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
@@ -803,6 +806,8 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
 
 streamElementsMessageCleaner = StreamElementsMessageCleaner()
 
+streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
+
 streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
@@ -820,6 +825,7 @@ streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = Stre
 streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     streamElementsApiService = streamElementsApiService,
     streamElementsMessageCleaner = streamElementsMessageCleaner,
+    streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     timber = timber

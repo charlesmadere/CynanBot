@@ -2,6 +2,7 @@ import traceback
 
 from .streamElementsHelperInterface import StreamElementsHelperInterface
 from ..apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
+from ..parser.streamElementsMessageVoiceParserInterface import StreamElementsMessageVoiceParserInterface
 from ..settings.streamElementsSettingsRepositoryInterface import StreamElementsSettingsRepositoryInterface
 from ..streamElementsMessageCleaner import StreamElementsMessageCleaner
 from ..userKeyRepository.streamElementsUserKeyRepositoryInterface import StreamElementsUserKeyRepositoryInterface
@@ -16,6 +17,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         self,
         streamElementsApiService: StreamElementsApiServiceInterface,
         streamElementsMessageCleaner: StreamElementsMessageCleaner,
+        streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface,
         timber: TimberInterface
@@ -24,6 +26,8 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             raise TypeError(f'streamElementsApiService argument is malformed: \"{streamElementsApiService}\"')
         elif not isinstance(streamElementsMessageCleaner, StreamElementsMessageCleaner):
             raise TypeError(f'streamElementsMessageCleaner argument is malformed: \"{streamElementsMessageCleaner}\"')
+        elif not isinstance(streamElementsMessageVoiceParser, StreamElementsMessageVoiceParserInterface):
+            raise TypeError(f'streamElementsMessageVoiceParser argument is malformed: \"{streamElementsMessageVoiceParser}\"')
         elif not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
             raise TypeError(f'streamElementsSettingsRepository argument is malformed: \"{streamElementsSettingsRepository}\"')
         elif not isinstance(streamElementsUserKeyRepository, StreamElementsUserKeyRepositoryInterface):
@@ -33,6 +37,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
 
         self.__streamElementsApiService: StreamElementsApiServiceInterface = streamElementsApiService
         self.__streamElementsMessageCleaner: StreamElementsMessageCleaner = streamElementsMessageCleaner
+        self.__streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = streamElementsMessageVoiceParser
         self.__streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = streamElementsSettingsRepository
         self.__streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = streamElementsUserKeyRepository
         self.__timber: TimberInterface = timber
@@ -62,7 +67,10 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             self.__timber.log('StreamElementsHelper', f'No Stream Elements user key available for this user: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({userKey=})')
             return None
 
-        voice = await self.__streamElementsSettingsRepository.getDefaultVoice()
+        voice = await self.__streamElementsMessageVoiceParser.determineVoiceFromMessage(message)
+
+        if voice is None:
+            voice = await self.__streamElementsSettingsRepository.getDefaultVoice()
 
         try:
             return await self.__streamElementsApiService.getSpeech(
