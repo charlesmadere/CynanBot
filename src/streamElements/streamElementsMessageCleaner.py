@@ -7,7 +7,6 @@ from ..misc import utils as utils
 class StreamElementsMessageCleaner:
 
     def __init__(self):
-        self.__cheerRegEx: Pattern = re.compile(r'^cheer\d+\s+', re.IGNORECASE)
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def clean(self, message: str | Any | None) -> str | None:

@@ -409,12 +409,14 @@ cheerRegExes: FrozenList[Pattern] = FrozenList([
 ])
 cheerRegExes.freeze()
 
-def removeCheerStrings(s: str) -> str:
+def removeCheerStrings(s: str, repl: str = ' ') -> str:
     if not isinstance(s, str):
         raise TypeError(f's argument is malformed: \"{s}\"')
+    elif not isinstance(repl, str):
+        raise TypeError(f'repl argument is malformed: \"{repl}\"')
 
     for cheerRegEx in cheerRegExes:
-        s = cheerRegEx.sub('', s.strip()).strip()
+        s = cheerRegEx.sub(repl, s.strip()).strip()
 
     return s.strip()
 
