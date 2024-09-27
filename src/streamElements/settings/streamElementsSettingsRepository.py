@@ -37,7 +37,7 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
             key = 'default_voice',
-            fallback = self.__defaultVoice.jsonValue
+            fallback = await self.__streamElementsJsonParser.serializeVoice(self.__defaultVoice)
         )
 
         return await self.__streamElementsJsonParser.requireVoice(defaultVoice)

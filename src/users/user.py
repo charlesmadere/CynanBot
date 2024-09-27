@@ -53,6 +53,7 @@ class User(UserInterface):
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
+        isSuperTriviaLotrTimeoutEnabled: bool,
         isSupStreamerEnabled: bool,
         isTimeoutCheerActionIncreasedBullyFailureEnabled: bool,
         isTimeoutCheerActionFailureEnabled: bool,
@@ -188,6 +189,8 @@ class User(UserInterface):
             raise TypeError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
             raise TypeError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
+        elif not utils.isValidBool(isSuperTriviaLotrTimeoutEnabled):
+            raise TypeError(f'isSuperTriviaLotrTimeoutEnabled argument is malformed: \"{isSuperTriviaLotrTimeoutEnabled}\"')
         elif not utils.isValidBool(isSupStreamerEnabled):
             raise TypeError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
         elif not utils.isValidBool(isTimeoutCheerActionIncreasedBullyFailureEnabled):
@@ -339,6 +342,7 @@ class User(UserInterface):
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
+        self.__isSuperTriviaLotrTimeoutEnabled: bool = isSuperTriviaLotrTimeoutEnabled
         self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
         self.__isTimeoutCheerActionIncreasedBullyFailureEnabled: bool = isTimeoutCheerActionIncreasedBullyFailureEnabled
         self.__isTimeoutCheerActionFailureEnabled: bool = isTimeoutCheerActionFailureEnabled
@@ -673,6 +677,10 @@ class User(UserInterface):
 
     def isSuperTriviaGameEnabled(self) -> bool:
         return self.__isSuperTriviaGameEnabled
+
+    @property
+    def isSuperTriviaLotrTimeoutEnabled(self) -> bool:
+        return self.__isSuperTriviaLotrTimeoutEnabled
 
     def isSupStreamerEnabled(self) -> bool:
         return self.__isSupStreamerEnabled

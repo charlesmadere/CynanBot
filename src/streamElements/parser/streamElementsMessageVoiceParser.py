@@ -9,9 +9,12 @@ from ...misc import utils as utils
 class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface):
 
     def __init__(self):
-        self.__voiceRegEx: Pattern = re.compile(r'^\s*(\w+):\s+', re.IGNORECASE)
+        self.__voiceRegEx: Pattern = re.compile(r'(^\s*(\w+):\s+)', re.IGNORECASE)
 
-    async def determineVoiceFromMessage(self, message: str) -> StreamElementsVoice | None:
+    async def determineVoiceFromMessage(
+        self,
+        message: str | None
+    ) -> StreamElementsMessageVoiceParserInterface.Result | None:
         if not utils.isValidStr(message):
             return None
 
@@ -19,12 +22,24 @@ class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface
         if voiceMatch is None:
             return None
 
-        voice = voiceMatch.group(1)
-        if not utils.isValidStr(voice):
+        voiceString = voiceMatch.group(2)
+        if not utils.isValidStr(voiceString):
             return None
 
-        for streamElementsVoice in StreamElementsVoice:
-            if streamElementsVoice.humanName.casefold() == voice.casefold():
-                return streamElementsVoice
+        streamElementsVoice: StreamElementsVoice | None = None
 
-        return None
+        for currentVoice in StreamElementsVoice:
+            if currentVoice.humanName.casefold() == voiceString.casefold():
+                streamElementsVoice = currentVoice
+                break
+
+        if streamElementsVoice is None:
+            return None
+
+        fullVoiceString = voiceMatch.group(1)
+        messageWithoutVoice = message[len(fullVoiceString):].strip()
+
+        return StreamElementsMessageVoiceParserInterface.Result(
+            message = messageWithoutVoice,
+            voice = streamElementsVoice
+        )

@@ -10,6 +10,11 @@ class TestStreamElementsJsonParser:
     parser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withAmy(self):
+        result = await self.parser.parseVoice('amy')
+        assert result is StreamElementsVoice.AMY
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withBrian(self):
         result = await self.parser.parseVoice('brian')
         assert result is StreamElementsVoice.BRIAN
@@ -70,3 +75,18 @@ class TestStreamElementsJsonParser:
             result = await self.parser.requireVoice(' ')
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withAmy(self):
+        result = await self.parser.serializeVoice(StreamElementsVoice.AMY)
+        assert result == 'amy'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withBrian(self):
+        result = await self.parser.serializeVoice(StreamElementsVoice.BRIAN)
+        assert result == 'brian'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withJoey(self):
+        result = await self.parser.serializeVoice(StreamElementsVoice.JOEY)
+        assert result == 'joey'

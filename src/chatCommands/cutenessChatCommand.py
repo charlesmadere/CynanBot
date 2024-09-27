@@ -81,7 +81,12 @@ class CutenessChatCommand(AbsChatCommand):
             )
 
             printOut = await self.__cutenessPresenter.printCuteness(result)
-            await self.__twitchUtils.safeSend(ctx, printOut)
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = printOut,
+                replyMessageId = await ctx.getMessageId()
+            )
         else:
             userId = ctx.getAuthorId()
 

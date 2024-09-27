@@ -14,6 +14,7 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
         jsonString = jsonString.lower()
 
         match jsonString:
+            case 'amy': return StreamElementsVoice.AMY
             case 'brian': return StreamElementsVoice.BRIAN
             case 'joey': return StreamElementsVoice.JOEY
             case _: return None
@@ -25,3 +26,13 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
             raise ValueError(f'Unable to parse \"{jsonString}\" into StreamElementsVoice value!')
 
         return result
+
+    async def serializeVoice(self, voice: StreamElementsVoice) -> str:
+        if not isinstance(voice, StreamElementsVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+
+        match voice:
+            case StreamElementsVoice.AMY: return 'amy'
+            case StreamElementsVoice.BRIAN: return 'brian'
+            case StreamElementsVoice.JOEY: return 'joey'
+            case _: raise ValueError(f'Encountered unexpected StreamElementsVoice value: \"{voice}\"')

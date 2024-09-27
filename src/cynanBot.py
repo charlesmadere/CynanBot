@@ -210,6 +210,7 @@ from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterfa
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from .twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from .twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from .twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from .twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
@@ -333,6 +334,7 @@ class CynanBot(
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
+        twitchTimeoutHelper: TwitchTimeoutHelperInterface | None,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
@@ -539,6 +541,8 @@ class CynanBot(
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
+        elif twitchTimeoutHelper is not None and not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
+            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif twitchTimeoutRemodHelper is not None and not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -706,7 +710,7 @@ class CynanBot(
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = RemoveGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
-            self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchFriendsUserIdRepository, authRepository, twitchTimeoutHelper, twitchTokensRepository, twitchUtils, usersRepository)
             self.__triviaInfoCommand: AbsChatCommand = TriviaInfoChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)

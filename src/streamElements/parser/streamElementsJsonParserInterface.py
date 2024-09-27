@@ -13,3 +13,7 @@ class StreamElementsJsonParserInterface(ABC):
     @abstractmethod
     async def requireVoice(self, jsonString: str | Any | None) -> StreamElementsVoice:
         pass
+
+    @abstractmethod
+    async def serializeVoice(self, voice: StreamElementsVoice) -> str:
+        pass

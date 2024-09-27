@@ -67,10 +67,12 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             self.__timber.log('StreamElementsHelper', f'No Stream Elements user key available for this user: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({userKey=})')
             return None
 
-        voice = await self.__streamElementsMessageVoiceParser.determineVoiceFromMessage(message)
+        result = await self.__streamElementsMessageVoiceParser.determineVoiceFromMessage(message)
+        voice = await self.__streamElementsSettingsRepository.getDefaultVoice()
 
-        if voice is None:
-            voice = await self.__streamElementsSettingsRepository.getDefaultVoice()
+        if result is not None:
+            message = result.message
+            voice = result.voice
 
         try:
             return await self.__streamElementsApiService.getSpeech(

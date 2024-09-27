@@ -45,11 +45,19 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to change user setting as no key argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to change user setting as no key argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
         elif len(splits) < 3:
             self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no value argument was supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to change user setting as no value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to change user setting as no value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         jsonConstantString: str | None = splits[1]
@@ -57,7 +65,11 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
 
         if jsonConstant is None:
             self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid key argument was supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to change user setting as an invalid key argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to change user setting as an invalid key argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         value: str | None = splits[2]
@@ -70,8 +82,18 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
             )
         except BadModifyUserValueException as e:
             self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid value argument was supplied: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to change user setting as an invalid value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to change user setting as an invalid value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Updated user setting {jsonConstant.jsonKey.lower()}',
+            replyMessageId = await ctx.getMessageId()
+        )
 
         self.__timber.log('ChangeUserSettingChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({jsonConstant=})')
 

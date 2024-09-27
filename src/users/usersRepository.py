@@ -214,6 +214,7 @@ class UsersRepository(UsersRepositoryInterface):
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
+        isSuperTriviaLotrTimeoutEnabled: bool = False
         superTriviaCheerTriggerAmount: float | None = None
         superTriviaSubscribeTriggerAmount: float | None = None
         superTriviaCheerTriggerMaximum: int | None = None
@@ -233,6 +234,7 @@ class UsersRepository(UsersRepositoryInterface):
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
+            isSuperTriviaLotrTimeoutEnabled = utils.getBoolFromDict(userJson, 'superTriviaLotrTimeoutEnabled', False)
 
             if 'superTriviaCheerTriggerAmount' in userJson and utils.isValidNum(userJson.get('superTriviaCheerTriggerAmount')):
                 superTriviaCheerTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaCheerTriggerAmount')
@@ -318,6 +320,7 @@ class UsersRepository(UsersRepositoryInterface):
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
+            isSuperTriviaLotrTimeoutEnabled = isSuperTriviaLotrTimeoutEnabled,
             isSupStreamerEnabled = isSupStreamerEnabled,
             isTimeoutCheerActionIncreasedBullyFailureEnabled = isTimeoutCheerActionIncreasedBullyFailureEnabled,
             isTimeoutCheerActionFailureEnabled = isTimeoutCheerActionFailureEnabled,

@@ -78,9 +78,17 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
         )
 
         if score is None:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ @{userName} has no aniv timeouts')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ @{userName} has no aniv timeouts',
+                replyMessageId = await ctx.getMessageId()
+            )
         else:
             printOut = await self.__anivCopyMessageTimeoutScorePresenter.toString(score)
-            await self.__twitchUtils.safeSend(ctx, printOut)
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = printOut,
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('MyAnivTimeoutsChatCommand', f'Handled !myanivtimeouts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -121,7 +121,7 @@ class TwitchUtils(TwitchUtilsInterface):
 
     @property
     def maxMessageSize(self) -> int:
-        return 494
+        return 496
 
     @property
     def maxTimeoutSeconds(self) -> int:
