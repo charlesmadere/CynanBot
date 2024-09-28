@@ -1,6 +1,8 @@
 import re
 import traceback
-from typing import Pattern
+from typing import Collection, Pattern
+
+from frozenlist import FrozenList
 
 from .ttsCheerDonation import TtsCheerDonation
 from .ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -40,8 +42,8 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__inlineCommandRegExes: list[Pattern] = self.__buildInlineCommandStrings()
-        self.__inputFlagRegExes: list[Pattern] = self.__buildInputFlagStrings()
+        self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandStrings()
+        self.__inputFlagRegExes: Collection[Pattern] = self.__buildInputFlagStrings()
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def buildAndCleanEvent(self, event: TtsEvent | None) -> str | None:
@@ -119,8 +121,8 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
         return message
 
-    def __buildInlineCommandStrings(self) -> list[Pattern]:
-        inlineCommandStrings: list[Pattern] = list()
+    def __buildInlineCommandStrings(self) -> FrozenList[Pattern]:
+        inlineCommandStrings: FrozenList[Pattern] = FrozenList()
 
         # purge comma pause inline command
         inlineCommandStrings.append(re.compile(r'\[\s*\:\s*(comm|cp).*?\]', re.IGNORECASE))
@@ -161,10 +163,11 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         # purge volume inline command
         inlineCommandStrings.append(re.compile(r'\[\s*\:\s*vol.*?\]', re.IGNORECASE))
 
+        inlineCommandStrings.freeze()
         return inlineCommandStrings
 
-    def __buildInputFlagStrings(self) -> list[Pattern]:
-        inputFlagStrings: list[Pattern] = list()
+    def __buildInputFlagStrings(self) -> Collection[Pattern]:
+        inputFlagStrings: FrozenList[Pattern] = FrozenList()
 
         # purge potentially dangerous/tricky characters
         inputFlagStrings.append(re.compile(r'\&|\%|\;|\=|\'|\"|\||\^|\~', re.IGNORECASE))
@@ -194,6 +197,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         inputFlagStrings.append(re.compile(r'(^|\s+)-w', re.IGNORECASE))
         inputFlagStrings.append(re.compile(r'(^|\s+)-l((\[\w+\])|\w+)?', re.IGNORECASE))
 
+        inputFlagStrings.freeze()
         return inputFlagStrings
 
     async def __cropMessageIfNecessary(self, message: str | None) -> str | None:
