@@ -123,11 +123,9 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
         if not utils.isValidStr(event.eventId):
             return None
-
-        if not utils.isValidStr(event.title):
+        elif not utils.isValidStr(event.title):
             return None
-
-        if event.outcomes is None or len(event.outcomes) == 0:
+        elif event.outcomes is None or len(event.outcomes) == 0:
             return None
 
         outcomesArray = await self.outcomesToEventDataArray(event.outcomes)

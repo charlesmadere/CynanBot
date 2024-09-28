@@ -383,6 +383,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                         outcomes.append(outcome)
 
                 if len(outcomes) >= 1:
+                    outcomes.sort(key = lambda outcome: outcome.outcomeId)
                     frozenOutcomes = FrozenList(outcomes)
                     frozenOutcomes.freeze()
 
@@ -400,6 +401,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                         choices.append(choice)
 
                 if len(choices) >= 1:
+                    choices.sort(key = lambda choice: choice.choiceId)
                     frozenChoices = FrozenList(choices)
                     frozenChoices.freeze()
 
