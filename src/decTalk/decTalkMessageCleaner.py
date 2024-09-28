@@ -1,5 +1,5 @@
 import re
-from typing import Any
+from typing import Any, Pattern
 
 from .decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ..misc import utils as utils
