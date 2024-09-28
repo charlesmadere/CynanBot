@@ -1,7 +1,6 @@
 from typing import Any
 
 import pytest
-from frozenlist import FrozenList
 
 from src.twitch.api.twitchOutcome import TwitchOutcome
 from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
@@ -54,7 +53,7 @@ class TestTwitchPredictionWebsocketUtils:
         ]
 
         result = await self.utils.outcomesToEventDataArray(outcomes)
-        assert isinstance(result, FrozenList)
+        assert isinstance(result, list)
         assert len(result) == 4
 
         assert len(result[0]) == 5

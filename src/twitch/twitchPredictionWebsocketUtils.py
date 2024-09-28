@@ -190,7 +190,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
     async def outcomesToEventDataArray(
         self,
         outcomes: Collection[TwitchOutcome]
-    ) -> FrozenList[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         if not isinstance(outcomes, Collection):
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
@@ -200,7 +200,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         frozenSortedOutcomes.freeze()
 
         colors = await self.websocketOutcomesToColorsArray(frozenSortedOutcomes)
-        events: FrozenList[dict[str, Any]] = FrozenList()
+        events: list[dict[str, Any]] = list()
 
         for index, outcome in enumerate(sortedOutcomes):
             events.append({
@@ -211,7 +211,6 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 'users': outcome.users
             })
 
-        events.freeze()
         return events
 
     async def websocketSubscriptionTypeToString(
