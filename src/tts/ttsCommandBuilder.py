@@ -87,7 +87,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = await self.__purgeCheers(message)
+        message = utils.removeCheerStrings(message)
         if not utils.isValidStr(message):
             return None
 
@@ -271,17 +271,6 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
             case _:
                 return f'{event.userName} subscribed!'
-
-    async def __purgeCheers(self, message: str | None) -> str | None:
-        if not utils.isValidStr(message):
-            return None
-
-        message = utils.removeCheerStrings(message)
-
-        if not utils.isValidStr(message):
-            return None
-
-        return message.strip()
 
     async def __purgeInlineCommands(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):
