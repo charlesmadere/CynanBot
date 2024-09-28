@@ -437,7 +437,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             if monthRecords is None or len(monthRecords) == 0:
                 continue
 
-            entries: list[CutenessLeaderboardEntry] = list()
+            entries: FrozenList[CutenessLeaderboardEntry] = FrozenList()
             rank = 1
 
             for monthRecord in monthRecords:
@@ -448,6 +448,8 @@ class CutenessRepository(CutenessRepositoryInterface):
                     userName = monthRecord[2]
                 ))
                 rank = rank + 1
+
+            entries.freeze()
 
             leaderboards.append(CutenessLeaderboardResult(
                 cutenessDate = cutenessDate,
