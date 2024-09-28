@@ -1,4 +1,6 @@
-from typing import Any
+from typing import Any, Collection
+
+from frozenlist import FrozenList
 
 from .api.twitchOutcome import TwitchOutcome
 from .api.twitchOutcomeColor import TwitchOutcomeColor
@@ -9,6 +11,105 @@ from ..misc import utils as utils
 
 
 class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
+
+    async def __appendIndexBasedColorDictionary(
+        self,
+        colors: FrozenList[dict[str, int]],
+        index: int
+    ):
+        if not isinstance(colors, FrozenList):
+            raise TypeError(f'colors argument is malformed: \"{colors}\"')
+        elif not utils.isValidInt(index):
+            raise TypeError(f'index argument is malformed: \"{index}\"')
+        elif index < 0 or index > utils.getIntMaxSafeSize():
+            raise ValueError(f'index argument is out of bounds: {index}')
+
+        match index:
+            case 0:
+                colors.append(await self.outcomeColorToEventData(TwitchOutcomeColor.BLUE))
+
+            case 1:
+                colors.append(await self.outcomeColorToEventData(TwitchOutcomeColor.PINK))
+
+            case 2:
+                # orange
+                colors.append({
+                    'red': 255,
+                    'green': 127,
+                    'blue': 0
+                })
+
+            case 3:
+                # green
+                colors.append({
+                    'red': 127,
+                    'green': 255,
+                    'blue': 0
+                })
+
+            case 4:
+                # cyan
+                colors.append({
+                    'red': 0,
+                    'green': 255,
+                    'blue': 255
+                })
+
+            case 5:
+                # light-ish blue
+                colors.append({
+                    'red': 0,
+                    'green': 127,
+                    'blue': 255
+                })
+
+            case 6:
+                # magenta
+                colors.append({
+                    'red': 255,
+                    'green': 0,
+                    'blue': 255
+                })
+
+            case 7:
+                # red
+                colors.append({
+                    'red': 255,
+                    'green': 0,
+                    'blue': 0
+                })
+
+            case 8:
+                # yellow
+                colors.append({
+                    'red': 255,
+                    'green': 255,
+                    'blue': 0
+                })
+
+            case 9:
+                # purple
+                colors.append({
+                    'red': 127,
+                    'green': 0,
+                    'blue': 255
+                })
+
+            case 10:
+                # silver
+                colors.append({
+                    'red': 192,
+                    'green': 192,
+                    'blue': 192
+                })
+
+            case 11:
+                # dark slate
+                colors.append({
+                    'red': 47,
+                    'green': 79,
+                    'blue': 79
+                })
 
     async def websocketEventToEventDataDictionary(
         self,
@@ -41,93 +142,24 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
     async def websocketOutcomesToColorsArray(
         self,
-        outcomes: list[TwitchOutcome]
-    ) -> list[dict[str, int]]:
-        if not isinstance(outcomes, list) or len(outcomes) == 0:
+        outcomes: FrozenList[TwitchOutcome]
+    ) -> FrozenList[dict[str, int]]:
+        if not isinstance(outcomes, FrozenList) or len(outcomes) == 0:
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
-        colors: list[dict[str, int]] = list()
+        colors: FrozenList[dict[str, int]] = FrozenList()
 
         if len(outcomes) <= 2:
             for outcome in outcomes:
                 colors.append(await self.outcomeColorToEventData(outcome.color))
         else:
             for index, outcome in enumerate(outcomes):
-                if index == 0:
-                    colors.append(await self.outcomeColorToEventData(TwitchOutcomeColor.BLUE))
-                elif index == 1:
-                    colors.append(await self.outcomeColorToEventData(TwitchOutcomeColor.PINK))
-                elif index == 2:
-                    # orange
-                    colors.append({
-                        'red': 255,
-                        'green': 127,
-                        'blue': 0
-                    })
-                elif index == 3:
-                    # green
-                    colors.append({
-                        'red': 127,
-                        'green': 255,
-                        'blue': 0
-                    })
-                elif index == 4:
-                    # cyan
-                    colors.append({
-                        'red': 0,
-                        'green': 255,
-                        'blue': 255
-                    })
-                elif index == 5:
-                    # light-ish blue
-                    colors.append({
-                        'red': 0,
-                        'green': 127,
-                        'blue': 255
-                    })
-                elif index == 6:
-                    # magenta
-                    colors.append({
-                        'red': 255,
-                        'green': 0,
-                        'blue': 255
-                    })
-                elif index == 7:
-                    # red
-                    colors.append({
-                        'red': 255,
-                        'green': 0,
-                        'blue': 0
-                    })
-                elif index == 8:
-                    # yellow
-                    colors.append({
-                        'red': 255,
-                        'green': 255,
-                        'blue': 0
-                    })
-                elif index == 9:
-                    # purple
-                    colors.append({
-                        'red': 127,
-                        'green': 0,
-                        'blue': 255
-                    })
-                elif index == 10:
-                    # silver
-                    colors.append({
-                        'red': 192,
-                        'green': 192,
-                        'blue': 192
-                    })
-                elif index == 11:
-                    # dark slate
-                    colors.append({
-                        'red': 47,
-                        'green': 79,
-                        'blue': 79
-                    })
+                await self.__appendIndexBasedColorDictionary(
+                    colors = colors,
+                    index = index
+                )
 
+        colors.freeze()
         return colors
 
     async def outcomeColorToEventData(
@@ -137,32 +169,38 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         if not isinstance(color, TwitchOutcomeColor):
             raise TypeError(f'color argument is malformed: \"{color}\"')
 
-        if color is TwitchOutcomeColor.BLUE:
-            return {
-                'red': 54,
-                'green': 162,
-                'blue': 235
-            }
-        elif color is TwitchOutcomeColor.PINK:
-            return {
-                'red': 255,
-                'green': 99,
-                'blue': 132
-            }
-        else:
-            raise RuntimeError(f'Unknown WebsocketOutcomeColor: \"{color}\"')
+        match color:
+            case TwitchOutcomeColor.BLUE:
+                return {
+                    'red': 54,
+                    'green': 162,
+                    'blue': 235
+                }
+
+            case TwitchOutcomeColor.PINK:
+                return {
+                    'red': 255,
+                    'green': 99,
+                    'blue': 132
+                }
+
+            case _:
+                raise RuntimeError(f'Unknown WebsocketOutcomeColor: \"{color}\"')
 
     async def outcomesToEventDataArray(
         self,
-        outcomes: list[TwitchOutcome]
-    ) -> list[dict[str, Any]]:
-        if not isinstance(outcomes, list) or len(outcomes) == 0:
+        outcomes: Collection[TwitchOutcome]
+    ) -> FrozenList[dict[str, Any]]:
+        if not isinstance(outcomes, Collection):
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
-        sortedOutcomes = sorted(outcomes, key = lambda outcome: outcome.title.lower())
-        colors = await self.websocketOutcomesToColorsArray(outcomes)
+        sortedOutcomes: list[TwitchOutcome] = list(outcomes)
+        sortedOutcomes.sort(key = lambda outcome: outcome.title.casefold())
+        frozenSortedOutcomes: FrozenList[TwitchOutcome] = FrozenList(sortedOutcomes)
+        frozenSortedOutcomes.freeze()
 
-        events: list[dict[str, Any]] = list()
+        colors = await self.websocketOutcomesToColorsArray(frozenSortedOutcomes)
+        events: FrozenList[dict[str, Any]] = FrozenList()
 
         for index, outcome in enumerate(sortedOutcomes):
             events.append({
@@ -173,6 +211,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 'users': outcome.users
             })
 
+        events.freeze()
         return events
 
     async def websocketSubscriptionTypeToString(

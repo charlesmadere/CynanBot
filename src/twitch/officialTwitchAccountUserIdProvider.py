@@ -1,23 +1,24 @@
 from .officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
+from ..misc import utils as utils
 
 
 class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInterface):
 
     def __init__(
         self,
-        twitchAccountUserId: str | None = '12826',
-        twitchAnonymousGifterUserId: str | None = '274598607'
+        twitchAccountUserId: str = '12826',
+        twitchAnonymousGifterUserId: str = '274598607'
     ):
-        if twitchAccountUserId is not None and not isinstance(twitchAccountUserId, str):
+        if not utils.isValidStr(twitchAccountUserId):
             raise TypeError(f'twitchAccountUserId argument is malformed: \"{twitchAccountUserId}\"')
-        elif twitchAnonymousGifterUserId is not None and not isinstance(twitchAnonymousGifterUserId, str):
+        elif not utils.isValidStr(twitchAnonymousGifterUserId):
             raise TypeError(f'twitchAnonymousGifterUserId argument is malformed: \"{twitchAnonymousGifterUserId}\"')
 
-        self.__twitchAccountUserId: str | None = twitchAccountUserId
-        self.__twitchAnonymousGifterUserId: str | None = twitchAnonymousGifterUserId
+        self.__twitchAccountUserId: str = twitchAccountUserId
+        self.__twitchAnonymousGifterUserId: str = twitchAnonymousGifterUserId
 
-    async def getTwitchAccountUserId(self) -> str | None:
+    async def getTwitchAccountUserId(self) -> str:
         return self.__twitchAccountUserId
 
-    async def getTwitchAnonymousGifterUserId(self) -> str | None:
+    async def getTwitchAnonymousGifterUserId(self) -> str:
         return self.__twitchAnonymousGifterUserId

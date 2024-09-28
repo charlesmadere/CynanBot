@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Collection
+
+from frozenlist import FrozenList
 
 from .api.twitchOutcome import TwitchOutcome
 from .api.twitchOutcomeColor import TwitchOutcomeColor
@@ -27,8 +29,8 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
     @abstractmethod
     async def outcomesToEventDataArray(
         self,
-        outcomes: list[TwitchOutcome]
-    ) -> list[dict[str, Any]]:
+        outcomes: Collection[TwitchOutcome]
+    ) -> FrozenList[dict[str, Any]]:
         pass
 
     @abstractmethod

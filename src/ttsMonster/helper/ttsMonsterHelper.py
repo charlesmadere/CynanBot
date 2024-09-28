@@ -123,7 +123,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         if not utils.isValidStr(message):
             return None
 
-        result: TtsMonsterUrls = None
+        result: TtsMonsterUrls | None = None
         alreadyTriedPrivateApi = False
 
         if await self.__ttsMonsterSettingsRepository.usePrivateApiFirst():

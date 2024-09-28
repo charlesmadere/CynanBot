@@ -403,7 +403,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def soundAlertRedemptions(self) -> dict[str, SoundAlertRedemption] | None:
+    def soundAlertRedemptions(self) -> frozendict[str, SoundAlertRedemption] | None:
         pass
 
     @property

@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
-    async def getTwitchAccountUserId(self) -> str | None:
+    async def getTwitchAccountUserId(self) -> str:
         pass
 
     @abstractmethod
-    async def getTwitchAnonymousGifterUserId(self) -> str | None:
+    async def getTwitchAnonymousGifterUserId(self) -> str:
         pass
