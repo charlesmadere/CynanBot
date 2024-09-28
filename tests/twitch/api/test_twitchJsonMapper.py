@@ -18,6 +18,7 @@ from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
 from src.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from src.twitch.api.twitchStreamType import TwitchStreamType
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.twitchUserType import TwitchUserType
 
@@ -437,6 +438,26 @@ class TestTwitchJsonMapper:
     async def test_parsePollStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parsePollStatus(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseStreamType_withEmptyString(self):
+        result = await self.jsonMapper.parseStreamType('')
+        assert result is TwitchStreamType.UNKNOWN
+
+    @pytest.mark.asyncio
+    async def test_parseStreamType_withLive(self):
+        result = await self.jsonMapper.parseStreamType('live')
+        assert result is TwitchStreamType.LIVE
+
+    @pytest.mark.asyncio
+    async def test_parseStreamType_withNone(self):
+        result = await self.jsonMapper.parseStreamType(None)
+        assert result is TwitchStreamType.UNKNOWN
+
+    @pytest.mark.asyncio
+    async def test_parseStreamType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseStreamType(' ')
+        assert result is TwitchStreamType.UNKNOWN
 
     @pytest.mark.asyncio
     async def test_parseSubscriberTier_withPrimeString(self):

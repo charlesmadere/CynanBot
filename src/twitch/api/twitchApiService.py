@@ -516,7 +516,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                 language = utils.getStrFromDict(dataEntry, 'language', fallback = ''),
                 thumbnailUrl = utils.getStrFromDict(dataEntry, 'thumbnail_url', fallback = ''),
                 title = utils.getStrFromDict(dataEntry, 'title', fallback = ''),
-                streamType = await self.__twitchJsonMapper.parseStreamStype(utils.getStrFromDict(dataEntry, 'type'))
+                streamType = await self.__twitchJsonMapper.parseStreamType(utils.getStrFromDict(dataEntry, 'type'))
             ))
 
         users.sort(key = lambda user: user.userName.casefold())

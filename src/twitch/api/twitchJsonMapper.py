@@ -515,10 +515,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             dropReason = dropReason
         )
 
-    async def parseStreamStype(
+    async def parseStreamType(
         self,
         streamType: str | None
-    ) -> TwitchStreamType | None:
+    ) -> TwitchStreamType:
         if not utils.isValidStr(streamType):
             return TwitchStreamType.UNKNOWN
 
@@ -623,7 +623,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if 'gifter_name' in dataEntry and utils.isValidStr(dataEntry.get('gifter_name')):
             gifterName = utils.getStrFromDict(dataEntry, 'gifter_name')
 
-        tier = await self.parseSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
+        tier = await self.requireSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
 
         return TwitchUserSubscription(
             isGift = isGift,

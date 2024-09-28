@@ -135,10 +135,10 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseStreamStype(
+    async def parseStreamType(
         self,
         streamType: str | None
-    ) -> TwitchStreamType | None:
+    ) -> TwitchStreamType:
         pass
 
     @abstractmethod
