@@ -78,7 +78,7 @@ class TwitchWebsocketJsonMapperInterface(ABC):
     @abstractmethod
     async def parseTwitchOutcomePredictor(
         self,
-        predictorJson: dict[str, Any] | None
+        predictorJson: dict[str, Any] | Any | None
     ) -> TwitchOutcomePredictor | None:
         pass
 

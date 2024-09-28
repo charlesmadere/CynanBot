@@ -608,7 +608,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                         topPredictors.append(topPredictor)
 
                 if len(topPredictors) >= 1:
-                    topPredictors.sort(key = lambda element: element.votes, reverse = True)
+                    topPredictors.sort(key = lambda element: element.channelPointsUsed, reverse = True)
                     frozenTopPredictors = FrozenList(topPredictors)
                     frozenTopPredictors.freeze()
 
@@ -623,7 +623,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseTwitchOutcomePredictor(
         self,
-        predictorJson: dict[str, Any] | None
+        predictorJson: dict[str, Any] | Any | None
     ) -> TwitchOutcomePredictor | None:
         if not isinstance(predictorJson, dict) or len(predictorJson) == 0:
             return None
