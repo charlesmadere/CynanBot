@@ -1,4 +1,5 @@
 import re
+import traceback
 from typing import Pattern
 
 from .ttsCheerDonation import TtsCheerDonation
@@ -109,8 +110,12 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             return None
 
         if provider is TtsProvider.DEC_TALK:
-            # DECTalk requires Windows-1252 encoding
-            message = message.encode().decode('windows-1252')
+            try:
+                # DECTalk requires Windows-1252 encoding
+                message = message.encode().decode('windows-1252')
+            except Exception as e:
+                self.__timber.log('TtsCommandBuilder', f'Encountered an error when attempting to re-encode message for DECTalk ({provider=}) ({message=}): {e}', e, traceback.format_exc())
+                return None
 
         return message
 
