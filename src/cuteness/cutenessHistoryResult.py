@@ -1,6 +1,8 @@
 import locale
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .cutenessHistoryEntry import CutenessHistoryEntry
 from ..misc import utils as utils
 
@@ -10,8 +12,8 @@ class CutenessHistoryResult:
     userId: str
     userName: str
     bestCuteness: CutenessHistoryEntry | None = None
+    entries: FrozenList[CutenessHistoryEntry] | None = None
     totalCuteness: int | None = None
-    entries: list[CutenessHistoryEntry] | None = None
 
     def requireTotalCuteness(self) -> int:
         if not utils.isValidInt(self.totalCuteness):

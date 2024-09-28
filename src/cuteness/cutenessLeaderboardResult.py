@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .cutenessDate import CutenessDate
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessResult import CutenessResult
@@ -9,4 +11,4 @@ from .cutenessResult import CutenessResult
 class CutenessLeaderboardResult:
     cutenessDate: CutenessDate
     specificLookupCutenessResult: CutenessResult | None = None
-    entries: list[CutenessLeaderboardEntry] | None = None
+    entries: FrozenList[CutenessLeaderboardEntry] | None = None

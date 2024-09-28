@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from .cutenessChampionsResult import CutenessChampionsResult
 from .cutenessDate import CutenessDate
 from .cutenessHistoryEntry import CutenessHistoryEntry
@@ -126,11 +128,12 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         if records is None or len(records) == 0:
             return CutenessChampionsResult(
+                champions = None,
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
 
-        champions: list[CutenessLeaderboardEntry] = list()
+        champions: FrozenList[CutenessLeaderboardEntry] = FrozenList()
 
         for index, record in enumerate(records):
             # Cuteness can potentially arrive from the database as a decimal.Decimal type,
@@ -144,10 +147,12 @@ class CutenessRepository(CutenessRepositoryInterface):
                 userName = record[1]
             ))
 
+        champions.freeze()
+
         return CutenessChampionsResult(
+            champions = champions,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            champions = champions
+            twitchChannelId = twitchChannelId
         )
 
     async def fetchCutenessHistory(
@@ -199,6 +204,9 @@ class CutenessRepository(CutenessRepositoryInterface):
         # sort entries into newest to oldest order
         entries.sort(key = lambda entry: entry.cutenessDate, reverse = True)
 
+        frozenEntries: FrozenList[CutenessHistoryEntry] = FrozenList(entries)
+        frozenEntries.freeze()
+
         record = await connection.fetchRow(
             '''
                 SELECT SUM(cuteness) FROM cuteness
@@ -241,8 +249,8 @@ class CutenessRepository(CutenessRepositoryInterface):
             userId = userId,
             userName = userName,
             bestCuteness = bestCuteness,
-            totalCuteness = totalCuteness,
-            entries = entries
+            entries = frozenEntries,
+            totalCuteness = totalCuteness
         )
 
     async def fetchCutenessIncrementedBy(
@@ -340,7 +348,7 @@ class CutenessRepository(CutenessRepositoryInterface):
         if records is None or len(records) == 0:
             return CutenessLeaderboardResult(cutenessDate = cutenessDate)
 
-        entries: list[CutenessLeaderboardEntry] = list()
+        entries: FrozenList[CutenessLeaderboardEntry] = FrozenList()
 
         for index, record in enumerate(records):
             entries.append(CutenessLeaderboardEntry(
@@ -350,7 +358,9 @@ class CutenessRepository(CutenessRepositoryInterface):
                 userName = record[2]
             ))
 
-        specificLookupAlreadyInResults: bool = False
+        entries.freeze()
+
+        specificLookupAlreadyInResults = False
         if utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
             for entry in entries:
                 if utils.isValidStr(specificLookupUserId) and entry.userId == specificLookupUserId:
@@ -377,8 +387,8 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         return CutenessLeaderboardResult(
             cutenessDate = cutenessDate,
-            entries = entries,
-            specificLookupCutenessResult = specificLookupCutenessResult
+            specificLookupCutenessResult = specificLookupCutenessResult,
+            entries = entries
         )
 
     async def fetchCutenessLeaderboardHistory(
@@ -409,7 +419,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 twitchChannelId = twitchChannelId
             )
 
-        leaderboards: list[CutenessLeaderboardResult] = list()
+        leaderboards: FrozenList[CutenessLeaderboardResult] = FrozenList()
 
         for record in records:
             cutenessDate = CutenessDate(record[0])
@@ -444,6 +454,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 entries = entries
             ))
 
+        leaderboards.freeze()
         await connection.close()
 
         return CutenessLeaderboardHistoryResult(

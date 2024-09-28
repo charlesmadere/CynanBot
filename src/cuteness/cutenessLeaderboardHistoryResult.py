@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .cutenessLeaderboardResult import CutenessLeaderboardResult
 
 
@@ -7,4 +9,4 @@ from .cutenessLeaderboardResult import CutenessLeaderboardResult
 class CutenessLeaderboardHistoryResult:
     twitchChannel: str
     twitchChannelId: str
-    leaderboards: list[CutenessLeaderboardResult] | None = None
+    leaderboards: FrozenList[CutenessLeaderboardResult] | None = None
