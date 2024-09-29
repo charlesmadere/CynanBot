@@ -53,11 +53,23 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         actions = await self.__cheerActionsRepository.getActions(userId)
 
         if actions is None or len(actions) == 0:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ You have no cheer actions')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ You have no cheer actions',
+                replyMessageId = await ctx.getMessageId()
+            )
         else:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ You have {len(actions)} cheer action(s)')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ You have {len(actions)} cheer action(s)',
+                replyMessageId = await ctx.getMessageId()
+            )
 
             for index, action in enumerate(actions):
-                await self.__twitchUtils.safeSend(ctx, f'Action #{(index + 1)} — {action.printOut()}')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'Action #{(index + 1)} — {action.printOut()}',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
         self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
