@@ -12,6 +12,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
 
     def __init__(
         self,
+        allWords: frozenset[str] | None,
         compiledCorrectAnswers: list[str],
         correctAnswers: list[str],
         originalCorrectAnswers: list[str],
@@ -33,16 +34,23 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             originalTriviaSource = originalTriviaSource
         )
 
-        if not isinstance(compiledCorrectAnswers, list) or len(compiledCorrectAnswers) == 0:
+        if allWords is not None and not isinstance(allWords, frozenset):
+            raise TypeError(f'allWords argument is malformed: \"{allWords}\"')
+        elif not isinstance(compiledCorrectAnswers, list) or len(compiledCorrectAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'compiledCorrectAnswers argument is malformed: \"{compiledCorrectAnswers}\"')
         elif not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
         elif not isinstance(originalCorrectAnswers, list) or len(originalCorrectAnswers) == 0:
             raise BadTriviaOriginalCorrectAnswersException(f'originalCorrectAnswers argument is malformed: \"{originalCorrectAnswers}\"')
 
+        self.__allWords: frozenset[str] | None = allWords
         self.__compiledCorrectAnswers: list[str] = compiledCorrectAnswers
         self.__correctAnswers: list[str] = correctAnswers
         self.__originalCorrectAnswers: list[str] = originalCorrectAnswers
+
+    @property
+    def allWords(self) -> frozenset[str] | None:
+        return self.__allWords
 
     @property
     def compiledCorrectAnswers(self) -> list[str]:
@@ -62,6 +70,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
 
     def toDictionary(self) -> dict[str, Any]:
         return {
+            'allWords': self.allWords,
             'category': self.category,
             'categoryId': self.categoryId,
             'compiled': self.__compiledCorrectAnswers,

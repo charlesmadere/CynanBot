@@ -201,6 +201,7 @@ class GlacialTriviaQuestionRepository(
             compiledCorrectAnswers = await self.__buildCompiledCorrectAnswersForQuestionAnswerTrivia(originalCorrectAnswers)
 
             questions.append(QuestionAnswerTriviaQuestion(
+                allWords = None,
                 compiledCorrectAnswers = compiledCorrectAnswers,
                 correctAnswers = correctAnswers,
                 originalCorrectAnswers = originalCorrectAnswers,
@@ -285,6 +286,7 @@ class GlacialTriviaQuestionRepository(
                 compiledCorrectAnswers = await self.__buildCompiledCorrectAnswersForQuestionAnswerTrivia(originalCorrectAnswers)
 
                 return QuestionAnswerTriviaQuestion(
+                    allWords = None,
                     compiledCorrectAnswers = compiledCorrectAnswers,
                     correctAnswers = correctAnswers,
                     originalCorrectAnswers = originalCorrectAnswers,
@@ -445,6 +447,7 @@ class GlacialTriviaQuestionRepository(
         compiledCorrectAnswers = await self.__buildCompiledCorrectAnswersForQuestionAnswerTrivia(originalCorrectAnswers)
 
         return QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = compiledCorrectAnswers,
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,

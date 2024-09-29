@@ -28,6 +28,7 @@ class TestTriviaQuestionPresenter:
     )
 
     questionAnswerQuestion1: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        allWords = None,
         compiledCorrectAnswers = [ 'mercury' ],
         correctAnswers = [ 'Mercury' ],
         originalCorrectAnswers = [ 'Mercury' ],

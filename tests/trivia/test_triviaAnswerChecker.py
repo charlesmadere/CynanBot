@@ -174,6 +174,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -215,6 +216,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -256,6 +258,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -423,6 +426,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -470,6 +474,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -502,6 +507,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -555,6 +561,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -590,6 +597,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -628,6 +636,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -663,6 +672,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -707,6 +717,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -760,6 +771,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -795,6 +807,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -842,6 +855,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -880,6 +894,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -938,6 +953,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -970,6 +986,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -1002,6 +1019,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -1034,6 +1052,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -1066,6 +1085,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -1098,6 +1118,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
@@ -1136,6 +1157,7 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,

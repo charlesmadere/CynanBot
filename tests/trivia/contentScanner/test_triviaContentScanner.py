@@ -109,6 +109,7 @@ class TestTriviaContentScanner:
         compiledCorrectAnswers.append('trumpet')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = compiledCorrectAnswers,
             correctAnswers = correctAnswers,
             originalCorrectAnswers = correctAnswers,
@@ -198,6 +199,7 @@ class TestTriviaContentScanner:
         compiledCorrectAnswers.append('(King) James')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = compiledCorrectAnswers,
             correctAnswers = correctAnswers,
             originalCorrectAnswers = correctAnswers,

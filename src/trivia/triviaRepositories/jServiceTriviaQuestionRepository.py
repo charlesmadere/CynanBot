@@ -133,6 +133,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
         return QuestionAnswerTriviaQuestion(
+            allWords = None,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = correctAnswers,

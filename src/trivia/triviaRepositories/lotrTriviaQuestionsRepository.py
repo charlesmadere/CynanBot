@@ -88,11 +88,21 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         for answer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
+        category = 'Lord of the Rings'
+
+        allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+            category = category,
+            question = question
+        )
+
+        self.__timber.log('LotrTriviaQuestionsRepository', f'All words found in question ({question=}) and category ({category=}) ({triviaId=}): ({allWords=})')
+
         return QuestionAnswerTriviaQuestion(
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Lord of the Rings',
+            category = category,
             categoryId = None,
             question = question,
             triviaId = triviaId,

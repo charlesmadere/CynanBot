@@ -15,6 +15,12 @@ from misc.backgroundTaskHelper import BackgroundTaskHelper
 from network.networkClientProvider import NetworkClientProvider
 from network.requestsClientProvider import RequestsClientProvider
 from pkmn.pokepediaRepository import PokepediaRepository
+from cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from twitch.api.twitchJsonMapper import TwitchJsonMapper
+from twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from location.timeZoneRepository import TimeZoneRepository
+from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from storage.backingDatabase import BackingDatabase
 from storage.backingSqliteDatabase import BackingSqliteDatabase
 from storage.jsonFileReader import JsonFileReader
@@ -95,52 +101,83 @@ from users.userIdsRepository import UserIdsRepository
 from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
-backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
-timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
+
+backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(eventLoop = eventLoop)
+
+timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
+timber: TimberInterface = Timber(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timeZoneRepository = timeZoneRepository
+)
+
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
+
 backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
+
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(
     timber = timber
 )
-twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
-    timber = timber
+
+twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
+
+twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
+    timber = timber,
+    twitchJsonMapper = twitchJsonMapper
+)
+
 twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
-    twitchCredentialsProvider = authRepository
+    timeZoneRepository = timeZoneRepository,
+    twitchCredentialsProvider = authRepository,
+    twitchJsonMapper = twitchJsonMapper,
+    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
 )
+
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
+
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchApiService = twitchApiService
 )
+
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
     backingDatabase = backingDatabase,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
+    userIdsRepository = userIdsRepository
 )
-cutenessRepository = CutenessRepository(
+
+cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
+
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
     timber = timber
 )
+
 contentScanner: ContentScannerInterface = ContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     timber = timber
 )
+
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
     timber = timber
 )
+
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
 )
@@ -367,6 +404,7 @@ async def main():
         expandedCompiledCorrectAnswers.update(await triviaAnswerCompiler.expandNumerals(answer))
 
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        allWords = None,
         compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
         correctAnswers = correctAnswers,
         originalCorrectAnswers = originalCorrectAnswers,

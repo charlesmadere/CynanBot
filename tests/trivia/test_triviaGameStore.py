@@ -58,6 +58,7 @@ class TriviaGameStoreTests:
     )
 
     superQuestion1: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        allWords = None,
         compiledCorrectAnswers = [ 'chicago bullies' ],
         correctAnswers = [ 'Chicago Bullies' ],
         originalCorrectAnswers = [ 'Chicago Bullies' ],
@@ -71,6 +72,7 @@ class TriviaGameStoreTests:
     )
 
     superQuestion2: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        allWords = None,
         compiledCorrectAnswers = [ 'stashiocat' ],
         correctAnswers = [ 'stashiocat' ],
         originalCorrectAnswers = [ 'stashiocat' ],
