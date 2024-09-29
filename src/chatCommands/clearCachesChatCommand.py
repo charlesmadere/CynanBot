@@ -35,7 +35,6 @@ from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTok
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
 from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
     TtsMonsterKeyAndUserIdRepositoryInterface
@@ -87,7 +86,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface | None,
-        ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepository | None,
+        ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
