@@ -57,12 +57,20 @@ class JishoChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         query: str | None = splits[1]
         if not utils.isValidStr(query):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         self.__lastMessageTimes.update(user.getHandle())
@@ -71,7 +79,11 @@ class JishoChatCommand(AbsChatCommand):
             strings = await self.__jishoHelper.search(query)
 
             for string in strings:
-                await self.__twitchUtils.safeSend(ctx, string)
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = string,
+                    replyMessageId = await ctx.getMessageId()
+                )
         except GenericNetworkException as e:
             self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
