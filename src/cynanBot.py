@@ -688,7 +688,7 @@ class CynanBot(
             self.__deleteTriviaAnswersCommand: AbsChatCommand = StubChatCommand()
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__getTriviaAnswersCommand: AbsChatCommand = StubChatCommand()
-            self.__getTriviaControllersChatCommand: AbsChatCommand = StubChatCommand()
+            self.__getTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
             self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
