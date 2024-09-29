@@ -1,5 +1,7 @@
 import traceback
 
+from frozenlist import FrozenList
+
 from .jishoHelperInterface import JishoHelperInterface
 from ..jisho.jishoApiServiceInterface import JishoApiServiceInterface
 from ..jisho.jishoPresenterInterface import JishoPresenterInterface
@@ -27,7 +29,7 @@ class JishoHelper(JishoHelperInterface):
         self.__jishoPresenter: JishoPresenterInterface = jishoPresenter
         self.__timber: TimberInterface = timber
 
-    async def search(self, query: str) -> list[str]:
+    async def search(self, query: str) -> FrozenList[str]:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 

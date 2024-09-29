@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 from .jishoResponse import JishoResponse
 
 
@@ -10,5 +12,5 @@ class JishoPresenterInterface(ABC):
         self,
         includeRomaji: bool,
         jishoResponse: JishoResponse
-    ) -> list[str]:
+    ) -> FrozenList[str]:
         pass

@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from .jishoJlptLevel import JishoJlptLevel
 from .jishoPresenterInterface import JishoPresenterInterface
 from .jishoResponse import JishoResponse
@@ -30,16 +32,17 @@ class JishoPresenter(JishoPresenterInterface):
         self,
         includeRomaji: bool,
         jishoResponse: JishoResponse
-    ) -> list[str]:
+    ) -> FrozenList[str]:
         if not utils.isValidBool(includeRomaji):
             raise TypeError(f'includeRomaji argument is malformed: \"{includeRomaji}\"')
         elif not isinstance(jishoResponse, JishoResponse):
             raise TypeError(f'jishoResponse argument is malformed: \"{jishoResponse}\"')
 
-        strings: list[str] = list()
+        strings: FrozenList[str] = FrozenList()
 
         if len(jishoResponse.data) == 0:
             strings.append(f'ⓘ No Jisho results')
+            strings.freeze()
             return strings
 
         index = 0
@@ -67,4 +70,5 @@ class JishoPresenter(JishoPresenterInterface):
             strings.append(definition)
             index = index + 1
 
+        strings.freeze()
         return strings
