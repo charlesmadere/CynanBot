@@ -65,7 +65,9 @@ class TwitchIoMessage(TwitchMessage):
         if tags is not None:
             return tags
 
-        rawTagsDictionary = await self.__requireRawTagsDictionary()
+        rawTagsDictionary: dict[Any, Any] | Any | None = self.__message.tags
+        if not isinstance(rawTagsDictionary, dict) or len(rawTagsDictionary) == 0:
+            raise TwitchIoHasMalformedTagsException(f'Encountered malformed TwitchIO tags ({rawTagsDictionary=}) ({self=}) ({self.__message})')
 
         messageId: str | Any | None = rawTagsDictionary.get('id', None)
         if not utils.isValidStr(messageId):
@@ -107,14 +109,6 @@ class TwitchIoMessage(TwitchMessage):
     async def isReply(self) -> bool:
         tags = await self.getTags()
         return utils.isValidStr(tags.replyParentMsgId)
-
-    async def __requireRawTagsDictionary(self) -> dict[Any, Any]:
-        tags: dict[Any, Any] | Any | None = self.__message.tags
-
-        if not isinstance(tags, dict) or len(tags) == 0:
-            raise TwitchIoHasMalformedTagsException(f'Encountered malformed `tags` value ({tags=}) ({self=})')
-
-        return tags
 
     @property
     def twitchConfigurationType(self) -> TwitchConfigurationType:
