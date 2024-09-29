@@ -50,6 +50,10 @@ class TwitchMessage(ABC):
         pass
 
     @abstractmethod
+    async def isMessageFromExternalSharedChat(self) -> bool:
+        pass
+
+    @abstractmethod
     async def isReply(self) -> bool:
         pass
 

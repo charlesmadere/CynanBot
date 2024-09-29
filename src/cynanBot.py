@@ -852,6 +852,9 @@ class CynanBot(
 
         twitchMessage = self.__twitchConfiguration.getMessage(message)
 
+        if await twitchMessage.isMessageFromExternalSharedChat():
+            return
+
         if self.__chatActionsManager is not None:
             await self.__chatActionsManager.handleMessage(twitchMessage)
 

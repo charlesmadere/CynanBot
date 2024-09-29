@@ -81,6 +81,8 @@ class TwitchIoMessage(TwitchMessage):
         replyParentMsgId: str | Any | None = rawTagsDictionary.get('reply-parent-msg-id', None)
         replyParentUserId: str | Any | None = rawTagsDictionary.get('reply-parent-user-id', None)
         replyParentUserLogin: str | Any | None = rawTagsDictionary.get('reply-parent-user-login', None)
+        sourceMessageId: str | Any | None = rawTagsDictionary.get('source-id', None)
+        sourceTwitchChannelId: str | Any | None = rawTagsDictionary.get('source-room-id', None)
 
         tags = TwitchMessageTags(
             rawTags = frozendict(rawTagsDictionary),
@@ -89,6 +91,8 @@ class TwitchIoMessage(TwitchMessage):
             replyParentMsgId = replyParentMsgId,
             replyParentUserId = replyParentUserId,
             replyParentUserLogin = replyParentUserLogin,
+            sourceMessageId = sourceMessageId,
+            sourceTwitchChannelId = sourceTwitchChannelId,
             twitchChannelId = roomId
         )
 
@@ -105,6 +109,15 @@ class TwitchIoMessage(TwitchMessage):
     @property
     def isEcho(self) -> bool:
         return self.__message.echo
+
+    async def isMessageFromExternalSharedChat(self) -> bool:
+        tags = await self.getTags()
+
+        if not utils.isValidStr(tags.sourceTwitchChannelId):
+            return False
+
+        twitchChannelId = await self.getTwitchChannelId()
+        return twitchChannelId != tags.sourceTwitchChannelId
 
     async def isReply(self) -> bool:
         tags = await self.getTags()

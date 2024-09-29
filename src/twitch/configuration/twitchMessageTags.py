@@ -12,4 +12,6 @@ class TwitchMessageTags:
     replyParentMsgId: str | None
     replyParentUserId: str | None
     replyParentUserLogin: str | None
+    sourceMessageId: str | None
+    sourceTwitchChannelId: str | None
     twitchChannelId: str

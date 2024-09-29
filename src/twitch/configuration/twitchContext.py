@@ -49,6 +49,10 @@ class TwitchContext(TwitchMessageable):
         pass
 
     @abstractmethod
+    async def isMessageFromExternalSharedChat(self) -> bool:
+        pass
+
+    @abstractmethod
     async def isMessageReply(self) -> bool:
         pass
 

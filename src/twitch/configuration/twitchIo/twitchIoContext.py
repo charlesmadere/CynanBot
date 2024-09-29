@@ -67,6 +67,9 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     def isAuthorVip(self) -> bool:
         return self.__author.isVip()
 
+    async def isMessageFromExternalSharedChat(self) -> bool:
+        return await self.__message.isMessageFromExternalSharedChat()
+
     async def isMessageReply(self) -> bool:
         return await self.__message.isReply()
 
