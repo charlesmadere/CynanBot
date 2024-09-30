@@ -8,14 +8,12 @@ import aiofiles.ospath
 import psutil
 
 from .decTalkFileManagerInterface import DecTalkFileManagerInterface
-from .decTalkVoiceChooserInterface import \
-    DecTalkVoiceChooserInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import \
-    TtsTempFileHelperInterface
+from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

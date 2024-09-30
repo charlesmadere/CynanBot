@@ -234,8 +234,8 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        englishDefinitionsArray: list[str | None] | None = jsonContents.get('english_definitions')
-        englishDefinitions: list[str] = list()
+        englishDefinitionsArray: list[str | None] | Any | None = jsonContents.get('english_definitions')
+        englishDefinitions: FrozenList[str] = FrozenList()
 
         if isinstance(englishDefinitionsArray, list) and len(englishDefinitionsArray) >= 1:
             for index, englishDefinition in enumerate(englishDefinitionsArray):
@@ -244,15 +244,17 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"english_definitions\" data: ({jsonContents=})')
 
+        englishDefinitions.freeze()
+
         if len(englishDefinitions) == 0:
             self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"english_definitions\" field in JSON data: ({jsonContents=})')
             return None
 
-        partsOfSpeechArray: list[str | None] | None = jsonContents.get('parts_of_speech')
-        partsOfSpeech: list[str] | None = None
+        partsOfSpeechArray: list[str | None] | Any | None = jsonContents.get('parts_of_speech')
+        partsOfSpeech: FrozenList[str] | None = None
 
         if isinstance(partsOfSpeechArray, list) and len(partsOfSpeechArray) >= 1:
-            partsOfSpeech = list()
+            partsOfSpeech = FrozenList()
 
             for index, partOfSpeech in enumerate(partsOfSpeechArray):
                 if utils.isValidStr(partOfSpeech):
@@ -262,12 +264,14 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
             if len(partsOfSpeech) == 0:
                 partsOfSpeech = None
+            else:
+                partsOfSpeech.freeze()
 
         tagsArray: list[str | None] | None = jsonContents.get('tags')
-        tags: list[str] | None = None
+        tags: FrozenList[str] | None = None
 
         if isinstance(tagsArray, list) and len(tagsArray) >= 1:
-            tags = list()
+            tags = FrozenList()
 
             for index, tag in enumerate(tagsArray):
                 if utils.isValidStr(tag):
@@ -277,6 +281,8 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
             if len(tags) == 0:
                 tags = None
+            else:
+                tags.freeze()
 
         return JishoSense(
             englishDefinitions = englishDefinitions,

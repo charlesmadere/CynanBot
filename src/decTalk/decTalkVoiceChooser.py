@@ -5,7 +5,7 @@ from typing import Pattern
 from .decTalkVoice import DecTalkVoice
 from .decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from .decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
-from ...misc import utils as utils
+from ..misc import utils as utils
 
 
 class DecTalkVoiceChooser(DecTalkVoiceChooserInterface):
@@ -14,23 +14,23 @@ class DecTalkVoiceChooser(DecTalkVoiceChooserInterface):
         self,
         decTalkVoiceMapper: DecTalkVoiceMapperInterface,
         probabilityOfDefaultVoice: float = 0.8,
-        voices: set[DecTalkVoice] = {
+        voices: frozenset[DecTalkVoice] = frozenset({
             DecTalkVoice.DENNIS,
             DecTalkVoice.FRANK,
             DecTalkVoice.HARRY
-        }
+        })
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
         if not utils.isValidNum(probabilityOfDefaultVoice):
             raise TypeError(f'probabilityOfDefaultVoice argument is malformed: \"{probabilityOfDefaultVoice}\"')
-        if not isinstance(voices, set):
+        if not isinstance(voices, frozenset):
             raise TypeError(f'voices argument is malformed: \"{voices}\"')
 
         self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
         self.__probabilityOfDefaultVoice: float = probabilityOfDefaultVoice
-        self.__voices: set[DecTalkVoice] = voices
-        self.__voiceRegEx: Pattern = re.compile(r'\[:n\w\]', re.IGNORECASE)
+        self.__voices: frozenset[DecTalkVoice] = voices
+        self.__voiceRegEx: Pattern = re.compile(r'\[:n\w]', re.IGNORECASE)
 
     async def choose(
         self,

@@ -65,6 +65,10 @@ from src.crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from src.crowdControl.crowdControlSettingsRepository import CrowdControlSettingsRepository
 from src.crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from src.cynanBot import CynanBot
+from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
+from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
+from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
+from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -172,10 +176,6 @@ from src.timber.timberInterface import TimberInterface
 from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
 from src.tts.decTalk.decTalkManager import DecTalkManager
-from src.tts.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
-from src.tts.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
-from src.tts.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
-from src.tts.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
 from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.tts.google.googleTtsFileManager import GoogleTtsFileManager

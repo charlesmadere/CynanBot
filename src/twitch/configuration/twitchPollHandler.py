@@ -98,9 +98,9 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         votesString = locale.format_string("%d", winningPollChoices[0].votes, grouping = True)
-        votesPlurality: str
 
-        if winningPollChoices[0].votes == 0:
+        votesPlurality: str
+        if winningPollChoices[0].votes == 1:
             votesPlurality = 'vote'
         else:
             votesPlurality = 'votes'
@@ -108,11 +108,18 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         if len(winningPollChoices) == 1:
             await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The winner of the poll is \"{winningPollChoices[0].title}\", with {votesString} {votesPlurality}!')
             return
+        elif len(winningPollChoices) == 2:
+            await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The poll winners are \"{winningPollChoices[0].title}\" and \"{winningPollChoices[1].title}\", with {votesString} {votesPlurality}!')
+            return
 
-        winningTitleStrings: list[str] = list()
-        for winningPollChoice in winningPollChoices:
-            winningTitleStrings.append(f'\"{winningPollChoice.title}\"')
-        winningTitlesString = ', '.join(winningTitleStrings)
+        winningTitlesString = ''
+        for index, winningPollChoice in enumerate(winningPollChoices):
+            if index == 0:
+                winningTitlesString = f'\"{winningPollChoice.title}\"'
+            elif index + 1 == len(winningPollChoices):
+                winningTitlesString = f'{winningTitlesString}, and \"{winningPollChoice.title}\"'
+            else:
+                winningTitlesString = f'{winningTitlesString}, \"{winningPollChoice.title}\"'
 
         await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The poll winners are {winningTitlesString}, with {votesString} {votesPlurality}!')
 

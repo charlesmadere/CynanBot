@@ -64,7 +64,7 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        translationsJson: list[dict[str, Any]] | None = jsonContents.get('translations')
+        translationsJson: list[dict[str, Any]] | Any | None = jsonContents.get('translations')
         if not isinstance(translationsJson, list) or len(translationsJson) == 0:
             return None
 

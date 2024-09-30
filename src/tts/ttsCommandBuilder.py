@@ -100,7 +100,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
 
-        # remove extranneous whitespace
+        # remove extraneous whitespace
         message = self.__whiteSpaceRegEx.sub(' ', message)
         message = message.strip()
 

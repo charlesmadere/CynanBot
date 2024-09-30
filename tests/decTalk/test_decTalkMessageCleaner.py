@@ -2,11 +2,17 @@ import pytest
 
 from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
 from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
 
 
 class TestDecTalkMessageCleaner:
 
-    cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner()
+    timber: TimberInterface = TimberStub()
+
+    cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+        timber = timber
+    )
 
     @pytest.mark.asyncio
     async def test_clean_withEmptyString(self):
