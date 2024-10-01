@@ -5,16 +5,24 @@ from typing import Any, Collection, Pattern
 from frozenlist import FrozenList
 
 from .decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
+from ..emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
 
 class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
-    def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
+    def __init__(
+        self,
+        emojiHelper: EmojiHelperInterface,
+        timber: TimberInterface
+    ):
+        if not isinstance(emojiHelper, EmojiHelperInterface):
+            raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__emojiHelper: EmojiHelperInterface = emojiHelper
         self.__timber: TimberInterface = timber
 
         self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandRegExes()
@@ -116,7 +124,8 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = self.__extraWhiteSpaceRegEx.sub(' ', message.strip()).strip()
+        message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
+        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         try:
             # DECTalk requires Windows-1252 encoding
