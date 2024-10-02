@@ -157,12 +157,12 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPlayerManager
 from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
+from src.soundPlayerManager.stub.stubImmediateSoundPlayerManager import StubImmediateSoundPlayerManager
 from src.soundPlayerManager.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
 from src.soundPlayerManager.stub.stubSoundPlayerRandomizerHelper import StubSoundPlayerRandomizerHelper
 from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
@@ -1348,10 +1348,7 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = StubSoundPla
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
 
-immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    timber = timber
-)
+immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = StubImmediateSoundPlayerManager()
 
 
 ##################################################

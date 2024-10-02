@@ -30,6 +30,10 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'maxHandleAttempts', 3)
 
+    async def getMediaPlayerVolume(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', 100)
+
     async def getSecondsToLive(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'secondsToLive', 300)

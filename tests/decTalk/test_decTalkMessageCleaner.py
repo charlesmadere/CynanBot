@@ -6,14 +6,22 @@ from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
 from src.emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
+from src.google.googleJsonMapper import GoogleJsonMapper
+from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from src.location.timeZoneRepository import TimeZoneRepository
+from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
+from src.tts.ttsSettingsRepository import TtsSettingsRepository
+from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
 class TestDecTalkMessageCleaner:
 
     timber: TimberInterface = TimberStub()
+
+    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
     emojiRepository: EmojiRepositoryInterface = EmojiRepository(
         emojiJsonReader = JsonStaticReader(
@@ -57,9 +65,20 @@ class TestDecTalkMessageCleaner:
         emojiRepository = emojiRepository
     )
 
+    googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+        timber = timber,
+        timeZoneRepository = timeZoneRepository
+    )
+
+    ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+        googleJsonMapper = googleJsonMapper,
+        settingsJsonReader = JsonStaticReader(dict())
+    )
+
     cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
         emojiHelper = emojiHelper,
-        timber = timber
+        timber = timber,
+        ttsSettingsRepository = ttsSettingsRepository
     )
 
     @pytest.mark.asyncio

@@ -18,6 +18,10 @@ class CrowdControlSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getMediaPlayerVolume(self) -> int:
+        pass
+
+    @abstractmethod
     async def getSecondsToLive(self) -> int:
         pass
 

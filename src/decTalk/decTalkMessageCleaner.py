@@ -8,6 +8,7 @@ from .decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ..emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
 class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
@@ -15,15 +16,19 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
     def __init__(
         self,
         emojiHelper: EmojiHelperInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(emojiHelper, EmojiHelperInterface):
             raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
+            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__emojiHelper: EmojiHelperInterface = emojiHelper
         self.__timber: TimberInterface = timber
+        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandRegExes()
         self.__inputFlagRegExes: Collection[Pattern] = self.__buildInputFlagRegExes()
@@ -127,6 +132,9 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
+        if len(message) > await self.__ttsSettingsRepository.getMaximumMessageSize():
+            message = message[0:await self.__ttsSettingsRepository.getMaximumMessageSize()]
+
         try:
             # DECTalk requires Windows-1252 encoding
             message = message.encode().decode('windows-1252')
@@ -150,7 +158,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
                     continue
 
                 repeat = True
-                message = inlineCommandRegEx.sub(' ', message)
+                message = inlineCommandRegEx.sub(' ', message).strip()
 
                 if not utils.isValidStr(message):
                     return None
@@ -174,7 +182,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
                     continue
 
                 repeat = True
-                message = inputFlagRegEx.sub(' ', message)
+                message = inputFlagRegEx.sub(' ', message).strip()
 
                 if not utils.isValidStr(message):
                     return None

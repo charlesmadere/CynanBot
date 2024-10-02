@@ -43,7 +43,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
-        websocketCreationDelayTimeSeconds: float = 0.25,
+        websocketCreationDelayTimeSeconds: float = 0.5,
         websocketSleepTimeSeconds: float = 3,
         subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,

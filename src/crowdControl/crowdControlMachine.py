@@ -97,7 +97,10 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         if handleResult is CrowdControlActionHandleResult.OK:
             if await self.__crowdControlSettingsRepository.areSoundsEnabled():
-                await self.__immediateSoundPlayerManager.playSoundAlert(SoundAlert.CLICK_NAVIGATION)
+                await self.__immediateSoundPlayerManager.playSoundAlert(
+                    alert = SoundAlert.CLICK_NAVIGATION,
+                    volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
+                )
 
             return CrowdControlActionHandleResult.OK
 

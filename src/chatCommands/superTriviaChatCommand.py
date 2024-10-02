@@ -192,7 +192,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             user = user
         )
 
-        message = f'RIPBOZO @{ctx.getAuthorName()}'
+        message = f'Wow @{ctx.getAuthorName()} is scamming with this command again 😡'
 
         while len(message) < self.__twitchUtils.maxMessageSize - len(' RIPBOZO'):
             message = f'{message}' + ' RIPBOZO'

@@ -59,7 +59,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
     async def getMaximumMessageSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maxMessageSize', fallback = 200)
+        return utils.getIntFromDict(jsonContents, 'maxMessageSize', fallback = 250)
 
     async def getTtsDelayBetweenSeconds(self) -> float:
         jsonContents = await self.__readJson()
