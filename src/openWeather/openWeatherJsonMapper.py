@@ -272,11 +272,11 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         humidity = utils.getIntFromDict(jsonContents, 'humidity')
         pressure = utils.getIntFromDict(jsonContents, 'pressure')
 
-        descriptionsArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
-        descriptions: list[OpenWeatherMomentDescription] | None = None
+        descriptionsArray: list[dict[str, Any] | None] | Any | None = jsonContents.get('weather')
+        descriptions: FrozenList[OpenWeatherMomentDescription] | None = None
 
         if isinstance(descriptionsArray, list) and len(descriptionsArray) >= 1:
-            descriptions = list()
+            descriptions = FrozenList()
 
             for index, descriptionEntryJson in enumerate(descriptionsArray):
                 description = await self.parseMomentDescription(descriptionEntryJson)
@@ -285,6 +285,11 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
                     self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"weather\" data: ({jsonContents=})')
                 else:
                     descriptions.append(description)
+
+            if len(descriptions) >= 1:
+                descriptions.freeze()
+            else:
+                descriptions = None
 
         return OpenWeatherMoment(
             dateTime = dateTime,
@@ -295,9 +300,9 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             temperature = temperature,
             uvIndex = uvIndex,
             windSpeed = windSpeed,
+            descriptions = descriptions,
             humidity = humidity,
-            pressure = pressure,
-            descriptions = descriptions
+            pressure = pressure
         )
 
     async def parseMomentDescription(
@@ -354,8 +359,8 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         latitude = utils.getFloatFromDict(jsonContents, 'lat')
         longitude = utils.getFloatFromDict(jsonContents, 'lon')
 
-        alertsArray: list[dict[str, Any] | None] | None = jsonContents.get('alerts')
-        alerts: list[OpenWeatherAlert] = list()
+        alertsArray: list[dict[str, Any] | None] | Any | None = jsonContents.get('alerts')
+        alerts: FrozenList[OpenWeatherAlert] = FrozenList()
 
         if isinstance(alertsArray, list) and len(alertsArray) >= 1:
             for index, alertEntryJson in enumerate(alertsArray):
@@ -365,6 +370,8 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
                     self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"alerts\" data: ({jsonContents=})')
                 else:
                     alerts.append(alert)
+
+        alerts.freeze()
 
         timeZoneStr = utils.getStrFromDict(jsonContents, 'timezone')
         timeZone = self.__timeZoneRepository.getTimeZone(timeZoneStr)
@@ -394,11 +401,14 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse any \"daily\" data: ({jsonContents=})')
             return None
 
+        frozenDays: FrozenList[OpenWeatherDay] = FrozenList(days)
+        frozenDays.freeze()
+
         return OpenWeatherReport(
             latitude = latitude,
             longitude = longitude,
             alerts = alerts,
-            days = days,
+            days = frozenDays,
             current = current,
             timeZone = timeZone
         )

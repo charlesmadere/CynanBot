@@ -21,6 +21,7 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
         string = string.lower()
 
         match string:
+            case 'esc': return BizhawkKey.ESC
             case 'f1': return BizhawkKey.F1
             case 'f2': return BizhawkKey.F2
             case 'f3': return BizhawkKey.F3

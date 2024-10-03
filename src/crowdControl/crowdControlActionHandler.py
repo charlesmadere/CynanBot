@@ -20,3 +20,7 @@ class CrowdControlActionHandler(ABC):
         action: GameShuffleCrowdControlAction
     ) -> CrowdControlActionHandleResult:
         pass
+
+    @abstractmethod
+    def start(self):
+        pass

@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 class BizhawkKey(Enum):
 
+    ESC = auto()
     F1 = auto()
     F2 = auto()
     F3 = auto()
@@ -25,6 +26,7 @@ class BizhawkKey(Enum):
         # https://github.com/AndersMalmgren/FreePIE/blob/master/FreePIE.Core.Plugins/KeyboardPlugin.cs
 
         match self:
+            case BizhawkKey.ESC: return 53
             case BizhawkKey.F1: return 54
             case BizhawkKey.F2: return 55
             case BizhawkKey.F3: return 56

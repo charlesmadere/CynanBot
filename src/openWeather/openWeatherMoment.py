@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from frozenlist import FrozenList
+
 from .openWeatherMomentDescription import OpenWeatherMomentDescription
 
 
@@ -14,6 +16,6 @@ class OpenWeatherMoment:
     temperature: float
     uvIndex: float
     windSpeed: float
+    descriptions: FrozenList[OpenWeatherMomentDescription] | None
     humidity: int
     pressure: int
-    descriptions: list[OpenWeatherMomentDescription] | None

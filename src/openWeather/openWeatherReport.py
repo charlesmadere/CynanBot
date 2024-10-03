@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import tzinfo
 
+from frozenlist import FrozenList
+
 from .openWeatherAlert import OpenWeatherAlert
 from .openWeatherDay import OpenWeatherDay
 from .openWeatherMoment import OpenWeatherMoment
@@ -10,7 +12,7 @@ from .openWeatherMoment import OpenWeatherMoment
 class OpenWeatherReport:
     latitude: float
     longitude: float
-    alerts: list[OpenWeatherAlert]
-    days: list[OpenWeatherDay]
+    alerts: FrozenList[OpenWeatherAlert]
+    days: FrozenList[OpenWeatherDay]
     current: OpenWeatherMoment
     timeZone: tzinfo

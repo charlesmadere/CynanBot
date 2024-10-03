@@ -1006,6 +1006,7 @@ crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdC
 )
 
 crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository

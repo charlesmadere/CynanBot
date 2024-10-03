@@ -260,6 +260,9 @@ from src.trivia.triviaRepositories.glacialTriviaQuestionRepository import Glacia
 from src.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
     GlacialTriviaQuestionRepositoryInterface
 from src.trivia.triviaRepositories.jServiceTriviaQuestionRepository import JServiceTriviaQuestionRepository
+from src.trivia.triviaRepositories.lordOfTheRings.lotrDatabaseQuestionStorage import LotrDatabaseQuestionStorage
+from src.trivia.triviaRepositories.lordOfTheRings.lotrDatabaseQuestionStorageInterface import \
+    LotrDatabaseQuestionStorageInterface
 from src.trivia.triviaRepositories.lotrTriviaQuestionsRepository import LotrTriviaQuestionRepository
 from src.trivia.triviaRepositories.millionaire.millionaireTriviaQuestionStorage import MillionaireTriviaQuestionStorage
 from src.trivia.triviaRepositories.millionaire.millionaireTriviaQuestionStorageInterface import \
@@ -1102,6 +1105,19 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     userIdsRepository = userIdsRepository
 )
 
+lotrDatabaseQuestionStorage: LotrDatabaseQuestionStorageInterface = LotrDatabaseQuestionStorage(
+    timber = timber
+)
+
+lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
+    additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+    lotrDatabaseQuestionStorage = lotrDatabaseQuestionStorage,
+    timber = timber,
+    triviaAnswerCompiler = triviaAnswerCompiler,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 millionaireTriviaQuestionStorage: MillionaireTriviaQuestionStorageInterface = MillionaireTriviaQuestionStorage(
     timber = timber
 )
@@ -1153,13 +1169,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
-        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        timber = timber,
-        triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    lotrTriviaQuestionRepository = lotrTriviaQuestionRepository,
     millionaireTriviaQuestionRepository = millionaireTriviaQuestionRepository,
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     openTriviaQaTriviaQuestionRepository = openTriviaQaTriviaQuestionRepository,

@@ -21,6 +21,11 @@ class TestBizhawkKeyMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_fromString_withEsc(self):
+        result = await self.mapper.fromString('esc')
+        assert result is BizhawkKey.ESC
+
+    @pytest.mark.asyncio
     async def test_fromString_withF1(self):
         result = await self.mapper.fromString('f1')
         assert result is BizhawkKey.F1

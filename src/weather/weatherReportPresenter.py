@@ -39,18 +39,14 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
 
         airPollutionIndex = weather.airPollution.airPollutionIndex
 
-        if airPollutionIndex is OpenWeatherAirPollutionIndex.GOOD:
-            return ''
-        elif airPollutionIndex is OpenWeatherAirPollutionIndex.FAIR:
-            return ''
-        elif airPollutionIndex is OpenWeatherAirPollutionIndex.MODERATE:
-            return 'air quality is moderate, '
-        elif airPollutionIndex is OpenWeatherAirPollutionIndex.POOR:
-            return 'air quality is poor, '
-        elif airPollutionIndex is OpenWeatherAirPollutionIndex.VERY_POOR:
-            return 'air quality is very poor, '
-        else:
-            raise RuntimeError(f'OpenWeatherAirPollutionIndex is unknown value: \"{airPollutionIndex}\"')
+        match airPollutionIndex:
+            case OpenWeatherAirPollutionIndex.GOOD: return ''
+            case OpenWeatherAirPollutionIndex.FAIR: return ''
+            case OpenWeatherAirPollutionIndex.MODERATE: return 'air quality is moderate, '
+            case OpenWeatherAirPollutionIndex.POOR: return 'air quality is poor, '
+            case OpenWeatherAirPollutionIndex.VERY_POOR: return 'air quality is very poor, '
+            case _:
+                raise RuntimeError(f'OpenWeatherAirPollutionIndex is unknown value: \"{airPollutionIndex}\"')
 
     async def __getAlertsString(self, weather: WeatherReport) -> str:
         alerts = weather.report.alerts

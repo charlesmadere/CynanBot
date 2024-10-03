@@ -944,7 +944,10 @@ class CynanBot(
         if self.__beanChanceCheerActionHelper is not None:
             self.__beanChanceCheerActionHelper.setTwitchChannelProvider(self)
 
-        if self.__crowdControlActionHandler is not None and self.__crowdControlCheerActionHelper is not None:
+        if self.__crowdControlActionHandler is not None:
+            self.__crowdControlActionHandler.start()
+
+        if self.__crowdControlCheerActionHelper is not None:
             self.__crowdControlCheerActionHelper.setTwitchChannelProvider(self)
 
         if self.__crowdControlMachine is not None:
