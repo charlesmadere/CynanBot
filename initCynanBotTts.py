@@ -65,6 +65,8 @@ from src.crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from src.crowdControl.crowdControlSettingsRepository import CrowdControlSettingsRepository
 from src.crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from src.cynanBot import CynanBot
+from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
+from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
 from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
@@ -757,6 +759,12 @@ decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
     timber = timber
 )
 
+decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+    emojiHelper = emojiHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
 decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
@@ -765,6 +773,7 @@ decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
 
 decTalkManager: DecTalkManager | None = DecTalkManager(
     decTalkFileManager = decTalkFileManager,
+    decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkVoiceChooser = decTalkVoiceChooser,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,

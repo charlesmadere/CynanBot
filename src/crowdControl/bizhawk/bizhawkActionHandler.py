@@ -3,7 +3,7 @@ import struct
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from multiprocessing.connection import Client
+from multiprocessing.connection import Client, Connection
 from typing import Any
 
 import psutil
@@ -26,7 +26,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
     @dataclass(frozen = True)
     class BizhawkConnection:
-        connection: Client
+        connection: Connection
         processId: int
         name: str
 
@@ -97,7 +97,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
         bizhawkConnection.connection.close()
         self.__bizhawkConnection = None
-        self.__lastBizhawkInput = None
+        self.__lastBizhawkInputDateTime = None
         self.__timber.log('BizhawkActionHandler', f'Closed Bizhawk connection as it hasn\'t recently been used ({bizhawkConnection=}) ({lastBizhawkInputDateTime=})')
 
     async def __findBizhawkProcessInfo(self) -> BizhawkProcessInfo | None:
@@ -218,6 +218,8 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
         self.__bizhawkConnection = bizhawkConnection
         self.__lastBizhawkInputDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        self.__timber.log('BizhawkActionHandler', f'Acquired Bizhawk connection ({bizhawkProcessInfo=})')
+
         return bizhawkConnection
 
     def start(self):

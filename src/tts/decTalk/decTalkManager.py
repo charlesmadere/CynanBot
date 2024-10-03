@@ -13,6 +13,7 @@ from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -23,6 +24,7 @@ class DecTalkManager(TtsManagerInterface):
     def __init__(
         self,
         decTalkFileManager: DecTalkFileManagerInterface,
+        decTalkMessageCleaner: DecTalkMessageCleanerInterface,
         decTalkVoiceChooser: DecTalkVoiceChooserInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -31,6 +33,8 @@ class DecTalkManager(TtsManagerInterface):
     ):
         if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
+        elif not isinstance(decTalkMessageCleaner, DecTalkMessageCleanerInterface):
+            raise TypeError(f'decTalkMessageCleaner argument is malformed: \"{decTalkMessageCleaner}\"')
         elif not isinstance(decTalkVoiceChooser, DecTalkVoiceChooserInterface):
             raise TypeError(f'decTalkVoiceChooser argument is malformed: \"{decTalkVoiceChooser}\"')
         elif not isinstance(timber, TimberInterface):
@@ -43,6 +47,7 @@ class DecTalkManager(TtsManagerInterface):
             raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
+        self.__decTalkMessageCleaner: DecTalkMessageCleanerInterface = decTalkMessageCleaner
         self.__decTalkVoiceChooser: DecTalkVoiceChooserInterface = decTalkVoiceChooser
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
