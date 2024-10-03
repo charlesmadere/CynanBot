@@ -133,7 +133,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         if len(message) > await self.__ttsSettingsRepository.getMaximumMessageSize():
-            message = message[0:await self.__ttsSettingsRepository.getMaximumMessageSize()]
+            message = message[0:await self.__ttsSettingsRepository.getMaximumMessageSize()].strip()
 
         try:
             # DECTalk requires Windows-1252 encoding
