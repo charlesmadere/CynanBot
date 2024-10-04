@@ -13,15 +13,19 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
     def __init__(
         self,
         bizhawkKeyMapper: BizhawkKeyMapperInterface,
-        settingsJsonReader: JsonReaderInterface
+        settingsJsonReader: JsonReaderInterface,
+        defaultGameShuffleKeyBind: BizhawkKey = BizhawkKey.F15
     ):
         if not isinstance(bizhawkKeyMapper, BizhawkKeyMapperInterface):
             raise TypeError(f'bizhawkKeyMapper argument is malformed: \"{bizhawkKeyMapper}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(defaultGameShuffleKeyBind, BizhawkKey):
+            raise TypeError(f'defaultGameShuffleKeyBind argument is malformed: \"{defaultGameShuffleKeyBind}\"')
 
         self.__bizhawkKeyMapper: BizhawkKeyMapperInterface = bizhawkKeyMapper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__defaultGameShuffleKeyBind: BizhawkKey = defaultGameShuffleKeyBind
 
         self.__cache: dict[str, Any] | None = None
 
@@ -148,7 +152,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
         keyBindString = utils.getStrFromDict(
             d = jsonContents,
             key = 'keyBindGameShuffle',
-            fallback = ''
+            fallback = await self.__bizhawkKeyMapper.toString(self.__defaultGameShuffleKeyBind)
         )
 
         if not utils.isValidStr(keyBindString):

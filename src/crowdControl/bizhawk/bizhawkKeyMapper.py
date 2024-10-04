@@ -40,3 +40,26 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             case _:
                 self.__timber.log('BizhawkKeyMapper', f'Encountered unknown BizhawkKey value: \"{string}\"')
                 return None
+
+    async def toString(self, bizhawkKey: BizhawkKey) -> str:
+        if not isinstance(bizhawkKey, BizhawkKey):
+            raise TypeError(f'bizhawkKey argument is malformed: \"{bizhawkKey}\"')
+
+        match bizhawkKey:
+            case BizhawkKey.ESC: return 'esc'
+            case BizhawkKey.F1: return 'f1'
+            case BizhawkKey.F2: return 'f2'
+            case BizhawkKey.F3: return 'f3'
+            case BizhawkKey.F4: return 'f4'
+            case BizhawkKey.F5: return 'f5'
+            case BizhawkKey.F6: return 'f6'
+            case BizhawkKey.F7: return 'f7'
+            case BizhawkKey.F8: return 'f8'
+            case BizhawkKey.F9: return 'f9'
+            case BizhawkKey.F10: return 'f10'
+            case BizhawkKey.F11: return 'f11'
+            case BizhawkKey.F12: return 'f12'
+            case BizhawkKey.F13: return 'f13'
+            case BizhawkKey.F14: return 'f14'
+            case BizhawkKey.F15: return 'f15'
+            case _: raise ValueError(f'Encountered unknown BizhawkKey value: \"{bizhawkKey}\"')

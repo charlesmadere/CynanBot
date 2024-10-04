@@ -9,3 +9,7 @@ class BizhawkKeyMapperInterface(ABC):
     @abstractmethod
     async def fromString(self, string: str | Any | None) -> BizhawkKey | None:
         pass
+
+    @abstractmethod
+    async def toString(self, bizhawkKey: BizhawkKey) -> str:
+        pass
