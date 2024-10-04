@@ -169,12 +169,13 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         )
 
         if keyBind is None:
+            self.__timber.log('BizhawkActionHandler', f'No key bind is available for the given button press action ({action=}) ({keyBind=})')
             return CrowdControlActionHandleResult.ABANDON
-        else:
-            return await self.__handleBizhawkKeyPress(
-                keyBind = keyBind,
-                action = action
-            )
+
+        return await self.__handleBizhawkKeyPress(
+            keyBind = keyBind,
+            action = action
+        )
 
     async def handleGameShuffleAction(
         self,
@@ -186,12 +187,13 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         keyBind = await self.__bizhawkSettingsRepository.getGameShuffleKeyBind()
 
         if keyBind is None:
+            self.__timber.log('BizhawkActionHandler', f'No key bind is available for the game shuffle action ({action=}) ({keyBind=})')
             return CrowdControlActionHandleResult.ABANDON
-        else:
-            return await self.__handleBizhawkKeyPress(
-                keyBind = keyBind,
-                action = action
-            )
+
+        return await self.__handleBizhawkKeyPress(
+            keyBind = keyBind,
+            action = action
+        )
 
     async def __requireBizhawkConnection(self) -> BizhawkConnection:
         bizhawkConnection = self.__bizhawkConnection
