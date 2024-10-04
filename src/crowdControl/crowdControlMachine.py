@@ -11,6 +11,7 @@ from .crowdControlActionHandleResult import CrowdControlActionHandleResult
 from .crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
+from .exceptions import ActionHandlerProcessNotFoundException
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -119,6 +120,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         try:
             return await actionHandler.handleButtonPressAction(action)
+        except ActionHandlerProcessNotFoundException as e:
+            self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling button press action ({action=}): {e}', e, traceback.format_exc())
+            return CrowdControlActionHandleResult.ABANDON
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling button press action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
@@ -135,6 +139,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         try:
             return await actionHandler.handleGameShuffleAction(action)
+        except ActionHandlerProcessNotFoundException as e:
+            self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
+            return CrowdControlActionHandleResult.ABANDON
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
