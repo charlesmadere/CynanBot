@@ -237,8 +237,8 @@ from .websocketConnection.websocketConnectionServerInterface import WebsocketCon
 
 class CynanBot(
     commands.Bot,
-    ChannelJoinListener,
     AddOrRemoveUserEventListener,
+    ChannelJoinListener,
     RecurringActionEventListener,
     TriviaEventListener,
     TwitchChannelProvider
