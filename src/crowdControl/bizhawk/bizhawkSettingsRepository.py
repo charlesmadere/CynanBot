@@ -89,28 +89,28 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadDown',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_DOWN)
                 )
 
             case CrowdControlButton.DPAD_LEFT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadLeft',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_LEFT)
                 )
 
             case CrowdControlButton.DPAD_RIGHT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadRight',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_RIGHT)
                 )
 
             case CrowdControlButton.DPAD_UP:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadUp',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_UP)
                 )
 
             case CrowdControlButton.SELECT:
