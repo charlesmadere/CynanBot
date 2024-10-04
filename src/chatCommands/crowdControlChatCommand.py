@@ -110,4 +110,4 @@ class CrowdControlChatCommand(AbsChatCommand):
             )
 
         self.__crowdControlMachine.submitAction(crowdControlAction)
-        self.__timber.log('CrowdControlChatCommand', f'Handled !crowdcontrol command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('CrowdControlChatCommand', f'Handled !crowdcontrol command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({button=})')
