@@ -35,11 +35,6 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         processId: int
         name: str
 
-    @dataclass(frozen = True)
-    class GenericProcessInfo:
-        processId: int
-        name: str
-
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
@@ -99,9 +94,8 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         self.__timber.log('BizhawkActionHandler', f'Closed Bizhawk connection as it hasn\'t recently been used ({bizhawkConnection=}) ({lastBizhawkInputDateTime=})')
 
     async def __findBizhawkProcessInfo(self) -> BizhawkProcessInfo | None:
-        bizhawkProcessInfo: BizhawkActionHandler.BizhawkProcessInfo | None = None
         bizhawkProcessName = await self.__bizhawkSettingsRepository.getProcessName()
-        allProcesses: list[BizhawkActionHandler.GenericProcessInfo] = list()
+        bizhawkProcessInfo: BizhawkActionHandler.BizhawkProcessInfo | None = None
 
         try:
             for proc in psutil.process_iter(['name', 'pid']):
@@ -110,13 +104,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
                 if not utils.isValidInt(processId) or not utils.isValidStr(processName):
                     continue
-
-                allProcesses.append(BizhawkActionHandler.GenericProcessInfo(
-                    processId = processId,
-                    name = processName
-                ))
-
-                if bizhawkProcessName not in processName:
+                elif bizhawkProcessName not in processName:
                     continue
 
                 return BizhawkActionHandler.BizhawkProcessInfo(
@@ -124,9 +112,9 @@ class BizhawkActionHandler(CrowdControlActionHandler):
                     name = processName
                 )
         except Exception as e:
-            self.__timber.log('BizhawkActionHandler', f'Encountered exception when looping through available processes ({bizhawkProcessInfo=}) ({bizhawkProcessName=}) ({allProcesses=}): {e}', e, traceback.format_exc())
+            self.__timber.log('BizhawkActionHandler', f'Encountered exception when looping through available processes ({bizhawkProcessName=}) ({bizhawkProcessInfo=}): {e}', e, traceback.format_exc())
 
-        self.__timber.log('BizhawkActionHandler', f'Unable to find any Bizhawk process! ({bizhawkProcessInfo=}) ({bizhawkProcessName=}) ({allProcesses=})')
+        self.__timber.log('BizhawkActionHandler', f'Failed to find any suitable Bizhawk process! ({bizhawkProcessName=}) ({bizhawkProcessInfo=})')
         return None
 
     async def __handleBizhawkKeyPress(
