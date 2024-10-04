@@ -123,6 +123,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         except ActionHandlerProcessNotFoundException as e:
             self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling button press action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
+        except PermissionError as e:
+            self.__timber.log('CrowdControlMachine', f'Don\'t have permission to handle button press action ({action=}): {e}', e, traceback.format_exc())
+            return CrowdControlActionHandleResult.ABANDON
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling button press action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
@@ -141,6 +144,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             return await actionHandler.handleGameShuffleAction(action)
         except ActionHandlerProcessNotFoundException as e:
             self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
+            return CrowdControlActionHandleResult.ABANDON
+        except PermissionError as e:
+            self.__timber.log('CrowdControlMachine', f'Don\'t have permission to handle game shuffle action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
