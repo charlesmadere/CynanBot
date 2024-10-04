@@ -67,22 +67,10 @@ class CrowdControlChatCommand(AbsChatCommand):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 2:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = '⚠ Missing a message argument! Example: !crowdcontrol shuffle',
-                replyMessageId = await ctx.getMessageId()
-            )
-            return
 
-        message = ' '.join(splits[1:])
-        if not utils.isValidStr(message):
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = '⚠ Missing a message argument! Example: !crowdcontrol shuffle',
-                replyMessageId = await ctx.getMessageId()
-            )
-            return
+        message: str | None = None
+        if len(splits) >= 2:
+            message = splits[1].strip()
 
         button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(message)
         crowdControlAction: CrowdControlAction
@@ -110,4 +98,11 @@ class CrowdControlChatCommand(AbsChatCommand):
             )
 
         self.__crowdControlMachine.submitAction(crowdControlAction)
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Handled crowd control action ({button=}) ({crowdControlAction.actionType=})',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('CrowdControlChatCommand', f'Handled !crowdcontrol command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({button=})')
