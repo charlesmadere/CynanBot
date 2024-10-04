@@ -85,9 +85,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         bizhawkConnection = self.__bizhawkConnection
         lastBizhawkInputDateTime = self.__lastBizhawkInputDateTime
 
-        if not isinstance(bizhawkConnection, BizhawkActionHandler.BizhawkConnection):
-            return
-        elif not isinstance(lastBizhawkInputDateTime, datetime):
+        if bizhawkConnection is None or lastBizhawkInputDateTime is None:
             return
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
