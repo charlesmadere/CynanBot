@@ -47,42 +47,42 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonA',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.X)
                 )
 
             case CrowdControlButton.BUTTON_B:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonB',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.Z)
                 )
 
             case CrowdControlButton.BUTTON_C:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonC',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.C)
                 )
 
             case CrowdControlButton.BUTTON_X:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonX',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.S)
                 )
 
             case CrowdControlButton.BUTTON_Y:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonY',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.A)
                 )
 
             case CrowdControlButton.BUTTON_Z:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonZ',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.D)
                 )
 
             case CrowdControlButton.DPAD_DOWN:
@@ -124,7 +124,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindStart',
-                    fallback = ''
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ENTER)
                 )
 
             case CrowdControlButton.TRIGGER_LEFT:

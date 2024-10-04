@@ -3,6 +3,10 @@ from src.crowdControl.bizhawk.bizhawkKey import BizhawkKey
 
 class TestBizhawkKey:
 
+    def test_intValue_withKeyA(self):
+        result = BizhawkKey.A.intValue
+        assert result == 10
+
     def test_intValue_withKeyArrowDown(self):
         result = BizhawkKey.ARROW_DOWN.intValue
         assert result == 50
@@ -18,6 +22,22 @@ class TestBizhawkKey:
     def test_intValue_withKeyArrowUp(self):
         result = BizhawkKey.ARROW_UP.intValue
         assert result == 132
+
+    def test_intValue_withKeyB(self):
+        result = BizhawkKey.B.intValue
+        assert result == 11
+
+    def test_intValue_withKeyC(self):
+        result = BizhawkKey.C.intValue
+        assert result == 12
+
+    def test_intValue_withKeyD(self):
+        result = BizhawkKey.D.intValue
+        assert result == 13
+
+    def test_intValue_withKeyE(self):
+        result = BizhawkKey.E.intValue
+        assert result == 14
 
     def test_intValue_withKeyEnter(self):
         result = BizhawkKey.ENTER.intValue
@@ -83,6 +103,26 @@ class TestBizhawkKey:
         result = BizhawkKey.F15.intValue
         assert result == 68
 
+    def test_intValue_withKeyS(self):
+        result = BizhawkKey.S.intValue
+        assert result == 28
+
     def test_intValue_withKeySpace(self):
         result = BizhawkKey.SPACE.intValue
         assert result == 126
+
+    def test_intValue_withKeyW(self):
+        result = BizhawkKey.W.intValue
+        assert result == 32
+
+    def test_intValue_withKeyX(self):
+        result = BizhawkKey.X.intValue
+        assert result == 33
+
+    def test_intValue_withKeyY(self):
+        result = BizhawkKey.Y.intValue
+        assert result == 34
+
+    def test_intValue_withKeyZ(self):
+        result = BizhawkKey.Z.intValue
+        assert result == 35

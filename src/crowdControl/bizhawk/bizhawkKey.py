@@ -3,10 +3,15 @@ from enum import Enum, auto
 
 class BizhawkKey(Enum):
 
+    A = auto()
     ARROW_DOWN = auto()
     ARROW_LEFT = auto()
     ARROW_RIGHT = auto()
     ARROW_UP = auto()
+    B = auto()
+    C = auto()
+    D = auto()
+    E = auto()
     ENTER = auto()
     ESC = auto()
     F1 = auto()
@@ -24,7 +29,12 @@ class BizhawkKey(Enum):
     F13 = auto()
     F14 = auto()
     F15 = auto()
+    S = auto()
     SPACE = auto()
+    W = auto()
+    X = auto()
+    Y = auto()
+    Z = auto()
 
     @property
     def intValue(self) -> int:
@@ -32,10 +42,15 @@ class BizhawkKey(Enum):
         # https://github.com/AndersMalmgren/FreePIE/blob/master/FreePIE.Core.Plugins/KeyboardPlugin.cs
 
         match self:
+            case BizhawkKey.A: return 10
             case BizhawkKey.ARROW_DOWN: return 50
             case BizhawkKey.ARROW_LEFT: return 76
             case BizhawkKey.ARROW_RIGHT: return 118
             case BizhawkKey.ARROW_UP: return 132
+            case BizhawkKey.B: return 11
+            case BizhawkKey.C: return 12
+            case BizhawkKey.D: return 13
+            case BizhawkKey.E: return 14
             case BizhawkKey.ENTER: return 117
             case BizhawkKey.ESC: return 53
             case BizhawkKey.F1: return 54
@@ -53,5 +68,10 @@ class BizhawkKey(Enum):
             case BizhawkKey.F13: return 66
             case BizhawkKey.F14: return 67
             case BizhawkKey.F15: return 68
+            case BizhawkKey.S: return 28
             case BizhawkKey.SPACE: return 126
+            case BizhawkKey.W: return 32
+            case BizhawkKey.X: return 33
+            case BizhawkKey.Y: return 34
+            case BizhawkKey.Z: return 35
             case _: raise ValueError(f'Unknown BizhawkKey: \"{self}\"')

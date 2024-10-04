@@ -21,10 +21,15 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
         string = string.lower()
 
         match string:
+            case 'a': return BizhawkKey.A
             case 'arrow_down': return BizhawkKey.ARROW_DOWN
             case 'arrow_left': return BizhawkKey.ARROW_LEFT
             case 'arrow_right': return BizhawkKey.ARROW_RIGHT
             case 'arrow_up': return BizhawkKey.ARROW_UP
+            case 'b': return BizhawkKey.B
+            case 'c': return BizhawkKey.C
+            case 'd': return BizhawkKey.D
+            case 'e': return BizhawkKey.E
             case 'enter': return BizhawkKey.ENTER
             case 'esc': return BizhawkKey.ESC
             case 'f1': return BizhawkKey.F1
@@ -42,7 +47,12 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             case 'f13': return BizhawkKey.F13
             case 'f14': return BizhawkKey.F14
             case 'f15': return BizhawkKey.F15
+            case 's': return BizhawkKey.S
             case 'space': return BizhawkKey.SPACE
+            case 'w': return BizhawkKey.W
+            case 'x': return BizhawkKey.X
+            case 'y': return BizhawkKey.Y
+            case 'z': return BizhawkKey.Z
             case _:
                 self.__timber.log('BizhawkKeyMapper', f'Encountered unknown BizhawkKey value: \"{string}\"')
                 return None
@@ -52,10 +62,15 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             raise TypeError(f'bizhawkKey argument is malformed: \"{bizhawkKey}\"')
 
         match bizhawkKey:
+            case BizhawkKey.A: return 'a'
             case BizhawkKey.ARROW_DOWN: return 'arrow_down'
             case BizhawkKey.ARROW_LEFT: return 'arrow_left'
             case BizhawkKey.ARROW_RIGHT: return 'arrow_right'
             case BizhawkKey.ARROW_UP: return 'arrow_up'
+            case BizhawkKey.B: return 'b'
+            case BizhawkKey.C: return 'c'
+            case BizhawkKey.D: return 'd'
+            case BizhawkKey.E: return 'e'
             case BizhawkKey.ENTER: return 'enter'
             case BizhawkKey.ESC: return 'esc'
             case BizhawkKey.F1: return 'f1'
@@ -73,5 +88,10 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             case BizhawkKey.F13: return 'f13'
             case BizhawkKey.F14: return 'f14'
             case BizhawkKey.F15: return 'f15'
+            case BizhawkKey.S: return 's'
             case BizhawkKey.SPACE: return 'space'
+            case BizhawkKey.W: return 'w'
+            case BizhawkKey.X: return 'x'
+            case BizhawkKey.Y: return 'y'
+            case BizhawkKey.Z: return 'z'
             case _: raise ValueError(f'Encountered unknown BizhawkKey value: \"{bizhawkKey}\"')
