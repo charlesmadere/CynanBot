@@ -101,7 +101,7 @@ class CrowdControlChatCommand(AbsChatCommand):
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'ⓘ Handled crowd control action ({button=}) ({crowdControlAction.actionType=})',
+            message = f'ⓘ Handled crowd control action (button={button}) (actionType={crowdControlAction.actionType})',
             replyMessageId = await ctx.getMessageId()
         )
 
