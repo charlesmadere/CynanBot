@@ -42,7 +42,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        keyPressDelayMillis: int = 32,
+        keyPressDelayFrames: int = 2,
         processConnectionCheckSleepTimeSeconds: int = 60,
         processConnectionTimeToLive: timedelta = timedelta(minutes = 15)
     ):
@@ -54,10 +54,10 @@ class BizhawkActionHandler(CrowdControlActionHandler):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not utils.isValidInt(keyPressDelayMillis):
-            raise TypeError(f'keyPressDelayMillis argument is malformed: \"{keyPressDelayMillis}\"')
-        elif keyPressDelayMillis < 16 or keyPressDelayMillis > 256:
-            raise ValueError(f'keyPressDelayMillis argument is out of bounds: {keyPressDelayMillis}')
+        elif not utils.isValidInt(keyPressDelayFrames):
+            raise TypeError(f'keyPressDelayMillis argument is malformed: \"{keyPressDelayFrames}\"')
+        elif keyPressDelayFrames < 1 or keyPressDelayFrames > 8:
+            raise ValueError(f'keyPressDelayFrames argument is out of bounds: {keyPressDelayFrames}')
         elif not utils.isValidInt(processConnectionCheckSleepTimeSeconds):
             raise TypeError(f'processConnectionCheckSleepTimeSeconds argument is malformed: \"{processConnectionCheckSleepTimeSeconds}\"')
         elif processConnectionCheckSleepTimeSeconds < 30 or processConnectionCheckSleepTimeSeconds > 1800:
@@ -70,7 +70,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__processConnectionCheckSleepTimeSeconds: float = processConnectionCheckSleepTimeSeconds
-        self.__keyPressDelayMillis: int = keyPressDelayMillis
+        self.__keyPressDelayFrames: int = keyPressDelayFrames
         self.__processConnectionTimeToLive: timedelta = processConnectionTimeToLive
 
         self.__bizhawkConnection: BizhawkActionHandler.BizhawkConnection | None = None
@@ -93,6 +93,9 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         self.__bizhawkConnection = None
         self.__lastBizhawkInputDateTime = None
         self.__timber.log('BizhawkActionHandler', f'Closed Bizhawk connection as it hasn\'t recently been used ({bizhawkConnection=}) ({lastBizhawkInputDateTime=})')
+
+    async def __convertDelayFramesToSeconds(self) -> float:
+        return float(self.__keyPressDelayFrames) * 0.0166666666666667
 
     async def __findBizhawkProcessInfo(self) -> BizhawkProcessInfo | None:
         bizhawkProcessName = await self.__bizhawkSettingsRepository.getProcessName()
@@ -134,7 +137,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
             # doing this is like we are pressing the key
             win32file.WriteFile(bizhawkConnection.connection, struct.pack('I', keyBind.intValue | 0x80000000))
 
-            await asyncio.sleep(self.__keyPressDelayMillis)
+            await asyncio.sleep(self.__convertDelayFramesToSeconds())
 
             # doing this is like we are releasing the key
             win32file.WriteFile(bizhawkConnection.connection, struct.pack('I', keyBind.intValue))
