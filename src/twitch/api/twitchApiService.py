@@ -98,17 +98,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when adding moderator ({broadcasterId=}) ({userId=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when adding moderator ({broadcasterId=}) ({userId=}): {e}')
 
-        if response is None:
-            self.__timber.log('TwitchApiService', f'Encountered unknown network error when adding moderator ({broadcasterId=}) ({userId=}) ({response=})')
-            raise GenericNetworkException(f'TwitchApiService encountered unknown network error when adding moderator ({broadcasterId=}) ({userId=}) ({response=})')
-
         responseStatusCode = response.statusCode
         await response.close()
 
         if responseStatusCode == 204:
             return True
         else:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when adding moderator ({broadcasterId=}) ({userId=}) ({responseStatusCode=})')
+            self.__timber.log('TwitchApiService', f'Encountered non-204 HTTP status code when adding moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
             return False
 
     async def banUser(
