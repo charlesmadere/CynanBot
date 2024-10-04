@@ -64,19 +64,27 @@ class TtsChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('TtsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('TtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
         elif not user.isTtsEnabled():
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = '⚠ Missing a message argument! Example: !tts Hello, World!',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         message = ' '.join(splits[1:])
         if not utils.isValidStr(message):
-            await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = '⚠ Missing a message argument! Example: !tts Hello, World!',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         ttsProvider: TtsProvider = TtsProvider.DEC_TALK
@@ -114,4 +122,4 @@ class TtsChatCommand(AbsChatCommand):
             )
         ))
 
-        self.__timber.log('TtsCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('TtsChatCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -40,6 +40,8 @@ from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdControlCheerActionHelper
+from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
@@ -62,8 +64,14 @@ from src.crowdControl.bizhawk.bizhawkKeyMapperInterface import BizhawkKeyMapperI
 from src.crowdControl.bizhawk.bizhawkSettingsRepository import BizhawkSettingsRepository
 from src.crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from src.crowdControl.crowdControlActionHandler import CrowdControlActionHandler
+from src.crowdControl.crowdControlMachine import CrowdControlMachine
+from src.crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from src.crowdControl.crowdControlSettingsRepository import CrowdControlSettingsRepository
 from src.crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
+from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
+from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from src.crowdControl.utils.crowdControlUserInputUtils import CrowdControlUserInputUtils
+from src.crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from src.cynanBot import CynanBot
 from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
 from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
@@ -1001,6 +1009,30 @@ if mostRecentAnivMessageRepository is not None:
 ## Crowd Control initialization section ##
 ##########################################
 
+crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
+    settingsJsonReader = JsonFileReader('crowdControlSettingsRepository.json')
+)
+
+crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    crowdControlSettingsRepository = crowdControlSettingsRepository,
+    immediateSoundPlayerManager = immediateSoundPlayerManager,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
+
+crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils()
+
+crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdControlCheerActionHelper(
+    crowdControlIdGenerator = crowdControlIdGenerator,
+    crowdControlMachine = crowdControlMachine,
+    crowdControlUserInputUtils = crowdControlUserInputUtils,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
     timber = timber
 )
@@ -1008,10 +1040,6 @@ bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
 bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsRepository(
     bizhawkKeyMapper = bizhawkKeyMapper,
     settingsJsonReader = JsonFileReader('bizhawkSettingsRepository.json')
-)
-
-crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
-    settingsJsonReader = JsonFileReader('crowdControlSettingsRepository.json')
 )
 
 crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
@@ -1237,9 +1265,11 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     crowdControlActionHandler = crowdControlActionHandler,
-    crowdControlCheerActionHelper = None,
-    crowdControlMachine = None,
-    crowdControlSettingsRepository = None,
+    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
+    crowdControlIdGenerator = crowdControlIdGenerator,
+    crowdControlMachine = crowdControlMachine,
+    crowdControlSettingsRepository = crowdControlSettingsRepository,
+    crowdControlUserInputUtils = crowdControlUserInputUtils,
     cutenessPresenter = None,
     cutenessRepository = None,
     cutenessUtils = None,
@@ -1275,6 +1305,7 @@ cynanBot = CynanBot(
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
     timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
+    timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,
     triviaBanHelper = None,

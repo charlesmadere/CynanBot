@@ -45,6 +45,7 @@ from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from .chatCommands.commandsChatCommand import CommandsChatCommand
+from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from .chatCommands.cutenessChatCommand import CutenessChatCommand
 from .chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
@@ -100,6 +101,8 @@ from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSett
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
+from .crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from .crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
@@ -111,6 +114,7 @@ from .language.translationHelper import TranslationHelper
 from .language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from .language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
+from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .misc import utils as utils
 from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.authRepository import AuthRepository
@@ -268,8 +272,10 @@ class CynanBot(
         cheerActionsWizard: CheerActionsWizardInterface | None,
         crowdControlActionHandler: CrowdControlActionHandler | None,
         crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
+        crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
         crowdControlMachine: CrowdControlMachineInterface | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
+        crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface | None,
         cutenessPresenter: CutenessPresenterInterface | None,
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
@@ -305,6 +311,7 @@ class CynanBot(
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
         timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface | None,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelper | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
@@ -411,10 +418,14 @@ class CynanBot(
             raise TypeError(f'crowdControlActionHandler argument is malformed: \"{crowdControlActionHandler}\"')
         elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
             raise TypeError(f'crowdControlCheerActionHelper argument is malformed: \"{crowdControlCheerActionHelper}\"')
+        elif crowdControlIdGenerator is not None and not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
+            raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
         elif crowdControlMachine is not None and not isinstance(crowdControlMachine, CrowdControlMachineInterface):
             raise TypeError(f'crowdControlMachine argument is malformed: \"{crowdControlMachine}\"')
         elif crowdControlSettingsRepository is not None and not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
+        elif crowdControlUserInputUtils is not None and not isinstance(crowdControlUserInputUtils, CrowdControlUserInputUtilsInterface):
+            raise TypeError(f'crowdControlUserInputUtils argument is malformed: \"{crowdControlUserInputUtils}\"')
         elif cutenessPresenter is not None and not isinstance(cutenessPresenter, CutenessPresenterInterface):
             raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
@@ -483,6 +494,8 @@ class CynanBot(
             raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
         elif timeoutCheerActionSettingsRepository is not None and not isinstance(timeoutCheerActionSettingsRepository, TimeoutCheerActionSettingsRepositoryInterface):
             raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutCheerActionSettingsRepository}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
@@ -647,6 +660,11 @@ class CynanBot(
             self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__enableCheerActionCommand: AbsChatCommand = EnableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+
+        if crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
+            self.__crowdControlCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__crowdControlCommand: AbsChatCommand = CrowdControlChatCommand(administratorProvider, crowdControlIdGenerator, crowdControlMachine, crowdControlUserInputUtils, timber, timeZoneRepository, twitchUtils, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
@@ -1425,6 +1443,11 @@ class CynanBot(
     async def command_confirm(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__confirmCommand.handleCommand(context)
+
+    @commands.command(name = 'crowdcontrol')
+    async def command_crowdcontrol(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__crowdControlCommand.handleChatCommand(context)
 
     @commands.command(name = 'cuteness', aliases = [ 'CUTENESS', 'Cuteness' ])
     async def command_cuteness(self, ctx: Context):
