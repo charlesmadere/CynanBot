@@ -16,9 +16,34 @@ class TestBizhawkKeyMapper:
     )
 
     @pytest.mark.asyncio
+    async def test_fromString_withArrowDown(self):
+        result = await self.mapper.fromString('arrow_down')
+        assert result is BizhawkKey.ARROW_DOWN
+
+    @pytest.mark.asyncio
+    async def test_fromString_withArrowLeft(self):
+        result = await self.mapper.fromString('arrow_left')
+        assert result is BizhawkKey.ARROW_LEFT
+
+    @pytest.mark.asyncio
+    async def test_fromString_withArrowRight(self):
+        result = await self.mapper.fromString('arrow_right')
+        assert result is BizhawkKey.ARROW_RIGHT
+
+    @pytest.mark.asyncio
+    async def test_fromString_withArrowUp(self):
+        result = await self.mapper.fromString('arrow_up')
+        assert result is BizhawkKey.ARROW_UP
+
+    @pytest.mark.asyncio
     async def test_fromString_withEmptyString(self):
         result = await self.mapper.fromString('')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_fromString_withEnter(self):
+        result = await self.mapper.fromString('enter')
+        assert result is BizhawkKey.ENTER
 
     @pytest.mark.asyncio
     async def test_fromString_withEsc(self):
@@ -109,6 +134,31 @@ class TestBizhawkKeyMapper:
     async def test_fromString_withWhitespaceString(self):
         result = await self.mapper.fromString(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_toString_withArrowDown(self):
+        result = await self.mapper.toString(BizhawkKey.ARROW_DOWN)
+        assert result == 'arrow_down'
+
+    @pytest.mark.asyncio
+    async def test_toString_withArrowLeft(self):
+        result = await self.mapper.toString(BizhawkKey.ARROW_LEFT)
+        assert result == 'arrow_left'
+
+    @pytest.mark.asyncio
+    async def test_toString_withArrowRight(self):
+        result = await self.mapper.toString(BizhawkKey.ARROW_RIGHT)
+        assert result == 'arrow_right'
+
+    @pytest.mark.asyncio
+    async def test_toString_withArrowUp(self):
+        result = await self.mapper.toString(BizhawkKey.ARROW_UP)
+        assert result == 'arrow_up'
+
+    @pytest.mark.asyncio
+    async def test_toString_withEnter(self):
+        result = await self.mapper.toString(BizhawkKey.ENTER)
+        assert result == 'enter'
 
     @pytest.mark.asyncio
     async def test_toString_withEsc(self):

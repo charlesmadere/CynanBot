@@ -21,6 +21,11 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
         string = string.lower()
 
         match string:
+            case 'arrow_down': return BizhawkKey.ARROW_DOWN
+            case 'arrow_left': return BizhawkKey.ARROW_LEFT
+            case 'arrow_right': return BizhawkKey.ARROW_RIGHT
+            case 'arrow_up': return BizhawkKey.ARROW_UP
+            case 'enter': return BizhawkKey.ENTER
             case 'esc': return BizhawkKey.ESC
             case 'f1': return BizhawkKey.F1
             case 'f2': return BizhawkKey.F2
@@ -46,6 +51,11 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             raise TypeError(f'bizhawkKey argument is malformed: \"{bizhawkKey}\"')
 
         match bizhawkKey:
+            case BizhawkKey.ARROW_DOWN: return 'arrow_down'
+            case BizhawkKey.ARROW_LEFT: return 'arrow_left'
+            case BizhawkKey.ARROW_RIGHT: return 'arrow_right'
+            case BizhawkKey.ARROW_UP: return 'arrow_up'
+            case BizhawkKey.ENTER: return 'enter'
             case BizhawkKey.ESC: return 'esc'
             case BizhawkKey.F1: return 'f1'
             case BizhawkKey.F2: return 'f2'

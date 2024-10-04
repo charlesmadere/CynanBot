@@ -3,6 +3,11 @@ from enum import Enum, auto
 
 class BizhawkKey(Enum):
 
+    ARROW_DOWN = auto()
+    ARROW_LEFT = auto()
+    ARROW_RIGHT = auto()
+    ARROW_UP = auto()
+    ENTER = auto()
     ESC = auto()
     F1 = auto()
     F2 = auto()
@@ -26,6 +31,11 @@ class BizhawkKey(Enum):
         # https://github.com/AndersMalmgren/FreePIE/blob/master/FreePIE.Core.Plugins/KeyboardPlugin.cs
 
         match self:
+            case BizhawkKey.ARROW_DOWN: return 50
+            case BizhawkKey.ARROW_LEFT: return 76
+            case BizhawkKey.ARROW_RIGHT: return 118
+            case BizhawkKey.ARROW_UP: return 132
+            case BizhawkKey.ENTER: return 117
             case BizhawkKey.ESC: return 53
             case BizhawkKey.F1: return 54
             case BizhawkKey.F2: return 55

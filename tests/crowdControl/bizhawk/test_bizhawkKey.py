@@ -3,6 +3,26 @@ from src.crowdControl.bizhawk.bizhawkKey import BizhawkKey
 
 class TestBizhawkKey:
 
+    def test_intValue_withKeyArrowDown(self):
+        result = BizhawkKey.ARROW_DOWN.intValue
+        assert result == 50
+
+    def test_intValue_withKeyArrowLeft(self):
+        result = BizhawkKey.ARROW_LEFT.intValue
+        assert result == 76
+
+    def test_intValue_withKeyArrowRight(self):
+        result = BizhawkKey.ARROW_RIGHT.intValue
+        assert result == 118
+
+    def test_intValue_withKeyArrowUp(self):
+        result = BizhawkKey.ARROW_UP.intValue
+        assert result == 132
+
+    def test_intValue_withKeyEnter(self):
+        result = BizhawkKey.ENTER.intValue
+        assert result == 117
+
     def test_intValue_withKeyF1(self):
         result = BizhawkKey.F1.intValue
         assert result == 54
