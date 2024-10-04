@@ -81,6 +81,12 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             self.__timber.log('CrowdControlMachine', f'Retrying action due to Crowd Control being disabled ({action=})')
             return CrowdControlActionHandleResult.RETRY
 
+        if await self.__crowdControlSettingsRepository.areSoundsEnabled():
+            await self.__immediateSoundPlayerManager.playSoundAlert(
+                alert = SoundAlert.CLICK_NAVIGATION,
+                volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
+            )
+
         handleResult: CrowdControlActionHandleResult
 
         if isinstance(action, ButtonPressCrowdControlAction):
@@ -97,12 +103,6 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
         if handleResult is CrowdControlActionHandleResult.OK:
-            if await self.__crowdControlSettingsRepository.areSoundsEnabled():
-                await self.__immediateSoundPlayerManager.playSoundAlert(
-                    alert = SoundAlert.CLICK_NAVIGATION,
-                    volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
-                )
-
             return CrowdControlActionHandleResult.OK
 
         self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}) ({handleResult=})')
