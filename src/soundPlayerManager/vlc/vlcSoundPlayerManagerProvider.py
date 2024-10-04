@@ -39,5 +39,6 @@ class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
         if soundPlayerManager is None:
             soundPlayerManager = self.constructNewSoundPlayerManagerInstance()
+            self.__soundPlayerManager = soundPlayerManager
 
         return soundPlayerManager
