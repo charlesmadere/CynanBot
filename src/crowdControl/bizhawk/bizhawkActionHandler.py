@@ -95,7 +95,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         self.__timber.log('BizhawkActionHandler', f'Closed Bizhawk connection as it hasn\'t recently been used ({bizhawkConnection=}) ({lastBizhawkInputDateTime=})')
 
     async def __convertDelayFramesToSeconds(self) -> float:
-        return float(self.__keyPressDelayFrames) * 0.0166666666666667
+        return float(self.__keyPressDelayFrames) * float(0.0166666666666667)
 
     async def __findBizhawkProcessInfo(self) -> BizhawkProcessInfo | None:
         bizhawkProcessName = await self.__bizhawkSettingsRepository.getProcessName()
@@ -137,7 +137,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
             # doing this is like we are pressing the key
             win32file.WriteFile(bizhawkConnection.connection, struct.pack('I', keyBind.intValue | 0x80000000))
 
-            await asyncio.sleep(self.__convertDelayFramesToSeconds())
+            await asyncio.sleep(await self.__convertDelayFramesToSeconds())
 
             # doing this is like we are releasing the key
             win32file.WriteFile(bizhawkConnection.connection, struct.pack('I', keyBind.intValue))
