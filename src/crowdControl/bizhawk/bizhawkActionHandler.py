@@ -3,14 +3,15 @@ import struct
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from multiprocessing.connection import Client, Connection
 from typing import Any
 
 import psutil
+import pywintypes
+import win32file
 
 from .bizhawkKey import BizhawkKey
 from .bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
-from .exceptions import BizhawkProcessNotFoundException
+from .exceptions import BizhawkProcessCantBeConnectedTo, BizhawkProcessNotFoundException
 from ..actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from ..actions.crowdControlAction import CrowdControlAction
 from ..actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
@@ -26,7 +27,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
     @dataclass(frozen = True)
     class BizhawkConnection:
-        connection: Connection
+        connection: Any
         processId: int
         name: str
 
@@ -131,12 +132,12 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
         try:
             # doing this is like we are pressing the key
-            bizhawkConnection.connection.send(struct.pack('I', keyBind.intValue | 0x80000000))
+            win32file.WriteFile(bizhawkConnection.connection, struct.pack('I', keyBind.intValue | 0x80000000))
 
             await asyncio.sleep(self.__keyPressDelayMillis)
 
             # doing this is like we are releasing the key
-            bizhawkConnection.connection.send(struct.pack('I', keyBind.intValue))
+            win32file.WriteFile(bizhawkConnection.connection, struct.pack('I', keyBind.intValue))
         except Exception as e:
             self.__timber.log('BizhawkActionHandler', f'Encountered exception when attempting to send key press to Bizhawk ({keyBind=}) ({action=}) ({bizhawkConnection=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
@@ -194,12 +195,24 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
         # This is taken from this GitHub issue:
         # https://github.com/TASEmulators/BizHawk/issues/477#issuecomment-131264972
-        pipeName = f'bizhawk-pid-{bizhawkProcessInfo.processId}-IPCKeyInput'
+        pipeName = f'\\\\.\\pipe\\bizhawk-pid-{bizhawkProcessInfo.processId}-IPCKeyInput'
 
-        address = ('localhost', pipeName)
+        try:
+            connection = win32file.CreateFile(
+                pipeName,
+                win32file.GENERIC_WRITE,
+                0, # No sharing
+                None, # Default security attributes
+                win32file.OPEN_EXISTING,
+                0,
+                None
+            )
+        except pywintypes.error as e:
+            self.__timber.log('BizhawkActionHandler', f'Unable to connect to Bizhawk process ({bizhawkProcessInfo=}) ({pipeName=}): {e}', e, traceback.format_exc())
+            raise BizhawkProcessCantBeConnectedTo(f'Unable to connect to Bizhawk process ({bizhawkProcessInfo=}) ({pipeName=}): {e}')
 
         bizhawkConnection = BizhawkActionHandler.BizhawkConnection(
-            connection = Client(address),
+            connection = connection,
             processId = bizhawkProcessInfo.processId,
             name = bizhawkProcessInfo.name
         )
