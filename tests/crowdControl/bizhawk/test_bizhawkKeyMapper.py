@@ -131,6 +131,11 @@ class TestBizhawkKeyMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_fromString_withSpace(self):
+        result = await self.mapper.fromString('space')
+        assert result is BizhawkKey.SPACE
+
+    @pytest.mark.asyncio
     async def test_fromString_withWhitespaceString(self):
         result = await self.mapper.fromString(' ')
         assert result is None
@@ -239,3 +244,8 @@ class TestBizhawkKeyMapper:
     async def test_toString_withF15(self):
         result = await self.mapper.toString(BizhawkKey.F15)
         assert result == 'f15'
+
+    @pytest.mark.asyncio
+    async def test_fromString_withSpace(self):
+        result = await self.mapper.toString(BizhawkKey.SPACE)
+        assert result == 'space'

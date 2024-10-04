@@ -42,6 +42,7 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             case 'f13': return BizhawkKey.F13
             case 'f14': return BizhawkKey.F14
             case 'f15': return BizhawkKey.F15
+            case 'space': return BizhawkKey.SPACE
             case _:
                 self.__timber.log('BizhawkKeyMapper', f'Encountered unknown BizhawkKey value: \"{string}\"')
                 return None
@@ -72,4 +73,5 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
             case BizhawkKey.F13: return 'f13'
             case BizhawkKey.F14: return 'f14'
             case BizhawkKey.F15: return 'f15'
+            case BizhawkKey.SPACE: return 'space'
             case _: raise ValueError(f'Encountered unknown BizhawkKey value: \"{bizhawkKey}\"')

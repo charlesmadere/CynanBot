@@ -24,6 +24,7 @@ class BizhawkKey(Enum):
     F13 = auto()
     F14 = auto()
     F15 = auto()
+    SPACE = auto()
 
     @property
     def intValue(self) -> int:
@@ -52,4 +53,5 @@ class BizhawkKey(Enum):
             case BizhawkKey.F13: return 66
             case BizhawkKey.F14: return 67
             case BizhawkKey.F15: return 68
+            case BizhawkKey.SPACE: return 126
             case _: raise ValueError(f'Unknown BizhawkKey: \"{self}\"')

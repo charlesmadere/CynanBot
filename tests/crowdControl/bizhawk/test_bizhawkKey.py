@@ -82,3 +82,7 @@ class TestBizhawkKey:
     def test_intValue_withKeyF15(self):
         result = BizhawkKey.F15.intValue
         assert result == 68
+
+    def test_intValue_withKeySpace(self):
+        result = BizhawkKey.SPACE.intValue
+        assert result == 126
