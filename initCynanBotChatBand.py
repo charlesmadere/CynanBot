@@ -593,13 +593,13 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
+    chatBandInstrumentSoundsRepository = None,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
 immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    timber = timber
+    soundPlayerManagerProvider = soundPlayerManagerProvider
 )
 
 

@@ -3,24 +3,39 @@ from typing import Collection
 from .immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from .soundAlert import SoundAlert
 from .soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..chatBand.chatBandInstrument import ChatBandInstrument
 from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
 
 
 class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
 
     def __init__(
         self,
-        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
-        timber: TimberInterface
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
     ):
         if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
-        self.__timber: TimberInterface = timber
+
+    async def playChatBandInstrument(
+        self,
+        instrument: ChatBandInstrument,
+        volume: int | None = None
+    ) -> bool:
+        if not isinstance(instrument, ChatBandInstrument):
+            raise TypeError(f'instrument argument is malformed: \"{instrument}\"')
+        elif volume is not None and not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
+        elif volume is not None and (volume < 0 or volume > 100):
+            raise ValueError(f'volume argument is out of bounds: {volume}')
+
+        soundPlayManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+
+        return await soundPlayManager.playChatBandInstrument(
+            instrument = instrument,
+            volume = volume
+        )
 
     async def playPlaylist(
         self,

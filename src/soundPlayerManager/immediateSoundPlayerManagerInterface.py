@@ -2,9 +2,18 @@ from abc import ABC, abstractmethod
 from typing import Collection
 
 from .soundAlert import SoundAlert
+from ..chatBand.chatBandInstrument import ChatBandInstrument
 
 
 class ImmediateSoundPlayerManagerInterface(ABC):
+
+    @abstractmethod
+    async def playChatBandInstrument(
+        self,
+        instrument: ChatBandInstrument,
+        volume: int | None = None
+    ) -> bool:
+        pass
 
     @abstractmethod
     async def playPlaylist(

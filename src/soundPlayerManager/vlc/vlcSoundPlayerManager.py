@@ -10,6 +10,8 @@ from frozenlist import FrozenList
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from ...chatBand.chatBandInstrument import ChatBandInstrument
+from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -51,12 +53,15 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         playlistSleepTimeSeconds: float = 0.15
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
+            raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -67,6 +72,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise ValueError(f'playlistSleepTimeSeconds argument is out of bounds: {playlistSleepTimeSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
         self.__playlistSleepTimeSeconds: float = playlistSleepTimeSeconds
@@ -80,6 +86,43 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         mediaPlayer = self.__mediaPlayer
         return mediaPlayer is not None and mediaPlayer.is_playing()
+
+    async def playChatBandInstrument(
+        self,
+        instrument: ChatBandInstrument,
+        volume: int | None = None
+    ) -> bool:
+        if not isinstance(instrument, ChatBandInstrument):
+            raise TypeError(f'instrument argument is malformed: \"{instrument}\"')
+        elif volume is not None and not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
+        elif volume is not None and (volume < 0 or volume > 100):
+            raise ValueError(f'volume argument is out of bounds: {volume}')
+
+        chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository
+
+        if chatBandInstrumentSoundsRepository is None:
+            return False
+        elif not await self.__soundPlayerSettingsRepository.isEnabled():
+            return False
+        elif await self.isPlaying():
+            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
+            return False
+
+        filePath = await chatBandInstrumentSoundsRepository.getRandomSound(instrument)
+
+        if not utils.isValidStr(filePath):
+            self.__timber.log('VlcSoundPlayerManager', f'No file path available for chat band instrument ({instrument=}) ({filePath=})')
+            return False
+
+        filePaths: FrozenList[str] = FrozenList()
+        filePaths.append(filePath)
+        filePaths.freeze()
+
+        return await self.playPlaylist(
+            filePaths = filePaths,
+            volume = volume
+        )
 
     async def playPlaylist(
         self,

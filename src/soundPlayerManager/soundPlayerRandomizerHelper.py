@@ -21,7 +21,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
-        pointRedemptionSoundAlerts: set[SoundAlert] | None = {
+        pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = frozenset({
             SoundAlert.POINT_REDEMPTION_01,
             SoundAlert.POINT_REDEMPTION_02,
             SoundAlert.POINT_REDEMPTION_03,
@@ -38,7 +38,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             SoundAlert.POINT_REDEMPTION_14,
             SoundAlert.POINT_REDEMPTION_15,
             SoundAlert.POINT_REDEMPTION_16
-        }
+        })
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -46,13 +46,13 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif pointRedemptionSoundAlerts is not None and not isinstance(pointRedemptionSoundAlerts, set):
+        elif pointRedemptionSoundAlerts is not None and not isinstance(pointRedemptionSoundAlerts, frozenset):
             raise TypeError(f'pointRedemptionSoundAlerts argument is malformed: \"{pointRedemptionSoundAlerts}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__pointRedemptionSoundAlerts: set[SoundAlert] | None = pointRedemptionSoundAlerts
+        self.__pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = pointRedemptionSoundAlerts
 
         self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
         self.__soundAlertCache: dict[SoundAlert, str | None] | None = None
@@ -179,10 +179,10 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         directoryContents.close()
         self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned \"{directoryPath}\" and found {len(soundFilesSet)} sound file(s) and {len(shinySoundFilesSet)} shiny sound file(s)')
 
-        soundFilesList = list(soundFilesSet)
+        soundFilesList: list[str] = list(soundFilesSet)
         soundFilesList.sort(key = lambda path: path.casefold())
 
-        shinySoundFilesList = list(shinySoundFilesSet)
+        shinySoundFilesList: list[str] = list(shinySoundFilesSet)
         shinySoundFilesList.sort(key = lambda path: path.casefold())
 
         return SoundPlayerRandomizerDirectoryScanResult(
