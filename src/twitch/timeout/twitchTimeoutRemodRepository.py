@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
+from typing import Collection
+
+from frozenlist import FrozenList
 
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
-from .twitchTimeoutRemodRepositoryInterface import \
-    TwitchTimeoutRemodRepositoryInterface
+from .twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -71,7 +73,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         await connection.close()
         self.__timber.log('CheerActionRemodRepository', f'Deleted remod action ({broadcasterUserId=}) ({userId=})')
 
-    async def getAll(self) -> list[TwitchTimeoutRemodData]:
+    async def getAll(self) -> Collection[TwitchTimeoutRemodData]:
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
@@ -82,7 +84,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         )
 
         await connection.close()
-        data: list[TwitchTimeoutRemodData] = list()
+        data: FrozenList[TwitchTimeoutRemodData] = FrozenList()
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if records is not None and len(records) >= 1:
@@ -99,6 +101,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                     userId = record[2]
                 ))
 
+        data.freeze()
         return data
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:

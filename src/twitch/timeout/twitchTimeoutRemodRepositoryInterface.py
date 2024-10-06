@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Collection
 
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
 
@@ -14,5 +15,5 @@ class TwitchTimeoutRemodRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getAll(self) -> list[TwitchTimeoutRemodData]:
+    async def getAll(self) -> Collection[TwitchTimeoutRemodData]:
         pass

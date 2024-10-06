@@ -1,13 +1,13 @@
 import asyncio
+from datetime import timedelta
+
+from frozenlist import FrozenList
 
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
-from .twitchTimeoutRemodHelperInterface import \
-    TwitchTimeoutRemodHelperInterface
-from .twitchTimeoutRemodRepositoryInterface import \
-    TwitchTimeoutRemodRepositoryInterface
+from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
+from .twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -24,7 +24,8 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        queueSleepTimeSeconds: float = 3
+        queueSleepTimeSeconds: float = 3,
+        additionalBufferTime: timedelta = timedelta(seconds = 5)
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -42,6 +43,8 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
+        elif not isinstance(additionalBufferTime, timedelta):
+            raise TypeError(f'additionalBufferTime argument is malformed: \"{additionalBufferTime}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
@@ -50,6 +53,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
+        self.__additionalBufferTime: timedelta = additionalBufferTime
 
         self.__isStarted: bool = False
 
@@ -64,28 +68,23 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
     async def __refresh(self):
         remodActions = await self.__twitchTimeoutRemodRepository.getAll()
-        if remodActions is None or len(remodActions) == 0:
+        frozenRemodActions: FrozenList[TwitchTimeoutRemodData] = FrozenList(remodActions)
+        frozenRemodActions.freeze()
+
+        if len(frozenRemodActions) == 0:
             return
 
         self.__timber.log('TwitchTimeoutRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
         twitchAccessTokens: dict[str, str | None] = dict()
         broadcastersWithoutTokens: set[str] = set()
 
-        for remodAction in remodActions:
+        for remodAction in frozenRemodActions:
             if remodAction.broadcasterUserId in broadcastersWithoutTokens:
                 continue
 
             twitchAccessToken = twitchAccessTokens.get(remodAction.broadcasterUserId, None)
 
             if not utils.isValidStr(twitchAccessToken):
-                if not await self.__twitchTokensRepository.hasAccessTokenById(
-                    twitchChannelId = remodAction.broadcasterUserId
-                ):
-                    self.__timber.log('TwitchTimeoutRemodHelper', f'There is no Twitch access token available for {remodAction.broadcasterUserName}:{remodAction.broadcasterUserId}')
-                    broadcastersWithoutTokens.add(remodAction.broadcasterUserId)
-                    await self.__deleteFromRepository(remodAction)
-                    continue
-
                 twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
                     twitchChannelId = remodAction.broadcasterUserId
                 )
@@ -114,7 +113,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
             await self.__deleteFromRepository(remodAction)
 
-        self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(remodActions)} user(s)')
+        self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(frozenRemodActions)} user(s)')
 
     def start(self):
         if self.__isStarted:
@@ -134,4 +133,9 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         if not isinstance(data, TwitchTimeoutRemodData):
             raise TypeError(f'data argument is malformed: \"{data}\"')
 
-        await self.__twitchTimeoutRemodRepository.add(data)
+        await self.__twitchTimeoutRemodRepository.add(TwitchTimeoutRemodData(
+            remodDateTime = data.remodDateTime + self.__additionalBufferTime,
+            broadcasterUserId = data.broadcasterUserId,
+            broadcasterUserName = data.broadcasterUserName,
+            userId = data.userId
+        ))
