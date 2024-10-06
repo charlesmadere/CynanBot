@@ -10,10 +10,10 @@ class BannedPhrase(AbsBannedWord):
     phrase: str
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, BannedPhrase):
-            return self.phrase.casefold() == other.phrase.casefold()
-        else:
+        if not isinstance(other, BannedPhrase):
             return False
+
+        return self.phrase.casefold() == other.phrase.casefold()
 
     def __hash__(self) -> int:
         return hash((self.phrase.casefold(), self.wordType))
