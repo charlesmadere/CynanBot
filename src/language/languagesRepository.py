@@ -1,5 +1,7 @@
 import random
 
+from frozenlist import FrozenList
+
 from .languageEntry import LanguageEntry
 from .languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..misc import utils as utils
@@ -8,10 +10,10 @@ from ..misc import utils as utils
 class LanguagesRepository(LanguagesRepositoryInterface):
 
     def __init__(self):
-        self.__languageList: list[LanguageEntry] = self.__createLanguageList()
+        self.__languageList: FrozenList[LanguageEntry] = self.__createLanguageList()
 
-    def __createLanguageList(self) -> list[LanguageEntry]:
-        languagesList: list[LanguageEntry] = list()
+    def __createLanguageList(self) -> FrozenList[LanguageEntry]:
+        languagesList: FrozenList[LanguageEntry] = FrozenList()
 
         languagesList.append(LanguageEntry(
             commandNames = [ 'de', 'deutsche', 'german', 'germany' ],
@@ -174,6 +176,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         if len(languagesList) == 0:
             raise RuntimeError(f'languagesList must contain at least 1 entry: \"{languagesList}\"')
 
+        languagesList.freeze()
         languagesNames: set[str] = set()
 
         for language in languagesList:
