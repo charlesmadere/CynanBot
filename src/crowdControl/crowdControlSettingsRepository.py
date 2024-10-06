@@ -24,7 +24,7 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
 
     async def getActionCooldownSeconds(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'actionCooldownSeconds', 0.5)
+        return utils.getFloatFromDict(jsonContents, 'actionCooldownSeconds', 0.125)
 
     async def getMaxHandleAttempts(self) -> int:
         jsonContents = await self.__readJson()
