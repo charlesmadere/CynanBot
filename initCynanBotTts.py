@@ -26,6 +26,7 @@ from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatA
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
+from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
@@ -711,6 +712,13 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 )
 
 
+######################################
+## Chat Band initialization section ##
+######################################
+
+chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = None
+
+
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -727,7 +735,7 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
-    chatBandInstrumentSoundsRepository = None,
+    chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )

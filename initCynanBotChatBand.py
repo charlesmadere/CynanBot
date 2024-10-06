@@ -10,6 +10,8 @@ from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
+from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
+from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
@@ -577,6 +579,16 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 )
 
 
+######################################
+## Chat Band initialization section ##
+######################################
+
+chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface = ChatBandInstrumentSoundsRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
+
+
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -593,7 +605,7 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
-    chatBandInstrumentSoundsRepository = None,
+    chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
