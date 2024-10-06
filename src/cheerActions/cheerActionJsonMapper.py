@@ -33,7 +33,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: dict[str, Any] | None = json.loads(jsonString)
+        jsonContents: dict[str, Any] = json.loads(jsonString)
 
         randomChance = utils.getIntFromDict(
             d = jsonContents,
@@ -94,22 +94,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: dict[str, Any] | None = json.loads(jsonString)
+        jsonContents: dict[str, Any] = json.loads(jsonString)
 
         crowdControlCheerActionTypeString = utils.getStrFromDict(
             d = jsonContents,
-            key = 'crowdControlCheerActionType',
+            key = 'crowdControlCheerActionType'
         )
 
         crowdControlCheerActionType = await self.requireCrowdControlCheerActionType(
             jsonString = crowdControlCheerActionTypeString
         )
 
+        gigaShuffleChance: int | None = None
+        if 'gigaShuffleChance' in jsonContents and utils.isValidInt(jsonContents.get('gigaShuffleChance')):
+            gigaShuffleChance = utils.getIntFromDict(jsonContents, 'gigaShuffleChance')
+
         return CrowdControlCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             crowdControlCheerActionType = crowdControlCheerActionType,
             bits = bits,
+            gigaShuffleChance = gigaShuffleChance,
             twitchChannelId = twitchChannelId
         )
 
@@ -140,7 +145,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: dict[str, Any] | None = json.loads(jsonString)
+        jsonContents: dict[str, Any] = json.loads(jsonString)
 
         directory = utils.getStrFromDict(
             d = jsonContents,
@@ -171,7 +176,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: dict[str, Any] | None = json.loads(jsonString)
+        jsonContents: dict[str, Any] = json.loads(jsonString)
 
         durationSeconds = utils.getIntFromDict(
             d = jsonContents,
@@ -380,6 +385,9 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         jsonContents: dict[str, Any] = {
             'crowdControlCheerActionType': crowdControlCheerActionType
         }
+
+        if utils.isValidInt(cheerAction.gigaShuffleChance):
+            jsonContents['gigaShuffleChance'] = cheerAction.gigaShuffleChance
 
         return json.dumps(jsonContents)
 

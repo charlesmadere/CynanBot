@@ -205,6 +205,7 @@ class TestCheerActionJsonMapper:
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             crowdControlCheerActionType = CrowdControlCheerActionType.GAME_SHUFFLE,
             bits = 50,
+            gigaShuffleChance = 20,
             twitchChannelId = 'abc123',
         )
 
@@ -213,9 +214,10 @@ class TestCheerActionJsonMapper:
 
         dictionary = json.loads(result)
         assert isinstance(dictionary, dict)
-        assert len(dictionary) == 1
+        assert len(dictionary) == 2
 
         assert dictionary['crowdControlCheerActionType'] == 'game_shuffle'
+        assert dictionary['gigaShuffleChance'] == 20
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):
