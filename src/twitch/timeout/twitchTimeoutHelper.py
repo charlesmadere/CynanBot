@@ -1,9 +1,7 @@
 import traceback
-from datetime import datetime, timedelta
 
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from .twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
-from .twitchTimeoutRemodData import TwitchTimeoutRemodData
 from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutResult import TwitchTimeoutResult
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
@@ -24,7 +22,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchConstants: TwitchConstantsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -35,8 +32,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConstants, TwitchConstantsInterface):
@@ -50,7 +45,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
         self.__timber: TimberInterface = timber
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
@@ -224,14 +218,12 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             return TwitchTimeoutResult.API_CALL_FAILED
 
         if isMod:
-            remodDateTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = durationSeconds)
-
-            await self.__twitchTimeoutRemodHelper.submitRemodData(TwitchTimeoutRemodData(
-                remodDateTime = remodDateTime,
+            await self.__twitchTimeoutRemodHelper.submitRemodData(
+                timeoutDurationSeconds = durationSeconds,
                 broadcasterUserId = twitchChannelId,
                 broadcasterUserName = user.getHandle(),
                 userId = userIdToTimeout
-            ))
+            )
 
         self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
         return TwitchTimeoutResult.SUCCESS

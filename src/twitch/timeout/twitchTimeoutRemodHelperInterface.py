@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from .twitchTimeoutRemodData import TwitchTimeoutRemodData
-
 
 class TwitchTimeoutRemodHelperInterface(ABC):
 
@@ -10,5 +8,11 @@ class TwitchTimeoutRemodHelperInterface(ABC):
         pass
 
     @abstractmethod
-    async def submitRemodData(self, data: TwitchTimeoutRemodData):
+    async def submitRemodData(
+        self,
+        timeoutDurationSeconds: int,
+        broadcasterUserId: str,
+        broadcasterUserName: str,
+        userId: str
+    ):
         pass

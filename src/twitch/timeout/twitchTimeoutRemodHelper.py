@@ -1,5 +1,5 @@
 import asyncio
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from frozenlist import FrozenList
 
@@ -8,6 +8,7 @@ from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -20,6 +21,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -31,6 +33,8 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTimeoutRemodRepository, TwitchTimeoutRemodRepositoryInterface):
@@ -48,6 +52,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface = twitchTimeoutRemodRepository
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -129,13 +134,30 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             await self.__refresh()
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
-    async def submitRemodData(self, data: TwitchTimeoutRemodData):
-        if not isinstance(data, TwitchTimeoutRemodData):
-            raise TypeError(f'data argument is malformed: \"{data}\"')
+    async def submitRemodData(
+        self,
+        timeoutDurationSeconds: int,
+        broadcasterUserId: str,
+        broadcasterUserName: str,
+        userId: str
+    ):
+        if not utils.isValidInt(timeoutDurationSeconds):
+            raise TypeError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
+        elif timeoutDurationSeconds < 1 or timeoutDurationSeconds > utils.getIntMaxSafeSize():
+            raise ValueError(f'timeoutDurationSeconds argument is out of bounds: {timeoutDurationSeconds}')
+        if not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        elif not utils.isValidStr(broadcasterUserName):
+            raise TypeError(f'broadcasterUserName argument is malformed: \"{broadcasterUserName}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        remodDateTime = now + timedelta(seconds = timeoutDurationSeconds) + self.__additionalBufferTime
 
         await self.__twitchTimeoutRemodRepository.add(TwitchTimeoutRemodData(
-            remodDateTime = data.remodDateTime + self.__additionalBufferTime,
-            broadcasterUserId = data.broadcasterUserId,
-            broadcasterUserName = data.broadcasterUserName,
-            userId = data.userId
+            remodDateTime = remodDateTime,
+            broadcasterUserId = broadcasterUserId,
+            broadcasterUserName = broadcasterUserName,
+            userId = userId
         ))
