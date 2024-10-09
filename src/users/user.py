@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
+from .tts.ttsBoosterPack import TtsBoosterPack
 from .userInterface import UserInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..misc import utils as utils
@@ -111,6 +112,7 @@ class User(UserInterface):
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
+        ttsBoosterPacks: frozendict[str, TtsBoosterPack] | None,
         timeZones: FrozenList[tzinfo] | None
     ):
         if not utils.isValidBool(areBeanChancesEnabled):
@@ -301,6 +303,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
+        elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, frozendict):
+            raise TypeError(f'ttsBoosterPacks argument is malformed: \"{ttsBoosterPacks}\"')
         elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
@@ -400,6 +404,7 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
+        self.__ttsBoosterPacks: frozendict[str, TtsBoosterPack] | None = ttsBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
 
     @property
@@ -751,3 +756,7 @@ class User(UserInterface):
     @property
     def timeZones(self) -> FrozenList[tzinfo] | None:
         return self.__timeZones
+
+    @property
+    def ttsBoosterPacks(self) -> frozendict[str, TtsBoosterPack] | None:
+        return self.__ttsBoosterPacks

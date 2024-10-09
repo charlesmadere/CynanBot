@@ -24,7 +24,7 @@ class TimeoutCheerActionSettingsRepository(TimeoutCheerActionSettingsRepositoryI
 
     async def getFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'failureProbability', 0.2)
+        return utils.getFloatFromDict(jsonContents, 'failureProbability', 0.20)
 
     async def getMaxBullyFailureOccurrences(self) -> int:
         jsonContents = await self.__readJson()
@@ -32,7 +32,7 @@ class TimeoutCheerActionSettingsRepository(TimeoutCheerActionSettingsRepositoryI
 
     async def getMaxBullyFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', 0.7)
+        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', 0.70)
 
     async def getReverseProbability(self) -> float:
         jsonContents = await self.__readJson()

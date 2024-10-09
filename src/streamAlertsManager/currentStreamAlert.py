@@ -15,23 +15,9 @@ class CurrentStreamAlert:
         self.__streamAlert: StreamAlert = streamAlert
         self.__alertState: StreamAlertState = StreamAlertState.NOT_STARTED
 
-    def getAlertState(self) -> StreamAlertState:
+    @property
+    def alertState(self) -> StreamAlertState:
         return self.__alertState
-
-    def getSoundAlert(self) -> SoundAlert | None:
-        return self.__streamAlert.soundAlert
-
-    def getStreamAlert(self) -> StreamAlert:
-        return self.__streamAlert
-
-    def getTtsEvent(self) -> TtsEvent | None:
-        return self.__streamAlert.ttsEvent
-
-    def getTwitchChannel(self) -> str:
-        return self.__streamAlert.twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__streamAlert.twitchChannelId
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -42,6 +28,26 @@ class CurrentStreamAlert:
             raise TypeError(f'state argument is malformed: \"{state}\"')
 
         self.__alertState = state
+
+    @property
+    def soundAlert(self) -> SoundAlert | None:
+        return self.__streamAlert.soundAlert
+
+    @property
+    def streamAlert(self) -> StreamAlert:
+        return self.__streamAlert
+
+    @property
+    def ttsEvent(self) -> TtsEvent | None:
+        return self.__streamAlert.ttsEvent
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.__streamAlert.twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__streamAlert.twitchChannelId
 
     def toDictionary(self) -> dict[str, Any]:
         return {

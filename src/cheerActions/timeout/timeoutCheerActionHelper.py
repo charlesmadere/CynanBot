@@ -381,6 +381,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        proceedWithTimeout = True
+        isReverse = False
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        randomNumber = random.random()
 
         if not await self.__verifyStreamStatus(
             twitchChannelId = twitchChannelId,
@@ -388,11 +392,16 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but the current stream status is invalid ({action=})')
-            return False
-
-        now = datetime.now(self.__timeZoneRepository.getDefault())
-
-        if await self.__isNewFollower(
+            proceedWithTimeout = False
+        elif await self.__isTryingToTimeoutTheStreamer(
+            twitchChannelId = twitchChannelId,
+            userIdToTimeout = userIdToTimeout
+        ):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID {userIdToTimeout} is the streamer, so they will be hit with a reverse ({action=})')
+            isReverse = True
+            userIdToTimeout = cheerUserId
+            userNameToTimeout = cheerUserName
+        elif await self.__isNewFollower(
             now = now,
             followShieldDays = user.timeoutCheerActionFollowShieldDays,
             twitchAccessToken = userTwitchAccessToken,
@@ -400,30 +409,18 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userIdToTimeout = userIdToTimeout
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but this user is a new follower ({action=})')
+            proceedWithTimeout = False
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,
                 message = f'ⓘ Sorry @{cheerUserName}, but they have the new follower shield',
                 replyMessageId = twitchChatMessageId
             )
-            return False
-
-        randomNumber = random.random()
-        isReverse = False
-
-        if await self.__isTryingToTimeoutTheStreamer(
-            twitchChannelId = twitchChannelId,
-            userIdToTimeout = userIdToTimeout
-        ):
-            isReverse = True
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID {userIdToTimeout} is the streamer, so they will be hit with a reverse ({action=})')
-            userIdToTimeout = cheerUserId
-            userNameToTimeout = cheerUserName
         elif await self.__isReverseTimeout(
             randomNumber = randomNumber,
             user = user
         ):
-            isReverse = True
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the reverse RNG ({randomNumber=}) ({action=})')
+            isReverse = True
             userIdToTimeout = cheerUserId
             userNameToTimeout = cheerUserName
         elif await self.__isFailedTimeout(
@@ -439,6 +436,9 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the failure RNG ({randomNumber=}) ({action=})')
+            proceedWithTimeout = False
+
+        if not proceedWithTimeout:
             return False
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(

@@ -7,6 +7,7 @@ from frozenlist import FrozenList
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
+from .tts.ttsBoosterPack import TtsBoosterPack
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 
 
@@ -414,4 +415,9 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def timeZones(self) -> FrozenList[tzinfo] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def ttsBoosterPacks(self) -> frozendict[str, TtsBoosterPack] | None:
         pass

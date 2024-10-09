@@ -369,6 +369,8 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
 from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.tts.ttsJsonParser import TtsJsonParser
+from src.users.tts.ttsJsonParserInterface import TtsJsonParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -544,12 +546,15 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
+ttsJsonParser: TtsJsonParserInterface = TtsJsonParser()
+
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
+    ttsJsonParser = ttsJsonParser
 )
 
 twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(

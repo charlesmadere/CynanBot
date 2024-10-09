@@ -14,7 +14,7 @@ class CrowdControlJsonParser(CrowdControlJsonParserInterface):
         self,
         jsonContents: dict[str, Any]
     ) -> CrowdControlBoosterPack:
-        if not isinstance(jsonContents, dict):
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         inputType = self.parseInputType(utils.getStrFromDict(jsonContents, 'inputType'))
