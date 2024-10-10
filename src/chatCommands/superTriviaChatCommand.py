@@ -10,12 +10,7 @@ from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -29,10 +24,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
         triviaGameMachine: TriviaGameMachineInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
-        twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchTimeoutHelper: TwitchTimeoutHelperInterface | None,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -48,14 +39,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
-            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif twitchTimeoutHelper is not None and not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
-            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -67,10 +50,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None = twitchFriendsUserIdRepository
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface | None = twitchTimeoutHelper
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -127,14 +106,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
             case '!supertrivialotr':
                 triviaSource = TriviaSource.LORD_OF_THE_RINGS
 
-        if await self.__scamStashio(
-            triviaSource = triviaSource,
-            ctx = ctx,
-            user = user
-        ):
-            self.__timber.log('SuperTriviaChatCommand', f'Handled {splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            return
-
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId(),
@@ -149,53 +120,4 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
         # Presumably, a command should always be the first item in the splits array, use this ref
         # just in case we want to add more specified supertrivia commands in the future.
-
-        self.__timber.log('SuperTriviaChatCommand', f'Handled {splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-    async def __scamStashio(
-        self,
-        triviaSource: TriviaSource | None,
-        ctx: TwitchContext,
-        user: UserInterface
-    ) -> bool:
-        if triviaSource is not TriviaSource.LORD_OF_THE_RINGS:
-            return False
-        elif not user.isSuperTriviaLotrTimeoutEnabled:
-            return False
-
-        twitchFriendsUserIdRepository = self.__twitchFriendsUserIdRepository
-        twitchTimeoutHelper = self.__twitchTimeoutHelper
-
-        if twitchFriendsUserIdRepository is None or twitchTimeoutHelper is None:
-            return False
-        elif ctx.getAuthorId() != await twitchFriendsUserIdRepository.getStashiocatUserId():
-            return False
-
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
-            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
-        )
-
-        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await ctx.getTwitchChannelId()
-        )
-
-        if not utils.isValidStr(twitchAccessToken) or not utils.isValidStr(twitchChannelAccessToken):
-            return False
-
-        await twitchTimeoutHelper.timeout(
-            durationSeconds = 600,
-            reason = f'{ctx.getAuthorName()} is scamming via the !supertrivialotr command',
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelAccessToken = twitchChannelAccessToken,
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            userIdToTimeout = ctx.getAuthorId(),
-            user = user
-        )
-
-        message = f'Wow @{ctx.getAuthorName()} is scamming with this command again 😡'
-
-        while len(message) < self.__twitchUtils.maxMessageSize - len(' RIPBOZO'):
-            message = f'{message}' + ' RIPBOZO'
-
-        await self.__twitchUtils.safeSend(messageable = ctx, message = message.strip())
-        return True
+        self.__timber.log('SuperTriviaChatCommand', f'Handled !{splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
