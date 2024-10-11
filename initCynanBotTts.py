@@ -128,6 +128,8 @@ from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requestsClientProvider import RequestsClientProvider
 from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
 from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
+from src.puptime.puptimeUserIdProvider import PuptimeUserIdProvider
+from src.puptime.puptimeUserIdProviderInterface import PuptimeUserIdProviderInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
@@ -629,6 +631,8 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+puptimeUserIdProvider: PuptimeUserIdProviderInterface = PuptimeUserIdProvider()
+
 seryBotUserIdProvider: SeryBotUserIdProviderInterface = SeryBotUserIdProvider()
 
 streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElementsUserIdProvider()
@@ -640,6 +644,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
+    puptimeUserIdProvider = puptimeUserIdProvider,
     seryBotUserIdProvider = seryBotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,

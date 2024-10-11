@@ -140,6 +140,8 @@ from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
 from src.pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
+from src.puptime.puptimeUserIdProvider import PuptimeUserIdProvider
+from src.puptime.puptimeUserIdProviderInterface import PuptimeUserIdProviderInterface
 from src.recurringActions.mostRecentRecurringActionRepository import MostRecentRecurringActionRepository
 from src.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
@@ -724,6 +726,8 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+puptimeUserIdProvider: PuptimeUserIdProviderInterface = PuptimeUserIdProvider()
+
 seryBotUserIdProvider: SeryBotUserIdProviderInterface = SeryBotUserIdProvider()
 
 streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElementsUserIdProvider()
@@ -735,6 +739,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
+    puptimeUserIdProvider = puptimeUserIdProvider,
     seryBotUserIdProvider = seryBotUserIdProvider,
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
