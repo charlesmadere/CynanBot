@@ -70,12 +70,16 @@ class CutenessHistoryChatCommand(AbsChatCommand):
             userName = utils.removePreceedingAt(splits[1])
 
         # this means that a user is querying for another user's cuteness history
-        if userName.lower() != ctx.getAuthorName().lower():
+        if userName.casefold() != ctx.getAuthorName().casefold():
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
                 self.__timber.log('CutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ Unable to find cuteness info for \"{userName}\"',
+                    replyMessageId = await ctx.getMessageId()
+                )
                 return
 
             result = await self.__cutenessRepository.fetchCutenessHistory(
@@ -106,7 +110,8 @@ class CutenessHistoryChatCommand(AbsChatCommand):
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = message
+                message = message,
+                replyMessageId = await ctx.getMessageId()
             )
 
         self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

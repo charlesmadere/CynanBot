@@ -75,7 +75,7 @@ class MyCutenessChatCommand(AbsChatCommand):
                 self.__timber.log('MyCutenessChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
-                    message = f'⚠ Unable to find user info for \"{userName}\" in the database!',
+                    message = f'⚠ Unable to find cuteness info for \"{userName}\"',
                     replyMessageId = await ctx.getMessageId()
                 )
                 return
