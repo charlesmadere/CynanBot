@@ -61,6 +61,7 @@ from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatComman
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
+from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessHistoryChatCommand import MyCutenessHistoryChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
@@ -93,9 +94,9 @@ from .cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
 from .cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import \
     TimeoutCheerActionSettingsRepositoryInterface
 from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, DiscordCommand,
-                       LoremIpsumCommand, PbsCommand, PkMonCommand, PkMoveCommand, RaceCommand,
-                       RemoveTriviaControllerCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
-                       StubCommand, SwQuoteCommand, TwitchInfoCommand, TwitterCommand, UnbanTriviaQuestionCommand)
+                       PbsCommand, PkMonCommand, PkMoveCommand, RaceCommand, RemoveTriviaControllerCommand,
+                       SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand, SwQuoteCommand,
+                       TwitchInfoCommand, TwitterCommand, UnbanTriviaQuestionCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
@@ -630,7 +631,7 @@ class CynanBot(
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
-        self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
+        self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchUtils, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
@@ -1537,7 +1538,7 @@ class CynanBot(
     @commands.command(name = 'lorem')
     async def command_lorem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__loremIpsumCommand.handleCommand(context)
+        await self.__loremIpsumCommand.handleChatCommand(context)
 
     @commands.command(name = 'mastodon')
     async def command_mastodon(self, ctx: Context):
