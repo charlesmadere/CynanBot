@@ -404,7 +404,11 @@ def randomBool() -> bool:
     return bool(random.getrandbits(1))
 
 cheerRegExes: FrozenList[Pattern] = FrozenList([
+    re.compile(r'(^|\s+)bitboss\d+(\s+|$)', re.IGNORECASE),
     re.compile(r'(^|\s+)cheer\d+(\s+|$)', re.IGNORECASE),
+    re.compile(r'(^|\s+)doodlecheer\d+(\s+|$)', re.IGNORECASE),
+    re.compile(r'(^|\s+)muxy\d+(\s+|$)', re.IGNORECASE),
+    re.compile(r'(^|\s+)streamlabs\d+(\s+|$)', re.IGNORECASE),
     re.compile(r'(^|\s+)uni\d+(\s+|$)', re.IGNORECASE)
 ])
 cheerRegExes.freeze()

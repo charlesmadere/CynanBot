@@ -489,12 +489,28 @@ class TestUtils:
         result = utils.numToBool(0)
         assert result is False
 
+    def test_removeCheerStrings_withBitbossAndHelloWorldString(self):
+        result = utils.removeCheerStrings('bitboss100 Hello, World!')
+        assert result == 'Hello, World!'
+
     def test_removeCheerStrings_withCheerAndHelloWorldString(self):
         result = utils.removeCheerStrings('cheer100 Hello, World!')
         assert result == 'Hello, World!'
 
+    def test_removeCheerStrings_withDoodleCheerAndHelloWorldString(self):
+        result = utils.removeCheerStrings('doodlecheer100 Hello, World!')
+        assert result == 'Hello, World!'
+
     def test_removeCheerStrings_withHelloWorldString(self):
         result = utils.removeCheerStrings('Hello, World!')
+        assert result == 'Hello, World!'
+
+    def test_removeCheerStrings_withMuxyWorldString(self):
+        result = utils.removeCheerStrings('muxy100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    def test_removeCheerStrings_withStreamLabsWorldString(self):
+        result = utils.removeCheerStrings('streamlabs100 Hello, World!')
         assert result == 'Hello, World!'
 
     def test_removeCheerStrings_withUniAndHelloWorldString(self):
