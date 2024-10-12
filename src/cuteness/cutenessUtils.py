@@ -83,15 +83,12 @@ class CutenessUtils(CutenessUtilsInterface):
         if not isinstance(entry, CutenessLeaderboardEntry):
             raise TypeError(f'result argument is malformed: \"{entry}\"')
 
-        rankStr = ''
+        rankStr: str
 
-        if entry.rank == 1:
-            rankStr = '🥇'
-        elif entry.rank == 2:
-            rankStr = '🥈'
-        elif entry.rank == 3:
-            rankStr = '🥉'
-        else:
-            rankStr = f'#{entry.rankStr}'
+        match entry.rank:
+            case 1: rankStr = '🥇'
+            case 2: rankStr = '🥈'
+            case 3: rankStr = '🥉'
+            case _: rankStr = f'#{entry.rankStr}'
 
         return f'{rankStr} {entry.userName} ({entry.cutenessStr})'

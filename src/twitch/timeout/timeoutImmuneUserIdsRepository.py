@@ -1,4 +1,5 @@
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
+from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
@@ -26,9 +27,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         streamElementsUserIdProvider: StreamElementsUserIdProviderInterface,
         streamLabsUserIdProvider: StreamLabsUserIdProviderInterface,
         tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface,
+        twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        additionalImmuneUserIds: set[str] | None = None
+        additionalImmuneUserIds: frozenset[str] | None = None
     ):
         if not isinstance(cynanBotUserIdsProvider, CynanBotUserIdsProviderInterface):
             raise TypeError(f'cynanBotUserIdsProvider argument is malformed: \"{cynanBotUserIdsProvider}\"')
@@ -48,11 +50,13 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'streamLabsUserIdProvider argument is malformed: \"{streamLabsUserIdProvider}\"')
         elif not isinstance(tangiaBotUserIdProvider, TangiaBotUserIdProviderInterface):
             raise TypeError(f'tangiaBotUserIdProvider argument is malformed: \"{tangiaBotUserIdProvider}\"')
+        elif not isinstance(twitchFriendsUserIdProvider, TwitchFriendsUserIdRepositoryInterface):
+            raise TypeError(f'twitchFriendsUserIdProvider argument is malformed: \"{twitchFriendsUserIdProvider}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif additionalImmuneUserIds is not None and not isinstance(additionalImmuneUserIds, set):
+        elif additionalImmuneUserIds is not None and not isinstance(additionalImmuneUserIds, frozenset):
             raise TypeError(f'additionalImmuneUserIds argument is malformed: \"{additionalImmuneUserIds}\"')
 
         self.__cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = cynanBotUserIdsProvider
@@ -64,9 +68,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = streamElementsUserIdProvider
         self.__streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = streamLabsUserIdProvider
         self.__tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = tangiaBotUserIdProvider
+        self.__twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__additionalImmuneUserIds: set[str] | None = additionalImmuneUserIds
+        self.__additionalImmuneUserIds: frozenset[str] | None = additionalImmuneUserIds
 
         self.__cachedImmuneUserIds: frozenset[str] | None = None
         self.__twitchUserId: str | None = None
@@ -94,6 +99,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         funtoonUserId = await self.__funtoonUserIdProvider.getFuntoonUserId()
         if utils.isValidStr(funtoonUserId):
             immuneUserIds.add(funtoonUserId)
+
+        mandooBotUserId = await self.__twitchFriendsUserIdProvider.getMandooBotUserId()
+        if utils.isValidStr(mandooBotUserId):
+            immuneUserIds.add(mandooBotUserId)
 
         nightbotUserId = await self.__nightbotUserIdProvider.getNightbotUserId()
         if utils.isValidStr(nightbotUserId):

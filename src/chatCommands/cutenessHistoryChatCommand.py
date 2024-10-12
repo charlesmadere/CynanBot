@@ -89,7 +89,10 @@ class CutenessHistoryChatCommand(AbsChatCommand):
                 userName = userName
             )
 
-            message = self.__cutenessUtils.getCutenessHistory(result, self.__entryDelimiter)
+            message = self.__cutenessUtils.getCutenessHistory(
+                result = result,
+                delimiter = self.__entryDelimiter
+            )
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,

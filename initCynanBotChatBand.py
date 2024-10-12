@@ -506,7 +506,7 @@ streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElem
 
 streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
 
-timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  TimeoutImmuneUserIdsRepository(
+timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
     nightbotUserIdProvider = nightbotUserIdProvider,
@@ -516,6 +516,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
+    twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository
 )
