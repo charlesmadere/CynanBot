@@ -54,14 +54,11 @@ class MyCutenessChatCommand(AbsChatCommand):
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        userId = ctx.getAuthorId()
-        userName = ctx.getAuthorName()
-
         result = await self.__cutenessRepository.fetchCutenessHistory(
             twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = userId,
-            userName = userName
+            userId = ctx.getAuthorId(),
+            userName = ctx.getAuthorName()
         )
 
         message = self.__cutenessUtils.getCutenessHistory(result, self.__delimiter)
