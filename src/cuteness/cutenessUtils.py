@@ -1,28 +1,11 @@
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
-from .cutenessResult import CutenessResult
 from .cutenessUtilsInterface import CutenessUtilsInterface
 from ..misc import utils as utils
 
 
 class CutenessUtils(CutenessUtilsInterface):
-
-    def __init__(self):
-        pass
-
-    def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
-        if not isinstance(result, CutenessResult):
-            raise TypeError(f'result argument is malformed: \"{result}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        cuteness = result.cuteness
-
-        if utils.isValidInt(cuteness) and cuteness >= 1:
-            return f'@{result.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr} ✨'
-        else:
-            return f'@{result.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
         if not isinstance(result, CutenessHistoryResult):
@@ -31,7 +14,7 @@ class CutenessUtils(CutenessUtilsInterface):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if result.entries is None or len(result.entries) == 0:
-            return f'{result.userName} has no cuteness history 😿'
+            return f'ⓘ @{result.userName} has no cuteness history 😿'
 
         historyStrs: list[str] = list()
 
@@ -43,13 +26,13 @@ class CutenessUtils(CutenessUtilsInterface):
         totalCuteness = result.totalCuteness
 
         if bestCuteness is not None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
-            return f'@{result.userName} has a total cuteness of {result.totalCutenessStr} with their best ever cuteness being {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}. And here is their recent cuteness history: {historyStr} ✨'
+            return f'ⓘ @{result.userName} has a total cuteness of {result.totalCutenessStr} with their best ever cuteness being {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}. And here is their recent cuteness history: {historyStr} ✨'
         elif bestCuteness is not None and (not utils.isValidInt(totalCuteness) or totalCuteness == 0):
-            return f'@{result.userName}\'s best ever cuteness was {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}, with a recent cuteness history of {historyStr} ✨'
+            return f'ⓘ @{result.userName}\'s best ever cuteness was {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}, with a recent cuteness history of {historyStr} ✨'
         elif bestCuteness is None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
-            return f'@{result.userName} has a total cuteness of {result.totalCutenessStr}, with a recent cuteness history of {historyStr} ✨'
+            return f'ⓘ @{result.userName} has a total cuteness of {result.totalCutenessStr}, with a recent cuteness history of {historyStr} ✨'
         else:
-            return f'@{result.userName}\'s recent cuteness history: {historyStr} ✨'
+            return f'ⓘ @{result.userName}\'s recent cuteness history: {historyStr} ✨'
 
     def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not isinstance(entries, list) or len(entries) == 0:

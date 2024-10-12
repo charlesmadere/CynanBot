@@ -12,7 +12,7 @@ from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class MyCutenessHistoryChatCommand(AbsChatCommand):
+class MyCutenessChatCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -23,7 +23,7 @@ class MyCutenessHistoryChatCommand(AbsChatCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 3)
+        cooldown: timedelta = timedelta(seconds = 1)
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -73,7 +73,11 @@ class MyCutenessHistoryChatCommand(AbsChatCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('MyCutenessHistoryChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ Unable to find user info for \"{userName}\" in the database!',
+                    replyMessageId = await ctx.getMessageId()
+                )
                 return
 
         result = await self.__cutenessRepository.fetchCutenessHistory(
@@ -83,5 +87,10 @@ class MyCutenessHistoryChatCommand(AbsChatCommand):
             userName = userName
         )
 
-        await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__delimiter))
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = self.__cutenessUtils.getCutenessHistory(result, self.__delimiter),
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('MyCutenessHistoryChatCommand', f'Handled !mycutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
