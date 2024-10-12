@@ -70,7 +70,11 @@ class CutenessChatCommand(AbsChatCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find cuteness info for \"{userName}\"')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ Unable to find cuteness info for \"{userName}\"',
+                    replyMessageId = await ctx.getMessageId()
+                )
                 return
 
             result = await self.__cutenessRepository.fetchCuteness(
@@ -97,7 +101,15 @@ class CutenessChatCommand(AbsChatCommand):
                 specificLookupUserName = userName
             )
 
-            printOut = await self.__cutenessPresenter.printLeaderboard(result)
-            await self.__twitchUtils.safeSend(ctx, printOut)
+            printOut = await self.__cutenessPresenter.printLeaderboard(
+                result = result,
+                delimiter = self.__delimiter
+            )
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = printOut,
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('CutenessChatCommand', f'Handled !cuteness command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -75,15 +75,13 @@ class TriviaScoreChatCommand(AbsChatCommand):
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
+        userName = ctx.getAuthorName()
         splits = utils.getCleanedSplits(ctx.getMessageContent())
-        userName: str | None
 
         if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
             userName = utils.removePreceedingAt(splits[1])
-        else:
-            userName = ctx.getAuthorName()
 
-        userId: str | None
+        userId = ctx.getAuthorId()
 
         # this means that a user is querying for another user's trivia score
         if userName.casefold() != ctx.getAuthorName().casefold():
@@ -91,10 +89,12 @@ class TriviaScoreChatCommand(AbsChatCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ Unable to find user info for \"{userName}\" in the database',
+                    replyMessageId = await ctx.getMessageId()
+                )
                 return
-        else:
-            userId = ctx.getAuthorId()
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.getHandle(),

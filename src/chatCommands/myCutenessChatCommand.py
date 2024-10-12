@@ -72,7 +72,7 @@ class MyCutenessChatCommand(AbsChatCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                self.__timber.log('MyCutenessHistoryChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
+                self.__timber.log('MyCutenessChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Unable to find user info for \"{userName}\" in the database!',
@@ -87,10 +87,12 @@ class MyCutenessChatCommand(AbsChatCommand):
             userName = userName
         )
 
+        message = self.__cutenessUtils.getCutenessHistory(result, self.__delimiter)
+
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = self.__cutenessUtils.getCutenessHistory(result, self.__delimiter),
+            message = message,
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('MyCutenessHistoryChatCommand', f'Handled !mycutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('MyCutenessChatCommand', f'Handled !mycuteness command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
