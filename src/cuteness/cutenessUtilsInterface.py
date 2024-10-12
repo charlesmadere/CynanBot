@@ -3,14 +3,9 @@ from abc import ABC, abstractmethod
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
-from .cutenessResult import CutenessResult
 
 
 class CutenessUtilsInterface(ABC):
-
-    @abstractmethod
-    def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
-        pass
 
     @abstractmethod
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
