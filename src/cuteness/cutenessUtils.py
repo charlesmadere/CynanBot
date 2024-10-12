@@ -48,7 +48,7 @@ class CutenessUtils(CutenessUtilsInterface):
             raise TypeError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
         if result.leaderboards is None or len(result.leaderboards) == 0:
-            return f'There is no Cuteness Leaderboard History here 😿'
+            return f'ⓘ There is no Cuteness Leaderboard History here 😿'
 
         leaderboardStrings: list[str] = list()
 
@@ -62,7 +62,7 @@ class CutenessUtils(CutenessUtilsInterface):
 
             leaderboardStrings.append(f'{leaderboard.cutenessDate.getHumanString()} {entryDelimiter.join(entryStrings)}')
 
-        return f'Cuteness Leaderboard History — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
+        return f'ⓘ Cuteness Leaderboard History — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
 
     def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not isinstance(entries, list) or len(entries) == 0:
