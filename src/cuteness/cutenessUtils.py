@@ -34,19 +34,6 @@ class CutenessUtils(CutenessUtilsInterface):
         else:
             return f'ⓘ @{result.userName}\'s recent cuteness history: {historyStr} ✨'
 
-    def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
-        if not isinstance(entries, list) or len(entries) == 0:
-            raise TypeError(f'entries argument is malformed: \"{entries}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        entryStrings: list[str] = list()
-
-        for entry in entries:
-            entryStrings.append(self.__getLeaderboardPlacementString(entry))
-
-        return delimiter.join(entryStrings)
-
     def getCutenessLeaderboardHistory(
         self,
         result: CutenessLeaderboardHistoryResult,
@@ -60,14 +47,12 @@ class CutenessUtils(CutenessUtilsInterface):
         elif not isinstance(leaderboardDelimiter, str):
             raise TypeError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
-        leaderboards = result.leaderboards
-
-        if leaderboards is None or len(leaderboards) == 0:
+        if result.leaderboards is None or len(result.leaderboards) == 0:
             return f'There is no Cuteness Leaderboard History here 😿'
 
         leaderboardStrings: list[str] = list()
 
-        for leaderboard in leaderboards:
+        for leaderboard in result.leaderboards:
             if leaderboard.entries is None or len(leaderboard.entries) == 0:
                 continue
 
@@ -78,6 +63,19 @@ class CutenessUtils(CutenessUtilsInterface):
             leaderboardStrings.append(f'{leaderboard.cutenessDate.getHumanString()} {entryDelimiter.join(entryStrings)}')
 
         return f'Cuteness Leaderboard History — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
+
+    def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
+        if not isinstance(entries, list) or len(entries) == 0:
+            raise TypeError(f'entries argument is malformed: \"{entries}\"')
+        elif not isinstance(delimiter, str):
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        entryStrings: list[str] = list()
+
+        for entry in entries:
+            entryStrings.append(self.__getLeaderboardPlacementString(entry))
+
+        return delimiter.join(entryStrings)
 
     def __getLeaderboardPlacementString(self, entry: CutenessLeaderboardEntry) -> str:
         if not isinstance(entry, CutenessLeaderboardEntry):
