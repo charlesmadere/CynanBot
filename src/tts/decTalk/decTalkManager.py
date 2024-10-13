@@ -151,9 +151,10 @@ class DecTalkManager(TtsManagerInterface):
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
+        self.__isLoading = False
+
         await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__ttsTempFileHelper.registerTempFile(fileName)
-        self.__isLoading = False
 
         return True
 
