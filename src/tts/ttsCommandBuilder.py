@@ -215,6 +215,27 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
         return message
 
+    async def buildDonationPrefix(self, event: TtsEvent | None) -> str | None:
+        if event is not None and not isinstance(event, TtsEvent):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
+
+        if event is None:
+            return None
+
+        donationPrefix = await self.__processDonationPrefix(event)
+        if not utils.isValidStr(donationPrefix):
+            return None
+
+        if event.provider is TtsProvider.DEC_TALK:
+            try:
+                # DECTalk requires Windows-1252 encoding
+                donationPrefix = donationPrefix.encode().decode('windows-1252')
+            except Exception as e:
+                self.__timber.log('TtsCommandBuilder', f'Encountered an error when attempting to re-encode message for DECTalk ({donationPrefix=}): {e}', e, traceback.format_exc())
+                return None
+
+        return donationPrefix
+
     async def __processCheerDonationPrefix(
         self,
         event: TtsEvent,

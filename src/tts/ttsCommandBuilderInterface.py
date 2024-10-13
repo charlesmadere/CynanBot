@@ -17,3 +17,7 @@ class TtsCommandBuilderInterface(ABC):
         message: str | None
     ) -> str | None:
         pass
+
+    @abstractmethod
+    async def buildDonationPrefix(self, event: TtsEvent | None) -> str | None:
+        pass

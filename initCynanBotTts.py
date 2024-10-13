@@ -194,6 +194,8 @@ from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensio
 from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from src.tts.google.googleTtsManager import GoogleTtsManager
+from src.tts.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
+from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
@@ -821,12 +823,17 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageCleaner(
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
 
 googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     googleApiService = googleApiService,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsFileManager = googleTtsFileManager,
+    googleTtsMessageCleaner = googleTtsMessageCleaner,
     googleTtsVoiceChooser = googleTtsVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,

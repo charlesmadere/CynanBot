@@ -5,6 +5,7 @@ import aiofiles.ospath
 
 from .googleTtsChoice import GoogleTtsChoice
 from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
+from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -29,6 +30,7 @@ class GoogleTtsManager(TtsManagerInterface):
         googleApiService: GoogleApiServiceInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsFileManager: GoogleTtsFileManagerInterface,
+        googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
         googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
@@ -42,6 +44,8 @@ class GoogleTtsManager(TtsManagerInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsFileManager, GoogleTtsFileManagerInterface):
             raise TypeError(f'googleTtsFileManager argument is malformed: \"{googleTtsFileManager}\"')
+        elif not isinstance(googleTtsMessageCleaner, GoogleTtsMessageCleanerInterface):
+            raise TypeError(f'googleTtsMessageCleaner argument is malformed: \"{googleTtsMessageCleaner}\"')
         elif not isinstance(googleTtsVoiceChooser, GoogleTtsVoiceChooserInterface):
             raise TypeError(f'googleTtsVoiceChooser argument is malformed: \"{googleTtsVoiceChooser}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
@@ -58,6 +62,7 @@ class GoogleTtsManager(TtsManagerInterface):
         self.__googleApiService: GoogleApiServiceInterface = googleApiService
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsFileManager: GoogleTtsFileManagerInterface = googleTtsFileManager
+        self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
         self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
@@ -109,19 +114,24 @@ class GoogleTtsManager(TtsManagerInterface):
         return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
-        if not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
+        message = await self.__googleTtsMessageCleaner.clean(event.message)
+        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
+        fullMessage: str
 
-        message = await self.__ttsCommandBuilder.buildAndCleanEvent(event)
-
-        if not utils.isValidStr(message):
+        if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
+            fullMessage = f'{donationPrefix} + {message}'
+        elif utils.isValidStr(message):
+            fullMessage = message
+        elif utils.isValidStr(donationPrefix):
+            fullMessage = donationPrefix
+        else:
             return None
 
         ttsChoice = await self.__randomlyChooseTts()
 
         request = GoogleTextSynthesizeRequest(
             synthesisInput = GoogleTextSynthesisInput(
-                text = message
+                text = fullMessage
             ),
             voice = ttsChoice.selectionParams,
             audioConfig = ttsChoice.audioConfig
