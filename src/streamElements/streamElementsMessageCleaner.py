@@ -1,12 +1,22 @@
 import re
 from typing import Any, Pattern
 
+from .streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
 from ..misc import utils as utils
+from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
-class StreamElementsMessageCleaner:
+class StreamElementsMessageCleaner(StreamElementsMessageCleanerInterface):
 
-    def __init__(self):
+    def __init__(
+        self,
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
+    ):
+        if not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
+            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+
+        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def clean(self, message: str | Any | None) -> str | None:
@@ -15,5 +25,8 @@ class StreamElementsMessageCleaner:
 
         message = utils.removeCheerStrings(message.strip()).strip()
         message = self.__extraWhiteSpaceRegEx.sub(' ', message.strip()).strip()
+
+        if len(message) > await self.__ttsSettingsRepository.getMaximumMessageSize():
+            message = message[0:await self.__ttsSettingsRepository.getMaximumMessageSize()].strip()
 
         return message

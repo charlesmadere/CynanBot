@@ -4,7 +4,6 @@ from .streamElementsHelperInterface import StreamElementsHelperInterface
 from ..apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
 from ..parser.streamElementsMessageVoiceParserInterface import StreamElementsMessageVoiceParserInterface
 from ..settings.streamElementsSettingsRepositoryInterface import StreamElementsSettingsRepositoryInterface
-from ..streamElementsMessageCleaner import StreamElementsMessageCleaner
 from ..userKeyRepository.streamElementsUserKeyRepositoryInterface import StreamElementsUserKeyRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -16,7 +15,6 @@ class StreamElementsHelper(StreamElementsHelperInterface):
     def __init__(
         self,
         streamElementsApiService: StreamElementsApiServiceInterface,
-        streamElementsMessageCleaner: StreamElementsMessageCleaner,
         streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface,
@@ -24,8 +22,6 @@ class StreamElementsHelper(StreamElementsHelperInterface):
     ):
         if not isinstance(streamElementsApiService, StreamElementsApiServiceInterface):
             raise TypeError(f'streamElementsApiService argument is malformed: \"{streamElementsApiService}\"')
-        elif not isinstance(streamElementsMessageCleaner, StreamElementsMessageCleaner):
-            raise TypeError(f'streamElementsMessageCleaner argument is malformed: \"{streamElementsMessageCleaner}\"')
         elif not isinstance(streamElementsMessageVoiceParser, StreamElementsMessageVoiceParserInterface):
             raise TypeError(f'streamElementsMessageVoiceParser argument is malformed: \"{streamElementsMessageVoiceParser}\"')
         elif not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
@@ -36,7 +32,6 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__streamElementsApiService: StreamElementsApiServiceInterface = streamElementsApiService
-        self.__streamElementsMessageCleaner: StreamElementsMessageCleaner = streamElementsMessageCleaner
         self.__streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = streamElementsMessageVoiceParser
         self.__streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = streamElementsSettingsRepository
         self.__streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = streamElementsUserKeyRepository
@@ -55,7 +50,6 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        message = await self.__streamElementsMessageCleaner.clean(message)
         if not utils.isValidStr(message):
             return None
 

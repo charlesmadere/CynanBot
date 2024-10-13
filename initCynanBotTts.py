@@ -171,6 +171,7 @@ from src.streamElements.settings.streamElementsSettingsRepository import StreamE
 from src.streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
 from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
+from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamElements.userKeyRepository.streamElementsUserKeyRepository import StreamElementsUserKeyRepository
@@ -847,7 +848,9 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
     timber = timber
 )
 
-streamElementsMessageCleaner = StreamElementsMessageCleaner()
+streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
+    ttsSettingsRepository = ttsSettingsRepository
+)
 
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
 
@@ -867,7 +870,6 @@ streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = Stre
 
 streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     streamElementsApiService = streamElementsApiService,
-    streamElementsMessageCleaner = streamElementsMessageCleaner,
     streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
@@ -884,9 +886,12 @@ streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsMan
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
+    streamElementsMessageCleaner = streamElementsMessageCleaner,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsCommandBuilder = ttsCommandBuilder,
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsTempFileHelper = ttsTempFileHelper
 )
 
 ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
