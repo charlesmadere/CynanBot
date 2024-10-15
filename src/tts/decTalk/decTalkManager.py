@@ -164,7 +164,7 @@ class DecTalkManager(TtsManagerInterface):
         fullMessage: str
 
         if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} + {message}'
+            fullMessage = f'{donationPrefix} {message}'
         elif utils.isValidStr(message):
             fullMessage = message
         elif utils.isValidStr(donationPrefix):
