@@ -419,5 +419,5 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def ttsBoosterPacks(self) -> frozendict[str, TtsBoosterPack] | None:
+    def ttsBoosterPacks(self) -> frozendict[int, TtsBoosterPack] | None:
         pass

@@ -14,7 +14,25 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
 
-    async def parseProvider(
+    async def asyncParseProvider(
+        self,
+        ttsProvider: str | Any | None
+    ) -> TtsProvider | None:
+        return self.parseProvider(ttsProvider)
+
+    async def asyncRequireProvider(
+        self,
+        ttsProvider: str | Any | None
+    ) -> TtsProvider:
+        return self.requireProvider(ttsProvider)
+
+    async def asyncSerializeProvider(
+        self,
+        ttsProvider: TtsProvider
+    ) -> str:
+        return self.serializeProvider(ttsProvider)
+
+    def parseProvider(
         self,
         ttsProvider: str | Any | None
     ) -> TtsProvider | None:
@@ -32,18 +50,18 @@ class TtsJsonMapper(TtsJsonMapperInterface):
                 self.__timber.log('TtsJsonMapper', f'Encountered unknown TtsProvider value: \"{ttsProvider}\"')
                 return None
 
-    async def requireProvider(
+    def requireProvider(
         self,
         ttsProvider: str | Any | None
     ) -> TtsProvider:
-        result = await self.parseProvider(ttsProvider)
+        result = self.parseProvider(ttsProvider)
 
         if result is None:
             raise ValueError(f'Unable to parse \"{ttsProvider}\" into TtsProvider value!')
 
         return result
 
-    async def serializeProvider(
+    def serializeProvider(
         self,
         ttsProvider: TtsProvider
     ) -> str:
@@ -55,5 +73,4 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
-            case _:
-                raise ValueError(f'The given TtsProvider value is unknown: \"{ttsProvider}\"')
+            case _: raise ValueError(f'The given TtsProvider value is unknown: \"{ttsProvider}\"')

@@ -162,8 +162,8 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
 from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
-from src.users.tts.ttsJsonParser import TtsJsonParser
-from src.users.tts.ttsJsonParserInterface import TtsJsonParserInterface
+from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
+from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -344,7 +344,7 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
-ttsJsonParser: TtsJsonParserInterface = TtsJsonParser()
+ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
@@ -352,7 +352,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    ttsJsonParser = ttsJsonParser
+    ttsBoosterPackParser = ttsBoosterPackParser
 )
 
 twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(

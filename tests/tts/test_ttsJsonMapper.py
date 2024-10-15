@@ -16,98 +16,96 @@ class TestTtsJsonMapper:
     )
 
     @pytest.mark.asyncio
-    async def test_parseProvider_withDecTalkString(self):
-        result = await self.jsonMapper.parseProvider('dec_talk')
+    async def test_asyncParseProvider_withDecTalkString(self):
+        result = await self.jsonMapper.asyncParseProvider('dec_talk')
         assert result is TtsProvider.DEC_TALK
 
     @pytest.mark.asyncio
-    async def test_parseProvider_withEmptyString(self):
-        result = await self.jsonMapper.parseProvider('')
+    async def test_asyncParseProvider_withEmptyString(self):
+        result = await self.jsonMapper.asyncParseProvider('')
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withDecTalk(self):
+        result = await self.jsonMapper.asyncParseProvider(TtsProvider.DEC_TALK)
+        assert result == 'dec_talk'
+
+    async def test_parseProvider_withDecTalkString(self):
+        result = self.jsonMapper.parseProvider('dec_talk')
+        assert result is TtsProvider.DEC_TALK
+
+    async def test_parseProvider_withEmptyString(self):
+        result = self.jsonMapper.parseProvider('')
+        assert result is None
+
     async def test_parseProvider_withGoogleString(self):
-        result = await self.jsonMapper.parseProvider('google')
+        result = self.jsonMapper.parseProvider('google')
         assert result is TtsProvider.GOOGLE
 
-    @pytest.mark.asyncio
     async def test_parseProvider_withNone(self):
-        result = await self.jsonMapper.parseProvider(None)
+        result = self.jsonMapper.parseProvider(None)
         assert result is None
 
-    @pytest.mark.asyncio
     async def test_parseProvider_withStreamElementsString(self):
-        result = await self.jsonMapper.parseProvider('stream_elements')
+        result = self.jsonMapper.parseProvider('stream_elements')
         assert result is TtsProvider.STREAM_ELEMENTS
 
-    @pytest.mark.asyncio
     async def test_parseProvider_withTtsMonsterString(self):
-        result = await self.jsonMapper.parseProvider('tts_monster')
+        result = self.jsonMapper.parseProvider('ttsmonster')
         assert result is TtsProvider.TTS_MONSTER
 
-    @pytest.mark.asyncio
     async def test_parseProvider_withWhitespaceString(self):
-        result = await self.jsonMapper.parseProvider(' ')
+        result = self.jsonMapper.parseProvider(' ')
         assert result is None
 
-    @pytest.mark.asyncio
     async def test_requireProvider_withDecTalkString(self):
-        result = await self.jsonMapper.requireProvider('dec_talk')
+        result = self.jsonMapper.requireProvider('dec_talk')
         assert result is TtsProvider.DEC_TALK
 
-    @pytest.mark.asyncio
     async def test_requireProvider_withEmptyString(self):
         result: TtsProvider | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireProvider('')
+            result = self.jsonMapper.requireProvider('')
 
         assert result is None
 
-    @pytest.mark.asyncio
     async def test_requireProvider_withGoogleString(self):
-        result = await self.jsonMapper.requireProvider('google')
+        result = self.jsonMapper.requireProvider('google')
         assert result is TtsProvider.GOOGLE
 
-    @pytest.mark.asyncio
     async def test_requireProvider_withNone(self):
         result: TtsProvider | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireProvider(None)
+            result = self.jsonMapper.requireProvider(None)
 
         assert result is None
 
-    @pytest.mark.asyncio
     async def test_requireProvider_withTtsMonsterString(self):
-        result = await self.jsonMapper.requireProvider('tts_monster')
+        result = self.jsonMapper.requireProvider('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
 
-    @pytest.mark.asyncio
     async def test_requireProvider_withWhitespaceString(self):
         result: TtsProvider | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireProvider(' ')
+            result = self.jsonMapper.requireProvider(' ')
 
         assert result is None
 
-    @pytest.mark.asyncio
     async def test_serializeProvider_withDecTalk(self):
-        result = await self.jsonMapper.serializeProvider(TtsProvider.DEC_TALK)
+        result = self.jsonMapper.serializeProvider(TtsProvider.DEC_TALK)
         assert result == 'dec_talk'
 
-    @pytest.mark.asyncio
     async def test_serializeProvider_withGoogle(self):
-        result = await self.jsonMapper.serializeProvider(TtsProvider.GOOGLE)
+        result = self.jsonMapper.serializeProvider(TtsProvider.GOOGLE)
         assert result == 'google'
 
-    @pytest.mark.asyncio
     async def test_serializeProvider_withStreamElements(self):
-        result = await self.jsonMapper.serializeProvider(TtsProvider.STREAM_ELEMENTS)
+        result = self.jsonMapper.serializeProvider(TtsProvider.STREAM_ELEMENTS)
         assert result == 'stream_elements'
 
-    @pytest.mark.asyncio
     async def test_serializeProvider_withTtsMonster(self):
-        result = await self.jsonMapper.serializeProvider(TtsProvider.TTS_MONSTER)
+        result = self.jsonMapper.serializeProvider(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'

@@ -53,7 +53,7 @@ class TtsChatCommand(AbsChatCommand):
         strings: list[str] = list()
 
         for ttsProvider in list(TtsProvider):
-            strings.append(await self.__ttsJsonMapper.serializeProvider(ttsProvider))
+            strings.append(await self.__ttsJsonMapper.asyncSerializeProvider(ttsProvider))
 
         strings.sort(key = lambda ttsProvider: ttsProvider.casefold())
         return strings
@@ -92,7 +92,7 @@ class TtsChatCommand(AbsChatCommand):
 
         if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)) and len(splits) >= 3:
             try:
-                ttsProvider = await self.__ttsJsonMapper.requireProvider(ttsProviderMatch.group(1))
+                ttsProvider = await self.__ttsJsonMapper.asyncRequireProvider(ttsProviderMatch.group(1))
                 message = ' '.join(splits[2:])
             except ValueError:
                 ttsProviderStrings = await self.__getTtsProviderStrings()

@@ -4,10 +4,9 @@ from typing import Any
 from frozendict import frozendict
 
 from .ttsBoosterPack import TtsBoosterPack
-from ...tts.ttsProvider import TtsProvider
 
 
-class TtsJsonParserInterface(ABC):
+class TtsBoosterPackParserInterface(ABC):
 
     @abstractmethod
     def parseBoosterPack(
@@ -20,12 +19,5 @@ class TtsJsonParserInterface(ABC):
     def parseBoosterPacks(
         self,
         jsonContents: list[dict[str, Any]] | Any | None
-    ) -> frozendict[str, TtsBoosterPack] | None:
-        pass
-
-    @abstractmethod
-    def parseTtsProvider(
-        self,
-        ttsProvider: str
-    ) -> TtsProvider:
+    ) -> frozendict[int, TtsBoosterPack] | None:
         pass

@@ -16,7 +16,7 @@ from .pkmn.pkmnCatchType import PkmnCatchType
 from .pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from .soundAlertRedemption import SoundAlertRedemption
 from .tts.ttsBoosterPack import TtsBoosterPack
-from .tts.ttsJsonParserInterface import TtsJsonParserInterface
+from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
@@ -36,7 +36,7 @@ class UsersRepository(UsersRepositoryInterface):
         soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        ttsJsonParser: TtsJsonParserInterface,
+        ttsBoosterPackParser: TtsBoosterPackParserInterface,
         usersFile: str = 'usersRepository.json'
     ):
         if not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
@@ -49,8 +49,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(ttsJsonParser, TtsJsonParserInterface):
-            raise TypeError(f'ttsJsonParser argument is malformed: \"{ttsJsonParser}\"')
+        elif not isinstance(ttsBoosterPackParser, TtsBoosterPackParserInterface):
+            raise TypeError(f'ttsBoosterPackParser argument is malformed: \"{ttsBoosterPackParser}\"')
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
@@ -59,7 +59,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__ttsJsonParser: TtsJsonParserInterface = ttsJsonParser
+        self.__ttsBoosterPackParser: TtsBoosterPackParserInterface = ttsBoosterPackParser
         self.__usersFile: str = usersFile
 
         self.__jsonCache: dict[str, Any] | None = None
@@ -278,10 +278,10 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
 
-        ttsBoosterPacks: frozendict[str, TtsBoosterPack] | None = None
+        ttsBoosterPacks: frozendict[int, TtsBoosterPack] | None = None
         if isTtsEnabled:
             ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
-            ttsBoosterPacks = self.__ttsJsonParser.parseBoosterPacks(ttsBoosterPacksJson)
+            ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
 
         crowdControlButtonPressRewardId: str | None = None
         crowdControlGameShuffleRewardId: str | None = None

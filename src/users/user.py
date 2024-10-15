@@ -112,7 +112,7 @@ class User(UserInterface):
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
-        ttsBoosterPacks: frozendict[str, TtsBoosterPack] | None,
+        ttsBoosterPacks: frozendict[int, TtsBoosterPack] | None,
         timeZones: FrozenList[tzinfo] | None
     ):
         if not utils.isValidBool(areBeanChancesEnabled):
@@ -404,7 +404,7 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
-        self.__ttsBoosterPacks: frozendict[str, TtsBoosterPack] | None = ttsBoosterPacks
+        self.__ttsBoosterPacks: frozendict[int, TtsBoosterPack] | None = ttsBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
 
     @property
@@ -758,5 +758,5 @@ class User(UserInterface):
         return self.__timeZones
 
     @property
-    def ttsBoosterPacks(self) -> frozendict[str, TtsBoosterPack] | None:
+    def ttsBoosterPacks(self) -> frozendict[int, TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
