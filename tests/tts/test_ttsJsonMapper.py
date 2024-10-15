@@ -27,7 +27,7 @@ class TestTtsJsonMapper:
 
     @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withDecTalk(self):
-        result = await self.jsonMapper.asyncParseProvider(TtsProvider.DEC_TALK)
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.DEC_TALK)
         assert result == 'dec_talk'
 
     async def test_parseProvider_withDecTalkString(self):
