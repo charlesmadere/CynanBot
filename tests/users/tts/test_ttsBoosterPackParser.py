@@ -53,13 +53,13 @@ class TestTtsBoosterPackParser:
         assert len(results) == 3
 
         entry = results[0]
-        assert entry.cheerAmount == 50
-        assert entry.ttsProvider is TtsProvider.DEC_TALK
+        assert entry.cheerAmount == 150
+        assert entry.ttsProvider is TtsProvider.TTS_MONSTER
 
         entry = results[1]
         assert entry.cheerAmount == 100
         assert entry.ttsProvider is TtsProvider.STREAM_ELEMENTS
 
         entry = results[2]
-        assert entry.cheerAmount == 150
-        assert entry.ttsProvider is TtsProvider.TTS_MONSTER
+        assert entry.cheerAmount == 50
+        assert entry.ttsProvider is TtsProvider.DEC_TALK

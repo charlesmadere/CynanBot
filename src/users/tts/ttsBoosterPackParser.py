@@ -43,7 +43,7 @@ class TtsBoosterPackParser(TtsBoosterPackParserInterface):
         for boosterPackJson in jsonContents:
             boosterPacks.append(self.parseBoosterPack(boosterPackJson))
 
-        boosterPacks.sort(key = lambda boosterPack: boosterPack.cheerAmount)
+        boosterPacks.sort(key = lambda boosterPack: boosterPack.cheerAmount, reverse = True)
         frozenBoosterPacks: FrozenList[TtsBoosterPack] = FrozenList(boosterPacks)
         frozenBoosterPacks.freeze()
 
