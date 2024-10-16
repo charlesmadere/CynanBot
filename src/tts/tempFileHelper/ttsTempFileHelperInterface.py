@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Collection
 
 
 class TtsTempFileHelperInterface(ABC):
@@ -9,4 +10,8 @@ class TtsTempFileHelperInterface(ABC):
 
     @abstractmethod
     async def registerTempFile(self, fileName: str | None):
+        pass
+
+    @abstractmethod
+    async def registerTempFiles(self, fileNames: Collection[str]):
         pass

@@ -2,7 +2,7 @@ import asyncio
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import Any, ByteString
+from typing import ByteString
 
 import aiofiles.ospath
 import psutil
@@ -174,13 +174,3 @@ class DecTalkManager(TtsManagerInterface):
 
         message = await self.__applyRandomVoice(fullMessage)
         return await self.__decTalkFileManager.writeCommandToNewFile(message)
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'isLoading': self.__isLoading,
-            'isPlaying': self.__isPlaying
-        }

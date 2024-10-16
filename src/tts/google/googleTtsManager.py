@@ -1,5 +1,4 @@
 import traceback
-from typing import Any
 
 import aiofiles.ospath
 
@@ -168,12 +167,3 @@ class GoogleTtsManager(TtsManagerInterface):
             audioConfig = audioConfig,
             selectionParams = selectionParams
         )
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'isLoading': self.__isLoading
-        }

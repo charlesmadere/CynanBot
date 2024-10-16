@@ -1,5 +1,3 @@
-from typing import Any
-
 import aiofiles.ospath
 
 from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
@@ -109,7 +107,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         fullMessage: str
 
         if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} + {message}'
+            fullMessage = f'{donationPrefix} {message}'
         elif utils.isValidStr(message):
             fullMessage = message
         elif utils.isValidStr(donationPrefix):
@@ -128,12 +126,3 @@ class StreamElementsTtsManager(TtsManagerInterface):
             return None
 
         return await self.__streamElementsFileManager.saveSpeechToNewFile(speechBytes)
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'isLoading': self.__isLoading
-        }

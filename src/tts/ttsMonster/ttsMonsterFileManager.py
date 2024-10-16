@@ -11,7 +11,6 @@ import aiofiles.ospath
 from frozenlist import FrozenList
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
@@ -24,7 +23,6 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
-        ttsTempFileHelper: TtsTempFileHelperInterface,
         directory: str = 'temp',
         fileExtension: str = 'wav'
     ):
@@ -34,8 +32,6 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsMonsterApiService, TtsMonsterApiServiceInterface):
             raise TypeError(f'ttsMonsterApiService argument is malformed: \"{ttsMonsterApiService}\"')
-        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
-            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(fileExtension):
@@ -44,7 +40,6 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__timber: TimberInterface = timber
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
-        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
         self.__directory: str = directory
         self.__fileExtension: str = fileExtension
 
@@ -78,8 +73,6 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         except Exception as e:
             self.__timber.log('TtsMonsterFileManager', f'Encountered exception when trying to write TTS Monster sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
             raise e
-
-        await self.__ttsTempFileHelper.registerTempFile(fileName)
 
     async def __generateFileNames(self, size: int) -> FrozenList[str]:
         if not utils.isValidInt(size):

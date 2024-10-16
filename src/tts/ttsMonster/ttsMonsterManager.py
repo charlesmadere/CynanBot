@@ -1,8 +1,6 @@
 import locale
 import math
 
-from frozenlist import FrozenList
-
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
@@ -103,12 +101,14 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             self.__isLoading = False
             return False
 
-        ttsFileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
+        fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
 
-        if ttsFileNames is None or len(ttsFileNames) == 0:
-            self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({ttsFileNames=})')
+        if fileNames is None or len(fileNames) == 0:
+            self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
             self.__isLoading = False
             return False
+
+        await self.__ttsTempFileHelper.registerTempFiles(fileNames)
 
         await self.__reportCharacterUsage(
             characterAllowance = ttsMonsterUrls.characterAllowance,
@@ -116,10 +116,10 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             twitchChannel = event.twitchChannel
         )
 
-        self.__timber.log('TtsMonsterManager', f'Playing {len(ttsFileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
+        self.__timber.log('TtsMonsterManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
 
         await self.__soundPlayerManager.playPlaylist(
-            filePaths = ttsFileNames,
+            filePaths = fileNames,
             volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
         )
 
@@ -127,21 +127,17 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
 
         return True
 
-    async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
-        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
-        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        # TODO
-        return None
-
     async def __reportCharacterUsage(
         self,
         characterAllowance: int | None,
         characterUsage: int | None,
         twitchChannel: str
     ):
-        if not utils.isValidInt(characterUsage) or self.__twitchChannelProvider is None:
+        if not utils.isValidInt(characterUsage):
+            return
+
+        twitchChannelProvider = self.__twitchChannelProvider
+        if twitchChannelProvider is None:
             return
 
         remainingCharactersString = ''
@@ -156,7 +152,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__timber.log('TtsMonsterManager', f'Current TTS Monster character usage stats in \"{twitchChannel}\": ({characterUsage=}) ({characterAllowance=}) ({usagePercentString=})')
 
         characterUsageString = locale.format_string("%d", characterUsage, grouping = True)
-        messageable = await self.__twitchChannelProvider.getTwitchChannel(twitchChannel)
+        messageable = await twitchChannelProvider.getTwitchChannel(twitchChannel)
 
         await self.__twitchUtils.waitThenSend(
             messageable = messageable,

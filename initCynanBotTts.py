@@ -969,8 +969,7 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
 ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
     eventLoop = eventLoop,
     timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService,
-    ttsTempFileHelper = ttsTempFileHelper
+    ttsMonsterApiService = ttsMonsterApiService
 )
 
 ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(

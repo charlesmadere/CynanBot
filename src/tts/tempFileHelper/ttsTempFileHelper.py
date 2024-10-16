@@ -1,8 +1,10 @@
 import os
 import traceback
 from datetime import datetime, timedelta
+from typing import Collection
 
 import aiofiles.ospath
+from frozenlist import FrozenList
 
 from .ttsTempFile import TtsTempFile
 from .ttsTempFileHelperInterface import TtsTempFileHelperInterface
@@ -99,6 +101,19 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
             creationDateTime = now,
             fileName = fileName
         ))
+
+    async def registerTempFiles(self, fileNames: Collection[str]):
+        if not isinstance(fileNames, Collection):
+            raise TypeError(f'fileNames argument is malformed: \"{fileNames}\"')
+
+        frozenFileNames: FrozenList[str] = FrozenList(fileNames)
+        frozenFileNames.freeze()
+
+        if len(frozenFileNames) == 0:
+            return
+
+        for fileName in frozenFileNames:
+            await self.registerTempFile(fileName)
 
     async def __removeFile(self, fileName: str) -> bool:
         if not await aiofiles.ospath.exists(fileName):
