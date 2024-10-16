@@ -92,7 +92,8 @@ class TestDecTalkMessageCleaner:
     @pytest.mark.asyncio
     async def test_clean_withCrazyLoudBoopSound(self):
         result = await self.cleaner.clean('[:phoneme arpabet on] [:nh][:dv gv 100][:dv ap 10000][:dv hs 200][llao<90047,999>][burr<90047,40>][aa<90047,999>][hxae<900047,40>] [burr<90047,40>]')
-        # TODO
+        # IDK, this test is clearly incomplete but at the same time, I guess this is OK to not completely clean this
+        # particular TTS string. In the future this might need to change but ehhh maybe this is OK for now.
         assert isinstance(result, str)
 
     @pytest.mark.asyncio
