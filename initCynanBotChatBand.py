@@ -103,6 +103,8 @@ from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
+from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
+from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
@@ -633,6 +635,13 @@ immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSou
 )
 
 
+##################################################
+## Stream Alerts Manager initialization section ##
+##################################################
+
+streamAlertsManager: StreamAlertsManagerInterface = StubStreamAlertsManager()
+
+
 ##########################################
 ## Cheer Actions initialization section ##
 ##########################################
@@ -725,7 +734,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 
 twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
     cheerActionHelper = cheerActionHelper,
-    streamAlertsManager = None,
+    streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,
     triviaGameMachine = None
@@ -793,7 +802,7 @@ cynanBot = CynanBot(
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,
-    streamAlertsManager = None,
+    streamAlertsManager = streamAlertsManager,
     streamAlertsSettingsRepository = None,
     streamElementsSettingsRepository = None,
     streamElementsUserKeyRepository = None,
