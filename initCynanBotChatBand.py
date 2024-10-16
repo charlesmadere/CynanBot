@@ -113,6 +113,8 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.tts.ttsJsonMapper import TtsJsonMapper
+from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -344,6 +346,10 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
+ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+    timber = timber
+)
+
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
@@ -352,7 +358,8 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    ttsBoosterPackParser = ttsBoosterPackParser
+    ttsBoosterPackParser = ttsBoosterPackParser,
+    ttsJsonMapper = ttsJsonMapper
 )
 
 twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(

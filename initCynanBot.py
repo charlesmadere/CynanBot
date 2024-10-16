@@ -316,6 +316,8 @@ from src.trivia.triviaUtils import TriviaUtils
 from src.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from src.trivia.triviaVerifier import TriviaVerifier
 from src.trivia.triviaVerifierInterface import TriviaVerifierInterface
+from src.tts.ttsJsonMapper import TtsJsonMapper
+from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -548,6 +550,10 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
+ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+    timber = timber
+)
+
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
@@ -556,7 +562,8 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    ttsBoosterPackParser = ttsBoosterPackParser
+    ttsBoosterPackParser = ttsBoosterPackParser,
+    ttsJsonMapper = ttsJsonMapper
 )
 
 twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(

@@ -90,6 +90,12 @@ class TestDecTalkMessageCleaner:
         assert result == 'hello world blah'
 
     @pytest.mark.asyncio
+    async def test_clean_withCrazyLoudBoopSound(self):
+        result = await self.cleaner.clean('[:phoneme arpabet on] [:nh][:dv gv 100][:dv ap 10000][:dv hs 200][llao<90047,999>][burr<90047,40>][aa<90047,999>][hxae<900047,40>] [burr<90047,40>]')
+        # TODO
+        assert isinstance(result, str)
+
+    @pytest.mark.asyncio
     async def test_clean_withDangerousCharactersString(self):
         result = await self.cleaner.clean('& cd C:\\ & dir')
         assert result == 'cd C:\\ dir'

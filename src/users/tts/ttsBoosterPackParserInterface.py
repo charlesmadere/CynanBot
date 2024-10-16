@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .ttsBoosterPack import TtsBoosterPack
 
@@ -19,5 +19,5 @@ class TtsBoosterPackParserInterface(ABC):
     def parseBoosterPacks(
         self,
         jsonContents: list[dict[str, Any]] | Any | None
-    ) -> frozendict[int, TtsBoosterPack] | None:
+    ) -> FrozenList[TtsBoosterPack] | None:
         pass

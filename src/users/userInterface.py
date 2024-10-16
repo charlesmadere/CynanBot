@@ -9,6 +9,7 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .tts.ttsBoosterPack import TtsBoosterPack
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
+from ..tts.ttsProvider import TtsProvider
 
 
 class UserInterface(ABC):
@@ -76,6 +77,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def cutenessBoosterPacks(self) -> frozendict[str, CutenessBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def defaultTtsProvider(self) -> TtsProvider:
         pass
 
     @abstractmethod
@@ -419,5 +425,5 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def ttsBoosterPacks(self) -> frozendict[int, TtsBoosterPack] | None:
+    def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         pass

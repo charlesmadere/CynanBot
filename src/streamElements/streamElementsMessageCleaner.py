@@ -26,7 +26,8 @@ class StreamElementsMessageCleaner(StreamElementsMessageCleanerInterface):
         message = utils.removeCheerStrings(message.strip()).strip()
         message = self.__extraWhiteSpaceRegEx.sub(' ', message.strip()).strip()
 
-        if len(message) > await self.__ttsSettingsRepository.getMaximumMessageSize():
-            message = message[0:await self.__ttsSettingsRepository.getMaximumMessageSize()].strip()
+        maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
+        if len(message) > maximumMessageSize:
+            message = message[0:maximumMessageSize].strip()
 
         return message

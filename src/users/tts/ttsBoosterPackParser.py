@@ -1,7 +1,6 @@
-from collections import OrderedDict
 from typing import Any
 
-from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .ttsBoosterPack import TtsBoosterPack
 from .ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
@@ -35,7 +34,7 @@ class TtsBoosterPackParser(TtsBoosterPackParserInterface):
     def parseBoosterPacks(
         self,
         jsonContents: list[dict[str, Any]] | Any | None
-    ) -> frozendict[int, TtsBoosterPack] | None:
+    ) -> FrozenList[TtsBoosterPack] | None:
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None
 
@@ -45,9 +44,7 @@ class TtsBoosterPackParser(TtsBoosterPackParserInterface):
             boosterPacks.append(self.parseBoosterPack(boosterPackJson))
 
         boosterPacks.sort(key = lambda boosterPack: boosterPack.cheerAmount)
-        boosterPacksDictionary: dict[int, TtsBoosterPack] = OrderedDict()
+        frozenBoosterPacks: FrozenList[TtsBoosterPack] = FrozenList(boosterPacks)
+        frozenBoosterPacks.freeze()
 
-        for boosterPack in boosterPacks:
-            boosterPacksDictionary[boosterPack.cheerAmount] = boosterPack
-
-        return frozendict(boosterPacksDictionary)
+        return frozenBoosterPacks

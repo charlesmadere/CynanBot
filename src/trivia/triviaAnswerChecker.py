@@ -910,6 +910,44 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'travelling':
             yield 'traveling'
 
+        # days of the week
+        if word == 'mon':
+            yield 'monday'
+        if word in ('tue', 'tues'):
+            yield 'tuesday'
+        if word in ('wed', 'weds'):
+            yield 'wednesday'
+        if word == 'thurs':
+            yield 'thursday'
+        if word == 'fri':
+            yield 'friday'
+        if word == 'sat':
+            yield 'saturday'
+        if word == 'sun':
+            yield 'sunday'
+
+        # months of the year
+        if word == 'jan':
+            yield 'january'
+        if word == 'feb':
+            yield 'february'
+        if word == 'mar':
+            yield 'march'
+        if word == 'apr':
+            yield 'april'
+        if word == 'jun':
+            yield 'june'
+        if word in ('jul', 'jly'):
+            yield 'july'
+        if word == 'aug':
+            yield 'august'
+        if word in ('sep', 'sept'):
+            yield 'september'
+        if word == 'nov':
+            yield 'november'
+        if word == 'dec':
+            yield 'december'
+
         # commonly misspelled words
         if word in ('absense', 'abcense', 'abcence'):
             yield 'absence'

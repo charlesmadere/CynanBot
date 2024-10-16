@@ -1,9 +1,12 @@
 import locale
 import math
 
+from frozenlist import FrozenList
+
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
+from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -11,6 +14,7 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
@@ -21,8 +25,10 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
+        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsMonsterFileManager: TtsMonsterFileManagerInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
+        ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         ttsTempFileHelper: TtsTempFileHelperInterface,
@@ -32,10 +38,14 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
+            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsMonsterFileManager, TtsMonsterFileManagerInterface):
             raise TypeError(f'ttsMonsterFileManager argument is malformed: \"{ttsMonsterFileManager}\"')
         elif not isinstance(ttsMonsterHelper, TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
+        elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
+            raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
@@ -47,8 +57,10 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
 
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
+        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
+        self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = ttsMonsterMessageCleaner
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
@@ -114,6 +126,14 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__isLoading = False
 
         return True
+
+    async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
+        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
+        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
+        fullMessage: str
+
+        # TODO
+        return None
 
     async def __reportCharacterUsage(
         self,

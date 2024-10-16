@@ -244,6 +244,7 @@ from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepository import Tts
 from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import \
     TtsMonsterStreamerVoicesRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
+from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -494,7 +495,8 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    ttsBoosterPackParser = ttsBoosterPackParser
+    ttsBoosterPackParser = ttsBoosterPackParser,
+    ttsJsonMapper = ttsJsonMapper
 )
 
 twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(
@@ -950,10 +952,13 @@ ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface 
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository
 )
 
-ttsMonsterMessageCleaner = TtsMonsterMessageCleaner()
+ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
+    ttsSettingsRepository = ttsSettingsRepository
+)
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
     ttsMonsterApiService = ttsMonsterApiService,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
@@ -975,6 +980,7 @@ ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
     ttsMonsterHelper = ttsMonsterHelper,
+    ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     ttsTempFileHelper = ttsTempFileHelper,

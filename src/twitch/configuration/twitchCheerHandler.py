@@ -233,15 +233,16 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif utils.isValidInt(minimumTtsCheerAmount) and bits < minimumTtsCheerAmount:
             return
 
-        donation: TtsDonation = TtsCheerDonation(bits = bits)
-        provider: TtsProvider
+        provider = user.defaultTtsProvider
+        ttsBoosterPacks = user.ttsBoosterPacks
 
-        if bits >= 150:
-            provider = TtsProvider.TTS_MONSTER
-        elif bits >= 100:
-            provider = TtsProvider.STREAM_ELEMENTS
-        else:
-            provider = TtsProvider.DEC_TALK
+        if ttsBoosterPacks is not None and len(ttsBoosterPacks) >= 1:
+            for ttsBoosterPack in ttsBoosterPacks:
+                if bits >= ttsBoosterPack.cheerAmount:
+                    provider = ttsBoosterPack.ttsProvider
+                    break
+
+        donation: TtsDonation = TtsCheerDonation(bits = bits)
 
         streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,

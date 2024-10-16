@@ -25,6 +25,8 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from ..timber.timberInterface import TimberInterface
+from ..tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ..tts.ttsProvider import TtsProvider
 
 
 class UsersRepository(UsersRepositoryInterface):
@@ -37,6 +39,7 @@ class UsersRepository(UsersRepositoryInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
+        ttsJsonMapper: TtsJsonMapperInterface,
         usersFile: str = 'usersRepository.json'
     ):
         if not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
@@ -51,6 +54,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsBoosterPackParser, TtsBoosterPackParserInterface):
             raise TypeError(f'ttsBoosterPackParser argument is malformed: \"{ttsBoosterPackParser}\"')
+        elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
+            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
@@ -60,6 +65,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsBoosterPackParser: TtsBoosterPackParserInterface = ttsBoosterPackParser
+        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
         self.__usersFile: str = usersFile
 
         self.__jsonCache: dict[str, Any] | None = None
@@ -278,8 +284,12 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
 
-        ttsBoosterPacks: frozendict[int, TtsBoosterPack] | None = None
+        defaultTtsProvider = TtsProvider.DEC_TALK
+        ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = None
         if isTtsEnabled:
+            if 'defaultTtsProvider' in userJson and utils.isValidStr(userJson.get('defaultTtsProvider')):
+                defaultTtsProvider = self.__ttsJsonMapper.requireProvider(utils.getStrFromDict(userJson, 'defaultTtsProvider'))
+
             ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
             ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
 
@@ -385,6 +395,7 @@ class UsersRepository(UsersRepositoryInterface):
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             twitterUrl = twitterUrl,
+            defaultTtsProvider = defaultTtsProvider,
             crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,

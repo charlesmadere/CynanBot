@@ -10,6 +10,7 @@ from .tts.ttsBoosterPack import TtsBoosterPack
 from .userInterface import UserInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..misc import utils as utils
+from ..tts.ttsProvider import TtsProvider
 
 
 class User(UserInterface):
@@ -108,12 +109,13 @@ class User(UserInterface):
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
         twitterUrl: str,
+        defaultTtsProvider: TtsProvider,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
-        ttsBoosterPacks: frozendict[int, TtsBoosterPack] | None,
-        timeZones: FrozenList[tzinfo] | None
+        timeZones: FrozenList[tzinfo] | None,
+        ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
     ):
         if not utils.isValidBool(areBeanChancesEnabled):
             raise TypeError(f'areBeanChancesEnabled argument is malformed: \"{areBeanChancesEnabled}\"')
@@ -295,6 +297,8 @@ class User(UserInterface):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif twitterUrl is not None and not isinstance(twitterUrl, str):
             raise TypeError(f'twitterUrl argument is malformed: \"{twitterUrl}\"')
+        elif not isinstance(defaultTtsProvider, TtsProvider):
+            raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
             raise TypeError(f'crowdControlBoosterPacks argument is malformed: \"{crowdControlBoosterPacks}\"')
         elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
@@ -303,10 +307,10 @@ class User(UserInterface):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
-        elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, frozendict):
-            raise TypeError(f'ttsBoosterPacks argument is malformed: \"{ttsBoosterPacks}\"')
         elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
+        elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, FrozenList):
+            raise TypeError(f'ttsBoosterPacks argument is malformed: \"{ttsBoosterPacks}\"')
 
         self.__areBeanChancesEnabled: bool = areBeanChancesEnabled
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
@@ -400,12 +404,13 @@ class User(UserInterface):
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__twitterUrl: str | None = twitterUrl
+        self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
-        self.__ttsBoosterPacks: frozendict[int, TtsBoosterPack] | None = ttsBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
+        self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
 
     @property
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:
@@ -458,6 +463,10 @@ class User(UserInterface):
     @property
     def cutenessBoosterPacks(self) -> frozendict[str, CutenessBoosterPack] | None:
         return self.__cutenessBoosterPacks
+
+    @property
+    def defaultTtsProvider(self) -> TtsProvider:
+        return self.__defaultTtsProvider
 
     def getCasualGamePollRewardId(self) -> str | None:
         return self.__casualGamePollRewardId
@@ -758,5 +767,5 @@ class User(UserInterface):
         return self.__timeZones
 
     @property
-    def ttsBoosterPacks(self) -> frozendict[int, TtsBoosterPack] | None:
+    def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
