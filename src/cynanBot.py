@@ -303,7 +303,7 @@ class CynanBot(
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         starWarsQuotesRepository: StarWarsQuotesRepositoryInterface | None,
-        streamAlertsManager: StreamAlertsManagerInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface | None,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface | None,
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
@@ -477,7 +477,7 @@ class CynanBot(
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface):
             raise TypeError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif streamAlertsSettingsRepository is not None and not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
             raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
@@ -597,7 +597,7 @@ class CynanBot(
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__recurringActionsMachine: RecurringActionsMachineInterface | None = recurringActionsMachine
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
