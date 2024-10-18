@@ -22,7 +22,7 @@ mock = "5.1.0"
 multidict = '6.1.0'
 num2words = "0.5.13"
 polyleven = "0.8"
-psutil = "6.0.0"
+psutil = "6.1.0"
 pyjwt = "2.9.0"
 pytest = "8.3.3"
 pytest-asyncio = "0.24.0"
@@ -37,7 +37,7 @@ typing_extensions = "4.12.2"
 urllib3 = '2.2.3'
 websockets = "13.1"
 xmltodict = "0.14.2"
-yarl = "1.15.3"
+yarl = "1.15.4"
 
 [dev-packages]
 
