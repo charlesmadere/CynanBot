@@ -8,7 +8,6 @@ from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProvider import TtsProvider
 from ...tts.ttsRaidInfo import TtsRaidInfo
 from ...users.userInterface import UserInterface
 
@@ -18,18 +17,18 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     def __init__(
         self,
         chatLogger: ChatLoggerInterface,
-        streamAlertsManager: StreamAlertsManagerInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface
     ):
         if not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatLogger: ChatLoggerInterface = chatLogger
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -104,18 +103,14 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        streamAlertsManager = self.__streamAlertsManager
-
-        if streamAlertsManager is None:
-            return
-        elif not user.isTtsEnabled():
+        if not user.isTtsEnabled():
             return
         elif viewers < 1:
             return
 
         raidInfo = TtsRaidInfo(viewers = viewers)
 
-        streamAlertsManager.submitAlert(StreamAlert(
+        self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.RAID,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
@@ -126,7 +121,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
                 userId = userId,
                 userName = fromUserName,
                 donation = None,
-                provider = TtsProvider.DEC_TALK,
+                provider = user.defaultTtsProvider,
                 raidInfo = raidInfo
             )
         ))

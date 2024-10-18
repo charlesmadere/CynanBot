@@ -955,10 +955,8 @@ class CynanBot(
         self.__twitchTokensRepository.start()
         self.__sentMessageLogger.start()
         self.__chatLogger.start()
+        self.__streamAlertsManager.start()
         self.__twitchUtils.start()
-
-        if self.__streamAlertsManager is not None:
-            self.__streamAlertsManager.start()
 
         if self.__beanChanceCheerActionHelper is not None:
             self.__beanChanceCheerActionHelper.setTwitchChannelProvider(self)
@@ -1043,6 +1041,8 @@ class CynanBot(
                 twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
                 websocketConnectionServer = self.__websocketConnectionServer
             )
+
+            predictionHandler.setTwitchChannelProvider(self)
 
             if self.__twitchRaidHandler is not None:
                 self.__twitchRaidHandler.setTwitchChannelProvider(self)

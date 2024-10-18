@@ -24,7 +24,6 @@ from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterf
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsDonation import TtsDonation
 from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProvider import TtsProvider
 from ...tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 from ...tts.ttsSubscriptionDonationGiftType import TtsSubscriptionDonationGiftType
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -35,7 +34,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
-        streamAlertsManager: StreamAlertsManagerInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
@@ -45,7 +44,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -64,7 +63,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
@@ -306,11 +305,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        streamAlertsManager = self.__streamAlertsManager
-
-        if streamAlertsManager is None:
-            return
-        elif not user.isTtsEnabled():
+        if not user.isTtsEnabled():
             return
         elif await self.__isRedundantSubscriptionAlert(
             isGift = isGift,
@@ -381,11 +376,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             userId = actualUserId,
             userName = actualUserName,
             donation = donation,
-            provider = TtsProvider.DEC_TALK,
+            provider = user.defaultTtsProvider,
             raidInfo = None
         )
 
-        streamAlertsManager.submitAlert(StreamAlert(
+        self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,

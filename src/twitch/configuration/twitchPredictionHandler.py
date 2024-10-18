@@ -5,13 +5,13 @@ from ..api.twitchOutcome import TwitchOutcome
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..configuration.twitchChannelProvider import TwitchChannelProvider
 from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProvider import TtsProvider
 from ...users.userInterface import UserInterface
 from ...websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
@@ -20,13 +20,13 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
     def __init__(
         self,
-        streamAlertsManager: StreamAlertsManagerInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
         websocketEventType: str = 'channelPrediction',
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -37,11 +37,13 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not utils.isValidStr(websocketEventType):
             raise TypeError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
         self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
         self.__websocketEventType: str = websocketEventType
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def onNewPrediction(
         self,
@@ -109,16 +111,12 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        streamAlertsManager = self.__streamAlertsManager
-
         if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
-            return
-        elif streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
 
-        streamAlertsManager.submitAlert(StreamAlert(
+        self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
@@ -129,7 +127,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 userId = userId,
                 userName = user.getHandle(),
                 donation = None,
-                provider = TtsProvider.DEC_TALK,
+                provider = user.defaultTtsProvider,
                 raidInfo = None
             )
         ))
@@ -174,3 +172,9 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             eventType = self.__websocketEventType,
             eventData = eventData
         )
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__twitchChannelProvider = provider
