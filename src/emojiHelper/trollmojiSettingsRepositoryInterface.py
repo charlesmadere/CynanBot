@@ -3,15 +3,7 @@ from abc import abstractmethod
 from ..misc.clearable import Clearable
 
 
-class TrollmojiHelperInterface(Clearable):
-
-    @abstractmethod
-    async def getEmote(
-        self,
-        emoteText: str | None,
-        twitchEmoteChannelId: str
-    ) -> str | None:
-        pass
+class TrollmojiSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
     async def getGottemEmote(self) -> str | None:
