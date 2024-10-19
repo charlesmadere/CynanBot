@@ -38,6 +38,10 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
         self.__cacheTimeBuffer: timedelta = cacheTimeBuffer
 
+    async def clearCaches(self):
+        # TODO
+        pass
+
     async def getEmote(
         self,
         emoteText: str | None,
@@ -47,9 +51,23 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         return None
 
     async def getGottemEmote(self) -> str | None:
-        # TODO
-        return None
+        gottemEmote = await self.__trollmojiSettingsRepository.getGottemEmote()
+
+        if gottemEmote is None:
+            return None
+
+        return self.getEmote(
+            emoteText = gottemEmote.emoteText,
+            twitchEmoteChannelId = gottemEmote.twitchChannelId
+        )
 
     async def getHypeEmote(self) -> str | None:
-        # TODO
-        return None
+        hypeEmote = await self.__trollmojiSettingsRepository.getHypeEmote()
+
+        if hypeEmote is None:
+            return None
+
+        return self.getEmote(
+            emoteText = hypeEmote.emoteText,
+            twitchEmoteChannelId = hypeEmote.twitchChannelId
+        )
