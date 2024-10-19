@@ -84,7 +84,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         self.__isLoading = True
         fileName = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName) or not aiofiles.ospath.exists(fileName):
+        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
             self.__timber.log('StreamElementsTtsManager', f'Failed to write TTS speech in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
             self.__isLoading = False
             return False
