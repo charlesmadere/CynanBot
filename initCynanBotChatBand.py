@@ -117,7 +117,6 @@ from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from src.twitch.api.twitchApiService import TwitchApiService
@@ -125,7 +124,6 @@ from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
-from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
 from src.twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
@@ -147,6 +145,8 @@ from src.twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRe
 from src.twitch.timeout.twitchTimeoutRemodRepository import TwitchTimeoutRemodRepository
 from src.twitch.timeout.twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
+from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
+from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchTokensRepository import TwitchTokensRepository
 from src.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from src.twitch.twitchTokensUtils import TwitchTokensUtils
@@ -370,6 +370,8 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     timber = timber,
     usersRepository = usersRepository
 )
+
+twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils()
 
 addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserDataHelper(
     timber = timber,
@@ -728,27 +730,18 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 )
 
 
-##########################################
-## Twitch events initialization section ##
-##########################################
-
-twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
-    cheerActionHelper = cheerActionHelper,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    triviaGameBuilder = None,
-    triviaGameMachine = None
-)
-
-
 #####################################
 ## CynanBot initialization section ##
 #####################################
 
 cynanBot = CynanBot(
     eventLoop = eventLoop,
-    twitchCheerHandler = twitchCheerHandler,
+    twitchCheerHandler = None,
+    twitchFollowHandler = None,
+    twitchPollHandler = None,
+    twitchPredictionHandler = None,
     twitchRaidHandler = None,
+    twitchSubscriptionHandler = None,
     additionalTriviaAnswersRepository = None,
     addOrRemoveUserDataHelper = addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,

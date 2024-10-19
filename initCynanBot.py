@@ -319,7 +319,11 @@ from src.trivia.triviaVerifierInterface import TriviaVerifierInterface
 from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
+from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
+from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+from src.twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from src.twitch.api.twitchApiService import TwitchApiService
@@ -329,8 +333,12 @@ from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
+from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
+from src.twitch.configuration.twitchPollHandler import TwitchPollHandler
+from src.twitch.configuration.twitchPredictionHandler import TwitchPredictionHandler
 from src.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
+from src.twitch.configuration.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from src.twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
 from src.twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFollowingStatusRepository
@@ -354,6 +362,7 @@ from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperI
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
 from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
+from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchTokensRepository import TwitchTokensRepository
 from src.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from src.twitch.twitchTokensUtils import TwitchTokensUtils
@@ -572,6 +581,8 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     timber = timber,
     usersRepository = usersRepository
 )
+
+twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils()
 
 addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserDataHelper(
     timber = timber,
@@ -1597,10 +1608,40 @@ twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
     triviaGameMachine = triviaGameMachine
 )
 
+twitchFollowHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
+    timber = timber,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository
+)
+
+twitchPollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchUtils = twitchUtils
+)
+
+twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHandler(
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
+    websocketConnectionServer = None
+)
+
 twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
     chatLogger = chatLogger,
     streamAlertsManager = streamAlertsManager,
     timber = timber
+)
+
+twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine,
+    twitchEmotesHelper = twitchEmotesHelper,
+    twitchHandleProvider = authRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository
 )
 
 
@@ -1611,7 +1652,11 @@ twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     twitchCheerHandler = twitchCheerHandler,
+    twitchFollowHandler = twitchFollowHandler,
+    twitchPollHandler = twitchPollHandler,
+    twitchPredictionHandler = twitchPredictionHandler,
     twitchRaidHandler = twitchRaidHandler,
+    twitchSubscriptionHandler = twitchSubscriptionHandler,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     addOrRemoveUserDataHelper= addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,
@@ -1703,7 +1748,7 @@ cynanBot = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
+    twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
