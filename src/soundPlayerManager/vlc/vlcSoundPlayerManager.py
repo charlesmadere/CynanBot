@@ -1,7 +1,7 @@
 import asyncio
 import traceback
 from enum import Enum, auto
-from typing import Any, Collection
+from typing import Collection
 
 import aiofiles.ospath
 import vlc
@@ -295,10 +295,6 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         self.__isProgressingThroughPlaylist = False
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
     async def __retrieveMediaPlayer(self) -> vlc.MediaPlayer:
         mediaPlayer = self.__mediaPlayer
 
@@ -316,8 +312,3 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         mediaPlayer.audio_set_volume(await self.__soundPlayerSettingsRepository.getMediaPlayerVolume())
         return mediaPlayer
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'mediaPlayer': self.__mediaPlayer
-        }
