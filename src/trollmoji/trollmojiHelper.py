@@ -47,6 +47,14 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         emoteText: str | None,
         twitchEmoteChannelId: str
     ) -> str | None:
+        if emoteText is not None and not isinstance(emoteText, str):
+            raise TypeError(f'emoteText argument is malformed: \"{emoteText}\"')
+        elif not utils.isValidStr(twitchEmoteChannelId):
+            raise TypeError(f'twitchEmoteChannelId argument is malformed: \"{twitchEmoteChannelId}\"')
+
+        if not utils.isValidStr(emoteText):
+            return None
+
         # TODO
         return None
 
