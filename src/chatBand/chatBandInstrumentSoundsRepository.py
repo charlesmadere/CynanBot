@@ -9,8 +9,8 @@ from frozenlist import FrozenList
 
 from .chatBandInstrument import ChatBandInstrument
 from .chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
-from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
 
 

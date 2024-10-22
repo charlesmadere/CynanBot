@@ -9,7 +9,6 @@ from ..api.twitchBanRequest import TwitchBanRequest
 from ..api.twitchModUser import TwitchModUser
 from ..twitchConstantsInterface import TwitchConstantsInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface

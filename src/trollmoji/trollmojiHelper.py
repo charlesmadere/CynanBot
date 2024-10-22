@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from .trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface

@@ -3,7 +3,6 @@ from datetime import timedelta
 from .absChatCommand import AbsChatCommand
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..cuteness.cutenessUtilsInterface import CutenessUtilsInterface
-from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
