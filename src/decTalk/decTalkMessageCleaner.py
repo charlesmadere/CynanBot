@@ -32,6 +32,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
         self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandRegExes()
         self.__inputFlagRegExes: Collection[Pattern] = self.__buildInputFlagRegExes()
+        self.__inputToneRegExes: Collection[Pattern] = self.__buildInputToneRegExes()
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     def __buildInlineCommandRegExes(self) -> FrozenList[Pattern]:
@@ -57,6 +58,9 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
         # purge period pause inline command
         inlineCommandRegExes.append(re.compile(r'\[\s*:\s*(peri|pp).*?]', re.IGNORECASE))
+
+        # purge phoneme inline command
+        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*phoneme.*?]', re.IGNORECASE))
 
         # purge pitch inline command
         inlineCommandRegExes.append(re.compile(r'\[\s*:\s*pitch.*?]', re.IGNORECASE))
@@ -113,6 +117,15 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         inputFlagRegExes.freeze()
         return inputFlagRegExes
 
+    def __buildInputToneRegExes(self) -> Collection[Pattern]:
+        inputToneRegExes: FrozenList[Pattern] = FrozenList()
+
+        # purge tone constructs
+        inputToneRegExes.append(re.compile(r'\[\s*\w*\<\d+,\d+\>.*?]', re.IGNORECASE))
+
+        inputToneRegExes.freeze()
+        return inputToneRegExes
+
     async def clean(self, message: str | Any | None) -> str | None:
         if not utils.isValidStr(message):
             return None
@@ -126,6 +139,10 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             return None
 
         message = await self.__purgeInlineCommands(message)
+        if not utils.isValidStr(message):
+            return None
+
+        message = await self.__purgeInputTones(message)
         if not utils.isValidStr(message):
             return None
 
@@ -184,6 +201,30 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
                 repeat = True
                 message = inputFlagRegEx.sub(' ', message).strip()
+
+                if not utils.isValidStr(message):
+                    return None
+
+        if not utils.isValidStr(message):
+            return None
+
+        return message.strip()
+
+    async def __purgeInputTones(self, message: str | None) -> str | None:
+        if not utils.isValidStr(message):
+            return None
+
+        repeat = True
+
+        while repeat:
+            repeat = False
+
+            for inputToneRegEx in self.__inputToneRegExes:
+                if inputToneRegEx.search(message) is None:
+                    continue
+
+                repeat = True
+                message = inputToneRegEx.sub(' ', message).strip()
 
                 if not utils.isValidStr(message):
                     return None
