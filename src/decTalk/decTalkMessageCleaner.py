@@ -35,6 +35,9 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         self.__inputToneRegExes: Collection[Pattern] = self.__buildInputToneRegExes()
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
+        # https://dectalk.github.io/dectalk/idh_ref_3_tone_table_2.htm
+        self.__durationPitchRegEx: Pattern = re.compile(r'\[.*\<(\d+),?(\d+)?\>.*?]', re.IGNORECASE)
+
     def __buildInlineCommandRegExes(self) -> FrozenList[Pattern]:
         inlineCommandRegExes: FrozenList[Pattern] = FrozenList()
 
@@ -146,6 +149,10 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
+        message = await self.__purgeIllegalCharacters(message)
+        if not utils.isValidStr(message):
+            return None
+
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
@@ -161,6 +168,18 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             return None
 
         return message
+
+    async def __purgeIllegalCharacters(self, message: str | None) -> str | None:
+        if not utils.isValidStr(message):
+            return None
+
+        for illegalCharacter in { '[' , ']', '<', '>' }:
+            message = message.replace(illegalCharacter, ' ').strip()
+
+        if not utils.isValidStr(message):
+            return None
+
+        return message.strip()
 
     async def __purgeInlineCommands(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):
