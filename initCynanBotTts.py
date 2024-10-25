@@ -1195,6 +1195,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
     timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
     timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTimeoutHelper = twitchTimeoutHelper,
