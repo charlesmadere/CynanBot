@@ -345,6 +345,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'martin'
         if word in ('micheal', 'mike'):
             yield 'michael'
+        if word in ('rick', 'rickie', 'rickey'):
+            yield 'ricky'
         if word in ('rob', 'robbie'):
             yield 'robert'
         if word in ('ron', 'ronaldo', 'ronnie'):
