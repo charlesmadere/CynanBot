@@ -85,7 +85,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if gottemEmote is None:
             return None
 
-        return self.getEmote(
+        return await self.getEmote(
             emoteText = gottemEmote.emoteText,
             twitchEmoteChannelId = gottemEmote.twitchChannelId
         )
@@ -96,7 +96,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if hypeEmote is None:
             return None
 
-        return self.getEmote(
+        return await self.getEmote(
             emoteText = hypeEmote.emoteText,
             twitchEmoteChannelId = hypeEmote.twitchChannelId
         )
@@ -107,7 +107,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if shrugEmote is None:
             return None
 
-        return self.getEmote(
+        return await self.getEmote(
             emoteText = shrugEmote.emoteText,
             twitchEmoteChannelId = shrugEmote.twitchChannelId
         )
@@ -118,7 +118,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if thumbsDownEmote is None:
             return None
 
-        return self.getEmote(
+        return await self.getEmote(
             emoteText = thumbsDownEmote.emoteText,
             twitchEmoteChannelId = thumbsDownEmote.twitchChannelId
         )
@@ -129,7 +129,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if thumbsUpEmote is None:
             return None
 
-        return self.getEmote(
+        return await self.getEmote(
             emoteText = thumbsUpEmote.emoteText,
             twitchEmoteChannelId = thumbsUpEmote.twitchChannelId
         )
