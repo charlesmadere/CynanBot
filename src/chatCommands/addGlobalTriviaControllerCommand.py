@@ -61,15 +61,24 @@ class AddGlobalTriviaControllerCommand(AbsChatCommand):
             userName = userName
         )
 
-        if result is AddTriviaGameControllerResult.ADDED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a global trivia game controller.')
-        elif result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a global trivia game controller, but they already were one.')
-        elif result is AddTriviaGameControllerResult.ERROR:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a global trivia game controller!')
-        else:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a global trivia game controller!')
-            self.__timber.log('AddGlobalTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        match result:
+            case AddTriviaGameControllerResult.ADDED:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Added {userName} as a global trivia game controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case AddTriviaGameControllerResult.ALREADY_EXISTS:
+                await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a global trivia game controller, but they already were one.')
+
+            case AddTriviaGameControllerResult.ERROR:
+                await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a global trivia game controller!')
+
+            case _:
+                await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a global trivia game controller!')
+
+                self.__timber.log('AddGlobalTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+                raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
         self.__timber.log('AddGlobalTriviaControllerCommand', f'Handled !addglobaltriviacontroller command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')

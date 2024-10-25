@@ -62,15 +62,36 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             userName = userName
         )
 
-        if result is AddBannedTriviaGameControllerResult.ADDED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a banned trivia game controller.')
-        elif result is AddBannedTriviaGameControllerResult.ALREADY_EXISTS:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a banned trivia game controller, but they already were one.')
-        elif result is AddBannedTriviaGameControllerResult.ERROR:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a banned trivia game controller!')
-        else:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a banned trivia game controller!')
-            self.__timber.log('AddBannedTriviaControllerChatCommand', f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            raise RuntimeError(f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        match result:
+            case AddBannedTriviaGameControllerResult.ADDED:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Added {userName} as a banned trivia game controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case AddBannedTriviaGameControllerResult.ALREADY_EXISTS:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Tried adding {userName} as a banned trivia game controller, but they already were one',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case AddBannedTriviaGameControllerResult.ERROR:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An error occurred when trying to add {userName} as a banned trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case _:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An unknown error occurred when trying to add {userName} as a banned trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+                self.__timber.log('AddBannedTriviaControllerChatCommand', f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+                raise RuntimeError(f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
         self.__timber.log('AddBannedTriviaControllerChatCommand', f'Handled !addbannedtriviacontroller command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')

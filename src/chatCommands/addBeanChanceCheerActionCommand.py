@@ -56,7 +56,11 @@ class AddBeanChanceCheerActionCommand(AbsChatCommand):
         step = wizard.getSteps().getStep()
 
         if step is BeanChanceStep.BITS:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of bits for this Bean Chance cheer action')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ Please specify the number of bits for this Bean Chance cheer action',
+                replyMessageId = await ctx.getMessageId()
+            )
         else:
             raise RuntimeError(f'unknown BeanChanceStep: \"{step}\"')
 

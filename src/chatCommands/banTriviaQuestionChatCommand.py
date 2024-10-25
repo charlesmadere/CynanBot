@@ -68,7 +68,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         emote: str | None = splits[1]
@@ -76,7 +80,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
@@ -89,7 +97,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
 
         if reference is None:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")', replyMessageId = replyMessageId)
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
+                replyMessageId = replyMessageId
+            )
             return
 
         await self.__triviaBanHelper.ban(

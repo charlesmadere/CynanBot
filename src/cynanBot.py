@@ -1414,6 +1414,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__banTriviaQuestionCommand.handleChatCommand(context)
 
+    @commands.command(name = 'beans')
+    async def command_beans(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__beanInstructionsCommand.handleChatCommand(context)
+
     @commands.command(name = 'beanstats')
     async def command_beanstats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
