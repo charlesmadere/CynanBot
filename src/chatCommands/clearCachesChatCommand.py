@@ -30,10 +30,11 @@ from ..streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface
     StreamElementsUserKeyRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
-from ..trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
+from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
@@ -85,7 +86,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
         timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
-        triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface | None,
+        trollmojiHelper: TrollmojiHelperInterface | None,
+        trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
@@ -155,8 +157,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutCheerActionSettingsRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif triviaTwitchEmoteHelper is not None and not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
-            raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
+        elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
+        elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
+            raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
         elif ttsMonsterApiTokensRepository is not None and not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
@@ -218,7 +222,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(timeoutCheerActionHistoryRepository)
         self.__clearables.append(timeoutCheerActionSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
-        self.__clearables.append(triviaTwitchEmoteHelper)
+        self.__clearables.append(trollmojiHelper)
+        self.__clearables.append(trollmojiSettingsRepository)
         self.__clearables.append(ttsMonsterApiTokensRepository)
         self.__clearables.append(ttsMonsterKeyAndUserIdRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
