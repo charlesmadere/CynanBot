@@ -316,6 +316,10 @@ from src.trivia.triviaUtils import TriviaUtils
 from src.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from src.trivia.triviaVerifier import TriviaVerifier
 from src.trivia.triviaVerifierInterface import TriviaVerifierInterface
+from src.trollmoji.trollmojiHelper import TrollmojiHelper
+from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
+from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
+from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
@@ -631,6 +635,22 @@ nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider
 ###################################
 
 tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = TangiaBotUserIdProvider()
+
+
+######################################
+## Trollmoji initialization section ##
+######################################
+
+trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSettingsRepository(
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
+)
+
+trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiSettingsRepository = trollmojiSettingsRepository,
+    twitchEmotesHelper = twitchEmotesHelper
+)
 
 
 ####################################
@@ -1231,10 +1251,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
 )
 
 triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = TriviaTwitchEmoteHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchEmotesHelper = twitchEmotesHelper,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
+    trollmojiHelper = trollmojiHelper,
 )
 
 triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
@@ -1308,7 +1325,7 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
-        twitchConstants = twitchUtils,
+        trollmojiHelper = trollmojiHelper,
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
@@ -1482,6 +1499,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
     timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
     timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTimeoutHelper = twitchTimeoutHelper,

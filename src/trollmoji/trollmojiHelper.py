@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from .trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
@@ -6,7 +6,6 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
-from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
 
 class TrollmojiHelper(TrollmojiHelperInterface):
@@ -17,7 +16,6 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         cacheTimeBuffer: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timber, TimberInterface):
@@ -26,8 +24,6 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
-        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
-            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif not isinstance(cacheTimeBuffer, timedelta):
             raise TypeError(f'cacheTimeBuffer argument is malformed: \"{cacheTimeBuffer}\"')
 
@@ -35,12 +31,15 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = trollmojiSettingsRepository
         self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
-        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
         self.__cacheTimeBuffer: timedelta = cacheTimeBuffer
 
+        self.__isAvailableCache: dict[str, bool | None] = dict()
+        self.__timeCache: dict[str, datetime | None] = dict()
+
     async def clearCaches(self):
-        # TODO
-        pass
+        self.__isAvailableCache.clear()
+        self.__timeCache.clear()
+        self.__timber.log('TrollmojiHelper', 'Caches cleared')
 
     async def getEmote(
         self,
@@ -55,8 +54,30 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if not utils.isValidStr(emoteText):
             return None
 
-        # TODO
-        return None
+        isAvailable = self.__isAvailableCache.get(emoteText, None)
+        cachedTime = self.__timeCache.get(emoteText, None)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+
+        if cachedTime is not None and cachedTime >= now:
+            if isAvailable is True:
+                return emoteText
+            else:
+                return None
+
+        viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
+            twitchChannelId = twitchEmoteChannelId
+        )
+
+        emoteIsAvailable = emoteText in viableEmoteNames
+        self.__isAvailableCache[emoteText] = emoteIsAvailable
+        self.__timeCache[emoteText] = now + self.__cacheTimeBuffer
+
+        if emoteIsAvailable:
+            self.__timber.log('TriviaTwitchEmoteHelper', f'Emote is available ({emoteText=}) ({twitchEmoteChannelId=})')
+            return emoteText
+        else:
+            self.__timber.log('TriviaTwitchEmoteHelper', f'Emote isn\'t available ({emoteText=}) ({twitchEmoteChannelId=})')
+            return None
 
     async def getGottemEmote(self) -> str | None:
         gottemEmote = await self.__trollmojiSettingsRepository.getGottemEmote()
@@ -78,4 +99,37 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         return self.getEmote(
             emoteText = hypeEmote.emoteText,
             twitchEmoteChannelId = hypeEmote.twitchChannelId
+        )
+
+    async def getShrugEmote(self):
+        shrugEmote = await self.__trollmojiSettingsRepository.getShrugEmote()
+
+        if shrugEmote is None:
+            return None
+
+        return self.getEmote(
+            emoteText = shrugEmote.emoteText,
+            twitchEmoteChannelId = shrugEmote.twitchChannelId
+        )
+
+    async def getThumbsDownEmote(self):
+        thumbsDownEmote = await self.__trollmojiSettingsRepository.getThumbsDownEmote()
+
+        if thumbsDownEmote is None:
+            return None
+
+        return self.getEmote(
+            emoteText = thumbsDownEmote.emoteText,
+            twitchEmoteChannelId = thumbsDownEmote.twitchChannelId
+        )
+
+    async def getThumbsUpEmote(self):
+        thumbsUpEmote = await self.__trollmojiSettingsRepository.getThumbsUpEmote()
+
+        if thumbsUpEmote is None:
+            return None
+
+        return self.getEmote(
+            emoteText = thumbsUpEmote.emoteText,
+            twitchEmoteChannelId = thumbsUpEmote.twitchChannelId
         )

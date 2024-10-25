@@ -14,6 +14,7 @@ from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...tts.ttsEvent import TtsEvent
 from ...tts.ttsProvider import TtsProvider
 from ...twitch.configuration.twitchChannel import TwitchChannel
@@ -39,6 +40,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface,
         timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
@@ -59,6 +61,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutCheerActionSettingsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
@@ -77,6 +81,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface = timeoutCheerActionHistoryRepository
         self.__timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface = timeoutCheerActionSettingsRepository
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
         self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
@@ -84,6 +89,14 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
+
+    async def __getRipbozoEmote(self) -> str:
+        emote = await self.__trollmojiHelper.getGottemEmote()
+
+        if utils.isValidStr(emote):
+            return emote
+        else:
+            return 'RIPBOZO'
 
     async def handleTimeoutCheerAction(
         self,
@@ -484,15 +497,17 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         )
 
+        ripbozoEmote = await self.__getRipbozoEmote()
+
         if isReverse:
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,
-                message = f'Uh oh, @{userNameToTimeout} got hit with a reverse! RIPBOZO'
+                message = f'Uh oh, @{userNameToTimeout} got hit with a reverse! {ripbozoEmote}'
             )
         else:
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,
-                message = f'RIPBOZO @{userNameToTimeout} RIPBOZO',
+                message = f'{ripbozoEmote} @{userNameToTimeout} {ripbozoEmote}',
                 replyMessageId = twitchChatMessageId
             )
 
@@ -524,7 +539,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userId = cheerUserId,
             userName = cheerUserName,
             donation = None,
-            provider = TtsProvider.GOOGLE,
+            provider = TtsProvider.DEC_TALK,
             raidInfo = None
         )
 

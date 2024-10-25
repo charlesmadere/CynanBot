@@ -1,9 +1,7 @@
-from abc import abstractmethod
-
-from ....misc.clearable import Clearable
+from abc import ABC, abstractmethod
 
 
-class TriviaTwitchEmoteHelperInterface(Clearable):
+class TriviaTwitchEmoteHelperInterface(ABC):
 
     @abstractmethod
     async def getCelebratoryEmote(self) -> str | None:

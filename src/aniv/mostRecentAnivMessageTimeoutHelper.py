@@ -12,10 +12,10 @@ from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTi
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
-from ..twitch.twitchConstantsInterface import TwitchConstantsInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -32,8 +32,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchConstants: TwitchConstantsInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
@@ -50,8 +50,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchConstants, TwitchConstantsInterface):
-            raise TypeError(f'twitchConstants argument is malformed: \"{twitchConstants}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -67,7 +67,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchConstants: TwitchConstantsInterface = twitchConstants
+        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -225,9 +225,14 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if twitchChannelProvider is None:
             return
 
+        emote = await self.__trollmojiHelper.getGottemEmote()
+
+        if not utils.isValidStr(emote):
+            emote = 'RIPBOZO'
+
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-        msg = f'@{chatterUserName} RIPBOZO {timeoutData.durationSecondsStr}s RIPBOZO {timeoutScoreString}'
+        msg = f'@{chatterUserName} {emote} {timeoutData.durationSecondsStr}s {emote} {timeoutScoreString}'
 
         await self.__twitchUtils.safeSend(twitchChannel, msg)
 

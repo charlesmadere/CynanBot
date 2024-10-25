@@ -187,6 +187,10 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.trollmoji.trollmojiHelper import TrollmojiHelper
+from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
+from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
+from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
 from src.tts.decTalk.decTalkManager import DecTalkManager
@@ -550,6 +554,22 @@ nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider
 ###################################
 
 tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = TangiaBotUserIdProvider()
+
+
+######################################
+## Trollmoji initialization section ##
+######################################
+
+trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSettingsRepository(
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
+)
+
+trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiSettingsRepository = trollmojiSettingsRepository,
+    twitchEmotesHelper = twitchEmotesHelper
+)
 
 
 ####################################
@@ -1045,7 +1065,7 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
-        twitchConstants = twitchUtils,
+        trollmojiHelper = trollmojiHelper,
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
