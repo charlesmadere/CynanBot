@@ -322,7 +322,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'christopher'
         if word == 'delanor':
             yield 'delano'
-        if word in ('dick', 'rick', 'ricky'):
+        if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
             yield 'richard'
         if word in ('ed', 'eddie', 'eddy'):
             yield 'edward'
@@ -345,8 +345,6 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'martin'
         if word in ('micheal', 'mike'):
             yield 'michael'
-        if word in ('rick', 'rickie', 'rickey'):
-            yield 'ricky'
         if word in ('rob', 'robbie'):
             yield 'robert'
         if word in ('ron', 'ronaldo', 'ronnie'):
