@@ -94,7 +94,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             totalTimeouts = history.totalTimeouts + 1
 
         historyEntries: list[TimeoutCheerActionEntry] = list()
-        if history is not None and history.entries is not None and len(historyEntries) >= 1:
+        if history is not None and history.entries is not None and len(history.entries) >= 1:
             for entry in history.entries:
                 historyEntries.append(entry)
 
