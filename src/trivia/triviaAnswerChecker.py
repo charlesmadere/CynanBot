@@ -1106,6 +1106,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'television'
         if word == 'vs':
             yield 'versus'
+        if word in ('married', 'wedding'):
+            yield 'marriage'
         if word == 'wr':
             yield 'world record'
         if word == 'ww':
