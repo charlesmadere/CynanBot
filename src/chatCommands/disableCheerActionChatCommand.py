@@ -59,16 +59,27 @@ class DisableCheerActionChatCommand(AbsChatCommand):
             return
 
         bitsString: str | None = splits[1]
+
         try:
             bits = int(bitsString)
         except Exception as e:
             self.__timber.log('DisableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed ({bitsString=}): {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Bits amount argument is malformed. Example: !disablecheeraction 100')
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Bits amount argument is malformed. Example: !disablecheeraction 100',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         if bits < 1 or bits > utils.getIntMaxSafeSize():
             self.__timber.log('DisableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds ({bitsString=} ({bits=})')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Bits amount argument is out of bounds. Example: !disablecheeraction 100')
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Bits amount argument is out of bounds. Example: !disablecheeraction 100',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         result = await self.__cheerActionsRepository.disableAction(
@@ -77,13 +88,33 @@ class DisableCheerActionChatCommand(AbsChatCommand):
         )
 
         if isinstance(result, AlreadyDisabledEditCheerActionResult):
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Cheer action {bits} is already disabled: {result.cheerAction.printOut()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ Cheer action {bits} is already disabled: {result.cheerAction.printOut()}',
+                replyMessageId = await ctx.getMessageId()
+            )
+
         elif isinstance(result, NotFoundEditCheerActionResult):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Found no corresponding cheer action for bit amount {bits}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Found no corresponding cheer action for bit amount {bits}',
+                replyMessageId = await ctx.getMessageId()
+            )
+
         elif isinstance(result, SuccessfullyDisabledEditCheerActionResult):
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Cheer action {bits} is now disabled: {result.cheerAction.printOut()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ Cheer action {bits} is now disabled: {result.cheerAction.printOut()}',
+                replyMessageId = await ctx.getMessageId()
+            )
+
         else:
             self.__timber.log('DisableCheerActionChatCommand', f'An unknown error occurred when {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried to disable cheer action {bits}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to disable cheer action {bits}')
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ An unknown error occurred when trying to disable cheer action {bits}',
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('DisableCheerActionChatCommand', f'Handled !disablecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

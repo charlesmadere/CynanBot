@@ -70,13 +70,25 @@ class AddGlobalTriviaControllerCommand(AbsChatCommand):
                 )
 
             case AddTriviaGameControllerResult.ALREADY_EXISTS:
-                await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a global trivia game controller, but they already were one.')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Tried adding {userName} as a global trivia game controller, but they already were one',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
             case AddTriviaGameControllerResult.ERROR:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a global trivia game controller!')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An error occurred when trying to add {userName} as a global trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
             case _:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a global trivia game controller!')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An unknown error occurred when trying to add {userName} as a global trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
                 self.__timber.log('AddGlobalTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
                 raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

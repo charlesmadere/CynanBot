@@ -60,13 +60,21 @@ class AddTriviaControllerChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         result = await self.__triviaGameControllersRepository.addController(
@@ -75,20 +83,35 @@ class AddTriviaControllerChatCommand(AbsChatCommand):
             userName = userName
         )
 
-        replyMessageId = await ctx.getMessageId()
-
         match result:
             case AddTriviaGameControllerResult.ADDED:
-                await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller', replyMessageId = replyMessageId)
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Added {userName} as a trivia game controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
             case AddTriviaGameControllerResult.ALREADY_EXISTS:
-                await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one', replyMessageId = replyMessageId)
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
             case AddTriviaGameControllerResult.ERROR:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!', replyMessageId = replyMessageId)
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An error occurred when trying to add {userName} as a trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
             case _:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!', replyMessageId = replyMessageId)
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
                 self.__timber.log('AddTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
                 raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 

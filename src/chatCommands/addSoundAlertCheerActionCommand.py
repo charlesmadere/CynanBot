@@ -55,9 +55,13 @@ class AddSoundAlertCheerActionCommand(AbsChatCommand):
 
         step = wizard.getSteps().getStep()
 
-        if step is SoundAlertStep.BITS:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of bits for this Sound Alert cheer action')
-        else:
+        if step is not SoundAlertStep.BITS:
             raise RuntimeError(f'unknown SoundAlertStep: \"{step}\"')
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Please specify the number of bits for this Sound Alert cheer action',
+            replyMessageId = await ctx.getMessageId()
+        )
 
         self.__timber.log('AddSoundAlertCheerActionCommand', f'Handled !addsoundalertcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

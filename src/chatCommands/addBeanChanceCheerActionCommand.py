@@ -55,13 +55,13 @@ class AddBeanChanceCheerActionCommand(AbsChatCommand):
 
         step = wizard.getSteps().getStep()
 
-        if step is BeanChanceStep.BITS:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'ⓘ Please specify the number of bits for this Bean Chance cheer action',
-                replyMessageId = await ctx.getMessageId()
-            )
-        else:
+        if step is not BeanChanceStep.BITS:
             raise RuntimeError(f'unknown BeanChanceStep: \"{step}\"')
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Please specify the number of bits for this Bean Chance cheer action',
+            replyMessageId = await ctx.getMessageId()
+        )
 
         self.__timber.log('AddBeanChanceCheerActionCommand', f'Handled !addbeanchancecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

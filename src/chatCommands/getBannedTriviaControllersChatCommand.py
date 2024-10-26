@@ -47,5 +47,11 @@ class GetBannedTriviaControllersChatCommand(AbsChatCommand):
             return
 
         controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
-        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameBannedControllers(controllers))
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = await self.__triviaUtils.getTriviaGameBannedControllers(controllers),
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('GetBannedTriviaControllersChatCommand', f'Handled !getbannedtriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

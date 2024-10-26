@@ -53,7 +53,12 @@ class GetRecurringActionsCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        await self.__twitchUtils.safeSend(ctx, await self.__toStr(recurringActions))
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = await self.__toStr(recurringActions),
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
     async def __toStr(self, recurringActions: list[RecurringAction]) -> str:

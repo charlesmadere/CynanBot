@@ -57,5 +57,11 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
             return
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
-        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = await self.__triviaUtils.getTriviaGameGlobalControllers(controllers),
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('GetGlobalTriviaControllersChatCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

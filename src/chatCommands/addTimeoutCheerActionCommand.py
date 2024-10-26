@@ -55,9 +55,13 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
 
         step = wizard.getSteps().getStep()
 
-        if step is TimeoutStep.BITS:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of bits for this Timeout cheer action')
-        else:
+        if step is not TimeoutStep.BITS:
             raise RuntimeError(f'unknown TimeoutStep: \"{step}\"')
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Please specify the number of bits for this Timeout cheer action',
+            replyMessageId = await ctx.getMessageId()
+        )
 
         self.__timber.log('AddTimeoutCheerActionCommand', f'Handled !addtimeoutcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
