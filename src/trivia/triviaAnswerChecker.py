@@ -1019,6 +1019,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'alternative'
         if word == 'hi':
             yield 'high'
+        if word == 'lil':
+            yield 'little'
         if word == 'lite':
             yield 'light'
         if word == 'lo':
