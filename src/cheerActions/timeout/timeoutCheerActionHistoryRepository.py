@@ -93,24 +93,24 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         else:
             totalTimeouts = history.totalTimeouts + 1
 
-        historyEntries: list[TimeoutCheerActionEntry] = list()
+        newHistoryEntries: list[TimeoutCheerActionEntry] = list()
         if history is not None and history.entries is not None and len(history.entries) >= 1:
             for entry in history.entries:
-                historyEntries.append(entry)
+                newHistoryEntries.append(entry)
 
-        historyEntries.append(TimeoutCheerActionEntry(
+        newHistoryEntries.append(TimeoutCheerActionEntry(
             timedOutAtDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
             bitAmount = bitAmount,
             durationSeconds = durationSeconds,
             timedOutByUserId = timedOutByUserId
         ))
 
-        historyEntries.sort(key = lambda entry: entry.timedOutAtDateTime, reverse = True)
+        newHistoryEntries.sort(key = lambda entry: entry.timedOutAtDateTime, reverse = True)
 
-        while len(historyEntries) > self.__maximumHistoryEntriesSize:
-            del historyEntries[len(historyEntries) - 1]
+        while len(newHistoryEntries) > self.__maximumHistoryEntriesSize:
+            del newHistoryEntries[len(newHistoryEntries) - 1]
 
-        frozenHistoryEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList(historyEntries)
+        frozenHistoryEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList(newHistoryEntries)
         frozenHistoryEntries.freeze()
 
         self.__caches[twitchChannelId][chatterUserId] = TimeoutCheerActionHistory(
@@ -122,7 +122,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         )
 
         historyEntriesString = await self.__timeoutCheerActionJsonMapper.serializeTimeoutCheerActionEntriesToJsonString(
-            entries = historyEntries
+            entries = newHistoryEntries
         )
 
         connection = await self.__getDatabaseConnection()
