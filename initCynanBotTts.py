@@ -45,6 +45,8 @@ from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdCon
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
+from src.cheerActions.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from src.cheerActions.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHistoryRepository import TimeoutCheerActionHistoryRepository
@@ -1050,6 +1052,10 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
 
 anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 
+guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
+    anivUserIdProvider = anivUserIdProvider
+)
+
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -1188,7 +1194,7 @@ timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterfac
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
-    anivUserIdProvider = anivUserIdProvider,
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,

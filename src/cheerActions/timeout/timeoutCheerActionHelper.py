@@ -2,13 +2,13 @@ import random
 from datetime import datetime, timedelta
 from typing import Collection
 
+from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
 from .timeoutCheerActionSettingsRepositoryInterface import TimeoutCheerActionSettingsRepositoryInterface
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..timeoutCheerAction import TimeoutCheerAction
-from ...aniv.anivUserIdProviderInterface import AnivUserIdProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -33,7 +33,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     def __init__(
         self,
-        anivUserIdProvider: AnivUserIdProviderInterface,
+        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
@@ -47,10 +47,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
-            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
-        elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+        if not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
+        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -74,7 +74,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
+        self.__guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
@@ -223,8 +223,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif cheerUserId == userIdToTimeout:
             # this user is trying to time themselves out, so don't bother with checking failure probability
             return False
-        elif userIdToTimeout == await self.__anivUserIdProvider.getAnivUserId():
-            # this user is trying to time out aniv, let's just always allow this to happen
+        elif userIdToTimeout in await self.__guaranteedTimeoutUsersRepository.getUserIds():
+            # this user is trying to time out a user who should always get timed out
             return False
 
         failureProbability = await self.__timeoutCheerActionSettingsRepository.getFailureProbability()
