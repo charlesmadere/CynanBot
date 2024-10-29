@@ -361,7 +361,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         return True
 
-
     async def __isReverseTimeout(
         self,
         diceRoll: DiceRoll,
