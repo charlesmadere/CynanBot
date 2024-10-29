@@ -34,8 +34,20 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     @dataclass(frozen = True)
     class DiceRoll:
-        maxRoll: int
+        dieSize: int
         roll: int
+
+    @dataclass(frozen = True)
+    class RollFailureData:
+        baseFailureProbability: float
+        failureProbability: float
+        maxBullyFailureProbability: float
+        perBullyFailureProbabilityIncrease: float
+        reverseProbability: float
+        bullyOccurrences: int
+        failureRoll: int
+        maxBullyFailureOccurrences: int
+        reverseRoll: int
 
     def __init__(
         self,
@@ -139,7 +151,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __alertViaTwitchChat(
         self,
+        isGuaranteed: bool,
         isReverse: bool,
+        diceRoll: DiceRoll,
+        rollFailureData: RollFailureData,
         twitchChatMessageId: str | None,
         userNameToTimeout: str,
         twitchChannel: TwitchChannel
@@ -150,14 +165,69 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         message: str
         if isReverse:
-            message = f'Oh noo! @{userNameToTimeout} got hit with a reverse! {ripbozoEmote}'
-        else:
+            message = f'{ripbozoEmote} Oh noo! @{userNameToTimeout} rolled a d{diceRoll.roll} and got hit with a reverse! {ripbozoEmote}'
+        elif isGuaranteed:
             message = f'{ripbozoEmote} @{userNameToTimeout} {ripbozoEmote}'
+        else:
+            message = f'{ripbozoEmote} Rolled a d{diceRoll.roll} and timed out @{userNameToTimeout} (needed greater than d{rollFailureData.failureRoll}) {ripbozoEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
             message = message,
             replyMessageId = twitchChatMessageId
+        )
+
+    async def __generateRollFailureData(
+        self,
+        now: datetime,
+        diceRoll: DiceRoll,
+        cheerUserId: str,
+        twitchChannelId: str,
+        userIdToTimeout: str,
+        user: UserInterface
+    ) -> RollFailureData:
+        baseFailureProbability = await self.__timeoutCheerActionSettingsRepository.getFailureProbability()
+        maxBullyFailureProbability = await self.__timeoutCheerActionSettingsRepository.getMaxBullyFailureProbability()
+        maxBullyFailureOccurrences = await self.__timeoutCheerActionSettingsRepository.getMaxBullyFailureOccurrences()
+        perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
+
+        bullyOccurrences = 0
+
+        if user.isTimeoutCheerActionIncreasedBullyFailureEnabled:
+            history = await self.__timeoutCheerActionHistoryRepository.get(
+                chatterUserId = userIdToTimeout,
+                twitchChannel = user.getHandle(),
+                twitchChannelId = twitchChannelId
+            )
+
+            bullyTimeToLiveDays = await self.__timeoutCheerActionSettingsRepository.getBullyTimeToLiveDays()
+            bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
+
+            if history.entries is not None and len(history.entries) >= 1:
+                for historyEntry in history.entries:
+                    if historyEntry.timedOutByUserId != cheerUserId:
+                        continue
+                    elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
+                        continue
+
+                    bullyOccurrences += 1
+
+        failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
+        failureRoll = int(round(failureProbability * diceRoll.dieSize))
+
+        reverseProbability = await self.__timeoutCheerActionSettingsRepository.getReverseProbability()
+        reverseRoll = int(round(reverseProbability * float(diceRoll.dieSize)))
+
+        return TimeoutCheerActionHelper.RollFailureData(
+            baseFailureProbability = baseFailureProbability,
+            failureProbability = failureProbability,
+            maxBullyFailureProbability = maxBullyFailureProbability,
+            perBullyFailureProbabilityIncrease = perBullyFailureProbabilityIncrease,
+            reverseProbability = reverseProbability,
+            bullyOccurrences = bullyOccurrences,
+            failureRoll = failureRoll,
+            maxBullyFailureOccurrences = maxBullyFailureOccurrences,
+            reverseRoll = reverseRoll
         )
 
     async def handleTimeoutCheerAction(
@@ -248,10 +318,57 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __isFailedTimeout(
         self,
-        now: datetime,
         diceRoll: DiceRoll,
-        cheerUserId: str,
+        rollFailureData: RollFailureData,
         cheerUserName: str,
+        twitchChatMessageId: str | None,
+        userNameToTimeout: str,
+        twitchChannel: TwitchChannel,
+        user: UserInterface
+    ) -> bool:
+        if not user.isTimeoutCheerActionFailureEnabled:
+            return False
+        elif diceRoll.roll <= rollFailureData.failureRoll:
+            return False
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'⚠️ Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed 🎲 🎰 (rolled d{diceRoll.roll} but needed greater than d{rollFailureData.failureRoll}) 🎲 🎰',
+            replyMessageId = twitchChatMessageId
+        )
+
+        return True
+
+    async def __isGuaranteedTimeoutUser(
+        self,
+        userIdToTimeout: str
+    ) -> bool:
+        return userIdToTimeout in await self.__guaranteedTimeoutUsersRepository.getUserIds()
+
+    async def __isImmuneUser(
+        self,
+        cheerUserName: str,
+        twitchChatMessageId: str | None,
+        userIdToTimeout: str,
+        userNameToTimeout: str,
+        twitchChannel: TwitchChannel
+    ) -> bool:
+        if not await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout):
+            return False
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'⚠️ Sorry @{cheerUserName}, but @{userNameToTimeout} is an immune user',
+            replyMessageId = twitchChatMessageId
+        )
+
+        return True
+
+    async def __hasNewFollowerShield(
+        self,
+        now: datetime,
+        cheerUserName: str,
+        twitchAccessToken: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
         userIdToTimeout: str,
@@ -259,89 +376,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         twitchChannel: TwitchChannel,
         user: UserInterface
     ) -> bool:
-        if not user.isTimeoutCheerActionFailureEnabled:
-            return False
-        elif cheerUserId == userIdToTimeout:
-            # this user is trying to time themselves out, so don't bother with checking failure probability
-            return False
-        elif userIdToTimeout in await self.__guaranteedTimeoutUsersRepository.getUserIds():
-            # this user is trying to time out a user who should always get timed out
-            return False
+        followShieldDays = user.timeoutCheerActionFollowShieldDays
 
-        failureProbability = await self.__timeoutCheerActionSettingsRepository.getFailureProbability()
-        failureRoll = int(round(failureProbability * diceRoll.maxRoll))
-
-        if diceRoll.roll < failureRoll:
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'ⓘ Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed 🎲 🎰 (rolled d{diceRoll.roll} but needed greater than d{failureRoll}) 🎲 🎰',
-                replyMessageId = twitchChatMessageId
-            )
-
-            return True
-        elif not user.isTimeoutCheerActionIncreasedBullyFailureEnabled:
-            return False
-
-        history = await self.__timeoutCheerActionHistoryRepository.get(
-            chatterUserId = userIdToTimeout,
-            twitchChannel = user.getHandle(),
-            twitchChannelId = twitchChannelId
-        )
-
-        if history.entries is None or len(history.entries) == 0:
-            return False
-
-        bullyTimeToLiveDays = await self.__timeoutCheerActionSettingsRepository.getBullyTimeToLiveDays()
-        bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
-        cheerUserOccurrences = 0
-
-        for historyEntry in history.entries:
-            if historyEntry.timedOutByUserId != cheerUserId:
-                continue
-            elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
-                continue
-
-            cheerUserOccurrences = cheerUserOccurrences + 1
-
-        if cheerUserOccurrences == 0:
-            return False
-
-        maxBullyFailureOccurrences = await self.__timeoutCheerActionSettingsRepository.getMaxBullyFailureOccurrences()
-        maxBullyFailureProbability = await self.__timeoutCheerActionSettingsRepository.getMaxBullyFailureProbability()
-        perStepFailureProbabilityIncrease = (maxBullyFailureProbability - failureProbability) / float(maxBullyFailureOccurrences)
-        cheerUserOccurrences = int(min(cheerUserOccurrences, maxBullyFailureOccurrences))
-        newlyIncreasedFailureProbability = failureProbability + (perStepFailureProbabilityIncrease * float(cheerUserOccurrences))
-        newlyIncreasedFailureRoll = int(round(newlyIncreasedFailureProbability * diceRoll.maxRoll))
-
-        if diceRoll.roll < newlyIncreasedFailureRoll:
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'ⓘ Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed 🎲 🎰 (rolled d{diceRoll.roll} but needed greater than d{newlyIncreasedFailureRoll}) 🎲 🎰',
-                replyMessageId = twitchChatMessageId
-            )
-
-            return True
-
-        return False
-
-    async def __isImmuneUser(
-        self,
-        userIdToTimeout: str
-    ) -> bool:
-        return await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout)
-
-    async def __hasNewFollowerShield(
-        self,
-        now: datetime,
-        cheerUserName: str,
-        followShieldDays: int | None,
-        twitchAccessToken: str,
-        twitchChannelId: str,
-        twitchChatMessageId: str | None,
-        userIdToTimeout: str,
-        userNameToTimeout: str,
-        twitchChannel: TwitchChannel
-    ) -> bool:
         if followShieldDays is None:
             # this user doesn't use a follow shield
             return False
@@ -359,7 +395,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'ⓘ Wow @{cheerUserName} are you trying to bully? @{userNameToTimeout} has the new follower shield!',
+            message = f'⚠️ Wow @{cheerUserName} are you trying to bully? @{userNameToTimeout} has the new follower shield!',
             replyMessageId = twitchChatMessageId
         )
 
@@ -368,15 +404,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     async def __isReverseTimeout(
         self,
         diceRoll: DiceRoll,
+        rollFailureData: RollFailureData,
         user: UserInterface
     ) -> bool:
         if not user.isTimeoutCheerActionReverseEnabled:
             return False
 
-        reverseProbability = await self.__timeoutCheerActionSettingsRepository.getReverseProbability()
-        reverseRoll = int(round(reverseProbability * float(diceRoll.maxRoll)))
-
-        return diceRoll.roll < reverseRoll
+        return diceRoll.roll < rollFailureData.reverseRoll
 
     async def __isTryingToTimeoutTheStreamer(
         self,
@@ -385,13 +419,12 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     ) -> bool:
         return twitchChannelId == userIdToTimeout
 
-    async def __rollTheDice(self) -> DiceRoll:
-        randomNumber = random.random()
-        maxRoll = await self.__timeoutCheerActionSettingsRepository.getDiceMaxRoll()
-        roll = int(round(randomNumber * float(maxRoll)))
+    async def __rollDice(self) -> DiceRoll:
+        dieSize = await self.__timeoutCheerActionSettingsRepository.getDieSize()
+        roll = random.randint(1, dieSize)
 
         return TimeoutCheerActionHelper.DiceRoll(
-            maxRoll = maxRoll,
+            dieSize = dieSize,
             roll = roll
         )
 
@@ -442,10 +475,19 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-        proceedWithTimeout = True
+        isGuaranteed = False
         isReverse = False
         now = datetime.now(self.__timeZoneRepository.getDefault())
-        diceRoll = await self.__rollTheDice()
+        diceRoll = await self.__rollDice()
+
+        rollFailureData = await self.__generateRollFailureData(
+            now = now,
+            diceRoll = diceRoll,
+            cheerUserId = cheerUserId,
+            twitchChannelId = twitchChannelId,
+            userIdToTimeout = userIdToTimeout,
+            user = user
+        )
 
         if not await self.__verifyStreamStatus(
             twitchChannelId = twitchChannelId,
@@ -453,57 +495,37 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but the current stream status is invalid ({action=})')
-            proceedWithTimeout = False
+            return False
 
-        elif await self.__isTryingToTimeoutTheStreamer(
-            twitchChannelId = twitchChannelId,
+        elif await self.__isGuaranteedTimeoutUser(
             userIdToTimeout = userIdToTimeout
         ):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID {userIdToTimeout} is the streamer, so they will be hit with a reverse ({action=})')
-            isReverse = True
-            userIdToTimeout = cheerUserId
-            userNameToTimeout = cheerUserName
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempting to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, who is a guaranteed timeout user ({action=})')
+            isGuaranteed = True
 
         elif await self.__isImmuneUser(
-            userIdToTimeout = userIdToTimeout
-        ):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID {userIdToTimeout} is immune ({action=})')
-            proceedWithTimeout = False
-
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'⚠️ Sorry @{cheerUserName}, but @{userNameToTimeout} is an immune user',
-                replyMessageId = twitchChatMessageId
-            )
-
-        elif await self.__hasNewFollowerShield(
-            now = now,
-            followShieldDays = user.timeoutCheerActionFollowShieldDays,
             cheerUserName = cheerUserName,
-            twitchAccessToken = userTwitchAccessToken,
-            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userIdToTimeout = userIdToTimeout,
             userNameToTimeout = userNameToTimeout,
             twitchChannel = twitchChannel
         ):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but this user is a new follower ({action=})')
-            proceedWithTimeout = False
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID \"{userIdToTimeout}\" is immune ({action=})')
+            return False
 
-        elif await self.__isReverseTimeout(
-            diceRoll = diceRoll,
-            user = user
+        elif await self.__isTryingToTimeoutTheStreamer(
+            twitchChannelId = twitchChannelId,
+            userIdToTimeout = userIdToTimeout
         ):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the reverse roll ({diceRoll=}) ({action=})')
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but user ID \"{userIdToTimeout}\" is the streamer, so they will be hit with a reverse ({action=})')
             isReverse = True
             userIdToTimeout = cheerUserId
             userNameToTimeout = cheerUserName
 
-        elif await self.__isFailedTimeout(
+        elif await self.__hasNewFollowerShield(
             now = now,
-            diceRoll = diceRoll,
-            cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
+            twitchAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userIdToTimeout = userIdToTimeout,
@@ -511,10 +533,29 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             twitchChannel = twitchChannel,
             user = user
         ):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the failure roll ({diceRoll=}) ({action=})')
-            proceedWithTimeout = False
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but this user is a new follower ({action=})')
+            return False
 
-        if not proceedWithTimeout:
+        elif await self.__isReverseTimeout(
+            diceRoll = diceRoll,
+            rollFailureData = rollFailureData,
+            user = user
+        ):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the reverse roll ({diceRoll=}) ({rollFailureData=}) ({action=})')
+            isReverse = True
+            userIdToTimeout = cheerUserId
+            userNameToTimeout = cheerUserName
+
+        elif await self.__isFailedTimeout(
+            diceRoll = diceRoll,
+            rollFailureData = rollFailureData,
+            cheerUserName = cheerUserName,
+            twitchChatMessageId = twitchChatMessageId,
+            userNameToTimeout = userNameToTimeout,
+            twitchChannel = twitchChannel,
+            user = user
+        ):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the failure roll ({diceRoll=}) ({rollFailureData=}) ({action=})')
             return False
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -528,10 +569,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but an error occurred ({timeoutResult=}) ({action=})')
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but an error occurred ({timeoutResult=}) ({diceRoll=}) ({rollFailureData=}) ({action=})')
             return False
 
-        self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" due to cheer from {cheerUserName}:{cheerUserId} ({diceRoll=}) ({action=})')
+        self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" due to cheer from {cheerUserName}:{cheerUserId} ({diceRoll=}) ({rollFailureData=}) ({timeoutResult=}) ({action=})')
 
         await self.__timeoutCheerActionHistoryRepository.add(
             bitAmount = action.bits,
@@ -553,7 +594,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         await self.__alertViaTwitchChat(
+            isGuaranteed = isGuaranteed,
             isReverse = isReverse,
+            diceRoll = diceRoll,
+            rollFailureData = rollFailureData,
             twitchChatMessageId = twitchChatMessageId,
             userNameToTimeout = userNameToTimeout,
             twitchChannel = twitchChannel

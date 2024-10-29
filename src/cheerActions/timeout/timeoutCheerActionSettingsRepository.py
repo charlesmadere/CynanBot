@@ -22,9 +22,9 @@ class TimeoutCheerActionSettingsRepository(TimeoutCheerActionSettingsRepositoryI
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'bullyTimeToLiveDays', 14)
 
-    async def getDiceMaxRoll(self) -> int:
+    async def getDieSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'diceMaxRoll', 20)
+        return utils.getIntFromDict(jsonContents, 'dieSize', 20)
 
     async def getFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
