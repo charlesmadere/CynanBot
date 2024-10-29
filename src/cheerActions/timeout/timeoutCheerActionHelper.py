@@ -33,7 +33,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     @dataclass(frozen = True)
     class DiceRoll:
-        rawRandomNumber: float
         maxRoll: int
         roll: int
 
@@ -374,7 +373,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         reverseProbability = await self.__timeoutCheerActionSettingsRepository.getReverseProbability()
         reverseRoll = int(round(reverseProbability * float(diceRoll.maxRoll)))
 
-        return diceRoll < reverseRoll
+        return diceRoll.roll < reverseRoll
 
     async def __isTryingToTimeoutTheStreamer(
         self,
@@ -389,7 +388,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         roll = int(round(randomNumber * float(maxRoll)))
 
         return TimeoutCheerActionHelper.DiceRoll(
-            rawRandomNumber = randomNumber,
             maxRoll = maxRoll,
             roll = roll
         )
@@ -491,7 +489,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         elif await self.__isReverseTimeout(
             diceRoll = diceRoll,
-            twitchChannel = twitchChannel,
             user = user
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempt to timeout {userNameToTimeout}:{userIdToTimeout} by {cheerUserName}:{cheerUserId} in {user.getHandle()}, but they hit the reverse roll ({diceRoll=}) ({action=})')
