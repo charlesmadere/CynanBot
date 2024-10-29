@@ -155,27 +155,32 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         isReverse: bool,
         diceRoll: DiceRoll,
         rollFailureData: RollFailureData,
+        ripBozoEmote: str,
         twitchChatMessageId: str | None,
         userNameToTimeout: str,
         twitchChannel: TwitchChannel
     ):
-        ripbozoEmote = await self.__trollmojiHelper.getGottemEmote()
-        if not utils.isValidStr(ripbozoEmote):
-            ripbozoEmote = 'RIPBOZO'
-
         message: str
         if isReverse:
-            message = f'{ripbozoEmote} Oh noo! @{userNameToTimeout} rolled a d{diceRoll.roll} and got hit with a reverse! {ripbozoEmote}'
+            message = f'{ripBozoEmote} Oh noo! @{userNameToTimeout} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote}'
         elif isGuaranteed:
-            message = f'{ripbozoEmote} @{userNameToTimeout} {ripbozoEmote}'
+            message = f'{ripBozoEmote} @{userNameToTimeout} {ripBozoEmote}'
         else:
-            message = f'{ripbozoEmote} Rolled a d{diceRoll.roll} and timed out @{userNameToTimeout} (needed greater than d{rollFailureData.failureRoll}) {ripbozoEmote}'
+            message = f'{ripBozoEmote} Timed out @{userNameToTimeout} after rolling a {diceRoll.roll} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
             message = message,
             replyMessageId = twitchChatMessageId
         )
+
+    async def __fetchRipBozoEmote(self) -> str:
+        ripBozoEmote = await self.__trollmojiHelper.getGottemEmote()
+
+        if not utils.isValidStr(ripBozoEmote):
+            ripBozoEmote = 'RIPBOZO'
+
+        return ripBozoEmote
 
     async def __generateRollFailureData(
         self,
@@ -321,19 +326,18 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         diceRoll: DiceRoll,
         rollFailureData: RollFailureData,
         cheerUserName: str,
+        ripBozoEmote: str,
         twitchChatMessageId: str | None,
         userNameToTimeout: str,
         twitchChannel: TwitchChannel,
         user: UserInterface
     ) -> bool:
-        if not user.isTimeoutCheerActionFailureEnabled:
-            return False
-        elif diceRoll.roll <= rollFailureData.failureRoll:
+        if not user.isTimeoutCheerActionFailureEnabled or diceRoll.roll > rollFailureData.failureRoll:
             return False
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠️ Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed 🎲 🎰 (rolled d{diceRoll.roll} but needed greater than d{rollFailureData.failureRoll}) 🎲 🎰',
+            message = f'{ripBozoEmote} Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed {ripBozoEmote} (rolled d{diceRoll.dieSize} and got a {diceRoll.roll} but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
             replyMessageId = twitchChatMessageId
         )
 
@@ -489,6 +493,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         )
 
+        ripBozoEmote = await self.__fetchRipBozoEmote()
+
         if not await self.__verifyStreamStatus(
             twitchChannelId = twitchChannelId,
             timeoutAction = action,
@@ -550,6 +556,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             diceRoll = diceRoll,
             rollFailureData = rollFailureData,
             cheerUserName = cheerUserName,
+            ripBozoEmote = ripBozoEmote,
             twitchChatMessageId = twitchChatMessageId,
             userNameToTimeout = userNameToTimeout,
             twitchChannel = twitchChannel,
@@ -598,6 +605,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             isReverse = isReverse,
             diceRoll = diceRoll,
             rollFailureData = rollFailureData,
+            ripBozoEmote = ripBozoEmote,
             twitchChatMessageId = twitchChatMessageId,
             userNameToTimeout = userNameToTimeout,
             twitchChannel = twitchChannel
