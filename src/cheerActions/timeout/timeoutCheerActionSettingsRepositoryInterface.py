@@ -10,6 +10,10 @@ class TimeoutCheerActionSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getDiceMaxRoll(self) -> int:
+        pass
+
+    @abstractmethod
     async def getFailureProbability(self) -> float:
         pass
 
