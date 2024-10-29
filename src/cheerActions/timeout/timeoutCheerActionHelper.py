@@ -162,11 +162,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     ):
         message: str
         if isReverse:
-            message = f'{ripBozoEmote} Oh noo! @{userNameToTimeout} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote}'
+            message = f'{ripBozoEmote} Oh noo! @{userNameToTimeout} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
         elif isGuaranteed:
             message = f'{ripBozoEmote} @{userNameToTimeout} {ripBozoEmote}'
         else:
-            message = f'{ripBozoEmote} Timed out @{userNameToTimeout} after rolling a {diceRoll.roll} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Timed out @{userNameToTimeout} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
