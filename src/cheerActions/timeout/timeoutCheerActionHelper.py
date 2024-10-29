@@ -337,7 +337,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'{ripBozoEmote} Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed {ripBozoEmote} (rolled d{diceRoll.dieSize} and got a {diceRoll.roll} but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
+            message = f'{ripBozoEmote} Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed {ripBozoEmote} (rolled a d{diceRoll.dieSize} and got a {diceRoll.roll}, but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
             replyMessageId = twitchChatMessageId
         )
 
