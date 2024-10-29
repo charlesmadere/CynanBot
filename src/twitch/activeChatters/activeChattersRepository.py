@@ -67,11 +67,15 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         )
 
         activeChatters.insert(0, activeChatter)
-        await self.__clean(now = now, activeChatters = activeChatters)
+
+        await self.__clean(
+            now = now,
+            activeChatters = activeChatters
+        )
 
     async def __chooseRandomActiveChatters(
         self,
-        count: int,
+        count: int | None,
         activeChatters: list[ActiveChatter]
     ) -> FrozenList[ActiveChatter]:
         if not utils.isValidInt(count):
@@ -80,6 +84,9 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise ValueError(f'count argument is out of bounds: {count}')
         elif not isinstance(activeChatters, list):
             raise TypeError(f'activeChatters argument is malformed: \"{activeChatters}\"')
+
+        if count is None:
+            count = utils.getIntMaxSafeSize()
 
         selectedChatters: set[ActiveChatter] = set()
 
@@ -116,14 +123,18 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     ) -> Collection[ActiveChatter]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidInt(count):
+        elif count is not None and not utils.isValidInt(count):
             raise TypeError(f'count argument is malformed: \"{count}\"')
         elif count is not None and (count < 1 or count > utils.getIntMaxSafeSize()):
             raise ValueError(f'count argument is out of bounds: {count}')
 
         activeChatters = self.__twitchChannelIdToActiveChatters[twitchChannelId]
         now = datetime.now(self.__timeZoneRepository.getDefault())
-        await self.__clean(now = now, activeChatters = activeChatters)
+
+        await self.__clean(
+            now = now,
+            activeChatters = activeChatters
+        )
 
         frozenActiveChatters: FrozenList[ActiveChatter]
 
