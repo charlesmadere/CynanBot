@@ -1313,7 +1313,8 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
 anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 
 guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
-    anivUserIdProvider = anivUserIdProvider
+    anivUserIdProvider = anivUserIdProvider,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
