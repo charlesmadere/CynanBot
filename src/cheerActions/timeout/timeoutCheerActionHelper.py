@@ -21,6 +21,7 @@ from ...twitch.configuration.twitchChannel import TwitchChannel
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
@@ -44,6 +45,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timber: TimberInterface,
         timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface,
         timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface,
+        timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
@@ -64,6 +66,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
         elif not isinstance(timeoutCheerActionSettingsRepository, TimeoutCheerActionSettingsRepositoryInterface):
             raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutCheerActionSettingsRepository}\"')
+        elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
+            raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
@@ -85,6 +89,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__timber: TimberInterface = timber
         self.__timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface = timeoutCheerActionHistoryRepository
         self.__timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface = timeoutCheerActionSettingsRepository
+        self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
@@ -323,8 +328,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self,
         userIdToTimeout: str
     ) -> bool:
-        # TODO
-        return False
+        return await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout)
 
     async def __hasNewFollowerShield(
         self,

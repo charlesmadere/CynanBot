@@ -1504,6 +1504,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     timber = timber,
     timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
     timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
