@@ -1,4 +1,5 @@
 import random
+from typing import Collection
 
 from frozenlist import FrozenList
 
@@ -10,182 +11,16 @@ from ..misc import utils as utils
 class LanguagesRepository(LanguagesRepositoryInterface):
 
     def __init__(self):
-        self.__languageList: FrozenList[LanguageEntry] = self.__createLanguageList()
+        self.__languageList: Collection[LanguageEntry] = self.__createLanguageList()
 
     def __createLanguageList(self) -> FrozenList[LanguageEntry]:
-        languagesList: FrozenList[LanguageEntry] = FrozenList()
+        languagesList: list[LanguageEntry] = list(LanguageEntry)
+        languagesList.sort(key = lambda element: element.name.casefold())
 
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'de', 'deutsche', 'german', 'germany' ],
-            flag = '🇩🇪',
-            iso6391Code = 'de',
-            name = 'German',
-            wotdApiCode = 'de'
-        ))
+        frozenLanguagesList: FrozenList[LanguageEntry] = FrozenList(languagesList)
+        frozenLanguagesList.freeze()
 
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'en', 'eng', 'english', '英語' ],
-            flag = '🇬🇧',
-            iso6391Code = 'en',
-            name = 'English'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'en-es' ],
-            name = 'English for Spanish speakers',
-            wotdApiCode = 'en-es'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'en-pt' ],
-            name = 'English for Portuguese speakers',
-            wotdApiCode = 'en-pt'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'es', 'español', 'sp', 'spanish' ],
-            iso6391Code = 'es',
-            name = 'Spanish',
-            wotdApiCode = 'es'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'fr', 'français', 'france', 'french' ],
-            flag = '🇫🇷',
-            iso6391Code = 'fr',
-            name = 'French',
-            wotdApiCode = 'fr'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'el', 'greek' ],
-            flag = '🇬🇷',
-            iso6391Code = 'el',
-            name = 'Greek'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'hi', 'hin', 'hindi' ],
-            flag = '🇮🇳',
-            iso6391Code = 'hi',
-            name = 'Hindi',
-            wotdApiCode = 'hindi'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'it', 'italian', 'italiano', 'italy' ],
-            flag = '🇮🇹',
-            iso6391Code = 'it',
-            name = 'Italian',
-            wotdApiCode = 'it'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'ja', 'japan', 'japanese', 'jp', '日本語', 'にほんご' ],
-            flag = '🇯🇵',
-            iso6391Code = 'ja',
-            name = 'Japanese',
-            wotdApiCode = 'ja'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'ko', 'korea', 'korean', '한국어' ],
-            flag = '🇰🇷',
-            iso6391Code = 'ko',
-            name = 'Korean',
-            wotdApiCode = 'korean'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'la', 'latin' ],
-            iso6391Code = 'la',
-            name = 'Latin'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'nl', 'dutch', 'nederlands', 'netherlands', 'vlaams' ],
-            flag = '🇳🇱',
-            iso6391Code = 'nl',
-            name = 'Dutch',
-            wotdApiCode = 'nl'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'no', 'norsk', 'norway', 'norwegian' ],
-            flag = '🇳🇴',
-            iso6391Code = 'no',
-            name = 'Norwegian',
-            wotdApiCode = 'norwegian'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'po', 'poland', 'polish' ],
-            flag = '🇵🇱',
-            iso6391Code = 'pl',
-            name = 'Polish',
-            wotdApiCode = 'polish',
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'pt', 'portuguese', 'português' ],
-            flag = '🇵🇹',
-            iso6391Code = 'pt',
-            name = 'Portuguese',
-            wotdApiCode = 'pt'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'ru', 'russia', 'russian', 'русский' ],
-            flag = '🇷🇺',
-            iso6391Code = 'ru',
-            name = 'Russian',
-            wotdApiCode = 'ru'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'se', 'sv', 'svenska', 'sw', 'sweden', 'swedish' ],
-            flag = '🇸🇪',
-            iso6391Code = 'sv',
-            name = 'Swedish',
-            wotdApiCode = 'swedish',
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'th', 'thai' ],
-            flag = '🇹🇭',
-            iso6391Code = 'th',
-            name = 'Thai'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'ur', 'urd', 'urdu' ],
-            flag = '🇵🇰',
-            iso6391Code = 'ur',
-            name = 'Urdu',
-            wotdApiCode = 'urdu'
-        ))
-
-        languagesList.append(LanguageEntry(
-            commandNames = [ 'zh', 'chinese', 'china', '中文' ],
-            flag = '🇨🇳',
-            iso6391Code = 'zh',
-            name = 'Chinese',
-            wotdApiCode = 'zh'
-        ))
-
-        if len(languagesList) == 0:
-            raise RuntimeError(f'languagesList must contain at least 1 entry: \"{languagesList}\"')
-
-        languagesList.freeze()
-        languagesNames: set[str] = set()
-
-        for language in languagesList:
-            if language.name.casefold() in languagesNames:
-                raise ValueError(f'Every language name must be unique (found duplicate of \"{language.name}\"): {languagesList}')
-            else:
-                languagesNames.add(language.name.casefold())
-
-        return languagesList
+        return frozenLanguagesList
 
     async def getAllWotdApiCodes(
         self,
