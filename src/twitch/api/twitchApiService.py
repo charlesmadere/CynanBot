@@ -459,7 +459,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif not isinstance(twitchChannelIds, list):
             raise TypeError(f'twitchChannelIds argument is malformed: \"{twitchChannelIds}\"')
         elif len(twitchChannelIds) > 100:
-            raise ValueError(f'userNames argument has too many values (len is {len(twitchChannelIds)}, max is 100): \"{twitchChannelIds}\"')
+            raise ValueError(f'twitchChannelIds argument has too many values (len is {len(twitchChannelIds)}, max is 100): \"{twitchChannelIds}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching live user details... ({twitchAccessToken=}) ({twitchChannelIds=})')
 
