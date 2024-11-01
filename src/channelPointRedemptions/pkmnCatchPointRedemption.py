@@ -38,7 +38,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
+        twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isPkmnEnabled():
             return False
 
@@ -46,7 +46,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         if pkmnCatchBoosterPacks is None or len(pkmnCatchBoosterPacks) == 0:
             return False
 
-        pkmnCatchBoosterPack = pkmnCatchBoosterPacks.get(twitchChannelPointsMessage.getRewardId(), None)
+        pkmnCatchBoosterPack = pkmnCatchBoosterPacks.get(twitchChannelPointsMessage.rewardId, None)
         if pkmnCatchBoosterPack is None:
             return False
 
@@ -60,16 +60,16 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnCatch(
             twitchChannel = twitchUser.getHandle(),
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
-            userThatRedeemed = twitchChannelPointsMessage.getUserName(),
+            userThatRedeemed = twitchChannelPointsMessage.userName,
             funtoonPkmnCatchType = funtoonPkmnCatchType
         ):
             actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.getUserName()}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.userName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} (catch type: {pkmnCatchBoosterPack.catchType}) in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} (catch type: {pkmnCatchBoosterPack.catchType}) in {twitchUser.getHandle()}')
         return actionCompleted
 
     def __toFuntoonPkmnCatchType(

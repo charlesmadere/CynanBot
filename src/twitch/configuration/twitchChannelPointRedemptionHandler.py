@@ -130,7 +130,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
 
-        if user.isCasualGamePollEnabled() and channelPointsMessage.getRewardId() == user.getCasualGamePollRewardId():
+        if user.isCasualGamePollEnabled() and channelPointsMessage.rewardId == user.getCasualGamePollRewardId():
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
@@ -145,7 +145,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 return
 
         if user.isPkmnEnabled():
-            if channelPointsMessage.getRewardId() == user.pkmnBattleRewardId:
+            if channelPointsMessage.rewardId == user.pkmnBattleRewardId:
                 if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
@@ -158,35 +158,35 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-            if channelPointsMessage.getRewardId() == user.getPkmnEvolveRewardId():
+            if channelPointsMessage.rewardId == user.getPkmnEvolveRewardId():
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-            if channelPointsMessage.getRewardId() == user.getPkmnShinyRewardId():
+            if channelPointsMessage.rewardId == user.getPkmnShinyRewardId():
                 if await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-        if user.isShizaMessageEnabled and channelPointsMessage.getRewardId() == user.shizaMessageRewardId:
+        if user.isShizaMessageEnabled and channelPointsMessage.rewardId == user.shizaMessageRewardId:
             if await self.__shizaPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 
-        if user.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getTriviaGameRewardId():
+        if user.isTriviaGameEnabled() and channelPointsMessage.rewardId == user.getTriviaGameRewardId():
             if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 
-        if user.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getSuperTriviaGameRewardId():
+        if user.isSuperTriviaGameEnabled() and channelPointsMessage.rewardId == user.getSuperTriviaGameRewardId():
             if await self.__superTriviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage

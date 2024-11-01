@@ -61,7 +61,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
+        twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isCrowdControlEnabled:
             return False
 
@@ -69,7 +69,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         if boosterPacks is None or len(boosterPacks) == 0:
             return False
 
-        boosterPack = boosterPacks.get(twitchChannelPointsMessage.getRewardId(), None)
+        boosterPack = boosterPacks.get(twitchChannelPointsMessage.rewardId, None)
         if boosterPack is None:
             return False
 
@@ -81,8 +81,8 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             self.__crowdControlMachine.submitAction(GameShuffleCrowdControlAction(
                 dateTime = now,
                 actionId = actionId,
-                chatterUserId = twitchChannelPointsMessage.getUserId(),
-                chatterUserName = twitchChannelPointsMessage.getUserName(),
+                chatterUserId = twitchChannelPointsMessage.userId,
+                chatterUserName = twitchChannelPointsMessage.userName,
                 twitchChannel = twitchUser.getHandle(),
                 twitchChannelId = twitchChannelId
             ))
@@ -94,7 +94,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
         if boosterPack.inputType is CrowdControlInputType.USER_INPUT_BUTTON:
             button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
-                userInput = twitchChannelPointsMessage.getRedemptionMessage()
+                userInput = twitchChannelPointsMessage.redemptionMessage
             )
         else:
             button = await self.__crowdControlInputTypeMapper.toButton(
@@ -109,8 +109,8 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             button = button,
             dateTime = now,
             actionId = actionId,
-            chatterUserId = twitchChannelPointsMessage.getUserId(),
-            chatterUserName = twitchChannelPointsMessage.getUserName(),
+            chatterUserId = twitchChannelPointsMessage.userId,
+            chatterUserName = twitchChannelPointsMessage.userName,
             twitchChannel = twitchUser.getHandle(),
             twitchChannelId = twitchChannelId
         ))

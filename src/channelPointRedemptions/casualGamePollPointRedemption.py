@@ -5,8 +5,7 @@ from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
+from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
@@ -34,7 +33,7 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
+        twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isCasualGamePollEnabled():
             return False
 
@@ -47,5 +46,5 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
             return False
 
         await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ Here\'s the current list of casual games: {casualGamePollUrl}')
-        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed casual game poll for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
+        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed casual game poll for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}')
         return True

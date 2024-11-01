@@ -44,15 +44,14 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         if soundAlertRedemptions is None or len(soundAlertRedemptions) == 0:
             return None
 
-        return soundAlertRedemptions.get(twitchChannelPointsMessage.getRewardId(), None)
+        return soundAlertRedemptions.get(twitchChannelPointsMessage.rewardId, None)
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        user = twitchChannelPointsMessage.getTwitchUser()
-
+        user = twitchChannelPointsMessage.twitchUser
         if not user.areSoundAlertsEnabled:
             return False
 
@@ -61,7 +60,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         soundAlertRedemption: SoundAlertRedemption | None = None
         filePath: str | None = None
 
-        if twitchChannelPointsMessage.getRewardId() == user.getRandomSoundAlertRewardId():
+        if twitchChannelPointsMessage.rewardId == user.getRandomSoundAlertRewardId():
             soundAlert = await self.__soundPlayerRandomizerHelper.chooseRandomSoundAlert()
 
         if soundAlert is None:

@@ -36,15 +36,14 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
-
+        twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isPkmnEnabled():
             return False
 
-        splits = utils.getCleanedSplits(twitchChannelPointsMessage.getRedemptionMessage())
+        splits = utils.getCleanedSplits(twitchChannelPointsMessage.redemptionMessage)
 
         if splits is None or len(splits) == 0:
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Sorry @{twitchChannelPointsMessage.getUserName()}, you must specify the exact user name of the person you want to fight')
+            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you must specify the exact user name of the person you want to fight')
             return False
 
         opponentUserName = utils.removePreceedingAt(splits[0])
@@ -54,14 +53,14 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnBattle(
             twitchChannel = twitchUser.getHandle(),
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
-            userThatRedeemed = twitchChannelPointsMessage.getUserName(),
+            userThatRedeemed = twitchChannelPointsMessage.userName,
             userToBattle = opponentUserName
         ):
             actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!battle {twitchChannelPointsMessage.getUserName()} {opponentUserName}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'!battle {twitchChannelPointsMessage.userName} {opponentUserName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}')
         return actionCompleted

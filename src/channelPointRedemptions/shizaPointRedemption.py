@@ -37,7 +37,7 @@ class ShizaPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         shizaMessage = self.__shizaMessage
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
+        twitchUser = twitchChannelPointsMessage.twitchUser
         shizaMessageRewardId = twitchUser.shizaMessageRewardId
 
         if not twitchUser.isShizaMessageEnabled:
@@ -46,7 +46,7 @@ class ShizaPointRedemption(AbsChannelPointRedemption):
             return False
         elif not utils.isValidStr(shizaMessageRewardId):
             return False
-        elif shizaMessageRewardId != twitchChannelPointsMessage.getRewardId():
+        elif shizaMessageRewardId != twitchChannelPointsMessage.rewardId:
             return False
 
         await self.__twitchUtils.waitThenSend(
