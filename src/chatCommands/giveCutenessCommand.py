@@ -57,33 +57,53 @@ class GiveCutenessCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
             self.__timber.log('GiveCutenessCommand', f'Less than 3 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         userName: str | None = splits[1]
         if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
             self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed: \"{userName}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         incrementAmountStr: str | None = splits[2]
         if not utils.isValidStr(incrementAmountStr):
             self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {userName} 5')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Increment amount argument is malformed. Example: !givecuteness {userName} 5',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, TypeError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {userName} 5')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Increment amount argument is malformed. Example: !givecuteness {userName} 5',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         userName = utils.removePreceedingAt(userName)
         userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
         if not utils.isValidStr(userId):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\"!')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to fetch user ID for \"{userName}\"',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         try:
@@ -95,9 +115,17 @@ class GiveCutenessCommand(AbsChatCommand):
                 userName = userName
             )
 
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Cuteness for {userName} is now {result.cutenessStr} ✨')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'ⓘ Cuteness for {userName} is now {result.cutenessStr} ✨',
+                replyMessageId = await ctx.getMessageId()
+            )
         except (OverflowError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Error giving cuteness to \"{userName}\"',
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command of {incrementAmount} for {userName}:{userId} from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

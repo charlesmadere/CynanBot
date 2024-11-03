@@ -4,7 +4,7 @@ from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
-class TimeoutHelperInterface(ABC):
+class TimeoutActionHelperInterface(ABC):
 
     @abstractmethod
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

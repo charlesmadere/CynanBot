@@ -347,7 +347,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self,
         userIdToTimeout: str
     ) -> bool:
-        return userIdToTimeout in await self.__guaranteedTimeoutUsersRepository.getUserIds()
+        return await self.__guaranteedTimeoutUsersRepository.isGuaranteed(userIdToTimeout)
 
     async def __isImmuneUser(
         self,
@@ -362,7 +362,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠️ Sorry @{cheerUserName}, but @{userNameToTimeout} is an immune user',
+            message = f'⚠ Sorry @{cheerUserName}, but @{userNameToTimeout} is an immune user',
             replyMessageId = twitchChatMessageId
         )
 
@@ -399,7 +399,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠️ Wow @{cheerUserName} are you trying to bully? @{userNameToTimeout} has the new follower shield!',
+            message = f'⚠ Wow @{cheerUserName} are you trying to bully? @{userNameToTimeout} has the new follower shield!',
             replyMessageId = twitchChatMessageId
         )
 

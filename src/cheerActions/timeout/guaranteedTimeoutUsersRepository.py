@@ -19,25 +19,31 @@ class GuaranteedTimeoutUsersRepository(GuaranteedTimeoutUsersRepositoryInterface
         self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
 
-        self.__userIds: frozenset[str] | None = None
+        self.__cachedGuaranteedUserIds: frozenset[str] | None = None
 
-    async def __createUserIdsSet(self) -> frozenset[str]:
-        userIds: set[str] = set()
+    async def __getGuaranteedUserIds(self) -> frozenset[str]:
+        cachedGuaranteedUserIds = self.__cachedGuaranteedUserIds
+
+        if cachedGuaranteedUserIds is not None:
+            return cachedGuaranteedUserIds
+
+        guaranteedUserIds: set[str] = set()
 
         anivUserId = await self.__anivUserIdProvider.getAnivUserId()
         if utils.isValidStr(anivUserId):
-            userIds.add(anivUserId)
+            guaranteedUserIds.add(anivUserId)
 
         albeeesUserId = await self.__twitchFriendsUserIdRepository.getAlbeeesUserId()
         if utils.isValidStr(albeeesUserId):
-            userIds.add(albeeesUserId)
+            guaranteedUserIds.add(albeeesUserId)
 
-        return frozenset(userIds)
+        cachedGuaranteedUserIds = frozenset(guaranteedUserIds)
+        self.__cachedGuaranteedUserIds = cachedGuaranteedUserIds
+        return cachedGuaranteedUserIds
 
-    async def getUserIds(self) -> frozenset[str]:
-        userIds = self.__userIds
+    async def isGuaranteed(self, userId: str) -> bool:
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        if userIds is None:
-            userIds = await self.__createUserIdsSet()
-
-        return userIds
+        guaranteedUserIds = await self.__getGuaranteedUserIds()
+        return userId in guaranteedUserIds
