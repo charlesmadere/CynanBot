@@ -573,13 +573,13 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
         )
 
-        if not 'access_token' in jsonResponse or not utils.isValidStr(jsonResponse.get('access_token')):
+        if 'access_token' not in jsonResponse or not utils.isValidStr(jsonResponse.get('access_token', None)):
             self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data does not include valid \"access_token\" value ({jsonResponse=})')
             return None
 
         accessToken = utils.getStrFromDict(jsonResponse, 'access_token')
 
-        if not 'refresh_token' in jsonResponse or not utils.isValidStr(jsonResponse.get('refresh_token')):
+        if 'refresh_token' not in jsonResponse or not utils.isValidStr(jsonResponse.get('refresh_token', None)):
             self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data does not include valid \"refresh_token\" value ({jsonResponse=})')
             return None
 

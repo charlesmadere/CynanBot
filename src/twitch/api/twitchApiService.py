@@ -23,11 +23,8 @@ from .twitchValidationResponse import TwitchValidationResponse
 from .websocket.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from .websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
-from ..exceptions import (TwitchAccessTokenMissingException,
-                          TwitchErrorException, TwitchJsonException,
-                          TwitchPasswordChangedException,
-                          TwitchRefreshTokenMissingException,
-                          TwitchStatusCodeException,
+from ..exceptions import (TwitchErrorException, TwitchJsonException,
+                          TwitchPasswordChangedException, TwitchStatusCodeException,
                           TwitchTokenIsExpiredException)
 from ..twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
 from ..websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
@@ -589,39 +586,27 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching tokens (code=\"{code}\"): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching tokens (code=\"{code}\"): {e}')
 
-        if response.statusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.statusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.statusCode}')
-
-        jsonResponse: dict[str, Any] | Any | None = await response.json()
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
+        if response.statusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching tokens (code=\"{code}\"): {jsonResponse}')
-            raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching tokens (code=\"{code}\"): {jsonResponse}')
+            self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
-        expirationTime = await self.__calculateExpirationTime(
-            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
-        )
+        tokensDetails = await self.__twitchJsonMapper.parseTokensDetails(jsonResponse)
 
-        accessToken = utils.getStrFromDict(jsonResponse, 'access_token', fallback = '')
-        if not utils.isValidStr(accessToken):
-            self.__timber.log('TwitchApiService', f'Received malformed \"access_token\" ({accessToken}) when fetching tokens (code=\"{code}\"): {jsonResponse}')
-            raise TwitchAccessTokenMissingException(f'TwitchApiService received malformed \"access_token\" ({accessToken}) when fetching tokens (code=\"{code}\"): {jsonResponse}')
+        if tokensDetails is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
-        refreshToken = utils.getStrFromDict(jsonResponse, 'refresh_token', fallback = '')
-        if not utils.isValidStr(refreshToken):
-            self.__timber.log('TwitchApiService', f'Received malformed \"refresh_token\" ({refreshToken}) when fetching tokens (code=\"{code}\"): {jsonResponse}')
-            raise TwitchRefreshTokenMissingException(f'TwitchApiService received malformed \"refresh_token\" ({refreshToken}) when fetching tokens (code=\"{code}\"): {jsonResponse}')
-
-        return TwitchTokensDetails(
-            expirationTime = expirationTime,
-            accessToken = accessToken,
-            refreshToken = refreshToken
-        )
+        return tokensDetails
 
     async def fetchUserDetailsWithUserId(
         self,
