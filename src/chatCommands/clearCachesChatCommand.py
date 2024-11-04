@@ -259,5 +259,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             if clearable is not None:
                 await clearable.clearCaches()
 
-        await self.__twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = 'ⓘ All caches cleared',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

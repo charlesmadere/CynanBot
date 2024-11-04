@@ -59,5 +59,11 @@ class AddRecurringSuperTriviaActionChatCommand(AbsChatCommand):
             raise RuntimeError(f'unknown SuperTriviaStep: \"{step}\"')
 
         minimumRecurringActionTimingMinutes = RecurringActionType.SUPER_TRIVIA.minimumRecurringActionTimingMinutes
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between recurring Super Trivia questions (most people choose 20 - 45 minutes, minimum is {minimumRecurringActionTimingMinutes})')
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Please specify the number of minutes between recurring Super Trivia questions (most people choose 20 - 45 minutes, minimum is {minimumRecurringActionTimingMinutes})',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('AddRecurringSuperTriviaActionChatCommand', f'Handled !addrecurringsupertriviaaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -63,5 +63,10 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
             twitchChannelId = twitchChannelId
         )
 
-        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameControllers(controllers))
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = await self.__triviaUtils.getTriviaGameControllers(controllers),
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('GetTriviaControllersChatCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
