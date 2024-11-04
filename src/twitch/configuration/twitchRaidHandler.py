@@ -115,7 +115,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
-                message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
+                message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid!',
                 twitchChannel = user.getHandle(),
                 twitchChannelId = broadcasterUserId,
                 userId = userId,

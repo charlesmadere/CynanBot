@@ -90,7 +90,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         inputFlagRegExes: FrozenList[Pattern] = FrozenList()
 
         # purge potentially dangerous/tricky characters
-        inputFlagRegExes.append(re.compile(r'[&%;=\'\"|^~]', re.IGNORECASE))
+        inputFlagRegExes.append(re.compile(r'[&%;=\"|^~]', re.IGNORECASE))
 
         # purge what might be directory traversal sequences
         inputFlagRegExes.append(re.compile(r'\.{2}', re.IGNORECASE))

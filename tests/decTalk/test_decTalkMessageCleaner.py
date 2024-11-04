@@ -230,6 +230,11 @@ class TestDecTalkMessageCleaner:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_clean_withRaidMessage(self):
+        result = await self.cleaner.clean('Hello everyone from imyt\'s stream, welcome in. Thanks for the raid!')
+        assert result == 'Hello everyone from imyt\'s stream, welcome in. Thanks for the raid!'
+
+    @pytest.mark.asyncio
     async def test_clean_withRateInlineCommand(self):
         result = await self.cleaner.clean('rate [:rate0]?')
         assert result == 'rate ?'
