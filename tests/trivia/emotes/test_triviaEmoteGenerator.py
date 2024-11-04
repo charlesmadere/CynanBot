@@ -934,6 +934,12 @@ class TestTriviaEmoteGenerator:
         assert result == '🏖️'
 
     @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withVideoCassette(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('📼')
+        assert result is not None
+        assert result == '📼'
+
+    @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withWatermelon(self):
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🍉')
         assert result is not None

@@ -140,6 +140,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🎺'] = frozenset({ '📯' })
         emotesDict['🌷'] = frozenset({ '🌹' })
         emotesDict['🐢'] = None
+        emotesDict['📼'] = None
         emotesDict['🌊'] = frozenset({ '💧', '💦' })
         emotesDict['🐋'] = frozenset({ '🐳' })
 
