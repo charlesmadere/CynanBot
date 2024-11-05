@@ -72,7 +72,11 @@ class TranslateChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Please specify the text you want to translate. Example: !translate I like tamales',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         targetLanguageEntry = await self.__determineOptionalLanguageEntry(splits)
@@ -89,9 +93,17 @@ class TranslateChatCommand(AbsChatCommand):
                 targetLanguage = targetLanguageEntry
             )
 
-            await self.__twitchUtils.safeSend(ctx, response.toStr())
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = response.toStr(),
+                replyMessageId = await ctx.getMessageId()
+            )
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, '⚠ Error translating')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = '⚠ Error translating',
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

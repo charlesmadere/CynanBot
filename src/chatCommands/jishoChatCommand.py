@@ -86,6 +86,10 @@ class JishoChatCommand(AbsChatCommand):
                 )
         except GenericNetworkException as e:
             self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Error searching Jisho for \"{query}\"',
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

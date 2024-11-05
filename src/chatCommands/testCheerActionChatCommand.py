@@ -73,5 +73,10 @@ class TestCheerActionChatCommand(AbsChatCommand):
             exception = e
             self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform cheer action test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({bits=}) ({message=}): {e}', e, traceback.format_exc())
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Cheer Action test results ({bits=}) ({message=}) ({result=}) ({exception=})')
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Cheer Action test results ({bits=}) ({message=}) ({result=}) ({exception=})',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('TestCheerActionChatCommand', f'Handled !testcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({result=})')

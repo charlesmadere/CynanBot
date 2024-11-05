@@ -57,5 +57,10 @@ class TimeChatCommand(AbsChatCommand):
                 timeZoneName = timeZone.tzname(localTime)
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
-        await self.__twitchUtils.safeSend(ctx, text)
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = text,
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('TimeChatCommand', f'Handled !time command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
