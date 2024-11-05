@@ -174,14 +174,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             replyMessageId = twitchChatMessageId
         )
 
-    async def __fetchRipBozoEmote(self) -> str:
-        ripBozoEmote = await self.__trollmojiHelper.getGottemEmote()
-
-        if not utils.isValidStr(ripBozoEmote):
-            ripBozoEmote = 'RIPBOZO'
-
-        return ripBozoEmote
-
     async def __generateRollFailureData(
         self,
         now: datetime,
@@ -493,7 +485,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             user = user
         )
 
-        ripBozoEmote = await self.__fetchRipBozoEmote()
+        ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
 
         if not await self.__verifyStreamStatus(
             twitchChannelId = twitchChannelId,

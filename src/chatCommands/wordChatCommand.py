@@ -68,7 +68,11 @@ class WordChatCommand(AbsChatCommand):
         if len(splits) < 2:
             exampleEntry = await self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
-            await self.__twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.requireWotdApiCode()}. Available languages: {allWotdApiCodes}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.requireWotdApiCode()}. Available languages: {allWotdApiCodes}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         language = splits[1]
@@ -82,7 +86,11 @@ class WordChatCommand(AbsChatCommand):
         except (RuntimeError, TypeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}', e, traceback.format_exc())
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
-            await self.__twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         try:
@@ -93,9 +101,17 @@ class WordChatCommand(AbsChatCommand):
                 wordOfTheDay = wotd
             )
 
-            await self.__twitchUtils.safeSend(ctx, wordOfTheDayString)
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = wordOfTheDayString,
+                replyMessageId = await ctx.getMessageId()
+            )
         except (GenericNetworkException, RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\"')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\"',
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('WordCommand', f'Handled !word command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

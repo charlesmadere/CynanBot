@@ -90,6 +90,14 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             twitchEmoteChannelId = gottemEmote.twitchChannelId
         )
 
+    async def getGottemEmoteOrBackup(self) -> str:
+        gottemEmote = await self.getGottemEmote()
+
+        if utils.isValidStr(gottemEmote):
+            return gottemEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getGottemEmoteBackup()
+
     async def getHypeEmote(self) -> str | None:
         hypeEmote = await self.__trollmojiSettingsRepository.getHypeEmote()
 

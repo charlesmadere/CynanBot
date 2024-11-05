@@ -225,16 +225,15 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if twitchChannelProvider is None:
             return
 
-        emote = await self.__trollmojiHelper.getGottemEmote()
-
-        if not utils.isValidStr(emote):
-            emote = 'RIPBOZO'
-
+        emote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
         msg = f'@{chatterUserName} {emote} {timeoutData.durationSecondsStr}s {emote} {timeoutScoreString}'
 
-        await self.__twitchUtils.safeSend(twitchChannel, msg)
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = msg
+        )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
