@@ -50,5 +50,10 @@ class CommandsChatCommand(AbsChatCommand):
         if not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Commands: {self.__commandsUrl}')
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Commands: {self.__commandsUrl}',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('CommandsChatCommand', f'Handled !commands command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
