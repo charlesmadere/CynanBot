@@ -79,6 +79,7 @@ from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
+from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -97,7 +98,7 @@ from .cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import 
 from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, DiscordCommand,
                        PbsCommand, PkMonCommand, PkMoveCommand, RaceCommand, SetFuntoonTokenCommand,
                        SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TwitchInfoCommand,
-                       TwitterCommand, UnbanTriviaQuestionCommand)
+                       TwitterCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
@@ -735,7 +736,7 @@ class CynanBot(
             self.__triviaInfoCommand: AbsChatCommand = StubChatCommand()
             self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
-            self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
+            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__addTriviaControllerCommand: AbsChatCommand = AddTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
@@ -753,7 +754,7 @@ class CynanBot(
             self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaInfoCommand: AbsChatCommand = TriviaInfoChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
-            self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessPresenter is None or cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
             self.__cutenessCommand: AbsChatCommand = StubChatCommand()
@@ -1673,7 +1674,7 @@ class CynanBot(
     @commands.command(name = 'unbantriviaquestion')
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__unbanTriviaQuestionCommand.handleCommand(context)
+        await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):
