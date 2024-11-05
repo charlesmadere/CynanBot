@@ -54,7 +54,7 @@ class TimeChatCommand(AbsChatCommand):
                 text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
             else:
                 formattedTime = utils.formatTimeShort(localTime)
-                timeZoneName = timeZone.tzname(localTime)
+                timeZoneName = localTime.strftime('%Z')
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
         await self.__twitchUtils.safeSend(
