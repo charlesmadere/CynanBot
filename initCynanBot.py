@@ -326,8 +326,8 @@ from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
-from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
+from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -680,7 +680,6 @@ funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
-    networkClientProvider = networkClientProvider,
     timber = timber
 )
 

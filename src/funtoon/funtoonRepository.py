@@ -9,7 +9,6 @@ from .funtoonRepositoryInterface import FuntoonRepositoryInterface
 from .funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..misc import utils as utils
 from ..network.exceptions import GenericNetworkException
-from ..network.networkClientProvider import NetworkClientProvider
 from ..timber.timberInterface import TimberInterface
 
 
@@ -20,7 +19,6 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         funtoonApiService: FuntoonApiServiceInterface,
         funtoonJsonMapper: FuntoonJsonMapperInterface,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface,
-        networkClientProvider: NetworkClientProvider,
         timber: TimberInterface
     ):
         if not isinstance(funtoonApiService, FuntoonApiServiceInterface):
@@ -29,15 +27,12 @@ class FuntoonRepository(FuntoonRepositoryInterface):
             raise TypeError(f'funtoonJsonMapper argument is malformed: \"{funtoonJsonMapper}\"')
         elif not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
-        elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__funtoonApiService: FuntoonApiServiceInterface = funtoonApiService
         self.__funtoonJsonMapper: FuntoonJsonMapperInterface = funtoonJsonMapper
         self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
 
     async def banTriviaQuestion(self, triviaId: str) -> bool:

@@ -45,8 +45,8 @@ from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdCon
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
-from src.cheerActions.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.cheerActions.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
+from src.cheerActions.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHistoryRepository import TimeoutCheerActionHistoryRepository
@@ -253,8 +253,8 @@ from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
-from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
+from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -599,7 +599,6 @@ funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
-    networkClientProvider = networkClientProvider,
     timber = timber
 )
 

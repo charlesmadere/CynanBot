@@ -103,8 +103,8 @@ from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
-from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
+from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
@@ -433,7 +433,6 @@ funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
-    networkClientProvider = networkClientProvider,
     timber = timber
 )
 

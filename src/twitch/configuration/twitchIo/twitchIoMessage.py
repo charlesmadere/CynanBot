@@ -35,9 +35,6 @@ class TwitchIoMessage(TwitchMessage):
             userIdsRepository = userIdsRepository
         )
 
-        self.__checkedForReplyData: bool = False
-        self.__messageId: str | None = None
-        self.__twitchChannelId: str | None = None
         self.__tags: TwitchMessageTags | None = None
 
     def getAuthor(self) -> TwitchAuthor:
