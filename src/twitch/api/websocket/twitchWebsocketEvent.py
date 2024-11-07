@@ -9,6 +9,7 @@ from ..twitchCommunitySubGift import TwitchCommunitySubGift
 from ..twitchOutcome import TwitchOutcome
 from ..twitchPollChoice import TwitchPollChoice
 from ..twitchPollStatus import TwitchPollStatus
+from ..twitchPredictionStatus import TwitchPredictionStatus
 from ..twitchResub import TwitchResub
 from ..twitchReward import TwitchReward
 from ..twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
@@ -58,6 +59,7 @@ class TwitchWebsocketEvent:
     tier: TwitchSubscriberTier | None = None
     channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
     pollStatus: TwitchPollStatus | None = None
+    predictionStatus: TwitchPredictionStatus | None = None
     resub: TwitchResub | None = None
     rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
     communitySubGift: TwitchCommunitySubGift | None = None

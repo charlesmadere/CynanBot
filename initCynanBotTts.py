@@ -1318,6 +1318,7 @@ twitchPollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
 twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    twitchUtils = twitchUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     websocketConnectionServer = websocketConnectionServer
 )

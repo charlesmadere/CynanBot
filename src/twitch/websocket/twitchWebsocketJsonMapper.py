@@ -10,6 +10,7 @@ from ..api.twitchOutcome import TwitchOutcome
 from ..api.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.twitchPollChoice import TwitchPollChoice
 from ..api.twitchPollStatus import TwitchPollStatus
+from ..api.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.twitchResub import TwitchResub
 from ..api.twitchReward import TwitchReward
 from ..api.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
@@ -508,9 +509,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         pollStatus: TwitchPollStatus | None = None
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
+        predictionStatus: TwitchPredictionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             pollStatus = await self.__twitchJsonMapper.parsePollStatus(utils.getStrFromDict(eventJson, 'status'))
             rewardRedemptionStatus = TwitchRewardRedemptionStatus.fromStr(utils.getStrFromDict(eventJson, 'status'))
+            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(utils.getStrFromDict(eventJson, 'status'))
 
         communitySubGift: TwitchCommunitySubGift | None = None
         if 'community_sub_gift' in eventJson:
@@ -573,6 +576,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             channelPointsVoting = channelPointsVoting,
             tier = tier,
             pollStatus = pollStatus,
+            predictionStatus = predictionStatus,
             resub = resub,
             rewardRedemptionStatus = rewardRedemptionStatus,
             communitySubGift = communitySubGift,
