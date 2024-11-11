@@ -9,9 +9,9 @@ from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from CynanBot.src.timeout.timeoutActionHistoryEntry import TimeoutActionHistoryEntry
-from CynanBot.src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
-from CynanBot.src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from src.timeout.timeoutActionHistoryEntry import TimeoutActionHistoryEntry
+from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
+from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
 
 
 class TestTimeoutCheerActionJsonMapper:
