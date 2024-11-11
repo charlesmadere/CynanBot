@@ -152,9 +152,9 @@ class ClearCachesChatCommand(AbsChatCommand):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
-            raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
+            raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionSettingsRepository is not None and not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
-            raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
+            raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):

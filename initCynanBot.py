@@ -1483,7 +1483,7 @@ timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMap
 )
 
 timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('timeoutCheerActionSettings.json')
+    settingsJsonReader = JsonFileReader('timeoutActionSettings.json')
 )
 
 timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
@@ -1500,8 +1500,8 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    timeoutCheerActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutCheerActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
+    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,

@@ -183,21 +183,21 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         userIdToTimeout: str,
         user: UserInterface
     ) -> RollFailureData:
-        baseFailureProbability = await self.__timeoutCheerActionSettingsRepository.getFailureProbability()
-        maxBullyFailureProbability = await self.__timeoutCheerActionSettingsRepository.getMaxBullyFailureProbability()
-        maxBullyFailureOccurrences = await self.__timeoutCheerActionSettingsRepository.getMaxBullyFailureOccurrences()
+        baseFailureProbability = await self.__timeoutActionSettingsRepository.getFailureProbability()
+        maxBullyFailureProbability = await self.__timeoutActionSettingsRepository.getMaxBullyFailureProbability()
+        maxBullyFailureOccurrences = await self.__timeoutActionSettingsRepository.getMaxBullyFailureOccurrences()
         perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
 
         bullyOccurrences = 0
 
         if user.isTimeoutCheerActionIncreasedBullyFailureEnabled:
-            history = await self.__timeoutCheerActionHistoryRepository.get(
+            history = await self.__timeoutActionHistoryRepository.get(
                 chatterUserId = userIdToTimeout,
                 twitchChannel = user.getHandle(),
                 twitchChannelId = twitchChannelId
             )
 
-            bullyTimeToLiveDays = await self.__timeoutCheerActionSettingsRepository.getBullyTimeToLiveDays()
+            bullyTimeToLiveDays = await self.__timeoutActionSettingsRepository.getBullyTimeToLiveDays()
             bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
 
             if history.entries is not None and len(history.entries) >= 1:
@@ -212,7 +212,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
         failureRoll = int(round(failureProbability * diceRoll.dieSize))
 
-        reverseProbability = await self.__timeoutCheerActionSettingsRepository.getReverseProbability()
+        reverseProbability = await self.__timeoutActionSettingsRepository.getReverseProbability()
         reverseRoll = int(round(reverseProbability * float(diceRoll.dieSize)))
 
         return TimeoutCheerActionHelper.RollFailureData(
@@ -416,7 +416,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         return twitchChannelId == userIdToTimeout
 
     async def __rollDice(self) -> DiceRoll:
-        dieSize = await self.__timeoutCheerActionSettingsRepository.getDieSize()
+        dieSize = await self.__timeoutActionSettingsRepository.getDieSize()
         roll = random.randint(1, dieSize)
 
         return TimeoutCheerActionHelper.DiceRoll(
@@ -573,7 +573,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         self.__timber.log('TimeoutCheerActionHelper', f'Timed out {userNameToTimeout}:{userIdToTimeout} in \"{user.getHandle()}\" due to cheer from {cheerUserName}:{cheerUserId} ({diceRoll=}) ({rollFailureData=}) ({timeoutResult=}) ({action=})')
 
-        await self.__timeoutCheerActionHistoryRepository.add(
+        await self.__timeoutActionHistoryRepository.add(
             bitAmount = action.bits,
             durationSeconds = action.durationSeconds,
             chatterUserId = userIdToTimeout,
