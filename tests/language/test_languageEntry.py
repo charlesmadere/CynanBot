@@ -1,5 +1,5 @@
-from src.language.languageEntry import LanguageEntry
 import src.misc.utils as utils
+from src.language.languageEntry import LanguageEntry
 
 
 class TestLanguageEntry:

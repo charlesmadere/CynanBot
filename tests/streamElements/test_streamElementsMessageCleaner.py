@@ -7,8 +7,8 @@ from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
 from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
-from src.timber.timberStub import TimberStub
 from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 

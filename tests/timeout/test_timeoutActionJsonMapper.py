@@ -5,13 +5,13 @@ from typing import Any
 import pytest
 from frozenlist import FrozenList
 
-from src.cheerActions.timeout.timeoutCheerActionEntry import TimeoutCheerActionEntry
-from src.cheerActions.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
-from src.cheerActions.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
+from CynanBot.src.timeout.timeoutActionHistoryEntry import TimeoutActionHistoryEntry
+from CynanBot.src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
+from CynanBot.src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
 
 
 class TestTimeoutCheerActionJsonMapper:
@@ -20,67 +20,67 @@ class TestTimeoutCheerActionJsonMapper:
 
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
-    jsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutCheerActionJsonMapper(
+    jsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
         timber = timber
     )
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntriesString_with1Entry(self):
-        entry = TimeoutCheerActionEntry(
+        entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
             bitAmount = 100,
             durationSeconds = 60,
             timedOutByUserId = 'abc123'
         )
 
-        entries: list[TimeoutCheerActionEntry] = [ entry ]
-        jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
+        entries: list[TimeoutActionHistoryEntry] = [ entry ]
+        jsonString = await self.jsonMapper.serializeTimeoutActionEntriesToJsonString(entries)
         assert isinstance(jsonString, str)
 
-        result = await self.jsonMapper.parseTimeoutCheerActionEntriesString(jsonString)
+        result = await self.jsonMapper.parseTimeoutActionEntriesString(jsonString)
         assert isinstance(result, FrozenList)
         assert len(result) == 1
 
         newEntry = result[0]
-        assert isinstance(newEntry, TimeoutCheerActionEntry)
+        assert isinstance(newEntry, TimeoutActionHistoryEntry)
         assert newEntry == entry
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntriesString_withEmptyString(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionEntriesString('')
+        result = await self.jsonMapper.parseTimeoutActionEntriesString('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntriesString_withNone(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionEntriesString(None)
+        result = await self.jsonMapper.parseTimeoutActionEntriesString(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntriesString_withWhitespaceString(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionEntriesString(' ')
+        result = await self.jsonMapper.parseTimeoutActionEntriesString(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntry_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionEntry(dict())
+        result = await self.jsonMapper.parseTimeoutActionEntry(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionEntry_withNone(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionEntry(None)
+        result = await self.jsonMapper.parseTimeoutActionEntry(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntriesToJsonString_with1Entry(self):
-        entry = TimeoutCheerActionEntry(
+        entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
             bitAmount = 100,
             durationSeconds = 60,
             timedOutByUserId = 'abc123'
         )
 
-        entries: list[TimeoutCheerActionEntry] = [ entry ]
-        jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
+        entries: list[TimeoutActionHistoryEntry] = [ entry ]
+        jsonString = await self.jsonMapper.serializeTimeoutActionEntriesToJsonString(entries)
         assert isinstance(jsonString, str)
 
         jsonList: list[dict[str, Any]] = json.loads(jsonString)
@@ -98,15 +98,15 @@ class TestTimeoutCheerActionJsonMapper:
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntriesToJsonString_with2Entries(self):
-        entry = TimeoutCheerActionEntry(
+        entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
             bitAmount = 50,
             durationSeconds = 60,
             timedOutByUserId = 'abc123'
         )
 
-        entries: list[TimeoutCheerActionEntry] = [ entry, entry ]
-        jsonString = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(entries)
+        entries: list[TimeoutActionHistoryEntry] = [ entry, entry ]
+        jsonString = await self.jsonMapper.serializeTimeoutActionEntriesToJsonString(entries)
         assert isinstance(jsonString, str)
 
         jsonList: list[dict[str, Any]] = json.loads(jsonString)
@@ -133,26 +133,26 @@ class TestTimeoutCheerActionJsonMapper:
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntriesToJsonString_withEmptyList(self):
-        result = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(list())
+        result = await self.jsonMapper.serializeTimeoutActionEntriesToJsonString(list())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntriesToJsonString_withNone(self):
-        result = await self.jsonMapper.serializeTimeoutCheerActionEntriesToJsonString(None)
+        result = await self.jsonMapper.serializeTimeoutActionEntriesToJsonString(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntry(self):
         now = datetime.now(self.timeZoneRepository.getDefault())
 
-        entry = TimeoutCheerActionEntry(
+        entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = now,
             bitAmount = 50,
             durationSeconds = 120,
             timedOutByUserId = 'abc123'
         )
 
-        result = await self.jsonMapper.serializeTimeoutCheerActionEntry(entry)
+        result = await self.jsonMapper.serializeTimeoutActionEntry(entry)
         assert isinstance(result, dict)
         assert len(result) == 4
 
@@ -163,10 +163,10 @@ class TestTimeoutCheerActionJsonMapper:
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionEntry_withNone(self):
-        result = await self.jsonMapper.serializeTimeoutCheerActionEntry(None)
+        result = await self.jsonMapper.serializeTimeoutActionEntry(None)
         assert result is None
 
     def test_sanity(self):
         assert self.jsonMapper is not None
-        assert isinstance(self.jsonMapper, TimeoutCheerActionJsonMapperInterface)
-        assert isinstance(self.jsonMapper, TimeoutCheerActionJsonMapper)
+        assert isinstance(self.jsonMapper, TimeoutActionJsonMapperInterface)
+        assert isinstance(self.jsonMapper, TimeoutActionJsonMapper)

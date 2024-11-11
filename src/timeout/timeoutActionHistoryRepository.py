@@ -6,25 +6,25 @@ from datetime import datetime
 from frozenlist import FrozenList
 from lru import LRU
 
-from .timeoutCheerActionEntry import TimeoutCheerActionEntry
-from .timeoutCheerActionHistory import TimeoutCheerActionHistory
-from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
-from .timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
-from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ...misc import utils as utils
-from ...storage.backingDatabase import BackingDatabase
-from ...storage.databaseConnection import DatabaseConnection
-from ...storage.databaseType import DatabaseType
-from ...timber.timberInterface import TimberInterface
+from .timeoutActionHistoryEntry import TimeoutActionHistoryEntry
+from .timeoutActionHistory import TimeoutActionHistory
+from .timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
+from .timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
+from ..storage.backingDatabase import BackingDatabase
+from ..storage.databaseConnection import DatabaseConnection
+from ..storage.databaseType import DatabaseType
+from ..timber.timberInterface import TimberInterface
 
 
-class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInterface):
+class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
 
     def __init__(
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface,
+        timeoutActionJsonMapper: TimeoutActionJsonMapperInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         cacheSize: int = 32,
         maximumHistoryEntriesSize: int = 16
@@ -33,8 +33,8 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeoutCheerActionJsonMapper, TimeoutCheerActionJsonMapperInterface):
-            raise TypeError(f'timeoutCheerActionJsonMapper argument is malformed: \"{timeoutCheerActionJsonMapper}\"')
+        elif not isinstance(timeoutActionJsonMapper, TimeoutActionJsonMapperInterface):
+            raise TypeError(f'timeoutActionJsonMapper argument is malformed: \"{timeoutActionJsonMapper}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidInt(cacheSize):
@@ -48,12 +48,12 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
-        self.__timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = timeoutCheerActionJsonMapper
+        self.__timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = timeoutActionJsonMapper
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__maximumHistoryEntriesSize: int = maximumHistoryEntriesSize
 
         self.__isDatabaseReady: bool = False
-        self.__caches: dict[str, LRU[str, TimeoutCheerActionHistory | None]] = defaultdict(lambda: LRU(cacheSize))
+        self.__caches: dict[str, LRU[str, TimeoutActionHistory | None]] = defaultdict(lambda: LRU(cacheSize))
 
     async def add(
         self,
@@ -93,12 +93,12 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         else:
             totalTimeouts = history.totalTimeouts + 1
 
-        newHistoryEntries: list[TimeoutCheerActionEntry] = list()
+        newHistoryEntries: list[TimeoutActionHistoryEntry] = list()
         if history is not None and history.entries is not None and len(history.entries) >= 1:
             for entry in history.entries:
                 newHistoryEntries.append(entry)
 
-        newHistoryEntries.append(TimeoutCheerActionEntry(
+        newHistoryEntries.append(TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
             bitAmount = bitAmount,
             durationSeconds = durationSeconds,
@@ -110,10 +110,10 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         while len(newHistoryEntries) > self.__maximumHistoryEntriesSize:
             del newHistoryEntries[len(newHistoryEntries) - 1]
 
-        frozenHistoryEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList(newHistoryEntries)
+        frozenHistoryEntries: FrozenList[TimeoutActionHistoryEntry] = FrozenList(newHistoryEntries)
         frozenHistoryEntries.freeze()
 
-        self.__caches[twitchChannelId][chatterUserId] = TimeoutCheerActionHistory(
+        self.__caches[twitchChannelId][chatterUserId] = TimeoutActionHistory(
             totalTimeouts = totalTimeouts,
             entries = frozenHistoryEntries,
             chatterUserId = chatterUserId,
@@ -121,14 +121,14 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             twitchChannelId = twitchChannelId
         )
 
-        historyEntriesString = await self.__timeoutCheerActionJsonMapper.serializeTimeoutCheerActionEntriesToJsonString(
+        historyEntriesString = await self.__timeoutActionJsonMapper.serializeTimeoutActionEntriesToJsonString(
             entries = newHistoryEntries
         )
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO timeoutcheeractionhistory (totaltimeouts, chatteruserid, entries, twitchchannelid)
+                INSERT INTO timeoutactionhistory (totaltimeouts, chatteruserid, entries, twitchchannelid)
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET totaltimeouts = EXCLUDED.totaltimeouts, entries = EXCLUDED.entries
             ''',
@@ -139,14 +139,14 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
 
     async def clearCaches(self):
         self.__caches.clear()
-        self.__timber.log('TimeoutCheerActionHistoryRepository', 'Caches cleared')
+        self.__timber.log('TimeoutActionHistoryRepository', 'Caches cleared')
 
     async def get(
         self,
         chatterUserId: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TimeoutCheerActionHistory:
+    ) -> TimeoutActionHistory:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -162,7 +162,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT totaltimeouts, chatteruserid, entries FROM timeoutcheeractionhistory
+                SELECT totaltimeouts, chatteruserid, entries FROM timeoutactionhistory
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
@@ -171,10 +171,10 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
 
         await connection.close()
 
-        timeoutCheerActionHistory: TimeoutCheerActionHistory
+        timeoutActionHistory: TimeoutActionHistory
 
         if record is None or len(record) == 0:
-            timeoutCheerActionHistory = TimeoutCheerActionHistory(
+            timeoutActionHistory = TimeoutActionHistory(
                 totalTimeouts = 0,
                 entries = None,
                 chatterUserId = chatterUserId,
@@ -182,11 +182,11 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
                 twitchChannelId = twitchChannelId
             )
         else:
-            entries = await self.__timeoutCheerActionJsonMapper.parseTimeoutCheerActionEntriesString(
+            entries = await self.__timeoutActionJsonMapper.parseTimeoutActionEntriesString(
                 jsonString = record[2]
             )
 
-            timeoutCheerActionHistory = TimeoutCheerActionHistory(
+            timeoutActionHistory = TimeoutActionHistory(
                 totalTimeouts = record[0],
                 entries = entries,
                 chatterUserId = record[1],
@@ -194,8 +194,8 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
                 twitchChannelId = twitchChannelId
             )
 
-        cache[chatterUserId] = timeoutCheerActionHistory
-        return timeoutCheerActionHistory
+        cache[chatterUserId] = timeoutActionHistory
+        return timeoutActionHistory
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -212,7 +212,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             case DatabaseType.POSTGRESQL:
                 await connection.createTableIfNotExists(
                     '''
-                        CREATE TABLE IF NOT EXISTS timeoutcheeractionhistory (
+                        CREATE TABLE IF NOT EXISTS timeoutactionhistory (
                             totaltimeouts int DEFAULT 0 NOT NULL,
                             chatteruserid text NOT NULL,
                             entries text DEFAULT NULL,
@@ -225,7 +225,7 @@ class TimeoutCheerActionHistoryRepository(TimeoutCheerActionHistoryRepositoryInt
             case DatabaseType.SQLITE:
                 await connection.createTableIfNotExists(
                     '''
-                        CREATE TABLE IF NOT EXISTS timeoutcheeractionhistory (
+                        CREATE TABLE IF NOT EXISTS timeoutactionhistory (
                             totaltimeouts INTEGER NOT NULL DEFAULT 0,
                             chatteruserid TEXT NOT NULL,
                             entries TEXT DEFAULT NULL,

@@ -5,13 +5,13 @@ from typing import Any
 
 from frozenlist import FrozenList
 
-from .timeoutCheerActionEntry import TimeoutCheerActionEntry
-from .timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
-from ...misc import utils as utils
-from ...timber.timberInterface import TimberInterface
+from .timeoutActionHistoryEntry import TimeoutActionHistoryEntry
+from .timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from ..misc import utils as utils
+from ..timber.timberInterface import TimberInterface
 
 
-class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
+class TimeoutActionJsonMapper(TimeoutActionJsonMapperInterface):
 
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):
@@ -19,10 +19,10 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
 
-    async def parseTimeoutCheerActionEntriesString(
+    async def parseTimeoutActionEntriesString(
         self,
         jsonString: str | Any | None
-    ) -> FrozenList[TimeoutCheerActionEntry] | None:
+    ) -> FrozenList[TimeoutActionHistoryEntry] | None:
         if not utils.isValidStr(jsonString):
             return None
 
@@ -31,19 +31,19 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
         try:
             jsonList = json.loads(jsonString)
         except JSONDecodeError as e:
-            self.__timber.log('TimeoutCheerActionJsonMapper', f'Encountered JSON decode exception when parsing timeout cheer action entries string into JSON ({jsonString=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionJsonMapper', f'Encountered JSON decode exception when parsing timeout action entries string into JSON ({jsonString=}): {e}', e, traceback.format_exc())
             return None
 
         if not isinstance(jsonList, list) or len(jsonList) == 0:
             return None
 
-        entries: list[TimeoutCheerActionEntry] = list()
+        entries: list[TimeoutActionHistoryEntry] = list()
 
         for index, entryJson in enumerate(jsonList):
-            entry = await self.parseTimeoutCheerActionEntry(entryJson)
+            entry = await self.parseTimeoutActionEntry(entryJson)
 
             if entry is None:
-                self.__timber.log('TimeoutCheerActionJsonMapper', f'Unable to parse timeout cheer action entry value at index {index}: ({entryJson=})')
+                self.__timber.log('TimeoutActionJsonMapper', f'Unable to parse timeout action entry value at index {index}: ({entryJson=})')
             else:
                 entries.append(entry)
 
@@ -51,15 +51,15 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
             return None
 
         entries.sort(key = lambda entry: entry.timedOutAtDateTime, reverse = True)
-        frozenEntries: FrozenList[TimeoutCheerActionEntry] = FrozenList(entries)
+        frozenEntries: FrozenList[TimeoutActionHistoryEntry] = FrozenList(entries)
         frozenEntries.freeze()
 
         return frozenEntries
 
-    async def parseTimeoutCheerActionEntry(
+    async def parseTimeoutActionEntry(
         self,
         jsonContents: dict[str, Any] | Any | None
-    ) -> TimeoutCheerActionEntry | None:
+    ) -> TimeoutActionHistoryEntry | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
@@ -68,16 +68,16 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
         timedOutAtDateTime = utils.getDateTimeFromDict(jsonContents, 'timedOutAtDateTime')
         timedOutByUserId = utils.getStrFromDict(jsonContents, 'timedOutByUserId')
 
-        return TimeoutCheerActionEntry(
+        return TimeoutActionHistoryEntry(
             bitAmount = bitAmount,
             durationSeconds = durationSeconds,
             timedOutAtDateTime = timedOutAtDateTime,
             timedOutByUserId = timedOutByUserId
         )
 
-    async def serializeTimeoutCheerActionEntriesToJsonString(
+    async def serializeTimeoutActionEntriesToJsonString(
         self,
-        entries: list[TimeoutCheerActionEntry] | None
+        entries: list[TimeoutActionHistoryEntry] | None
     ) -> str | None:
         if entries is not None and not isinstance(entries, list):
             raise TypeError(f'entries argument is malformed: \"{entries}\"')
@@ -88,10 +88,10 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
         entryDictionaries: list[dict[str, Any]] = list()
 
         for index, entry in enumerate(entries):
-            entryDictionary = await self.serializeTimeoutCheerActionEntry(entry)
+            entryDictionary = await self.serializeTimeoutActionEntry(entry)
 
             if entryDictionary is None:
-                self.__timber.log('TimeoutCheerActionJsonMapper', f'Unable to serialize timeout cheer action entry value at index {index}: ({entry=})')
+                self.__timber.log('TimeoutActionJsonMapper', f'Unable to serialize timeout action entry value at index {index}: ({entry=})')
             else:
                 entryDictionaries.append(entryDictionary)
 
@@ -100,11 +100,11 @@ class TimeoutCheerActionJsonMapper(TimeoutCheerActionJsonMapperInterface):
 
         return json.dumps(entryDictionaries)
 
-    async def serializeTimeoutCheerActionEntry(
+    async def serializeTimeoutActionEntry(
         self,
-        entry: TimeoutCheerActionEntry | None
+        entry: TimeoutActionHistoryEntry | None
     ) -> dict[str, Any] | None:
-        if entry is not None and not isinstance(entry, TimeoutCheerActionEntry):
+        if entry is not None and not isinstance(entry, TimeoutActionHistoryEntry):
             raise TypeError(f'entry argument is malformed: \"{entry}\"')
 
         if entry is None:

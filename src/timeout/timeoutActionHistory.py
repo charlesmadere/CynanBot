@@ -2,13 +2,13 @@ from dataclasses import dataclass
 
 from frozenlist import FrozenList
 
-from .timeoutCheerActionEntry import TimeoutCheerActionEntry
+from .timeoutActionHistoryEntry import TimeoutActionHistoryEntry
 
 
 @dataclass(frozen = True)
-class TimeoutCheerActionHistory:
+class TimeoutActionHistory:
     totalTimeouts: int
-    entries: FrozenList[TimeoutCheerActionEntry] | None
+    entries: FrozenList[TimeoutActionHistoryEntry] | None
     chatterUserId: str
     twitchChannel: str
     twitchChannelId: str

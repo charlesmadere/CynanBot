@@ -1,10 +1,10 @@
 from abc import abstractmethod
 
-from .timeoutCheerActionHistory import TimeoutCheerActionHistory
-from ...misc.clearable import Clearable
+from .timeoutActionHistory import TimeoutActionHistory
+from ..misc.clearable import Clearable
 
 
-class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
+class TimeoutActionHistoryRepositoryInterface(Clearable):
 
     @abstractmethod
     async def add(
@@ -24,5 +24,5 @@ class TimeoutCheerActionHistoryRepositoryInterface(Clearable):
         chatterUserId: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TimeoutCheerActionHistory:
+    ) -> TimeoutActionHistory:
         pass

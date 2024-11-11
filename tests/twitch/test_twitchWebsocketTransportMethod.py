@@ -1,5 +1,3 @@
-import pytest
-
 from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
 
