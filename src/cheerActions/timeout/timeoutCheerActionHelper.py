@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Collection
 
-from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionHistoryRepositoryInterface import TimeoutCheerActionHistoryRepositoryInterface
 from .timeoutCheerActionSettingsRepositoryInterface import TimeoutCheerActionSettingsRepositoryInterface
@@ -15,6 +14,7 @@ from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
+from ...timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...tts.ttsEvent import TtsEvent
 from ...twitch.configuration.twitchChannel import TwitchChannel
