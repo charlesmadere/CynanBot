@@ -1,9 +1,9 @@
 from abc import abstractmethod
 
-from ...misc.clearable import Clearable
+from ..misc.clearable import Clearable
 
 
-class TimeoutCheerActionSettingsRepositoryInterface(Clearable):
+class TimeoutActionSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
     async def getBullyTimeToLiveDays(self) -> int:

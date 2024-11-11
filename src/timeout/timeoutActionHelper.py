@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeoutActionData import TimeoutActionData
 from .timeoutActionHelperInterface import TimeoutActionHelperInterface
+from .timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
@@ -35,6 +36,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
+        timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchConstants: TwitchConstantsInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
@@ -45,6 +47,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
+            raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchConstants, TwitchConstantsInterface):
@@ -58,6 +62,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         self.__guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = guaranteedTimeoutUsersRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
+        self.__timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = timeoutActionHistoryRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository

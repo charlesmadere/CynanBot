@@ -49,14 +49,12 @@ from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersR
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from src.timeout.timeoutCheerActionHistoryRepository import TimeoutCheerActionHistoryRepository
-from src.timeout.timeoutCheerActionHistoryRepositoryInterface import \
-    TimeoutCheerActionHistoryRepositoryInterface
-from src.timeout.timeoutCheerActionJsonMapper import TimeoutCheerActionJsonMapper
-from src.timeout.timeoutCheerActionJsonMapperInterface import TimeoutCheerActionJsonMapperInterface
-from src.cheerActions.timeout.timeoutCheerActionSettingsRepository import TimeoutCheerActionSettingsRepository
-from src.cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import \
-    TimeoutCheerActionSettingsRepositoryInterface
+from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
+from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
+from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
+from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from src.timeout.timeoutActionSettingsRepository import TimeoutActionSettingsRepository
+from src.timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -1176,18 +1174,18 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = Sound
     timber = timber
 )
 
-timeoutCheerActionJsonMapper: TimeoutCheerActionJsonMapperInterface = TimeoutCheerActionJsonMapper(
+timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
     timber = timber
 )
 
-timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface = TimeoutCheerActionSettingsRepository(
+timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
     settingsJsonReader = JsonFileReader('timeoutCheerActionSettings.json')
 )
 
-timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface = TimeoutCheerActionHistoryRepository(
+timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeoutCheerActionJsonMapper = timeoutCheerActionJsonMapper,
+    timeoutCheerActionJsonMapper = timeoutActionJsonMapper,
     timeZoneRepository = timeZoneRepository
 )
 
@@ -1198,8 +1196,8 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
-    timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
+    timeoutCheerActionHistoryRepository = timeoutActionHistoryRepository,
+    timeoutCheerActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,
@@ -1412,9 +1410,9 @@ cynanBot = CynanBot(
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
+    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
+    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
-    timeoutCheerActionHistoryRepository = timeoutCheerActionHistoryRepository,
-    timeoutCheerActionSettingsRepository = timeoutCheerActionSettingsRepository,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,

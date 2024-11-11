@@ -5,10 +5,6 @@ from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterfa
 from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from ..cheerActions.timeout.timeoutCheerActionHistoryRepositoryInterface import \
-    TimeoutCheerActionHistoryRepositoryInterface
-from ..cheerActions.timeout.timeoutCheerActionSettingsRepositoryInterface import \
-    TimeoutCheerActionSettingsRepositoryInterface
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
@@ -30,6 +26,10 @@ from ..streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface
     StreamElementsUserKeyRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..timeout.timeoutActionHistoryRepositoryInterface import \
+    TimeoutActionHistoryRepositoryInterface
+from ..timeout.timeoutActionSettingsRepositoryInterface import \
+    TimeoutActionSettingsRepositoryInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
@@ -83,8 +83,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
-        timeoutCheerActionHistoryRepository: TimeoutCheerActionHistoryRepositoryInterface | None,
-        timeoutCheerActionSettingsRepository: TimeoutCheerActionSettingsRepositoryInterface | None,
+        timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
+        timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
@@ -151,10 +151,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif timeoutCheerActionHistoryRepository is not None and not isinstance(timeoutCheerActionHistoryRepository, TimeoutCheerActionHistoryRepositoryInterface):
-            raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutCheerActionHistoryRepository}\"')
-        elif timeoutCheerActionSettingsRepository is not None and not isinstance(timeoutCheerActionSettingsRepository, TimeoutCheerActionSettingsRepositoryInterface):
-            raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutCheerActionSettingsRepository}\"')
+        elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
+            raise TypeError(f'timeoutCheerActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
+        elif timeoutActionSettingsRepository is not None and not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
+            raise TypeError(f'timeoutCheerActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):
@@ -219,8 +219,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(streamElementsSettingsRepository)
         self.__clearables.append(streamElementsUserKeyRepository)
         self.__clearables.append(supStreamerRepository)
-        self.__clearables.append(timeoutCheerActionHistoryRepository)
-        self.__clearables.append(timeoutCheerActionSettingsRepository)
+        self.__clearables.append(timeoutActionHistoryRepository)
+        self.__clearables.append(timeoutActionSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(trollmojiHelper)
         self.__clearables.append(trollmojiSettingsRepository)

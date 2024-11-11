@@ -1,11 +1,11 @@
 from typing import Any
 
-from .timeoutCheerActionSettingsRepositoryInterface import TimeoutCheerActionSettingsRepositoryInterface
-from ...misc import utils as utils
-from ...storage.jsonReaderInterface import JsonReaderInterface
+from .timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
+from ..misc import utils as utils
+from ..storage.jsonReaderInterface import JsonReaderInterface
 
 
-class TimeoutCheerActionSettingsRepository(TimeoutCheerActionSettingsRepositoryInterface):
+class TimeoutActionSettingsRepository(TimeoutActionSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
