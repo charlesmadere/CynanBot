@@ -11,5 +11,5 @@ class TimeoutActionHelperInterface(ABC):
         pass
 
     @abstractmethod
-    async def timeout(self, data: TimeoutActionData) -> bool:
+    async def timeout(self, timeoutData: TimeoutActionData) -> bool:
         pass
