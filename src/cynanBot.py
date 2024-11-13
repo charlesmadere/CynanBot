@@ -659,6 +659,8 @@ class CynanBot(
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
+            self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addGameShuffleCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__beanInstructionsCommand: AbsChatCommand = StubChatCommand()
@@ -667,6 +669,8 @@ class CynanBot(
             self.__enableCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
         else:
+            self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addGameShuffleCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__beanInstructionsCommand: AbsChatCommand = BeanInstructionsChatCommand(cheerActionsRepository, timber, twitchUtils, usersRepository)
@@ -1345,12 +1349,12 @@ class CynanBot(
     @commands.command(name = 'addcrowdcontrolaction')
     async def command_addcrowdcontrolaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        pass # TODO
+        await self.__addCrowdControlCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addgameshuffleaction')
     async def command_addgameshuffleaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        pass # TODO
+        await self.__addGameShuffleCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):
