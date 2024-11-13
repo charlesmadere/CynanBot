@@ -45,16 +45,8 @@ from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdCon
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
-from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
-from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
-from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
-from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
-from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
-from src.timeout.timeoutActionSettingsRepository import TimeoutActionSettingsRepository
-from src.timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -187,6 +179,16 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
+from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from src.timeout.timeoutActionHelper import TimeoutActionHelper
+from src.timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
+from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
+from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
+from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
+from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from src.timeout.timeoutActionSettingsRepository import TimeoutActionSettingsRepository
+from src.timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
@@ -1139,6 +1141,40 @@ streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
 )
 
 
+####################################
+## Timeout initialization section ##
+####################################
+
+timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
+    timber = timber
+)
+
+timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
+    settingsJsonReader = JsonFileReader('timeoutActionSettings.json')
+)
+
+timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeoutCheerActionJsonMapper = timeoutActionJsonMapper,
+    timeZoneRepository = timeZoneRepository
+)
+
+timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    streamAlertsManager = streamAlertsManager,
+    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
+    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchConstants = twitchUtils,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
+    twitchUtils = twitchUtils
+)
+
+
 ##########################################
 ## Cheer Actions initialization section ##
 ##########################################
@@ -1196,6 +1232,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,

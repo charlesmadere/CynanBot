@@ -45,16 +45,8 @@ from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
-from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
-from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
-from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
-from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
-from src.timeout.timeoutActionSettingsRepository import TimeoutActionSettingsRepository
-from src.timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -193,6 +185,16 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
+from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from src.timeout.timeoutActionHelper import TimeoutActionHelper
+from src.timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
+from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
+from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
+from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
+from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from src.timeout.timeoutActionSettingsRepository import TimeoutActionSettingsRepository
+from src.timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from src.transparent.transparentApiService import TransparentApiService
 from src.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 from src.transparent.transparentXmlMapper import TransparentXmlMapper
@@ -1418,35 +1420,37 @@ immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = StubImmediat
 streamAlertsManager: StreamAlertsManagerInterface = StubStreamAlertsManager()
 
 
-#############################################
-## Star Wars Quotes initialization section ##
-#############################################
+####################################
+## Timeout initialization section ##
+####################################
 
-starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
-    quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
-)
-
-
-##################################
-## Jisho initialization section ##
-##################################
-
-jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
     timber = timber
 )
 
-jishoApiService: JishoApiServiceInterface = JishoApiService(
-    jishoJsonMapper = jishoJsonMapper,
-    networkClientProvider = networkClientProvider,
-    timber = timber
+timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
+    settingsJsonReader = JsonFileReader('timeoutActionSettings.json')
 )
 
-jishoPresenter: JishoPresenterInterface = JishoPresenter()
+timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeoutCheerActionJsonMapper = timeoutActionJsonMapper,
+    timeZoneRepository = timeZoneRepository
+)
 
-jishoHelper: JishoHelperInterface = JishoHelper(
-    jishoApiService = jishoApiService,
-    jishoPresenter = jishoPresenter,
-    timber = timber
+timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    streamAlertsManager = streamAlertsManager,
+    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
+    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchConstants = twitchUtils,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
+    twitchUtils = twitchUtils
 )
 
 
@@ -1478,21 +1482,6 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
     twitchUtils = twitchUtils
 )
 
-timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
-    timber = timber
-)
-
-timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('timeoutActionSettings.json')
-)
-
-timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeoutCheerActionJsonMapper = timeoutActionJsonMapper,
-    timeZoneRepository = timeZoneRepository
-)
-
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
@@ -1500,6 +1489,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
@@ -1522,6 +1512,38 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
+)
+
+
+#############################################
+## Star Wars Quotes initialization section ##
+#############################################
+
+starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
+    quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
+)
+
+
+##################################
+## Jisho initialization section ##
+##################################
+
+jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+    timber = timber
+)
+
+jishoApiService: JishoApiServiceInterface = JishoApiService(
+    jishoJsonMapper = jishoJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+jishoPresenter: JishoPresenterInterface = JishoPresenter()
+
+jishoHelper: JishoHelperInterface = JishoHelper(
+    jishoApiService = jishoApiService,
+    jishoPresenter = jishoPresenter,
+    timber = timber
 )
 
 

@@ -13,6 +13,8 @@ from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from ...timeout.timeoutActionData import TimeoutActionData
+from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from ...timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from ...timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
@@ -55,6 +57,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
+        timeoutActionHelper: TimeoutActionHelperInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
@@ -74,6 +77,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
+            raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
         elif not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
@@ -99,6 +104,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
+        self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
         self.__timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = timeoutActionHistoryRepository
         self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
