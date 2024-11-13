@@ -15,6 +15,7 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmn.pkmnCatchType import PkmnCatchType
 from .pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from .soundAlertRedemption import SoundAlertRedemption
+from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from .user import User
@@ -37,6 +38,7 @@ class UsersRepository(UsersRepositoryInterface):
         pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface,
         soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
+        timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
@@ -50,6 +52,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'soundAlertJsonMapper argument is malformed: \"{soundAlertJsonMapper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutBoosterPackJsonParser, TimeoutBoosterPackJsonParserInterface):
+            raise TypeError(f'timeoutBoosterPackJsonParser argument is malformed: \"{timeoutBoosterPackJsonParser}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsBoosterPackParser, TtsBoosterPackParserInterface):
@@ -63,6 +67,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = pkmnCatchTypeJsonMapper
         self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
+        self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsBoosterPackParser: TtsBoosterPackParserInterface = ttsBoosterPackParser
         self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
@@ -180,10 +185,10 @@ class UsersRepository(UsersRepositoryInterface):
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
-        timeoutCheerActionFollowShieldDays: int | None = None
+        timeoutActionFollowShieldDays: int | None = None
         if areCheerActionsEnabled:
-            if 'timeoutCheerActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutCheerActionFollowShieldDays')):
-                timeoutCheerActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutCheerActionFollowShieldDays')
+            if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
+                timeoutActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutActionFollowShieldDays')
 
         anivMessageCopyTimeoutProbability: float | None = None
         anivMessageCopyMaxAgeSeconds: int | None = None
@@ -373,7 +378,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             superTriviaSubscribeTriggerMaximum = superTriviaSubscribeTriggerMaximum,
-            timeoutCheerActionFollowShieldDays = timeoutCheerActionFollowShieldDays,
+            timeoutActionFollowShieldDays = timeoutActionFollowShieldDays,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
@@ -403,6 +408,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
             timeZones = timeZones,
+            timeoutBoosterPacks = None,
             ttsBoosterPacks = ttsBoosterPacks
         )
 

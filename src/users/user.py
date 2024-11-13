@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
+from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .userInterface import UserInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -86,7 +87,7 @@ class User(UserInterface):
         superTriviaGameToxicPunishmentMultiplier: int | None,
         superTriviaPerUserAttempts: int | None,
         superTriviaSubscribeTriggerMaximum: int | None,
-        timeoutCheerActionFollowShieldDays: int | None,
+        timeoutActionFollowShieldDays: int | None,
         triviaGamePoints: int | None,
         triviaGameShinyMultiplier: int | None,
         waitForSuperTriviaAnswerDelay: int | None,
@@ -115,6 +116,7 @@ class User(UserInterface):
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
+        timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None,
         timeZones: FrozenList[tzinfo] | None,
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
     ):
@@ -254,8 +256,8 @@ class User(UserInterface):
             raise TypeError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif superTriviaSubscribeTriggerMaximum is not None and not utils.isValidInt(superTriviaSubscribeTriggerMaximum):
             raise TypeError(f'superTriviaSubscribeTriggerMaximum argument is malformed: \"{superTriviaSubscribeTriggerMaximum}\"')
-        elif timeoutCheerActionFollowShieldDays is not None and not utils.isValidInt(timeoutCheerActionFollowShieldDays):
-            raise TypeError(f'timeoutCheerActionFollowShieldDays argument is malformed: \"{timeoutCheerActionFollowShieldDays}\"')
+        elif timeoutActionFollowShieldDays is not None and not utils.isValidInt(timeoutActionFollowShieldDays):
+            raise TypeError(f'timeoutActionFollowShieldDays argument is malformed: \"{timeoutActionFollowShieldDays}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise TypeError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif triviaGameShinyMultiplier is not None and not utils.isValidInt(triviaGameShinyMultiplier):
@@ -310,6 +312,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
+        elif timeoutBoosterPacks is not None and not isinstance(timeoutBoosterPacks, frozendict):
+            raise TypeError(f'timeoutBoosterPacks argument is malformed: \"{timeoutBoosterPacks}\"')
         elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
         elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, FrozenList):
@@ -384,7 +388,7 @@ class User(UserInterface):
         self.__superTriviaGameToxicPunishmentMultiplier: int | None = superTriviaGameToxicPunishmentMultiplier
         self.__superTriviaPerUserAttempts: int | None = superTriviaPerUserAttempts
         self.__superTriviaSubscribeTriggerMaximum: int | None = superTriviaSubscribeTriggerMaximum
-        self.__timeoutCheerActionFollowShieldDays: int | None = timeoutCheerActionFollowShieldDays
+        self.__timeoutActionFollowShieldDays: int | None = timeoutActionFollowShieldDays
         self.__triviaGamePoints: int | None = triviaGamePoints
         self.__triviaGameShinyMultiplier: int | None = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
@@ -413,6 +417,7 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
+        self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
         self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
 
@@ -767,8 +772,12 @@ class User(UserInterface):
         return self.__soundAlertRedemptions
 
     @property
-    def timeoutCheerActionFollowShieldDays(self) -> int | None:
-        return self.__timeoutCheerActionFollowShieldDays
+    def timeoutActionFollowShieldDays(self) -> int | None:
+        return self.__timeoutActionFollowShieldDays
+
+    @property
+    def timeoutBoosterPacks(self) -> frozendict[str, TimeoutBoosterPack] | None:
+        return self.__timeoutBoosterPacks
 
     @property
     def timeZones(self) -> FrozenList[tzinfo] | None:

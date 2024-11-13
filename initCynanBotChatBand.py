@@ -166,6 +166,8 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
 from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
+from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
@@ -348,6 +350,8 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
+timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
+
 ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
     timber = timber
 )
@@ -359,6 +363,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
+    timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper

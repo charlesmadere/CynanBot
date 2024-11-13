@@ -7,6 +7,7 @@ from frozenlist import FrozenList
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
+from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..tts.ttsProvider import TtsProvider
@@ -420,7 +421,12 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def timeoutCheerActionFollowShieldDays(self) -> int | None:
+    def timeoutActionFollowShieldDays(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
+    def timeoutBoosterPacks(self) -> frozendict[str, TimeoutBoosterPack] | None:
         pass
 
     @property

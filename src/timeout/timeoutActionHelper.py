@@ -274,7 +274,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ) -> bool:
-        followShieldDays = timeoutData.user.timeoutCheerActionFollowShieldDays
+        followShieldDays = timeoutData.user.timeoutActionFollowShieldDays
 
         if followShieldDays is None:
             # this user doesn't use a follow shield
