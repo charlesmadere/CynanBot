@@ -1342,6 +1342,16 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addBannedTriviaControllerCommand.handleChatCommand(context)
 
+    @commands.command(name = 'addcrowdcontrolaction')
+    async def command_addcrowdcontrolaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        pass # TODO
+
+    @commands.command(name = 'addgameshuffleaction')
+    async def command_addgameshuffleaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        pass # TODO
+
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
