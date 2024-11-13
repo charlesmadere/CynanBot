@@ -318,6 +318,9 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         if not isinstance(timeoutData, TimeoutActionData):
             raise TypeError(f'timeoutData argument is malformed: \"{timeoutData}\"')
 
+        if not timeoutData.user.areTimeoutActionsEnabled:
+            return False
+
         twitchChannelProvider = self.__twitchChannelProvider
         if twitchChannelProvider is None:
             self.__timber.log('TimeoutActionHelper', f'No TwitchChannelProvider instance has been set: \"{twitchChannelProvider}\"')
