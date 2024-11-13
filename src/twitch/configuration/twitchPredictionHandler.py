@@ -3,7 +3,6 @@ from frozenlist import FrozenList
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from ..api.twitchOutcome import TwitchOutcome
 from ..api.twitchPredictionStatus import TwitchPredictionStatus
-from ..api.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
@@ -96,7 +95,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             return
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-        
+
         topPredictorsString = ''
         for index, topPredictor in enumerate(topPredictors):
             predictorString = f'{topPredictor.userName}({topPredictor.channelPointsWon})'
