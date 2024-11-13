@@ -30,14 +30,14 @@ python-vlc = { version = "3.0.21203", markers = "sys_platform == 'win32'" }
 pytz = "2024.2"
 pywin32 = { version = "308", markers = "sys_platform == 'win32'" }
 requests = "2.32.3"
-rich = "13.9.3"
+rich = "13.9.4"
 roman = "4.2"
 twitchio = "2.10.0"
 typing_extensions = "4.12.2"
 urllib3 = '2.2.3'
-websockets = "13.1"
+websockets = "14.1"
 xmltodict = "0.14.2"
-yarl = "1.16.0"
+yarl = "1.17.1"
 
 [dev-packages]
 
