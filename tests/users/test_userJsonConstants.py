@@ -3,6 +3,14 @@ from src.users.userJsonConstant import UserJsonConstant
 
 class TestUserJsonConstants:
 
+    def test_allJsonKeyValuesAreCorrectlyImplemented(self):
+        allJsonKeys: set[str] = set()
+
+        for userJsonConstant in UserJsonConstant:
+            allJsonKeys.add(userJsonConstant.jsonKey)
+
+        assert len(allJsonKeys) == len(list(UserJsonConstant))
+
     def test_jsonKey_withAnivContentScanningEnabled(self):
         result = UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey
         assert result == 'anivContentScanningEnabled'
