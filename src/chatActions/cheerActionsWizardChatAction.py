@@ -10,6 +10,8 @@ from ..cheerActions.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.timeoutCheerAction import TimeoutCheerAction
 from ..cheerActions.wizards.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChanceWizard import BeanChanceWizard
+from ..cheerActions.wizards.crowdControl.crowdControlWizard import CrowdControlWizard
+from ..cheerActions.wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
 from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
 from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
 from ..cheerActions.wizards.stepResult import StepResult
@@ -131,6 +133,24 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__twitchUtils.safeSend(channel, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
+
+    async def __configureCrowdControlWizard(
+        self,
+        content: str,
+        wizard: CrowdControlWizard,
+        message: TwitchMessage
+    ) -> bool:
+        # TODO
+        return True
+
+    async def __configureGameShuffleWizard(
+        self,
+        content: str,
+        wizard: GameShuffleWizard,
+        message: TwitchMessage
+    ) -> bool:
+        # TODO
+        return True
 
     async def __configureSoundAlertWizard(
         self,
@@ -335,18 +355,35 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 wizard = wizard,
                 message = message
             )
+
+        elif isinstance(wizard, CrowdControlWizard):
+            return await self.__configureCrowdControlWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+
+        elif isinstance(wizard, GameShuffleWizard):
+            return await self.__configureGameShuffleWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+
         elif isinstance(wizard, SoundAlertWizard):
             return await self.__configureSoundAlertWizard(
                 content = content,
                 wizard = wizard,
                 message = message
             )
+
         elif isinstance(wizard, TimeoutWizard):
             return await self.__configureTimeoutWizard(
                 content = content,
                 wizard = wizard,
                 message = message
             )
+
         else:
             self.__timber.log('CheerActionsWizardChatAction', f'Received unknown AbsWizard type: \"{wizard}\" ({message.getAuthorName()=}) ({message.getAuthorName()=}) ({twitchChannelId=}) ({message.getTwitchChannelName()=})')
             return False

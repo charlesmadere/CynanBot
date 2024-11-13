@@ -4,6 +4,8 @@ from .cheerActionType import CheerActionType
 from .cheerActionsWizardInterface import CheerActionsWizardInterface
 from .wizards.absWizard import AbsWizard
 from .wizards.beanChanceWizard import BeanChanceWizard
+from .wizards.crowdControl.crowdControlWizard import CrowdControlWizard
+from .wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
 from .wizards.soundAlertWizard import SoundAlertWizard
 from .wizards.timeoutWizard import TimeoutWizard
 from ..misc import utils as utils
@@ -63,6 +65,18 @@ class CheerActionsWizard(CheerActionsWizardInterface):
                     twitchChannelId = twitchChannelId
                 )
 
+            case CheerActionType.CROWD_CONTROL:
+                return await self.__startNewCrowdControlWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
+            case CheerActionType.GAME_SHUFFLE:
+                return await self.__startNewGameShuffleWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
             case CheerActionType.SOUND_ALERT:
                 return await self.__startNewSoundAlertWizard(
                     twitchChannel = twitchChannel,
@@ -95,6 +109,46 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
         self.__wizards[twitchChannelId] = wizard
         self.__timber.log('CheerActionsWizard', f'Started new Bean Chance wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
+
+    async def __startNewCrowdControlWizard(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CrowdControlWizard:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        wizard = CrowdControlWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('CheerActionsWizard', f'Started new Crowd Control wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
+
+    async def __startNewGameShuffleWizard(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CrowdControlWizard:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        wizard = GameShuffleWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('CheerActionsWizard', f'Started new Game Shuffle wizard for {twitchChannel}:{twitchChannelId}')
 
         return wizard
 
