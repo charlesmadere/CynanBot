@@ -6,6 +6,8 @@ from .beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
+from .crowdControl.buttonPress.buttonPressCheerAction import ButtonPressCheerAction
+from .crowdControl.gameShuffle.gameShuffleCheerAction import GameShuffleCheerAction
 from .crowdControl.crowdControlCheerAction import CrowdControlCheerAction
 from .crowdControl.crowdControlCheerActionType import CrowdControlCheerActionType
 from .soundAlertCheerAction import SoundAlertCheerAction
@@ -45,6 +47,21 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             randomChance = randomChance,
+            twitchChannelId = twitchChannelId
+        )
+
+    async def __parseButtonPressCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonContents: dict[str, Any],
+        twitchChannelId: str
+    ) -> ButtonPressCheerAction:
+        return ButtonPressCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
             twitchChannelId = twitchChannelId
         )
 
@@ -105,18 +122,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             jsonString = crowdControlCheerActionTypeString
         )
 
-        gigaShuffleChance: int | None = None
-        if 'gigaShuffleChance' in jsonContents and utils.isValidInt(jsonContents.get('gigaShuffleChance')):
-            gigaShuffleChance = utils.getIntFromDict(jsonContents, 'gigaShuffleChance')
+        match crowdControlCheerActionType:
+            case CrowdControlCheerActionType.BUTTON_PRESS:
+                return await self.__parseButtonPressCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonContents = jsonContents,
+                    twitchChannelId = twitchChannelId
+                )
 
-        return CrowdControlCheerAction(
-            isEnabled = isEnabled,
-            streamStatusRequirement = streamStatusRequirement,
-            crowdControlCheerActionType = crowdControlCheerActionType,
-            bits = bits,
-            gigaShuffleChance = gigaShuffleChance,
-            twitchChannelId = twitchChannelId
-        )
+            case CrowdControlCheerActionType.GAME_SHUFFLE:
+                return await self.__parseGameShuffleCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonContents = jsonContents,
+                    twitchChannelId = twitchChannelId
+                )
+
+            case _:
+                raise ValueError(f'Encountered unknown CrowdControlCheerActionType: \"{crowdControlCheerActionType}\"')
 
     async def parseCrowdControlCheerActionType(
         self,
@@ -133,6 +159,26 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             case _:
                 self.__timber.log('CheerActionJsonMapper', f'Encountered unknown CrowdControlCheerActionType value: \"{jsonString}\"')
                 return None
+
+    async def __parseGameShuffleCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonContents: dict[str, Any],
+        twitchChannelId: str
+    ) -> GameShuffleCheerAction:
+        gigaShuffleChance: int | None = None
+        if 'gigaShuffleChance' in jsonContents and utils.isValidInt(jsonContents.get('gigaShuffleChance')):
+            gigaShuffleChance = utils.getIntFromDict(jsonContents, 'gigaShuffleChance')
+
+        return GameShuffleCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            gigaShuffleChance = gigaShuffleChance,
+            twitchChannelId = twitchChannelId
+        )
 
     async def parseSoundAlertCheerAction(
         self,
@@ -344,6 +390,23 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         return json.dumps(jsonContents)
 
+    async def __serializeButtonPressCheerAction(
+        self,
+        cheerAction: ButtonPressCheerAction
+    ) -> str:
+        if not isinstance(cheerAction, ButtonPressCheerAction):
+            raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
+
+        crowdControlCheerActionType = await self.serializeCrowdControlCheerActionType(
+            actionType = cheerAction.crowdControlCheerActionType
+        )
+
+        jsonContents: dict[str, Any] = {
+            'crowdControlCheerActionType': crowdControlCheerActionType
+        }
+
+        return json.dumps(jsonContents)
+
     async def serializeCheerActionStreamStatusRequirement(
         self,
         streamStatusRequirement: CheerActionStreamStatusRequirement
@@ -377,6 +440,31 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
     ) -> str:
         if not isinstance(cheerAction, CrowdControlCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
+        elif isinstance(cheerAction, ButtonPressCheerAction):
+            return await self.__serializeButtonPressCheerAction(cheerAction)
+        elif isinstance(cheerAction, GameShuffleCheerAction):
+            return await self.__serializeGameShuffleCheerAction(cheerAction)
+        else:
+            raise ValueError(f'Encountered unknown CrowdControlCheerAction type: \"{cheerAction}\"')
+
+    async def serializeCrowdControlCheerActionType(
+        self,
+        actionType: CrowdControlCheerActionType
+    ) -> str:
+        if not isinstance(actionType, CrowdControlCheerActionType):
+            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
+
+        match actionType:
+            case CrowdControlCheerActionType.BUTTON_PRESS: return 'button_press'
+            case CrowdControlCheerActionType.GAME_SHUFFLE: return 'game_shuffle'
+            case _: raise ValueError(f'The given CrowdControlCheerActionType value is unknown: \"{actionType}\"')
+
+    async def __serializeGameShuffleCheerAction(
+        self,
+        cheerAction: GameShuffleCheerAction
+    ) -> str:
+        if not isinstance(cheerAction, GameShuffleCheerAction):
+            raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         crowdControlCheerActionType = await self.serializeCrowdControlCheerActionType(
             actionType = cheerAction.crowdControlCheerActionType
@@ -390,18 +478,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             jsonContents['gigaShuffleChance'] = cheerAction.gigaShuffleChance
 
         return json.dumps(jsonContents)
-
-    async def serializeCrowdControlCheerActionType(
-        self,
-        actionType: CrowdControlCheerActionType
-    ) -> str:
-        if not isinstance(actionType, CrowdControlCheerActionType):
-            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
-
-        match actionType:
-            case CrowdControlCheerActionType.BUTTON_PRESS: return 'button_press'
-            case CrowdControlCheerActionType.GAME_SHUFFLE: return 'game_shuffle'
-            case _: raise ValueError(f'The given CrowdControlCheerActionType value is unknown: \"{actionType}\"')
 
     async def __serializeSoundAlertCheerAction(
         self,
