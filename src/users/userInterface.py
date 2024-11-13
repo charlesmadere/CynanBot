@@ -57,7 +57,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def areTimeoutCheerActionsEnabled(self) -> bool:
+    def areTimeoutActionsEnabled(self) -> bool:
         pass
 
     @property

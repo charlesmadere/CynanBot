@@ -15,6 +15,7 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmn.pkmnCatchType import PkmnCatchType
 from .pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from .soundAlertRedemption import SoundAlertRedemption
+from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
@@ -127,7 +128,7 @@ class UsersRepository(UsersRepositoryInterface):
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
-        areTimeoutCheerActionsEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionsEnabled', False)
+        areTimeoutActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TIMEOUT_ACTIONS_ENABLED.jsonKey, False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
         isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, 'anivMessageCopyTimeoutChatReportingEnabled', True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
@@ -290,6 +291,11 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
 
+        timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = None
+        if areTimeoutActionsEnabled:
+            timeoutBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('timeoutBoosterPacks')
+            timeoutBoosterPacks = self.__timeoutBoosterPackJsonParser.parseBoosterPacks(timeoutBoosterPacksJson)
+
         defaultTtsProvider = TtsProvider.DEC_TALK
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = None
         if isTtsEnabled:
@@ -313,7 +319,7 @@ class UsersRepository(UsersRepositoryInterface):
             areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
-            areTimeoutCheerActionsEnabled = areTimeoutCheerActionsEnabled,
+            areTimeoutActionsEnabled = areTimeoutActionsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
@@ -408,7 +414,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
             timeZones = timeZones,
-            timeoutBoosterPacks = None,
+            timeoutBoosterPacks = timeoutBoosterPacks,
             ttsBoosterPacks = ttsBoosterPacks
         )
 

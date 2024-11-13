@@ -59,9 +59,9 @@ class TestUserJsonConstants:
         result = UserJsonConstant.SOUND_ALERTS_ENABLED.jsonKey
         assert result == 'soundAlertsEnabled'
 
-    def test_jsonKey_withTimeoutCheerActionsEnabled(self):
-        result = UserJsonConstant.TIMEOUT_CHEER_ACTIONS_ENABLED.jsonKey
-        assert result == 'timeoutCheerActionsEnabled'
+    def test_jsonKey_withTimeoutActionsEnabled(self):
+        result = UserJsonConstant.TIMEOUT_ACTIONS_ENABLED.jsonKey
+        assert result == 'timeoutActionsEnabled'
 
     def test_jsonKey_withTimeZone(self):
         result = UserJsonConstant.TIMEZONE.jsonKey

@@ -17,7 +17,7 @@ class UserJsonConstant(Enum):
     RAT_JAM_MESSAGE_ENABLED = auto()
     RECURRING_ACTIONS_ENABLED = auto()
     SOUND_ALERTS_ENABLED = auto()
-    TIMEOUT_CHEER_ACTIONS_ENABLED = auto()
+    TIMEOUT_ACTIONS_ENABLED = auto()
     TIMEZONE = auto()
     TIMEZONES = auto()
     TTS_ENABLED = auto()
@@ -42,7 +42,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.RAT_JAM_MESSAGE_ENABLED: return 'ratJamMessageEnabled'
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED: return 'recurringActionsEnabled'
             case UserJsonConstant.SOUND_ALERTS_ENABLED: return 'soundAlertsEnabled'
-            case UserJsonConstant.TIMEOUT_CHEER_ACTIONS_ENABLED: return 'timeoutCheerActionsEnabled'
+            case UserJsonConstant.TIMEOUT_ACTIONS_ENABLED: return 'timeoutActionsEnabled'
             case UserJsonConstant.TIMEZONE: return 'timeZone'
             case UserJsonConstant.TIMEZONES: return 'timeZones'
             case UserJsonConstant.TTS_ENABLED: return 'ttsEnabled'

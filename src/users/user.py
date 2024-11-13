@@ -22,7 +22,7 @@ class User(UserInterface):
         areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
-        areTimeoutCheerActionsEnabled: bool,
+        areTimeoutActionsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
@@ -128,8 +128,8 @@ class User(UserInterface):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
-        elif not utils.isValidBool(areTimeoutCheerActionsEnabled):
-            raise TypeError(f'areTimeoutCheerActionsEnabled argument is malformed: \"{areTimeoutCheerActionsEnabled}\"')
+        elif not utils.isValidBool(areTimeoutActionsEnabled):
+            raise TypeError(f'areTimeoutActionsEnabled argument is malformed: \"{areTimeoutActionsEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isAnivMessageCopyTimeoutChatReportingEnabled):
@@ -323,7 +323,7 @@ class User(UserInterface):
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
-        self.__areTimeoutCheerActionsEnabled: bool = areTimeoutCheerActionsEnabled
+        self.__areTimeoutActionsEnabled: bool = areTimeoutActionsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
@@ -454,8 +454,8 @@ class User(UserInterface):
         return self.__areSoundAlertsEnabled
 
     @property
-    def areTimeoutCheerActionsEnabled(self) -> bool:
-        return self.__areTimeoutCheerActionsEnabled
+    def areTimeoutActionsEnabled(self) -> bool:
+        return self.__areTimeoutActionsEnabled
 
     @property
     def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
