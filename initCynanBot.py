@@ -47,6 +47,7 @@ from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
+from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -1443,9 +1444,11 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
+    timber = timber,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,
     twitchConstants = twitchUtils,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
@@ -1484,21 +1487,13 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
 
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
+timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
+
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    streamAlertsManager = streamAlertsManager,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    timeoutCheerActionMapper = timeoutCheerActionMapper,
     twitchMessageStringUtils = twitchMessageStringUtils,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
 )
 
@@ -1762,9 +1757,9 @@ cynanBot = CynanBot(
     streamElementsUserKeyRepository = None,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
+    timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,

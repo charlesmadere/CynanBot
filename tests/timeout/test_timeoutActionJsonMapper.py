@@ -14,7 +14,7 @@ from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
 from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
 
 
-class TestTimeoutCheerActionJsonMapper:
+class TestTimeoutActionJsonMapper:
 
     timber: TimberInterface = TimberStub()
 
@@ -28,7 +28,6 @@ class TestTimeoutCheerActionJsonMapper:
     async def test_parseTimeoutCheerActionEntriesString_with1Entry(self):
         entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
-            bitAmount = 100,
             durationSeconds = 60,
             timedOutByUserId = 'abc123'
         )
@@ -74,7 +73,6 @@ class TestTimeoutCheerActionJsonMapper:
     async def test_serializeTimeoutCheerActionEntriesToJsonString_with1Entry(self):
         entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
-            bitAmount = 100,
             durationSeconds = 60,
             timedOutByUserId = 'abc123'
         )
@@ -89,9 +87,8 @@ class TestTimeoutCheerActionJsonMapper:
 
         jsonEntry = jsonList[0]
         assert isinstance(jsonEntry, dict)
-        assert len(jsonEntry) == 4
+        assert len(jsonEntry) == 3
 
-        assert jsonEntry['bitAmount'] == entry.bitAmount
         assert jsonEntry['durationSeconds'] == entry.durationSeconds
         assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
         assert jsonEntry['timedOutByUserId'] == entry.timedOutByUserId
@@ -100,7 +97,6 @@ class TestTimeoutCheerActionJsonMapper:
     async def test_serializeTimeoutCheerActionEntriesToJsonString_with2Entries(self):
         entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.timeZoneRepository.getDefault()),
-            bitAmount = 50,
             durationSeconds = 60,
             timedOutByUserId = 'abc123'
         )
@@ -115,18 +111,16 @@ class TestTimeoutCheerActionJsonMapper:
 
         jsonEntry = jsonList[0]
         assert isinstance(jsonEntry, dict)
-        assert len(jsonEntry) == 4
+        assert len(jsonEntry) == 3
 
-        assert jsonEntry['bitAmount'] == entry.bitAmount
         assert jsonEntry['durationSeconds'] == entry.durationSeconds
         assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
         assert jsonEntry['timedOutByUserId'] == entry.timedOutByUserId
 
         jsonEntry = jsonList[1]
         assert isinstance(jsonEntry, dict)
-        assert len(jsonEntry) == 4
+        assert len(jsonEntry) == 3
 
-        assert jsonEntry['bitAmount'] == entry.bitAmount
         assert jsonEntry['durationSeconds'] == entry.durationSeconds
         assert jsonEntry['timedOutAtDateTime'] == entry.timedOutAtDateTime.isoformat()
         assert jsonEntry['timedOutByUserId'] == entry.timedOutByUserId
@@ -147,16 +141,14 @@ class TestTimeoutCheerActionJsonMapper:
 
         entry = TimeoutActionHistoryEntry(
             timedOutAtDateTime = now,
-            bitAmount = 50,
             durationSeconds = 120,
             timedOutByUserId = 'abc123'
         )
 
         result = await self.jsonMapper.serializeTimeoutActionEntry(entry)
         assert isinstance(result, dict)
-        assert len(result) == 4
+        assert len(result) == 3
 
-        assert result['bitAmount'] == 50
         assert result['durationSeconds'] == 120
         assert result['timedOutAtDateTime'] == now.isoformat()
         assert result['timedOutByUserId'] == 'abc123'

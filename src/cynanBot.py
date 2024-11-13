@@ -63,6 +63,7 @@ from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from .timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
@@ -309,9 +310,9 @@ class CynanBot(
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
+        timeoutActionHelper: TimeoutActionHelperInterface | None,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
-        timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
         timeZoneRepository: TimeZoneRepositoryInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelper | None,
@@ -499,12 +500,12 @@ class CynanBot(
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif timeoutActionHelper is not None and not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
+            raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
         elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionSettingsRepository is not None and not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
             raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
-        elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
-            raise TypeError(f'timeoutCheerActionHelper argument is malformed: \"{timeoutCheerActionHelper}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
@@ -617,7 +618,7 @@ class CynanBot(
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper
+        self.__timeoutActionHelper: TimeoutActionHelperInterface | None = timeoutActionHelper
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
@@ -984,8 +985,8 @@ class CynanBot(
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
             self.__crowdControlMachine.start()
 
-        if self.__timeoutCheerActionHelper is not None:
-            self.__timeoutCheerActionHelper.setTwitchChannelProvider(self)
+        if self.__timeoutActionHelper is not None:
+            self.__timeoutActionHelper.setTwitchChannelProvider(self)
 
         if self.__mostRecentAnivMessageTimeoutHelper is not None:
             self.__mostRecentAnivMessageTimeoutHelper.setTwitchChannelProvider(self)

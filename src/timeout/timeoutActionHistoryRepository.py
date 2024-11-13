@@ -57,18 +57,13 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
 
     async def add(
         self,
-        bitAmount: int,
         durationSeconds: int,
         chatterUserId: str,
         timedOutByUserId: str,
         twitchChannel: str,
         twitchChannelId: str
     ):
-        if not utils.isValidInt(bitAmount):
-            raise TypeError(f'bitAmount argument is malformed: \"{bitAmount}\"')
-        elif bitAmount < 1 or bitAmount > utils.getIntMaxSafeSize():
-            raise TypeError(f'bitAmount argument is out of bounds: {bitAmount}')
-        elif not utils.isValidInt(durationSeconds):
+        if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
         elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
             raise TypeError(f'durationSeconds argument is out of bounds: {durationSeconds}')
@@ -100,7 +95,6 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
 
         newHistoryEntries.append(TimeoutActionHistoryEntry(
             timedOutAtDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
-            bitAmount = bitAmount,
             durationSeconds = durationSeconds,
             timedOutByUserId = timedOutByUserId
         ))

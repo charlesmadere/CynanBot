@@ -1,3 +1,4 @@
+import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -6,9 +7,10 @@ from .timeoutActionData import TimeoutActionData
 from .timeoutActionHelperInterface import TimeoutActionHelperInterface
 from .timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from .timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
-from ..misc import utils as utils
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
+from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..tts.ttsEvent import TtsEvent
 from ..twitch.configuration.twitchChannel import TwitchChannel
@@ -17,9 +19,9 @@ from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import Tw
 from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
+from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ..twitch.twitchConstantsInterface import TwitchConstantsInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.userInterface import UserInterface
 
 
 class TimeoutActionHelper(TimeoutActionHelperInterface):
@@ -46,9 +48,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
+        timber: TimberInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchConstants: TwitchConstantsInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
@@ -61,6 +65,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
@@ -81,9 +87,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
+        self.__timber: TimberInterface = timber
         self.__timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = timeoutActionHistoryRepository
         self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
@@ -92,40 +100,31 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def __alertViaTextToSpeech(
-        self,
-        isReverse: bool,
-        cheerUserId: str,
-        cheerUserName: str,
-        twitchChannelId: str,
-        userNameToTimeout: str,
-        timeoutData: TimeoutActionData,
-        user: UserInterface
-    ):
-        if not user.isTtsEnabled():
+    async def __alertViaTextToSpeech(self, isReverse: bool, timeoutData: TimeoutActionData):
+        if not timeoutData.user.isTtsEnabled():
             return
 
         message: str
         if isReverse:
-            message = f'Oh noo! {userNameToTimeout} got hit with a reverse! Rip bozo!'
+            message = f'Oh noo! {timeoutData.instigatorUserName} got hit with a reverse! Rip bozo!'
         else:
-            message = f'{cheerUserName} timed out {userNameToTimeout} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
+            message = f'{timeoutData.instigatorUserName} timed out {timeoutData.timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
 
         ttsEvent = TtsEvent(
             message = message,
-            twitchChannel = user.getHandle(),
-            twitchChannelId = twitchChannelId,
-            userId = cheerUserId,
-            userName = cheerUserName,
+            twitchChannel = timeoutData.twitchChannel,
+            twitchChannelId = timeoutData.twitchChannelId,
+            userId = timeoutData.instigatorUserId,
+            userName = timeoutData.instigatorUserName,
             donation = None,
-            provider = user.defaultTtsProvider,
+            provider = timeoutData.user.defaultTtsProvider,
             raidInfo = None
         )
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.getHandle(),
-            twitchChannelId = twitchChannelId,
+            twitchChannel = timeoutData.twitchChannel,
+            twitchChannelId = timeoutData.twitchChannelId,
             ttsEvent = ttsEvent
         ))
 
@@ -136,32 +135,29 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         diceRoll: DiceRoll,
         rollFailureData: RollFailureData,
         ripBozoEmote: str,
-        twitchChatMessageId: str | None,
-        userNameToTimeout: str,
+        timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ):
         message: str
         if isReverse:
-            message = f'{ripBozoEmote} Oh noo! @{userNameToTimeout} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Oh noo! @{timeoutData.instigatorUserName} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
         elif isGuaranteed:
-            message = f'{ripBozoEmote} @{userNameToTimeout} {ripBozoEmote}'
+            message = f'{ripBozoEmote} @{timeoutData.timeoutTargetUserName} {ripBozoEmote}'
         else:
-            message = f'{ripBozoEmote} Timed out @{userNameToTimeout} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Timed out @{timeoutData.timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
             message = message,
-            replyMessageId = twitchChatMessageId
+            replyMessageId = timeoutData.twitchChatMessageId
         )
 
     async def __generateRollFailureData(
         self,
         now: datetime,
         diceRoll: DiceRoll,
-        cheerUserId: str,
-        twitchChannelId: str,
-        userIdToTimeout: str,
-        user: UserInterface
+        timeoutTargetUserId: str,
+        timeoutData: TimeoutActionData
     ) -> RollFailureData:
         baseFailureProbability = await self.__timeoutActionSettingsRepository.getFailureProbability()
         maxBullyFailureProbability = await self.__timeoutActionSettingsRepository.getMaxBullyFailureProbability()
@@ -170,11 +166,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         bullyOccurrences = 0
 
-        if user.isTimeoutCheerActionIncreasedBullyFailureEnabled:
+        if timeoutData.user.isTimeoutCheerActionIncreasedBullyFailureEnabled:
             history = await self.__timeoutActionHistoryRepository.get(
-                chatterUserId = userIdToTimeout,
-                twitchChannel = user.getHandle(),
-                twitchChannelId = twitchChannelId
+                chatterUserId = timeoutTargetUserId,
+                twitchChannel = timeoutData.twitchChannel,
+                twitchChannelId = timeoutData.twitchChannelId
             )
 
             bullyTimeToLiveDays = await self.__timeoutActionSettingsRepository.getBullyTimeToLiveDays()
@@ -182,7 +178,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
             if history.entries is not None and len(history.entries) >= 1:
                 for historyEntry in history.entries:
-                    if historyEntry.timedOutByUserId != cheerUserId:
+                    if historyEntry.timedOutByUserId != timeoutData.instigatorUserId:
                         continue
                     elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
                         continue
@@ -211,71 +207,83 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self,
         diceRoll: DiceRoll,
         rollFailureData: RollFailureData,
-        cheerUserName: str,
         ripBozoEmote: str,
-        twitchChatMessageId: str | None,
-        userNameToTimeout: str,
-        twitchChannel: TwitchChannel,
-        user: UserInterface
+        timeoutTargetUserName: str,
+        timeoutData: TimeoutActionData,
+        twitchChannel: TwitchChannel
     ) -> bool:
-        if not user.isTimeoutCheerActionFailureEnabled or diceRoll.roll > rollFailureData.failureRoll:
+        if not timeoutData.user.isTimeoutCheerActionFailureEnabled or diceRoll.roll > rollFailureData.failureRoll:
             return False
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'{ripBozoEmote} Sorry @{cheerUserName}, but your timeout of @{userNameToTimeout} failed {ripBozoEmote} (rolled a d{diceRoll.dieSize} and got a {diceRoll.roll}, but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
-            replyMessageId = twitchChatMessageId
+            message = f'{ripBozoEmote} Sorry @{timeoutData.instigatorUserName}, but your timeout of @{timeoutTargetUserName} failed {ripBozoEmote} (rolled a d{diceRoll.dieSize} and got a {diceRoll.roll}, but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
+            replyMessageId = timeoutData.twitchChatMessageId
         )
 
         return True
 
     async def __isGuaranteedTimeoutUser(
         self,
-        userIdToTimeout: str
+        timeoutTargetUserId: str
     ) -> bool:
-        return await self.__guaranteedTimeoutUsersRepository.isGuaranteed(userIdToTimeout)
+        return await self.__guaranteedTimeoutUsersRepository.isGuaranteed(timeoutTargetUserId)
 
     async def __isImmuneUser(
         self,
-        cheerUserName: str,
-        twitchChatMessageId: str | None,
-        userIdToTimeout: str,
-        userNameToTimeout: str,
+        timeoutTargetUserId: str,
+        timeoutTargetUserName: str,
+        timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ) -> bool:
-        if not await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout):
+        if not await self.__timeoutImmuneUserIdsRepository.isImmune(timeoutTargetUserId):
             return False
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠ Sorry @{cheerUserName}, but @{userNameToTimeout} is an immune user',
-            replyMessageId = twitchChatMessageId
+            message = f'⚠ Sorry @{timeoutData.instigatorUserName}, but @{timeoutTargetUserName} is an immune user',
+            replyMessageId = timeoutData.twitchChatMessageId
         )
 
         return True
 
+    async def __isReverseTimeout(
+        self,
+        diceRoll: DiceRoll,
+        rollFailureData: RollFailureData,
+        timeoutData: TimeoutActionData
+    ) -> bool:
+        if not timeoutData.user.isTimeoutCheerActionReverseEnabled:
+            return False
+
+        return diceRoll.roll < rollFailureData.reverseRoll
+
+    async def __isTryingToTimeoutTheStreamer(
+        self,
+        timeoutTargetUserId: str,
+        timeoutData: TimeoutActionData
+    ) -> bool:
+        return timeoutTargetUserId == timeoutData.twitchChannelId
+
     async def __hasNewFollowerShield(
         self,
         now: datetime,
-        cheerUserName: str,
-        twitchAccessToken: str,
-        twitchChannelId: str,
-        twitchChatMessageId: str | None,
-        userIdToTimeout: str,
-        userNameToTimeout: str,
-        twitchChannel: TwitchChannel,
-        user: UserInterface
+        ripBozoEmote: str,
+        timeoutTargetUserId: str,
+        timeoutTargetUserName: str,
+        timeoutData: TimeoutActionData,
+        twitchChannel: TwitchChannel
     ) -> bool:
-        followShieldDays = user.timeoutCheerActionFollowShieldDays
+        followShieldDays = timeoutData.user.timeoutCheerActionFollowShieldDays
 
         if followShieldDays is None:
             # this user doesn't use a follow shield
             return False
 
         followingStatus = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-            userId = userIdToTimeout
+            twitchAccessToken = timeoutData.userTwitchAccessToken,
+            twitchChannelId = timeoutData.twitchChannelId,
+            userId = timeoutTargetUserId
         )
 
         minimumFollowDuration = timedelta(days = followShieldDays)
@@ -285,11 +293,20 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠ Wow @{cheerUserName} are you trying to bully? @{userNameToTimeout} has the new follower shield!',
-            replyMessageId = twitchChatMessageId
+            message = f'⚠ Wow @{timeoutData.instigatorUserName} are you trying to bully? @{timeoutTargetUserName} has the new follower shield! {ripBozoEmote}',
+            replyMessageId = timeoutData.twitchChatMessageId
         )
 
         return True
+
+    async def __rollDice(self) -> DiceRoll:
+        dieSize = await self.__timeoutActionSettingsRepository.getDieSize()
+        roll = random.randint(1, dieSize)
+
+        return TimeoutActionHelper.DiceRoll(
+            dieSize = dieSize,
+            roll = roll
+        )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
@@ -301,25 +318,137 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         if not isinstance(timeoutData, TimeoutActionData):
             raise TypeError(f'timeoutData argument is malformed: \"{timeoutData}\"')
 
-        return False
+        twitchChannelProvider = self.__twitchChannelProvider
+        if twitchChannelProvider is None:
+            self.__timber.log('TimeoutActionHelper', f'No TwitchChannelProvider instance has been set: \"{twitchChannelProvider}\"')
+            return False
+
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(timeoutData.twitchChannel)
+        isGuaranteed = False
+        isReverse = False
+        timeoutTargetUserId = timeoutData.timeoutTargetUserId
+        timeoutTargetUserName = timeoutData.timeoutTargetUserName
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        diceRoll = await self.__rollDice()
+
+        rollFailureData = await self.__generateRollFailureData(
+            now = now,
+            diceRoll = diceRoll,
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutData = timeoutData
+        )
+
+        ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
+
+        if not await self.__verifyStreamStatus(
+            timeoutData = timeoutData
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but the current stream status is invalid ({timeoutData=})')
+            return False
+
+        elif await self.__isGuaranteedTimeoutUser(
+            timeoutTargetUserId = timeoutTargetUserId
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempting to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, who is a guaranteed timeout user ({timeoutData=})')
+            isGuaranteed = True
+
+        elif await self.__isImmuneUser(
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutTargetUserName = timeoutTargetUserName,
+            timeoutData = timeoutData,
+            twitchChannel = twitchChannel
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is immune ({timeoutData=})')
+            return False
+
+        elif await self.__isTryingToTimeoutTheStreamer(
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutData = timeoutData
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is the streamer, so they will be hit with a reverse ({timeoutData=})')
+            isReverse = True
+            timeoutTargetUserId = timeoutData.instigatorUserId
+            timeoutTargetUserName = timeoutData.instigatorUserName
+
+        elif await self.__hasNewFollowerShield(
+            now = now,
+            ripBozoEmote = ripBozoEmote,
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutTargetUserName = timeoutTargetUserName,
+            timeoutData = timeoutData,
+            twitchChannel = twitchChannel
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but this user is a new follower ({timeoutData=})')
+            return False
+
+        elif await self.__isReverseTimeout(
+            diceRoll = diceRoll,
+            rollFailureData = rollFailureData,
+            timeoutData = timeoutData
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but they hit the reverse roll ({diceRoll=}) ({rollFailureData=}) ({timeoutData=})')
+            isReverse = True
+            timeoutTargetUserId = timeoutData.instigatorUserId
+            timeoutTargetUserName = timeoutData.instigatorUserName
+
+        elif await self.__isFailedTimeout(
+            diceRoll = diceRoll,
+            rollFailureData = rollFailureData,
+            ripBozoEmote = ripBozoEmote,
+            timeoutData = timeoutData
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but they hit the failure roll ({diceRoll=}) ({rollFailureData=}) ({timeoutData=})')
+            return False
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutData.durationSeconds,
+            reason = f'Timeout from {timeoutData.instigatorUserName} — {timeoutData.durationSeconds} second(s)',
+            twitchAccessToken = timeoutData.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = timeoutData.userTwitchAccessToken,
+            twitchChannelId = timeoutData.twitchChannelId,
+            userIdToTimeout = timeoutTargetUserId,
+            user = timeoutData.user
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but an error occurred ({timeoutResult=}) ({diceRoll=}) ({rollFailureData=}) ({timeoutData=})')
+            return False
+
+        self.__timber.log('TimeoutActionHelper', f'Timed out {timeoutTargetUserName}:{timeoutTargetUserId} in \"{timeoutData.twitchChannel}\" from {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} ({diceRoll=}) ({rollFailureData=}) ({timeoutResult=}) ({timeoutData=})')
+
+        await self.__timeoutActionHistoryRepository.add(
+            durationSeconds = timeoutData.durationSeconds,
+            chatterUserId = timeoutTargetUserId,
+            timedOutByUserId = timeoutData.instigatorUserId,
+            twitchChannel = timeoutData.twitchChannel,
+            twitchChannelId = timeoutData.twitchChannelId
+        )
+
+        await self.__alertViaTextToSpeech(
+            isReverse = isReverse,
+            timeoutData = timeoutData
+        )
+
+        await self.__alertViaTwitchChat(
+            isGuaranteed = isGuaranteed,
+            isReverse = isReverse,
+            diceRoll = diceRoll,
+            rollFailureData = rollFailureData,
+            ripBozoEmote = ripBozoEmote,
+            timeoutData = timeoutData,
+            twitchChannel = twitchChannel
+        )
+
+        return True
 
     async def __verifyStreamStatus(
         self,
-        twitchChannelId: str,
-        timeoutData: TimeoutActionData,
-        user: UserInterface
+        timeoutData: TimeoutActionData
     ) -> bool:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not isinstance(timeoutData, TimeoutActionData):
-            raise TypeError(f'timeoutData argument is malformed: \"{timeoutData}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         requirement = timeoutData.streamStatusRequirement
         if requirement is TimeoutActionData.StreamStatusRequirement.ANY:
             return True
 
-        isLive = await self.__isLiveOnTwitchRepository.isLive(twitchChannelId)
+        isLive = await self.__isLiveOnTwitchRepository.isLive(timeoutData.twitchChannelId)
         return isLive and requirement is TimeoutActionData.StreamStatusRequirement.ONLINE or \
             not isLive and requirement is TimeoutActionData.StreamStatusRequirement.OFFLINE

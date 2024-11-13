@@ -63,13 +63,11 @@ class TimeoutActionJsonMapper(TimeoutActionJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        bitAmount = utils.getIntFromDict(jsonContents, 'bitAmount')
         durationSeconds = utils.getIntFromDict(jsonContents, 'durationSeconds')
         timedOutAtDateTime = utils.getDateTimeFromDict(jsonContents, 'timedOutAtDateTime')
         timedOutByUserId = utils.getStrFromDict(jsonContents, 'timedOutByUserId')
 
         return TimeoutActionHistoryEntry(
-            bitAmount = bitAmount,
             durationSeconds = durationSeconds,
             timedOutAtDateTime = timedOutAtDateTime,
             timedOutByUserId = timedOutByUserId
@@ -111,7 +109,6 @@ class TimeoutActionJsonMapper(TimeoutActionJsonMapperInterface):
             return None
 
         return {
-            'bitAmount': entry.bitAmount,
             'durationSeconds': entry.durationSeconds,
             'timedOutAtDateTime': entry.timedOutAtDateTime.isoformat(),
             'timedOutByUserId': entry.timedOutByUserId

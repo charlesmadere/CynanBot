@@ -34,3 +34,7 @@ class TimeoutActionData:
     @property
     def durationSecondsStr(self) -> str:
         return locale.format_string("%d", self.durationSeconds, grouping = True)
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.user.getHandle()

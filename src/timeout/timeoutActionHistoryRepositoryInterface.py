@@ -9,7 +9,6 @@ class TimeoutActionHistoryRepositoryInterface(Clearable):
     @abstractmethod
     async def add(
         self,
-        bitAmount: int,
         durationSeconds: int,
         chatterUserId: str,
         timedOutByUserId: str,
