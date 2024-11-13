@@ -17,6 +17,7 @@ from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
+from src.twitch.api.twitchPredictionStatus import TwitchPredictionStatus
 from src.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from src.twitch.api.twitchStreamType import TwitchStreamType
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
@@ -437,6 +438,31 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parsePollStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parsePollStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePredictionStatus_withActive(self):
+        result = await self.jsonMapper.parsePredictionStatus('active')
+        assert result is TwitchPredictionStatus.ACTIVE
+
+    @pytest.mark.asyncio
+    async def test_parsePredictionStatus_withCanceled(self):
+        result = await self.jsonMapper.parsePredictionStatus('canceled')
+        assert result is TwitchPredictionStatus.CANCELED
+
+    @pytest.mark.asyncio
+    async def test_parsePredictionStatus_withLocked(self):
+        result = await self.jsonMapper.parsePredictionStatus('locked')
+        assert result is TwitchPredictionStatus.LOCKED
+
+    @pytest.mark.asyncio
+    async def test_parsePredictionStatus_withResolved(self):
+        result = await self.jsonMapper.parsePredictionStatus('resolved')
+        assert result is TwitchPredictionStatus.RESOLVED
+
+    @pytest.mark.asyncio
+    async def test_parsePredictionStatus_withWhitespaceString(self):
+        result = await self.jsonMapper.parsePredictionStatus(' ')
         assert result is None
 
     @pytest.mark.asyncio

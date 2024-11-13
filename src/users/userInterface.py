@@ -294,6 +294,11 @@ class UserInterface(ABC):
     def isNotifyOfPollResultsEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isNotifyOfPredictionResultsEnabled(self) -> bool:
+        pass
+
     @abstractmethod
     def isPkmnEnabled(self) -> bool:
         pass

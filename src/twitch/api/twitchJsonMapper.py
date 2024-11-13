@@ -19,6 +19,7 @@ from .twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
+from .twitchPredictionStatus import TwitchPredictionStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -470,6 +471,24 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'terminated': return TwitchPollStatus.TERMINATED
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchPollStatus value: \"{pollStatus}\"')
+                return None
+
+    async def parsePredictionStatus(
+        self,
+        predictionStatus: str | Any | None
+    ) -> TwitchPredictionStatus | None:
+        if not utils.isValidStr(predictionStatus):
+            return None
+
+        predictionStatus = predictionStatus.lower()
+
+        match predictionStatus:
+            case 'active': return TwitchPredictionStatus.ACTIVE
+            case 'canceled': return TwitchPredictionStatus.CANCELED
+            case 'locked': return TwitchPredictionStatus.LOCKED
+            case 'resolved': return TwitchPredictionStatus.RESOLVED
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchPredictionStatus value: \"{predictionStatus}\"')
                 return None
 
     async def parseSendChatDropReason(

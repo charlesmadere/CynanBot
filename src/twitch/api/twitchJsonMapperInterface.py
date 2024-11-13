@@ -15,6 +15,7 @@ from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
+from .twitchPredictionStatus import TwitchPredictionStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -118,6 +119,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         pollStatus: str | Any | None
     ) -> TwitchPollStatus | None:
+        pass
+
+    @abstractmethod
+    async def parsePredictionStatus(
+        self,
+        predictionStatus: str | Any | None
+    ) -> TwitchPredictionStatus | None:
         pass
 
     @abstractmethod
