@@ -20,7 +20,7 @@ class GameShuffleWizard(AbsWizard):
 
         self.__steps = GameShuffleSteps()
         self.__bits: int | None = None
-        self.__superShuffleChance: int | None = None
+        self.__gigaShuffleChance: int | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
@@ -29,8 +29,12 @@ class GameShuffleWizard(AbsWizard):
     def getSteps(self) -> GameShuffleSteps:
         return self.__steps
 
+    @property
+    def gigaShuffleChance(self) -> int | None:
+        return self.__gigaShuffleChance
+
     def printOut(self) -> str:
-        return f'{self.__bits=}, {self.__superShuffleChance}'
+        return f'{self.__bits=}, {self.__gigaShuffleChance}'
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -52,23 +56,19 @@ class GameShuffleWizard(AbsWizard):
 
         self.__bits = bits
 
-    def setSuperShuffleChance(self, superShuffleChance: int):
-        if not utils.isValidInt(superShuffleChance):
-            raise TypeError(f'superShuffleChance argument is malformed: \"{superShuffleChance}\"')
-        elif superShuffleChance < 0 or superShuffleChance > 100:
-            raise ValueError(f'superShuffleChance argument is out of bounds: {superShuffleChance}')
+    def setGigaShuffleChance(self, gigaShuffleChance: int):
+        if not utils.isValidInt(gigaShuffleChance):
+            raise TypeError(f'gigaShuffleChance argument is malformed: \"{gigaShuffleChance}\"')
+        elif gigaShuffleChance < 0 or gigaShuffleChance > 100:
+            raise ValueError(f'gigaShuffleChance argument is out of bounds: {gigaShuffleChance}')
 
-        self.__superShuffleChance = superShuffleChance
-
-    @property
-    def superShuffleChance(self) -> int | None:
-        return self.__superShuffleChance
+        self.__gigaShuffleChance = gigaShuffleChance
 
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'gigaShuffleChance': self.__gigaShuffleChance,
             'steps': self.__steps,
-            'superShuffleChance': self.__superShuffleChance,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId
         }

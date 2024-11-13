@@ -6,4 +6,4 @@ from ..absStep import AbsStep
 class GameShuffleStep(AbsStep):
 
     BITS = auto()
-    SUPER_SHUFFLE_CHANCE = auto()
+    GIGA_SHUFFLE_CHANCE = auto()

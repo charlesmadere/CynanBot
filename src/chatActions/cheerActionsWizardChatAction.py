@@ -14,6 +14,7 @@ from ..cheerActions.wizards.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.crowdControl.crowdControlStep import CrowdControlStep
 from ..cheerActions.wizards.crowdControl.crowdControlWizard import CrowdControlWizard
+from ..cheerActions.wizards.gameShuffle.gameShuffleStep import GameShuffleStep
 from ..cheerActions.wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
 from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
 from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
@@ -212,8 +213,82 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: GameShuffleWizard,
         message: TwitchMessage
     ) -> bool:
-        # TODO
-        return True
+        channel = message.getChannel()
+        steps = wizard.getSteps()
+        step = steps.getStep()
+
+        match step:
+            case GameShuffleStep.BITS:
+                try:
+                    bits = int(content)
+                    wizard.setBits(bits)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Game Shuffle wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Game Shuffle wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case GameShuffleStep.GIGA_SHUFFLE_CHANCE:
+                try:
+                    chance = int(content)
+                    wizard.setGigaShuffleChance(chance)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set giga shuffle chance value for Game Shuffle wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Game Shuffle wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__cheerActionsRepository.setAction(CrowdControlCheerAction(
+                    isEnabled = True,
+                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
+                    crowdControlCheerActionType = CrowdControlCheerActionType.GAME_SHUFFLE,
+                    bits = wizard.requireBits(),
+                    gigaShuffleChance = wizard.gigaShuffleChance,
+                    twitchChannelId = wizard.twitchChannelId
+                ))
+
+                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Game Shuffle wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Game Shuffle ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                # this is intentionally empty
+                pass
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        match steps.getStep():
+            case GameShuffleStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case GameShuffleStep.GIGA_SHUFFLE_CHANCE:
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Game Shuffle\'s chance of giga shuffle. This value must be an integer from 0 to 100 (decimals aren\'t allowed).')
+                return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                await self.__twitchUtils.safeSend(channel, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
 
     async def __configureSoundAlertWizard(
         self,

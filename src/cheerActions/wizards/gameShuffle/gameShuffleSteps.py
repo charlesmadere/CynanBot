@@ -16,10 +16,10 @@ class GameShuffleSteps(AbsSteps):
 
         match currentStep:
             case GameShuffleStep.BITS:
-                self.__step = GameShuffleStep.SUPER_SHUFFLE_CHANCE
+                self.__step = GameShuffleStep.GIGA_SHUFFLE_CHANCE
                 return StepResult.NEXT
 
-            case GameShuffleStep.SUPER_SHUFFLE_CHANCE:
+            case GameShuffleStep.GIGA_SHUFFLE_CHANCE:
                 return StepResult.DONE
 
             case _:
