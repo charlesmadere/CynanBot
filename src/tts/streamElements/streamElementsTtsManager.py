@@ -65,10 +65,10 @@ class StreamElementsTtsManager(TtsManagerInterface):
             return True
 
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
-        #  to be playing media, but it could be media that is completely unrelated to Google TTS,
-        #  and yet in this scenario, this method would still return true. So for the fix for this
-        #  is probably a way to check if SoundPlayerManager is currently playing, AND also a check
-        #  to see specifically what media it is currently playing.
+        #  to be playing media, but it could be media that is completely unrelated to Stream
+        #  Elements TTS, and yet in this scenario, this method would still return true. So for
+        #  the fix for this is probably a way to check if SoundPlayerManager is currently playing,
+        #  AND also a check to see specifically what media it is currently playing.
         return await self.__soundPlayerManager.isPlaying()
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:

@@ -54,8 +54,7 @@ class DecTalkManager(TtsManagerInterface):
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
-        self.__isLoading: bool = False
-        self.__isPlaying: bool = False
+        self.__isLoadingOrPlaying: bool = False
 
     async def __applyRandomVoice(self, command: str) -> str:
         updatedCommand = await self.__decTalkVoiceChooser.choose(command)
@@ -70,11 +69,6 @@ class DecTalkManager(TtsManagerInterface):
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
 
-        if await self.isPlaying():
-            self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
-            return
-
-        self.__isPlaying = True
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         process: Process | None = None
@@ -105,7 +99,6 @@ class DecTalkManager(TtsManagerInterface):
             outputString = outputTuple[1].decode('utf-8').strip()
 
         self.__timber.log('DecTalkManager', f'Ran Dec Talk system command ({command}) ({outputString=}) ({exception=})')
-        self.__isPlaying = False
 
     async def __killDecTalkProcess(self, process: Process | None):
         if process is None:
@@ -129,7 +122,7 @@ class DecTalkManager(TtsManagerInterface):
         self.__timber.log('DecTalkManager', f'Finished killing process \"{process}\" ({childCount=})')
 
     async def isPlaying(self) -> bool:
-        return self.__isLoading or self.__isPlaying
+        return self.__isLoadingOrPlaying
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
         if not isinstance(event, TtsEvent):
@@ -141,21 +134,20 @@ class DecTalkManager(TtsManagerInterface):
             self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
             return False
 
-        self.__isLoading = True
+        self.__isLoadingOrPlaying = True
         fileName = await self.__processTtsEvent(event)
 
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
             self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to temporary file ({event=}) ({fileName=})')
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
             return False
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
-        self.__isLoading = False
-
         await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__ttsTempFileHelper.registerTempFile(fileName)
 
+        self.__isLoadingOrPlaying = False
         return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:

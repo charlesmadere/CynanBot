@@ -4,7 +4,6 @@ import math
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
 from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
-from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -12,7 +11,6 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
@@ -23,10 +21,8 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
-        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsMonsterFileManager: TtsMonsterFileManagerInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
-        ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         ttsTempFileHelper: TtsTempFileHelperInterface,
@@ -36,14 +32,10 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
-            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsMonsterFileManager, TtsMonsterFileManagerInterface):
             raise TypeError(f'ttsMonsterFileManager argument is malformed: \"{ttsMonsterFileManager}\"')
         elif not isinstance(ttsMonsterHelper, TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
-        elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
-            raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
@@ -55,10 +47,8 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
 
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
-        self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = ttsMonsterMessageCleaner
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
@@ -73,9 +63,9 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
 
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
         #  to be playing media, but it could be media that is completely unrelated to TTS Monster,
-        #  and yet in this scenario, this method would still return true. So the fix for this is
-        #  to check if SoundPlayerManager is currently playing, AND also a check to see
-        #  specifically what media it is currently playing.
+        #  and yet in this scenario, this method would still return true. So for the fix for this
+        #  is probably a way to check if SoundPlayerManager is currently playing, AND also a check
+        #  to see specifically what media it is currently playing.
         return await self.__soundPlayerManager.isPlaying()
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
