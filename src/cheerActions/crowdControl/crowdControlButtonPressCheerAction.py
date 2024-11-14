@@ -1,12 +1,9 @@
-from abc import abstractmethod
-
-from .crowdControlCheerActionType import CrowdControlCheerActionType
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from ...misc import utils as utils
+from ..cheerActionType import CheerActionType
 
 
-class CrowdControlCheerAction(AbsCheerAction):
+class CrowdControlButtonPressCheerAction(AbsCheerAction):
 
     def __init__(
         self,
@@ -22,7 +19,9 @@ class CrowdControlCheerAction(AbsCheerAction):
             twitchChannelId = twitchChannelId
         )
 
-    @abstractmethod
     @property
-    def crowdControlCheerActionType(self) -> CrowdControlCheerActionType:
-        pass
+    def actionType(self) -> CheerActionType:
+        return CheerActionType.CROWD_CONTROL
+
+    def printOut(self) -> str:
+        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}'

@@ -24,7 +24,7 @@ class GameShuffleWizard(AbsWizard):
 
     @property
     def cheerActionType(self) -> CheerActionType:
-        return CheerActionType.GAME_SHUFFLE
+        return CheerActionType.CROWD_CONTROL
 
     def getSteps(self) -> GameShuffleSteps:
         return self.__steps

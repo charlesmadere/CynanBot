@@ -1,13 +1,10 @@
-from abc import abstractmethod
-
-from ..crowdControlCheerAction import CrowdControlCheerAction
-from ..crowdControlCheerActionType import CrowdControlCheerActionType
-from ...cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from ...cheerActionType import CheerActionType
-from ....misc import utils as utils
+from ..absCheerAction import AbsCheerAction
+from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
+from ..cheerActionType import CheerActionType
+from ...misc import utils as utils
 
 
-class GameShuffleCheerAction(CrowdControlCheerAction):
+class CrowdControlGameShuffleCheerAction(AbsCheerAction):
 
     def __init__(
         self,
@@ -33,16 +30,11 @@ class GameShuffleCheerAction(CrowdControlCheerAction):
 
     @property
     def actionType(self) -> CheerActionType:
-        return CheerActionType.CROWD_CONTROL
-
-    @abstractmethod
-    @property
-    def crowdControlCheerActionType(self) -> CrowdControlCheerActionType:
-        return CrowdControlCheerActionType.GAME_SHUFFLE
+        return CheerActionType.GAME_SHUFFLE
 
     @property
     def gigaShuffleChance(self) -> int | None:
         return self.__gigaShuffleChance
 
     def printOut(self) -> str:
-        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, crowdControlActionType={self.crowdControlCheerActionType}, gigaShuffleChance={self.gigaShuffleChance}'
+        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, gigaShuffleChance={self.gigaShuffleChance}'

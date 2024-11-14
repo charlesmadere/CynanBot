@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Collection
 
+from .crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from .crowdControlCheerAction import CrowdControlCheerAction
 from .crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
+from .crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from ..absCheerAction import AbsCheerAction
-from .buttonPress.buttonPressCheerAction import ButtonPressCheerAction
-from .gameShuffle.gameShuffleCheerAction import GameShuffleCheerAction
 from ...crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from ...crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
 from ...crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
@@ -73,7 +73,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         if crowdControlAction is None:
             return False
 
-        elif isinstance(crowdControlAction, ButtonPressCheerAction):
+        elif isinstance(crowdControlAction, CrowdControlButtonPressCheerAction):
             return await self.__inputButtonPressIntoCrowdControl(
                 action = crowdControlAction,
                 cheerUserId = cheerUserId,
@@ -83,7 +83,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 user = user
             )
 
-        elif isinstance(crowdControlAction, GameShuffleCheerAction):
+        elif isinstance(crowdControlAction, CrowdControlGameShuffleCheerAction):
             return await self.__inputGameShuffleIntoCrowdControl(
                 action = crowdControlAction,
                 cheerUserId = cheerUserId,
@@ -99,14 +99,14 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
     async def __inputButtonPressIntoCrowdControl(
         self,
-        action: ButtonPressCheerAction,
+        action: CrowdControlButtonPressCheerAction,
         cheerUserId: str,
         cheerUserName: str,
         message: str | None,
         twitchChannelId: str,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, ButtonPressCheerAction):
+        if not isinstance(action, CrowdControlButtonPressCheerAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
@@ -144,14 +144,14 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
     async def __inputGameShuffleIntoCrowdControl(
         self,
-        action: GameShuffleCheerAction,
+        action: CrowdControlGameShuffleCheerAction,
         cheerUserId: str,
         cheerUserName: str,
         message: str | None,
         twitchChannelId: str,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, GameShuffleCheerAction):
+        if not isinstance(action, CrowdControlGameShuffleCheerAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')

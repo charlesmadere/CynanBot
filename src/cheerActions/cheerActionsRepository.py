@@ -88,7 +88,16 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 )
 
             case CheerActionType.CROWD_CONTROL:
-                return await self.__cheerActionJsonMapper.requireCrowdControlCheerAction(
+                return await self.__cheerActionJsonMapper.requireCrowdControlButtonPressCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId
+                )
+
+            case CheerActionType.GAME_SHUFFLE:
+                return await self.__cheerActionJsonMapper.requireCrowdControlGameShuffleCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,

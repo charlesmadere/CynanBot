@@ -4,8 +4,8 @@ from .absCheerAction import AbsCheerAction
 from .beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
-from .crowdControl.crowdControlCheerAction import CrowdControlCheerAction
-from .crowdControl.crowdControlCheerActionType import CrowdControlCheerActionType
+from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
+from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from .soundAlertCheerAction import SoundAlertCheerAction
 from .timeoutCheerAction import TimeoutCheerAction
 
@@ -38,21 +38,25 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseCrowdControlCheerAction(
+    async def parseCrowdControlButtonPressCheerAction(
         self,
         isEnabled: bool,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
         twitchChannelId: str
-    ) -> CrowdControlCheerAction | None:
+    ) -> CrowdControlButtonPressCheerAction | None:
         pass
 
     @abstractmethod
-    async def parseCrowdControlCheerActionType(
+    async def parseCrowdControlGameShuffleCheerAction(
         self,
-        jsonString: str | None
-    ) -> CrowdControlCheerActionType | None:
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> CrowdControlGameShuffleCheerAction | None:
         pass
 
     @abstractmethod
@@ -103,21 +107,25 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def requireCrowdControlCheerAction(
+    async def requireCrowdControlButtonPressCheerAction(
         self,
         isEnabled: bool,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
         twitchChannelId: str
-    ) -> CrowdControlCheerAction:
+    ) -> CrowdControlButtonPressCheerAction:
         pass
 
     @abstractmethod
-    async def requireCrowdControlCheerActionType(
+    async def requireCrowdControlGameShuffleCheerAction(
         self,
-        jsonString: str | None
-    ) -> CrowdControlCheerActionType:
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> CrowdControlGameShuffleCheerAction:
         pass
 
     @abstractmethod
@@ -160,12 +168,5 @@ class CheerActionJsonMapperInterface(ABC):
     async def serializeCheerActionType(
         self,
         actionType: CheerActionType
-    ) -> str:
-        pass
-
-    @abstractmethod
-    async def serializeCrowdControlCheerActionType(
-        self,
-        actionType: CrowdControlCheerActionType
     ) -> str:
         pass

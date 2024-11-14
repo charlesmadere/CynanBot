@@ -9,7 +9,6 @@ from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMappe
 from src.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from src.cheerActions.cheerActionType import CheerActionType
 from src.cheerActions.crowdControl.crowdControlCheerAction import CrowdControlCheerAction
-from src.cheerActions.crowdControl.crowdControlCheerActionType import CrowdControlCheerActionType
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
@@ -253,13 +252,3 @@ class TestCheerActionJsonMapper:
     async def test_serializeCheerActionType_withTimeout(self):
         result = await self.jsonMapper.serializeCheerActionType(CheerActionType.TIMEOUT)
         assert result == 'timeout'
-
-    @pytest.mark.asyncio
-    async def test_serializeCrowdControlCheerActionType_withButtonPress(self):
-        result = await self.jsonMapper.serializeCrowdControlCheerActionType(CrowdControlCheerActionType.BUTTON_PRESS)
-        assert result == 'button_press'
-
-    @pytest.mark.asyncio
-    async def test_serializeCrowdControlCheerActionType_withGameShuffle(self):
-        result = await self.jsonMapper.serializeCrowdControlCheerActionType(CrowdControlCheerActionType.GAME_SHUFFLE)
-        assert result == 'game_shuffle'

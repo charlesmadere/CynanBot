@@ -1248,7 +1248,6 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
-    timber = timber,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
