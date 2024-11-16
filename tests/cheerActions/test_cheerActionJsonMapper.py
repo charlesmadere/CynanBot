@@ -10,6 +10,8 @@ from src.cheerActions.cheerActionStreamStatusRequirement import CheerActionStrea
 from src.cheerActions.cheerActionType import CheerActionType
 from src.cheerActions.crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from src.cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
+from src.cheerActions.soundAlertCheerAction import SoundAlertCheerAction
+from src.cheerActions.timeoutCheerAction import TimeoutCheerAction
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
@@ -175,6 +177,44 @@ class TestCheerActionJsonMapper:
         assert len(dictionary) == 1
 
         assert dictionary['gigaShuffleChance'] == 20
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withSoundAlertCheerAction(self):
+        cheerAction: AbsCheerAction = SoundAlertCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            bits = 100,
+            directory = 'soundsDirectory',
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 1
+
+        assert dictionary['directory'] == 'soundsDirectory'
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withTimeoutCheerAction(self):
+        cheerAction: AbsCheerAction = TimeoutCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            bits = 100,
+            durationSeconds = 60,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 1
+
+        assert dictionary['durationSeconds'] == 60
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):
