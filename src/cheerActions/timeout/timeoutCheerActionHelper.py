@@ -110,18 +110,18 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         if timeoutAction is None:
             return False
 
-        userNameToTimeout = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
-        if not utils.isValidStr(userNameToTimeout):
+        timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
+        if not utils.isValidStr(timeoutTargetUserName):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user name: ({message=}) ({timeoutAction=})')
             return False
 
-        userIdToTimeout = await self.__userIdsRepository.fetchUserId(
-            userName = userNameToTimeout,
+        timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
+            userName = timeoutTargetUserName,
             twitchAccessToken = userTwitchAccessToken
         )
 
-        if not utils.isValidStr(userIdToTimeout):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{userNameToTimeout}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
+        if not utils.isValidStr(timeoutTargetUserId):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
             return False
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(
@@ -139,8 +139,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             pointRedemptionEventId = None,
             pointRedemptionMessage = None,
             pointRedemptionRewardId = None,
-            timeoutTargetUserId = userIdToTimeout,
-            timeoutTargetUserName = userNameToTimeout,
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutTargetUserName = timeoutTargetUserName,
             twitchChannelId = broadcasterUserId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
