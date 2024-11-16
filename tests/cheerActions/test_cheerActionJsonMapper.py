@@ -8,7 +8,8 @@ from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from src.cheerActions.cheerActionType import CheerActionType
-from src.cheerActions.crowdControl.crowdControlCheerAction import CrowdControlCheerAction
+from src.cheerActions.crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
+from src.cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
@@ -62,6 +63,11 @@ class TestCheerActionJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseCheerActionType_withGameShuffle(self):
+        result = await self.jsonMapper.parseCheerActionType('game_shuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+    @pytest.mark.asyncio
     async def test_parseCheerActionType_withNone(self):
         result = await self.jsonMapper.parseCheerActionType(None)
         assert result is None
@@ -79,31 +85,6 @@ class TestCheerActionJsonMapper:
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withWhitespaceString(self):
         result = await self.jsonMapper.parseCheerActionType(' ')
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseCrowdControlCheerActionType_withButtonPressString(self):
-        result = await self.jsonMapper.parseCrowdControlCheerActionType('button_press')
-        assert result is CrowdControlCheerActionType.BUTTON_PRESS
-
-    @pytest.mark.asyncio
-    async def test_parseCrowdControlCheerActionType_withEmptyString(self):
-        result = await self.jsonMapper.parseCrowdControlCheerActionType('')
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseCrowdControlCheerActionType_withGameShuffleString(self):
-        result = await self.jsonMapper.parseCrowdControlCheerActionType('game_shuffle')
-        assert result is CrowdControlCheerActionType.GAME_SHUFFLE
-
-    @pytest.mark.asyncio
-    async def test_parseCrowdControlCheerActionType_withNone(self):
-        result = await self.jsonMapper.parseCrowdControlCheerActionType(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseCrowdControlCheerActionType_withWhitespaceString(self):
-        result = await self.jsonMapper.parseCrowdControlCheerActionType(' ')
         assert result is None
 
     @pytest.mark.asyncio
@@ -142,43 +123,6 @@ class TestCheerActionJsonMapper:
         assert result is CheerActionType.TIMEOUT
 
     @pytest.mark.asyncio
-    async def test_requireCrowdControlCheerActionType_withButtonPressString(self):
-        result = await self.jsonMapper.requireCrowdControlCheerActionType('button_press')
-        assert result is CrowdControlCheerActionType.BUTTON_PRESS
-
-    @pytest.mark.asyncio
-    async def test_requireCrowdControlCheerActionType_withEmptyString(self):
-        result: CrowdControlCheerActionType | None = None
-
-        with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireCrowdControlCheerActionType('')
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireCrowdControlCheerActionType_withGameShuffleString(self):
-        result = await self.jsonMapper.requireCrowdControlCheerActionType('game_shuffle')
-        assert result is CrowdControlCheerActionType.GAME_SHUFFLE
-
-    @pytest.mark.asyncio
-    async def test_requireCrowdControlCheerActionType_withNone(self):
-        result: CrowdControlCheerActionType | None = None
-
-        with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireCrowdControlCheerActionType(None)
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireCrowdControlCheerActionType_withWhitespaceString(self):
-        result: CrowdControlCheerActionType | None = None
-
-        with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireCrowdControlCheerActionType(' ')
-
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withBeanChanceCheerAction(self):
         cheerAction: AbsCheerAction = BeanChanceCheerAction(
             isEnabled = True,
@@ -198,11 +142,26 @@ class TestCheerActionJsonMapper:
         assert dictionary['randomChance'] == 70
 
     @pytest.mark.asyncio
-    async def test_serializeAbsCheerAction_withCrowdControlCheerAction(self):
-        cheerAction: AbsCheerAction = CrowdControlCheerAction(
+    async def test_serializeAbsCheerAction_withCrowdControlButtonPressCheerAction(self):
+        cheerAction: AbsCheerAction = CrowdControlButtonPressCheerAction(
             isEnabled = True,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
-            crowdControlCheerActionType = CrowdControlCheerActionType.GAME_SHUFFLE,
+            bits = 50,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withCrowdControlGameShuffleCheerAction(self):
+        cheerAction: AbsCheerAction = CrowdControlGameShuffleCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 50,
             gigaShuffleChance = 20,
             twitchChannelId = 'abc123',
@@ -213,9 +172,8 @@ class TestCheerActionJsonMapper:
 
         dictionary = json.loads(result)
         assert isinstance(dictionary, dict)
-        assert len(dictionary) == 2
+        assert len(dictionary) == 1
 
-        assert dictionary['crowdControlCheerActionType'] == 'game_shuffle'
         assert dictionary['gigaShuffleChance'] == 20
 
     @pytest.mark.asyncio
@@ -242,6 +200,11 @@ class TestCheerActionJsonMapper:
     async def test_serializeCheerActionType_withCrowdControl(self):
         result = await self.jsonMapper.serializeCheerActionType(CheerActionType.CROWD_CONTROL)
         assert result == 'crowd_control'
+
+    @pytest.mark.asyncio
+    async def test_serializeCheerActionType_withGameShuffle(self):
+        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.GAME_SHUFFLE)
+        assert result == 'game_shuffle'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withSoundAlert(self):

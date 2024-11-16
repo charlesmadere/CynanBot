@@ -92,6 +92,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         match jsonString:
             case 'bean_chance': return CheerActionType.BEAN_CHANCE
             case 'crowd_control': return CheerActionType.CROWD_CONTROL
+            case 'game_shuffle': return CheerActionType.GAME_SHUFFLE
             case 'sound_alert': return CheerActionType.SOUND_ALERT
             case 'timeout': return CheerActionType.TIMEOUT
             case _:
@@ -263,7 +264,28 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         )
 
         if action is None:
-            raise ValueError(f'Unable to create CrowdControlCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+            raise ValueError(f'Unable to create CrowdControlButtonPressCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
+    async def requireCrowdControlGameShuffleCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> CrowdControlGameShuffleCheerAction:
+        action = await self.parseCrowdControlGameShuffleCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create CrowdControlGameShuffleCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
 
         return action
 
@@ -377,14 +399,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not isinstance(cheerAction, CrowdControlButtonPressCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
-        crowdControlCheerActionType = await self.serializeCrowdControlCheerActionType(
-            actionType = cheerAction.crowdControlCheerActionType
-        )
-
-        jsonContents: dict[str, Any] = {
-            'crowdControlCheerActionType': crowdControlCheerActionType
-        }
-
+        jsonContents: dict[str, Any] = dict()
         return json.dumps(jsonContents)
 
     async def __serializeCrowdControlGameShuffleCheerAction(
