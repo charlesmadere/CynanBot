@@ -759,6 +759,8 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
     userIdsRepository = userIdsRepository
 )
 
+twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -1490,8 +1492,6 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
     twitchUtils = twitchUtils
 )
 
-twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
-
 timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
@@ -1795,6 +1795,7 @@ cynanBot = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,

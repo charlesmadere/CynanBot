@@ -145,6 +145,8 @@ from src.twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRe
 from src.twitch.timeout.twitchTimeoutRemodRepository import TwitchTimeoutRemodRepository
 from src.twitch.timeout.twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchTokensRepository import TwitchTokensRepository
@@ -501,6 +503,8 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
     userIdsRepository = userIdsRepository
 )
 
+twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -838,6 +842,7 @@ cynanBot = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = None,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = None,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,

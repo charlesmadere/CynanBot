@@ -13,6 +13,7 @@ from ...channelPointRedemptions.shizaPointRedemption import ShizaPointRedemption
 from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from ...channelPointRedemptions.stubChannelPointRedemption import StubPointRedemption
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
+from ...channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -33,6 +34,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         shizaPointRedemption: AbsChannelPointRedemption,
         soundAlertPointRedemption: AbsChannelPointRedemption,
         superTriviaGamePointRedemption: AbsChannelPointRedemption,
+        timeoutPointRedemption: AbsChannelPointRedemption,
         triviaGamePointRedemption: AbsChannelPointRedemption,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface
@@ -55,6 +57,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'soundAlertPointRedemption argument is malformed: \"{soundAlertPointRedemption}\"')
         elif not isinstance(superTriviaGamePointRedemption, SuperTriviaGamePointRedemption) and not isinstance(superTriviaGamePointRedemption, StubPointRedemption):
             raise TypeError(f'superTriviaGamePointRedemption argument is malformed: \"{superTriviaGamePointRedemption}\"')
+        elif not isinstance(timeoutPointRedemption, TimeoutPointRedemption) and not isinstance(timeoutPointRedemption, StubPointRedemption):
+            raise TypeError(f'timeoutPointRedemption argument is malformed: \"{timeoutPointRedemption}\"')
         elif not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption) and not isinstance(triviaGamePointRedemption, StubPointRedemption):
             raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
@@ -71,6 +75,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__shizaPointRedemption: AbsChannelPointRedemption = shizaPointRedemption
         self.__soundAlertPointRedemption: AbsChannelPointRedemption = soundAlertPointRedemption
         self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
+        self.__timeoutPointRedemption: TimeoutPointRedemption = timeoutPointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -179,8 +184,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.isTriviaGameEnabled() and channelPointsMessage.rewardId == user.getTriviaGameRewardId():
-            if await self.__triviaGamePointRedemption.handlePointRedemption(
+        if user.areSoundAlertsEnabled:
+            if await self.__soundAlertPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
@@ -193,8 +198,15 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.areSoundAlertsEnabled:
-            if await self.__soundAlertPointRedemption.handlePointRedemption(
+        if user.areTimeoutActionsEnabled:
+            if await self.__timeoutPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.isTriviaGameEnabled() and channelPointsMessage.rewardId == user.getTriviaGameRewardId():
+            if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):

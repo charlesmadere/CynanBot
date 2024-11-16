@@ -24,6 +24,7 @@ from .channelPointRedemptions.shizaPointRedemption import ShizaPointRedemption
 from .channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from .channelPointRedemptions.stubChannelPointRedemption import StubPointRedemption
 from .channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
+from .channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from .channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from .chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatCommands.absChatCommand import AbsChatCommand
@@ -216,6 +217,7 @@ from .twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryIn
 from .twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from .twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
+from .twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from .twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from .twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -345,6 +347,7 @@ class CynanBot(
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
+        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface | None,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
@@ -569,6 +572,8 @@ class CynanBot(
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
+        elif twitchMessageStringUtils is not None and not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
+            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif twitchTimeoutHelper is not None and not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -846,6 +851,11 @@ class CynanBot(
         else:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(immediateSoundPlayerManager, soundPlayerRandomizerHelper, streamAlertsManager)
 
+        if timeoutActionHelper is None:
+            self.__timeoutPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+        else:
+            self.__timeoutPointRedemption: AbsChannelPointRedemption = TimeoutPointRedemption(timber, timeoutActionHelper, authRepository, twitchMessageStringUtils, twitchTokensRepository, twitchUtils, userIdsRepository)
+
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -1029,6 +1039,7 @@ class CynanBot(
                 shizaPointRedemption = self.__shizaPointRedemption,
                 soundAlertPointRedemption = self.__soundAlertPointRedemption,
                 superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
+                timeoutPointRedemption = self.__timeoutPointRedemption,
                 triviaGamePointRedemption = self.__triviaGamePointRedemption,
                 timber = self.__timber,
                 userIdsRepository = self.__userIdsRepository
