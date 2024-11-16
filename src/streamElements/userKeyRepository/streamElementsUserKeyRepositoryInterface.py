@@ -5,6 +5,8 @@ from ...misc.clearable import Clearable
 
 class StreamElementsUserKeyRepositoryInterface(Clearable):
 
+    # This returned value corresponds directly to the "key" HTTP query parameter in this example:
+    # https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=marley+cheered+x1000%2C++&key=BIG_KEY_STRING_HERE
     @abstractmethod
     async def get(self, twitchChannelId: str) -> str | None:
         pass
