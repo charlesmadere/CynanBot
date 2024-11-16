@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Collection
 
 from .crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
-from .crowdControlCheerAction import CrowdControlCheerAction
 from .crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from .crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from ..absCheerAction import AbsCheerAction
@@ -63,10 +62,14 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         if not user.areCheerActionsEnabled or not user.isCrowdControlEnabled:
             return False
 
-        crowdControlAction: CrowdControlCheerAction | None = None
+        crowdControlAction: AbsCheerAction | None = None
 
         for action in actions:
-            if isinstance(action, CrowdControlCheerAction) and action.isEnabled and action.bits == bits:
+            if not isinstance(action, CrowdControlButtonPressCheerAction) and not isinstance(action, CrowdControlGameShuffleCheerAction):
+                continue
+            elif not action.isEnabled or action.bits != bits:
+                continue
+            else:
                 crowdControlAction = action
                 break
 
