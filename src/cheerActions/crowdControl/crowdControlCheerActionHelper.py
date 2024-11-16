@@ -97,8 +97,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             )
 
         else:
-            self.__timber.log('CrowdControlCheerActionHelper', f'Encountered unknown CrowdControlCheerActionType value: \"{crowdControlAction.crowdControlCheerActionType}\"')
-            return False
+            raise RuntimeError(f'Encountered unknown AbsCheerAction value: \"{crowdControlAction}\"')
 
     async def __inputButtonPressIntoCrowdControl(
         self,
