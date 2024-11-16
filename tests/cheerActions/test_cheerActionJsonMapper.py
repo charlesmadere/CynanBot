@@ -160,7 +160,7 @@ class TestCheerActionJsonMapper:
         assert len(dictionary) == 0
 
     @pytest.mark.asyncio
-    async def test_serializeAbsCheerAction_withCrowdControlGameShuffleCheerAction(self):
+    async def test_serializeAbsCheerAction_withCrowdControlGameShuffleCheerAction1(self):
         cheerAction: AbsCheerAction = CrowdControlGameShuffleCheerAction(
             isEnabled = True,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
@@ -177,6 +177,23 @@ class TestCheerActionJsonMapper:
         assert len(dictionary) == 1
 
         assert dictionary['gigaShuffleChance'] == 20
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withCrowdControlGameShuffleCheerAction2(self):
+        cheerAction: AbsCheerAction = CrowdControlGameShuffleCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            bits = 50,
+            gigaShuffleChance = None,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 0
 
     @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withSoundAlertCheerAction(self):
