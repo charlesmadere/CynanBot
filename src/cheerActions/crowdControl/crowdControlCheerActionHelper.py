@@ -167,6 +167,10 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+
+        # TODO
+        gigaShuffleChance = action.gigaShuffleChance
+
         actionId = await self.__crowdControlIdGenerator.generateActionId()
 
         self.__crowdControlMachine.submitAction(GameShuffleCrowdControlAction(
