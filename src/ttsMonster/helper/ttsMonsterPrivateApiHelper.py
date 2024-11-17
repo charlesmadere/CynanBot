@@ -37,7 +37,8 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
         twitchChannelId: str
     ) -> TtsMonsterUrls | None:
         keyAndUserId = await self.__ttsMonsterKeyAndUserIdRepository.get(
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
         if keyAndUserId is None:

@@ -4,5 +4,5 @@ from dataclasses import dataclass
 @dataclass(frozen = True)
 class TtsMonsterKeyAndUserId:
     key: str
-    twitchChannel: str
+    twitchChannelId: str
     userId: str

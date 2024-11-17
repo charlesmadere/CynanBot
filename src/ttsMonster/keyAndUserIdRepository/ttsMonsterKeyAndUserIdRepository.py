@@ -9,6 +9,9 @@ from ...storage.jsonReaderInterface import JsonReaderInterface
 class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
+        if not isinstance(settingsJsonReader, JsonReaderInterface):
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
         self.__settingsCache: dict[str, Any] | None = None
@@ -16,7 +19,16 @@ class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface
     async def clearCaches(self):
         self.__settingsCache = None
 
-    async def get(self, twitchChannel: str) -> TtsMonsterKeyAndUserId | None:
+    async def get(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> TtsMonsterKeyAndUserId | None:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
         jsonContents = await self.__readJson()
         userConfiguration: dict[str, Any] | Any | None = jsonContents.get(twitchChannel.lower())
 
@@ -31,7 +43,7 @@ class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface
 
         return TtsMonsterKeyAndUserId(
             key = key,
-            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
