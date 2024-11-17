@@ -14,11 +14,19 @@ class CrowdControlSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getMaxGigaShuffleCount(self) -> int:
+        pass
+
+    @abstractmethod
     async def getMaxHandleAttempts(self) -> int:
         pass
 
     @abstractmethod
     async def getMediaPlayerVolume(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getMinGigaShuffleCount(self) -> int:
         pass
 
     @abstractmethod

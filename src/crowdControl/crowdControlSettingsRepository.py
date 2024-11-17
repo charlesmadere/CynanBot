@@ -26,6 +26,10 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'actionCooldownSeconds', 0.125)
 
+    async def getMaxGigaShuffleCount(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'maxGigaShuffleCount', 16)
+
     async def getMaxHandleAttempts(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'maxHandleAttempts', 3)
@@ -33,6 +37,10 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
     async def getMediaPlayerVolume(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', 75)
+
+    async def getMinGigaShuffleCount(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'minGigaShuffleCount', 4)
 
     async def getSecondsToLive(self) -> int:
         jsonContents = await self.__readJson()

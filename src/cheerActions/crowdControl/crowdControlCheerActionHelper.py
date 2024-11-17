@@ -76,6 +76,20 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             randomNumber = random.random()
 
             if randomNumber < gigaShuffleFloat:
+                gigaMinimum = await self.__crowdControlSettingsRepository.getMinGigaShuffleCount()
+                gigaMaximum = await self.__crowdControlSettingsRepository.getMaxGigaShuffleCount()
+                gigaShuffleCount = random.randint(gigaMinimum, gigaMaximum)
+
+                actions.append(GameShuffleCrowdControlAction(
+                    isOriginOfGigaShuffle = True,
+                    dateTime = dateTime,
+                    actionId = await self.__crowdControlIdGenerator.generateActionId(),
+                    chatterUserId = chatterUserId,
+                    chatterUserName = chatterUserName,
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                ))
+
                 pass
 
         actions.append(GameShuffleCrowdControlAction(
