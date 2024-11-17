@@ -122,6 +122,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user
         ):

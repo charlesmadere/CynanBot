@@ -1108,9 +1108,11 @@ crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUs
 crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdControlCheerActionHelper(
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
+    crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
+    twitchUtils = twitchUtils
 )
 
 bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(

@@ -18,3 +18,8 @@ class TestCrowdControlIdGenerator:
             actionId = await self.idGenerator.generateActionId()
             assert isinstance(actionId, str)
             assert self.actionIdRegEx.fullmatch(actionId) is not None
+
+    def test_sanity(self):
+        assert self.idGenerator is not None
+        assert isinstance(self.idGenerator, CrowdControlIdGeneratorInterface)
+        assert isinstance(self.idGenerator, CrowdControlIdGenerator)

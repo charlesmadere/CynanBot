@@ -8,6 +8,7 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
 
     def __init__(
         self,
+        isOriginOfGigaShuffle: bool,
         dateTime: datetime,
         actionId: str,
         chatterUserId: str,
@@ -24,6 +25,12 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
             twitchChannelId = twitchChannelId
         )
 
+        self.__isOriginOfGigaShuffle: bool = isOriginOfGigaShuffle
+
     @property
     def actionType(self) -> CrowdControlActionType:
         return CrowdControlActionType.GAME_SHUFFLE
+
+    @property
+    def isOriginOfGigaShuffle(self) -> bool:
+        return self.__isOriginOfGigaShuffle

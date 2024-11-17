@@ -79,6 +79,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
         if boosterPack.inputType is CrowdControlInputType.GAME_SHUFFLE:
             self.__crowdControlMachine.submitAction(GameShuffleCrowdControlAction(
+                isOriginOfGigaShuffle = False,
                 dateTime = now,
                 actionId = actionId,
                 chatterUserId = twitchChannelPointsMessage.userId,
