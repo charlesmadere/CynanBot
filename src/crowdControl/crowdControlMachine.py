@@ -57,6 +57,17 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self.__actionHandler: CrowdControlActionHandler | None = None
         self.__actionQueue: SimpleQueue[CrowdControlAction] = SimpleQueue()
 
+    async def __announceGigaShuffle(self, action: CrowdControlAction):
+        if not isinstance(action, GameShuffleCrowdControlAction):
+            return
+
+        startOfGigaShuffleSize = action.startOfGigaShuffleSize
+
+        if startOfGigaShuffleSize is None or startOfGigaShuffleSize < 1:
+            return
+
+        # TODO
+
     async def __handleAction(
         self,
         action: CrowdControlAction,
@@ -103,6 +114,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
         if handleResult is CrowdControlActionHandleResult.OK:
+            await self.__announceGigaShuffle(action)
             return CrowdControlActionHandleResult.OK
 
         self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}) ({handleResult=})')
