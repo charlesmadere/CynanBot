@@ -2,14 +2,15 @@ from datetime import datetime
 
 from .crowdControlAction import CrowdControlAction
 from .crowdControlActionType import CrowdControlActionType
+from ...misc import utils as utils
 
 
 class GameShuffleCrowdControlAction(CrowdControlAction):
 
     def __init__(
         self,
-        isOriginOfGigaShuffle: bool,
         dateTime: datetime,
+        startOfGigaShuffleSize: int | None,
         actionId: str,
         chatterUserId: str,
         chatterUserName: str,
@@ -25,12 +26,15 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
             twitchChannelId = twitchChannelId
         )
 
-        self.__isOriginOfGigaShuffle: bool = isOriginOfGigaShuffle
+        if startOfGigaShuffleSize is not None and not utils.isValidInt(startOfGigaShuffleSize):
+            raise TypeError(f'startOfGigaShuffleSize argument is malformed: \"{startOfGigaShuffleSize}\"')
+
+        self.__startOfGigaShuffleSize: int | None = startOfGigaShuffleSize
 
     @property
     def actionType(self) -> CrowdControlActionType:
         return CrowdControlActionType.GAME_SHUFFLE
 
     @property
-    def isOriginOfGigaShuffle(self) -> bool:
-        return self.__isOriginOfGigaShuffle
+    def startOfGigaShuffleSize(self) -> int | None:
+        return self.__startOfGigaShuffleSize

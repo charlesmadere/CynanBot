@@ -78,29 +78,43 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             if randomNumber < gigaShuffleFloat:
                 gigaMinimum = await self.__crowdControlSettingsRepository.getMinGigaShuffleCount()
                 gigaMaximum = await self.__crowdControlSettingsRepository.getMaxGigaShuffleCount()
-                gigaShuffleCount = random.randint(gigaMinimum, gigaMaximum)
+                gigaScale = random.random()
+                gigaShuffleCount = int(round(pow(gigaScale, 9) * (gigaMaximum - gigaMinimum) + gigaMinimum))
 
-                actions.append(GameShuffleCrowdControlAction(
-                    isOriginOfGigaShuffle = True,
-                    dateTime = dateTime,
-                    actionId = await self.__crowdControlIdGenerator.generateActionId(),
-                    chatterUserId = chatterUserId,
-                    chatterUserName = chatterUserName,
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
-                ))
+                self.__timber.log('CrowdControlCheerActionHelper', f'Encountered giga shuffle event: ({gigaShuffleFloat=}) ({randomNumber=}) ({gigaMinimum=}) ({gigaMaximum=}) ({gigaScale=}) ({gigaShuffleCount=})')
 
-                pass
+                if gigaShuffleCount >= 1:
+                    actions.append(GameShuffleCrowdControlAction(
+                        dateTime = dateTime,
+                        startOfGigaShuffleSize = gigaShuffleCount,
+                        actionId = await self.__crowdControlIdGenerator.generateActionId(),
+                        chatterUserId = chatterUserId,
+                        chatterUserName = chatterUserName,
+                        twitchChannel = twitchChannel,
+                        twitchChannelId = twitchChannelId
+                    ))
 
-        actions.append(GameShuffleCrowdControlAction(
-            isOriginOfGigaShuffle = False,
-            dateTime = dateTime,
-            actionId = await self.__crowdControlIdGenerator.generateActionId(),
-            chatterUserId = chatterUserId,
-            chatterUserName = chatterUserName,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
-        ))
+                    for _ in range(gigaShuffleCount - 1):
+                        actions.append(GameShuffleCrowdControlAction(
+                            dateTime = dateTime,
+                            startOfGigaShuffleSize = None,
+                            actionId = await self.__crowdControlIdGenerator.generateActionId(),
+                            chatterUserId = chatterUserId,
+                            chatterUserName = chatterUserName,
+                            twitchChannel = twitchChannel,
+                            twitchChannelId = twitchChannelId
+                        ))
+
+        if len(actions) == 0:
+            actions.append(GameShuffleCrowdControlAction(
+                dateTime = dateTime,
+                startOfGigaShuffleSize = None,
+                actionId = await self.__crowdControlIdGenerator.generateActionId(),
+                chatterUserId = chatterUserId,
+                chatterUserName = chatterUserName,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            ))
 
         actions.freeze()
         return actions

@@ -79,8 +79,8 @@ class CrowdControlChatCommand(AbsChatCommand):
 
         if button is None:
             crowdControlAction = GameShuffleCrowdControlAction(
-                isOriginOfGigaShuffle = False,
                 dateTime = now,
+                startOfGigaShuffleSize = None,
                 actionId = actionId,
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
