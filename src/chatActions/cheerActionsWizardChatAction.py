@@ -6,8 +6,8 @@ from ..cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperI
 from ..cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from ..cheerActions.crowdControl.crowdControlCheerAction import CrowdControlCheerAction
-from ..cheerActions.crowdControl.crowdControlCheerActionType import CrowdControlCheerActionType
+from ..cheerActions.crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
+from ..cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from ..cheerActions.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.timeoutCheerAction import TimeoutCheerAction
 from ..cheerActions.wizards.beanChanceStep import BeanChanceStep
@@ -171,12 +171,10 @@ class CheerActionsWizardChatAction(AbsChatAction):
             case StepResult.DONE:
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
 
-                await self.__cheerActionsRepository.setAction(CrowdControlCheerAction(
+                await self.__cheerActionsRepository.setAction(CrowdControlButtonPressCheerAction(
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
-                    crowdControlCheerActionType = CrowdControlCheerActionType.BUTTON_PRESS,
                     bits = wizard.requireBits(),
-                    gigaShuffleChance = None,
                     twitchChannelId = wizard.twitchChannelId
                 ))
 
@@ -250,10 +248,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
             case StepResult.DONE:
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
 
-                await self.__cheerActionsRepository.setAction(CrowdControlCheerAction(
+                await self.__cheerActionsRepository.setAction(CrowdControlGameShuffleCheerAction(
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
-                    crowdControlCheerActionType = CrowdControlCheerActionType.GAME_SHUFFLE,
                     bits = wizard.requireBits(),
                     gigaShuffleChance = wizard.gigaShuffleChance,
                     twitchChannelId = wizard.twitchChannelId
