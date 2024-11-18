@@ -1164,7 +1164,7 @@ timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = Time
 timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeoutCheerActionJsonMapper = timeoutActionJsonMapper,
+    timeoutActionJsonMapper = timeoutActionJsonMapper,
     timeZoneRepository = timeZoneRepository
 )
 
@@ -1231,7 +1231,7 @@ timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = Time
 timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeoutCheerActionJsonMapper = timeoutActionJsonMapper,
+    timeoutActionJsonMapper = timeoutActionJsonMapper,
     timeZoneRepository = timeZoneRepository
 )
 

@@ -28,7 +28,7 @@ class TimeoutBoosterPackJsonParser(TimeoutBoosterPackJsonParserInterface):
         self,
         jsonContents: list[dict[str, Any]] | Any | None
     ) -> frozendict[str, TimeoutBoosterPack] | None:
-        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+        if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None
 
         boosterPacks: dict[str, TimeoutBoosterPack] = dict()

@@ -65,7 +65,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
             return False
 
         moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
-            twitchChannelId = await self.__twitchHandleProvider.getTwitchHandle()
+            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
         )
 
         if not utils.isValidStr(moderatorTwitchAccessToken):
