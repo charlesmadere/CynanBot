@@ -1,3 +1,5 @@
+from ..recurringActions.wizards.weatherStep import WeatherStep
+from ..recurringActions.recurringActionType import RecurringActionType
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
@@ -45,5 +47,22 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
         elif not user.areRecurringActionsEnabled:
             return
 
-        # TODO
+        wizard = await self.__recurringActionsWizard.start(
+            recurringActionType = RecurringActionType.WEATHER,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = userId
+        )
+
+        step = wizard.getSteps().getStep()
+        if step is not WeatherStep.MINUTES_BETWEEN:
+            raise RuntimeError(f'unknown WeatherStep: \"{step}\"')
+
+        minimumRecurringActionTimingMinutes = RecurringActionType.WEATHER.minimumRecurringActionTimingMinutes
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ Please specify the number of minutes between recurring Weather prompts (most people choose 60 - 120 minutes, minimum is {minimumRecurringActionTimingMinutes})',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('AddRecurringWeatherActionChatCommand', f'Handled !addrecurringweatheraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
