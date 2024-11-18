@@ -84,7 +84,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
                 ))
 
                 self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Cuteness wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-                await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Super Trivia ({wizard.printOut()})')
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring Cuteness wizard ({wizard.printOut()})')
                 return True
 
             case StepResult.NEXT:
