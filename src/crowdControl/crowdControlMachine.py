@@ -10,6 +10,8 @@ from .actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
 from .crowdControlActionHandleResult import CrowdControlActionHandleResult
 from .crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControlMachineInterface import CrowdControlMachineInterface
+from .crowdControlMessage import CrowdControlMessage
+from .crowdControlMessageHandler import CrowdControlMessageHandler
 from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .exceptions import ActionHandlerProcessCantBeConnectedToException, ActionHandlerProcessNotFoundException
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -55,6 +57,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__isStarted: bool = False
         self.__actionHandler: CrowdControlActionHandler | None = None
+        self.__messageHandler: CrowdControlMessageHandler | None = None
         self.__actionQueue: SimpleQueue[CrowdControlAction] = SimpleQueue()
 
     async def __announceGigaShuffle(self, action: CrowdControlAction):
@@ -176,6 +179,12 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__actionHandler = actionHandler
 
+    def setMessageHandler(self, messageHander: CrowdControlMessageHandler | None):
+        if messageHander is not None and not isinstance(messageHander):
+            raise TypeError(f'messageHander argument is malformed: \"{messageHander}\"')
+
+        self.__messageHandler = messageHander
+
     def start(self):
         if self.__isStarted:
             self.__timber.log('CrowdControlMachine', 'Not starting CrowdControlMachine as it has already been started')
@@ -218,3 +227,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             self.__actionQueue.put(action, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
             self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()}): {e}', e, traceback.format_exc())
+
+    def __submitMessage(self, message: CrowdControlMessage):
+        if not isinstance(message, CrowdControlMessage):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        # TODO
