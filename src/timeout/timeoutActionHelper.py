@@ -398,6 +398,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             diceRoll = diceRoll,
             rollFailureData = rollFailureData,
             ripBozoEmote = ripBozoEmote,
+            timeoutTargetUserName = timeoutTargetUserName,
+            twitchChannel= twitchChannel,
             timeoutData = timeoutData
         ):
             self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but they hit the failure roll ({diceRoll=}) ({rollFailureData=}) ({timeoutData=})')
