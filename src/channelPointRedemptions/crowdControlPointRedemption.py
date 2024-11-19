@@ -12,7 +12,6 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.crowdControl.crowdControlInputType import CrowdControlInputType
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -27,7 +26,6 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
@@ -42,8 +40,6 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
@@ -53,7 +49,6 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         self.__crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = crowdControlUserInputUtils
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     async def handlePointRedemption(
@@ -85,7 +80,8 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 chatterUserId = twitchChannelPointsMessage.userId,
                 chatterUserName = twitchChannelPointsMessage.userName,
                 twitchChannel = twitchUser.getHandle(),
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
+                twitchChatMessageId = None
             ))
 
             self.__timber.log('CrowdControlPointRedemption', f'Created new game shuffle crowd control action from channel point redemption ({twitchChannelPointsMessage=})')
@@ -113,7 +109,8 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             chatterUserId = twitchChannelPointsMessage.userId,
             chatterUserName = twitchChannelPointsMessage.userName,
             twitchChannel = twitchUser.getHandle(),
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = None
         ))
 
         self.__timber.log('CrowdControlPointRedemption', f'Created new button press crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({button=})')

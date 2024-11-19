@@ -92,7 +92,6 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from .cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, DiscordCommand,
                        PbsCommand, PkMonCommand, PkMoveCommand, RaceCommand, SetFuntoonTokenCommand,
                        SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TwitchInfoCommand,
@@ -276,7 +275,6 @@ class CynanBot(
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         cheerActionsWizard: CheerActionsWizardInterface | None,
         crowdControlActionHandler: CrowdControlActionHandler | None,
-        crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
         crowdControlMachine: CrowdControlMachineInterface | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
@@ -432,8 +430,6 @@ class CynanBot(
             raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
         elif crowdControlActionHandler is not None and not isinstance(crowdControlActionHandler, CrowdControlActionHandler):
             raise TypeError(f'crowdControlActionHandler argument is malformed: \"{crowdControlActionHandler}\"')
-        elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
-            raise TypeError(f'crowdControlCheerActionHelper argument is malformed: \"{crowdControlCheerActionHelper}\"')
         elif crowdControlIdGenerator is not None and not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
         elif crowdControlMachine is not None and not isinstance(crowdControlMachine, CrowdControlMachineInterface):
@@ -615,7 +611,6 @@ class CynanBot(
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__crowdControlActionHandler: CrowdControlActionHandler | None = crowdControlActionHandler
-        self.__crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None = crowdControlCheerActionHelper
         self.__crowdControlMachine: CrowdControlMachineInterface | None = crowdControlMachine
         self.__cutenessPresenter: CutenessPresenterInterface | None = cutenessPresenter
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -992,9 +987,6 @@ class CynanBot(
 
         if self.__crowdControlActionHandler is not None:
             self.__crowdControlActionHandler.start()
-
-        if self.__crowdControlCheerActionHelper is not None:
-            self.__crowdControlCheerActionHelper.setTwitchChannelProvider(self)
 
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)

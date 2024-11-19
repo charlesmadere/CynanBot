@@ -15,7 +15,8 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        twitchChatMessageId: str | None
     ):
         super().__init__(
             dateTime = dateTime,
@@ -23,7 +24,8 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId
         )
 
         if startOfGigaShuffleSize is not None and not utils.isValidInt(startOfGigaShuffleSize):

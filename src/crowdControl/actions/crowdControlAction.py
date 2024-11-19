@@ -15,7 +15,8 @@ class CrowdControlAction(ABC):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        twitchChatMessageId: str | None
     ):
         if not isinstance(dateTime, datetime):
             raise TypeError(f'dateTime argument is malformed: \"{dateTime}\"')
@@ -29,6 +30,8 @@ class CrowdControlAction(ABC):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
+            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
 
         self.__dateTime: datetime = dateTime
         self.__actionId: str = actionId
@@ -36,6 +39,7 @@ class CrowdControlAction(ABC):
         self.__chatterUserName: str = chatterUserName
         self.__twitchChannel: str = twitchChannel
         self.__twitchChannelId: str = twitchChannelId
+        self.__twitchChatMessageId: str | None = twitchChatMessageId
 
         self.__handleAttempts: int = 0
 
@@ -79,7 +83,8 @@ class CrowdControlAction(ABC):
             'dateTime': self.__dateTime,
             'handleAttempts': self.__handleAttempts,
             'twitchChannel': self.__twitchChannel,
-            'twitchChannelId': self.__twitchChannelId
+            'twitchChannelId': self.__twitchChannelId,
+            'twitchChatMessageId': self.__twitchChatMessageId
         }
 
     @property
@@ -89,3 +94,7 @@ class CrowdControlAction(ABC):
     @property
     def twitchChannelId(self) -> str:
         return self.__twitchChannel
+
+    @property
+    def twitchChatMessageId(self) -> str | None:
+        return self.__twitchChatMessageId

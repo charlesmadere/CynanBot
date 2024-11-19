@@ -36,3 +36,7 @@ class CrowdControlSettingsRepositoryInterface(Clearable):
     @abstractmethod
     async def isEnabled(self) -> bool:
         pass
+
+    @abstractmethod
+    async def isGigaShuffleEnabled(self) -> bool:
+        pass

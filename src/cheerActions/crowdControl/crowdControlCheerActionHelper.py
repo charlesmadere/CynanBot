@@ -17,8 +17,6 @@ from ...crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdContr
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userInterface import UserInterface
 
 
@@ -31,8 +29,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
@@ -46,8 +43,6 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
         self.__crowdControlMachine: CrowdControlMachineInterface = crowdControlMachine
@@ -55,9 +50,6 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         self.__crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = crowdControlUserInputUtils
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __createGameShuffleActions(
         self,
@@ -65,13 +57,14 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        twitchChatMessageId: str | None
     ) -> Collection[GameShuffleCrowdControlAction]:
         dateTime = datetime.now(self.__timeZoneRepository.getDefault())
         actions: FrozenList[CrowdControlGameShuffleCheerAction] = FrozenList()
 
         gigaShuffleChance = action.gigaShuffleChance
-        if utils.isValidInt(gigaShuffleChance) and gigaShuffleChance > 0:
+        if await self.__crowdControlSettingsRepository.isGigaShuffleEnabled() and utils.isValidInt(gigaShuffleChance) and gigaShuffleChance > 0:
             gigaShuffleFloat = float(gigaShuffleChance) / float(100)
             randomNumber = random.random()
 
@@ -91,7 +84,8 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                         chatterUserId = chatterUserId,
                         chatterUserName = chatterUserName,
                         twitchChannel = twitchChannel,
-                        twitchChannelId = twitchChannelId
+                        twitchChannelId = twitchChannelId,
+                        twitchChatMessageId = twitchChatMessageId
                     ))
 
                     for _ in range(gigaShuffleCount - 1):
@@ -102,7 +96,8 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                             chatterUserId = chatterUserId,
                             chatterUserName = chatterUserName,
                             twitchChannel = twitchChannel,
-                            twitchChannelId = twitchChannelId
+                            twitchChannelId = twitchChannelId,
+                            twitchChatMessageId = twitchChatMessageId
                         ))
 
         if len(actions) == 0:
@@ -113,7 +108,8 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 chatterUserId = chatterUserId,
                 chatterUserName = chatterUserName,
                 twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
+                twitchChatMessageId = twitchChatMessageId
             ))
 
         actions.freeze()
@@ -168,6 +164,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 chatterUserName = cheerUserName,
                 message = message,
                 twitchChannelId = broadcasterUserId,
+                twitchChatMessageId = twitchChatMessageId,
                 user = user
             )
 
@@ -217,7 +214,8 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = user.getHandle(),
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId
         ))
 
         return True
@@ -229,6 +227,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         chatterUserName: str,
         message: str | None,
         twitchChannelId: str,
+        twitchChatMessageId: str | None,
         user: UserInterface
     ) -> bool:
         if not isinstance(action, CrowdControlGameShuffleCheerAction):
@@ -241,6 +240,8 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
+            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -249,16 +250,11 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = user.getHandle(),
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId
         )
 
         for gameShuffleAction in gameShuffleActions:
             self.__crowdControlMachine.submitAction(gameShuffleAction)
 
         return True
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

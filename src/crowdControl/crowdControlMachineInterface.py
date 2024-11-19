@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from .actions.crowdControlAction import CrowdControlAction
 from .crowdControlActionHandler import CrowdControlActionHandler
-from .crowdControlMessageHandler import CrowdControlMessageHandler
+from .message.crowdControlMessageListener import CrowdControlMessageListener
 
 
 class CrowdControlMachineInterface(ABC):
@@ -12,7 +12,7 @@ class CrowdControlMachineInterface(ABC):
         pass
 
     @abstractmethod
-    def setMessageHandler(self, messageHander: CrowdControlMessageHandler | None):
+    def setMessageListener(self, messageHander: CrowdControlMessageListener | None):
         pass
 
     @abstractmethod

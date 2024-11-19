@@ -50,6 +50,10 @@ class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'enabled', True)
 
+    async def isGigaShuffleEnabled(self):
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'gigaShuffleEnabled', True)
+
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache

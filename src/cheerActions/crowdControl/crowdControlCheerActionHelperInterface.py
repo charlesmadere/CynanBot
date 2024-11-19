@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Collection
 
 from ..absCheerAction import AbsCheerAction
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
 
 
@@ -23,8 +22,4 @@ class CrowdControlCheerActionHelperInterface(ABC):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

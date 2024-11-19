@@ -73,9 +73,9 @@ class CrowdControlChatCommand(AbsChatCommand):
             message = splits[1].strip()
 
         button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(message)
-        crowdControlAction: CrowdControlAction
         now = datetime.now(self.__timeZoneRepository.getDefault())
         actionId = await self.__crowdControlIdGenerator.generateActionId()
+        crowdControlAction: CrowdControlAction
 
         if button is None:
             crowdControlAction = GameShuffleCrowdControlAction(
@@ -85,7 +85,8 @@ class CrowdControlChatCommand(AbsChatCommand):
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
                 twitchChannel = user.getHandle(),
-                twitchChannelId = await ctx.getTwitchChannelId()
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChatMessageId = await ctx.getMessageId()
             )
         else:
             crowdControlAction = ButtonPressCrowdControlAction(
@@ -95,7 +96,8 @@ class CrowdControlChatCommand(AbsChatCommand):
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
                 twitchChannel = user.getHandle(),
-                twitchChannelId = await ctx.getTwitchChannelId()
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChatMessageId = await ctx.getMessageId()
             )
 
         self.__crowdControlMachine.submitAction(crowdControlAction)

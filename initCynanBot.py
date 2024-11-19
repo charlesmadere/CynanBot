@@ -1725,7 +1725,6 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     crowdControlActionHandler = None,
-    crowdControlCheerActionHelper = None,
     crowdControlIdGenerator = None,
     crowdControlMachine = None,
     crowdControlSettingsRepository = None,

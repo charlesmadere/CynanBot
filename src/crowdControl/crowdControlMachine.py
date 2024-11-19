@@ -10,10 +10,10 @@ from .actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
 from .crowdControlActionHandleResult import CrowdControlActionHandleResult
 from .crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControlMachineInterface import CrowdControlMachineInterface
-from .crowdControlMessage import CrowdControlMessage
-from .crowdControlMessageHandler import CrowdControlMessageHandler
 from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .exceptions import ActionHandlerProcessCantBeConnectedToException, ActionHandlerProcessNotFoundException
+from .message.crowdControlMessage import CrowdControlMessage
+from .message.crowdControlMessageListener import CrowdControlMessageListener
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -57,7 +57,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__isStarted: bool = False
         self.__actionHandler: CrowdControlActionHandler | None = None
-        self.__messageHandler: CrowdControlMessageHandler | None = None
+        self.__messageListener: CrowdControlMessageListener | None = None
         self.__actionQueue: SimpleQueue[CrowdControlAction] = SimpleQueue()
 
     async def __announceGigaShuffle(self, action: CrowdControlAction):
@@ -179,11 +179,11 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__actionHandler = actionHandler
 
-    def setMessageHandler(self, messageHander: CrowdControlMessageHandler | None):
-        if messageHander is not None and not isinstance(messageHander):
-            raise TypeError(f'messageHander argument is malformed: \"{messageHander}\"')
+    def setMessageListener(self, messageListener: CrowdControlMessageListener | None):
+        if messageListener is not None and not isinstance(messageListener):
+            raise TypeError(f'messageListener argument is malformed: \"{messageListener}\"')
 
-        self.__messageHandler = messageHander
+        self.__messageListener = messageListener
 
     def start(self):
         if self.__isStarted:
