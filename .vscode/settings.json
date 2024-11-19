@@ -2,10 +2,15 @@
     "editor.wordWrapColumn": 120,
     "files.autoSave": "afterDelay",
     "files.trimFinalNewlines": true,
+    "python.analysis.aiCodeActions": {
+        "implementAbstractClasses": false
+    },
+    "python.analysis.autoFormatStrings": true,
     "python.analysis.autoImportCompletions": true,
-    "python.analysis.importFormat": "relative",
-    "python.analysis.typeCheckingMode": "standard",
     "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.importFormat": "relative",
+    "python.analysis.indexing": true,
+    "python.analysis.typeCheckingMode": "strict",
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.testing.pytestArgs": [
         "tests"
@@ -19,7 +24,6 @@
             "source.organizeImports.reorder-python-imports": "always",
             "source.sortImports": "always"
         },
-        "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
         "editor.formatOnType": false
     }
