@@ -10,7 +10,7 @@
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.importFormat": "relative",
     "python.analysis.indexing": true,
-    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.typeCheckingMode": "basic",
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.testing.pytestArgs": [
         "tests"
