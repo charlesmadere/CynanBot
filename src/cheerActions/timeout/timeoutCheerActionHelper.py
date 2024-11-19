@@ -130,7 +130,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         return await self.__timeoutActionHelper.timeout(TimeoutActionData(
             bits = bits,
-            durationSeconds = action.durationSeconds,
+            durationSeconds = timeoutAction.durationSeconds,
             chatMessage = message,
             instigatorUserId = cheerUserId,
             instigatorUserName = cheerUserName,
