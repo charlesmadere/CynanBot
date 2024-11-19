@@ -11,37 +11,37 @@ class TestStreamElementsJsonParser:
 
     @pytest.mark.asyncio
     async def test_parseVoice_withAmy(self):
-        result = await self.parser.parseVoice('amy')
+        result = self.parser.parseVoice('amy')
         assert result is StreamElementsVoice.AMY
 
     @pytest.mark.asyncio
     async def test_parseVoice_withBrian(self):
-        result = await self.parser.parseVoice('brian')
+        result = self.parser.parseVoice('brian')
         assert result is StreamElementsVoice.BRIAN
 
     @pytest.mark.asyncio
     async def test_parseVoice_withEmptyString(self):
-        result = await self.parser.parseVoice('')
+        result = self.parser.parseVoice('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoice_withJoey(self):
-        result = await self.parser.parseVoice('joey')
+        result = self.parser.parseVoice('joey')
         assert result is StreamElementsVoice.JOEY
 
     @pytest.mark.asyncio
     async def test_parseVoice_withNone(self):
-        result = await self.parser.parseVoice(None)
+        result = self.parser.parseVoice(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoice_withWhitespaceString(self):
-        result = await self.parser.parseVoice(' ')
+        result = self.parser.parseVoice(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireVoice_withBrian(self):
-        result = await self.parser.requireVoice('brian')
+        result = self.parser.requireVoice('brian')
         assert result is StreamElementsVoice.BRIAN
 
     @pytest.mark.asyncio
@@ -49,13 +49,13 @@ class TestStreamElementsJsonParser:
         result: StreamElementsVoice | None = None
 
         with pytest.raises(ValueError):
-            result = await self.parser.requireVoice('')
+            result = self.parser.requireVoice('')
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireVoice_withJoey(self):
-        result = await self.parser.requireVoice('joey')
+        result = self.parser.requireVoice('joey')
         assert result is StreamElementsVoice.JOEY
 
     @pytest.mark.asyncio
@@ -63,7 +63,7 @@ class TestStreamElementsJsonParser:
         result: StreamElementsVoice | None = None
 
         with pytest.raises(ValueError):
-            result = await self.parser.requireVoice(None)
+            result = self.parser.requireVoice(None)
 
         assert result is None
 
@@ -72,21 +72,21 @@ class TestStreamElementsJsonParser:
         result: StreamElementsVoice | None = None
 
         with pytest.raises(ValueError):
-            result = await self.parser.requireVoice(' ')
+            result = self.parser.requireVoice(' ')
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withAmy(self):
-        result = await self.parser.serializeVoice(StreamElementsVoice.AMY)
+        result = self.parser.serializeVoice(StreamElementsVoice.AMY)
         assert result == 'amy'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withBrian(self):
-        result = await self.parser.serializeVoice(StreamElementsVoice.BRIAN)
+        result = self.parser.serializeVoice(StreamElementsVoice.BRIAN)
         assert result == 'brian'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withJoey(self):
-        result = await self.parser.serializeVoice(StreamElementsVoice.JOEY)
+        result = self.parser.serializeVoice(StreamElementsVoice.JOEY)
         assert result == 'joey'

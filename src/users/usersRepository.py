@@ -19,6 +19,7 @@ from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
+from .tts.ttsChatterBoosterPack import TtsChatterBoosterPack
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
@@ -26,6 +27,8 @@ from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from ..streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
+from ..streamElements.models.streamElementsVoice import StreamElementsVoice
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.ttsProvider import TtsProvider
@@ -168,6 +171,7 @@ class UsersRepository(UsersRepositoryInterface):
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
+        isTtsChattersEnabled = utils.getBoolFromDict(userJson, 'ttsChattersEnabled', False)
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
         isTtsMonsterApiUsageReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED.jsonKey, True)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
@@ -314,6 +318,11 @@ class UsersRepository(UsersRepositoryInterface):
             crowdControlBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('crowdControlBoosterPacks')
             crowdControlBoosterPacks = self.__crowdControlJsonParser.parseBoosterPacks(crowdControlBoosterPacksJson)
 
+        ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = None
+        if isTtsChattersEnabled:
+            ttsChatterBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsChatterBoosterPacks')
+            ttsChatterBoosterPacks = self.__parseTtsChatterBoosterPacksFromJson(ttsChatterBoosterPacksJson)
+
         user = User(
             areBeanChancesEnabled = areBeanChancesEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
@@ -363,6 +372,7 @@ class UsersRepository(UsersRepositoryInterface):
             isTranslateEnabled = isTranslateEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isTriviaScoreEnabled = isTriviaScoreEnabled,
+            isTtsChattersEnabled = isTtsChattersEnabled,
             isTtsEnabled = isTtsEnabled,
             isTtsMonsterApiUsageReportingEnabled = isTtsMonsterApiUsageReportingEnabled,
             isWeatherEnabled = isWeatherEnabled,
@@ -415,7 +425,8 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptions = soundAlertRedemptions,
             timeZones = timeZones,
             timeoutBoosterPacks = timeoutBoosterPacks,
-            ttsBoosterPacks = ttsBoosterPacks
+            ttsBoosterPacks = ttsBoosterPacks,
+            ttsChatterBoosterPacks = ttsChatterBoosterPacks
         )
 
         self.__userCache[handle.casefold()] = user
@@ -546,6 +557,31 @@ class UsersRepository(UsersRepositoryInterface):
             raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
 
         userJson[jsonConstant.jsonKey] = value
+
+    def __parseTtsChatterBoosterPacksFromJson(
+        self,
+        jsonList: list[dict[str, Any]] | None
+    ) -> frozendict[str, TtsChatterBoosterPack] | None:
+        if not isinstance(jsonList, list) or len(jsonList) == 0:
+            return None
+
+        boosterPacks: dict[str, TtsChatterBoosterPack] = dict()
+
+        for ttsChatterBoosterPackJson in jsonList:
+            userName = utils.getStrFromDict(ttsChatterBoosterPackJson, 'userName')
+            voiceStr = utils.getStrFromDict(ttsChatterBoosterPackJson, 'voice')
+
+            if not utils.isValidStr(voiceStr):
+                return None
+
+            voice: StreamElementsVoice = StreamElementsJsonParser().requireVoice(voiceStr)
+
+            boosterPacks[userName] = TtsChatterBoosterPack(
+                userName = userName,
+                voice = voice
+            )
+
+        return frozendict(boosterPacks)
 
     def __parseCutenessBoosterPacksFromJson(
         self,

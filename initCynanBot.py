@@ -1634,6 +1634,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ),
     supStreamerChatAction = None,
     timber = timber,
+    ttsChattersChatAction = None,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository

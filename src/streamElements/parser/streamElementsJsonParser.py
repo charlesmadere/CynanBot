@@ -7,7 +7,7 @@ from ...misc import utils as utils
 
 class StreamElementsJsonParser(StreamElementsJsonParserInterface):
 
-    async def parseVoice(self, jsonString: str | Any | None) -> StreamElementsVoice | None:
+    def parseVoice(self, jsonString: str | Any | None) -> StreamElementsVoice | None:
         if not utils.isValidStr(jsonString):
             return None
 
@@ -19,15 +19,15 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
             case 'joey': return StreamElementsVoice.JOEY
             case _: return None
 
-    async def requireVoice(self, jsonString: str | Any | None) -> StreamElementsVoice:
-        result = await self.parseVoice(jsonString)
+    def requireVoice(self, jsonString: str | Any | None) -> StreamElementsVoice:
+        result = self.parseVoice(jsonString)
 
         if result is None:
             raise ValueError(f'Unable to parse \"{jsonString}\" into StreamElementsVoice value!')
 
         return result
 
-    async def serializeVoice(self, voice: StreamElementsVoice) -> str:
+    def serializeVoice(self, voice: StreamElementsVoice) -> str:
         if not isinstance(voice, StreamElementsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 

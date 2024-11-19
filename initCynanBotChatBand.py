@@ -731,6 +731,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     schubertWalkChatAction = None,
     supStreamerChatAction = None,
     timber = timber,
+    ttsChattersChatAction = None,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository

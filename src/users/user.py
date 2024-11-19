@@ -8,6 +8,7 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
+from .tts.ttsChatterBoosterPack import TtsChatterBoosterPack
 from .userInterface import UserInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..misc import utils as utils
@@ -66,6 +67,7 @@ class User(UserInterface):
         isTranslateEnabled: bool,
         isTriviaGameEnabled: bool,
         isTriviaScoreEnabled: bool,
+        isTtsChattersEnabled: bool,
         isTtsEnabled: bool,
         isTtsMonsterApiUsageReportingEnabled: bool,
         isWeatherEnabled: bool,
@@ -119,6 +121,7 @@ class User(UserInterface):
         timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None,
         timeZones: FrozenList[tzinfo] | None,
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
+        ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None,
     ):
         if not utils.isValidBool(areBeanChancesEnabled):
             raise TypeError(f'areBeanChancesEnabled argument is malformed: \"{areBeanChancesEnabled}\"')
@@ -216,6 +219,8 @@ class User(UserInterface):
             raise TypeError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
         elif not utils.isValidBool(isTriviaScoreEnabled):
             raise TypeError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
+        elif not utils.isValidBool(isTtsChattersEnabled):
+            raise TypeError(f'isTtsChattersEnabled argument is malformed: \"{isTtsChattersEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isTtsMonsterApiUsageReportingEnabled):
@@ -318,6 +323,8 @@ class User(UserInterface):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
         elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, FrozenList):
             raise TypeError(f'ttsBoosterPacks argument is malformed: \"{ttsBoosterPacks}\"')
+        elif ttsChatterBoosterPacks is not None and not isinstance(ttsChatterBoosterPacks, frozendict):
+            raise TypeError(f'ttsChatterBoosterPacks argument is malformed: \"{ttsChatterBoosterPacks}\"')
 
         self.__areBeanChancesEnabled: bool = areBeanChancesEnabled
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
@@ -367,6 +374,7 @@ class User(UserInterface):
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
+        self.__isTtsChattersEnabled: bool = isTtsChattersEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
@@ -420,6 +428,7 @@ class User(UserInterface):
         self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
         self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
+        self.__ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = ttsChatterBoosterPacks
 
     @property
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:
@@ -739,6 +748,9 @@ class User(UserInterface):
     def isTtsEnabled(self) -> bool:
         return self.__isTtsEnabled
 
+    def isTtsChattersEnabled(self) -> bool:
+        return self.__isTtsChattersEnabled
+
     @property
     def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
         return self.__isTtsMonsterApiUsageReportingEnabled
@@ -786,3 +798,7 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
+
+    @property
+    def ttsChatterBoosterPacks(self) -> frozendict[str, TtsChatterBoosterPack] | None:
+        return self.__ttsChatterBoosterPacks

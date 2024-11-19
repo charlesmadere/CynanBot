@@ -9,6 +9,7 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
+from .tts.ttsChatterBoosterPack import TtsChatterBoosterPack
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..tts.ttsProvider import TtsProvider
 
@@ -379,6 +380,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isTtsChattersEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isTtsEnabled(self) -> bool:
         pass
 
@@ -437,4 +442,9 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def ttsChatterBoosterPacks(self) -> frozendict[str, TtsChatterBoosterPack] | None:
         pass
