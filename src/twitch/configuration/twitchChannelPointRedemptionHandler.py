@@ -75,7 +75,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__shizaPointRedemption: AbsChannelPointRedemption = shizaPointRedemption
         self.__soundAlertPointRedemption: AbsChannelPointRedemption = soundAlertPointRedemption
         self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
-        self.__timeoutPointRedemption: TimeoutPointRedemption = timeoutPointRedemption
+        self.__timeoutPointRedemption: AbsChannelPointRedemption = timeoutPointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository

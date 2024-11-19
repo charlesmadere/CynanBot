@@ -124,7 +124,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         bits: int,
         jsonString: str | None,
         twitchChannelId: str
-    ) -> CrowdControlGameShuffleCheerAction:
+    ) -> CrowdControlGameShuffleCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
 

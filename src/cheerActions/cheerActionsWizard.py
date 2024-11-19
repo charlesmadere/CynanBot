@@ -136,7 +136,7 @@ class CheerActionsWizard(CheerActionsWizardInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> CrowdControlWizard:
+    ) -> GameShuffleWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
