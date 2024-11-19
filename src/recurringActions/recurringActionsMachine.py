@@ -246,7 +246,12 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if not action.isEnabled:
             raise RuntimeError(f'Attempting to process a disabled action: \"{action}\"')
 
-        if isinstance(action, SuperTriviaRecurringAction):
+        if isinstance(action, CutenessRecurringAction):
+            return await self.__processCutenessRecurringAction(
+                user = user,
+                action = action
+            )
+        elif isinstance(action, SuperTriviaRecurringAction):
             return await self.__processSuperTriviaRecurringAction(
                 user = user,
                 action = action
@@ -262,7 +267,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                 action = action
             )
         else:
-            raise RuntimeError(f'Unknown RecurringAction: ({type(action)=}) ({action=})')
+            raise RuntimeError(f'Unknown RecurringAction: {action=}')
 
     async def __processSuperTriviaRecurringAction(
         self,
