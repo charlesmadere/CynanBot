@@ -26,6 +26,7 @@ from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatA
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
+from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
 from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -1304,6 +1305,12 @@ if streamAlertsManager is not None:
         timeZoneRepository = timeZoneRepository
     )
 
+ttsChattersChatAction: TtsChattersChatAction | None = None
+if streamAlertsManager is not None:
+    ttsChattersChatAction = TtsChattersChatAction(
+        streamAlertsManager = streamAlertsManager
+    )
+
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = None,
@@ -1320,6 +1327,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     schubertWalkChatAction = None,
     supStreamerChatAction = supStreamerChatAction,
     timber = timber,
+    ttsChattersChatAction = ttsChattersChatAction,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository

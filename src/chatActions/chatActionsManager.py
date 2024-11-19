@@ -10,6 +10,7 @@ from .recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from .saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from .schubertWalkChatAction import SchubertWalkChatAction
 from .supStreamerChatAction import SupStreamerChatAction
+from .ttsChattersChatAction import TtsChattersChatAction
 from ..aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -42,6 +43,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         schubertWalkChatAction: SchubertWalkChatAction | None,
         supStreamerChatAction: SupStreamerChatAction | None,
         timber: TimberInterface,
+        ttsChattersChatAction: TtsChattersChatAction | None,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -76,6 +78,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif ttsChattersChatAction is not None and not isinstance(ttsChattersChatAction, TtsChattersChatAction):
+            raise TypeError(f'ttsChattersChatAction argument is malformed: \"{ttsChattersChatAction}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -97,6 +101,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__schubertWalkChatAction: AbsChatAction | None = schubertWalkChatAction
         self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
         self.__timber: TimberInterface = timber
+        self.__ttsChattersChatAction: AbsChatAction | None = ttsChattersChatAction
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -194,6 +199,13 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         if self.__supStreamerChatAction is not None:
             await self.__supStreamerChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
+        
+        if self.__ttsChattersChatAction is not None:
+            await self.__ttsChattersChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
                 user = user
