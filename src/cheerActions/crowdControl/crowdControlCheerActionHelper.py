@@ -9,6 +9,7 @@ from .crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelpe
 from .crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from ..absCheerAction import AbsCheerAction
 from ...crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
+from ...crowdControl.actions.crowdControlAction import CrowdControlAction
 from ...crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
 from ...crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from ...crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
@@ -59,9 +60,9 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         twitchChannel: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None
-    ) -> Collection[GameShuffleCrowdControlAction]:
+    ) -> Collection[CrowdControlAction]:
         dateTime = datetime.now(self.__timeZoneRepository.getDefault())
-        actions: FrozenList[GameShuffleCrowdControlAction] = FrozenList()
+        actions: FrozenList[CrowdControlAction] = FrozenList()
 
         gigaShuffleChance = action.gigaShuffleChance
         if await self.__crowdControlSettingsRepository.isGigaShuffleEnabled() and utils.isValidInt(gigaShuffleChance) and gigaShuffleChance > 0:
