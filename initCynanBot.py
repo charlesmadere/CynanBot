@@ -117,6 +117,7 @@ from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInt
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
@@ -174,8 +175,6 @@ from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
-from src.users.tts.stub.stubTtsChatterBoosterPackParser import StubTtsChatterBoosterPackParser
-from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
@@ -394,7 +393,9 @@ from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMap
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
+from src.users.tts.stub.stubTtsChatterBoosterPackParser import StubTtsChatterBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
+from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -469,8 +470,13 @@ match generalSettingsSnapshot.requireDatabaseType():
 networkClientProvider: NetworkClientProvider
 match generalSettingsSnapshot.requireNetworkClientType():
     case NetworkClientType.AIOHTTP:
+        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+            eventLoop = eventLoop
+        )
+
         networkClientProvider = AioHttpClientProvider(
             eventLoop = eventLoop,
+            cookieJarProvider = aioHttpCookieJarProvider,
             timber = timber
         )
 

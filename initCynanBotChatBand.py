@@ -69,6 +69,7 @@ from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInt
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
@@ -246,8 +247,13 @@ match generalSettingsSnapshot.requireDatabaseType():
 networkClientProvider: NetworkClientProvider
 match generalSettingsSnapshot.requireNetworkClientType():
     case NetworkClientType.AIOHTTP:
+        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+            eventLoop = eventLoop
+        )
+
         networkClientProvider = AioHttpClientProvider(
             eventLoop = eventLoop,
+            cookieJarProvider = aioHttpCookieJarProvider,
             timber = timber
         )
 
