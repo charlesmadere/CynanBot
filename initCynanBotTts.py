@@ -20,13 +20,13 @@ from src.beanStats.beanStatsPresenter import BeanStatsPresenter
 from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
+from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
-from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
 from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -320,6 +320,8 @@ from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJso
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
+from src.users.ttsChatters.ttsChatterBoosterPackParser import TtsChatterBoosterPackParser
+from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -500,6 +502,8 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
+streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
 timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
 
 ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
@@ -510,6 +514,11 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
+ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
+    ttsJsonMapper = ttsJsonMapper,
+    streamElementsJsonParser = streamElementsJsonParser
+)
+
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
@@ -518,6 +527,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
+    ttsChatterBoosterPackParser = ttsChatterBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper
 )
 
@@ -1070,20 +1080,19 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None
 )
 
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
-if mostRecentAnivMessageRepository is not None:
-    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
-        anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-        anivSettingsRepository = anivSettingsRepository,
-        anivUserIdProvider = anivUserIdProvider,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-        timber = timber,
-        timeZoneRepository = timeZoneRepository,
-        trollmojiHelper = trollmojiHelper,
-        twitchHandleProvider = authRepository,
-        twitchTimeoutHelper = twitchTimeoutHelper,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils
-    )
+mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+    anivSettingsRepository = anivSettingsRepository,
+    anivUserIdProvider = anivUserIdProvider,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchHandleProvider = authRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils
+)
 
 
 ##########################################
@@ -1112,8 +1121,7 @@ crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdCon
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchUtils = twitchUtils
+    timeZoneRepository = timeZoneRepository
 )
 
 bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
@@ -1284,11 +1292,10 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
 )
 
 saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
-if mostRecentAnivMessageRepository is not None:
-    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-        anivUserIdProvider = anivUserIdProvider,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
-    )
+saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+    anivUserIdProvider = anivUserIdProvider,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+)
 
 supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
     backingDatabase = backingDatabase,
@@ -1297,19 +1304,16 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
 )
 
 supStreamerChatAction: SupStreamerChatAction | None = None
-if streamAlertsManager is not None:
-    supStreamerChatAction = SupStreamerChatAction(
-        streamAlertsManager = streamAlertsManager,
-        supStreamerRepository = supStreamerRepository,
-        timber = timber,
-        timeZoneRepository = timeZoneRepository
-    )
+supStreamerChatAction = SupStreamerChatAction(
+    streamAlertsManager = streamAlertsManager,
+    supStreamerRepository = supStreamerRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
 
-ttsChattersChatAction: TtsChattersChatAction | None = None
-if streamAlertsManager is not None:
-    ttsChattersChatAction = TtsChattersChatAction(
-        streamAlertsManager = streamAlertsManager
-    )
+ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
+    streamAlertsManager = streamAlertsManager
+)
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,

@@ -171,7 +171,9 @@ from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMap
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
+from src.users.tts.stub.stubTtsChatterBoosterPackParser import StubTtsChatterBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
+from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -360,6 +362,8 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
+ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = StubTtsChatterBoosterPackParser()
+
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
@@ -368,6 +372,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
+    ttsChatterBoosterPackParser = ttsChatterBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper
 )
 

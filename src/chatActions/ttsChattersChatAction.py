@@ -4,6 +4,7 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
+from ..streamElements.models.streamElementsVoice import StreamElementsVoice
 from ..tts.ttsEvent import TtsEvent
 from ..tts.ttsProvider import TtsProvider
 from ..twitch.configuration.twitchMessage import TwitchMessage
@@ -42,22 +43,41 @@ class TtsChattersChatAction(AbsChatAction):
         if boosterPacks is None or len(boosterPacks) == 0:
             return False
 
-        boosterPack = boosterPacks.get(message.getTwitchChannelName(), None)
+        boosterPack = boosterPacks.get(message.getAuthorName().lower(), None)
         if boosterPack is None:
             return False
+
+
+        voice: StreamElementsVoice | str
+        voice = ''
+        match boosterPack.ttsProvider:
+            case TtsProvider.STREAM_ELEMENTS:
+                if not isinstance(boosterPack.voice, StreamElementsVoice):
+                    raise TypeError(f'boosterPack.voice argument is malformed: \"{boosterPack.voice}\"')
+                if boosterPack.voice is None:
+                    voice = ''
+                else:
+                    voice = f'{boosterPack.voice.humanName}: '
+            case TtsProvider.TTS_MONSTER:
+                if not utils.isValidStr(boosterPack.voice):
+                    raise TypeError(f'boosterPack.voice argument is malformed: \"{boosterPack.voice}\"')
+                voice = f'{boosterPack.voice}: '
+            case TtsProvider.DEC_TALK:
+                if isinstance(boosterPack.voice, str) and len(boosterPack.voice) == 5:
+                    voice = f'{boosterPack.voice} '
 
         streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                message = f'{boosterPack.voice.humanName}: {chatMessage}',
+                message = f'{voice}{chatMessage}',
                 twitchChannel = user.getHandle(),
                 twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),
                 userName = message.getAuthorName(),
                 donation = None,
-                provider = TtsProvider.STREAM_ELEMENTS,
+                provider = boosterPack.ttsProvider,
                 raidInfo = None
             )
         ))

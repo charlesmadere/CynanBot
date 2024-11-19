@@ -174,6 +174,8 @@ from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
+from src.users.tts.stub.stubTtsChatterBoosterPackParser import StubTtsChatterBoosterPackParser
+from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
@@ -576,6 +578,8 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
+ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = StubTtsChatterBoosterPackParser()
+
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
@@ -584,6 +588,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
+    ttsChatterBoosterPackParser = ttsChatterBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper
 )
 

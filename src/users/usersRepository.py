@@ -19,7 +19,9 @@ from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from .tts.ttsChatterBoosterPack import TtsChatterBoosterPack
+from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
+from .ttsChatters.ttsChatterBoosterPackParser import TtsChatterBoosterPackParser
+from .ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
@@ -27,8 +29,6 @@ from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from ..streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
-from ..streamElements.models.streamElementsVoice import StreamElementsVoice
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.ttsProvider import TtsProvider
@@ -45,6 +45,7 @@ class UsersRepository(UsersRepositoryInterface):
         timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
+        ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
         usersFile: str = 'usersRepository.json'
     ):
@@ -62,6 +63,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsBoosterPackParser, TtsBoosterPackParserInterface):
             raise TypeError(f'ttsBoosterPackParser argument is malformed: \"{ttsBoosterPackParser}\"')
+        elif not isinstance(ttsChatterBoosterPackParser, TtsChatterBoosterPackParserInterface):
+            raise TypeError(f'ttsChatterBoosterPackParser argument is malformed: \"{ttsChatterBoosterPackParser}\"')
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif not utils.isValidStr(usersFile):
@@ -74,6 +77,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsBoosterPackParser: TtsBoosterPackParserInterface = ttsBoosterPackParser
+        self.__ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = ttsChatterBoosterPackParser
         self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
         self.__usersFile: str = usersFile
 
@@ -321,7 +325,7 @@ class UsersRepository(UsersRepositoryInterface):
         ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = None
         if isTtsChattersEnabled:
             ttsChatterBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsChatterBoosterPacks')
-            ttsChatterBoosterPacks = self.__parseTtsChatterBoosterPacksFromJson(ttsChatterBoosterPacksJson)
+            ttsChatterBoosterPacks = self.__ttsChatterBoosterPackParser.parseBoosterPacks(defaultTtsProvider, ttsChatterBoosterPacksJson)
 
         user = User(
             areBeanChancesEnabled = areBeanChancesEnabled,
@@ -557,31 +561,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
 
         userJson[jsonConstant.jsonKey] = value
-
-    def __parseTtsChatterBoosterPacksFromJson(
-        self,
-        jsonList: list[dict[str, Any]] | None
-    ) -> frozendict[str, TtsChatterBoosterPack] | None:
-        if not isinstance(jsonList, list) or len(jsonList) == 0:
-            return None
-
-        boosterPacks: dict[str, TtsChatterBoosterPack] = dict()
-
-        for ttsChatterBoosterPackJson in jsonList:
-            userName = utils.getStrFromDict(ttsChatterBoosterPackJson, 'userName')
-            voiceStr = utils.getStrFromDict(ttsChatterBoosterPackJson, 'voice')
-
-            if not utils.isValidStr(voiceStr):
-                return None
-
-            voice: StreamElementsVoice = StreamElementsJsonParser().requireVoice(voiceStr)
-
-            boosterPacks[userName] = TtsChatterBoosterPack(
-                userName = userName,
-                voice = voice
-            )
-
-        return frozendict(boosterPacks)
 
     def __parseCutenessBoosterPacksFromJson(
         self,

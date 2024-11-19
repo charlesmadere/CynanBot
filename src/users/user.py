@@ -8,7 +8,7 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
-from .tts.ttsChatterBoosterPack import TtsChatterBoosterPack
+from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
 from .userInterface import UserInterface
 from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..misc import utils as utils
