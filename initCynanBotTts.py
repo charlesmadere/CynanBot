@@ -20,13 +20,13 @@ from src.beanStats.beanStatsPresenter import BeanStatsPresenter
 from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
-from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
+from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
 from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -114,6 +114,7 @@ from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInt
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
@@ -394,8 +395,13 @@ match generalSettingsSnapshot.requireDatabaseType():
 networkClientProvider: NetworkClientProvider
 match generalSettingsSnapshot.requireNetworkClientType():
     case NetworkClientType.AIOHTTP:
+        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+            eventLoop = eventLoop
+        )
+
         networkClientProvider = AioHttpClientProvider(
             eventLoop = eventLoop,
+            cookieJarProvider = aioHttpCookieJarProvider,
             timber = timber
         )
 

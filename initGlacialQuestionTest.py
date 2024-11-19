@@ -53,6 +53,8 @@ from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsoc
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
+from .src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
@@ -119,8 +121,13 @@ match generalSettingsSnapshot.requireDatabaseType():
 networkClientProvider: NetworkClientProvider
 match generalSettingsSnapshot.requireNetworkClientType():
     case NetworkClientType.AIOHTTP:
+        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+            eventLoop = eventLoop
+        )
+
         networkClientProvider = AioHttpClientProvider(
             eventLoop = eventLoop,
+            cookieJarProvider = aioHttpCookieJarProvider,
             timber = timber
         )
 
