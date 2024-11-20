@@ -26,6 +26,10 @@ class CrowdControlSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getMessageCooldownSeconds(self) -> float:
+        pass
+
+    @abstractmethod
     async def getMinGigaShuffleCount(self) -> int:
         pass
 

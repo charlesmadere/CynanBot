@@ -10,6 +10,7 @@ from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdC
 class TestCrowdControlIdGenerator:
 
     actionIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+    messageIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
     idGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
 
     @pytest.mark.asyncio
@@ -18,6 +19,13 @@ class TestCrowdControlIdGenerator:
             actionId = await self.idGenerator.generateActionId()
             assert isinstance(actionId, str)
             assert self.actionIdRegEx.fullmatch(actionId) is not None
+
+    @pytest.mark.asyncio
+    async def test_generateMessageId(self):
+        for _ in range(100):
+            messageId = await self.idGenerator.generateMessageId()
+            assert isinstance(messageId, str)
+            assert self.messageIdRegEx.fullmatch(messageId) is not None
 
     def test_sanity(self):
         assert self.idGenerator is not None
