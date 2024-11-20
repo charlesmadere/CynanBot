@@ -102,6 +102,7 @@ from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from .crowdControl.message.crowdControlMessageHandler import CrowdControlMessageHandler
 from .crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
@@ -277,6 +278,7 @@ class CynanBot(
         crowdControlActionHandler: CrowdControlActionHandler | None,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
         crowdControlMachine: CrowdControlMachineInterface | None,
+        crowdControlMessageHandler: CrowdControlMessageHandler | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface | None,
         cutenessPresenter: CutenessPresenterInterface | None,
@@ -434,6 +436,8 @@ class CynanBot(
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
         elif crowdControlMachine is not None and not isinstance(crowdControlMachine, CrowdControlMachineInterface):
             raise TypeError(f'crowdControlMachine argument is malformed: \"{crowdControlMachine}\"')
+        elif crowdControlMessageHandler is not None and not isinstance(crowdControlMessageHandler, CrowdControlMessageHandler):
+            raise TypeError(f'crowdControlMessageHandler argument is malformed: \"{crowdControlMessageHandler}\"')
         elif crowdControlSettingsRepository is not None and not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif crowdControlUserInputUtils is not None and not isinstance(crowdControlUserInputUtils, CrowdControlUserInputUtilsInterface):
@@ -612,6 +616,7 @@ class CynanBot(
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__crowdControlActionHandler: CrowdControlActionHandler | None = crowdControlActionHandler
         self.__crowdControlMachine: CrowdControlMachineInterface | None = crowdControlMachine
+        self.__crowdControlMessageHandler: CrowdControlMessageHandler | None = crowdControlMessageHandler
         self.__cutenessPresenter: CutenessPresenterInterface | None = cutenessPresenter
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
@@ -990,6 +995,11 @@ class CynanBot(
 
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
+
+            if self.__crowdControlMessageHandler is not None:
+                self.__crowdControlMessageHandler.setTwitchChannelProvider(self)
+                self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageHandler)
+
             self.__crowdControlMachine.start()
 
         if self.__timeoutActionHelper is not None:
