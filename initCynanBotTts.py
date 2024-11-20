@@ -1105,19 +1105,20 @@ mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
 ## Crowd Control initialization section ##
 ##########################################
 
+crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
+
 crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
     settingsJsonReader = JsonFileReader('crowdControlSettingsRepository.json')
 )
 
 crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
+    crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
-
-crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
 
 crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils()
 
