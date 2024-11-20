@@ -160,6 +160,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         try:
             mediaList = vlc.MediaList()
+            if not isinstance(mediaList, vlc.MediaList):
+                return False
+
             mediaList.lock()
 
             for filePath in frozenFilePaths:

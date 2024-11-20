@@ -1172,6 +1172,9 @@ class CynanBot(
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
 
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+
         message = await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
             numberOfGamesRemoved = event.numberOfGamesRemoved
         )
@@ -1185,6 +1188,9 @@ class CynanBot(
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+            
         message = await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,
@@ -1214,6 +1220,9 @@ class CynanBot(
     async def __handleGameOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
 
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
@@ -1223,6 +1232,9 @@ class CynanBot(
         ))
 
     async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+
         message = await self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
@@ -1240,6 +1252,9 @@ class CynanBot(
         )
 
     async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+
         message = await self.__triviaUtils.getInvalidAnswerInputPrompt(
             question = event.triviaQuestion,
             emote = event.emote,
@@ -1259,6 +1274,9 @@ class CynanBot(
         twitchChannel = await self.__getChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = event.triviaQuestion,
             delaySeconds = event.secondsToLive,
@@ -1273,6 +1291,9 @@ class CynanBot(
         twitchChannel = await self.__getChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
+
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
             triviaQuestion = event.triviaQuestion,
             delaySeconds = event.secondsToLive,
@@ -1285,6 +1306,9 @@ class CynanBot(
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
+
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
 
         message = await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.triviaQuestion,
@@ -1322,6 +1346,9 @@ class CynanBot(
     async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
         twitchChannel = await self.__getChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
+
+        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
+            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.triviaQuestion,

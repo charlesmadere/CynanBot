@@ -140,7 +140,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
         chatterUserId: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TimeoutActionHistory:
+    ) -> TimeoutActionHistory | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannel):

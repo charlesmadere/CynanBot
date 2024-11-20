@@ -15,7 +15,7 @@ class TwitchIoAuthor(TwitchAuthor):
         self.__author: Union[Chatter, PartialChatter] = author
 
     def getDisplayName(self) -> str:
-        displayName: str | None = self.__author.display_name
+        displayName: str | None = self.__author.display_name # type: ignore
 
         if not isinstance(displayName, str):
             raise RuntimeError(f'displayName value is missing! ({displayName=}) ({self.__author=})')
@@ -23,7 +23,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return displayName
 
     def getId(self) -> str:
-        authorId: str | None = self.__author.id
+        authorId: str | None = self.__author.id # type: ignore
 
         if not isinstance(authorId, str):
             raise RuntimeError(f'authorId value is missing! ({authorId=}) ({self.__author=})')
@@ -39,7 +39,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return authorName
 
     def isMod(self) -> bool:
-        isMod: bool | None = self.__author.is_mod
+        isMod: bool | None = self.__author.is_mod # type: ignore
 
         if not isinstance(isMod, bool):
             raise RuntimeError(f'isMod value is missing! ({isMod=}) ({self.__author=})')
@@ -47,7 +47,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return isMod
 
     def isVip(self) -> bool:
-        isVip: bool | None = self.__author.is_vip
+        isVip: bool | None = self.__author.is_vip # type: ignore
 
         if not isinstance(isVip, bool):
             raise RuntimeError(f'isVip value is missing! ({isVip=}) ({self.__author=})')

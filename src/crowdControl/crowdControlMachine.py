@@ -180,7 +180,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self.__actionHandler = actionHandler
 
     def setMessageListener(self, messageListener: CrowdControlMessageListener | None):
-        if messageListener is not None and not isinstance(messageListener):
+        if messageListener is not None and not isinstance(messageListener, CrowdControlMessageListener):
             raise TypeError(f'messageListener argument is malformed: \"{messageListener}\"')
 
         self.__messageListener = messageListener

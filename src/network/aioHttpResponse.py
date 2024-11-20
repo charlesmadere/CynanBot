@@ -101,6 +101,9 @@ class AioHttpResponse(NetworkResponse):
 
         try:
             rawBytes = await self.read()
+            if rawBytes is None:
+                return None
+
             return xmltodict.parse(rawBytes)
         except Exception as e:
             self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into XML ({self}): {e}', e, traceback.format_exc())
