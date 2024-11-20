@@ -1738,6 +1738,7 @@ cynanBot = CynanBot(
     crowdControlActionHandler = None,
     crowdControlIdGenerator = None,
     crowdControlMachine = None,
+    crowdControlMessageHandler = None,
     crowdControlSettingsRepository = None,
     crowdControlUserInputUtils = None,
     cutenessPresenter = cutenessPresenter,

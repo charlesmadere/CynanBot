@@ -12,6 +12,7 @@ from .crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .exceptions import ActionHandlerProcessCantBeConnectedToException, ActionHandlerProcessNotFoundException
+from .idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 from .message.crowdControlMessage import CrowdControlMessage
 from .message.crowdControlMessageListener import CrowdControlMessageListener
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -27,6 +28,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        crowdControlIdGenerator: CrowdControlIdGeneratorInterface,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface,
         immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
         timber: TimberInterface,
@@ -35,6 +37,8 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
+            raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
         elif not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
@@ -49,6 +53,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
         self.__crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = crowdControlSettingsRepository
         self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
         self.__timber: TimberInterface = timber
@@ -59,17 +64,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self.__actionHandler: CrowdControlActionHandler | None = None
         self.__messageListener: CrowdControlMessageListener | None = None
         self.__actionQueue: SimpleQueue[CrowdControlAction] = SimpleQueue()
-
-    async def __announceGigaShuffle(self, action: CrowdControlAction):
-        if not isinstance(action, GameShuffleCrowdControlAction):
-            return
-
-        startOfGigaShuffleSize = action.startOfGigaShuffleSize
-
-        if startOfGigaShuffleSize is None or startOfGigaShuffleSize < 1:
-            return
-
-        # TODO
+        self.__messageQueue: SimpleQueue[CrowdControlMessage] = SimpleQueue()
 
     async def __handleAction(
         self,
@@ -116,11 +111,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         else:
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
-        if handleResult is CrowdControlActionHandleResult.OK:
-            await self.__announceGigaShuffle(action)
-            return CrowdControlActionHandleResult.OK
+        if handleResult is not CrowdControlActionHandleResult.OK:
+            self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}) ({handleResult=})')
 
-        self.__timber.log('CrowdControlMachine', f'Failed to handle action ({action=}) ({handleResult=})')
         return handleResult
 
     async def __handleButtonPressAction(
@@ -193,6 +186,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self.__isStarted = True
         self.__timber.log('CrowdControlMachine', 'Starting CrowdControlMachine...')
         self.__backgroundTaskHelper.createTask(self.__startActionLoop())
+        self.__backgroundTaskHelper.createTask(self.__startMessageLoop())
 
     async def __startActionLoop(self):
         while True:
@@ -213,11 +207,38 @@ class CrowdControlMachine(CrowdControlMachineInterface):
                         actionHandler = actionHandler
                     )
 
-                    if result is CrowdControlActionHandleResult.RETRY:
-                        self.submitAction(action)
+                    match result:
+                        case CrowdControlActionHandleResult.OK:
+                            await self.__submitMessage(action)
+
+                        case CrowdControlActionHandleResult.RETRY:
+                            self.submitAction(action)
+
+                        case _:
+                            # this case is intentionally ignored
+                            pass
 
             actionCooldownSeconds = await self.__crowdControlSettingsRepository.getActionCooldownSeconds()
             await asyncio.sleep(actionCooldownSeconds)
+
+    async def __startMessageLoop(self):
+        while True:
+            messageListener = self.__messageListener
+
+            if messageListener is not None:
+                message: CrowdControlMessage | None = None
+
+                try:
+                    if not self.__messageQueue.empty():
+                        message = self.__messageQueue.get_nowait()
+                except queue.Empty as e:
+                    self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing message (queue size: {self.__messageQueue.qsize()}) ({message=}): {e}', e, traceback.format_exc())
+
+                if message is not None:
+                    await messageListener.onNewCrowdControlMessage(message)
+
+            messageCooldownSeconds = await self.__crowdControlSettingsRepository.getMessageCooldownSeconds()
+            await asyncio.sleep(messageCooldownSeconds)
 
     def submitAction(self, action: CrowdControlAction):
         if not isinstance(action, CrowdControlAction):
@@ -228,8 +249,21 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         except queue.Full as e:
             self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()}): {e}', e, traceback.format_exc())
 
-    def __submitMessage(self, message: CrowdControlMessage):
-        if not isinstance(message, CrowdControlMessage):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
+    async def __submitMessage(self, action: CrowdControlAction):
+        if not isinstance(action, CrowdControlAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        # TODO
+        if not isinstance(action, GameShuffleCrowdControlAction) or action.startOfGigaShuffleSize is None or action.startOfGigaShuffleSize <= 1:
+            # this is kind of stupid but oh well it's the best/simplest way to do this for now, as I'm only currently
+            # intending to send a message to the chat if we're currently processing a giga shuffle
+            return
+
+        message = CrowdControlMessage(
+            originatingAction = action,
+            messageId = await self.__crowdControlIdGenerator.generateMessageId()
+        )
+
+        try:
+            self.__messageQueue.put_nowait(message)
+        except queue.Full as e:
+            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new message ({message}) into the giga shuffle message queue (queue size: {self.__messageQueue.qsize()}): {e}', e, traceback.format_exc())

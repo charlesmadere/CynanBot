@@ -1,11 +1,17 @@
 from dataclasses import dataclass
 
+from ..actions.crowdControlAction import CrowdControlAction
+
 
 @dataclass(frozen = True)
 class CrowdControlMessage:
-    chatterUserId: str
-    chatterUserName: str
-    message: str
-    twitchChannel: str
-    twitchChannelId: str
-    twitchChatMessageId: str | None
+    originatingAction: CrowdControlAction
+    messageId: str
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.originatingAction.twitchChannel
+
+    @property
+    def twitchChatMessageId(self) -> str | None:
+        return self.originatingAction.twitchChatMessageId
