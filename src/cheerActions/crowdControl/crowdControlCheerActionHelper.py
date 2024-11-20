@@ -61,7 +61,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         twitchChatMessageId: str | None
     ) -> Collection[GameShuffleCrowdControlAction]:
         dateTime = datetime.now(self.__timeZoneRepository.getDefault())
-        actions: FrozenList[CrowdControlGameShuffleCheerAction] = FrozenList()
+        actions: FrozenList[GameShuffleCrowdControlAction] = FrozenList()
 
         gigaShuffleChance = action.gigaShuffleChance
         if await self.__crowdControlSettingsRepository.isGigaShuffleEnabled() and utils.isValidInt(gigaShuffleChance) and gigaShuffleChance > 0:

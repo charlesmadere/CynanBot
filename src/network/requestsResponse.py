@@ -84,7 +84,10 @@ class RequestsResponse(NetworkResponse):
         self.__requireNotClosed()
 
         try:
-            return xmltodict.parse(await self.read())
+            rawBytes = await self.read()
+            if rawBytes is None:
+                return None
+            return xmltodict.parse(rawBytes)
         except Exception as e:
             self.__timber.log('RequestsResponse', f'Unable to decode response into XML for url \"{self.__url}\"', e)
             return None

@@ -59,7 +59,7 @@ class TestTtsMonsterWebsiteVoiceMapper:
 
         with pytest.raises(TypeError):
             # noinspection PyTypeChecker
-            result = await self.mapper.fromApiVoiceId(None)
+            result = await self.mapper.fromApiVoiceId(None) # type: ignore
 
         assert result is None
 
@@ -141,7 +141,7 @@ class TestTtsMonsterWebsiteVoiceMapper:
 
         with pytest.raises(TypeError):
             # noinspection PyTypeChecker
-            result = await self.mapper.fromWebsiteName(None)
+            result = await self.mapper.fromWebsiteName(None) # type: ignore
 
         assert result is None
 

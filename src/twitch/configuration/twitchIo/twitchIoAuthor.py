@@ -15,6 +15,9 @@ class TwitchIoAuthor(TwitchAuthor):
         self.__author: Union[Chatter, PartialChatter] = author
 
     def getDisplayName(self) -> str:
+        if isinstance(self.__author, PartialChatter):
+            raise TypeError(f'displayName property is not available for type ({PartialChatter=}) ({self.__author=})')
+
         displayName: str | None = self.__author.display_name
 
         if not isinstance(displayName, str):
@@ -23,6 +26,9 @@ class TwitchIoAuthor(TwitchAuthor):
         return displayName
 
     def getId(self) -> str:
+        if isinstance(self.__author, PartialChatter):
+            raise TypeError(f'id property is not available for type ({PartialChatter=}) ({self.__author=})')
+
         authorId: str | None = self.__author.id
 
         if not isinstance(authorId, str):
@@ -39,6 +45,9 @@ class TwitchIoAuthor(TwitchAuthor):
         return authorName
 
     def isMod(self) -> bool:
+        if isinstance(self.__author, PartialChatter):
+            raise TypeError(f'isMod property is not available for type ({PartialChatter=}) ({self.__author=})')
+
         isMod: bool | None = self.__author.is_mod
 
         if not isinstance(isMod, bool):
@@ -47,6 +56,9 @@ class TwitchIoAuthor(TwitchAuthor):
         return isMod
 
     def isVip(self) -> bool:
+        if isinstance(self.__author, PartialChatter):
+            raise TypeError(f'isVip property is not available for type ({PartialChatter=}) ({self.__author=})')
+
         isVip: bool | None = self.__author.is_vip
 
         if not isinstance(isVip, bool):

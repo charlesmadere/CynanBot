@@ -14,6 +14,8 @@ from soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInt
 from soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
 from soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
+from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
+from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from storage.jsonStaticReader import JsonStaticReader
 from storage.linesStaticReader import LinesStaticReader
 from systemCommandHelper.systemCommandHelper import SystemCommandHelper
@@ -45,6 +47,11 @@ contentScanner: ContentScannerInterface = ContentScanner(
     timber = timber
 )
 
+chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface = ChatBandInstrumentSoundsRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
+
 anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     contentScanner = contentScanner,
     timber = timber
@@ -69,6 +76,7 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
 
 soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(
     backgroundTaskHelper = backgroundTaskHelper,
+    chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
