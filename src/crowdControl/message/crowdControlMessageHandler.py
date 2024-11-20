@@ -41,7 +41,7 @@ class CrowdControlMessageHandler(CrowdControlMessageListener):
             replyMessageId = crowdControlMessage.twitchChatMessageId
         )
 
-    async def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
