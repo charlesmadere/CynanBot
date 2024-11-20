@@ -15,10 +15,7 @@ class TwitchIoAuthor(TwitchAuthor):
         self.__author: Union[Chatter, PartialChatter] = author
 
     def getDisplayName(self) -> str:
-        if isinstance(self.__author, PartialChatter):
-            raise TypeError(f'displayName property is not available for type ({PartialChatter=}) ({self.__author=})')
-
-        displayName: str | None = self.__author.display_name
+        displayName: str | None = self.__author.display_name # type: ignore
 
         if not isinstance(displayName, str):
             raise RuntimeError(f'displayName value is missing! ({displayName=}) ({self.__author=})')
@@ -26,10 +23,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return displayName
 
     def getId(self) -> str:
-        if isinstance(self.__author, PartialChatter):
-            raise TypeError(f'id property is not available for type ({PartialChatter=}) ({self.__author=})')
-
-        authorId: str | None = self.__author.id
+        authorId: str | None = self.__author.id # type: ignore
 
         if not isinstance(authorId, str):
             raise RuntimeError(f'authorId value is missing! ({authorId=}) ({self.__author=})')
@@ -45,10 +39,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return authorName
 
     def isMod(self) -> bool:
-        if isinstance(self.__author, PartialChatter):
-            raise TypeError(f'isMod property is not available for type ({PartialChatter=}) ({self.__author=})')
-
-        isMod: bool | None = self.__author.is_mod
+        isMod: bool | None = self.__author.is_mod # type: ignore
 
         if not isinstance(isMod, bool):
             raise RuntimeError(f'isMod value is missing! ({isMod=}) ({self.__author=})')
@@ -56,10 +47,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return isMod
 
     def isVip(self) -> bool:
-        if isinstance(self.__author, PartialChatter):
-            raise TypeError(f'isVip property is not available for type ({PartialChatter=}) ({self.__author=})')
-
-        isVip: bool | None = self.__author.is_vip
+        isVip: bool | None = self.__author.is_vip # type: ignore
 
         if not isinstance(isVip, bool):
             raise RuntimeError(f'isVip value is missing! ({isVip=}) ({self.__author=})')
