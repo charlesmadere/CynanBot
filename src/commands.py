@@ -173,7 +173,7 @@ class CynanSourceCommand(AbsCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(minutes = 1)
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -191,13 +191,15 @@ class CynanSourceCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.isCynanSourceEnabled():
-            return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
+        if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
             return
 
-        await self.__twitchUtils.safeSend(ctx, 'ⓘ My source code is available here: https://github.com/charlesmadere/cynanbot')
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = 'ⓘ My source code is available here: https://github.com/charlesmadere/cynanbot',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 

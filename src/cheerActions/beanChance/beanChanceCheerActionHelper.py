@@ -101,9 +101,6 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not user.areCheerActionsEnabled or not user.areBeanChancesEnabled:
-            return False
-
         beanAction: BeanChanceCheerAction | None = None
 
         for action in actions:

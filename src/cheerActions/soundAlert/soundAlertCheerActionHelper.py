@@ -70,7 +70,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.areCheerActionsEnabled or not user.areSoundAlertsEnabled:
+        if not user.areSoundAlertsEnabled:
             return False
 
         soundAlertAction: SoundAlertCheerAction | None = None
