@@ -77,9 +77,6 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.areCheerActionsEnabled:
-            return False
-
         moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
         )

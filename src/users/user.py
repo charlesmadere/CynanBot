@@ -19,11 +19,8 @@ class User(UserInterface):
 
     def __init__(
         self,
-        areBeanChancesEnabled: bool,
-        areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
-        areTimeoutActionsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
@@ -34,7 +31,6 @@ class User(UserInterface):
         isChatLoggingEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
-        isCynanSourceEnabled: bool,
         isDeerForceMessageEnabled: bool,
         isEnabled: bool,
         isEyesMessageEnabled: bool,
@@ -48,9 +44,7 @@ class User(UserInterface):
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
-        isRaidLinkMessagingEnabled: bool,
         isRatJamMessageEnabled: bool,
-        isRewardIdPrintingEnabled: bool,
         isRoachMessageEnabled: bool,
         isSchubertWalkMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
@@ -94,6 +88,7 @@ class User(UserInterface):
         triviaGameShinyMultiplier: int | None,
         waitForSuperTriviaAnswerDelay: int | None,
         waitForTriviaAnswerDelay: int | None,
+        blueSkyUrl: str | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
         crowdControlButtonPressRewardId: str | None,
@@ -123,16 +118,10 @@ class User(UserInterface):
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
         ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None,
     ):
-        if not utils.isValidBool(areBeanChancesEnabled):
-            raise TypeError(f'areBeanChancesEnabled argument is malformed: \"{areBeanChancesEnabled}\"')
-        elif not utils.isValidBool(areCheerActionsEnabled):
-            raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
-        elif not utils.isValidBool(areRecurringActionsEnabled):
+        if not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
-        elif not utils.isValidBool(areTimeoutActionsEnabled):
-            raise TypeError(f'areTimeoutActionsEnabled argument is malformed: \"{areTimeoutActionsEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isAnivMessageCopyTimeoutChatReportingEnabled):
@@ -153,8 +142,6 @@ class User(UserInterface):
             raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
-        elif not utils.isValidBool(isCynanSourceEnabled):
-            raise TypeError(f'isCynanSourceEnabled argument is malformed: \"{isCynanSourceEnabled}\"')
         elif not utils.isValidBool(isDeerForceMessageEnabled):
             raise TypeError(f'isDeerForceMessageEnabled argument is malformed: \"{isDeerForceMessageEnabled}\"')
         elif not utils.isValidBool(isEnabled):
@@ -181,12 +168,8 @@ class User(UserInterface):
             raise TypeError(f'isPokepediaEnabled argument is malformed: \"{isPokepediaEnabled}\"')
         elif not utils.isValidBool(isRaceEnabled):
             raise TypeError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
-        elif not utils.isValidBool(isRaidLinkMessagingEnabled):
-            raise TypeError(f'isRaidLinkMessagingEnabled argument is malformed: \"{isRaidLinkMessagingEnabled}\"')
         elif not utils.isValidBool(isRatJamMessageEnabled):
             raise TypeError(f'isRatJamMessageEnabled argument is malformed: \"{isRatJamMessageEnabled}\"')
-        elif not utils.isValidBool(isRewardIdPrintingEnabled):
-            raise TypeError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
         elif not utils.isValidBool(isRoachMessageEnabled):
             raise TypeError(f'isRoachMessageEnabled argument is malformed: \"{isRoachMessageEnabled}\"')
         elif not utils.isValidBool(isSchubertWalkMessageEnabled):
@@ -271,6 +254,8 @@ class User(UserInterface):
             raise TypeError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidInt(waitForTriviaAnswerDelay):
             raise TypeError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
+        elif blueSkyUrl is not None and not isinstance(blueSkyUrl, str):
+            raise TypeError(f'blueSkyUrl argument is malformed: \"{blueSkyUrl}\"')
         elif casualGamePollRewardId is not None and not isinstance(casualGamePollRewardId, str):
             raise TypeError(f'casualGamePollRewardId argument is malformed: \"{casualGamePollRewardId}\"')
         elif casualGamePollUrl is not None and not isinstance(casualGamePollUrl, str):
@@ -326,11 +311,8 @@ class User(UserInterface):
         elif ttsChatterBoosterPacks is not None and not isinstance(ttsChatterBoosterPacks, frozendict):
             raise TypeError(f'ttsChatterBoosterPacks argument is malformed: \"{ttsChatterBoosterPacks}\"')
 
-        self.__areBeanChancesEnabled: bool = areBeanChancesEnabled
-        self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
-        self.__areTimeoutActionsEnabled: bool = areTimeoutActionsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
@@ -341,7 +323,6 @@ class User(UserInterface):
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
-        self.__isCynanSourceEnabled: bool = isCynanSourceEnabled
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
         self.__isEnabled: bool = isEnabled
         self.__isEyesMessageEnabled: bool = isEyesMessageEnabled
@@ -355,9 +336,7 @@ class User(UserInterface):
         self.__isPkmnEnabled: bool = isPkmnEnabled
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
         self.__isRaceEnabled: bool = isRaceEnabled
-        self.__isRaidLinkMessagingEnabled: bool = isRaidLinkMessagingEnabled
         self.__isRatJamMessageEnabled: bool = isRatJamMessageEnabled
-        self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
         self.__isRoachMessageEnabled: bool = isRoachMessageEnabled
         self.__isSchubertWalkMessageEnabled: bool = isSchubertWalkMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
@@ -401,6 +380,7 @@ class User(UserInterface):
         self.__triviaGameShinyMultiplier: int | None = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: int | None = waitForSuperTriviaAnswerDelay
+        self.__blueSkyUrl: str | None = blueSkyUrl
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
@@ -447,14 +427,6 @@ class User(UserInterface):
         return self.__anivMessageCopyTimeoutProbability
 
     @property
-    def areBeanChancesEnabled(self) -> bool:
-        return self.__areBeanChancesEnabled
-
-    @property
-    def areCheerActionsEnabled(self) -> bool:
-        return self.__areCheerActionsEnabled
-
-    @property
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
 
@@ -463,8 +435,8 @@ class User(UserInterface):
         return self.__areSoundAlertsEnabled
 
     @property
-    def areTimeoutActionsEnabled(self) -> bool:
-        return self.__areTimeoutActionsEnabled
+    def blueSkyUrl(self) -> str | None:
+        return self.__blueSkyUrl
 
     @property
     def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
@@ -624,9 +596,11 @@ class User(UserInterface):
     def isChannelPredictionChartEnabled(self) -> bool:
         return self.__isChannelPredictionChartEnabled
 
+    @property
     def isChatBandEnabled(self) -> bool:
         return self.__isChatBandEnabled
 
+    @property
     def isChatLoggingEnabled(self) -> bool:
         return self.__isChatLoggingEnabled
 
@@ -636,9 +610,6 @@ class User(UserInterface):
 
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
-
-    def isCynanSourceEnabled(self) -> bool:
-        return self.__isCynanSourceEnabled
 
     def isDeerForceMessageEnabled(self) -> bool:
         return self.__isDeerForceMessageEnabled
@@ -682,14 +653,8 @@ class User(UserInterface):
     def isRaceEnabled(self) -> bool:
         return self.__isRaceEnabled
 
-    def isRaidLinkMessagingEnabled(self) -> bool:
-        return self.__isRaidLinkMessagingEnabled
-
     def isRatJamMessageEnabled(self) -> bool:
         return self.__isRatJamMessageEnabled
-
-    def isRewardIdPrintingEnabled(self) -> bool:
-        return self.__isRewardIdPrintingEnabled
 
     def isRoachMessageEnabled(self) -> bool:
         return self.__isRoachMessageEnabled

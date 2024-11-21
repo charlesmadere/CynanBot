@@ -19,9 +19,9 @@ class TestUserJsonConstants:
         result = UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey
         assert result == 'anivMessageCopyTimeoutEnabled'
 
-    def test_jsonKey_withBeanChancesEnabled(self):
-        result = UserJsonConstant.BEAN_CHANCES_ENABLED.jsonKey
-        assert result == 'beanChancesEnabled'
+    def test_jsonKey_withBlueSkyUrl(self):
+        result = UserJsonConstant.BLUE_SKY_URL.jsonKey
+        assert result == 'blueSkyUrl'
 
     def test_jsonKey_withCatJamMessageEnabled(self):
         result = UserJsonConstant.CAT_JAM_MESSAGE_ENABLED.jsonKey
@@ -66,10 +66,6 @@ class TestUserJsonConstants:
     def test_jsonKey_withSoundAlertsEnabled(self):
         result = UserJsonConstant.SOUND_ALERTS_ENABLED.jsonKey
         assert result == 'soundAlertsEnabled'
-
-    def test_jsonKey_withTimeoutActionsEnabled(self):
-        result = UserJsonConstant.TIMEOUT_ACTIONS_ENABLED.jsonKey
-        assert result == 'timeoutActionsEnabled'
 
     def test_jsonKey_withTimeZone(self):
         result = UserJsonConstant.TIMEZONE.jsonKey

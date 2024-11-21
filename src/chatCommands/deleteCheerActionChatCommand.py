@@ -50,8 +50,6 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areCheerActionsEnabled:
-            return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2 or not utils.strContainsAlphanumericCharacters(splits[1]):
