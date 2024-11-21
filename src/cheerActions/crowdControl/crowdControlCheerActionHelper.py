@@ -130,7 +130,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not user.areCheerActionsEnabled or not user.isCrowdControlEnabled:
+        if not user.isCrowdControlEnabled:
             return False
 
         crowdControlAction: AbsCheerAction | None = None

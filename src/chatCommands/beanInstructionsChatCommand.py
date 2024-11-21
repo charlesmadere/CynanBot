@@ -35,9 +35,6 @@ class BeanInstructionsChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.areBeanChancesEnabled:
-            return
-
         cheerActions = await self.__cheerActionsRepository.getActions(
             twitchChannelId = await ctx.getTwitchChannelId()
         )

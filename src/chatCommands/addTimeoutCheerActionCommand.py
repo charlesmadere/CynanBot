@@ -44,8 +44,6 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('AddTimeoutCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areCheerActionsEnabled:
-            return
 
         wizard = await self.__cheerActionsWizard.start(
             cheerActionType = CheerActionType.TIMEOUT,

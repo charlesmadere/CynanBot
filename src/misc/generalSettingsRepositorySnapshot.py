@@ -34,20 +34,6 @@ class GeneralSettingsRepositorySnapshot:
         self.__networkJsonMapper: NetworkJsonMapperInterface = networkJsonMapper
         self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
 
-    def getEventSubPort(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
-
-    def getRaidLinkMessagingDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'raidLinkMessagingDelay', 60)
-
-    def getRefreshPubSubTokensSeconds(self) -> int:
-        refreshPubSubTokensSeconds = utils.getIntFromDict(self.__jsonContents, 'refreshPubSubTokensSeconds', 120)
-
-        if refreshPubSubTokensSeconds < 30:
-            raise ValueError(f'\"refreshPubSubTokensSeconds\" value in General Settings file is too aggressive: {refreshPubSubTokensSeconds}')
-
-        return refreshPubSubTokensSeconds
-
     def getSuperTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
 
@@ -77,15 +63,6 @@ class GeneralSettingsRepositorySnapshot:
 
     def isCatJamMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'catJamMessageEnabled', False)
-
-    def isChatBandEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'chatBandEnabled', False)
-
-    def isCommandsChatCommandEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'commandsChatCommandEnabled', True)
-
-    def isCrowdControlEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'crowdControlEnabled', False)
 
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
@@ -120,23 +97,11 @@ class GeneralSettingsRepositorySnapshot:
     def isPokepediaEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'pokepediaEnabled', True)
 
-    def isPubSubEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'pubSubEnabled', False)
-
     def isPubSubPongLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'pubSubPongLoggingEnabled', False)
 
-    def isRaidLinkMessagingEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'raidLinkMessagingEnabled', True)
-
     def isRatJamMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'ratJamMessageEnabled', False)
-
-    def isRawEventDataLoggingEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'rawEventDataLoggingEnabled', False)
-
-    def isRewardIdPrintingEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'rewardIdPrintingEnabled', False)
 
     def isRoachMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'roachMessageEnabled', False)

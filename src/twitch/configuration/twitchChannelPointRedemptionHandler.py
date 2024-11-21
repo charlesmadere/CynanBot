@@ -198,12 +198,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.areTimeoutActionsEnabled:
-            if await self.__timeoutPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
-            ):
-                return
+        if await self.__timeoutPointRedemption.handlePointRedemption(
+            twitchChannel = twitchChannel,
+            twitchChannelPointsMessage = channelPointsMessage
+        ):
+            return
 
         if user.isTriviaGameEnabled() and channelPointsMessage.rewardId == user.getTriviaGameRewardId():
             if await self.__triviaGamePointRedemption.handlePointRedemption(

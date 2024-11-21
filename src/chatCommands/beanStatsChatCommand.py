@@ -37,9 +37,6 @@ class BeanStatsChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.areBeanChancesEnabled:
-            return
-
         beanStats = await self.__beanStatsRepository.getStats(
             chatterUserId = ctx.getAuthorId(),
             chatterUserName = ctx.getAuthorName(),

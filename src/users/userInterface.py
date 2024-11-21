@@ -38,16 +38,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def areBeanChancesEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def areCheerActionsEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def areRecurringActionsEnabled(self) -> bool:
         pass
 
@@ -58,7 +48,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def areTimeoutActionsEnabled(self) -> bool:
+    def blueSkyUrl(self) -> str | None:
         pass
 
     @property
@@ -253,6 +243,12 @@ class UserInterface(ABC):
     def isChannelPredictionChartEnabled(self) -> bool:
         pass
 
+    @property
+    @abstractmethod
+    def isChatBandEnabled(self) -> bool:
+        pass
+
+    @property
     @abstractmethod
     def isChatLoggingEnabled(self) -> bool:
         pass
@@ -264,10 +260,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def isCutenessEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    def isCynanSourceEnabled(self) -> bool:
         pass
 
     @abstractmethod
