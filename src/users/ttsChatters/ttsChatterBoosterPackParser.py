@@ -36,10 +36,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         if not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        voiceStr = utils.getStrFromDict(jsonContents, 'voice')
-
-        if not utils.isValidStr(voiceStr):
-            raise TypeError(f'voice argument is malformed: \"{voiceStr}\"')
+        voiceStr = utils.getStrFromDict(jsonContents, 'voice', '')
 
         ttsProviderStr = utils.getStrFromDict(jsonContents, 'ttsProvider')
         ttsProvider = self.__ttsJsonMapper.parseProvider(ttsProviderStr)
@@ -54,7 +51,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
             case TtsProvider.TTS_MONSTER:
                 voice = voiceStr
             case TtsProvider.DEC_TALK:
-                voice = voiceStr
+                voice = ''
             case TtsProvider.GOOGLE:
                 voice = ''
 
