@@ -11,6 +11,7 @@ from language.jishoHelper import JishoHelper
 from language.jishoHelperInterface import JishoHelperInterface
 from network.aioHttpClientProvider import AioHttpClientProvider
 from network.networkClientProvider import NetworkClientProvider
+from network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 
@@ -18,8 +19,13 @@ eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
 timber: TimberInterface = TimberStub()
 
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop
+)
+
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber
 )
 
