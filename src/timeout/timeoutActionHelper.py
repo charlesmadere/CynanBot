@@ -352,15 +352,6 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             self.__timber.log('TimeoutActionHelper', f'Attempting to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, who is a guaranteed timeout user ({timeoutData=})')
             isGuaranteed = True
 
-        elif await self.__isImmuneUser(
-            timeoutTargetUserId = timeoutTargetUserId,
-            timeoutTargetUserName = timeoutTargetUserName,
-            timeoutData = timeoutData,
-            twitchChannel = twitchChannel
-        ):
-            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is immune ({timeoutData=})')
-            return False
-
         elif await self.__isTryingToTimeoutTheStreamer(
             timeoutTargetUserId = timeoutTargetUserId,
             timeoutData = timeoutData
@@ -369,6 +360,15 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             isReverse = True
             timeoutTargetUserId = timeoutData.instigatorUserId
             timeoutTargetUserName = timeoutData.instigatorUserName
+
+        elif await self.__isImmuneUser(
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutTargetUserName = timeoutTargetUserName,
+            timeoutData = timeoutData,
+            twitchChannel = twitchChannel
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is immune ({timeoutData=})')
+            return False
 
         elif await self.__hasNewFollowerShield(
             now = now,

@@ -73,72 +73,8 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__additionalImmuneUserIds: frozenset[str] | None = additionalImmuneUserIds
 
-        self.__cachedImmuneUserIds: frozenset[str] | None = None
+        self.__userIds: frozenset[str] | None = None
         self.__twitchUserId: str | None = None
-
-    async def __getImmuneUserIds(self) -> frozenset[str]:
-        cachedImmuneUserIds = self.__cachedImmuneUserIds
-
-        if cachedImmuneUserIds is not None:
-            return cachedImmuneUserIds
-
-        immuneUserIds: set[str] = set()
-        immuneUserIds.add(await self.__getTwitchUserId())
-
-        if self.__additionalImmuneUserIds is not None and len(self.__additionalImmuneUserIds) >= 1:
-            immuneUserIds.update(self.__additionalImmuneUserIds)
-
-        cynanBotUserId = await self.__cynanBotUserIdsProvider.getCynanBotUserId()
-        if utils.isValidStr(cynanBotUserId):
-            immuneUserIds.add(cynanBotUserId)
-
-        cynanBotTtsUserId = await self.__cynanBotUserIdsProvider.getCynanBotTtsUserId()
-        if utils.isValidStr(cynanBotTtsUserId):
-            immuneUserIds.add(cynanBotTtsUserId)
-
-        funtoonUserId = await self.__funtoonUserIdProvider.getFuntoonUserId()
-        if utils.isValidStr(funtoonUserId):
-            immuneUserIds.add(funtoonUserId)
-
-        mandooBotUserId = await self.__twitchFriendsUserIdProvider.getMandooBotUserId()
-        if utils.isValidStr(mandooBotUserId):
-            immuneUserIds.add(mandooBotUserId)
-
-        nightbotUserId = await self.__nightbotUserIdProvider.getNightbotUserId()
-        if utils.isValidStr(nightbotUserId):
-            immuneUserIds.add(nightbotUserId)
-
-        puptimeUserId = await self.__puptimeUserIdProvider.getPuptimeUserId()
-        if utils.isValidStr(puptimeUserId):
-            immuneUserIds.add(puptimeUserId)
-
-        seryBotUserId = await self.__seryBotUserIdProvider.getSeryBotUserId()
-        if utils.isValidStr(seryBotUserId):
-            immuneUserIds.add(seryBotUserId)
-
-        streamElementsUserId = await self.__streamElementsUserIdProvider.getStreamElementsUserId()
-        if utils.isValidStr(streamElementsUserId):
-            immuneUserIds.add(streamElementsUserId)
-
-        streamLabsUserId = await self.__streamLabsUserIdProvider.getStreamLabsUserId()
-        if utils.isValidStr(streamLabsUserId):
-            immuneUserIds.add(streamLabsUserId)
-
-        tangiaBotUserId = await self.__tangiaBotUserIdProvider.getTangiaBotUserId()
-        if utils.isValidStr(tangiaBotUserId):
-            immuneUserIds.add(tangiaBotUserId)
-
-        twitchAccountUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAccountUserId()
-        if utils.isValidStr(twitchAccountUserId):
-            immuneUserIds.add(twitchAccountUserId)
-
-        twitchAnonymousGifterUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
-        if utils.isValidStr(twitchAnonymousGifterUserId):
-            immuneUserIds.add(twitchAnonymousGifterUserId)
-
-        cachedImmuneUserIds = frozenset(immuneUserIds)
-        self.__cachedImmuneUserIds = cachedImmuneUserIds
-        return cachedImmuneUserIds
 
     async def __getTwitchUserId(self) -> str:
         twitchUserId = self.__twitchUserId
@@ -150,9 +86,73 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
 
         return twitchUserId
 
+    async def getUserIds(self) -> frozenset[str]:
+        userIds = self.__userIds
+
+        if userIds is not None:
+            return userIds
+
+        newUserIds: set[str] = set()
+        newUserIds.add(await self.__getTwitchUserId())
+
+        if self.__additionalImmuneUserIds is not None and len(self.__additionalImmuneUserIds) >= 1:
+            newUserIds.update(self.__additionalImmuneUserIds)
+
+        cynanBotUserId = await self.__cynanBotUserIdsProvider.getCynanBotUserId()
+        if utils.isValidStr(cynanBotUserId):
+            newUserIds.add(cynanBotUserId)
+
+        cynanBotTtsUserId = await self.__cynanBotUserIdsProvider.getCynanBotTtsUserId()
+        if utils.isValidStr(cynanBotTtsUserId):
+            newUserIds.add(cynanBotTtsUserId)
+
+        funtoonUserId = await self.__funtoonUserIdProvider.getFuntoonUserId()
+        if utils.isValidStr(funtoonUserId):
+            newUserIds.add(funtoonUserId)
+
+        mandooBotUserId = await self.__twitchFriendsUserIdProvider.getMandooBotUserId()
+        if utils.isValidStr(mandooBotUserId):
+            newUserIds.add(mandooBotUserId)
+
+        nightbotUserId = await self.__nightbotUserIdProvider.getNightbotUserId()
+        if utils.isValidStr(nightbotUserId):
+            newUserIds.add(nightbotUserId)
+
+        puptimeUserId = await self.__puptimeUserIdProvider.getPuptimeUserId()
+        if utils.isValidStr(puptimeUserId):
+            newUserIds.add(puptimeUserId)
+
+        seryBotUserId = await self.__seryBotUserIdProvider.getSeryBotUserId()
+        if utils.isValidStr(seryBotUserId):
+            newUserIds.add(seryBotUserId)
+
+        streamElementsUserId = await self.__streamElementsUserIdProvider.getStreamElementsUserId()
+        if utils.isValidStr(streamElementsUserId):
+            newUserIds.add(streamElementsUserId)
+
+        streamLabsUserId = await self.__streamLabsUserIdProvider.getStreamLabsUserId()
+        if utils.isValidStr(streamLabsUserId):
+            newUserIds.add(streamLabsUserId)
+
+        tangiaBotUserId = await self.__tangiaBotUserIdProvider.getTangiaBotUserId()
+        if utils.isValidStr(tangiaBotUserId):
+            newUserIds.add(tangiaBotUserId)
+
+        twitchAccountUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAccountUserId()
+        if utils.isValidStr(twitchAccountUserId):
+            newUserIds.add(twitchAccountUserId)
+
+        twitchAnonymousGifterUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
+        if utils.isValidStr(twitchAnonymousGifterUserId):
+            newUserIds.add(twitchAnonymousGifterUserId)
+
+        frozenUserIds: frozenset[str] = frozenset(newUserIds)
+        self.__userIds = frozenUserIds
+        return frozenUserIds
+
     async def isImmune(self, userId: str) -> bool:
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        immuneUserIds = await self.__getImmuneUserIds()
-        return userId in immuneUserIds
+        userIds = await self.getUserIds()
+        return userId in userIds
