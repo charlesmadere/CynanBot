@@ -23,7 +23,7 @@ class ChatLoggerChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isChatLoggingEnabled():
+        if not user.isChatLoggingEnabled:
             return False
 
         msg = utils.cleanStr(message.getContent())

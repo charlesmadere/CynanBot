@@ -5,23 +5,19 @@ from datetime import datetime, timedelta
 from queue import SimpleQueue
 
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .api.twitchSendChatMessageRequest import \
-    TwitchSendChatMessageRequest
-from .api.twitchSendChatMessageResponse import \
-    TwitchSendChatMessageResponse
+from .api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from .api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .configuration.twitchMessageable import TwitchMessageable
 from .outboundMessage import OutboundMessage
 from .twitchHandleProviderInterface import TwitchHandleProviderInterface
-from .twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitchUtilsInterface import TwitchUtilsInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..sentMessageLogger.messageMethod import MessageMethod
-from ..sentMessageLogger.sentMessageLoggerInterface import \
-    SentMessageLoggerInterface
+from ..sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from ..timber.timberInterface import TimberInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 

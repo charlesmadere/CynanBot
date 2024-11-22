@@ -53,8 +53,6 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
-        if not twitchUser.areTimeoutActionsEnabled:
-            return False
 
         timeoutBoosterPacks = twitchUser.timeoutBoosterPacks
         if timeoutBoosterPacks is None or len(timeoutBoosterPacks) == 0:

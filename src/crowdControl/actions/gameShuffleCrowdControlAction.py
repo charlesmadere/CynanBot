@@ -1,3 +1,4 @@
+import locale
 from datetime import datetime
 
 from .crowdControlAction import CrowdControlAction
@@ -37,6 +38,19 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
     def actionType(self) -> CrowdControlActionType:
         return CrowdControlActionType.GAME_SHUFFLE
 
+    def requireStartOfGigaShuffleSize(self) -> int:
+        startOfGigaShuffleSize = self.__startOfGigaShuffleSize
+
+        if not utils.isValidInt(startOfGigaShuffleSize):
+            raise RuntimeError(f'No startOfGigaShuffleSize value is available: {self}')
+
+        return startOfGigaShuffleSize
+
     @property
     def startOfGigaShuffleSize(self) -> int | None:
         return self.__startOfGigaShuffleSize
+
+    @property
+    def startOfGigaShuffleSizeStr(self) -> str:
+        startOfGigaShuffleSize = self.requireStartOfGigaShuffleSize()
+        return locale.format_string("%d", startOfGigaShuffleSize, grouping = True)

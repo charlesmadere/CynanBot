@@ -160,6 +160,9 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if len(message) > maximumMessageSize:
             message = message[0:maximumMessageSize].strip()
 
+        if not utils.isValidStr(message):
+            return None
+
         try:
             # DECTalk requires Windows-1252 encoding
             message = message.encode().decode('windows-1252')

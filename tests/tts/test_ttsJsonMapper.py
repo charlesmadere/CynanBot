@@ -16,6 +16,23 @@ class TestTtsJsonMapper:
     )
 
     @pytest.mark.asyncio
+    async def test_allTtsProvidersAreParsed(self):
+        for ttsProvider in TtsProvider:
+            serializedTtsProvider = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
+            parsedTtsProvider = await self.jsonMapper.asyncParseProvider(serializedTtsProvider)
+            assert parsedTtsProvider == ttsProvider
+
+    @pytest.mark.asyncio
+    async def test_allTtsProvidersAreSerialized(self):
+        serializedTtsProviders: set[str] = set()
+
+        for ttsProvider in TtsProvider:
+            serializedTtsProvider = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
+            serializedTtsProviders.add(serializedTtsProvider)
+
+        assert len(serializedTtsProviders) == len(list(TtsProvider))
+
+    @pytest.mark.asyncio
     async def test_asyncParseProvider_withDecTalkString(self):
         result = await self.jsonMapper.asyncParseProvider('dec_talk')
         assert result is TtsProvider.DEC_TALK

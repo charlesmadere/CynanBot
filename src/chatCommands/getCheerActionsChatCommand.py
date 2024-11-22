@@ -47,8 +47,6 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('GetCheerActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.areCheerActionsEnabled:
-            return
 
         actions = await self.__cheerActionsRepository.getActions(userId)
 

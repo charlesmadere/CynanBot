@@ -65,6 +65,9 @@ from src.crowdControl.crowdControlSettingsRepository import CrowdControlSettings
 from src.crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
 from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from src.crowdControl.message.crowdControlMessageHandler import CrowdControlMessageHandler
+from src.crowdControl.message.crowdControlMessagePresenter import CrowdControlMessagePresenter
+from src.crowdControl.message.crowdControlMessagePresenterInterface import CrowdControlMessagePresenterInterface
 from src.crowdControl.utils.crowdControlUserInputUtils import CrowdControlUserInputUtils
 from src.crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from src.cynanBot import CynanBot
@@ -1105,19 +1108,29 @@ mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
 ## Crowd Control initialization section ##
 ##########################################
 
+crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
+
+crowdControlMessagePresenter: CrowdControlMessagePresenterInterface = CrowdControlMessagePresenter(
+    trollmojiHelper = trollmojiHelper
+)
+
+crowdControlMessageHandler = CrowdControlMessageHandler(
+    crowdControlMessagePresenter = crowdControlMessagePresenter,
+    twitchUtils = twitchUtils
+)
+
 crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
     settingsJsonReader = JsonFileReader('crowdControlSettingsRepository.json')
 )
 
 crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
+    crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
-
-crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
 
 crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils()
 
@@ -1430,6 +1443,7 @@ cynanBot = CynanBot(
     crowdControlActionHandler = crowdControlActionHandler,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
+    crowdControlMessageHandler = crowdControlMessageHandler,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     cutenessPresenter = None,

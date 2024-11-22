@@ -66,7 +66,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         self.__timber.log('TwitchRaidHandler', f'\"{user.getHandle()}\" received raid of {viewers} from \"{fromUserLogin}\"')
 
-        if user.isChatLoggingEnabled():
+        if user.isChatLoggingEnabled:
             self.__chatLogger.logRaid(
                 raidSize = viewers,
                 fromWho = fromUserName,

@@ -15,12 +15,10 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmn.pkmnCatchType import PkmnCatchType
 from .pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from .soundAlertRedemption import SoundAlertRedemption
-from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
-from .ttsChatters.ttsChatterBoosterPackParser import TtsChatterBoosterPackParser
 from .ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from .user import User
 from .userJsonConstant import UserJsonConstant
@@ -131,11 +129,8 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
-        areBeanChancesEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_CHANCES_ENABLED.jsonKey, False)
-        areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
-        areTimeoutActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TIMEOUT_ACTIONS_ENABLED.jsonKey, False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
         isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, 'anivMessageCopyTimeoutChatReportingEnabled', True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
@@ -146,7 +141,6 @@ class UsersRepository(UsersRepositoryInterface):
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
-        isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
         isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
         isEnabled = utils.getBoolFromDict(userJson, 'enabled', True)
         isEyesMessageEnabled = utils.getBoolFromDict(userJson, 'eyesMessageEnabled', False)
@@ -160,9 +154,7 @@ class UsersRepository(UsersRepositoryInterface):
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
-        isRaidLinkMessagingEnabled = utils.getBoolFromDict(userJson, 'raidLinkMessagingEnabled', False)
         isRatJamMessageEnabled = utils.getBoolFromDict(userJson, 'ratJamMessageEnabled', False)
-        isRewardIdPrintingEnabled = utils.getBoolFromDict(userJson, 'rewardIdPrintingEnabled', False)
         isRoachMessageEnabled = utils.getBoolFromDict(userJson, 'roachMessageEnabled', False)
         isSchubertWalkMessageEnabled = utils.getBoolFromDict(userJson, 'schubertWalkMessageEnabled', False)
         isShizaMessageEnabled = utils.getBoolFromDict(userJson, 'shizaMessageEnabled', False)
@@ -181,6 +173,7 @@ class UsersRepository(UsersRepositoryInterface):
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWelcomeTtsEnabled = utils.getBoolFromDict(userJson, 'welcomeTtsEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
+        blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         discord = utils.getStrFromDict(userJson, 'discord', '')
@@ -193,11 +186,6 @@ class UsersRepository(UsersRepositoryInterface):
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
-
-        timeoutActionFollowShieldDays: int | None = None
-        if areCheerActionsEnabled:
-            if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
-                timeoutActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutActionFollowShieldDays')
 
         anivMessageCopyTimeoutProbability: float | None = None
         anivMessageCopyMaxAgeSeconds: int | None = None
@@ -299,10 +287,12 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
 
-        timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = None
-        if areTimeoutActionsEnabled:
-            timeoutBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('timeoutBoosterPacks')
-            timeoutBoosterPacks = self.__timeoutBoosterPackJsonParser.parseBoosterPacks(timeoutBoosterPacksJson)
+        timeoutActionFollowShieldDays: int | None = None
+        if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
+            timeoutActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutActionFollowShieldDays')
+
+        timeoutBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('timeoutBoosterPacks')
+        timeoutBoosterPacks = self.__timeoutBoosterPackJsonParser.parseBoosterPacks(timeoutBoosterPacksJson)
 
         defaultTtsProvider = TtsProvider.DEC_TALK
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = None
@@ -328,11 +318,8 @@ class UsersRepository(UsersRepositoryInterface):
             ttsChatterBoosterPacks = self.__ttsChatterBoosterPackParser.parseBoosterPacks(defaultTtsProvider, ttsChatterBoosterPacksJson)
 
         user = User(
-            areBeanChancesEnabled = areBeanChancesEnabled,
-            areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
-            areTimeoutActionsEnabled = areTimeoutActionsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
@@ -343,7 +330,6 @@ class UsersRepository(UsersRepositoryInterface):
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
-            isCynanSourceEnabled = isCynanSourceEnabled,
             isDeerForceMessageEnabled = isDeerForceMessageEnabled,
             isEnabled = isEnabled,
             isEyesMessageEnabled = isEyesMessageEnabled,
@@ -357,9 +343,7 @@ class UsersRepository(UsersRepositoryInterface):
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
-            isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled,
             isRatJamMessageEnabled = isRatJamMessageEnabled,
-            isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
             isRoachMessageEnabled = isRoachMessageEnabled,
             isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
@@ -403,6 +387,7 @@ class UsersRepository(UsersRepositoryInterface):
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
+            blueSkyUrl = blueSkyUrl,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
@@ -494,14 +479,19 @@ class UsersRepository(UsersRepositoryInterface):
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
 
-    async def modifyUserValue(self, handle: str, jsonConstant: UserJsonConstant, value: Any | None):
+    async def modifyUserValue(
+        self,
+        handle: str,
+        jsonConstant: UserJsonConstant,
+        value: Any | None
+    ):
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif not isinstance(jsonConstant, UserJsonConstant):
             raise TypeError(f'jsonConstant argument is malformed: \"{jsonConstant}\"')
 
         jsonContents = await self.__readJsonAsync()
-        userJson = jsonContents.get(handle.casefold())
+        userJson = jsonContents.get(handle.casefold(), None)
 
         if not isinstance(userJson, dict):
             raise NoSuchUserException(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
@@ -515,7 +505,31 @@ class UsersRepository(UsersRepositoryInterface):
                     rawValue = value
                 )
 
+            case UserJsonConstant.BLUE_SKY_URL:
+                await self.__modifyUserStringValue(
+                    handle = handle,
+                    userJson = userJson,
+                    jsonConstant = jsonConstant,
+                    rawValue = value
+                )
+
             case UserJsonConstant.CHEER_ACTIONS_ENABLED:
+                await self.__modifyUserBooleanValue(
+                    handle = handle,
+                    userJson = userJson,
+                    jsonConstant = jsonConstant,
+                    rawValue = value
+                )
+
+            case UserJsonConstant.CROWD_CONTROL_ENABLED:
+                await self.__modifyUserBooleanValue(
+                    handle = handle,
+                    userJson = userJson,
+                    jsonConstant = jsonConstant,
+                    rawValue = value
+                )
+
+            case UserJsonConstant.SOUND_ALERTS_ENABLED:
                 await self.__modifyUserBooleanValue(
                     handle = handle,
                     userJson = userJson,
@@ -556,6 +570,29 @@ class UsersRepository(UsersRepositoryInterface):
         if isinstance(rawValue, str):
             value = utils.strictStrToBool(rawValue)
         elif utils.isValidBool(rawValue):
+            value = rawValue
+        else:
+            raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
+
+        userJson[jsonConstant.jsonKey] = value
+
+    async def __modifyUserStringValue(
+        self,
+        handle: str,
+        userJson: dict[str, Any],
+        jsonConstant: UserJsonConstant,
+        rawValue: Any | None
+    ):
+        if not utils.isValidStr(handle):
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
+        elif not isinstance(userJson, dict):
+            raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
+        elif not isinstance(jsonConstant, UserJsonConstant):
+            raise TypeError(f'jsonConstant argument is malformed: \"{jsonConstant}\"')
+
+        value: str | None
+
+        if isinstance(rawValue, str):
             value = rawValue
         else:
             raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
