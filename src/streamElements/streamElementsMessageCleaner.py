@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 from typing import Any, Pattern
 
 from .streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
@@ -24,11 +25,15 @@ class StreamElementsMessageCleaner(StreamElementsMessageCleanerInterface):
             return None
 
         message = utils.removeCheerStrings(message.strip()).strip()
-        message = self.__extraWhiteSpaceRegEx.sub(' ', message.strip()).strip()
-        message = utils.replaceAmpersand(message)
+        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
+        message = utils.replaceAmpersand(message).strip()
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
         if len(message) > maximumMessageSize:
             message = message[0:maximumMessageSize].strip()
 
-        return message
+        # this shouldn't be necessary but Python sux at type checking
+        if not utils.isValidStr(message):
+            return None
+
+        return urllib.parse.quote_plus(message).strip()
