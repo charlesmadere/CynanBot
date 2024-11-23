@@ -114,7 +114,7 @@ streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFi
 async def main():
     pass
 
-    message = 'Hello, World!'
+    message = await streamElementsMessageCleaner.clean('Hello, & World!')
 
     speechBytes = await streamElementsHelper.getSpeech(
         message = message,

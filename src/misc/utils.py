@@ -440,14 +440,6 @@ def removePreceedingAt(s: str | None) -> str | None:
     else:
         return s
 
-def replaceAmpersand(s: str, repl: str = 'and') -> str:
-    if not isinstance(s, str):
-        raise TypeError(f's argument is malformed: \"{s}\"')
-    elif not isinstance(repl, str):
-        raise TypeError(f'repl argument is malformed: \"{repl}\"')
-
-    return s.replace('&', repl)
-
 def safeStrToInt(s: str | None) -> int | None:
     if not isValidStr(s):
         return None
