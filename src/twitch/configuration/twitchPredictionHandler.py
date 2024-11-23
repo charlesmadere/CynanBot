@@ -56,7 +56,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         title: str,
         predictionStatus: TwitchPredictionStatus | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
+        user: UserInterface,
+        winningOutcomeId: str
     ):
         if not isinstance(outcomes, FrozenList):
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
@@ -70,6 +71,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
+        elif not utils.isValidStr(winningOutcomeId):
+            raise TypeError(f'winningOutcomeId argument is malformed: \"{winningOutcomeId}\"')
 
         twitchChannelProvider = self.__twitchChannelProvider
 
@@ -83,30 +86,35 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             return
         elif not user.isNotifyOfPredictionResultsEnabled:
             return
+        elif not utils.isValidStr(winningOutcomeId):
+            return
 
-        winningOutcome = max(outcomes, key=lambda outcome: outcome.channelPoints)
+        winningOutcome = [outcome for outcome in outcomes if outcome.outcomeId == winningOutcomeId][0]
         topPredictors = winningOutcome.topPredictors
+    
+        outcomeString = f'🗳️ The winning outcome is \"{winningOutcome.title}\"'
 
-        if winningOutcome.channelPoints == 0:
-            return
-        elif topPredictors is None:
-            return
-        elif len(topPredictors) == 0:
-            return
-
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-
-        topPredictorsString = ''
-        for index, topPredictor in enumerate(topPredictors):
-            predictorString = f'{topPredictor.userName}({topPredictor.channelPointsWon})'
-            if index == 0:
-                topPredictorsString = predictorString
-            elif index + 1 == len(topPredictors):
-                topPredictorsString = f'{topPredictorsString}, and {predictorString})'
+        if topPredictors is not None and len(topPredictors) > 0:
+            topPredictorsString = ''
+            for index, topPredictor in enumerate(topPredictors):
+                predictorString = f'{topPredictor.userName}({topPredictor.channelPointsWon})'
+                if index == 0:
+                    topPredictorsString = predictorString
+                elif index + 1 == len(topPredictors):
+                    topPredictorsString = f'{topPredictorsString}, and {predictorString}'
+                else:
+                    topPredictorsString = f'{topPredictorsString}, {predictorString}'
+            
+            predictorPluralization: str
+            if len(topPredictors) == 1:
+                predictorPluralization = 'top predictor was'
             else:
-                topPredictorsString = f'{topPredictorsString}, {predictorString}'
-
-        await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The winning outcome is \"{winningOutcome.title}\", top predictors were {topPredictorsString}!')
+                predictorPluralization = 'top predictors were'
+            
+            outcomeString = outcomeString + f', {predictorPluralization} {topPredictorsString}!'
+        
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
 
     async def onNewPrediction(
         self,
@@ -131,6 +139,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         broadcasterUserId = event.broadcasterUserId
         title = event.title
         outcomes = event.outcomes
+        winningOutcomeId = event.winningOutcomeId
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or outcomes is None or len(outcomes) == 0:
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
@@ -147,14 +156,16 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             subscriptionType = subscriptionType
         )
 
-        await self.__notifyChatOfPredictionResults(
-            outcomes = outcomes,
-            broadcasterUserId = broadcasterUserId,
-            title = title,
-            predictionStatus = event.predictionStatus,
-            subscriptionType = subscriptionType,
-            user = user
-        )
+        if winningOutcomeId is not None:
+            await self.__notifyChatOfPredictionResults(
+                outcomes = outcomes,
+                broadcasterUserId = broadcasterUserId,
+                title = title,
+                predictionStatus = event.predictionStatus,
+                subscriptionType = subscriptionType,
+                user = user,
+                winningOutcomeId = winningOutcomeId
+            )
 
         await self.__processWebsocketEvent(
             outcomes = outcomes,
