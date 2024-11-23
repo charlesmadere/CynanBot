@@ -583,14 +583,14 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://id.twitch.tv/oauth2/token?client_id={twitchClientId}&client_secret={twitchClientSecret}&code={code}&grant_type=authorization_code&redirect_uri=http://localhost'
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching tokens (code=\"{code}\"): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching tokens (code=\"{code}\"): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching tokens ({code=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching tokens ({code=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
-        if response.statusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens ({code=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
         elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
