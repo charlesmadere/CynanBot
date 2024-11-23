@@ -20,3 +20,12 @@ class TtsMonsterPrivateApiJsonMapperInterface(ABC):
         jsonContents: dict[str, Any] | Any | None
     ) -> TtsMonsterPrivateApiTtsResponse | None:
         pass
+
+    @abstractmethod
+    async def serializeGenerateTtsJsonBody(
+        self,
+        key: str,
+        message: str,
+        userId: str
+    ) -> dict[str, Any]:
+        pass

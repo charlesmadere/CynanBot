@@ -50,3 +50,33 @@ class TestTtsMonsterPrivateApiJsonMapper:
 
         result = await self.mapper.parseTtsResponse(dictionary)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_serializeGenerateTtsJsonBody(self):
+        key = 'key'
+        message = 'Hello, World!'
+        userId = 'smCharles'
+
+        jsonBody = await self.mapper.serializeGenerateTtsJsonBody(
+            key = key,
+            message = message,
+            userId = userId
+        )
+
+        assert isinstance(jsonBody, dict)
+        assert len(jsonBody) == 1
+
+        dataJson: dict[str, Any] | Any | None = jsonBody.get('data', None)
+        assert isinstance(dataJson, dict)
+        assert len(dataJson) == 5
+
+        assert dataJson['ai'] == True
+        assert dataJson['key'] == key
+        assert dataJson['message'] == message
+        assert dataJson['userId'] == userId
+
+        detailsJson: dict[str, Any] | Any | None = dataJson.get('details', None)
+        assert isinstance(detailsJson, dict)
+        assert len(detailsJson) == 1
+
+        assert detailsJson['provider'] == 'provider'

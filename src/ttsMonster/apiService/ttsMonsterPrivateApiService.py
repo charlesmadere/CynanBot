@@ -15,8 +15,7 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         self,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
-        provider: str = 'provider'
+        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -24,13 +23,10 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
-        elif not utils.isValidStr(provider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
         self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
-        self.__provider: str = provider
 
     async def generateTts(
         self,
@@ -48,20 +44,16 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         self.__timber.log('TtsMonsterApiService', f'Generating TTS using private API... ({key=}) ({message=}) ({userId=})')
         clientSession = await self.__networkClientProvider.get()
 
+        jsonBody = await self.__ttsMonsterPrivateApiJsonMapper.serializeGenerateTtsJsonBody(
+            key = key,
+            message = message,
+            userId = userId
+        )
+
         try:
             response = await clientSession.post(
                 url = f'https://us-central1-tts-monster.cloudfunctions.net/generateTTS',
-                json = {
-                    'data': {
-                        'ai': True,
-                        'details': {
-                            'provider': self.__provider
-                        },
-                        'key': key,
-                        'message': message,
-                        'userId': userId
-                    }
-                }
+                json = jsonBody
             )
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterPrivateApiService', f'Encountered network error when generating TTS ({key=}) ({message=}) ({userId=}): {e}', e, traceback.format_exc())

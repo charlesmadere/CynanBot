@@ -8,6 +8,12 @@ from ...misc import utils as utils
 
 class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
+    def __init__(self, provider: str = 'provider'):
+        if not utils.isValidStr(provider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__provider: str = provider
+
     async def parseTtsData(
         self,
         jsonContents: dict[str, Any] | Any | None
@@ -43,3 +49,28 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             status = status,
             data = data
         )
+
+    async def serializeGenerateTtsJsonBody(
+        self,
+        key: str,
+        message: str,
+        userId: str
+    ) -> dict[str, Any]:
+        if not utils.isValidStr(key):
+            raise TypeError(f'key argument is malformed: \"{key}\"')
+        elif not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        return {
+            'data': {
+                'ai': True,
+                'details': {
+                    'provider': self.__provider
+                },
+                'key': key,
+                'message': message,
+                'userId': userId
+            }
+        }
