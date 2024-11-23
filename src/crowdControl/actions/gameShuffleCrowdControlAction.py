@@ -10,6 +10,7 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
 
     def __init__(
         self,
+        entryWithinGigaShuffle: bool,
         dateTime: datetime,
         startOfGigaShuffleSize: int | None,
         actionId: str,
@@ -29,14 +30,21 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
             twitchChatMessageId = twitchChatMessageId
         )
 
-        if startOfGigaShuffleSize is not None and not utils.isValidInt(startOfGigaShuffleSize):
+        if not utils.isValidBool(entryWithinGigaShuffle):
+            raise TypeError(f'entryWithinGigaShuffle argument is malformed: \"{entryWithinGigaShuffle}\"')
+        elif startOfGigaShuffleSize is not None and not utils.isValidInt(startOfGigaShuffleSize):
             raise TypeError(f'startOfGigaShuffleSize argument is malformed: \"{startOfGigaShuffleSize}\"')
 
+        self.__entryWithinGigaShuffle: bool = entryWithinGigaShuffle
         self.__startOfGigaShuffleSize: int | None = startOfGigaShuffleSize
 
     @property
     def actionType(self) -> CrowdControlActionType:
         return CrowdControlActionType.GAME_SHUFFLE
+
+    @property
+    def entryWithinGigaShuffle(self) -> bool:
+        return self.__entryWithinGigaShuffle
 
     def requireStartOfGigaShuffleSize(self) -> int:
         startOfGigaShuffleSize = self.__startOfGigaShuffleSize

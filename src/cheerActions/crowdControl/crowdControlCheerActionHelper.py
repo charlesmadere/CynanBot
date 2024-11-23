@@ -80,6 +80,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 if gigaShuffleCount >= 1:
                     actions.append(GameShuffleCrowdControlAction(
                         dateTime = dateTime,
+                        entryWithinGigaShuffle = True,
                         startOfGigaShuffleSize = gigaShuffleCount,
                         actionId = await self.__crowdControlIdGenerator.generateActionId(),
                         chatterUserId = chatterUserId,
@@ -92,6 +93,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                     for _ in range(gigaShuffleCount - 1):
                         actions.append(GameShuffleCrowdControlAction(
                             dateTime = dateTime,
+                            entryWithinGigaShuffle = True,
                             startOfGigaShuffleSize = None,
                             actionId = await self.__crowdControlIdGenerator.generateActionId(),
                             chatterUserId = chatterUserId,
@@ -104,6 +106,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         if len(actions) == 0:
             actions.append(GameShuffleCrowdControlAction(
                 dateTime = dateTime,
+                entryWithinGigaShuffle = False,
                 startOfGigaShuffleSize = None,
                 actionId = await self.__crowdControlIdGenerator.generateActionId(),
                 chatterUserId = chatterUserId,

@@ -75,6 +75,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         if boosterPack.inputType is CrowdControlInputType.GAME_SHUFFLE:
             self.__crowdControlMachine.submitAction(GameShuffleCrowdControlAction(
                 dateTime = now,
+                entryWithinGigaShuffle = False,
                 startOfGigaShuffleSize = None,
                 actionId = actionId,
                 chatterUserId = twitchChannelPointsMessage.userId,
@@ -84,7 +85,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 twitchChatMessageId = None
             ))
 
-            self.__timber.log('CrowdControlPointRedemption', f'Created new game shuffle crowd control action from channel point redemption ({twitchChannelPointsMessage=})')
+            self.__timber.log('CrowdControlPointRedemption', f'Created new game shuffle crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=})')
             return True
 
         button: CrowdControlButton | None
@@ -99,7 +100,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             )
 
         if button is None:
-            self.__timber.log('CrowdControlPointRedemption', f'Unable to create crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({button=})')
+            self.__timber.log('CrowdControlPointRedemption', f'Unable to create crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=}) ({button=})')
             return False
 
         self.__crowdControlMachine.submitAction(ButtonPressCrowdControlAction(
@@ -113,5 +114,5 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             twitchChatMessageId = None
         ))
 
-        self.__timber.log('CrowdControlPointRedemption', f'Created new button press crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({button=})')
+        self.__timber.log('CrowdControlPointRedemption', f'Created new button press crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=}) ({button=})')
         return True
