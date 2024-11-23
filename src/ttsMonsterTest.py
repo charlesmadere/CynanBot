@@ -3,6 +3,7 @@ from asyncio import AbstractEventLoop
 
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.timber.timberInterface import TimberInterface
@@ -44,8 +45,13 @@ timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop
+)
+
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber
 )
 

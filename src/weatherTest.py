@@ -6,6 +6,7 @@ from location.locationsRepository import LocationsRepository
 from location.locationsRepositoryInterface import LocationsRepositoryInterface
 from location.timeZoneRepository import TimeZoneRepository
 from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from network.aioHttpClientProvider import AioHttpClientProvider
 from network.networkClientProvider import NetworkClientProvider
 from openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
@@ -54,8 +55,13 @@ locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     timeZoneRepository = timeZoneRepository
 )
 
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop
+)
+
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber
 )
 

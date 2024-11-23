@@ -48,23 +48,15 @@ class TtsChattersChatAction(AbsChatAction):
             return False
 
 
-        voice: StreamElementsVoice | str
-        voice = ''
+        voice: str = ''
+        
         match boosterPack.ttsProvider:
             case TtsProvider.STREAM_ELEMENTS:
-                if not isinstance(boosterPack.voice, StreamElementsVoice):
-                    raise TypeError(f'boosterPack.voice argument is malformed: \"{boosterPack.voice}\"')
-                if boosterPack.voice is None:
-                    voice = ''
-                else:
+                if isinstance(boosterPack.voice, StreamElementsVoice):
                     voice = f'{boosterPack.voice.humanName}: '
             case TtsProvider.TTS_MONSTER:
-                if not utils.isValidStr(boosterPack.voice):
-                    raise TypeError(f'boosterPack.voice argument is malformed: \"{boosterPack.voice}\"')
-                voice = f'{boosterPack.voice}: '
-            case TtsProvider.DEC_TALK:
-                if isinstance(boosterPack.voice, str) and len(boosterPack.voice) == 5:
-                    voice = f'{boosterPack.voice} '
+                if utils.isValidStr(boosterPack.voice):
+                    voice = f'{boosterPack.voice}: '
 
         streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,

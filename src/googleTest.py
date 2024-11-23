@@ -17,6 +17,7 @@ from location.timeZoneRepository import TimeZoneRepository
 from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from misc.backgroundTaskHelper import BackgroundTaskHelper
 from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from network.aioHttpClientProvider import AioHttpClientProvider
 from network.networkClientProvider import NetworkClientProvider
 from storage.jsonStaticReader import JsonStaticReader
@@ -67,9 +68,12 @@ googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
-
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop
+)
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber
 )
 

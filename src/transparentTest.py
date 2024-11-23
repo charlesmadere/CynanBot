@@ -7,6 +7,7 @@ from location.timeZoneRepository import TimeZoneRepository
 from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from network.aioHttpClientProvider import AioHttpClientProvider
 from network.networkClientProvider import NetworkClientProvider
+from network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from timber.timberInterface import TimberInterface
 from timber.timberStub import TimberStub
 from transparent.transparentApiService import TransparentApiService
@@ -26,8 +27,13 @@ transparentXmlMapper: TransparentXmlMapperInterface = TransparentXmlMapper(
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop
+)
+
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber
 )
 
