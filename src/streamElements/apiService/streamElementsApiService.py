@@ -1,4 +1,5 @@
 import traceback
+import urllib.parse
 
 from .streamElementsApiServiceInterface import StreamElementsApiServiceInterface
 from ..models.streamElementsVoice import StreamElementsVoice
@@ -37,6 +38,7 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         clientSession = await self.__networkClientProvider.get()
+        text = urllib.parse.quote_plus(text).strip()
 
         try:
             response = await clientSession.get(

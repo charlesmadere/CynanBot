@@ -34,14 +34,14 @@ class TestStreamElementsMessageCleaner:
     )
 
     @pytest.mark.asyncio
-    async def test_clean_withSimpleAmpersandMessage(self):
-        result = await self.cleaner.clean('Nintendo & Microsoft & Sony?')
-        assert result == 'Nintendo+%26+Microsoft+%26+Sony%3F'
+    async def test_clean_withVoiceMessage(self):
+        result = await self.cleaner.clean('brian: test')
+        assert result == 'brian: test'
 
     @pytest.mark.asyncio
     async def test_clean_withComplicatedCheerMessage(self):
         result = await self.cleaner.clean('cheer500 good uni25 luck cheer50 with cheer25 the uni25 runs! cheer10')
-        assert result == 'good+luck+with+the+runs%21'
+        assert result == 'good luck with the runs!'
 
     @pytest.mark.asyncio
     async def test_clean_withEmptyString(self):
@@ -56,17 +56,17 @@ class TestStreamElementsMessageCleaner:
     @pytest.mark.asyncio
     async def test_clean_withSimpleMessage(self):
         result = await self.cleaner.clean('Hello, World')
-        assert result == 'Hello%2C+World'
+        assert result == 'Hello, World'
 
     @pytest.mark.asyncio
     async def test_clean_withSimpleMessageAndLotsOfWhitespace(self):
         result = await self.cleaner.clean('   \n  Hello,     World!\n \n')
-        assert result == 'Hello%2C+World%21'
+        assert result == 'Hello, World!'
 
     @pytest.mark.asyncio
     async def test_clean_withSimpleCheerMessage(self):
         result = await self.cleaner.clean('cheer500 good luck with the runs!')
-        assert result == 'good+luck+with+the+runs%21'
+        assert result == 'good luck with the runs!'
 
     @pytest.mark.asyncio
     async def test_clean_withWhitespaceString(self):

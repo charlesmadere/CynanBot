@@ -1,5 +1,4 @@
 import re
-import urllib.parse
 from typing import Any, Pattern
 
 from .streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
@@ -35,4 +34,4 @@ class StreamElementsMessageCleaner(StreamElementsMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        return urllib.parse.quote_plus(message).strip()
+        return message
