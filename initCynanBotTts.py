@@ -330,6 +330,10 @@ from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
 from src.users.usersRepositoryInterface import UsersRepositoryInterface
+from src.websocketConnection.mapper.websocketEventTypeMapper import WebsocketEventTypeMapper
+from src.websocketConnection.mapper.websocketEventTypeMapperInterface import WebsocketEventTypeMapperInterface
+from src.websocketConnection.settings.websocketConnectionServerSettings import WebsocketConnectionServerSettings
+from src.websocketConnection.settings.websocketConnectionServerSettingsInterface import WebsocketConnectionServerSettingsInterface
 from src.websocketConnection.websocketConnectionServer import WebsocketConnectionServer
 from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
@@ -462,13 +466,6 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
-)
-
-websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
-    backgroundTaskHelper = backgroundTaskHelper,
-    settingsJsonReader = JsonFileReader('websocketConnectionServer.json'),
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
 )
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
@@ -1354,6 +1351,25 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
+)
+
+
+########################################################
+## Websocket Connection Server initialization section ##
+########################################################
+
+websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = WebsocketConnectionServerSettings(
+    settingsJsonReader = JsonFileReader('websocketConnectionServerSettings.json')
+)
+
+websocketEventTypeMapper: WebsocketEventTypeMapperInterface = WebsocketEventTypeMapper()
+
+websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    websocketConnectionServerSettings = websocketConnectionServerSettings,
+    websocketEventTypeMapper = websocketEventTypeMapper
 )
 
 

@@ -404,6 +404,8 @@ from src.weather.weatherReportPresenter import WeatherReportPresenter
 from src.weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from src.weather.weatherRepository import WeatherRepository
 from src.weather.weatherRepositoryInterface import WeatherRepositoryInterface
+from src.websocketConnection.stub.stubWebsocketConnectionServer import StubWebsocketConnectionServer
+from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
@@ -1652,6 +1654,13 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 )
 
 
+########################################################
+## Websocket Connection Server initialization section ##
+########################################################
+
+websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketConnectionServer()
+
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -1680,7 +1689,7 @@ twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHan
     timber = timber,
     twitchUtils = twitchUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
-    websocketConnectionServer = None
+    websocketConnectionServer = websocketConnectionServer
 )
 
 twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(

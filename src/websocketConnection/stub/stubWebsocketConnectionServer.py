@@ -5,19 +5,15 @@ from ..websocketConnectionServerInterface import WebsocketConnectionServerInterf
 
 class StubWebsocketConnectionServer(WebsocketConnectionServerInterface):
 
-    async def clearCaches(self):
+    def start(self):
         # this method is intentionally empty
         pass
 
-    async def sendEvent(
+    def submitEvent(
         self,
         twitchChannel: str,
         eventType: str,
-        eventData: dict[Any, Any]
+        eventData: dict[str, Any]
     ):
-        # this method is intentionally empty
-        pass
-
-    def start(self):
         # this method is intentionally empty
         pass

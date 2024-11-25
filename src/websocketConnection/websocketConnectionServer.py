@@ -7,13 +7,15 @@ from queue import SimpleQueue
 from typing import Any
 
 import websockets
+from websockets.asyncio.server import ServerConnection
 
+from .mapper.websocketEventTypeMapperInterface import WebsocketEventTypeMapperInterface
+from .settings.websocketConnectionServerSettingsInterface import WebsocketConnectionServerSettingsInterface
 from .websocketConnectionServerInterface import WebsocketConnectionServerInterface
 from .websocketEvent import WebsocketEvent
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..timber.timberInterface import TimberInterface
 
 
@@ -22,104 +24,49 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        settingsJsonReader: JsonReaderInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        sleepTimeSeconds: float = 5,
-        port: int = 8765,
-        host: str = '0.0.0.0',
-        websocketSettingsFile: str = 'websocketSettings.json',
-        eventTimeToLive: timedelta = timedelta(seconds = 30)
+        websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface,
+        websocketEventTypeMapper: WebsocketEventTypeMapperInterface,
+        websocketSleepTimeSeconds: float = 3,
+        queueTimeoutSeconds: int = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not utils.isValidNum(sleepTimeSeconds):
-            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 3 or sleepTimeSeconds > 10:
-            raise TypeError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not utils.isValidInt(port):
-            raise TypeError(f'port argument is malformed: \"{port}\"')
-        elif port <= 1000 or port > utils.getIntMaxSafeSize():
-            raise TypeError(f'port argument is out of bounds: {port}')
-        elif not utils.isValidStr(host):
-            raise TypeError(f'host argument is malformed: \"{host}\"')
-        elif not utils.isValidStr(websocketSettingsFile):
-            raise TypeError(f'websocketSettingsFile argument is malformed: \"{websocketSettingsFile}\"')
-        elif not isinstance(eventTimeToLive, timedelta):
-            raise TypeError(f'eventTimeToLive argument is malformed: \"{eventTimeToLive}\"')
+        elif not isinstance(websocketConnectionServerSettings, WebsocketConnectionServerSettingsInterface):
+            raise TypeError(f'websocketConnectionServerSettings argument is malformed: \"{websocketConnectionServerSettings}\"')
+        elif not isinstance(websocketEventTypeMapper, WebsocketEventTypeMapperInterface):
+            raise TypeError(f'websocketEventTypeMapper argument is malformed: \"{websocketEventTypeMapper}\"')
+        elif not utils.isValidNum(websocketSleepTimeSeconds):
+            raise TypeError(f'websocketSleepTimeSeconds argument is malformed: \"{websocketSleepTimeSeconds}\"')
+        elif websocketSleepTimeSeconds < 3 or websocketSleepTimeSeconds > 10:
+            raise TypeError(f'websocketSleepTimeSeconds argument is out of bounds: {websocketSleepTimeSeconds}')
+        elif not utils.isValidInt(queueTimeoutSeconds):
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__port: int = port
-        self.__host: str = host
-        self.__websocketSettingsFile: str = websocketSettingsFile
-        self.__eventTimeToLive: timedelta = eventTimeToLive
+        self.__websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = websocketConnectionServerSettings
+        self.__websocketEventTypeMapper: WebsocketEventTypeMapperInterface = websocketEventTypeMapper
+        self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
+        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
         self.__isStarted: bool = False
-        self.__cache: dict[str, Any] | None = None
         self.__eventQueue: SimpleQueue[WebsocketEvent] = SimpleQueue()
 
-    async def clearCaches(self):
-        self.__cache = None
-        self.__timber.log('WebsocketConnectionServer', 'Caches cleared')
+    async def __serializeEventToJson(self, event: WebsocketEvent) -> str:
+        if not isinstance(event, WebsocketEvent):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
-    async def __isDebugLoggingEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'debugLoggingEnabled', False)
-
-    async def __readJson(self) -> dict[str, Any]:
-        if self.__cache is not None:
-            return self.__cache
-
-        jsonContents: dict[str, Any] | None = None
-
-        if await self.__settingsJsonReader.fileExistsAsync():
-            jsonContents = await self.__settingsJsonReader.readJsonAsync()
-        else:
-            jsonContents = dict()
-
-        if jsonContents is None:
-            raise IOError(f'Error reading from Websocket settings file: \"{self.__websocketSettingsFile}\"')
-
-        self.__cache = jsonContents
-        return jsonContents
-
-    async def sendEvent(
-        self,
-        twitchChannel: str,
-        eventType: str,
-        eventData: dict[Any, Any]
-    ):
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(eventType):
-            raise ValueError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
-        elif not isinstance(eventData, dict) or len(eventData) == 0:
-            raise ValueError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
-
-        event: dict[str, Any] = {
-            'twitchChannel': twitchChannel,
-            'eventType': eventType,
-            'eventData': eventData
-        }
-
-        if await self.__isDebugLoggingEnabled():
-            currentSize = self.__eventQueue.qsize()
-            self.__timber.log('WebsocketConnectionServer', f'Adding event to queue (current qsize is {currentSize}): {event}')
-
-        self.__eventQueue.put(WebsocketEvent(
-            eventTime = datetime.now(self.__timeZoneRepository.getDefault()), 
-            eventData = event
-        ))
+        # TODO will add more logic here in the future
+        return json.dumps(event.eventData, sort_keys = True)
 
     def start(self):
         if self.__isStarted:
@@ -128,62 +75,92 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
         self.__isStarted = True
         self.__timber.log('WebsocketConnectionServer', 'Starting WebsocketConnectionServer...')
-        self.__backgroundTaskHelper.createTask(self.__startEventLoop())
+        self.__backgroundTaskHelper.createTask(self.__startWebsocketServer())
 
-    async def __startEventLoop(self):
+    async def __startWebsocketServer(self):
         while True:
+            host = await self.__websocketConnectionServerSettings.getHost()
+            port = await self.__websocketConnectionServerSettings.getPort()
+
             try:
                 async with websockets.serve(
                     self.__websocketConnectionReceived,
-                    host = self.__host,
-                    port = self.__port
+                    host = host,
+                    port = port
                 ) as websocket:
-                    if await self.__isDebugLoggingEnabled():
-                        self.__timber.log('WebsocketConnectionServer', f'Looping within `__start()`')
-
+                    self.__timber.log('WebsocketConnectionServer', f'Serving in progress... ({host=}) ({port=})')
                     await websocket.wait_closed()
             except Exception as e:
-                self.__timber.log('WebsocketConnectionServer', f'Encountered exception within `__start()`: {e}', e, traceback.format_exc())
+                self.__timber.log('WebsocketConnectionServer', f'Encountered exception within `__startWebsocketServer()` ({host=}) ({port=}): {e}', e, traceback.format_exc())
 
                 if str(e) == 'Event loop is closed':
                     # this annoying code provides us an escape from this infinite loop when using
                     # CTRL+C at the terminal to stop the bot
-                    self.__timber.log('WebsocketConnectionServer', f'Breaking from `__start()` loop')
-                    break
+                    self.__timber.log('WebsocketConnectionServer', f'Breaking from `__startWebsocketServer()` loop')
+                    return
 
-            if await self.__isDebugLoggingEnabled():
-                self.__timber.log('WebsocketConnectionServer', f'Sleeping within `__start()`')
+            self.__timber.log('WebsocketConnectionServer', f'Sleeping within `__startWebsocketServer()`')
+            await asyncio.sleep(self.__websocketSleepTimeSeconds)
 
-            await asyncio.sleep(self.__sleepTimeSeconds)
+    def submitEvent(
+        self,
+        twitchChannel: str,
+        eventType: str,
+        eventData: dict[str, Any]
+    ):
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(eventType):
+            raise TypeError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
+        elif not isinstance(eventData, dict) or len(eventData) == 0:
+            raise TypeError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
 
-    async def __websocketConnectionReceived(self, websocket, path):
-        if await self.__isDebugLoggingEnabled():
-            self.__timber.log('WebsocketConnectionServer', f'Entered `__websocketConnectionReceived()` (path: \"{path}\") (qsize: {self.__eventQueue.qsize()})')
+        event: dict[str, Any] = {
+            'twitchChannel': twitchChannel,
+            'eventType': eventType,
+            'eventData': eventData
+        }
 
-        while websocket.open:
-            while not self.__eventQueue.empty():
-                isDebugLoggingEnabled = await self.__isDebugLoggingEnabled()
+        websocketEvent = WebsocketEvent(
+            eventTime = datetime.now(self.__timeZoneRepository.getDefault()), 
+            eventData = event
+        )
 
-                try:
-                    event = self.__eventQueue.get_nowait()
+        try:
+            self.__eventQueue.put(websocketEvent, block = True, timeout = self.__queueTimeoutSeconds)
+        except queue.Full as e:
+            self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Full when submitting a new event ({websocketEvent=}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
-                    if event.eventTime + self.__eventTimeToLive >= datetime.now(self.__timeZoneRepository.getDefault()):
-                        eventJson = json.dumps(event.eventData, sort_keys = True)
-                        await websocket.send(eventJson)
+    async def __websocketConnectionReceived(
+        self,
+        serverConnection: ServerConnection
+    ):
+        self.__timber.log('WebsocketConnectionServer', f'Entered `__websocketConnectionReceived()` ({serverConnection=}) (qsize: {self.__eventQueue.qsize()})')
 
-                        if isDebugLoggingEnabled:
-                            self.__timber.log('WebsocketConnectionServer', f'Sent event to \"{path}\": {event.eventData}')
-                        else:
-                            self.__timber.log('WebsocketConnectionServer', f'Sent event to \"{path}\"')
+        while await serverConnection.wait_closed():
+            eventTimeToLive = timedelta(
+                seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds()
+            )
+
+            events: list[WebsocketEvent] = list()
+
+            try:
+                while not self.__eventQueue.empty():
+                    events.append(self.__eventQueue.get_nowait())
+            except queue.Empty as e:
+                self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events ({serverConnection=}) (qsize: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+
+            if len(events) >= 1:
+                now = datetime.now(self.__timeZoneRepository.getDefault())
+
+                for event in events:
+                    if event.eventTime + eventTimeToLive >= now:
+                        eventJson = await self.__serializeEventToJson(event)
+                        await serverConnection.send(eventJson)
+                        self.__timber.log('WebsocketConnectionServer', f'Sent websocket event ({serverConnection=}) ({event=})')
                     else:
-                        if isDebugLoggingEnabled:
-                            self.__timber.log('WebsocketConnectionServer', f'Discarded an event meant for \"{path}\": {event.eventData}')
-                        else:
-                            self.__timber.log('WebsocketConnectionServer', f'Discarded an event meant for \"{path}\"')
-                except queue.Empty as e:
-                    self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events (qsize: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+                        self.__timber.log('WebsocketConnectionServer', f'Discarded websocket event ({serverConnection=}) ({event=})')
 
-            await asyncio.sleep(self.__sleepTimeSeconds)
+            await asyncio.sleep(self.__websocketSleepTimeSeconds)
 
-        if await self.__isDebugLoggingEnabled():
-            self.__timber.log('WebsocketConnectionServer', f'Exiting `__websocketConnectionReceived()`')
+        self.__timber.log('WebsocketConnectionServer', f'Exiting `__websocketConnectionReceived()` ({serverConnection=})')

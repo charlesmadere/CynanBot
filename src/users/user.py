@@ -65,7 +65,6 @@ class User(UserInterface):
         isTtsEnabled: bool,
         isTtsMonsterApiUsageReportingEnabled: bool,
         isWeatherEnabled: bool,
-        isWelcomeTtsEnabled: bool,
         isWordOfTheDayEnabled: bool,
         anivMessageCopyTimeoutProbability: float | None,
         superTriviaCheerTriggerAmount: float | None,
@@ -210,8 +209,6 @@ class User(UserInterface):
             raise TypeError(f'isTtsMonsterApiUsageReportingEnabled argument is malformed: \"{isTtsMonsterApiUsageReportingEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
             raise TypeError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
-        elif not utils.isValidBool(isWelcomeTtsEnabled):
-            raise TypeError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise TypeError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
         elif anivMessageCopyTimeoutProbability is not None and not utils.isValidNum(anivMessageCopyTimeoutProbability):
@@ -357,7 +354,6 @@ class User(UserInterface):
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
-        self.__isWelcomeTtsEnabled: bool = isWelcomeTtsEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__anivMessageCopyTimeoutProbability: float | None = anivMessageCopyTimeoutProbability
         self.__superTriviaCheerTriggerAmount: float | None = superTriviaCheerTriggerAmount
@@ -720,12 +716,11 @@ class User(UserInterface):
     def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
         return self.__isTtsMonsterApiUsageReportingEnabled
 
+    @property
     def isWeatherEnabled(self) -> bool:
         return self.__isWeatherEnabled
 
-    def isWelcomeTtsEnabled(self) -> bool:
-        return self.__isWelcomeTtsEnabled
-
+    @property
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
 

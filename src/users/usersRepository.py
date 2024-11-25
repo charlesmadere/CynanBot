@@ -171,7 +171,6 @@ class UsersRepository(UsersRepositoryInterface):
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
         isTtsMonsterApiUsageReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED.jsonKey, True)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
-        isWelcomeTtsEnabled = utils.getBoolFromDict(userJson, 'welcomeTtsEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
@@ -364,7 +363,6 @@ class UsersRepository(UsersRepositoryInterface):
             isTtsEnabled = isTtsEnabled,
             isTtsMonsterApiUsageReportingEnabled = isTtsMonsterApiUsageReportingEnabled,
             isWeatherEnabled = isWeatherEnabled,
-            isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             anivMessageCopyTimeoutProbability = anivMessageCopyTimeoutProbability,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,

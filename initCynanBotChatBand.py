@@ -179,7 +179,7 @@ from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
 from src.users.usersRepositoryInterface import UsersRepositoryInterface
-from src.websocketConnection.websocketConnectionServer import WebsocketConnectionServer
+from src.websocketConnection.stub.stubWebsocketConnectionServer import StubWebsocketConnectionServer
 from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
@@ -311,13 +311,6 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
-)
-
-websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
-    backgroundTaskHelper = backgroundTaskHelper,
-    settingsJsonReader = JsonFileReader('websocketConnectionServer.json'),
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
 )
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
@@ -749,6 +742,13 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 )
 
 
+########################################################
+## Websocket Connection Server initialization section ##
+########################################################
+
+websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketConnectionServer()
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -866,7 +866,7 @@ cynanBot = CynanBot(
     usersRepository = usersRepository,
     weatherReportPresenter = None,
     weatherRepository = None,
-    websocketConnectionServer = None,
+    websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayPresenter = None,
     wordOfTheDayRepository = None
 )

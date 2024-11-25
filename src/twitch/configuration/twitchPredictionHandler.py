@@ -26,7 +26,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
-        websocketConnectionServer: WebsocketConnectionServerInterface | None,
+        websocketConnectionServer: WebsocketConnectionServerInterface,
         websocketEventType: str = 'channelPrediction',
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
@@ -35,7 +35,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
+        elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
         elif not utils.isValidStr(websocketEventType):
             raise TypeError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
@@ -44,7 +44,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
-        self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
+        self.__websocketConnectionServer: WebsocketConnectionServerInterface = websocketConnectionServer
         self.__websocketEventType: str = websocketEventType
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -104,15 +104,15 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                     topPredictorsString = f'{topPredictorsString}, and {predictorString}'
                 else:
                     topPredictorsString = f'{topPredictorsString}, {predictorString}'
-            
+
             predictorPluralization: str
             if len(topPredictors) == 1:
                 predictorPluralization = 'top predictor was'
             else:
                 predictorPluralization = 'top predictors were'
-            
+
             outcomeString = outcomeString + f', {predictorPluralization} {topPredictorsString}!'
-        
+
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
         await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
 
@@ -235,9 +235,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils
-        websocketConnectionServer = self.__websocketConnectionServer
 
-        if twitchPredictionWebsocketUtils is None or websocketConnectionServer is None:
+        if twitchPredictionWebsocketUtils is None:
             return
         elif not user.isChannelPredictionChartEnabled():
             return
@@ -250,7 +249,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         if eventData is None or len(eventData) == 0:
             return
 
-        await websocketConnectionServer.sendEvent(
+        self.__websocketConnectionServer.submitEvent(
             twitchChannel = user.getHandle(),
             eventType = self.__websocketEventType,
             eventData = eventData

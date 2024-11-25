@@ -121,12 +121,6 @@ class GeneralSettingsRepositorySnapshot:
     def isTwitchChatApiEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'twitchChatApiEnabled', False)
 
-    def isWeatherEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'weatherEnabled', False)
-
-    def isWordOfTheDayEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'wordOfTheDayEnabled', False)
-
     def requireAdministrator(self) -> str:
         administrator = self.__jsonContents.get('administrator')
 

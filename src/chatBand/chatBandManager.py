@@ -145,7 +145,7 @@ class ChatBandManager(ChatBandManagerInterface):
         if await self.__isDebugLoggingEnabled():
             self.__timber.log('ChatBandManager', f'New \"{twitchChannel}\" Chat Band event: {eventData}')
 
-        await self.__websocketConnectionServer.sendEvent(
+        self.__websocketConnectionServer.submitEvent(
             twitchChannel = twitchChannel,
             eventType = self.__websocketEventType,
             eventData = eventData

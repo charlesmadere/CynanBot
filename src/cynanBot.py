@@ -646,7 +646,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, crowdControlSettingsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterApiTokensRepository, ttsMonsterKeyAndUserIdRepository, ttsMonsterSettingsRepository, ttsMonsterStreamerVoicesRepository, ttsSettingsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, crowdControlSettingsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterApiTokensRepository, ttsMonsterKeyAndUserIdRepository, ttsMonsterSettingsRepository, ttsMonsterStreamerVoicesRepository, ttsSettingsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -811,7 +811,7 @@ class CynanBot(
         if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
             self.__weatherCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__weatherCommand: AbsChatCommand = WeatherChatCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
+            self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
         if cheerActionHelper is None:
             self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -821,7 +821,7 @@ class CynanBot(
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__wordCommand: AbsChatCommand = WordChatCommand(generalSettingsRepository, languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
+            self.__wordCommand: AbsChatCommand = WordChatCommand(languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
 
         ########################################################
         ## Initialization of point redemption handler objects ##

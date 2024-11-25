@@ -384,14 +384,12 @@ class UserInterface(ABC):
     def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isWeatherEnabled(self) -> bool:
         pass
 
-    @abstractmethod
-    def isWelcomeTtsEnabled(self) -> bool:
-        pass
-
+    @property
     @abstractmethod
     def isWordOfTheDayEnabled(self) -> bool:
         pass

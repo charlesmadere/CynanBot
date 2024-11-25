@@ -52,7 +52,6 @@ from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
-from ..websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 
 class ClearCachesChatCommand(AbsChatCommand):
@@ -100,7 +99,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: WeatherRepositoryInterface | None,
-        websocketConnectionServer: WebsocketConnectionServerInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
     ):
         if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
@@ -185,8 +183,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
@@ -235,7 +231,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)
         self.__clearables.append(weatherRepository)
-        self.__clearables.append(websocketConnectionServer)
         self.__clearables.append(wordOfTheDayRepository)
         self.__clearables.freeze()
 

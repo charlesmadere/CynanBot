@@ -91,10 +91,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             return CrowdControlActionHandleResult.RETRY
 
         if await self.__crowdControlSettingsRepository.areSoundsEnabled():
-            await self.__immediateSoundPlayerManager.playSoundAlert(
-                alert = SoundAlert.CLICK_NAVIGATION,
-                volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
-            )
+            await self.__playSoundAlert(action)
 
         handleResult: CrowdControlActionHandleResult
 
@@ -165,6 +162,34 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         except Exception as e:
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
+
+    async def __playSoundAlert(self, action: CrowdControlAction):
+        if not isinstance(action, CrowdControlAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if not await self.__crowdControlSettingsRepository.areSoundsEnabled():
+            return
+
+        alert: SoundAlert | None = None
+
+        if isinstance(action, ButtonPressCrowdControlAction):
+            alert = SoundAlert.CLICK_NAVIGATION
+        elif isinstance(action, GameShuffleCrowdControlAction):
+            entryWithinGigaShuffle = action.entryWithinGigaShuffle
+            startOfGigaShuffleSize = action.startOfGigaShuffleSize
+
+            if not entryWithinGigaShuffle and startOfGigaShuffleSize is not None and startOfGigaShuffleSize >= 2:
+                alert = None # TODO set a new alert type here
+        else:
+            raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
+
+        if alert is None:
+            return
+
+        await self.__immediateSoundPlayerManager.playSoundAlert(
+            alert = alert,
+            volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
+        )
 
     def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
         if actionHandler is not None and not isinstance(actionHandler, CrowdControlActionHandler):
