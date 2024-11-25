@@ -7,9 +7,8 @@ from .chatBandMember import ChatBandMember
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..storage.jsonReaderInterface import JsonReaderInterface
+from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
-from ..websocketConnection.websocketConnectionServerInterface import \
-    WebsocketConnectionServerInterface
 
 
 class ChatBandManager(ChatBandManagerInterface):
@@ -17,29 +16,25 @@ class ChatBandManager(ChatBandManagerInterface):
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        websocketConnectionServer: WebsocketConnectionServerInterface,
-        websocketEventType: str = 'chatBand',
         eventCooldown: timedelta = timedelta(minutes = 5),
         memberCacheTimeToLive: timedelta = timedelta(minutes = 15)
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif not utils.isValidStr(websocketEventType):
-            raise TypeError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
         elif not isinstance(eventCooldown, timedelta):
             raise TypeError(f'eventCooldown argument is malformed: \"{eventCooldown}\"')
         elif not isinstance(memberCacheTimeToLive, timedelta):
             raise TypeError(f'memberCacheTimeToLive argument is malformed: \"{memberCacheTimeToLive}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__websocketConnectionServer: WebsocketConnectionServerInterface = websocketConnectionServer
-        self.__websocketEventType: str = websocketEventType
 
         self.__stubChatBandMember = ChatBandMember(
             isEnabled = False,
@@ -61,16 +56,10 @@ class ChatBandManager(ChatBandManagerInterface):
     async def __findChatBandMember(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         author: str,
         message: str
     ) -> ChatBandMember | None:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(author):
-            raise TypeError(f'author argument is malformed: \"{author}\"')
-        elif not utils.isValidStr(message):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-
         isDebugLoggingEnabled = await self.__isDebugLoggingEnabled()
         chatBandMember = self.__chatBandMemberCache[self.__getCooldownKey(twitchChannel, author)]
 
@@ -99,7 +88,7 @@ class ChatBandManager(ChatBandManagerInterface):
         if chatBandMember is None:
             self.__chatBandMemberCache[self.__getCooldownKey(twitchChannel, author)] = self.__stubChatBandMember
 
-        if chatBandMember is not None and chatBandMember is not self.__stubChatBandMember and chatBandMember.isEnabled() and chatBandMember.getKeyPhrase() == message:
+        if chatBandMember is not None and chatBandMember is not self.__stubChatBandMember and chatBandMember.isEnabled and chatBandMember.keyPhrase == message:
             if isDebugLoggingEnabled:
                 self.__timber.log('ChatBandManager', f'Found corresponding \"{twitchChannel}\" chat band member for given message: {self.__toEventData(chatBandMember)}')
 
@@ -119,9 +108,17 @@ class ChatBandManager(ChatBandManagerInterface):
         jsonContents = await self.__readAllJson()
         return utils.getBoolFromDict(jsonContents, 'debugLoggingEnabled', fallback = False)
 
-    async def playInstrumentForMessage(self, twitchChannel: str, author: str, message: str) -> bool:
+    async def playInstrumentForMessage(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str,
+        author: str,
+        message: str
+    ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(author):
             raise TypeError(f'author argument is malformed: \"{author}\"')
         elif not utils.isValidStr(message):
@@ -129,6 +126,7 @@ class ChatBandManager(ChatBandManagerInterface):
 
         chatBandMember = await self.__findChatBandMember(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             author = author,
             message = message
         )
@@ -145,11 +143,7 @@ class ChatBandManager(ChatBandManagerInterface):
         if await self.__isDebugLoggingEnabled():
             self.__timber.log('ChatBandManager', f'New \"{twitchChannel}\" Chat Band event: {eventData}')
 
-        self.__websocketConnectionServer.submitEvent(
-            twitchChannel = twitchChannel,
-            eventType = self.__websocketEventType,
-            eventData = eventData
-        )
+        # this event should be submitted to StreamAlertsManager
 
         return True
 
@@ -192,7 +186,7 @@ class ChatBandManager(ChatBandManagerInterface):
             raise TypeError(f'chatBandMember argument is malformed: \"{chatBandMember}\"')
 
         return {
-            'author': chatBandMember.getAuthor(),
-            'instrument': chatBandMember.getInstrument().toStr(),
-            'keyPhrase': chatBandMember.getKeyPhrase()
+            'author': chatBandMember.author,
+            'instrument': chatBandMember.instrument.toStr(),
+            'keyPhrase': chatBandMember.keyPhrase
         }

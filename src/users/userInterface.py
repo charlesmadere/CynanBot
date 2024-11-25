@@ -239,6 +239,7 @@ class UserInterface(ABC):
     def isCatJamMessageEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isChannelPredictionChartEnabled(self) -> bool:
         pass
@@ -371,6 +372,7 @@ class UserInterface(ABC):
     def isTriviaScoreEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isTtsChattersEnabled(self) -> bool:
         pass

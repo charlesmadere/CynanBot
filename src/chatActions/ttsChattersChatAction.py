@@ -28,7 +28,7 @@ class TtsChattersChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isTtsChattersEnabled() or not user.isTtsEnabled():
+        if not user.isTtsChattersEnabled or not user.isTtsEnabled():
             return False
 
         streamAlertsManager = self.__streamAlertsManager
@@ -47,9 +47,8 @@ class TtsChattersChatAction(AbsChatAction):
         if boosterPack is None:
             return False
 
-
         voice: str = ''
-        
+
         match boosterPack.ttsProvider:
             case TtsProvider.STREAM_ELEMENTS:
                 if isinstance(boosterPack.voice, StreamElementsVoice):

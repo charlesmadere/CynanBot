@@ -589,6 +589,7 @@ class User(UserInterface):
     def isCatJamMessageEnabled(self) -> bool:
         return self.__isCatJamMessageEnabled
 
+    @property
     def isChannelPredictionChartEnabled(self) -> bool:
         return self.__isChannelPredictionChartEnabled
 
@@ -709,6 +710,7 @@ class User(UserInterface):
     def isTtsEnabled(self) -> bool:
         return self.__isTtsEnabled
 
+    @property
     def isTtsChattersEnabled(self) -> bool:
         return self.__isTtsChattersEnabled
 

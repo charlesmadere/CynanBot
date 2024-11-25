@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from .websocketEventType import WebsocketEventType
+
 
 class WebsocketConnectionServerInterface(ABC):
 
@@ -12,7 +14,8 @@ class WebsocketConnectionServerInterface(ABC):
     def submitEvent(
         self,
         twitchChannel: str,
-        eventType: str,
+        twitchChannelId: str,
+        eventType: WebsocketEventType,
         eventData: dict[str, Any]
     ):
         pass

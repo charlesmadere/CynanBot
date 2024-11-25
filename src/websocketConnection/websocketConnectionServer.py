@@ -131,10 +131,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         except queue.Full as e:
             self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Full when submitting a new event ({websocketEvent=}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
-    async def __websocketConnectionReceived(
-        self,
-        serverConnection: ServerConnection
-    ):
+    async def __websocketConnectionReceived(self, serverConnection: ServerConnection):
         self.__timber.log('WebsocketConnectionServer', f'Entered `__websocketConnectionReceived()` ({serverConnection=}) (qsize: {self.__eventQueue.qsize()})')
 
         while await serverConnection.wait_closed():
