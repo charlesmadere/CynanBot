@@ -11,7 +11,7 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
-from ...streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
+from ...messageCleaner.messageCleanerInterface import MessageCleanerInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -22,7 +22,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         streamElementsFileManager: StreamElementsFileManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
-        streamElementsMessageCleaner: StreamElementsMessageCleanerInterface,
+        messageCleaner: MessageCleanerInterface,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -35,8 +35,8 @@ class StreamElementsTtsManager(TtsManagerInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
         elif not isinstance(streamElementsHelper, StreamElementsHelperInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
-        elif not isinstance(streamElementsMessageCleaner, StreamElementsMessageCleanerInterface):
-            raise TypeError(f'streamElementsMessageCleaner argument is malformed: \"{streamElementsMessageCleaner}\"')
+        elif not isinstance(messageCleaner, MessageCleanerInterface):
+            raise TypeError(f'messageCleaner argument is malformed: \"{messageCleaner}\"')
         elif not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
             raise TypeError(f'streamElementsSettingsRepository argument is malformed: \"{streamElementsSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -51,7 +51,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamElementsFileManager: StreamElementsFileManagerInterface = streamElementsFileManager
         self.__streamElementsHelper: StreamElementsHelperInterface = streamElementsHelper
-        self.__streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = streamElementsMessageCleaner
+        self.__streamElementsMessageCleaner: MessageCleanerInterface = messageCleaner
         self.__streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = streamElementsSettingsRepository
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder

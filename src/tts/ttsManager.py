@@ -2,6 +2,7 @@ from typing import Any
 
 from .decTalk.decTalkManager import DecTalkManager
 from .google.googleTtsManager import GoogleTtsManager
+from .halfLife.halfLifeTtsManager import HalfLifeTtsManager
 from .streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from .tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from .ttsEvent import TtsEvent
@@ -18,6 +19,7 @@ class TtsManager(TtsManagerInterface):
         self,
         decTalkManager: DecTalkManager | None,
         googleTtsManager: GoogleTtsManager | None,
+        halfLifeTtsManager: HalfLifeTtsManager | None,
         streamElementsTtsManager: StreamElementsTtsManager | None,
         timber: TimberInterface,
         ttsMonsterManager: TtsMonsterManagerInterface | None,
@@ -28,6 +30,8 @@ class TtsManager(TtsManagerInterface):
             raise TypeError(f'decTalkManager argument is malformed: \"{decTalkManager}\"')
         elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManager):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
+        elif halfLifeTtsManager is not None and not isinstance(halfLifeTtsManager, HalfLifeTtsManager):
+            raise TypeError(f'halfLifeTtsManager argument is malformed: \"{halfLifeTtsManager}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManager):
             raise TypeError(f'streamElementsTtsManager argument is malformed: \"{streamElementsTtsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -41,6 +45,7 @@ class TtsManager(TtsManagerInterface):
 
         self.__decTalkManager: TtsManagerInterface | None = decTalkManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
+        self.__halfLifeTtsManager: HalfLifeTtsManager | None = halfLifeTtsManager
         self.__streamElementsTtsManager: StreamElementsTtsManager | None = streamElementsTtsManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterManager: TtsMonsterManagerInterface | None = ttsMonsterManager
@@ -65,6 +70,7 @@ class TtsManager(TtsManagerInterface):
 
         decTalkManager = self.__decTalkManager
         googleTtsManager = self.__googleTtsManager
+        halfLifeTtsManager = self.__halfLifeTtsManager
         streamElementsTtsManager = self.__streamElementsTtsManager
         ttsMonsterManager = self.__ttsMonsterManager
         proceed = False
@@ -76,6 +82,10 @@ class TtsManager(TtsManagerInterface):
         elif event.provider is TtsProvider.GOOGLE and googleTtsManager is not None:
             if await googleTtsManager.playTtsEvent(event):
                 self.__currentTtsManager = googleTtsManager
+                proceed = True
+        elif event.provider is TtsProvider.HALF_LIFE and halfLifeTtsManager is not None:
+            if await halfLifeTtsManager.playTtsEvent(event):
+                self.__currentTtsManager = halfLifeTtsManager
                 proceed = True
         elif event.provider is TtsProvider.STREAM_ELEMENTS and streamElementsTtsManager is not None:
             if await streamElementsTtsManager.playTtsEvent(event):

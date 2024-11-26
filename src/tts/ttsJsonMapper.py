@@ -44,6 +44,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         match ttsProvider:
             case 'dec_talk': return TtsProvider.DEC_TALK
             case 'google': return TtsProvider.GOOGLE
+            case 'half_life': return TtsProvider.HALF_LIFE
             case 'stream_elements': return TtsProvider.STREAM_ELEMENTS
             case 'tts_monster': return TtsProvider.TTS_MONSTER
             case _:
@@ -71,6 +72,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         match ttsProvider:
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
+            case TtsProvider.HALF_LIFE: return 'half_life'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
             case _: raise ValueError(f'The given TtsProvider value is unknown: \"{ttsProvider}\"')
