@@ -680,6 +680,7 @@ class User(UserInterface):
     def isSuperTriviaLotrTimeoutEnabled(self) -> bool:
         return self.__isSuperTriviaLotrTimeoutEnabled
 
+    @property
     def isSupStreamerEnabled(self) -> bool:
         return self.__isSupStreamerEnabled
 

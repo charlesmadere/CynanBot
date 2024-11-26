@@ -20,15 +20,15 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
-        streamAlertsManager: StreamAlertsManagerInterface | None,
-        supStreamerRepository: SupStreamerRepositoryInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface,
+        supStreamerRepository: SupStreamerRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 6)
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
+        elif not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -37,8 +37,8 @@ class SupStreamerChatAction(AbsChatAction):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
-        self.__supStreamerRepository: SupStreamerRepositoryInterface | None = supStreamerRepository
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
+        self.__supStreamerRepository: SupStreamerRepositoryInterface = supStreamerRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__cooldown: timedelta = cooldown
@@ -49,13 +49,7 @@ class SupStreamerChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isSupStreamerEnabled() or not user.isTtsEnabled():
-            return False
-
-        streamAlertsManager = self.__streamAlertsManager
-        supStreamerRepository = self.__supStreamerRepository
-
-        if streamAlertsManager is None or supStreamerRepository is None:
+        if not user.isSupStreamerEnabled or not user.isTtsEnabled():
             return False
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -68,10 +62,10 @@ class SupStreamerChatAction(AbsChatAction):
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
-        elif chatMessage.casefold() != supStreamerMessage.casefold():
+        elif not await self.__isSupStreamerMessage(chatMessage, supStreamerMessage):
             return False
 
-        supStreamerChatData = await supStreamerRepository.get(
+        supStreamerChatData = await self.__supStreamerRepository.get(
             chatterUserId = message.getAuthorId(),
             twitchChannelId = await message.getTwitchChannelId()
         )
@@ -79,14 +73,14 @@ class SupStreamerChatAction(AbsChatAction):
         if supStreamerChatData is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
             return False
 
-        await supStreamerRepository.set(
+        await self.__supStreamerRepository.set(
             chatterUserId = message.getAuthorId(),
             twitchChannelId = await message.getTwitchChannelId()
         )
 
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
 
-        streamAlertsManager.submitAlert(StreamAlert(
+        self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = await message.getTwitchChannelId(),
@@ -103,3 +97,14 @@ class SupStreamerChatAction(AbsChatAction):
         ))
 
         return True
+
+    async def __isSupStreamerMessage(
+        self,
+        chatMessage: str | None,
+        supStreamerMessage: str
+    ) -> bool:
+        if not utils.isValidStr(chatMessage):
+            return False
+
+        # TODO better checks to allow slightly more flexibility
+        return chatMessage.casefold() == supStreamerMessage.casefold()
