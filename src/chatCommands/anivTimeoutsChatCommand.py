@@ -67,7 +67,11 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find timeout score for \"{userName}\"')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ Unable to find timeout score for \"{userName}\"',
+                    replyMessageId = await ctx.getMessageId()
+                )
                 return
 
         score = await self.__anivCopyMessageTimeoutScoreRepository.getScore(
