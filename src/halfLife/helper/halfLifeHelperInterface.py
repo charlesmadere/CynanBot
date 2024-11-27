@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 
 class HalfLifeHelperInterface(ABC):
 
@@ -7,5 +9,5 @@ class HalfLifeHelperInterface(ABC):
     async def getSpeech(
         self,
         message: str | None
-    ) -> list[str] | None:
+    ) -> FrozenList[str] | None:
         pass

@@ -1,3 +1,4 @@
+from frozenlist import FrozenList
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsManagerInterface import TtsManagerInterface
@@ -83,7 +84,7 @@ class HalfLifeTtsManager(TtsManagerInterface):
 
         return True
 
-    async def __processTtsEvent(self, event: TtsEvent) -> list[str] | None:
+    async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
         message = await self.__halfLifeMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str

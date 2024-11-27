@@ -534,9 +534,12 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
+halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
+
 ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper,
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
+    halfLifeJsonParser = halfLifeJsonParser
 )
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
@@ -1054,7 +1057,6 @@ ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
     twitchUtils = twitchUtils
 )
 
-halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
     settingsJsonReader = JsonFileReader('halfLifeTtsSettingsRepository.json'),
