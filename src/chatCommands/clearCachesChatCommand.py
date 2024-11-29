@@ -127,7 +127,7 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(halfLifeService, HalfLifeServiceInterface):
+        elif halfLifeService is not None and not isinstance(halfLifeService, HalfLifeServiceInterface):
             raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeService}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
