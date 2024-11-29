@@ -1,31 +1,31 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from aniv.anivContentScanner import AnivContentScanner
-from aniv.anivContentScannerInterface import AnivContentScannerInterface
-from contentScanner.bannedWordsRepository import BannedWordsRepository
-from contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
-from contentScanner.contentScanner import ContentScanner
-from contentScanner.contentScannerInterface import ContentScannerInterface
-from misc.backgroundTaskHelper import BackgroundTaskHelper
-from misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from soundPlayerManager.soundAlert import SoundAlert
-from soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
-from soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
-from soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
-from soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
-from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
-from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
-from storage.jsonStaticReader import JsonStaticReader
-from storage.linesStaticReader import LinesStaticReader
-from systemCommandHelper.systemCommandHelper import SystemCommandHelper
-from systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
-from trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
-from trivia.triviaSettingsRepository import TriviaSettingsRepository
-from trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from .aniv.anivContentScanner import AnivContentScanner
+from .aniv.anivContentScannerInterface import AnivContentScannerInterface
+from .chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
+from .chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
+from .contentScanner.bannedWordsRepository import BannedWordsRepository
+from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
+from .contentScanner.contentScanner import ContentScanner
+from .contentScanner.contentScannerInterface import ContentScannerInterface
+from .misc.backgroundTaskHelper import BackgroundTaskHelper
+from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from .soundPlayerManager.soundAlert import SoundAlert
+from .soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
+from .soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
+from .soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from .soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
+from .storage.jsonStaticReader import JsonStaticReader
+from .storage.linesStaticReader import LinesStaticReader
+from .systemCommandHelper.systemCommandHelper import SystemCommandHelper
+from .systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
+from .timber.timberInterface import TimberInterface
+from .timber.timberStub import TimberStub
+from .trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
+from .trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from .trivia.triviaSettingsRepository import TriviaSettingsRepository
+from .trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
@@ -62,8 +62,7 @@ triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepo
 )
 
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-    timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    timber = timber
 )
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(

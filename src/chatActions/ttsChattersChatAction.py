@@ -15,12 +15,12 @@ class TtsChattersChatAction(AbsChatAction):
 
     def __init__(
         self,
-        streamAlertsManager: StreamAlertsManagerInterface | None
+        streamAlertsManager: StreamAlertsManagerInterface
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
 
     async def handleChat(
         self,
@@ -28,11 +28,7 @@ class TtsChattersChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isTtsChattersEnabled or not user.isTtsEnabled():
-            return False
-
-        streamAlertsManager = self.__streamAlertsManager
-        if streamAlertsManager is None:
+        if not user.isTtsChattersEnabled or not user.isTtsEnabled:
             return False
 
         chatMessage = message.getContent()
@@ -57,7 +53,7 @@ class TtsChattersChatAction(AbsChatAction):
                 if utils.isValidStr(boosterPack.voice):
                     voice = f'{boosterPack.voice}: '
 
-        streamAlertsManager.submitAlert(StreamAlert(
+        self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = await message.getTwitchChannelId(),

@@ -1,19 +1,19 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from language.languagesRepository import LanguagesRepository
-from language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from location.timeZoneRepository import TimeZoneRepository
-from location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from network.aioHttpClientProvider import AioHttpClientProvider
-from network.networkClientProvider import NetworkClientProvider
-from network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from transparent.transparentApiService import TransparentApiService
-from transparent.transparentApiServiceInterface import TransparentApiServiceInterface
-from transparent.transparentXmlMapper import TransparentXmlMapper
-from transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
+from .language.languagesRepository import LanguagesRepository
+from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from .location.timeZoneRepository import TimeZoneRepository
+from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
+from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from .network.networkClientProvider import NetworkClientProvider
+from .timber.timberInterface import TimberInterface
+from .timber.timberStub import TimberStub
+from .transparent.transparentApiService import TransparentApiService
+from .transparent.transparentApiServiceInterface import TransparentApiServiceInterface
+from .transparent.transparentXmlMapper import TransparentXmlMapper
+from .transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 
 timber: TimberInterface = TimberStub()
 

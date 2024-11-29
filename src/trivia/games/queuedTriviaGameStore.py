@@ -52,7 +52,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         queuedSuperGames = self.__queuedSuperGames[action.getTwitchChannelId()]
         oldQueueSize = len(queuedSuperGames)
 
-        if action.isQueueActionConsumed():
+        if action.isQueueActionConsumed:
             return AddQueuedGamesResult(
                 amountAdded = 0,
                 newQueueSize = oldQueueSize,
@@ -87,8 +87,8 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             if len(queuedSuperGames) < maxSuperTriviaGameQueueSize:
                 queuedSuperGames.append(StartNewSuperTriviaGameAction(
                     isQueueActionConsumed = True,
-                    isShinyTriviaEnabled = action.isShinyTriviaEnabled(),
-                    isToxicTriviaEnabled = action.isToxicTriviaEnabled(),
+                    isShinyTriviaEnabled = action.isShinyTriviaEnabled,
+                    isToxicTriviaEnabled = action.isToxicTriviaEnabled,
                     numberOfGames = 1,
                     perUserAttempts = action.getPerUserAttempts(),
                     pointsForWinning = action.getPointsForWinning(),

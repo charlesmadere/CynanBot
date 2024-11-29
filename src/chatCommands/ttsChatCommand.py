@@ -66,7 +66,7 @@ class TtsChatCommand(AbsChatCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('TtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
-        elif not user.isTtsEnabled():
+        elif not user.isTtsEnabled:
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())

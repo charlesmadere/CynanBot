@@ -11,12 +11,13 @@ from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
-from src.network.aioHttpClientProvider import AioHttpClientProvider
+from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
-from src.network.requestsClientProvider import RequestsClientProvider
+from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.backingPsqlDatabase import BackingPsqlDatabase
 from src.storage.backingSqliteDatabase import BackingSqliteDatabase
@@ -53,8 +54,6 @@ from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsoc
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
-from .src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
-
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
@@ -76,8 +75,7 @@ triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepo
 )
 
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-    timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    timber = timber
 )
 
 triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(

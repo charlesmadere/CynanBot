@@ -23,8 +23,7 @@ class TestTriviaAnswerCompiler:
     )
 
     triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-        timber = timber,
-        triviaSettingsRepository = triviaSettingsRepository
+        timber = timber
     )
 
     @pytest.mark.asyncio

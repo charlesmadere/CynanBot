@@ -20,7 +20,6 @@ from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryI
 from ..twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
-from ..twitch.twitchConstantsInterface import TwitchConstantsInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
@@ -54,7 +53,6 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
-        twitchConstants: TwitchConstantsInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchUtils: TwitchUtilsInterface
@@ -75,8 +73,6 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif not isinstance(twitchConstants, TwitchConstantsInterface):
-            raise TypeError(f'twitchConstants argument is malformed: \"{twitchConstants}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -93,7 +89,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
-        self.__twitchConstants: TwitchConstantsInterface = twitchConstants
+
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -101,7 +97,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __alertViaTextToSpeech(self, isReverse: bool, timeoutData: TimeoutActionData):
-        if not timeoutData.user.isTtsEnabled():
+        if not timeoutData.user.isTtsEnabled:
             return
 
         message: str

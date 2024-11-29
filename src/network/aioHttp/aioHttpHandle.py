@@ -3,11 +3,11 @@ from typing import Any
 import aiohttp
 
 from .aioHttpResponse import AioHttpResponse
-from .exceptions import GenericNetworkException
-from .networkClientType import NetworkClientType
-from .networkHandle import NetworkHandle
-from .networkResponse import NetworkResponse
-from ..timber.timberInterface import TimberInterface
+from ..exceptions import GenericNetworkException
+from ..networkClientType import NetworkClientType
+from ..networkHandle import NetworkHandle
+from ..networkResponse import NetworkResponse
+from ...timber.timberInterface import TimberInterface
 
 
 class AioHttpHandle(NetworkHandle):

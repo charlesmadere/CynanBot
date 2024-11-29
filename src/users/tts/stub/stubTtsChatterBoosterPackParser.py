@@ -2,9 +2,9 @@ from typing import Any
 
 from frozendict import frozendict
 
-from ....tts.ttsProvider import TtsProvider
 from ...ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
 from ...ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
+from ....tts.ttsProvider import TtsProvider
 
 
 class StubTtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):

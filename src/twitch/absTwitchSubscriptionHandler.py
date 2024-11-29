@@ -19,3 +19,7 @@ class AbsTwitchSubscriptionHandler(ABC):
     @abstractmethod
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass
+
+    @abstractmethod
+    def start(self):
+        pass

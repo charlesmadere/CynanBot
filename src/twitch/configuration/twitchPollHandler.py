@@ -22,18 +22,18 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
     def __init__(
         self,
-        streamAlertsManager: StreamAlertsManagerInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
@@ -190,16 +190,12 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        streamAlertsManager = self.__streamAlertsManager
-
-        if streamAlertsManager is None:
-            return
-        elif not user.isTtsEnabled():
+        if not user.isTtsEnabled:
             return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
 
-        streamAlertsManager.submitAlert(StreamAlert(
+        self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,

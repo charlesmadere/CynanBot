@@ -49,7 +49,7 @@ class SupStreamerChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isSupStreamerEnabled or not user.isTtsEnabled():
+        if not user.isSupStreamerEnabled or not user.isTtsEnabled:
             return False
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -62,7 +62,10 @@ class SupStreamerChatAction(AbsChatAction):
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
-        elif not await self.__isSupStreamerMessage(chatMessage, supStreamerMessage):
+        elif not await self.__isSupStreamerMessage(
+            chatMessage = chatMessage,
+            supStreamerMessage = supStreamerMessage
+        ):
             return False
 
         supStreamerChatData = await self.__supStreamerRepository.get(

@@ -29,8 +29,7 @@ class TestTriviaAnswerChecker:
     )
 
     triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-        timber = timber,
-        triviaSettingsRepository = triviaSettingsRepository
+        timber = timber
     )
 
     triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(

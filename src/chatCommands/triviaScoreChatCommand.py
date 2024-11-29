@@ -70,7 +70,7 @@ class TriviaScoreChatCommand(AbsChatCommand):
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaScoreEnabled():
+        elif not user.isTriviaScoreEnabled:
             return
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return

@@ -1,20 +1,20 @@
 from typing import Any
+
 from frozendict import frozendict
 
+from .ttsChatterBoosterPack import TtsChatterBoosterPack
+from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from ...tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ...tts.ttsProvider import TtsProvider
 
-from .ttsChatterBoosterPack import TtsChatterBoosterPack
-from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
-
 
 class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
 
     def __init__(
-            self, 
+            self,
             ttsJsonMapper: TtsJsonMapperInterface,
             streamElementsJsonParser: StreamElementsJsonParserInterface
         ):
@@ -42,9 +42,9 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         ttsProvider = self.__ttsJsonMapper.parseProvider(ttsProviderStr)
         if ttsProvider is None:
             ttsProvider = defaultTtsProvider
-            
+
         voice: StreamElementsVoice | str | None
-        
+
         match ttsProvider:
             case TtsProvider.STREAM_ELEMENTS:
                 voice = self.__streamElementsJsonParser.parseVoice(voiceStr)

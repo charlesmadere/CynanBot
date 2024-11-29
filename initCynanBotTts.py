@@ -117,13 +117,13 @@ from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInt
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
-from src.network.aioHttpClientProvider import AioHttpClientProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
-from src.network.requestsClientProvider import RequestsClientProvider
+from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
 from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from src.puptime.puptimeUserIdProvider import PuptimeUserIdProvider
@@ -1412,6 +1412,7 @@ twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,

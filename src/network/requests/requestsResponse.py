@@ -4,11 +4,11 @@ from typing import Any
 import xmltodict
 from requests.models import Response
 
-from .exceptions import NetworkResponseIsClosedException
-from .networkClientType import NetworkClientType
-from .networkResponse import NetworkResponse
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
+from ..exceptions import NetworkResponseIsClosedException
+from ..networkClientType import NetworkClientType
+from ..networkResponse import NetworkResponse
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class RequestsResponse(NetworkResponse):
@@ -85,8 +85,10 @@ class RequestsResponse(NetworkResponse):
 
         try:
             rawBytes = await self.read()
+
             if rawBytes is None:
                 return None
+
             return xmltodict.parse(rawBytes)
         except Exception as e:
             self.__timber.log('RequestsResponse', f'Unable to decode response into XML for url \"{self.__url}\"', e)

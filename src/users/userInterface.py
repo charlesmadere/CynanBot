@@ -310,6 +310,7 @@ class UserInterface(ABC):
     def isSchubertWalkMessageEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isShinyTriviaEnabled(self) -> bool:
         pass
@@ -357,6 +358,7 @@ class UserInterface(ABC):
     def isTimeoutCheerActionReverseEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isToxicTriviaEnabled(self) -> bool:
         pass
@@ -369,6 +371,7 @@ class UserInterface(ABC):
     def isTriviaGameEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isTriviaScoreEnabled(self) -> bool:
         pass
@@ -378,6 +381,7 @@ class UserInterface(ABC):
     def isTtsChattersEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isTtsEnabled(self) -> bool:
         pass

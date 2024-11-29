@@ -170,7 +170,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
         if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
-        elif not user.isTtsEnabled():
+        elif not user.isTtsEnabled:
             return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(

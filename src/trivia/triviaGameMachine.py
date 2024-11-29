@@ -728,12 +728,12 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         specialTriviaStatus: SpecialTriviaStatus | None = None
         pointsForWinning = action.getPointsForWinning()
 
-        if action.isShinyTriviaEnabled() and await self.__shinyTriviaHelper.isShinySuperTriviaQuestion(
+        if action.isShinyTriviaEnabled and await self.__shinyTriviaHelper.isShinySuperTriviaQuestion(
             twitchChannelId = action.getTwitchChannelId()
         ):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
             pointsForWinning = pointsForWinning * action.getShinyMultiplier()
-        elif action.isToxicTriviaEnabled() and await self.__toxicTriviaHelper.isToxicSuperTriviaQuestion(
+        elif action.isToxicTriviaEnabled and await self.__toxicTriviaHelper.isToxicSuperTriviaQuestion(
             twitchChannelId = action.getTwitchChannelId()
         ):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC

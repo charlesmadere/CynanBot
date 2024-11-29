@@ -8,7 +8,10 @@ from ...storage.jsonReaderInterface import JsonReaderInterface
 
 class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface):
 
-    def __init__(self, settingsJsonReader: JsonReaderInterface):
+    def __init__(
+        self,
+        settingsJsonReader: JsonReaderInterface
+    ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 

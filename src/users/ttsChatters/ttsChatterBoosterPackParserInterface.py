@@ -3,8 +3,8 @@ from typing import Any
 
 from frozendict import frozendict
 
-from ...tts.ttsProvider import TtsProvider
 from .ttsChatterBoosterPack import TtsChatterBoosterPack
+from ...tts.ttsProvider import TtsProvider
 
 
 class TtsChatterBoosterPackParserInterface(ABC):

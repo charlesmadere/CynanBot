@@ -146,12 +146,15 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def getTwitchChannelId(self) -> str:
         return self.__twitchChannelId
 
+    @property
     def isQueueActionConsumed(self) -> bool:
         return self.__isQueueActionConsumed
 
+    @property
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled
 
+    @property
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled
 

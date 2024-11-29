@@ -705,9 +705,11 @@ class User(UserInterface):
     def isTriviaGameEnabled(self) -> bool:
         return self.__isTriviaGameEnabled
 
+    @property
     def isTriviaScoreEnabled(self) -> bool:
         return self.__isTriviaScoreEnabled
 
+    @property
     def isTtsEnabled(self) -> bool:
         return self.__isTtsEnabled
 

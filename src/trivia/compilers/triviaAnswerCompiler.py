@@ -1,15 +1,14 @@
 import re
 import traceback
+import unicodedata
 from typing import Collection, Pattern
 
 import roman
-import unicodedata
 from num2words import num2words
 from roman import RomanError
 
 from .triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from ..triviaExceptions import BadTriviaAnswerException
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -29,18 +28,11 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     There are many other simple conversions that this class performs, but those are some key examples.
     """
 
-    def __init__(
-        self,
-        timber: TimberInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
-    ):
+    def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
         self.__ampersandRegEx: Pattern = re.compile(r'(^&\s+)|(\s+&\s+)|(\s+&$)', re.IGNORECASE)
         self.__decadeRegEx: Pattern = re.compile(r'^((in\s+)?the\s+)?(\d{4})\'?s$', re.IGNORECASE)

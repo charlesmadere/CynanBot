@@ -6,11 +6,11 @@ import aiohttp
 import xmltodict
 from aiohttp.client_exceptions import ContentTypeError
 
-from .exceptions import NetworkResponseIsClosedException
-from .networkClientType import NetworkClientType
-from .networkResponse import NetworkResponse
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
+from ..exceptions import NetworkResponseIsClosedException
+from ..networkClientType import NetworkClientType
+from ..networkResponse import NetworkResponse
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class AioHttpResponse(NetworkResponse):
@@ -101,6 +101,7 @@ class AioHttpResponse(NetworkResponse):
 
         try:
             rawBytes = await self.read()
+
             if rawBytes is None:
                 return None
 

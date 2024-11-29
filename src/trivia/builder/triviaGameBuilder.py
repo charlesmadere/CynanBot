@@ -116,8 +116,8 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         if not user.isSuperTriviaGameEnabled():
             return None
 
-        isShinyTriviaEnabled = user.isShinyTriviaEnabled() and user.isCutenessEnabled()
-        isToxicTriviaEnabled = user.isToxicTriviaEnabled() and user.isCutenessEnabled()
+        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled()
+        isToxicTriviaEnabled = user.isToxicTriviaEnabled and user.isCutenessEnabled()
 
         perUserAttempts = user.getSuperTriviaPerUserAttempts()
         if not utils.isValidInt(perUserAttempts):

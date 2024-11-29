@@ -124,7 +124,7 @@ class TestQueuedTriviaGameStore1:
 
     @pytest.mark.asyncio
     async def test_addQueuedSuperGamesSize_withEmptyTwitchChannel_andSuperGameIsNotInProgress(self):
-        assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed() is False
+        assert not self.startNewSuperTriviaGameAction1.isQueueActionConsumed
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = False,
@@ -133,7 +133,7 @@ class TestQueuedTriviaGameStore1:
         assert addResult.amountAdded == 2
         assert addResult.newQueueSize == 2
         assert addResult.oldQueueSize == 0
-        assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
@@ -142,7 +142,7 @@ class TestQueuedTriviaGameStore1:
         assert addResult.amountAdded == 0
         assert addResult.newQueueSize == 2
         assert addResult.oldQueueSize == 2
-        assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction1.isQueueActionConsumed
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
@@ -151,7 +151,7 @@ class TestQueuedTriviaGameStore1:
         assert addResult.amountAdded == 1
         assert addResult.newQueueSize == 3
         assert addResult.oldQueueSize == 2
-        assert self.startNewSuperTriviaGameAction2.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction2.isQueueActionConsumed
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
@@ -160,7 +160,7 @@ class TestQueuedTriviaGameStore1:
         assert addResult.amountAdded == 0
         assert addResult.newQueueSize == 3
         assert addResult.oldQueueSize == 3
-        assert self.startNewSuperTriviaGameAction3.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction3.isQueueActionConsumed
 
         addResult = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = False,
@@ -169,7 +169,7 @@ class TestQueuedTriviaGameStore1:
         assert addResult.amountAdded == 4
         assert addResult.newQueueSize == 4
         assert addResult.oldQueueSize == 0
-        assert self.startNewSuperTriviaGameAction4.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction4.isQueueActionConsumed
 
     def test_sanity(self):
         assert self.queuedTriviaGameStore is not None
@@ -269,7 +269,7 @@ class TestQueuedTriviaGameStore4:
 
     @pytest.mark.asyncio
     async def test_addQueuedSuperGamesSize_withEmptyTwitchChannel_andSuperGameIsInProgress(self):
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
+        assert not self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
         result = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
@@ -279,7 +279,7 @@ class TestQueuedTriviaGameStore4:
         assert result.amountAdded == 1
         assert result.newQueueSize == 1
         assert result.oldQueueSize == 0
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
     def test_sanity(self):
         assert self.queuedTriviaGameStore is not None
@@ -326,7 +326,7 @@ class TestQueuedTriviaGameStore5:
 
     @pytest.mark.asyncio
     async def test_addQueuedSuperGamesSize_withEmptyTwitchChannel_andSuperGameIsInProgress_andQueueActionConsumedIsTrue(self):
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
+        assert not self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
         result = await self.queuedTriviaGameStore.addSuperGames(
             isSuperTriviaGameCurrentlyInProgress = True,
@@ -336,7 +336,7 @@ class TestQueuedTriviaGameStore5:
         assert result.amountAdded == 5
         assert result.newQueueSize == 5
         assert result.oldQueueSize == 0
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is True
+        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
     def test_sanity(self):
         assert self.queuedTriviaGameStore is not None
@@ -383,7 +383,7 @@ class TestQueuedTriviaGameStore6:
 
     @pytest.mark.asyncio
     async def test_clearQueuedSuperGames(self):
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
+        assert not self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames(
             twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
@@ -398,7 +398,7 @@ class TestQueuedTriviaGameStore6:
         assert addResult.amountAdded == 2
         assert addResult.newQueueSize == 2
         assert addResult.oldQueueSize == 0
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed()
+        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize(
             twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
@@ -461,7 +461,7 @@ class TestQueuedTriviaGameStore7:
 
     @pytest.mark.asyncio
     async def test_clearQueuedSuperGames_isCaseInsensitive(self):
-        assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
+        assert not self.startNewSuperTriviaGameAction.isQueueActionConsumed
 
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('c')
         assert clearResult.amountRemoved == 0

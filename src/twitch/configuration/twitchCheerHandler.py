@@ -96,7 +96,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         ):
             return
 
-        if user.isTtsEnabled():
+        if user.isTtsEnabled:
             await self.__processTtsEvent(
                 bits = bits,
                 broadcasterUserId = broadcasterUserId,
@@ -217,7 +217,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.isTtsEnabled():
+        if not user.isTtsEnabled:
             return
 
         maximumTtsCheerAmount = user.getMaximumTtsCheerAmount()
