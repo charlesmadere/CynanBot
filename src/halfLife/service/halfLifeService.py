@@ -1,5 +1,3 @@
-import os
-
 import aiofiles.ospath
 from frozenlist import FrozenList
 
@@ -46,6 +44,8 @@ class HalfLifeService(HalfLifeServiceInterface):
             if path is not None:
                 return path
 
+        return None
+
     async def getPath(
         self,
         directory: str,
@@ -56,7 +56,7 @@ class HalfLifeService(HalfLifeServiceInterface):
             return None
 
         path = f'{directory}/{voice.value}/{file}.wav'
-        if await aiofiles.ospath.exists(path):
+        if await aiofiles.ospath.exists(path) and await aiofiles.ospath.isfile(path):
             return path
         else:
             return None

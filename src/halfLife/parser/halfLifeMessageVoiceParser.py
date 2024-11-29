@@ -1,8 +1,6 @@
 import re
 from typing import Pattern
 
-from src import halfLife
-from src.halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
 from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
 
 from .halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
