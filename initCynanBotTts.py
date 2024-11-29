@@ -535,9 +535,9 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
 halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
 
 ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
-    ttsJsonMapper = ttsJsonMapper,
+    halfLifeJsonParser = halfLifeJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
-    halfLifeJsonParser = halfLifeJsonParser
+    ttsJsonMapper = ttsJsonMapper
 )
 
 usersRepository: UsersRepositoryInterface = UsersRepository(

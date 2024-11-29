@@ -17,30 +17,29 @@ from ...tts.ttsProvider import TtsProvider
 class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
 
     def __init__(
-            self,
-            ttsJsonMapper: TtsJsonMapperInterface,
-            streamElementsJsonParser: StreamElementsJsonParserInterface,
-            halfLifeJsonParser: HalfLifeJsonParser
-        ):
-        if not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
-            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
-        if not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
+        self,
+        halfLifeJsonParser: HalfLifeJsonParser,
+        streamElementsJsonParser: StreamElementsJsonParserInterface,
+        ttsJsonMapper: TtsJsonMapperInterface
+    ):
+        if not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
+            raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
+        elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
             raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
+        elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
+            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
 
-        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
-        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
+        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
+        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
 
     def parseBoosterPack(
         self,
         defaultTtsProvider: TtsProvider,
         jsonContents: dict[str, Any]
-    ) -> TtsChatterBoosterPack :
+    ) -> TtsChatterBoosterPack:
 
         userName = utils.getStrFromDict(jsonContents, 'userName')
-        if not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
         voiceStr = utils.getStrFromDict(jsonContents, 'voice', '')
 
         ttsProviderStr = utils.getStrFromDict(jsonContents, 'ttsProvider')
