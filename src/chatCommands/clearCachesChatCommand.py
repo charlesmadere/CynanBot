@@ -9,6 +9,7 @@ from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositor
 from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from ..funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from ..halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
@@ -70,6 +71,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
+        halfLifeService: HalfLifeServiceInterface | None, 
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
@@ -125,6 +127,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(halfLifeService, HalfLifeServiceInterface):
+            raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeService}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
@@ -207,6 +211,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(crowdControlSettingsRepository)
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
+        self.__clearables.append(halfLifeService)
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)
         self.__clearables.append(mostRecentAnivMessageRepository)

@@ -1063,7 +1063,9 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
     halfLifeJsonParser = halfLifeJsonParser
 )
 
-halfLifeService: HalfLifeServiceInterface = HalfLifeService()
+halfLifeService: HalfLifeServiceInterface = HalfLifeService(
+    timber = timber
+)
 
 halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
     halfLifeJsonParser = halfLifeJsonParser
@@ -1495,6 +1497,7 @@ cynanBot = CynanBot(
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
+    halfLifeService = halfLifeService,
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,

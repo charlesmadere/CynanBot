@@ -4,9 +4,24 @@ from frozenlist import FrozenList
 from .halfLifeServiceInterface import HalfLifeServiceInterface
 from ..models.halfLifeVoice import HalfLifeVoice
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class HalfLifeService(HalfLifeServiceInterface):
+
+    def __init__(
+        self,
+        timber: TimberInterface
+    ):
+        if not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+
+        self.__timber: TimberInterface = timber
+        self.__cache: dict[str, str | None] = dict()
+
+    async def clearCaches(self):
+        self.__cache.clear()
+        self.__timber.log('HalfLifeService', 'Caches cleared')
 
     async def getWavs(
         self,
@@ -34,6 +49,10 @@ class HalfLifeService(HalfLifeServiceInterface):
         text: str,
         voice: HalfLifeVoice
     ) -> str | None:
+        cachedWav: str | None = self.__cache.get(text)
+        if cachedWav is not None:
+            return cachedWav
+
         if voice.value == HalfLifeVoice.ALL.value:
             for possibleVoice in HalfLifeVoice:
                 path = await self.getPath(directory, text, possibleVoice)
@@ -57,6 +76,7 @@ class HalfLifeService(HalfLifeServiceInterface):
 
         path = f'{directory}/{voice.value}/{file}.wav'
         if await aiofiles.ospath.exists(path) and await aiofiles.ospath.isfile(path):
+            self.__cache[file] = path
             return path
         else:
             return None

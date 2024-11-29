@@ -1,11 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from frozenlist import FrozenList
 
 from ..models.halfLifeVoice import HalfLifeVoice
+from ...misc.clearable import Clearable
 
 
-class HalfLifeServiceInterface(ABC):
+class HalfLifeServiceInterface(Clearable):
 
     @abstractmethod
     async def getWavs(
