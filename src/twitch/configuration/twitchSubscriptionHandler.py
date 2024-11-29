@@ -43,10 +43,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         gifterUserId: str
         gifterUserName: str
         subGiftGiverDisplayName: str | None
-        twitchChannel: str
         twitchChannelId: str
         giftType: TtsSubscriptionDonationGiftType
         tier: TwitchSubscriberTier
+        user: UserInterface
+
+        @property
+        def twitchChannel(self) -> str:
+            return self.user.getHandle()
 
     def __init__(
         self,
@@ -60,7 +64,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        sleepTimeSeconds: float = 2
+        sleepTimeSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -231,20 +235,46 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')
         self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.getHandle()} for a gifted sub!')
 
-    async def __processGiftSubBatches(self, giftSubs: list[GiftSub] | None):
-        if giftSubs is None or len(giftSubs) == 0:
+    async def __processGiftSubBatches(self, giftSubBatches: list[GiftSub] | None):
+        if giftSubBatches is None or len(giftSubBatches) == 0:
             return
 
         giftSubGroups: dict[str, dict[str, list[TwitchSubscriptionHandler.GiftSub]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
-        for giftSub in giftSubs:
-            giftSubGroups[giftSub.twitchChannelId][giftSub.gifterUserId].append(giftSub)
+        for giftSubBatch in giftSubBatches:
+            giftSubGroups[giftSubBatch.twitchChannelId][giftSubBatch.gifterUserId].append(giftSubBatch)
 
         for giftSubGroup in giftSubGroups.values():
-            pass
+            for giftSubList in giftSubGroup.values():
+                firstGiftSub = giftSubList[0]
 
-        # TODO
-        pass
+                donation = TtsSubscriptionDonation(
+                    isAnonymous = firstGiftSub.isAnonymous,
+                    cumulativeMonths = None,
+                    durationMonths = None,
+                    numberOfGiftedSubs = len(giftSubList),
+                    subGiftGiverDisplayName = firstGiftSub.subGiftGiverDisplayName,
+                    giftType = firstGiftSub.giftType,
+                    tier = firstGiftSub.tier
+                )
+
+                ttsEvent = TtsEvent(
+                    message = None,
+                    twitchChannel = firstGiftSub.twitchChannel,
+                    twitchChannelId = firstGiftSub.twitchChannelId,
+                    userId = firstGiftSub.gifterUserId,
+                    userName = firstGiftSub.gifterUserName,
+                    donation = donation,
+                    provider = firstGiftSub.user.defaultTtsProvider,
+                    raidInfo = None
+                )
+
+                self.__streamAlertsManager.submitAlert(StreamAlert(
+                    soundAlert = SoundAlert.SUBSCRIBE,
+                    twitchChannel = firstGiftSub.twitchChannel,
+                    twitchChannelId = firstGiftSub.twitchChannelId,
+                    ttsEvent = ttsEvent
+                ))
 
     async def __processSuperTriviaEvent(
         self,
@@ -366,6 +396,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 isAnonymous = isAnonymous,
                 cumulativeMonths = cumulativeMonths,
                 durationMonths = durationMonths,
+                numberOfGiftedSubs = None,
                 subGiftGiverDisplayName = subGiftGiverDisplayName,
                 giftType = giftType,
                 tier = tier
@@ -395,10 +426,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     gifterUserId = actualUserId,
                     gifterUserName = actualUserName,
                     subGiftGiverDisplayName = subGiftGiverDisplayName,
-                    twitchChannel = user.getHandle(),
                     twitchChannelId = broadcasterUserId,
                     giftType = giftType,
-                    tier = tier
+                    tier = tier,
+                    user = user
                 ))
             except queue.Full as e:
                 self.__timber.log('TwitchSubscriptionHandler', f'Encountered queue.Full when submitting a new gift sub into the giftSub queue (queue size: {self.__giftSubQueue.qsize()}): {e}', e, traceback.format_exc())

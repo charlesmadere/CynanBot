@@ -284,18 +284,26 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         elif donation.donationType is not TtsDonationType.SUBSCRIPTION:
             raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.donationType}\" ({donation=})')
 
+        numberOfGiftedSubs = donation.numberOfGiftedSubs
+        subGiftGiverDisplayName = donation.subGiftGiverDisplayName
+
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?
 
         match donation.giftType:
             case TtsSubscriptionDonationGiftType.GIVER:
                 if donation.isAnonymous:
-                    return 'anonymous gifted a sub!'
+                    if utils.isValidInt(numberOfGiftedSubs) and numberOfGiftedSubs > 1:
+                        return f'anonymous gifted {numberOfGiftedSubs} subs!'
+                    else:
+                        return 'anonymous gifted a sub!'
+                elif utils.isValidInt(numberOfGiftedSubs) and numberOfGiftedSubs > 1:
+                    return f'{event.userName} gifted {numberOfGiftedSubs} subs!'
                 else:
                     return f'{event.userName} gifted a sub!'
 
             case TtsSubscriptionDonationGiftType.RECEIVER:
-                if utils.isValidStr(donation.subGiftGiverDisplayName) and not donation.isAnonymous:
-                    return f'{event.userName} received a sub gift from {donation.subGiftGiverDisplayName}!'
+                if utils.isValidStr(subGiftGiverDisplayName) and not donation.isAnonymous:
+                    return f'{event.userName} received a sub gift from {subGiftGiverDisplayName}!'
                 else:
                     return f'{event.userName} received a sub gift!'
 

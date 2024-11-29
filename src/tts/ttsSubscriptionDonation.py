@@ -11,6 +11,7 @@ class TtsSubscriptionDonation(TtsDonation):
     isAnonymous: bool
     cumulativeMonths: int | None
     durationMonths: int | None
+    numberOfGiftedSubs: int | None
     subGiftGiverDisplayName: str | None
     giftType: TtsSubscriptionDonationGiftType | None
     tier: TwitchSubscriberTier
