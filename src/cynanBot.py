@@ -454,7 +454,7 @@ class CynanBot(
             raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(halfLifeService, HalfLifeServiceInterface):
+        elif halfLifeService is not None and not isinstance(halfLifeService, HalfLifeServiceInterface):
             raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeService}\"')
         elif immediateSoundPlayerManager is not None and not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
             raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
