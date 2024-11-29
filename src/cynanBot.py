@@ -1201,7 +1201,7 @@ class CynanBot(
 
         if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-            
+
         message = await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,

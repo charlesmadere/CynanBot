@@ -69,7 +69,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
         winningOutcome = [ outcome for outcome in outcomes if outcome.outcomeId == winningOutcomeId ][0]
         topPredictors = winningOutcome.topPredictors
-    
+
         outcomeString = f'🗳️ The winning outcome is \"{winningOutcome.title}\"'
 
         if topPredictors is not None and len(topPredictors) > 0:

@@ -105,11 +105,14 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
     def submitEvent(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         eventType: str,
         eventData: dict[str, Any]
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(eventType):
             raise TypeError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
         elif not isinstance(eventData, dict) or len(eventData) == 0:
@@ -117,12 +120,13 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
         event: dict[str, Any] = {
             'twitchChannel': twitchChannel,
+            'twitchChannelId': twitchChannelId,
             'eventType': eventType,
             'eventData': eventData
         }
 
         websocketEvent = WebsocketEvent(
-            eventTime = datetime.now(self.__timeZoneRepository.getDefault()), 
+            eventTime = datetime.now(self.__timeZoneRepository.getDefault()),
             eventData = event
         )
 
