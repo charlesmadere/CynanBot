@@ -1,3 +1,4 @@
+from ..halfLife.models.halfLifeVoice import HalfLifeVoice
 from .absChatAction import AbsChatAction
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -46,6 +47,9 @@ class TtsChattersChatAction(AbsChatAction):
         voice: str = ''
 
         match boosterPack.ttsProvider:
+            case TtsProvider.HALF_LIFE:
+                if isinstance(boosterPack.voice, HalfLifeVoice):
+                    voice = f'{boosterPack.voice.value}: '
             case TtsProvider.STREAM_ELEMENTS:
                 if isinstance(boosterPack.voice, StreamElementsVoice):
                     voice = f'{boosterPack.voice.humanName}: '

@@ -5,15 +5,15 @@ from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.storage.jsonStaticReader import JsonStaticReader
-from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
-from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
+from src.messageCleaner.messageCleaner import MessageCleaner
+from src.messageCleaner.messageCleanerInterface import MessageCleanerInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
-class TestStreamElementsMessageCleaner:
+class TestMessageCleaner:
 
     timber: TimberInterface = TimberStub()
 
@@ -29,7 +29,7 @@ class TestStreamElementsMessageCleaner:
         settingsJsonReader = JsonStaticReader(dict())
     )
 
-    cleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
+    cleaner: MessageCleanerInterface = MessageCleaner(
         ttsSettingsRepository = ttsSettingsRepository
     )
 

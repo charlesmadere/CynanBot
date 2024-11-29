@@ -101,6 +101,16 @@ from src.google.googleJwtBuilder import GoogleJwtBuilder
 from src.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
+from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
+from src.halfLife.service.halfLifeService import HalfLifeService
+from src.halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
+from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from src.halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
+from src.halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
+from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
+from src.halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
+from src.halfLife.settings.halfLifeSettingsRepository import HalfLifeSettingsRepository
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.location.locationsRepository import LocationsRepository
@@ -168,8 +178,8 @@ from src.streamElements.parser.streamElementsMessageVoiceParserInterface import 
 from src.streamElements.settings.streamElementsSettingsRepository import StreamElementsSettingsRepository
 from src.streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
-from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
-from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
+from src.messageCleaner.messageCleaner import MessageCleaner
+from src.messageCleaner.messageCleanerInterface import MessageCleanerInterface
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamElements.userKeyRepository.streamElementsUserKeyRepository import StreamElementsUserKeyRepository
@@ -211,6 +221,7 @@ from src.tts.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
 from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
+from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
 from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
 from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
@@ -521,9 +532,12 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
+halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
+
 ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper,
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
+    halfLifeJsonParser = halfLifeJsonParser
 )
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
@@ -910,7 +924,7 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
     timber = timber
 )
 
-streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
+messageCleaner: MessageCleanerInterface = MessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
@@ -948,7 +962,7 @@ streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsMan
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
-    streamElementsMessageCleaner = streamElementsMessageCleaner,
+    messageCleaner = messageCleaner,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -1041,9 +1055,40 @@ ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
     twitchUtils = twitchUtils
 )
 
+
+halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
+    settingsJsonReader = JsonFileReader('halfLifeTtsSettingsRepository.json'),
+    halfLifeJsonParser = halfLifeJsonParser
+)
+
+halfLifeService: HalfLifeServiceInterface = HalfLifeService(
+    timber = timber
+)
+
+halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
+    halfLifeJsonParser = halfLifeJsonParser
+)
+
+halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
+    halfLifeService = halfLifeService,
+    halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
+    halfLifeSettingsRepository = halfLifeSettingsRepository
+)
+
+halfLifeTtsManager: HalfLifeTtsManager | None = HalfLifeTtsManager(
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    halfLifeHelper = halfLifeHelper,
+    messageCleaner = messageCleaner,
+    halfLifeSettingsRepository = halfLifeSettingsRepository,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsCommandBuilder = ttsCommandBuilder
+)
+
 ttsManager: TtsManagerInterface | None = TtsManager(
     decTalkManager = decTalkManager,
     googleTtsManager = googleTtsManager,
+    halfLifeTtsManager = halfLifeTtsManager,
     streamElementsTtsManager = streamElementsTtsManager,
     timber = timber,
     ttsMonsterManager = ttsMonsterManager,
@@ -1470,6 +1515,7 @@ cynanBot = CynanBot(
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
+    halfLifeService = halfLifeService,
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,

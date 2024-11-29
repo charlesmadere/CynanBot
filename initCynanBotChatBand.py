@@ -794,6 +794,7 @@ cynanBot = CynanBot(
     funtoonRepository = None,
     funtoonTokensRepository = None,
     generalSettingsRepository = generalSettingsRepository,
+    halfLifeService = None,
     immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,

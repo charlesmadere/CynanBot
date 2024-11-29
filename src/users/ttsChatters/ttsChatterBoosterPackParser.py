@@ -4,6 +4,9 @@ from frozendict import frozendict
 
 from .ttsChatterBoosterPack import TtsChatterBoosterPack
 from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
+from ...halfLife.models.halfLifeVoice import HalfLifeVoice
+from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from ...halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
@@ -16,7 +19,8 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
     def __init__(
             self,
             ttsJsonMapper: TtsJsonMapperInterface,
-            streamElementsJsonParser: StreamElementsJsonParserInterface
+            streamElementsJsonParser: StreamElementsJsonParserInterface,
+            halfLifeJsonParser: HalfLifeJsonParser
         ):
         if not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
@@ -25,6 +29,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
 
         self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
+        self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
 
     def parseBoosterPack(
         self,
@@ -43,17 +48,19 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         if ttsProvider is None:
             ttsProvider = defaultTtsProvider
 
-        voice: StreamElementsVoice | str | None
+        voice: StreamElementsVoice | HalfLifeVoice | str | None
 
         match ttsProvider:
-            case TtsProvider.STREAM_ELEMENTS:
-                voice = self.__streamElementsJsonParser.parseVoice(voiceStr)
-            case TtsProvider.TTS_MONSTER:
-                voice = voiceStr
             case TtsProvider.DEC_TALK:
                 voice = ''
             case TtsProvider.GOOGLE:
                 voice = ''
+            case TtsProvider.HALF_LIFE:
+                voice = self.__halfLifeJsonParser.parseVoice(voiceStr)
+            case TtsProvider.STREAM_ELEMENTS:
+                voice = self.__streamElementsJsonParser.parseVoice(voiceStr)
+            case TtsProvider.TTS_MONSTER:
+                voice = voiceStr
 
         return TtsChatterBoosterPack(
             userName = userName,
