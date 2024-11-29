@@ -24,7 +24,7 @@
             "source.organizeImports.reorder-python-imports": "always",
             "source.sortImports": "always"
         },
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": false,
         "editor.formatOnType": false
     }
 }
