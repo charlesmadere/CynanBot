@@ -40,9 +40,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     @dataclass(frozen = True)
     class GiftSub:
         isAnonymous: bool
-        gifterUserId: str
-        gifterUserName: str
-        subGiftGiverDisplayName: str | None
+        receiverUserId: str
+        receiverUserName: str
+        subGiftGiverUserId: str
+        subGiftGiverUserName: str
         twitchChannelId: str
         giftType: TtsSubscriptionDonationGiftType
         tier: TwitchSubscriberTier
@@ -242,7 +243,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         giftSubGroups: dict[str, dict[str, list[TwitchSubscriptionHandler.GiftSub]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for giftSubBatch in giftSubBatches:
-            giftSubGroups[giftSubBatch.twitchChannelId][giftSubBatch.gifterUserId].append(giftSubBatch)
+            giftSubGroups[giftSubBatch.twitchChannelId][giftSubBatch.subGiftGiverUserId].append(giftSubBatch)
 
         for giftSubGroup in giftSubGroups.values():
             for giftSubList in giftSubGroup.values():
@@ -253,7 +254,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     cumulativeMonths = None,
                     durationMonths = None,
                     numberOfGiftedSubs = len(giftSubList),
-                    subGiftGiverDisplayName = firstGiftSub.subGiftGiverDisplayName,
+                    subGiftGiverDisplayName = firstGiftSub.subGiftGiverUserName,
                     giftType = firstGiftSub.giftType,
                     tier = firstGiftSub.tier
                 )
@@ -262,8 +263,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     message = None,
                     twitchChannel = firstGiftSub.twitchChannel,
                     twitchChannelId = firstGiftSub.twitchChannelId,
-                    userId = firstGiftSub.gifterUserId,
-                    userName = firstGiftSub.gifterUserName,
+                    userId = firstGiftSub.receiverUserId,
+                    userName = firstGiftSub.receiverUserName,
                     donation = donation,
                     provider = firstGiftSub.user.defaultTtsProvider,
                     raidInfo = None
@@ -382,22 +383,39 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         cumulativeMonths: int | None = None
         durationMonths: int | None = None
-        subGiftGiverDisplayName: str | None = None
+        subGiftGiverUserId: str | None = None
+        subGiftGiverUserName: str | None = None
 
         if resub is not None:
             cumulativeMonths = resub.cumulativeMonths
             durationMonths = resub.durationMonths
 
             if giftType is TtsSubscriptionDonationGiftType.RECEIVER and not isAnonymous and utils.isValidStr(resub.gifterUserId) and utils.isValidStr(resub.gifterUserName) and actualUserId != resub.gifterUserId:
-                subGiftGiverDisplayName = resub.gifterUserName
+                subGiftGiverUserId = resub.gifterUserId
+                subGiftGiverUserName = resub.gifterUserName
 
-        if giftType is None:
+        if giftType is not None and utils.isValidStr(subGiftGiverUserId) and utils.isValidStr(subGiftGiverUserName):
+            try:
+                self.__giftSubQueue.put_nowait(TwitchSubscriptionHandler.GiftSub(
+                    isAnonymous = isAnonymous,
+                    receiverUserId = actualUserId,
+                    receiverUserName = actualUserName,
+                    subGiftGiverUserId = subGiftGiverUserId,
+                    subGiftGiverUserName = subGiftGiverUserName,
+                    twitchChannelId = broadcasterUserId,
+                    giftType = giftType,
+                    tier = tier,
+                    user = user
+                ))
+            except queue.Full as e:
+                self.__timber.log('TwitchSubscriptionHandler', f'Encountered queue.Full when submitting a new gift sub into the giftSub queue (queue size: {self.__giftSubQueue.qsize()}): {e}', e, traceback.format_exc())
+        else:
             donation = TtsSubscriptionDonation(
                 isAnonymous = isAnonymous,
                 cumulativeMonths = cumulativeMonths,
                 durationMonths = durationMonths,
                 numberOfGiftedSubs = None,
-                subGiftGiverDisplayName = subGiftGiverDisplayName,
+                subGiftGiverDisplayName = subGiftGiverUserName,
                 giftType = giftType,
                 tier = tier
             )
@@ -419,20 +437,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 twitchChannelId = broadcasterUserId,
                 ttsEvent = ttsEvent
             ))
-        else:
-            try:
-                self.__giftSubQueue.put_nowait(TwitchSubscriptionHandler.GiftSub(
-                    isAnonymous = isAnonymous,
-                    gifterUserId = actualUserId,
-                    gifterUserName = actualUserName,
-                    subGiftGiverDisplayName = subGiftGiverDisplayName,
-                    twitchChannelId = broadcasterUserId,
-                    giftType = giftType,
-                    tier = tier,
-                    user = user
-                ))
-            except queue.Full as e:
-                self.__timber.log('TwitchSubscriptionHandler', f'Encountered queue.Full when submitting a new gift sub into the giftSub queue (queue size: {self.__giftSubQueue.qsize()}): {e}', e, traceback.format_exc())
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
