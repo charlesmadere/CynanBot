@@ -65,7 +65,7 @@ class DecTalkManager(TtsManagerInterface):
         else:
             return command
 
-    async def __executeDecTalkCommand(self, command: str):
+    async def __executeTts(self, command: str):
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
 
@@ -98,19 +98,19 @@ class DecTalkManager(TtsManagerInterface):
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
-        self.__timber.log('DecTalkManager', f'Ran Dec Talk system command ({command}) ({outputString=}) ({exception=})')
+        self.__timber.log('DecTalkManager', f'Ran DecTalk system command ({command}) ({outputString=}) ({exception=})')
 
     async def __killDecTalkProcess(self, process: Process | None):
         if process is None:
-            self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process is None: \"{process}\"')
+            self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process is None: \"{process}\"')
             return
         elif not isinstance(process, Process):
             raise TypeError(f'process argument is malformed: \"{process}\"')
         elif process.returncode is not None:
-            self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process (\"{process}\") has a return code: \"{process.returncode}\"')
+            self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process ({process}) has a return code: \"{process.returncode}\"')
             return
 
-        self.__timber.log('DecTalkManager', f'Killing Dec Talk process \"{process}\"...')
+        self.__timber.log('DecTalkManager', f'Killing DecTalk process ({process=})...')
         parent = psutil.Process(process.pid)
         childCount = 0
 
@@ -119,7 +119,7 @@ class DecTalkManager(TtsManagerInterface):
             childCount += 1
 
         parent.terminate()
-        self.__timber.log('DecTalkManager', f'Finished killing process \"{process}\" ({childCount=})')
+        self.__timber.log('DecTalkManager', f'Finished killing DecTalk process ({process=}) ({childCount=})')
 
     async def isPlaying(self) -> bool:
         return self.__isLoadingOrPlaying
@@ -131,7 +131,7 @@ class DecTalkManager(TtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return False
         elif await self.isPlaying():
-            self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
+            self.__timber.log('DecTalkManager', f'There is already an ongoing DecTalk event!')
             return False
 
         self.__isLoadingOrPlaying = True
@@ -144,7 +144,7 @@ class DecTalkManager(TtsManagerInterface):
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
-        await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
+        await self.__executeTts(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__ttsTempFileHelper.registerTempFile(fileName)
 
         self.__isLoadingOrPlaying = False
