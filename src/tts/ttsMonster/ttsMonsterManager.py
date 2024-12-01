@@ -1,5 +1,10 @@
 import locale
 import math
+from asyncio.subprocess import Process
+from typing import ByteString
+
+from frozenlist import FrozenList
+import psutil
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
@@ -57,6 +62,36 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__isLoading: bool = False
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
+    async def __executeTts(self, fileNames: FrozenList[str]):
+        timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
+
+        process: Process | None = None
+        outputTuple: tuple[ByteString, ByteString] | None = None
+        exception: BaseException | None = None
+
+        # TODO add logic to kill TTS Monster if it runs too long
+
+        await self.__soundPlayerManager.playPlaylist(
+            filePaths = fileNames,
+            volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
+        )
+
+    async def __killTtsMonsterProcess(self, process: Process | None):
+        if process is None:
+            self.__timber.log('TtsMonsterManager', f'Went to kill the ')
+            return
+        elif not isinstance(process, Process):
+            raise TypeError(f'process argument is malformed: \"{process}\"')
+        elif process.returncode is not None:
+            self.__timber.log('TtsMonsterManager', f'Went to kill the TTS Monster process, but the process ({process}) has a return code: \"{process.returncode}\"')
+            return
+
+        self.__timber.log('TtsMonsterManager', f'Killing TTS Monster process ({process=})')
+        parent = psutil.Process(process.pid)
+        childCount = 0
+
+        # TODO might delete this, i think this logic doesn't really apply here
+
     async def isPlaying(self) -> bool:
         if self.__isLoading:
             return True
@@ -107,14 +142,9 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         )
 
         self.__timber.log('TtsMonsterManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-
-        await self.__soundPlayerManager.playPlaylist(
-            filePaths = fileNames,
-            volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
-        )
+        await self.__executeTts(fileNames = fileNames)
 
         self.__isLoading = False
-
         return True
 
     async def __reportCharacterUsage(
