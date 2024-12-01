@@ -3,8 +3,8 @@ import math
 from asyncio.subprocess import Process
 from typing import ByteString
 
-from frozenlist import FrozenList
 import psutil
+from frozenlist import FrozenList
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterManagerInterface import TtsMonsterManagerInterface

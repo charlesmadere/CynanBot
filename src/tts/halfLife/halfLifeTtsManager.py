@@ -5,10 +5,10 @@ from ..ttsEvent import TtsEvent
 from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
-from ...misc import utils as utils
-from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
+from ...misc import utils as utils
+from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
 

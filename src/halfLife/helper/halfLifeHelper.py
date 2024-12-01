@@ -1,7 +1,8 @@
 from frozenlist import FrozenList
+
 from .halfLifeHelperInterface import HalfLifeHelperInterface
-from ..service.halfLifeServiceInterface import HalfLifeServiceInterface
 from ..parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
+from ..service.halfLifeServiceInterface import HalfLifeServiceInterface
 from ..settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
 
