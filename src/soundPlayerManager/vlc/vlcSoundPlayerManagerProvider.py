@@ -1,4 +1,5 @@
 from .vlcSoundPlayerManager import VlcSoundPlayerManager
+from ..playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
@@ -13,6 +14,7 @@ class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
+        playSessionIdGenerator: PlaySessionIdGeneratorInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface
     ):
@@ -20,6 +22,8 @@ class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
             raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
+        elif not isinstance(playSessionIdGenerator, PlaySessionIdGeneratorInterface):
+            raise TypeError(f'playSessionIdGenerator argument is malformed: \"{playSessionIdGenerator}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -27,6 +31,7 @@ class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
+        self.__playSessionIdGenerator: PlaySessionIdGeneratorInterface = playSessionIdGenerator
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
@@ -36,6 +41,7 @@ class VlcSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         return VlcSoundPlayerManager(
             backgroundTaskHelper = self.__backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
+            playSessionIdGenerator = self.__playSessionIdGenerator,
             soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
             timber = self.__timber
         )

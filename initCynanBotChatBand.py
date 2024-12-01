@@ -84,6 +84,8 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
+from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
+from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -625,6 +627,8 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 ## Sound Player initialization section ##
 #########################################
 
+playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
+
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
@@ -638,6 +642,7 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
+    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
