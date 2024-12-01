@@ -836,10 +836,6 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
     timber = timber
 )
 
-immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
-    soundPlayerManagerProvider = soundPlayerManagerProvider
-)
-
 
 ################################
 ## TTS initialization section ##
@@ -1176,7 +1172,7 @@ crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -1283,7 +1279,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1291,8 +1287,8 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     timber = timber
 )
@@ -1522,7 +1518,6 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     halfLifeService = halfLifeService,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,
     languagesRepository = languagesRepository,
@@ -1539,6 +1534,7 @@ cynanBot = CynanBot(
     recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,

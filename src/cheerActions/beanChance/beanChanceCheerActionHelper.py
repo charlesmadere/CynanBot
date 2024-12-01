@@ -7,8 +7,8 @@ from ..beanChanceCheerAction import BeanChanceCheerAction
 from ...beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from ...beanStats.chatterBeanStats import ChatterBeanStats
 from ...misc import utils as utils
-from ...soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
+from ...soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchMessageable import TwitchMessageable
@@ -23,7 +23,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
     def __init__(
         self,
         beanStatsRepository: BeanStatsRepositoryInterface,
-        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
@@ -31,8 +31,8 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
     ):
         if not isinstance(beanStatsRepository, BeanStatsRepositoryInterface):
             raise TypeError(f'beanStatsRepository argument is malformed: \"{beanStatsRepository}\"')
-        elif not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
-            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
@@ -43,7 +43,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__beanStatsRepository: BeanStatsRepositoryInterface = beanStatsRepository
-        self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
+        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__timber: TimberInterface = timber
         self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
@@ -179,11 +179,12 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'{emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} 🫘 {emote} {beanStatsMessage}',
+            message = f'{emote} 🫘 {emote} 🫘 {emote} {beanStatsMessage}',
             replyMessageId = twitchChatMessageId
         )
 
-        await self.__immediateSoundPlayerManager.playSoundAlert(SoundAlert.BEAN)
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        await soundPlayerManager.playSoundAlert(SoundAlert.BEAN)
 
     async def __rollBeanChance(
         self,

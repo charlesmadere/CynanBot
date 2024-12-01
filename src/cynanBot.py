@@ -135,7 +135,7 @@ from .recurringActions.superTriviaRecurringEvent import SuperTriviaRecurringEven
 from .recurringActions.weatherRecurringEvent import WeatherRecurringEvent
 from .recurringActions.wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
-from .soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
+from .soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from .soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelperInterface
 from .soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from .starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
@@ -289,7 +289,6 @@ class CynanBot(
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         halfLifeService: HalfLifeServiceInterface | None,
-        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         jishoHelper: JishoHelperInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
@@ -306,6 +305,7 @@ class CynanBot(
         recurringActionsWizard: RecurringActionsWizardInterface | None,
         sentMessageLogger: SentMessageLoggerInterface,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface | None,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface | None,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         starWarsQuotesRepository: StarWarsQuotesRepositoryInterface | None,
@@ -456,8 +456,6 @@ class CynanBot(
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif halfLifeService is not None and not isinstance(halfLifeService, HalfLifeServiceInterface):
             raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeService}\"')
-        elif immediateSoundPlayerManager is not None and not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
-            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
@@ -490,6 +488,8 @@ class CynanBot(
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
+        elif soundPlayerManagerProvider is not None and not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -850,10 +850,10 @@ class CynanBot(
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
-        if immediateSoundPlayerManager is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
+        if soundPlayerManagerProvider is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(immediateSoundPlayerManager, soundPlayerRandomizerHelper, streamAlertsManager)
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(soundPlayerManagerProvider, soundPlayerRandomizerHelper, streamAlertsManager)
 
         if timeoutActionHelper is None:
             self.__timeoutPointRedemption: AbsChannelPointRedemption = StubPointRedemption()

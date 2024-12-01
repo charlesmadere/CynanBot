@@ -4,7 +4,7 @@ from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInt
 from ..absCheerAction import AbsCheerAction
 from ..soundAlertCheerAction import SoundAlertCheerAction
 from ...misc import utils as utils
-from ...soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
+from ...soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
@@ -15,22 +15,22 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
     def __init__(
         self,
-        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         timber: TimberInterface
     ):
-        if not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
-            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
-        elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+        if not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
+        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__timber: TimberInterface = timber
 
@@ -121,6 +121,8 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not utils.isValidStr(soundAlertPath):
             return False
 
-        return await self.__immediateSoundPlayerManager.playSoundFile(
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+
+        return await soundPlayerManager.playSoundFile(
             filePath = soundAlertPath
-        )
+        ) is not None

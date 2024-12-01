@@ -12,7 +12,7 @@ class ImmediateSoundPlayerManagerInterface(ABC):
         self,
         instrument: ChatBandInstrument,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         pass
 
     @abstractmethod

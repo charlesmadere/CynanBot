@@ -84,8 +84,6 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPlayerManager
-from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -644,10 +642,6 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
     timber = timber
 )
 
-immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
-    soundPlayerManagerProvider = soundPlayerManagerProvider
-)
-
 
 ##################################################
 ## Stream Alerts Manager initialization section ##
@@ -676,8 +670,8 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     timber = timber
 )
@@ -795,7 +789,6 @@ cynanBot = CynanBot(
     funtoonTokensRepository = None,
     generalSettingsRepository = generalSettingsRepository,
     halfLifeService = None,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,
     languagesRepository = languagesRepository,
@@ -812,6 +805,7 @@ cynanBot = CynanBot(
     recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,

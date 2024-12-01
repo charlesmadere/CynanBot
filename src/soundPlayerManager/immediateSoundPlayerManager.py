@@ -1,13 +1,13 @@
 from typing import Collection
 
-from .immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from .soundAlert import SoundAlert
+from .soundPlayerManagerInterface import SoundPlayerManagerInterface
 from .soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..chatBand.chatBandInstrument import ChatBandInstrument
 from ..misc import utils as utils
 
 
-class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
+class ImmediateSoundPlayerManager(SoundPlayerManagerInterface):
 
     def __init__(
         self,
@@ -22,7 +22,7 @@ class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
         self,
         instrument: ChatBandInstrument,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not isinstance(instrument, ChatBandInstrument):
             raise TypeError(f'instrument argument is malformed: \"{instrument}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -41,7 +41,7 @@ class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
         self,
         filePaths: Collection[str],
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not isinstance(filePaths, Collection):
             raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -60,7 +60,7 @@ class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
         self,
         alert: SoundAlert,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -79,7 +79,7 @@ class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
         self,
         filePath: str | None,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if filePath is not None and not isinstance(filePath, str):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -93,3 +93,7 @@ class ImmediateSoundPlayerManager(ImmediateSoundPlayerManagerInterface):
             filePath = filePath,
             volume = volume
         )
+
+    async def stop(self) -> str | None:
+        # this method is intentionally empty
+        return None
