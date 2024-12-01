@@ -160,6 +160,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         try:
             mediaList = vlc.MediaList()
+
             if not isinstance(mediaList, vlc.MediaList):
                 return False
 
@@ -315,3 +316,19 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         mediaPlayer.audio_set_volume(await self.__soundPlayerSettingsRepository.getMediaPlayerVolume())
         return mediaPlayer
+
+    async def stop(self) -> bool:
+        mediaPlayer = await self.__retrieveMediaPlayer()
+        exception: Exception | None = None
+
+        try:
+            mediaPlayer.stop()
+        except Exception as e:
+            exception = e
+
+        if exception is None:
+            self.__timber.log('VlcSoundPlayerManager', f'Stopped ({mediaPlayer=})')
+            return True
+        else:
+            self.__timber.log('VlcSoundPlayerManager', f'Attempted to stop but an exception occurred ({mediaPlayer=}): {exception}', exception, traceback.format_exc())
+            return False

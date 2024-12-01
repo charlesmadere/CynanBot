@@ -42,3 +42,7 @@ class SoundPlayerManagerInterface(ABC):
         volume: int | None = None
     ) -> bool:
         pass
+
+    @abstractmethod
+    async def stop(self) -> bool:
+        pass
