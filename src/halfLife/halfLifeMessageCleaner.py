@@ -1,12 +1,12 @@
 import re
 from typing import Any, Pattern
 
-from .messageCleanerInterface import MessageCleanerInterface
+from .halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ..misc import utils as utils
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
-class MessageCleaner(MessageCleanerInterface):
+class HalfLifeMessageCleaner(HalfLifeMessageCleanerInterface):
 
     def __init__(
         self,

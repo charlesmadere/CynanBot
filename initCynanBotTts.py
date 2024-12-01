@@ -101,6 +101,8 @@ from src.google.googleJwtBuilder import GoogleJwtBuilder
 from src.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from .src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
+from .src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
 from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
 from src.halfLife.service.halfLifeService import HalfLifeService
@@ -178,8 +180,8 @@ from src.streamElements.parser.streamElementsMessageVoiceParserInterface import 
 from src.streamElements.settings.streamElementsSettingsRepository import StreamElementsSettingsRepository
 from src.streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
-from src.messageCleaner.messageCleaner import MessageCleaner
-from src.messageCleaner.messageCleanerInterface import MessageCleanerInterface
+from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
+from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamElements.userKeyRepository.streamElementsUserKeyRepository import StreamElementsUserKeyRepository
@@ -924,7 +926,7 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
     timber = timber
 )
 
-messageCleaner: MessageCleanerInterface = MessageCleaner(
+streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
@@ -962,7 +964,7 @@ streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsMan
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
-    messageCleaner = messageCleaner,
+    streamElementsMessageCleaner = streamElementsMessageCleaner,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -1075,10 +1077,14 @@ halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
     halfLifeSettingsRepository = halfLifeSettingsRepository
 )
 
+halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 halfLifeTtsManager: HalfLifeTtsManager | None = HalfLifeTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     halfLifeHelper = halfLifeHelper,
-    messageCleaner = messageCleaner,
+    halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository,

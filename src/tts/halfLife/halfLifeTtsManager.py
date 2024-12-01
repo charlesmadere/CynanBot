@@ -1,13 +1,14 @@
 from frozenlist import FrozenList
+
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
-from ...messageCleaner.messageCleanerInterface import MessageCleanerInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -17,7 +18,7 @@ class HalfLifeTtsManager(TtsManagerInterface):
         self,
         soundPlayerManager: SoundPlayerManagerInterface,
         halfLifeHelper: HalfLifeHelperInterface,
-        messageCleaner: MessageCleanerInterface,
+        halfLifeMessageCleaner: HalfLifeMessageCleanerInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -27,8 +28,8 @@ class HalfLifeTtsManager(TtsManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(halfLifeHelper, HalfLifeHelperInterface):
             raise TypeError(f'halfLifeHelper argument is malformed: \"{halfLifeHelper}\"')
-        elif not isinstance(messageCleaner, MessageCleanerInterface):
-            raise TypeError(f'messageCleaner argument is malformed: \"{messageCleaner}\"')
+        elif not isinstance(halfLifeMessageCleaner, HalfLifeMessageCleanerInterface):
+            raise TypeError(f'halfLifeMessageCleaner argument is malformed: \"{halfLifeMessageCleaner}\"')
         elif not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -40,7 +41,7 @@ class HalfLifeTtsManager(TtsManagerInterface):
 
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__halfLifeHelper: HalfLifeHelperInterface = halfLifeHelper
-        self.__halfLifeMessageCleaner: MessageCleanerInterface = messageCleaner
+        self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
@@ -74,14 +75,13 @@ class HalfLifeTtsManager(TtsManagerInterface):
 
         if fileNames is None:
             return False
-        
-        await self.__soundPlayerManager.playPlaylist(
-            fileNames, 
-            await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
-        )
-        
-        self.__isLoading = False
 
+        await self.__soundPlayerManager.playPlaylist(
+            filePaths = fileNames,
+            volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
+        )
+
+        self.__isLoading = False
         return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
@@ -103,7 +103,7 @@ class HalfLifeTtsManager(TtsManagerInterface):
 
         speechFiles = await self.__halfLifeHelper.getSpeech(fullMessage)
 
-        if speechFiles is None:
+        if speechFiles is None or len(speechFiles) == 0:
             self.__timber.log('HalfLifeTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({speechFiles=})')
             return None
 
