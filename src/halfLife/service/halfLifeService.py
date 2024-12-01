@@ -29,7 +29,9 @@ class HalfLifeService(HalfLifeServiceInterface):
         text: str,
         voice: HalfLifeVoice
     ) -> FrozenList[str]:
-        if not utils.isValidStr(text):
+        if not utils.isValidStr(directory):
+            raise TypeError(f'directory argument is malformed: \"{directory}\"')
+        elif not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
         elif not isinstance(voice, HalfLifeVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -41,7 +43,10 @@ class HalfLifeService(HalfLifeServiceInterface):
             if path is not None:
                 paths.append(path)
 
-        return FrozenList(paths)
+        frozenPaths: FrozenList[str] = FrozenList(paths)
+        frozenPaths.freeze()
+
+        return frozenPaths
 
     async def getWav(
         self,
@@ -49,8 +54,9 @@ class HalfLifeService(HalfLifeServiceInterface):
         text: str,
         voice: HalfLifeVoice
     ) -> str | None:
-        cachedWav: str | None = self.__cache.get(text)
-        if cachedWav is not None:
+        cachedWav: str | None = self.__cache.get(text, None)
+
+        if utils.isValidStr(cachedWav):
             return cachedWav
 
         if voice.value == HalfLifeVoice.ALL.value:
@@ -74,7 +80,8 @@ class HalfLifeService(HalfLifeServiceInterface):
         if not utils.isValidStr(file):
             return None
 
-        path = f'{directory}/{voice.value}/{file}.wav'
+        path = utils.cleanPath(f'{directory}/{voice.value}/{file}.wav')
+
         if await aiofiles.ospath.exists(path) and await aiofiles.ospath.isfile(path):
             self.__cache[file] = path
             return path

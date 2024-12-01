@@ -1,8 +1,7 @@
 import re
 from typing import Pattern
 
-from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
-
+from .halfLifeJsonParserInterface import HalfLifeJsonParserInterface
 from .halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
 from ..models.halfLifeVoice import HalfLifeVoice
 from ...misc import utils as utils
@@ -11,13 +10,14 @@ from ...misc import utils as utils
 class HalfLifeMessageVoiceParser(HalfLifeMessageVoiceParserInterface):
 
     def __init__(
-        self, 
-        halfLifeJsonParser: HalfLifeJsonParserInterface):
-
+        self,
+        halfLifeJsonParser: HalfLifeJsonParserInterface
+    ):
         if not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{HalfLifeJsonParserInterface}\"')
 
         self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
+
         self.__voiceRegEx: Pattern = re.compile(r'(^\s*(\w+):\s+)', re.IGNORECASE)
 
     async def determineVoiceFromMessage(
@@ -38,7 +38,7 @@ class HalfLifeMessageVoiceParser(HalfLifeMessageVoiceParserInterface):
         halfLifeVoice: HalfLifeVoice | None = None
 
         halfLifeVoice = self.__halfLifeJsonParser.parseVoice(voiceString)
-        
+
         if halfLifeVoice is None:
             return None
 

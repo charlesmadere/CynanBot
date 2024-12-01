@@ -39,7 +39,7 @@ def boolToInt(b: bool) -> int:
 
 def cleanPath(path: str) -> str:
     if not isValidStr(path):
-        raise ValueError(f'path argument is malformed: \"{path}\"')
+        raise TypeError(f'path argument is malformed: \"{path}\"')
 
     return os.path.normcase(os.path.normpath(path))
 

@@ -13,13 +13,11 @@ class HalfLifeJsonParser(HalfLifeJsonParserInterface):
 
         jsonString = jsonString.lower()
 
-        halfLifeVoice: HalfLifeVoice | None = None
         for currentVoice in HalfLifeVoice:
             if currentVoice.value.casefold() == jsonString.casefold():
                 return currentVoice
 
-        if halfLifeVoice is None:
-            return None
+        return None
 
     def requireVoice(self, jsonString: str | Any | None) -> HalfLifeVoice:
         result = self.parseVoice(jsonString)
