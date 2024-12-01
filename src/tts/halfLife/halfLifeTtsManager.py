@@ -73,7 +73,9 @@ class HalfLifeTtsManager(TtsManagerInterface):
         self.__isLoading = True
         fileNames = await self.__processTtsEvent(event)
 
-        if fileNames is None:
+        if fileNames is None or len(fileNames) == 0:
+            self.__timber.log('HalfLifeTtsManager', f'Failed to find any TTS files ({event=}) ({fileNames=})')
+            self.__isLoading = False
             return False
 
         await self.__soundPlayerManager.playPlaylist(
