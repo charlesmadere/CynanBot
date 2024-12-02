@@ -98,7 +98,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         cheerUserName: str,
         twitchChannelId: str,
         user: UserInterface
-    ) -> bool:
+    ):
         if not isinstance(action, SoundAlertCheerAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not utils.isValidStr(cheerUserId):
@@ -122,7 +122,6 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             return False
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        await soundPlayerManager.playSoundFile(soundAlertPath)
 
-        return await soundPlayerManager.playSoundFile(
-            filePath = soundAlertPath
-        ) is not None
+        return True
