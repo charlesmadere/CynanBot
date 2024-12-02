@@ -52,5 +52,5 @@ class SoundPlayerManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def stopPlaySessionId(self, playSessionId: str) -> bool:
+    async def stopPlaySessionId(self, playSessionId: str | None) -> bool:
         pass
