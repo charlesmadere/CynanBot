@@ -8,10 +8,9 @@ import aiofiles.ospath
 import psutil
 
 from .decTalkFileManagerInterface import DecTalkFileManagerInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
+from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
-from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
@@ -19,7 +18,7 @@ from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
-class DecTalkManager(TtsManagerInterface):
+class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
     def __init__(
         self,
@@ -28,8 +27,7 @@ class DecTalkManager(TtsManagerInterface):
         decTalkVoiceChooser: DecTalkVoiceChooserInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        ttsTempFileHelper: TtsTempFileHelperInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
@@ -43,8 +41,6 @@ class DecTalkManager(TtsManagerInterface):
             raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
-            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
         self.__decTalkMessageCleaner: DecTalkMessageCleanerInterface = decTalkMessageCleaner
@@ -52,7 +48,6 @@ class DecTalkManager(TtsManagerInterface):
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -98,7 +93,7 @@ class DecTalkManager(TtsManagerInterface):
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
-        self.__timber.log('DecTalkManager', f'Ran DecTalk system command ({command}) ({outputString=}) ({exception=})')
+        self.__timber.log('DecTalkManager', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
     async def __killDecTalkProcess(self, process: Process | None):
         if process is None:
@@ -145,7 +140,6 @@ class DecTalkManager(TtsManagerInterface):
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
         await self.__executeTts(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
-        await self.__ttsTempFileHelper.registerTempFile(fileName)
 
         self.__isLoadingOrPlaying = False
         return True
@@ -166,3 +160,7 @@ class DecTalkManager(TtsManagerInterface):
 
         message = await self.__applyRandomVoice(fullMessage)
         return await self.__decTalkFileManager.writeCommandToNewFile(message)
+
+    async def stopTtsEvent(self):
+        # TODO
+        pass

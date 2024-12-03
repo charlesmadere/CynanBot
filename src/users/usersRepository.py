@@ -521,6 +521,14 @@ class UsersRepository(UsersRepositoryInterface):
                     rawValue = value
                 )
 
+            case UserJsonConstant.RECURRING_ACTIONS_ENABLED:
+                await self.__modifyUserBooleanValue(
+                    handle = handle,
+                    userJson = userJson,
+                    jsonConstant = jsonConstant,
+                    rawValue = value
+                )
+
             case UserJsonConstant.SOUND_ALERTS_ENABLED:
                 await self.__modifyUserBooleanValue(
                     handle = handle,

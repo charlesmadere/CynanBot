@@ -24,7 +24,7 @@ num2words = "0.5.13"
 polyleven = "0.8"
 psutil = "6.1.0"
 pyjwt = "2.10.1"
-pytest = "8.3.3"
+pytest = "8.3.4"
 pytest-asyncio = "0.24.0"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'win32'" }
 pytz = "2024.2"
@@ -32,12 +32,12 @@ pywin32 = { version = "308", markers = "sys_platform == 'win32'" }
 requests = "2.32.3"
 rich = "13.9.4"
 roman = "4.2"
-twitchio = "2.10.0"
+twitchio = "2.10.1"
 typing_extensions = "4.12.2"
 urllib3 = '2.2.3'
 websockets = "14.1"
 xmltodict = "0.14.2"
-yarl = "1.18.0"
+yarl = "1.18.3"
 
 [dev-packages]
 

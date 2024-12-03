@@ -1,10 +1,9 @@
 import aiofiles.ospath
 
 from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
+from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
-from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -16,7 +15,7 @@ from ...streamElements.streamElementsMessageCleanerInterface import \
 from ...timber.timberInterface import TimberInterface
 
 
-class StreamElementsTtsManager(TtsManagerInterface):
+class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
     def __init__(
         self,
@@ -27,8 +26,7 @@ class StreamElementsTtsManager(TtsManagerInterface):
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        ttsTempFileHelper: TtsTempFileHelperInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
@@ -46,8 +44,6 @@ class StreamElementsTtsManager(TtsManagerInterface):
             raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
-            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamElementsFileManager: StreamElementsFileManagerInterface = streamElementsFileManager
@@ -57,19 +53,29 @@ class StreamElementsTtsManager(TtsManagerInterface):
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__isLoading: bool = False
+        self.__playSessionId: str | None = None
+
+    async def __executeTts(self, fileName: str):
+        timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
+
+        # TODO add logic to stop VLC if it runs too long
+
+        self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
+            filePath = fileName,
+            volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
+        )
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
             return True
 
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
-        #  to be playing media, but it could be media that is completely unrelated to Stream
-        #  Elements TTS, and yet in this scenario, this method would still return true. So for
-        #  the fix for this is probably a way to check if SoundPlayerManager is currently playing,
-        #  AND also a check to see specifically what media it is currently playing.
+        #  to be playing media, but it could be media that is completely unrelated to Stream Elements
+        #  TTS, and yet in this scenario, this method would still return true. So the fix for this is
+        #  probably a way to check if SoundPlayerManager is currently playing, AND also a check to see
+        #  specifically what media it is currently playing.
         return await self.__soundPlayerManager.isPlaying()
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
@@ -91,16 +97,10 @@ class StreamElementsTtsManager(TtsManagerInterface):
             return False
 
         self.__timber.log('StreamElementsTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
+        await self.__executeTts(fileName = fileName)
 
-        await self.__soundPlayerManager.playSoundFile(
-            filePath = fileName,
-            volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
-        )
-
-        await self.__ttsTempFileHelper.registerTempFile(fileName)
         self.__isLoading = False
-
-        return False
+        return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__streamElementsMessageCleaner.clean(event.message)
@@ -127,3 +127,15 @@ class StreamElementsTtsManager(TtsManagerInterface):
             return None
 
         return await self.__streamElementsFileManager.saveSpeechToNewFile(speechBytes)
+
+    async def stopTtsEvent(self):
+        playSessionId = self.__playSessionId
+        if not utils.isValidStr(playSessionId):
+            return
+
+        self.__playSessionId = None
+        stopResult = await self.__soundPlayerManager.stopPlaySessionId(
+            playSessionId = playSessionId
+        )
+
+        self.__timber.log('StreamElementsTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')

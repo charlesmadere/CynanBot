@@ -32,7 +32,9 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
 
     async def __getRandomJsonConstant(self) -> UserJsonConstant:
         constants: list[UserJsonConstant] = [
-            UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED
+            UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED,
+            UserJsonConstant.TTS_ENABLED,
+            UserJsonConstant.RECURRING_ACTIONS_ENABLED
         ]
 
         return random.choice(constants)

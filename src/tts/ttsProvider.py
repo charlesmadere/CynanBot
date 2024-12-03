@@ -7,4 +7,5 @@ class TtsProvider(Enum):
     GOOGLE = auto()
     HALF_LIFE = auto()
     STREAM_ELEMENTS = auto()
+    STUB = auto()
     TTS_MONSTER = auto()

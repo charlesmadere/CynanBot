@@ -1,13 +1,11 @@
-from typing import Any
-
-from .decTalk.decTalkManager import DecTalkManager
-from .google.googleTtsManager import GoogleTtsManager
-from .halfLife.halfLifeTtsManager import HalfLifeTtsManager
-from .streamElements.streamElementsTtsManager import StreamElementsTtsManager
-from .tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
+from .decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
+from .google.googleTtsManagerInterface import GoogleTtsManagerInterface
+from .halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
+from .streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
+from .stub.stubTtsManager import StubTtsManager
 from .ttsEvent import TtsEvent
 from .ttsManagerInterface import TtsManagerInterface
-from .ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
+from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .ttsProvider import TtsProvider
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
@@ -17,40 +15,36 @@ class TtsManager(TtsManagerInterface):
 
     def __init__(
         self,
-        decTalkManager: DecTalkManager | None,
-        googleTtsManager: GoogleTtsManager | None,
-        halfLifeTtsManager: HalfLifeTtsManager | None,
-        streamElementsTtsManager: StreamElementsTtsManager | None,
+        decTalkTtsManager: DecTalkTtsManagerInterface | StubTtsManager,
+        googleTtsManager: GoogleTtsManagerInterface | StubTtsManager,
+        halfLifeTtsManager: HalfLifeTtsManagerInterface | StubTtsManager,
+        streamElementsTtsManager: StreamElementsTtsManagerInterface | StubTtsManager,
         timber: TimberInterface,
-        ttsMonsterManager: TtsMonsterManagerInterface | None,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        ttsTempFileHelper: TtsTempFileHelperInterface
+        ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | StubTtsManager,
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if decTalkManager is not None and not isinstance(decTalkManager, DecTalkManager):
-            raise TypeError(f'decTalkManager argument is malformed: \"{decTalkManager}\"')
-        elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManager):
+        if not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface) and not isinstance(decTalkTtsManager, StubTtsManager):
+            raise TypeError(f'decTalkTtsManager argument is malformed: \"{decTalkTtsManager}\"')
+        elif not isinstance(googleTtsManager, GoogleTtsManagerInterface) and not isinstance(googleTtsManager, StubTtsManager):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
-        elif halfLifeTtsManager is not None and not isinstance(halfLifeTtsManager, HalfLifeTtsManager):
+        elif not isinstance(halfLifeTtsManager, HalfLifeTtsManagerInterface) and not isinstance(halfLifeTtsManager, StubTtsManager):
             raise TypeError(f'halfLifeTtsManager argument is malformed: \"{halfLifeTtsManager}\"')
-        elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManager):
+        elif not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface) and not isinstance(streamElementsTtsManager, StubTtsManager):
             raise TypeError(f'streamElementsTtsManager argument is malformed: \"{streamElementsTtsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterManagerInterface):
-            raise TypeError(f'ttsMonsterManager argument is malformed: \"{ttsMonsterManager}\"')
+        elif not isinstance(ttsMonsterTtsManager, TtsMonsterTtsManagerInterface) and not isinstance(ttsMonsterTtsManager, StubTtsManager):
+            raise TypeError(f'ttsMonsterTtsManager argument is malformed: \"{ttsMonsterTtsManager}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
-            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
-        self.__decTalkManager: TtsManagerInterface | None = decTalkManager
-        self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
-        self.__halfLifeTtsManager: HalfLifeTtsManager | None = halfLifeTtsManager
-        self.__streamElementsTtsManager: StreamElementsTtsManager | None = streamElementsTtsManager
+        self.__decTalkTtsManager: TtsManagerInterface = decTalkTtsManager
+        self.__googleTtsManager: TtsManagerInterface = googleTtsManager
+        self.__halfLifeTtsManager: TtsManagerInterface = halfLifeTtsManager
+        self.__streamElementsTtsManager: TtsManagerInterface = streamElementsTtsManager
         self.__timber: TimberInterface = timber
-        self.__ttsMonsterManager: TtsMonsterManagerInterface | None = ttsMonsterManager
+        self.__ttsMonsterTtsManager: TtsManagerInterface = ttsMonsterTtsManager
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__currentTtsManager: TtsManagerInterface | None = None
 
@@ -68,46 +62,42 @@ class TtsManager(TtsManagerInterface):
             self.__timber.log('TtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
 
-        decTalkManager = self.__decTalkManager
-        googleTtsManager = self.__googleTtsManager
-        halfLifeTtsManager = self.__halfLifeTtsManager
-        streamElementsTtsManager = self.__streamElementsTtsManager
-        ttsMonsterManager = self.__ttsMonsterManager
         proceed = False
 
-        if event.provider is TtsProvider.DEC_TALK and decTalkManager is not None:
-            if await decTalkManager.playTtsEvent(event):
-                self.__currentTtsManager = decTalkManager
-                proceed = True
-        elif event.provider is TtsProvider.GOOGLE and googleTtsManager is not None:
-            if await googleTtsManager.playTtsEvent(event):
-                self.__currentTtsManager = googleTtsManager
-                proceed = True
-        elif event.provider is TtsProvider.HALF_LIFE and halfLifeTtsManager is not None:
-            if await halfLifeTtsManager.playTtsEvent(event):
-                self.__currentTtsManager = halfLifeTtsManager
-                proceed = True
-        elif event.provider is TtsProvider.STREAM_ELEMENTS and streamElementsTtsManager is not None:
-            if await streamElementsTtsManager.playTtsEvent(event):
-                self.__currentTtsManager = streamElementsTtsManager
-                proceed = True
-        elif event.provider is TtsProvider.TTS_MONSTER and ttsMonsterManager is not None:
-            if await ttsMonsterManager.playTtsEvent(event):
-                self.__currentTtsManager = ttsMonsterManager
-                proceed = True
+        match event.provider:
+            case TtsProvider.DEC_TALK:
+                if await self.__decTalkTtsManager.playTtsEvent(event):
+                    self.__currentTtsManager = self.__decTalkTtsManager
+                    proceed = True
+
+            case TtsProvider.GOOGLE:
+                if await self.__googleTtsManager.playTtsEvent(event):
+                    self.__currentTtsManager = self.__googleTtsManager
+                    proceed = True
+
+            case TtsProvider.HALF_LIFE:
+                if await self.__halfLifeTtsManager.playTtsEvent(event):
+                    self.__currentTtsManager = self.__halfLifeTtsManager
+                    proceed = True
+
+            case TtsProvider.STREAM_ELEMENTS:
+                if await self.__streamElementsTtsManager.playTtsEvent(event):
+                    self.__currentTtsManager = self.__streamElementsTtsManager
+                    proceed = True
+
+            case TtsProvider.TTS_MONSTER:
+                if await self.__ttsMonsterTtsManager.playTtsEvent(event):
+                    self.__currentTtsManager = self.__ttsMonsterTtsManager
+                    proceed = True
 
         if proceed:
-            await self.__ttsTempFileHelper.deleteOldTempFiles()
             return True
         else:
             self.__timber.log('TtsManager', f'Unable to play the given TTS event via the requested TTS provider ({event=}) ({event.provider=})')
             return False
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
+    async def stopTtsEvent(self):
+        currentTtsManager = self.__currentTtsManager
 
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'currentTtsManager': self.__currentTtsManager
-        }
+        if currentTtsManager is not None:
+            await currentTtsManager.stopTtsEvent()

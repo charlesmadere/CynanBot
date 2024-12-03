@@ -4,12 +4,11 @@ import aiofiles.ospath
 
 from .googleTtsChoice import GoogleTtsChoice
 from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
+from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
-from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...google.googleApiServiceInterface import GoogleApiServiceInterface
 from ...google.googleTextSynthesisInput import GoogleTextSynthesisInput
@@ -22,7 +21,7 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...timber.timberInterface import TimberInterface
 
 
-class GoogleTtsManager(TtsManagerInterface):
+class GoogleTtsManager(GoogleTtsManagerInterface):
 
     def __init__(
         self,
@@ -34,8 +33,7 @@ class GoogleTtsManager(TtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        ttsTempFileHelper: TtsTempFileHelperInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(googleApiService, GoogleApiServiceInterface):
             raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}"')
@@ -55,8 +53,6 @@ class GoogleTtsManager(TtsManagerInterface):
             raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
-            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__googleApiService: GoogleApiServiceInterface = googleApiService
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
@@ -67,9 +63,19 @@ class GoogleTtsManager(TtsManagerInterface):
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__isLoading: bool = False
+        self.__playSessionId: str | None = None
+
+    async def __executeTts(self, fileName: str):
+        timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
+
+        # TODO add logic to stop VLC if it runs too long
+
+        self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
+            filePath = fileName,
+            volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
+        )
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
@@ -77,8 +83,8 @@ class GoogleTtsManager(TtsManagerInterface):
 
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
         #  to be playing media, but it could be media that is completely unrelated to Google TTS,
-        #  and yet in this scenario, this method would still return true. So for the fix for this
-        #  is probably a way to check if SoundPlayerManager is currently playing, AND also a check
+        #  and yet in this scenario, this method would still return true. So the fix for this is
+        #  probably a way to check if SoundPlayerManager is currently playing, AND also a check
         #  to see specifically what media it is currently playing.
         return await self.__soundPlayerManager.isPlaying()
 
@@ -101,15 +107,9 @@ class GoogleTtsManager(TtsManagerInterface):
             return False
 
         self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
+        await self.__executeTts(fileName = fileName)
 
-        await self.__soundPlayerManager.playSoundFile(
-            filePath = fileName,
-            volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
-        )
-
-        await self.__ttsTempFileHelper.registerTempFile(fileName)
         self.__isLoading = False
-
         return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
@@ -167,3 +167,15 @@ class GoogleTtsManager(TtsManagerInterface):
             audioConfig = audioConfig,
             selectionParams = selectionParams
         )
+
+    async def stopTtsEvent(self):
+        playSessionId = self.__playSessionId
+        if not utils.isValidStr(playSessionId):
+            return
+
+        self.__playSessionId = None
+        stopResult = await self.__soundPlayerManager.stopPlaySessionId(
+            playSessionId = playSessionId
+        )
+
+        self.__timber.log('GoogleTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')

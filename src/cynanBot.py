@@ -187,7 +187,7 @@ from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from .tts.ttsJsonMapperInterface import TtsJsonMapperInterface
-from .tts.ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
+from .tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from .ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
@@ -339,7 +339,7 @@ class CynanBot(
         ttsJsonMapper: TtsJsonMapperInterface | None,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
-        ttsMonsterManager: TtsMonsterManagerInterface | None,
+        ttsMonsterManager: TtsMonsterTtsManagerInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
@@ -556,7 +556,7 @@ class CynanBot(
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
             raise TypeError(f'ttsMonsterKeyAndUserIdRepository argument is malformed: \"{ttsMonsterKeyAndUserIdRepository}\"')
-        elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterManagerInterface):
+        elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterTtsManagerInterface):
             raise TypeError(f'ttsMonsterManager argument is malformed: \"{ttsMonsterManager}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
@@ -632,7 +632,7 @@ class CynanBot(
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
-        self.__ttsMonsterManager: TtsMonsterManagerInterface | None = ttsMonsterManager
+        self.__ttsMonsterManager: TtsMonsterTtsManagerInterface | None = ttsMonsterManager
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper

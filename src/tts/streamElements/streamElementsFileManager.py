@@ -9,7 +9,6 @@ import aiofiles.os
 import aiofiles.ospath
 
 from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
-from ..tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -20,7 +19,6 @@ class StreamElementsFileManager(StreamElementsFileManagerInterface):
         self,
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
-        ttsTempFileHelper: TtsTempFileHelperInterface,
         directory: str = 'temp',
         fileExtension: str = 'mp3'
     ):
@@ -28,8 +26,6 @@ class StreamElementsFileManager(StreamElementsFileManagerInterface):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
-            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(fileExtension):
@@ -37,7 +33,6 @@ class StreamElementsFileManager(StreamElementsFileManagerInterface):
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__timber: TimberInterface = timber
-        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
         self.__directory: str = directory
         self.__fileExtension: str = fileExtension
 

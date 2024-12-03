@@ -8,8 +8,6 @@ from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvide
 from src.network.networkClientProvider import NetworkClientProvider
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from src.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
-from src.tts.tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
 from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
@@ -68,11 +66,6 @@ ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     ttsMonsterJsonMapper = ttsMonsterJsonMapper
-)
-
-ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
 )
 
 ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(

@@ -4,7 +4,7 @@ from ..ttsManagerInterface import TtsManagerInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 
 
-class TtsMonsterManagerInterface(TtsManagerInterface):
+class TtsMonsterTtsManagerInterface(TtsManagerInterface):
 
     @abstractmethod
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

@@ -24,6 +24,7 @@ class TesthalfLifeJsonParser:
         result = self.parser.parseVoice('female')
         assert result is HalfLifeVoice.FEMALE
 
+    @pytest.mark.asyncio
     async def test_parseVoice_withMale(self):
         result = self.parser.parseVoice('male')
         assert result is HalfLifeVoice.MALE

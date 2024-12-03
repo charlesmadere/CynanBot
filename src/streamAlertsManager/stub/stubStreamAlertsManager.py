@@ -8,6 +8,10 @@ class StubStreamAlertsManager(StreamAlertsManagerInterface):
         # this method is intentionally empty
         pass
 
+    async def stopCurrentAlert(self):
+        # this method is intentionally empty
+        pass
+
     def submitAlert(self, alert: StreamAlert):
         # this method is intentionally empty
         pass

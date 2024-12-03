@@ -145,7 +145,8 @@ from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerIn
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
 from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
+from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import \
+    PlaySessionIdGeneratorInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -213,7 +214,8 @@ from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepositor
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
-from src.tts.decTalk.decTalkManager import DecTalkManager
+from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
+from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
 from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
@@ -224,11 +226,11 @@ from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageClea
 from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
+from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
 from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
-from src.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
-from src.tts.tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
+from src.tts.streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from src.tts.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.ttsJsonMapper import TtsJsonMapper
@@ -237,8 +239,8 @@ from src.tts.ttsManager import TtsManager
 from src.tts.ttsManagerInterface import TtsManagerInterface
 from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
 from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
-from src.tts.ttsMonster.ttsMonsterManager import TtsMonsterManager
-from src.tts.ttsMonster.ttsMonsterManagerInterface import TtsMonsterManagerInterface
+from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
+from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
@@ -849,17 +851,7 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
-ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
-    contentScanner = contentScanner,
-    emojiHelper = emojiHelper,
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
+ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
     backgroundTaskHelper = backgroundTaskHelper,
@@ -878,14 +870,13 @@ decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
     decTalkVoiceMapper = decTalkVoiceMapper
 )
 
-decTalkManager: DecTalkManager | None = DecTalkManager(
+decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
     decTalkFileManager = decTalkFileManager,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkVoiceChooser = decTalkVoiceChooser,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
@@ -916,8 +907,7 @@ googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
@@ -955,11 +945,10 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
 
 streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
     eventLoop = eventLoop,
-    timber = timber,
-    ttsTempFileHelper = ttsTempFileHelper
+    timber = timber
 )
 
-streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsManager(
+streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamElementsTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
@@ -967,8 +956,7 @@ streamElementsTtsManager: StreamElementsTtsManager | None = StreamElementsTtsMan
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
@@ -1045,17 +1033,15 @@ ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
     ttsMonsterApiService = ttsMonsterApiService
 )
 
-ttsMonsterManager: TtsMonsterManagerInterface | None = TtsMonsterManager(
+ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper,
     twitchUtils = twitchUtils
 )
-
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
     settingsJsonReader = JsonFileReader('halfLifeTtsSettingsRepository.json'),
@@ -1080,25 +1066,24 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-halfLifeTtsManager: HalfLifeTtsManager | None = HalfLifeTtsManager(
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository,
     ttsCommandBuilder = ttsCommandBuilder
 )
 
 ttsManager: TtsManagerInterface | None = TtsManager(
-    decTalkManager = decTalkManager,
+    decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
     streamElementsTtsManager = streamElementsTtsManager,
     timber = timber,
-    ttsMonsterManager = ttsMonsterManager,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsTempFileHelper = ttsTempFileHelper
+    ttsMonsterTtsManager = ttsMonsterTtsManager,
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 
@@ -1572,7 +1557,7 @@ cynanBot = CynanBot(
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
     ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
-    ttsMonsterManager = ttsMonsterManager,
+    ttsMonsterManager = ttsMonsterTtsManager,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository,
     ttsSettingsRepository = ttsSettingsRepository,

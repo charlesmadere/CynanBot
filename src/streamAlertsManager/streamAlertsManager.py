@@ -120,6 +120,10 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
             await asyncio.sleep(await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds())
 
+    async def stopCurrentAlert(self):
+        # TODO
+        pass
+
     def submitAlert(self, alert: StreamAlert):
         if not isinstance(alert, StreamAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')

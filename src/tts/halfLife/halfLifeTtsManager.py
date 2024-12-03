@@ -1,8 +1,8 @@
 from frozenlist import FrozenList
 
+from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
-from ..ttsManagerInterface import TtsManagerInterface
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
@@ -12,26 +12,26 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...timber.timberInterface import TimberInterface
 
 
-class HalfLifeTtsManager(TtsManagerInterface):
+class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
     def __init__(
         self,
-        soundPlayerManager: SoundPlayerManagerInterface,
         halfLifeHelper: HalfLifeHelperInterface,
         halfLifeMessageCleaner: HalfLifeMessageCleanerInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
+        soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
-            raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
-        elif not isinstance(halfLifeHelper, HalfLifeHelperInterface):
+        if not isinstance(halfLifeHelper, HalfLifeHelperInterface):
             raise TypeError(f'halfLifeHelper argument is malformed: \"{halfLifeHelper}\"')
         elif not isinstance(halfLifeMessageCleaner, HalfLifeMessageCleanerInterface):
             raise TypeError(f'halfLifeMessageCleaner argument is malformed: \"{halfLifeMessageCleaner}\"')
         elif not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+            raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
@@ -39,25 +39,36 @@ class HalfLifeTtsManager(TtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__halfLifeHelper: HalfLifeHelperInterface = halfLifeHelper
         self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
+        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoading: bool = False
+        self.__playSessionId: str | None = None
+
+    async def __executeTts(self, fileNames: FrozenList[str]):
+        timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
+
+        # TODO add logic to stop VLC if it runs too long
+
+        self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
+            filePaths = fileNames,
+            volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
+        )
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
             return True
 
         # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
-        #  to be playing media, but it could be media that is completely unrelated to Half Life
-        #  TTS, and yet in this scenario, this method would still return true. So for
-        #  the fix for this is probably a way to check if SoundPlayerManager is currently playing,
-        #  AND also a check to see specifically what media it is currently playing.
+        #  to be playing media, but it could be media that is completely unrelated to Half Life TTS
+        #  TTS, and yet in this scenario, this method would still return true. So the fix for this
+        #  is probably a way to check if SoundPlayerManager is currently playing, AND also a check
+        # to see specifically what media it is currently playing.
         return await self.__soundPlayerManager.isPlaying()
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
@@ -78,10 +89,8 @@ class HalfLifeTtsManager(TtsManagerInterface):
             self.__isLoading = False
             return False
 
-        await self.__soundPlayerManager.playPlaylist(
-            filePaths = fileNames,
-            volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
-        )
+        self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileNames = fileNames)
 
         self.__isLoading = False
         return True
@@ -110,3 +119,15 @@ class HalfLifeTtsManager(TtsManagerInterface):
             return None
 
         return speechFiles
+
+    async def stopTtsEvent(self):
+        playSessionId = self.__playSessionId
+        if not utils.isValidStr(playSessionId):
+            return
+
+        self.__playSessionId = None
+        stopResult = await self.__soundPlayerManager.stopPlaySessionId(
+            playSessionId = playSessionId
+        )
+
+        self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')

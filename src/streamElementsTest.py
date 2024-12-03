@@ -29,8 +29,6 @@ from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
 from .tts.streamElements.streamElementsFileManager import StreamElementsFileManager
 from .tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
-from .tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
-from .tts.tempFileHelper.ttsTempFileHelperInterface import TtsTempFileHelperInterface
 from .tts.ttsSettingsRepository import TtsSettingsRepository
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
@@ -72,11 +70,6 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
 )
 
-ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
-)
-
 streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository
 )
@@ -107,8 +100,7 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
 
 streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
     eventLoop = eventLoop,
-    timber = timber,
-    ttsTempFileHelper = ttsTempFileHelper
+    timber = timber
 )
 
 async def main():
