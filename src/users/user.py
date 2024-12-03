@@ -27,6 +27,7 @@ class User(UserInterface):
         isCatJamMessageEnabled: bool,
         isCasualGamePollEnabled: bool,
         isChannelPredictionChartEnabled: bool,
+        isChatBackMessagesEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
         isCrowdControlEnabled: bool,
@@ -90,6 +91,7 @@ class User(UserInterface):
         blueSkyUrl: str | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
+        chatBackMessages: list[str] | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
         discord: str | None,
@@ -133,6 +135,8 @@ class User(UserInterface):
             raise TypeError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChannelPredictionChartEnabled):
             raise TypeError(f'isChannelPredictionChartEnabled argument is malformed: \"{isChannelPredictionChartEnabled}\"')
+        elif not utils.isValidBool(isChatBackMessagesEnabled):
+            raise TypeError(f'isChatBackMessagesEnabled argument is malformed: \"{isChatBackMessagesEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
             raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
@@ -257,6 +261,8 @@ class User(UserInterface):
             raise TypeError(f'casualGamePollRewardId argument is malformed: \"{casualGamePollRewardId}\"')
         elif casualGamePollUrl is not None and not isinstance(casualGamePollUrl, str):
             raise TypeError(f'casualGamePollUrl argument is malformed: \"{casualGamePollUrl}\"')
+        elif chatBackMessages is not None and not isinstance(chatBackMessages, list):
+            raise TypeError(f'chatBackMessages argument is malformed: \"{chatBackMessages}\"')
         elif crowdControlButtonPressRewardId is not None and not isinstance(crowdControlButtonPressRewardId, str):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
@@ -316,6 +322,7 @@ class User(UserInterface):
         self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
+        self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
@@ -377,6 +384,7 @@ class User(UserInterface):
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: int | None = waitForSuperTriviaAnswerDelay
         self.__blueSkyUrl: str | None = blueSkyUrl
+        self.__chatBackMessages: list[str] | None = chatBackMessages
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
@@ -453,6 +461,9 @@ class User(UserInterface):
     @property
     def defaultTtsProvider(self) -> TtsProvider:
         return self.__defaultTtsProvider
+
+    def getChatBackMessages(self) -> list[str] | None:
+        return self.__chatBackMessages
 
     def getCasualGamePollRewardId(self) -> str | None:
         return self.__casualGamePollRewardId
@@ -592,6 +603,10 @@ class User(UserInterface):
     @property
     def isChannelPredictionChartEnabled(self) -> bool:
         return self.__isChannelPredictionChartEnabled
+
+    @property
+    def isChatBackMessagesEnabled(self) -> bool:
+        return self.__isChatBackMessagesEnabled
 
     @property
     def isChatBandEnabled(self) -> bool:

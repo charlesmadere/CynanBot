@@ -24,6 +24,7 @@ from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.catJamChatAction import CatJamChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
+from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.deerForceChatAction import DeerForceChatAction
@@ -1566,6 +1567,12 @@ activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepo
     timeZoneRepository = timeZoneRepository
 )
 
+chatBacksChatAction = ChatBackMessagesChatAction(
+    generalSettingsRepository = generalSettingsRepository,
+    timber = timber,
+    twitchUtils = twitchUtils,
+)
+
 catJamChatAction = CatJamChatAction(
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
@@ -1626,6 +1633,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         userIdsRepository = userIdsRepository
     ),
     catJamChatAction = catJamChatAction,
+    chatBackMessagesChatAction = chatBacksChatAction,
     chatLoggerChatAction = chatLoggerChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     deerForceChatAction = DeerForceChatAction(

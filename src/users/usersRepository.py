@@ -137,6 +137,7 @@ class UsersRepository(UsersRepositoryInterface):
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
+        isChatBackMessagesEnabled = utils.getBoolFromDict(userJson, 'chatBackMessagesEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
@@ -175,6 +176,7 @@ class UsersRepository(UsersRepositoryInterface):
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
+        chatBackMessages = userJson.get('chatBackMessages', None)
         discord = utils.getStrFromDict(userJson, 'discord', '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -325,6 +327,7 @@ class UsersRepository(UsersRepositoryInterface):
             isCatJamMessageEnabled = isCatJamMessageEnabled,
             isCasualGamePollEnabled = isCasualGamePollEnabled,
             isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,
+            isChatBackMessagesEnabled = isChatBackMessagesEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCrowdControlEnabled = isCrowdControlEnabled,
@@ -388,6 +391,7 @@ class UsersRepository(UsersRepositoryInterface):
             blueSkyUrl = blueSkyUrl,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
+            chatBackMessages = chatBackMessages,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discord = discord,

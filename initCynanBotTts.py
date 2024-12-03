@@ -1387,6 +1387,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = None,
     catJamChatAction = None,
+    chatBackMessagesChatAction = None,
     chatLoggerChatAction = None,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     deerForceChatAction = None,

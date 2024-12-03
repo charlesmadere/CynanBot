@@ -2,6 +2,7 @@ from .absChatAction import AbsChatAction
 from .anivCheckChatAction import AnivCheckChatAction
 from .catJamChatAction import CatJamChatAction
 from .chatActionsManagerInterface import ChatActionsManagerInterface
+from .chatBackMessagesChatAction import ChatBackMessagesChatAction
 from .chatLoggerChatAction import ChatLoggerChatAction
 from .cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from .deerForceChatAction import DeerForceChatAction
@@ -31,6 +32,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         activeChattersRepository: ActiveChattersRepositoryInterface,
         anivCheckChatAction: AnivCheckChatAction | None,
         catJamChatAction: CatJamChatAction | None,
+        chatBackMessagesChatAction: ChatBackMessagesChatAction | None,
         chatLoggerChatAction: ChatLoggerChatAction | None,
         cheerActionsWizardChatAction: CheerActionsWizardChatAction | None,
         deerForceChatAction: DeerForceChatAction | None,
@@ -54,6 +56,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
         elif catJamChatAction is not None and not isinstance(catJamChatAction, CatJamChatAction):
             raise TypeError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
+        elif chatBackMessagesChatAction is not None and not isinstance(chatBackMessagesChatAction, ChatBackMessagesChatAction):
+            raise TypeError(f'chatBackMessagesChatAction argument is malformed: \"{chatBackMessagesChatAction}\"')
         elif chatLoggerChatAction is not None and not isinstance(chatLoggerChatAction, ChatLoggerChatAction):
             raise TypeError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
         elif cheerActionsWizardChatAction is not None and not isinstance(cheerActionsWizardChatAction, CheerActionsWizardChatAction):
@@ -90,6 +94,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__anivCheckChatAction: AbsChatAction | None = anivCheckChatAction
         self.__catJamChatAction: AbsChatAction | None = catJamChatAction
+        self.__chatBackMessagesChatAction: AbsChatAction | None = chatBackMessagesChatAction
         self.__chatLoggerChatAction: AbsChatAction | None = chatLoggerChatAction
         self.__cheerActionsWizardChatAction: CheerActionsWizardChatAction | None = cheerActionsWizardChatAction
         self.__deerForceChatAction: AbsChatAction | None = deerForceChatAction
@@ -203,7 +208,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
                 message = message,
                 user = user
             )
-        
+
         if self.__ttsChattersChatAction is not None:
             await self.__ttsChattersChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
@@ -231,6 +236,13 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if self.__catJamChatAction is not None and await self.__catJamChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return
+
+        if self.__chatBackMessagesChatAction is not None and await self.__chatBackMessagesChatAction.handleChat(
             mostRecentChat = mostRecentChat,
             message = message,
             user = user

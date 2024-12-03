@@ -85,6 +85,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getChatBackMessages(self) -> list[str] | None:
+        pass
+
+    @abstractmethod
     def getDiscordUrl(self) -> str | None:
         pass
 
@@ -242,6 +246,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isChannelPredictionChartEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isChatBackMessagesEnabled(self) -> bool:
         pass
 
     @property

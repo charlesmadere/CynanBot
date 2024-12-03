@@ -64,6 +64,9 @@ class GeneralSettingsRepositorySnapshot:
     def isCatJamMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'catJamMessageEnabled', False)
 
+    def isChatBacksMessageEnabled(self) -> bool:
+        return utils.getBoolFromDict(self.__jsonContents, 'chatBacksEnabled', False)
+
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
 
