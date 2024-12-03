@@ -339,7 +339,7 @@ class CynanBot(
         ttsJsonMapper: TtsJsonMapperInterface | None,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
-        ttsMonsterManager: TtsMonsterTtsManagerInterface | None,
+        ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
@@ -556,8 +556,8 @@ class CynanBot(
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
             raise TypeError(f'ttsMonsterKeyAndUserIdRepository argument is malformed: \"{ttsMonsterKeyAndUserIdRepository}\"')
-        elif ttsMonsterManager is not None and not isinstance(ttsMonsterManager, TtsMonsterTtsManagerInterface):
-            raise TypeError(f'ttsMonsterManager argument is malformed: \"{ttsMonsterManager}\"')
+        elif ttsMonsterTtsManager is not None and not isinstance(ttsMonsterTtsManager, TtsMonsterTtsManagerInterface):
+            raise TypeError(f'ttsMonsterTtsManager argument is malformed: \"{ttsMonsterTtsManager}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif ttsMonsterStreamerVoicesRepository is not None and not isinstance(ttsMonsterStreamerVoicesRepository, TtsMonsterStreamerVoicesRepositoryInterface):
@@ -632,7 +632,7 @@ class CynanBot(
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
-        self.__ttsMonsterManager: TtsMonsterTtsManagerInterface | None = ttsMonsterManager
+        self.__ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = ttsMonsterTtsManager
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
@@ -1022,8 +1022,8 @@ class CynanBot(
             self.__triviaGameMachine.setEventListener(self)
             self.__triviaGameMachine.startMachine()
 
-        if self.__ttsMonsterManager is not None:
-            self.__ttsMonsterManager.setTwitchChannelProvider(self)
+        if self.__ttsMonsterTtsManager is not None:
+            self.__ttsMonsterTtsManager.setTwitchChannelProvider(self)
 
         if self.__recurringActionsMachine is not None:
             self.__recurringActionsMachine.setEventListener(self)
