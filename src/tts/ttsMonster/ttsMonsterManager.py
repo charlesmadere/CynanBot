@@ -50,6 +50,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__cache: dict[str, FrozenList[str]] = dict()
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
@@ -112,34 +113,42 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         elif await self.isPlaying():
             self.__timber.log('TtsMonsterManager', f'There is already an ongoing TTS Monster event!')
             return False
+        elif event.message is None:
+            self.__timber.log('TtsMonsterManager', f'There is no TtsEvent message!')
+            return False
 
         self.__isLoading = True
 
-        ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
-            message = event.message,
-            twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId
-        )
+        fileNames: FrozenList[str] | None
+        if self.__cache.get(event.message) is not None:
+            fileNames = self.__cache[event.message]
+        else:
+            ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
+                message = event.message,
+                twitchChannel = event.twitchChannel,
+                twitchChannelId = event.twitchChannelId
+            )
 
-        if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
-            self.__timber.log('TtsMonsterManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterUrls=})')
-            self.__isLoading = False
-            return False
+            if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
+                self.__timber.log('TtsMonsterManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterUrls=})')
+                self.__isLoading = False
+                return False
 
-        fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
+            fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
+            if fileNames is None or len(fileNames) == 0:
+                self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
+                self.__isLoading = False
+                return False
 
-        if fileNames is None or len(fileNames) == 0:
-            self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
-            self.__isLoading = False
-            return False
+            await self.__ttsTempFileHelper.registerTempFiles(fileNames)
 
-        await self.__ttsTempFileHelper.registerTempFiles(fileNames)
+            await self.__reportCharacterUsage(
+                characterAllowance = ttsMonsterUrls.characterAllowance,
+                characterUsage = ttsMonsterUrls.characterUsage,
+                twitchChannel = event.twitchChannel
+            )
 
-        await self.__reportCharacterUsage(
-            characterAllowance = ttsMonsterUrls.characterAllowance,
-            characterUsage = ttsMonsterUrls.characterUsage,
-            twitchChannel = event.twitchChannel
-        )
+            self.__cache[event.message] = fileNames
 
         self.__timber.log('TtsMonsterManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         await self.__executeTts(fileNames = fileNames)
