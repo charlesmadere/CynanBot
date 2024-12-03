@@ -1,3 +1,4 @@
+import aiofiles.ospath
 import locale
 import math
 from asyncio.subprocess import Process
@@ -120,7 +121,7 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         self.__isLoading = True
 
         fileNames: FrozenList[str] | None
-        if self.__cache.get(event.message) is not None:
+        if await self.__validateCache(event.message):
             fileNames = self.__cache[event.message]
         else:
             ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
@@ -154,6 +155,18 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
         await self.__executeTts(fileNames = fileNames)
 
         self.__isLoading = False
+        return True
+
+    async def __validateCache(self, message) -> bool:
+        if self.__cache.get(message) is None:
+            return False
+
+        fileNames = self.__cache[message]
+        for fileName in fileNames:
+            if not await aiofiles.ospath.exists(fileName) or not await aiofiles.ospath.isfile(fileName):
+                self.__cache.pop(message)
+                return False
+
         return True
 
     async def __reportCharacterUsage(
