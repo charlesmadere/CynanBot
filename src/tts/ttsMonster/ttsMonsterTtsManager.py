@@ -7,7 +7,7 @@ import psutil
 from frozenlist import FrozenList
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
-from .ttsMonsterManagerInterface import TtsMonsterManagerInterface
+from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..ttsEvent import TtsEvent
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -19,7 +19,7 @@ from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
-class TtsMonsterManager(TtsMonsterManagerInterface):
+class TtsMonsterManager(TtsMonsterTtsManagerInterface):
 
     def __init__(
         self,
@@ -108,8 +108,6 @@ class TtsMonsterManager(TtsMonsterManagerInterface):
             self.__timber.log('TtsMonsterManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
             self.__isLoading = False
             return False
-
-        await self.__ttsTempFileHelper.registerTempFiles(fileNames)
 
         await self.__reportCharacterUsage(
             characterAllowance = ttsMonsterUrls.characterAllowance,
