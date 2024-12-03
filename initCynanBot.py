@@ -154,12 +154,10 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
-from src.soundPlayerManager.stub.stubImmediateSoundPlayerManager import StubImmediateSoundPlayerManager
 from src.soundPlayerManager.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
 from src.soundPlayerManager.stub.stubSoundPlayerRandomizerHelper import StubSoundPlayerRandomizerHelper
 from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
@@ -1431,8 +1429,6 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = StubSoundPla
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
 
-immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = StubImmediateSoundPlayerManager()
-
 
 ##################################################
 ## Stream Alerts Manager initialization section ##
@@ -1498,7 +1494,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1765,7 +1761,6 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     halfLifeService = None,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = jishoHelper,
     languagesRepository = languagesRepository,
@@ -1782,6 +1777,7 @@ cynanBot = CynanBot(
     recurringActionsWizard = recurringActionsWizard,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = None,
     starWarsQuotesRepository = starWarsQuotesRepository,

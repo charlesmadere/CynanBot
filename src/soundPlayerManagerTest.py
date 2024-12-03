@@ -11,6 +11,8 @@ from .contentScanner.contentScanner import ContentScanner
 from .contentScanner.contentScannerInterface import ContentScannerInterface
 from .misc.backgroundTaskHelper import BackgroundTaskHelper
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from .soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
+from .soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
 from .soundPlayerManager.soundAlert import SoundAlert
 from .soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from .soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
@@ -65,6 +67,8 @@ triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
 )
 
+playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
+
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
 )
@@ -76,6 +80,7 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
 soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(
     backgroundTaskHelper = backgroundTaskHelper,
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
+    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )

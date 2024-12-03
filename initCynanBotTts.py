@@ -144,8 +144,8 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.immediateSoundPlayerManager import ImmediateSoundPlayerManager
-from src.soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
+from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
+from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -819,6 +819,8 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 ## Sound Player initialization section ##
 #########################################
 
+playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
+
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
@@ -832,12 +834,9 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
+    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
-)
-
-immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = ImmediateSoundPlayerManager(
-    soundPlayerManagerProvider = soundPlayerManagerProvider
 )
 
 
@@ -1176,7 +1175,7 @@ crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -1283,7 +1282,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1291,8 +1290,8 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     timber = timber
 )
@@ -1523,7 +1522,6 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     halfLifeService = halfLifeService,
-    immediateSoundPlayerManager = immediateSoundPlayerManager,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,
     languagesRepository = languagesRepository,
@@ -1540,6 +1538,7 @@ cynanBot = CynanBot(
     recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,

@@ -1,7 +1,7 @@
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
-from ..soundPlayerManager.immediateSoundPlayerManagerInterface import ImmediateSoundPlayerManagerInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
+from ..soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -15,18 +15,18 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
-        immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface
     ):
-        if not isinstance(immediateSoundPlayerManager, ImmediateSoundPlayerManagerInterface):
-            raise TypeError(f'immediateSoundPlayerManager argument is malformed: \"{immediateSoundPlayerManager}\"')
+        if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
 
-        self.__immediateSoundPlayerManager: ImmediateSoundPlayerManagerInterface = immediateSoundPlayerManager
+        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
 
@@ -83,10 +83,12 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             return False
 
         if isImmediate:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+
             if utils.isValidStr(filePath):
-                await self.__immediateSoundPlayerManager.playSoundFile(filePath)
+                await soundPlayerManager.playSoundFile(filePath)
             elif soundAlert is not None:
-                await self.__immediateSoundPlayerManager.playSoundAlert(soundAlert)
+                await soundPlayerManager.playSoundAlert(soundAlert)
         else:
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = soundAlert,

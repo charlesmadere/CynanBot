@@ -1,5 +1,5 @@
-from ..halfLife.models.halfLifeVoice import HalfLifeVoice
 from .absChatAction import AbsChatAction
+from ..halfLife.models.halfLifeVoice import HalfLifeVoice
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert

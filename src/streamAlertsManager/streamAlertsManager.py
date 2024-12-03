@@ -72,7 +72,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 return True
             elif currentAlert.alertState is StreamAlertState.SOUND_STARTED:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
-            elif await self.__soundPlayerManager.playSoundAlert(soundAlert):
+            elif await self.__soundPlayerManager.playSoundAlert(soundAlert) is not None:
                 currentAlert.setAlertState(StreamAlertState.SOUND_STARTED)
                 return True
             else:

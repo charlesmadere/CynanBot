@@ -8,6 +8,10 @@ from ..chatBand.chatBandInstrument import ChatBandInstrument
 class SoundPlayerManagerInterface(ABC):
 
     @abstractmethod
+    async def getCurrentPlaySessionId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def isPlaying(self) -> bool:
         pass
 
@@ -16,7 +20,7 @@ class SoundPlayerManagerInterface(ABC):
         self,
         instrument: ChatBandInstrument,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         pass
 
     @abstractmethod
@@ -24,7 +28,7 @@ class SoundPlayerManagerInterface(ABC):
         self,
         filePaths: Collection[str],
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         pass
 
     @abstractmethod
@@ -32,7 +36,7 @@ class SoundPlayerManagerInterface(ABC):
         self,
         alert: SoundAlert,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         pass
 
     @abstractmethod
@@ -40,9 +44,13 @@ class SoundPlayerManagerInterface(ABC):
         self,
         filePath: str | None,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         pass
 
     @abstractmethod
-    async def stop(self) -> bool:
+    async def stop(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def stopPlaySessionId(self, playSessionId: str | None) -> bool:
         pass

@@ -7,6 +7,7 @@ import aiofiles.ospath
 import vlc
 from frozenlist import FrozenList
 
+from ..playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
@@ -54,6 +55,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
+        playSessionIdGenerator: PlaySessionIdGeneratorInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         playlistSleepTimeSeconds: float = 0.15
@@ -62,6 +64,8 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
             raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
+        elif not isinstance(playSessionIdGenerator, PlaySessionIdGeneratorInterface):
+            raise TypeError(f'playSessionIdGenerator argument is malformed: \"{playSessionIdGenerator}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -73,12 +77,27 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
+        self.__playSessionIdGenerator: PlaySessionIdGeneratorInterface = playSessionIdGenerator
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
         self.__playlistSleepTimeSeconds: float = playlistSleepTimeSeconds
 
         self.__isProgressingThroughPlaylist: bool = False
+        self.__currentPlaySessionId: str | None = None
         self.__mediaPlayer: vlc.MediaPlayer | None = None
+
+    async def __applyNewPlaySessionId(self) -> str:
+        newPlaySessionId = await self.__playSessionIdGenerator.generatePlaySessionId()
+        self.__currentPlaySessionId = newPlaySessionId
+        return newPlaySessionId
+
+    async def __clearCurrentPlaySessionId(self) -> str | None:
+        currentPlaySessionId = self.__currentPlaySessionId
+        self.__currentPlaySessionId = None
+        return currentPlaySessionId
+
+    async def getCurrentPlaySessionId(self) -> str | None:
+        return self.__currentPlaySessionId
 
     async def isPlaying(self) -> bool:
         if self.__isProgressingThroughPlaylist:
@@ -91,7 +110,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self,
         instrument: ChatBandInstrument,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not isinstance(instrument, ChatBandInstrument):
             raise TypeError(f'instrument argument is malformed: \"{instrument}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -102,18 +121,18 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository
 
         if chatBandInstrumentSoundsRepository is None:
-            return False
+            return None
         elif not await self.__soundPlayerSettingsRepository.isEnabled():
-            return False
+            return None
         elif await self.isPlaying():
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
-            return False
+            return None
 
         filePath = await chatBandInstrumentSoundsRepository.getRandomSound(instrument)
 
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for chat band instrument ({instrument=}) ({filePath=})')
-            return False
+            return None
 
         filePaths: FrozenList[str] = FrozenList()
         filePaths.append(filePath)
@@ -128,7 +147,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self,
         filePaths: Collection[str],
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not isinstance(filePaths, Collection):
             raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -141,18 +160,18 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         if len(frozenFilePaths) == 0:
             self.__timber.log('VlcSoundPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
-            return False
+            return None
 
         for index, filePath in enumerate(frozenFilePaths):
             if not utils.isValidStr(filePath):
                 self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a valid string: \"{filePath}\"')
-                return False
+                return None
             elif not await aiofiles.ospath.exists(filePath):
                 self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} does not exist: \"{filePath}\"')
-                return False
+                return None
             elif not await aiofiles.ospath.isfile(filePath):
                 self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a file: \"{filePath}\"')
-                return False
+                return None
 
         mediaList: vlc.MediaList | None = None
         addResults: dict[str, int] = dict()
@@ -162,7 +181,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             mediaList = vlc.MediaList()
 
             if not isinstance(mediaList, vlc.MediaList):
-                return False
+                return None
 
             mediaList.lock()
 
@@ -174,12 +193,12 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         if mediaList is None or exception is not None:
             self.__timber.log('VlcSoundPlayerManager', f'Failed to load sounds from file paths: \"{filePaths}\" ({mediaList=}) ({exception=})', exception, traceback.format_exc())
-            return False
+            return None
 
         for filePath, addResult in addResults.items():
             if addResult != 0:
                 self.__timber.log('VlcSoundPlayerManager', f'Encountered bad result code ({addResult}) when trying to add sound \"{filePath}\" from file paths: \"{filePaths}\" ({mediaList=}) ({exception=})', exception, traceback.format_exc())
-                return False
+                return None
 
         mediaPlayer = await self.__retrieveMediaPlayer()
 
@@ -188,19 +207,21 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         else:
             mediaPlayer.audio_set_volume(volume)
 
+        newPlaySessionId = await self.__applyNewPlaySessionId()
+
         self.__backgroundTaskHelper.createTask(self.__progressThroughPlaylist(
             playlistFilePaths = frozenFilePaths,
             mediaPlayer = mediaPlayer
         ))
 
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({filePaths=}) ({mediaList=}) ({mediaPlayer=})')
-        return True
+        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({newPlaySessionId=}) ({filePaths=}) ({mediaList=}) ({mediaPlayer=})')
+        return newPlaySessionId
 
     async def playSoundAlert(
         self,
         alert: SoundAlert,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
         elif volume is not None and not utils.isValidInt(volume):
@@ -209,16 +230,16 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise ValueError(f'volume argument is out of bounds: {volume}')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
-            return False
+            return None
         elif await self.isPlaying():
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
-            return False
+            return None
 
         filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(alert)
 
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
-            return False
+            return None
 
         return await self.playSoundFile(
             filePath = filePath,
@@ -229,20 +250,20 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self,
         filePath: str | None,
         volume: int | None = None
-    ) -> bool:
+    ) -> str | None:
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'filePath argument is malformed: \"{filePath}\"')
-            return False
+            return None
         elif volume is not None and not utils.isValidInt(volume):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
         elif volume is not None and (volume < 0 or volume > 100):
             raise ValueError(f'volume argument is out of bounds: {volume}')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
-            return False
+            return None
         elif await self.isPlaying():
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
-            return False
+            return None
 
         filePaths: FrozenList[str] = FrozenList()
         filePaths.append(filePath)
@@ -264,7 +285,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'mediaPlayer argument is malformed: \"{mediaPlayer}\"')
 
         self.__isProgressingThroughPlaylist = True
+        playlistSleepTimeSeconds = self.__playlistSleepTimeSeconds
         currentPlaylistIndex: int | None = -1
+        currentPlaySessionId = self.__currentPlaySessionId
 
         try:
             while currentPlaylistIndex != None and currentPlaylistIndex < len(playlistFilePaths):
@@ -289,15 +312,16 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                             playbackResult = mediaPlayer.play()
 
                             if playbackResult != 0:
-                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index {currentPlaylistIndex}: \"{currentFilePath}\"')
+                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({currentPlaySessionId=}) ({mediaPlayer=})')
                                 currentPlaylistIndex = None
 
                 if currentPlaylistIndex is not None:
-                    await asyncio.sleep(self.__playlistSleepTimeSeconds)
+                    await asyncio.sleep(playlistSleepTimeSeconds)
         except Exception as e:
-            self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playlistFilePaths=}) ({mediaPlayer=}) ({currentPlaylistIndex=}): {e}', e, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({currentPlaylistIndex=}) ({playlistFilePaths=}) ({currentPlaySessionId=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
 
         self.__isProgressingThroughPlaylist = False
+        await self.__clearCurrentPlaySessionId()
 
     async def __retrieveMediaPlayer(self) -> vlc.MediaPlayer:
         mediaPlayer = self.__mediaPlayer
@@ -326,9 +350,25 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         except Exception as e:
             exception = e
 
+        oldPlaySessionId = await self.__clearCurrentPlaySessionId()
+
         if exception is None:
-            self.__timber.log('VlcSoundPlayerManager', f'Stopped ({mediaPlayer=})')
+            self.__timber.log('VlcSoundPlayerManager', f'Stopped ({oldPlaySessionId=}) ({mediaPlayer=})')
             return True
         else:
-            self.__timber.log('VlcSoundPlayerManager', f'Attempted to stop but an exception occurred ({mediaPlayer=}): {exception}', exception, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Attempted to stop but an exception occurred ({oldPlaySessionId=}) ({mediaPlayer=}): {exception}', exception, traceback.format_exc())
+            return False
+
+    async def stopPlaySessionId(self, playSessionId: str | None) -> bool:
+        if playSessionId is not None and not isinstance(playSessionId, str):
+            raise TypeError(f'playSessionId argument is malformed: \"{playSessionId}\"')
+        elif not utils.isValidStr(playSessionId):
+            return False
+
+        currentPlaySessionId = await self.getCurrentPlaySessionId()
+
+        if playSessionId == currentPlaySessionId:
+            return await self.stop()
+        else:
+            self.__timber.log('VlcSoundPlayerManager', f'Attempted to stop but the given playSessionId is not what is currently playing ({playSessionId=}) ({currentPlaySessionId=})')
             return False

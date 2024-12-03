@@ -6,7 +6,6 @@ from .ttsChatterBoosterPack import TtsChatterBoosterPack
 from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
-from ...halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
@@ -18,7 +17,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
 
     def __init__(
         self,
-        halfLifeJsonParser: HalfLifeJsonParser,
+        halfLifeJsonParser: HalfLifeJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface
     ):
