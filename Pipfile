@@ -32,7 +32,7 @@ pywin32 = { version = "308", markers = "sys_platform == 'win32'" }
 requests = "2.32.3"
 rich = "13.9.4"
 roman = "4.2"
-twitchio = "2.10.1"
+twitchio = "2.10.0"
 typing_extensions = "4.12.2"
 urllib3 = '2.2.3'
 websockets = "14.1"

@@ -54,7 +54,7 @@ python {
     pip 'requests:2.32.3'
     pip 'rich:13.9.4'
     pip 'roman:4.2'
-    pip 'twitchio:2.10.1'
+    pip 'twitchio:2.10.0'
     pip 'typing_extensions:4.12.2'
     pip 'urllib3:2.2.3'
     pip 'websockets:14.1'
