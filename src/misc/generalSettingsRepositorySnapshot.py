@@ -64,9 +64,6 @@ class GeneralSettingsRepositorySnapshot:
     def isCatJamMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'catJamMessageEnabled', False)
 
-    def isChatBacksMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'chatBacksEnabled', False)
-
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
 
@@ -76,20 +73,11 @@ class GeneralSettingsRepositorySnapshot:
     def isEventSubEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'eventSubEnabled', False)
 
-    def isEyesMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'eyesMessageEnabled', False)
-
     def isFuntoonApiEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'funtoonApiEnabled', True)
 
     def isFuntoonTwitchChatFallbackEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'funtoonTwitchChatFallbackEnabled', True)
-
-    def isImytSlurpMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'imytSlurpMessageEnabled', False)
-
-    def isJamCatMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'jamCatMessageEnabled', False)
 
     def isJishoEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'jishoEnabled', True)
@@ -102,12 +90,6 @@ class GeneralSettingsRepositorySnapshot:
 
     def isPubSubPongLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'pubSubPongLoggingEnabled', False)
-
-    def isRatJamMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'ratJamMessageEnabled', False)
-
-    def isRoachMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'roachMessageEnabled', False)
 
     def isSchubertWalkMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'schubertWalkMessageEnabled', False)

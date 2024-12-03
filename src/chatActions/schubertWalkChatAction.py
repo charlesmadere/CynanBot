@@ -48,7 +48,7 @@ class SchubertWalkChatAction(AbsChatAction):
 
         if not generalSettings.isSchubertWalkMessageEnabled():
             return False
-        elif not user.isSchubertWalkMessageEnabled():
+        elif not user.isSchubertWalkMessageEnabled:
             return False
 
         splits = utils.getCleanedSplits(message.getContent())

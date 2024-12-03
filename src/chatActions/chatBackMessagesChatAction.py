@@ -20,16 +20,13 @@ class ChatBackMessagesChatAction(AbsChatAction):
         twitchUtils: TwitchUtilsInterface,
         cooldown: timedelta = timedelta(minutes = 20)
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__lastMessageTimes: dict[str, TimedDict] = dict()
@@ -41,12 +38,9 @@ class ChatBackMessagesChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        messageList = user.getChatBackMessages()
+        messageList = user.chatBackMessages
 
-        if not generalSettings.isChatBacksMessageEnabled():
-            return False
-        elif not user.isChatBackMessagesEnabled:
+        if not user.isChatBackMessagesEnabled:
             return False
         elif messageList is None or len(messageList) == 0:
             return False

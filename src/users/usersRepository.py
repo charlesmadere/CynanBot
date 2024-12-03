@@ -144,10 +144,7 @@ class UsersRepository(UsersRepositoryInterface):
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
         isEnabled = utils.getBoolFromDict(userJson, 'enabled', True)
-        isEyesMessageEnabled = utils.getBoolFromDict(userJson, 'eyesMessageEnabled', False)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
-        isImytSlurpMessageEnabled = utils.getBoolFromDict(userJson, 'imytSlurpMessageEnabled', False)
-        isJamCatMessageEnabled = utils.getBoolFromDict(userJson, 'jamCatMessageEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
         isNotifyOfPollResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollResultsEnabled', True)
@@ -155,8 +152,6 @@ class UsersRepository(UsersRepositoryInterface):
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
-        isRatJamMessageEnabled = utils.getBoolFromDict(userJson, 'ratJamMessageEnabled', False)
-        isRoachMessageEnabled = utils.getBoolFromDict(userJson, 'roachMessageEnabled', False)
         isSchubertWalkMessageEnabled = utils.getBoolFromDict(userJson, 'schubertWalkMessageEnabled', False)
         isShizaMessageEnabled = utils.getBoolFromDict(userJson, 'shizaMessageEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
@@ -176,7 +171,7 @@ class UsersRepository(UsersRepositoryInterface):
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
-        chatBackMessages = userJson.get('chatBackMessages', None)
+        chatBackMessages = FrozenList(userJson.get('chatBackMessages', None))
         discord = utils.getStrFromDict(userJson, 'discord', '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -334,10 +329,7 @@ class UsersRepository(UsersRepositoryInterface):
             isCutenessEnabled = isCutenessEnabled,
             isDeerForceMessageEnabled = isDeerForceMessageEnabled,
             isEnabled = isEnabled,
-            isEyesMessageEnabled = isEyesMessageEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
-            isImytSlurpMessageEnabled = isImytSlurpMessageEnabled,
-            isJamCatMessageEnabled = isJamCatMessageEnabled,
             isJishoEnabled = isJishoEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
             isNotifyOfPollResultsEnabled = isNotifyOfPollResultsEnabled,
@@ -345,8 +337,6 @@ class UsersRepository(UsersRepositoryInterface):
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
-            isRatJamMessageEnabled = isRatJamMessageEnabled,
-            isRoachMessageEnabled = isRoachMessageEnabled,
             isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
             isShizaMessageEnabled = isShizaMessageEnabled,

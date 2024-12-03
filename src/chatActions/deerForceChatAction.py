@@ -48,7 +48,7 @@ class DeerForceChatAction(AbsChatAction):
 
         if not generalSettings.isDeerForceMessageEnabled():
             return False
-        elif not user.isDeerForceMessageEnabled():
+        elif not user.isDeerForceMessageEnabled:
             return False
 
         splits = utils.getCleanedSplits(message.getContent())

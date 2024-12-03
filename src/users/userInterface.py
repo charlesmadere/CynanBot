@@ -84,8 +84,9 @@ class UserInterface(ABC):
     def getCasualGamePollUrl(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getChatBackMessages(self) -> list[str] | None:
+    def chatBackMessages(self) -> FrozenList[str] | None:
         pass
 
     @abstractmethod
@@ -272,6 +273,7 @@ class UserInterface(ABC):
     def isCutenessEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isDeerForceMessageEnabled(self) -> bool:
         pass
@@ -315,6 +317,7 @@ class UserInterface(ABC):
     def isRaceEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isSchubertWalkMessageEnabled(self) -> bool:
         pass
