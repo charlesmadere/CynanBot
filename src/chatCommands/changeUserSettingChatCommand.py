@@ -46,7 +46,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to change user setting as no key argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
@@ -54,7 +54,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
             )
             return
         elif len(splits) < 3:
-            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no value argument was supplied')
+            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no value argument was supplied')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to change user setting as no value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
@@ -66,7 +66,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
         jsonConstant = await self.__stringToUserJsonConstant(jsonConstantString)
 
         if jsonConstant is None:
-            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid key argument was supplied')
+            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid key argument was supplied')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to change user setting as an invalid key argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
@@ -78,12 +78,12 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
 
         try:
             await self.__usersRepository.modifyUserValue(
-                handle = user.getHandle(),
+                handle = user.handle,
                 jsonConstant = jsonConstant,
                 value = value
             )
         except BadModifyUserValueException as e:
-            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid value argument was supplied: {e}', e, traceback.format_exc())
+            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid value argument was supplied: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to change user setting as an invalid value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
@@ -97,7 +97,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('ChangeUserSettingChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({jsonConstant=})')
+        self.__timber.log('ChangeUserSettingChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({jsonConstant=})')
 
     async def __stringToUserJsonConstant(self, jsonConstantString: str | None) -> UserJsonConstant | None:
         if not utils.isValidStr(jsonConstantString):

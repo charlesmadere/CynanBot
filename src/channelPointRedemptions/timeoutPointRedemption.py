@@ -89,7 +89,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         )
 
         if not utils.isValidStr(timeoutTargetUserName):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}, but was unable to find a user name: ({twitchChannelPointsMessage=})')
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}, but was unable to find a user name: ({twitchChannelPointsMessage=})')
 
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,
@@ -104,7 +104,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         )
 
         if not utils.isValidStr(timeoutTargetUserId):
-            self.__timber.log('TimeoutPointRedemption', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}, but was unable to find a user ID: ({twitchChannelPointsMessage=})')
+            self.__timber.log('TimeoutPointRedemption', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}, but was unable to find a user ID: ({twitchChannelPointsMessage=})')
 
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,

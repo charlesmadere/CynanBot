@@ -30,7 +30,7 @@ class ChatLoggerChatAction(AbsChatAction):
 
         self.__chatLogger.logMessage(
             msg = msg,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             userId = message.getAuthorId(),
             userName = message.getAuthorName()

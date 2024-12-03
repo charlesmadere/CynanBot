@@ -111,7 +111,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if not await self.__isLiveOnTwitchRepository.isLive(twitchChannelId):
-            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.getHandle()=}) ({action=})')
+            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.handle=}) ({action=})')
             return False
 
         soundAlertPath = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(

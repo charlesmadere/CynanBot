@@ -47,10 +47,10 @@ class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
 
         if not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isSuperTriviaGameEnabled():
+        elif not user.isSuperTriviaGameEnabled:
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             userId = ctx.getAuthorId()
         ):
@@ -60,9 +60,9 @@ class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
 
         self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
             actionId = actionId,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = await ctx.getMessageId()
         ))
 
-        self.__timber.log('ClearSuperTriviaQueueChatCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('ClearSuperTriviaQueueChatCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

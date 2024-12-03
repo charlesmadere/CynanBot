@@ -68,11 +68,11 @@ class TriviaScoreChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
         elif not user.isTriviaScoreEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         userName = ctx.getAuthorName()
@@ -97,19 +97,19 @@ class TriviaScoreChatCommand(AbsChatCommand):
                 return
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId
         )
 
         toxicResult = await self.__toxicTriviaOccurencesRepository.fetchDetails(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId
         )
 
         triviaResult = await self.__triviaScoreRepository.fetchTriviaScore(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId
         )
@@ -127,4 +127,4 @@ class TriviaScoreChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

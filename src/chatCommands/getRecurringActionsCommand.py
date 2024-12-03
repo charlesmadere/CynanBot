@@ -45,11 +45,11 @@ class GetRecurringActionsCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('GetRecurringActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('GetRecurringActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -59,7 +59,7 @@ class GetRecurringActionsCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __toStr(self, recurringActions: list[RecurringAction]) -> str:
         if not isinstance(recurringActions, list):

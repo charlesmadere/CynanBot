@@ -66,7 +66,7 @@ class BeanInstructionsChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('BeanInstructionsChatCommand', f'Handled !beaninstructions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('BeanInstructionsChatCommand', f'Handled !beaninstructions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __toString(self, beanCheerAction: BeanChanceCheerAction) -> str:
         bits: str

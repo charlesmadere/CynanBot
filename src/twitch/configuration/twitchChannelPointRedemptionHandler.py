@@ -98,7 +98,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         eventId = dataBundle.metadata.messageId
@@ -111,7 +111,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: ({eventId=}) ({reward=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=})')
             return
 
-        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Channel point reward ({reward}) redeemed by {redemptionUserLogin}:{redemptionUserId} in {user.getHandle()}:{userId} ({redemptionUserInput=})')
+        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Channel point reward ({reward}) redeemed by {redemptionUserLogin}:{redemptionUserId} in {user.handle}:{userId} ({redemptionUserInput=})')
 
         await self.__userIdsRepository.setUser(
             userId = redemptionUserId,
@@ -133,23 +133,23 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__timber.log('TwitchChannelPointRedemptionHandler', f'Abandoning handling of this channel point redemption as no TwitchChannelProvider has been set: \"{twitchChannelProvider}\"')
             return
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
 
-        if user.isCasualGamePollEnabled() and channelPointsMessage.rewardId == user.getCasualGamePollRewardId():
+        if user.isCasualGamePollEnabled and channelPointsMessage.rewardId == user.casualGamePollRewardId:
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 
-        if user.isCutenessEnabled():
+        if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 
-        if user.isPkmnEnabled():
+        if user.isPkmnEnabled:
             if channelPointsMessage.rewardId == user.pkmnBattleRewardId:
                 if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
@@ -163,14 +163,14 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-            if channelPointsMessage.rewardId == user.getPkmnEvolveRewardId():
+            if channelPointsMessage.rewardId == user.pkmnEvolveRewardId:
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-            if channelPointsMessage.rewardId == user.getPkmnShinyRewardId():
+            if channelPointsMessage.rewardId == user.pkmnShinyRewardId:
                 if await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
@@ -191,7 +191,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.isSuperTriviaGameEnabled() and channelPointsMessage.rewardId == user.getSuperTriviaGameRewardId():
+        if user.isSuperTriviaGameEnabled and channelPointsMessage.rewardId == user.superTriviaGameRewardId:
             if await self.__superTriviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
@@ -204,7 +204,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         ):
             return
 
-        if user.isTriviaGameEnabled() and channelPointsMessage.rewardId == user.getTriviaGameRewardId():
+        if user.isTriviaGameEnabled and channelPointsMessage.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage

@@ -53,7 +53,7 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if administrator != ctx.getAuthorId():
-            self.__timber.log('GetGlobalTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('GetGlobalTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
@@ -64,4 +64,4 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('GetGlobalTriviaControllersChatCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetGlobalTriviaControllersChatCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

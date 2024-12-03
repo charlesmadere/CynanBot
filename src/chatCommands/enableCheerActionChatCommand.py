@@ -47,7 +47,7 @@ class EnableCheerActionChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('EnableCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('EnableCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -64,7 +64,7 @@ class EnableCheerActionChatCommand(AbsChatCommand):
         try:
             bits = int(bitsString)
         except Exception as e:
-            self.__timber.log('EnableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed ({bitsString=}): {e}', e, traceback.format_exc())
+            self.__timber.log('EnableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is malformed ({bitsString=}): {e}', e, traceback.format_exc())
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -74,7 +74,7 @@ class EnableCheerActionChatCommand(AbsChatCommand):
             return
 
         if bits < 1 or bits > utils.getIntMaxSafeSize():
-            self.__timber.log('EnableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds ({bitsString=} ({bits=})')
+            self.__timber.log('EnableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({bitsString=} ({bits=})')
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -110,7 +110,7 @@ class EnableCheerActionChatCommand(AbsChatCommand):
             )
 
         else:
-            self.__timber.log('EnableCheerActionChatCommand', f'An unknown error occurred when {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried to enable cheer action {bits}')
+            self.__timber.log('EnableCheerActionChatCommand', f'An unknown error occurred when {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried to enable cheer action {bits}')
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -118,4 +118,4 @@ class EnableCheerActionChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('EnableCheerActionChatCommand', f'Handled !enablecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('EnableCheerActionChatCommand', f'Handled !enablecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

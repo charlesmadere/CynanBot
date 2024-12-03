@@ -58,12 +58,12 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('SetWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('SetWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         wizard = await self.__recurringActionsWizard.start(
             recurringActionType = RecurringActionType.WEATHER,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 

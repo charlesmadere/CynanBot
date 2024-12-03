@@ -125,7 +125,7 @@ class TriviaUtils(TriviaUtilsInterface):
             celebratoryEmote = self.__celebratoryEmote
 
         infix = ''
-        if twitchUser.isCutenessEnabled():
+        if twitchUser.isCutenessEnabled:
             infix = f'Your new cuteness is {newCuteness.cutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
@@ -363,7 +363,7 @@ class TriviaUtils(TriviaUtilsInterface):
         prefix = f'{emotePrompt} CONGRATULATIONS @{userName}, that\'s correct!'
 
         infix = ''
-        if twitchUser.isCutenessEnabled():
+        if twitchUser.isCutenessEnabled:
             infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.cutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
@@ -463,7 +463,7 @@ class TriviaUtils(TriviaUtilsInterface):
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
 
         cutenessPrompt = ''
-        if twitchUser.isCutenessEnabled():
+        if twitchUser.isCutenessEnabled:
             pointsStr = locale.format_string("%d", points, grouping = True)
             cutenessPrompt = f'for {pointsStr} cuteness '
 
@@ -493,7 +493,7 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not twitchUser.isCutenessEnabled() or toxicTriviaPunishmentResult is None:
+        if not twitchUser.isCutenessEnabled or toxicTriviaPunishmentResult is None:
             return None
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
@@ -613,7 +613,7 @@ class TriviaUtils(TriviaUtilsInterface):
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
 
         cutenessPrompt = ''
-        if twitchUser.isCutenessEnabled():
+        if twitchUser.isCutenessEnabled:
             pointsStr = locale.format_string("%d", points, grouping = True)
             cutenessPrompt = f'for {pointsStr} cuteness '
 
@@ -729,7 +729,7 @@ class TriviaUtils(TriviaUtilsInterface):
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
 
         twitchUserId = await self.__userIdsRepository.fetchUserId(
-            userName = twitchUser.getHandle(),
+            userName = twitchUser.handle,
             twitchAccessToken = twitchAccessToken
         )
 
@@ -737,7 +737,7 @@ class TriviaUtils(TriviaUtilsInterface):
             return True
 
         gameControllers = await self.__triviaGameControllersRepository.getControllers(
-            twitchChannel = twitchUser.getHandle(),
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId
         )
 

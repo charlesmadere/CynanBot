@@ -40,7 +40,7 @@ class BeanStatsChatCommand(AbsChatCommand):
         beanStats = await self.__beanStatsRepository.getStats(
             chatterUserId = ctx.getAuthorId(),
             chatterUserName = ctx.getAuthorName(),
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
@@ -60,4 +60,4 @@ class BeanStatsChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('BeanStatsChatCommand', f'Handled !beanstats for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('BeanStatsChatCommand', f'Handled !beanstats for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

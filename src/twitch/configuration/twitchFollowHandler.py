@@ -42,7 +42,7 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         followedAt = event.followedAt

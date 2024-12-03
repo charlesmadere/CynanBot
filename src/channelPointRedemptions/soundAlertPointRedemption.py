@@ -60,7 +60,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         soundAlertRedemption: SoundAlertRedemption | None = None
         filePath: str | None = None
 
-        if twitchChannelPointsMessage.rewardId == user.getRandomSoundAlertRewardId():
+        if twitchChannelPointsMessage.rewardId == user.randomSoundAlertRewardId:
             soundAlert = await self.__soundPlayerRandomizerHelper.chooseRandomSoundAlert()
 
         if soundAlert is None:

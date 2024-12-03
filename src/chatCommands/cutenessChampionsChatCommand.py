@@ -48,16 +48,16 @@ class CutenessChampionsChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.isCutenessEnabled():
+        if not user.isCutenessEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         result = await self.__cutenessRepository.fetchCutenessChampions(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         printOut = await self.__cutenessPresenter.printCutenessChampions(result)
         await self.__twitchUtils.safeSend(ctx, printOut)
-        self.__timber.log('CutenessChampionsChatCommand', f'Handled !cutenesschampions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('CutenessChampionsChatCommand', f'Handled !cutenesschampions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

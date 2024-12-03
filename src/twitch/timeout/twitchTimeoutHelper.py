@@ -220,7 +220,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             await self.__twitchTimeoutRemodHelper.submitRemodData(
                 timeoutDurationSeconds = durationSeconds,
                 broadcasterUserId = twitchChannelId,
-                broadcasterUserName = user.getHandle(),
+                broadcasterUserName = user.handle,
                 userId = userIdToTimeout
             )
 

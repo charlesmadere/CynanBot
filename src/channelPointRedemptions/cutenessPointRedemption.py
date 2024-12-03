@@ -33,7 +33,7 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
-        if not twitchUser.isCutenessEnabled():
+        if not twitchUser.isCutenessEnabled:
             return False
 
         cutenessBoosterPacks = twitchUser.cutenessBoosterPacks
@@ -49,15 +49,15 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         try:
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
-                twitchChannel = twitchUser.getHandle(),
+                twitchChannel = twitchUser.handle,
                 twitchChannelId = await twitchChannel.getTwitchChannelId(),
                 userId = twitchChannelPointsMessage.userId,
                 userName = twitchChannelPointsMessage.userName
             )
 
-            self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}')
+            self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}: {e}', e, traceback.format_exc())
+            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.userName}')
 
         return True

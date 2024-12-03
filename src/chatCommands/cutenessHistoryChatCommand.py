@@ -58,9 +58,9 @@ class CutenessHistoryChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.isCutenessEnabled():
+        if not user.isCutenessEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         userName = ctx.getAuthorName()
@@ -83,7 +83,7 @@ class CutenessHistoryChatCommand(AbsChatCommand):
                 return
 
             result = await self.__cutenessRepository.fetchCutenessHistory(
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 userId = userId,
                 userName = userName
@@ -101,7 +101,7 @@ class CutenessHistoryChatCommand(AbsChatCommand):
             )
         else:
             result = await self.__cutenessRepository.fetchCutenessLeaderboardHistory(
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = await ctx.getTwitchChannelId()
             )
 
@@ -117,4 +117,4 @@ class CutenessHistoryChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

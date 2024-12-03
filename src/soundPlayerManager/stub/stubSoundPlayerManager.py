@@ -53,4 +53,5 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
     async def stopPlaySessionId(self, playSessionId: str | None) -> bool:
         # this method is intentionally empty
-        return True
+        return False
+

@@ -55,13 +55,13 @@ class WeatherChatCommand(AbsChatCommand):
 
         if not user.isWeatherEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
-        locationId = user.getLocationId()
+        locationId = user.locationId
 
         if not utils.isValidStr(locationId):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Weather for {user.handle} is enabled, but no location ID is available')
             return
 
         try:
@@ -82,4 +82,4 @@ class WeatherChatCommand(AbsChatCommand):
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{locationId}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
-        self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

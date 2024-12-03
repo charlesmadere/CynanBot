@@ -37,4 +37,4 @@ class TimeoutActionData:
 
     @property
     def twitchChannel(self) -> str:
-        return self.user.getHandle()
+        return self.user.handle

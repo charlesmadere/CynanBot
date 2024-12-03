@@ -47,11 +47,11 @@ class RemoveRecurringSuperTriviaActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         recurringAction = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -64,4 +64,4 @@ class RemoveRecurringSuperTriviaActionCommand(AbsChatCommand):
 
         await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring super trivia action has been disabled')
-        self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'Handled !removesupertriviarecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'Handled !removesupertriviarecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

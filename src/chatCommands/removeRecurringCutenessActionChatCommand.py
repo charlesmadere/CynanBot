@@ -45,11 +45,11 @@ class RemoveRecurringCutenessActionChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveRecurringCutenessActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveRecurringCutenessActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         recurringAction = await self.__recurringActionsRepository.getCutenessRecurringAction(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -62,4 +62,4 @@ class RemoveRecurringCutenessActionChatCommand(AbsChatCommand):
 
         await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring cuteness action has been disabled')
-        self.__timber.log('RemoveRecurringCutenessActionChatCommand', f'Handled !removerecurringcutenessaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RemoveRecurringCutenessActionChatCommand', f'Handled !removerecurringcutenessaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

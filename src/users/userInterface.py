@@ -76,12 +76,14 @@ class UserInterface(ABC):
     def defaultTtsProvider(self) -> TtsProvider:
         pass
 
+    @property
     @abstractmethod
-    def getCasualGamePollRewardId(self) -> str | None:
+    def casualGamePollRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getCasualGamePollUrl(self) -> str | None:
+    def casualGamePollUrl(self) -> str | None:
         pass
 
     @property
@@ -89,134 +91,167 @@ class UserInterface(ABC):
     def chatBackMessages(self) -> FrozenList[str] | None:
         pass
 
+    @property
     @abstractmethod
-    def getDiscordUrl(self) -> str | None:
+    def discordUrl(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getHandle(self) -> str:
+    def handle(self) -> str:
         pass
 
+    @property
     @abstractmethod
-    def getLocationId(self) -> str | None:
+    def locationId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getMastodonUrl(self) -> str | None:
+    def mastodonUrl(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getMaximumTtsCheerAmount(self) -> int | None:
+    def maximumTtsCheerAmount(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getMinimumTtsCheerAmount(self) -> int | None:
+    def minimumTtsCheerAmount(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getPkmnEvolveRewardId(self) -> str | None:
+    def pkmnEvolveRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getPkmnShinyRewardId(self) -> str | None:
+    def pkmnShinyRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getRandomSoundAlertRewardId(self) -> str | None:
+    def randomSoundAlertRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getSpeedrunProfile(self) -> str | None:
+    def speedrunProfile(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getSoundAlertRewardId(self) -> str | None:
+    def soundAlertRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaCheerTriggerAmount(self) -> float | None:
+    def superTriviaCheerTriggerAmount(self) -> float | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaCheerTriggerMaximum(self) -> int | None:
+    def superTriviaCheerTriggerMaximum(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaGamePoints(self) -> int | None:
+    def superTriviaGamePoints(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaGameRewardId(self) -> str | None:
+    def superTriviaGameRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaGameShinyMultiplier(self) -> int | None:
+    def superTriviaGameShinyMultiplier(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaGameToxicMultiplier(self) -> int | None:
+    def superTriviaGameToxicMultiplier(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int | None:
+    def superTriviaGameToxicPunishmentMultiplier(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaPerUserAttempts(self) -> int | None:
+    def superTriviaPerUserAttempts(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaSubscribeTriggerAmount(self) -> float | None:
+    def superTriviaSubscribeTriggerAmount(self) -> float | None:
         pass
 
+    @property
     @abstractmethod
-    def getSuperTriviaSubscribeTriggerMaximum(self) -> float | None:
+    def superTriviaSubscribeTriggerMaximum(self) -> float | None:
         pass
 
+    @property
     @abstractmethod
-    def getSupStreamerMessage(self) -> str | None:
+    def supStreamerMessage(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getTriviaGamePoints(self) -> int | None:
+    def triviaGamePoints(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getTriviaGameRewardId(self) -> str | None:
+    def triviaGameRewardId(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getTriviaGameShinyMultiplier(self) -> int | None:
+    def triviaGameShinyMultiplier(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getTwitterUrl(self) -> str | None:
+    def twitterUrl(self) -> str | None:
         pass
 
+    @property
     @abstractmethod
-    def getWaitForSuperTriviaAnswerDelay(self) -> int | None:
+    def waitForSuperTriviaAnswerDelay(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
-    def getWaitForTriviaAnswerDelay(self) -> int | None:
+    def waitForTriviaAnswerDelay(self) -> int | None:
         pass
 
+    @property
     @abstractmethod
     def hasDiscord(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def hasLocationId(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def hasSpeedrunProfile(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def hasTimeZones(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def hasTwitter(self) -> bool:
         pass
@@ -236,10 +271,12 @@ class UserInterface(ABC):
     def isAnivMessageCopyTimeoutEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isCasualGamePollEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isCatJamMessageEnabled(self) -> bool:
         pass
@@ -269,6 +306,7 @@ class UserInterface(ABC):
     def isCrowdControlEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isCutenessEnabled(self) -> bool:
         pass
@@ -283,14 +321,17 @@ class UserInterface(ABC):
     def isEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isGiveCutenessEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isJishoEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isLoremIpsumEnabled(self) -> bool:
         pass
@@ -305,14 +346,17 @@ class UserInterface(ABC):
     def isNotifyOfPredictionResultsEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isPkmnEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isPokepediaEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isRaceEnabled(self) -> bool:
         pass
@@ -332,6 +376,7 @@ class UserInterface(ABC):
     def isShizaMessageEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isStarWarsQuotesEnabled(self) -> bool:
         pass
@@ -341,6 +386,7 @@ class UserInterface(ABC):
     def isSubGiftThankingEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isSuperTriviaGameEnabled(self) -> bool:
         pass
@@ -375,10 +421,12 @@ class UserInterface(ABC):
     def isToxicTriviaEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isTranslateEnabled(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isTriviaGameEnabled(self) -> bool:
         pass

@@ -36,14 +36,14 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
-        if not twitchUser.isPkmnEnabled():
+        if not twitchUser.isPkmnEnabled:
             return False
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         actionCompleted = False
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnGiveShiny(
-            twitchChannel = twitchUser.getHandle(),
+            twitchChannel = twitchUser.handle,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.userName
         ):
@@ -53,5 +53,5 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
             await self.__twitchUtils.safeSend(twitchChannel, f'!freeshiny {twitchChannelPointsMessage.userName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnShinyRedemption', f'Redeemed pkmn shiny for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnShinyRedemption', f'Redeemed pkmn shiny for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return actionCompleted

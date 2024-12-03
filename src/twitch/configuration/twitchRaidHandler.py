@@ -49,7 +49,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         fromUserId = event.fromBroadcasterUserId
@@ -61,16 +61,16 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         viewers = event.viewers
 
         if not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName) or not utils.isValidStr(toUserId) or not utils.isValidStr(toUserLogin) or not utils.isValidStr(toUserName) or not utils.isValidInt(viewers):
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')
             return
 
-        self.__timber.log('TwitchRaidHandler', f'\"{user.getHandle()}\" received raid of {viewers} from \"{fromUserLogin}\"')
+        self.__timber.log('TwitchRaidHandler', f'\"{user.handle}\" received raid of {viewers} from \"{fromUserLogin}\"')
 
         if user.isChatLoggingEnabled:
             self.__chatLogger.logRaid(
                 raidSize = viewers,
                 fromWho = fromUserName,
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = toUserId
             )
 
@@ -112,11 +112,11 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.RAID,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid!',
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
                 userId = userId,
                 userName = fromUserName,

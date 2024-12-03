@@ -121,7 +121,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
                 chatterUserName = chatterUserName,
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId
             )
 
@@ -145,7 +145,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             timeoutDurationSeconds = timeoutData.durationSeconds,
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId
         )
 
@@ -226,7 +226,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return
 
         emote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
         msg = f'@{chatterUserName} {emote} {timeoutData.durationSecondsStr}s {emote} {timeoutScoreString}'
 

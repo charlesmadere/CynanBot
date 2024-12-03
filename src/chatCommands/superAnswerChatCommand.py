@@ -42,7 +42,7 @@ class SuperAnswerChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled or not user.isSuperTriviaGameEnabled:
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -54,11 +54,11 @@ class SuperAnswerChatCommand(AbsChatCommand):
         self.__triviaGameMachine.submitAction(CheckSuperAnswerTriviaAction(
             actionId = await self.__triviaIdGenerator.generateActionId(),
             answer = answer,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             twitchChatMessageId = await ctx.getMessageId(),
             userId = ctx.getAuthorId(),
             userName = ctx.getAuthorName()
         ))
 
-        self.__timber.log('SuperAnswerCommand', f'Handled !superanswer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('SuperAnswerCommand', f'Handled !superanswer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

@@ -43,7 +43,7 @@ class GetBannedTriviaControllersChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != administrator:
-            self.__timber.log('GetBannedTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('GetBannedTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
@@ -54,4 +54,4 @@ class GetBannedTriviaControllersChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('GetBannedTriviaControllersChatCommand', f'Handled !getbannedtriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetBannedTriviaControllersChatCommand', f'Handled !getbannedtriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

@@ -59,14 +59,14 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled or not user.isSuperTriviaGameEnabled:
             return
 
         # For the time being, this command is intentionally not checking for mod status, as it has
         # been determined that super trivia game controllers shouldn't necessarily have to be mod.
 
         if not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
@@ -81,7 +81,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             try:
                 numberOfGames = int(numberOfGamesStr)
             except (SyntaxError, TypeError, ValueError) as e:
-                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}): {e}', e, traceback.format_exc())
+                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}): {e}', e, traceback.format_exc())
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
@@ -92,7 +92,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperTriviaGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
-                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
+                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',
@@ -107,7 +107,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 triviaSource = TriviaSource.LORD_OF_THE_RINGS
 
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             numberOfGames = numberOfGames,
             requiredTriviaSource = triviaSource
@@ -120,4 +120,4 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
         # Presumably, a command should always be the first item in the splits array, use this ref
         # just in case we want to add more specified supertrivia commands in the future.
-        self.__timber.log('SuperTriviaChatCommand', f'Handled !{splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('SuperTriviaChatCommand', f'Handled !{splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

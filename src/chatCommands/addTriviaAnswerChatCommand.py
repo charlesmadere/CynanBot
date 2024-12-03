@@ -67,10 +67,10 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
@@ -78,7 +78,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but not enough arguments were supplied')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but not enough arguments were supplied')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to add additional trivia answer as not enough arguments were given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
@@ -90,7 +90,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to add additional trivia answer as an invalid emote argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
@@ -100,12 +100,12 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found with emote \"{emote}\"')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
@@ -115,7 +115,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
 
         additionalAnswer: str | None = ' '.join(splits[2:])
         if not utils.isValidStr(additionalAnswer):
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid additional answer was given: \"{additionalAnswer}\"')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid additional answer was given: \"{additionalAnswer}\"')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to add additional trivia answer as an invalid answer argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
@@ -140,7 +140,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-            self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
+            self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}: \"{additionalAnswer}\"')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -148,7 +148,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer already exists: \"{additionalAnswer}\"', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the additional answer already exists: \"{additionalAnswer}\"', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsMalformedException as e:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -156,7 +156,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer is malformed: \"{additionalAnswer}\"', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the additional answer is malformed: \"{additionalAnswer}\"', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -164,7 +164,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.triviaType.toStr()}\"', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the question is an unsupported type: \"{reference.triviaType.toStr()}\"', e, traceback.format_exc())
         except TooManyAdditionalTriviaAnswersException as e:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -172,6 +172,6 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question has too many additional answers', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the question has too many additional answers', e, traceback.format_exc())
 
-        self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

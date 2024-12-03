@@ -76,9 +76,9 @@ class TwitchChannelJoinHelper(TwitchChannelJoinHelperInterface):
 
         for user in users:
             if user.isEnabled:
-                allChannels.append(user.getHandle())
+                allChannels.append(user.handle)
             else:
-                disabledChannels.append(user.getHandle())
+                disabledChannels.append(user.handle)
 
         if len(disabledChannels) >= 1:
             self.__timber.log('ChannelJoinHelper', f'Disabled channel(s) that will not be joined: {disabledChannels}')

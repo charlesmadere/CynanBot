@@ -37,7 +37,7 @@ class TestCheerActionChatCommand(AbsChatCommand):
         twitchChannelId = await ctx.getTwitchChannelId()
 
         if twitchChannelId != ctx.getAuthorId():
-            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -52,7 +52,7 @@ class TestCheerActionChatCommand(AbsChatCommand):
             pass
 
         if not utils.isValidInt(bits) or bits < 1 or bits > utils.getIntMaxSafeSize():
-            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} specified an invalid bit amount ({splits=}) ({bits=})')
+            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} specified an invalid bit amount ({splits=}) ({bits=})')
             return
 
         message = (f'cheer{bits} ' + ' '.join(splits[2:])).strip()

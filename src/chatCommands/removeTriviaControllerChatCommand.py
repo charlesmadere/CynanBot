@@ -47,38 +47,38 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
 
         twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('RemoveTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('RemoveTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}',
+                message = f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.handle}',
                 replyMessageId = await ctx.getMessageId()
             )
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('RemoveTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}',
+                message = f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.handle}',
                 replyMessageId = await ctx.getMessageId()
             )
             return
 
         result = await self.__triviaGameControllersRepository.removeController(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             userName = userName
         )
@@ -112,7 +112,7 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
                     replyMessageId = await ctx.getMessageId()
                 )
 
-                self.__timber.log('RemoveTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-                raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+                self.__timber.log('RemoveTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+                raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
-        self.__timber.log('RemoveTriviaControllerCommand', f'Handled !removetriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RemoveTriviaControllerCommand', f'Handled !removetriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

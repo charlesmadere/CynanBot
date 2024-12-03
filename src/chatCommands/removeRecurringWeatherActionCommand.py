@@ -45,11 +45,11 @@ class RemoveRecurringWeatherActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         recurringAction = await self.__recurringActionsRepository.getWeatherRecurringAction(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -62,4 +62,4 @@ class RemoveRecurringWeatherActionCommand(AbsChatCommand):
 
         await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring weather action has been disabled')
-        self.__timber.log('RemoveWeatherRecurringActionCommand', f'Handled !removeweatherrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RemoveWeatherRecurringActionCommand', f'Handled !removeweatherrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

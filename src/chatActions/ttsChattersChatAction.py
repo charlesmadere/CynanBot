@@ -59,11 +59,11 @@ class TtsChattersChatAction(AbsChatAction):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
                 message = f'{voice}{chatMessage}',
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),
                 userName = message.getAuthorName(),
