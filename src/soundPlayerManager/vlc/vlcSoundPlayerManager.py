@@ -214,7 +214,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             mediaPlayer = mediaPlayer
         ))
 
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({newPlaySessionId=}) ({filePaths=}) ({mediaList=}) ({mediaPlayer=})')
+        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({newPlaySessionId=}) ({filePaths=}) ({volume=}) ({mediaList=}) ({mediaPlayer=})')
         return newPlaySessionId
 
     async def playSoundAlert(
