@@ -45,6 +45,7 @@ from .chatCommands.answerChatCommand import AnswerChatCommand
 from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
+from .chatCommands.blueSkyChatCommand import BlueSkyChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from .chatCommands.commandsChatCommand import CommandsChatCommand
@@ -55,6 +56,7 @@ from .chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from .chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
+from .chatCommands.discordChatCommand import DiscordChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
@@ -92,10 +94,9 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, DiscordCommand,
-                       PbsCommand, PkMonCommand, PkMoveCommand, RaceCommand, SetFuntoonTokenCommand,
-                       SetTwitchCodeCommand, StubCommand, SwQuoteCommand, TwitchInfoCommand,
-                       TwitterCommand)
+from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, PbsCommand,
+                       PkMonCommand, PkMoveCommand, RaceCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
+                       StubCommand, SwQuoteCommand, TwitchInfoCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
@@ -650,11 +651,12 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchUtils, usersRepository)
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, crowdControlSettingsRepository, funtoonTokensRepository, generalSettingsRepository, halfLifeService, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterApiTokensRepository, ttsMonsterKeyAndUserIdRepository, ttsMonsterSettingsRepository, ttsMonsterStreamerVoicesRepository, ttsSettingsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
-        self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
+        self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchUtils, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
@@ -662,7 +664,6 @@ class CynanBot(
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
         if beanStatsPresenter is None or beanStatsRepository is None:
             self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
@@ -1478,6 +1479,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__beanStatsCommand.handleChatCommand(context)
 
+    @commands.command(name = 'bluesky', aliases = [ 'BlueSky', 'blueSky' ])
+    async def command_bluesky(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__blueSkyCommand.handleChatCommand(context)
+
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1538,10 +1544,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__disableCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'discord')
+    @commands.command(name = 'discord', aliases = [ 'Discord' ])
     async def command_discord(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__discordCommand.handleCommand(context)
+        await self.__discordCommand.handleChatCommand(context)
 
     @commands.command(name = 'enablecheeraction')
     async def command_enablecheeraction(self, ctx: Context):
@@ -1717,11 +1723,6 @@ class CynanBot(
     async def command_twitchinfo(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__twitchInfoCommand.handleCommand(context)
-
-    @commands.command(name = 'twitter')
-    async def command_twitter(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__twitterCommand.handleCommand(context)
 
     @commands.command(name = 'unbantriviaquestion')
     async def command_unbantriviaquestion(self, ctx: Context):

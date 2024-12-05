@@ -1,6 +1,6 @@
-from .absSteps import AbsSteps
 from .beanChanceStep import BeanChanceStep
-from .stepResult import StepResult
+from ..absSteps import AbsSteps
+from ..stepResult import StepResult
 
 
 class BeanChanceSteps(AbsSteps):

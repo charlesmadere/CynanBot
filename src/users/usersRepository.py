@@ -10,6 +10,8 @@ from frozenlist import FrozenList
 
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
+from .cuteness.cutenessBoosterPack import CutenessBoosterPack
+from .cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmn.pkmnCatchType import PkmnCatchType
@@ -23,7 +25,6 @@ from .ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterP
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
-from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
@@ -37,6 +38,7 @@ class UsersRepository(UsersRepositoryInterface):
     def __init__(
         self,
         crowdControlJsonParser: CrowdControlJsonParserInterface,
+        cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
         pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface,
         soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
@@ -49,6 +51,8 @@ class UsersRepository(UsersRepositoryInterface):
     ):
         if not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
             raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
+        elif not isinstance(cutenessBoosterPackJsonParser, CutenessBoosterPackJsonParserInterface):
+            raise TypeError(f'cutenessBoosterPackJsonParser argument is malformed: \"{cutenessBoosterPackJsonParser}\"')
         elif not isinstance(pkmnCatchTypeJsonMapper, PkmnCatchTypeJsonMapperInterface):
             raise TypeError(f'pkmnCatchTypeJsonMapper argument is malformed: \"{pkmnCatchTypeJsonMapper}\"')
         elif not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
@@ -69,6 +73,7 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
+        self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
         self.__pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = pkmnCatchTypeJsonMapper
         self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
@@ -172,7 +177,7 @@ class UsersRepository(UsersRepositoryInterface):
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         chatBackMessages = FrozenList(userJson.get('chatBackMessages', None))
-        discord = utils.getStrFromDict(userJson, 'discord', '')
+        discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
@@ -181,7 +186,6 @@ class UsersRepository(UsersRepositoryInterface):
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
-        twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
         anivMessageCopyTimeoutProbability: float | None = None
         anivMessageCopyMaxAgeSeconds: int | None = None
@@ -220,7 +224,7 @@ class UsersRepository(UsersRepositoryInterface):
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = None
         if isCutenessEnabled:
             cutenessBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('cutenessBoosterPacks')
-            cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
+            cutenessBoosterPacks = self.__cutenessBoosterPackJsonParser.parseBoosterPacks(cutenessBoosterPacksJson)
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
@@ -384,7 +388,7 @@ class UsersRepository(UsersRepositoryInterface):
             chatBackMessages = chatBackMessages,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
-            discord = discord,
+            discordUrl = discordUrl,
             handle = handle,
             instagram = instagram,
             locationId = locationId,
@@ -398,7 +402,6 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
-            twitterUrl = twitterUrl,
             defaultTtsProvider = defaultTtsProvider,
             crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,
@@ -521,6 +524,14 @@ class UsersRepository(UsersRepositoryInterface):
                     rawValue = value
                 )
 
+            case UserJsonConstant.DISCORD_URL:
+                await self.__modifyUserStringValue(
+                    handle = handle,
+                    userJson = userJson,
+                    jsonConstant = jsonConstant,
+                    rawValue = value
+                )
+
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED:
                 await self.__modifyUserBooleanValue(
                     handle = handle,
@@ -598,26 +609,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
 
         userJson[jsonConstant.jsonKey] = value
-
-    def __parseCutenessBoosterPacksFromJson(
-        self,
-        jsonList: list[dict[str, Any]] | None
-    ) -> frozendict[str, CutenessBoosterPack] | None:
-        if not isinstance(jsonList, list) or len(jsonList) == 0:
-            return None
-
-        boosterPacks: dict[str, CutenessBoosterPack] = dict()
-
-        for cutenessBoosterPackJson in jsonList:
-            amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount')
-            rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
-
-            boosterPacks[rewardId] = CutenessBoosterPack(
-                amount = amount,
-                rewardId = rewardId
-            )
-
-        return frozendict(boosterPacks)
 
     def __parsePkmnCatchBoosterPacksFromJson(
         self,

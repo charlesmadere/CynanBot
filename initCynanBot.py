@@ -387,6 +387,8 @@ from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
+from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
+from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
 from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
 from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
@@ -569,6 +571,8 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
 
 crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
 
+cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
+
 pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
     timber = timber
 )
@@ -589,6 +593,7 @@ ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = StubTtsChatt
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
+    cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,

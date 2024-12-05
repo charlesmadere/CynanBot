@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 
 from .absCheerAction import AbsCheerAction
-from .beanChanceCheerAction import BeanChanceCheerAction
+from .beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
-from .soundAlertCheerAction import SoundAlertCheerAction
-from .timeoutCheerAction import TimeoutCheerAction
+from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
+from .timeout.timeoutCheerAction import TimeoutCheerAction
 
 
 class CheerActionJsonMapperInterface(ABC):

@@ -1,7 +1,7 @@
-from .absCheerAction import AbsCheerAction
-from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from .cheerActionType import CheerActionType
-from ..misc import utils as utils
+from ..absCheerAction import AbsCheerAction
+from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
+from ..cheerActionType import CheerActionType
+from ...misc import utils as utils
 
 
 class BeanChanceCheerAction(AbsCheerAction):

@@ -1,5 +1,5 @@
 from .absChatCommand import AbsChatCommand
-from ..cheerActions.beanChanceCheerAction import BeanChanceCheerAction
+from ..cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext

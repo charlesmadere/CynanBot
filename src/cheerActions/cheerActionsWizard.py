@@ -3,11 +3,11 @@ from datetime import timedelta
 from .cheerActionType import CheerActionType
 from .cheerActionsWizardInterface import CheerActionsWizardInterface
 from .wizards.absWizard import AbsWizard
-from .wizards.beanChanceWizard import BeanChanceWizard
+from .wizards.beanChance.beanChanceWizard import BeanChanceWizard
 from .wizards.crowdControl.crowdControlWizard import CrowdControlWizard
 from .wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
-from .wizards.soundAlertWizard import SoundAlertWizard
-from .wizards.timeoutWizard import TimeoutWizard
+from .wizards.soundAlert.soundAlertWizard import SoundAlertWizard
+from .wizards.timeout.timeoutWizard import TimeoutWizard
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface

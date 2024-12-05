@@ -1,9 +1,9 @@
 import random
 from typing import Collection
 
+from .beanChanceCheerAction import BeanChanceCheerAction
 from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
-from ..beanChanceCheerAction import BeanChanceCheerAction
 from ...beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from ...beanStats.chatterBeanStats import ChatterBeanStats
 from ...misc import utils as utils

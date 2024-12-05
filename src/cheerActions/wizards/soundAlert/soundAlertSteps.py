@@ -1,6 +1,6 @@
-from .absSteps import AbsSteps
 from .soundAlertStep import SoundAlertStep
-from .stepResult import StepResult
+from ..absSteps import AbsSteps
+from ..stepResult import StepResult
 
 
 class SoundAlertSteps(AbsSteps):

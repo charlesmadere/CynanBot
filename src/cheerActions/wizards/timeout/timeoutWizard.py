@@ -1,10 +1,10 @@
 from typing import Any
 
-from .absWizard import AbsWizard
 from .timeoutSteps import TimeoutSteps
-from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
-from ..cheerActionType import CheerActionType
-from ...misc import utils as utils
+from ..absWizard import AbsWizard
+from ...cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
+from ...cheerActionType import CheerActionType
+from ....misc import utils as utils
 
 
 class TimeoutWizard(AbsWizard):
@@ -20,6 +20,7 @@ class TimeoutWizard(AbsWizard):
         )
 
         self.__steps = TimeoutSteps()
+        self.__randomChanceEnabled: bool | None = None
         self.__streamStatus: CheerActionStreamStatusRequirement | None = None
         self.__bits: int | None = None
         self.__durationSeconds: int | None = None
@@ -50,6 +51,14 @@ class TimeoutWizard(AbsWizard):
 
         return durationSeconds
 
+    def requireRandomChanceEnabled(self) -> bool:
+        randomChanceEnabled = self.__randomChanceEnabled
+
+        if randomChanceEnabled is None:
+            raise ValueError(f'randomChanceEnabled value has not been set: ({self=})')
+
+        return randomChanceEnabled
+
     def requireStreamStatus(self) -> CheerActionStreamStatusRequirement:
         streamStatus = self.__streamStatus
 
@@ -74,6 +83,12 @@ class TimeoutWizard(AbsWizard):
 
         self.__durationSeconds = durationSeconds
 
+    def setRandomChanceEnabled(self, randomChanceEnabled: bool):
+        if not utils.isValidBool(randomChanceEnabled):
+            raise TypeError(f'randomChanceEnabled argument is malformed: \"{randomChanceEnabled}\"')
+
+        self.__randomChanceEnabled = randomChanceEnabled
+
     def setStreamStatus(self, streamStatus: CheerActionStreamStatusRequirement):
         if not isinstance(streamStatus, CheerActionStreamStatusRequirement):
             raise TypeError(f'streamStatus argument is malformed: \"{streamStatus}\"')
@@ -85,6 +100,7 @@ class TimeoutWizard(AbsWizard):
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
             'durationSeconds': self.__durationSeconds,
+            'randomChanceEnabled': self.__randomChanceEnabled,
             'steps': self.__steps,
             'streamStatus': self.__streamStatus,
             'twitchChannel': self.twitchChannel,

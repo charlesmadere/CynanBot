@@ -5,12 +5,12 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
+from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
-from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..tts.ttsProvider import TtsProvider
 
 
@@ -190,19 +190,11 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def getTwitterUrl(self) -> str | None:
-        pass
-
-    @abstractmethod
     def getWaitForSuperTriviaAnswerDelay(self) -> int | None:
         pass
 
     @abstractmethod
     def getWaitForTriviaAnswerDelay(self) -> int | None:
-        pass
-
-    @abstractmethod
-    def hasDiscord(self) -> bool:
         pass
 
     @abstractmethod
@@ -215,10 +207,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def hasTimeZones(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasTwitter(self) -> bool:
         pass
 
     @property

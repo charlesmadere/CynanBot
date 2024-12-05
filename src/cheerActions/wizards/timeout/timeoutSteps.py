@@ -1,6 +1,6 @@
-from .absSteps import AbsSteps
-from .stepResult import StepResult
 from .timeoutStep import TimeoutStep
+from ..absSteps import AbsSteps
+from ..stepResult import StepResult
 
 
 class TimeoutSteps(AbsSteps):
@@ -20,6 +20,10 @@ class TimeoutSteps(AbsSteps):
                 return StepResult.NEXT
 
             case TimeoutStep.DURATION_SECONDS:
+                self.__step = TimeoutStep.RANDOM_CHANCE_ENABLED
+                return StepResult.NEXT
+
+            case TimeoutStep.RANDOM_CHANCE_ENABLED:
                 self.__step = TimeoutStep.STREAM_STATUS
                 return StepResult.NEXT
 

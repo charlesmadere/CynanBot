@@ -114,6 +114,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
             return False
 
         await self.__timeoutActionHelper.timeout(TimeoutActionData(
+            isRandomChanceEnabled = timeoutBoosterPack.randomChanceEnabled,
             bits = None,
             durationSeconds = timeoutBoosterPack.durationSeconds,
             chatMessage = None,

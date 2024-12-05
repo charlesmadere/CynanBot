@@ -1,12 +1,8 @@
-from .triviaGameBuilderInterface import \
-    TriviaGameBuilderInterface
-from .triviaGameBuilderSettingsInterface import \
-    TriviaGameBuilderSettingsInterface
-from ..actions.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
+from .triviaGameBuilderInterface import TriviaGameBuilderInterface
+from .triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
+from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from ..actions.startNewTriviaGameAction import StartNewTriviaGameAction
-from ..questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
+from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from ..questions.triviaSource import TriviaSource
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
@@ -57,7 +53,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         if not user.isTriviaGameEnabled():
             return None
 
-        isShinyTriviaEnabled = user.isShinyTriviaEnabled() and user.isCutenessEnabled()
+        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled()
 
         points = user.getTriviaGamePoints()
         if not utils.isValidInt(points):

@@ -1,9 +1,9 @@
 from typing import Any
 
-from .absWizard import AbsWizard
 from .beanChanceSteps import BeanChanceSteps
-from ..cheerActionType import CheerActionType
-from ...misc import utils as utils
+from ..absWizard import AbsWizard
+from ...cheerActionType import CheerActionType
+from ....misc import utils as utils
 
 
 class BeanChanceWizard(AbsWizard):

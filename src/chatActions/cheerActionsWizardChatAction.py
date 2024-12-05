@@ -1,26 +1,26 @@
 import traceback
 
 from .absChatAction import AbsChatAction
-from ..cheerActions.beanChanceCheerAction import BeanChanceCheerAction
+from ..cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from ..cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from ..cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from ..cheerActions.crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from ..cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
-from ..cheerActions.soundAlertCheerAction import SoundAlertCheerAction
-from ..cheerActions.timeoutCheerAction import TimeoutCheerAction
-from ..cheerActions.wizards.beanChanceStep import BeanChanceStep
-from ..cheerActions.wizards.beanChanceWizard import BeanChanceWizard
+from ..cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
+from ..cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
+from ..cheerActions.wizards.beanChance.beanChanceStep import BeanChanceStep
+from ..cheerActions.wizards.beanChance.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.crowdControl.crowdControlStep import CrowdControlStep
 from ..cheerActions.wizards.crowdControl.crowdControlWizard import CrowdControlWizard
 from ..cheerActions.wizards.gameShuffle.gameShuffleStep import GameShuffleStep
 from ..cheerActions.wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
-from ..cheerActions.wizards.soundAlertStep import SoundAlertStep
-from ..cheerActions.wizards.soundAlertWizard import SoundAlertWizard
+from ..cheerActions.wizards.soundAlert.soundAlertStep import SoundAlertStep
+from ..cheerActions.wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from ..cheerActions.wizards.stepResult import StepResult
-from ..cheerActions.wizards.timeoutStep import TimeoutStep
-from ..cheerActions.wizards.timeoutWizard import TimeoutWizard
+from ..cheerActions.wizards.timeout.timeoutStep import TimeoutStep
+from ..cheerActions.wizards.timeout.timeoutWizard import TimeoutWizard
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
@@ -399,6 +399,16 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
+            case TimeoutStep.RANDOM_CHANCE_ENABLED:
+                try:
+                    randomChanceEnabled = utils.strictStrToBool(content)
+                    wizard.setRandomChanceEnabled(randomChanceEnabled)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set randomChanceEnabled value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__twitchUtils.safeSend(channel, f'⚠ The Timeout wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
             case TimeoutStep.STREAM_STATUS:
                 try:
                     streamStatus = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(content)
@@ -423,6 +433,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
                 await self.__cheerActionsRepository.setAction(TimeoutCheerAction(
                     isEnabled = True,
+                    isRandomChanceEnabled = wizard.requireRandomChanceEnabled(),
                     streamStatusRequirement = wizard.requireStreamStatus(),
                     bits = wizard.requireBits(),
                     durationSeconds = wizard.requireDurationSeconds(),
@@ -452,6 +463,10 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
             case TimeoutStep.DURATION_SECONDS:
                 await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify the Timeout\'s duration (in seconds)')
+                return True
+
+            case TimeoutStep.RANDOM_CHANCE_ENABLED:
+                await self.__twitchUtils.safeSend(channel, f'ⓘ Next, please specify whether or not the Timeout should have a random chance (true or false)')
                 return True
 
             case TimeoutStep.STREAM_STATUS:

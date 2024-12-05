@@ -43,6 +43,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.CYNAN_SOURCE_ENABLED.jsonKey
         assert result == 'cynanSourceEnabled'
 
+    def test_jsonKey_withDiscordUrl(self):
+        result = UserJsonConstant.DISCORD_URL.jsonKey
+        assert result == 'discordUrl'
+
     def test_jsonKey_withEnabled(self):
         result = UserJsonConstant.ENABLED.jsonKey
         assert result == 'enabled'
@@ -82,10 +86,6 @@ class TestUserJsonConstants:
     def test_jsonKey_withTtsMonsterApiUsageReportingEnabled(self):
         result = UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED.jsonKey
         assert result == 'ttsMonsterApiUsageReportingEnabled'
-
-    def test_jsonKey_withTwitterUrl(self):
-        result = UserJsonConstant.TWITTER_URL.jsonKey
-        assert result == 'twitterUrl'
 
     def test_jsonKey_withWeatherEnabled(self):
         result = UserJsonConstant.WEATHER_ENABLED.jsonKey

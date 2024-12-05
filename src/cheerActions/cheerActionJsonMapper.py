@@ -2,14 +2,14 @@ import json
 from typing import Any
 
 from .absCheerAction import AbsCheerAction
-from .beanChanceCheerAction import BeanChanceCheerAction
+from .beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
-from .soundAlertCheerAction import SoundAlertCheerAction
-from .timeoutCheerAction import TimeoutCheerAction
+from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
+from .timeout.timeoutCheerAction import TimeoutCheerAction
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
@@ -45,21 +45,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             randomChance = randomChance,
-            twitchChannelId = twitchChannelId
-        )
-
-    async def __parseButtonPressCheerAction(
-        self,
-        isEnabled: bool,
-        streamStatusRequirement: CheerActionStreamStatusRequirement,
-        bits: int,
-        jsonContents: dict[str, Any],
-        twitchChannelId: str
-    ) -> CrowdControlButtonPressCheerAction:
-        return CrowdControlButtonPressCheerAction(
-            isEnabled = isEnabled,
-            streamStatusRequirement = streamStatusRequirement,
-            bits = bits,
             twitchChannelId = twitchChannelId
         )
 
@@ -192,12 +177,15 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             fallback = 0
         )
 
-        if durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
-            self.__timber.log('CheerActionJsonMapper', f'Unable to read in \"durationSeconds\" value from timeout cheer action JSON ({durationSeconds=}) ({jsonContents=})')
-            return None
+        isRandomChanceEnabled = utils.getBoolFromDict(
+            d = jsonContents,
+            key = 'randomChanceEnabled',
+            fallback = True
+        )
 
         return TimeoutCheerAction(
             isEnabled = isEnabled,
+            isRandomChanceEnabled = isRandomChanceEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             durationSeconds = durationSeconds,
@@ -437,7 +425,8 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
-            'durationSeconds': cheerAction.durationSeconds
+            'durationSeconds': cheerAction.durationSeconds,
+            'randomChanceEnabled': cheerAction.isRandomChanceEnabled
         }
 
         return json.dumps(jsonContents)

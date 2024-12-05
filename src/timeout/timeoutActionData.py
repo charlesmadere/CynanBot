@@ -13,6 +13,7 @@ class TimeoutActionData:
         OFFLINE = auto()
         ONLINE = auto()
 
+    isRandomChanceEnabled: bool
     bits: int | None
     durationSeconds: int
     chatMessage: str | None

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Collection
 
+from .timeoutCheerAction import TimeoutCheerAction
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ..absCheerAction import AbsCheerAction
-from ..timeoutCheerAction import TimeoutCheerAction
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...timeout.timeoutActionData import TimeoutActionData
@@ -126,6 +126,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         return await self.__timeoutActionHelper.timeout(TimeoutActionData(
+            isRandomChanceEnabled = timeoutAction.isRandomChanceEnabled,
             bits = bits,
             durationSeconds = timeoutAction.durationSeconds,
             chatMessage = message,

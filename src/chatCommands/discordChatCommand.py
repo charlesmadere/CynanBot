@@ -9,7 +9,7 @@ from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class BlueSkyChatCommand(AbsChatCommand):
+class DiscordChatCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -34,17 +34,17 @@ class BlueSkyChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        blueSkyUrl = user.blueSkyUrl
+        discordUrl = user.getDiscordUrl()
 
-        if not utils.isValidUrl(blueSkyUrl):
+        if not utils.isValidUrl(discordUrl):
             return
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'ⓘ BlueSky: {blueSkyUrl}',
+            message = f'ⓘ Discord: {discordUrl}',
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('BlueSkyChatCommand', f'Handled !bluesky command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('DiscordChatCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

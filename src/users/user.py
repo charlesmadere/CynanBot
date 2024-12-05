@@ -4,13 +4,13 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
+from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
 from .userInterface import UserInterface
-from ..cuteness.cutenessBoosterPack import CutenessBoosterPack
 from ..misc import utils as utils
 from ..tts.ttsProvider import TtsProvider
 
@@ -89,7 +89,7 @@ class User(UserInterface):
         chatBackMessages: FrozenList[str] | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
-        discord: str | None,
+        discordUrl: str | None,
         handle: str,
         instagram: str | None,
         locationId: str | None,
@@ -103,7 +103,6 @@ class User(UserInterface):
         speedrunProfile: str | None,
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
-        twitterUrl: str,
         defaultTtsProvider: TtsProvider,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
@@ -252,8 +251,8 @@ class User(UserInterface):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
             raise TypeError(f'crowdControlGameShuffleRewardId argument is malformed: \"{crowdControlGameShuffleRewardId}\"')
-        elif discord is not None and not isinstance(discord, str):
-            raise TypeError(f'discord argument is malformed: \"{discord}\"')
+        elif discordUrl is not None and not isinstance(discordUrl, str):
+            raise TypeError(f'discordUrl argument is malformed: \"{discordUrl}\"')
         elif not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif locationId is not None and not isinstance(locationId, str):
@@ -278,8 +277,6 @@ class User(UserInterface):
             raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
-        elif twitterUrl is not None and not isinstance(twitterUrl, str):
-            raise TypeError(f'twitterUrl argument is malformed: \"{twitterUrl}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
@@ -369,7 +366,7 @@ class User(UserInterface):
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
-        self.__discord: str | None = discord
+        self.__discordUrl: str | None = discordUrl
         self.__handle: str = handle
         self.__instagram: str | None = instagram
         self.__locationId: str | None = locationId
@@ -383,7 +380,6 @@ class User(UserInterface):
         self.__speedrunProfile: str | None = speedrunProfile
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
-        self.__twitterUrl: str | None = twitterUrl
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
@@ -453,7 +449,7 @@ class User(UserInterface):
         return self.__casualGamePollUrl
 
     def getDiscordUrl(self) -> str | None:
-        return self.__discord
+        return self.__discordUrl
 
     def getHandle(self) -> str:
         return self.__handle
@@ -533,17 +529,11 @@ class User(UserInterface):
     def getTwitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
 
-    def getTwitterUrl(self) -> str | None:
-        return self.__twitterUrl
-
     def getWaitForSuperTriviaAnswerDelay(self) -> int | None:
         return self.__waitForSuperTriviaAnswerDelay
 
     def getWaitForTriviaAnswerDelay(self) -> int | None:
         return self.__waitForTriviaAnswerDelay
-
-    def hasDiscord(self) -> bool:
-        return utils.isValidUrl(self.__discord)
 
     def hasInstagram(self) -> bool:
         return utils.isValidUrl(self.__instagram)
@@ -559,9 +549,6 @@ class User(UserInterface):
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
-
-    def hasTwitter(self) -> bool:
-        return utils.isValidUrl(self.__twitterUrl)
 
     @property
     def isAnivContentScanningEnabled(self) -> bool:

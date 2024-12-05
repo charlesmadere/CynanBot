@@ -11,6 +11,7 @@ class UserJsonConstant(Enum):
     CROWD_CONTROL_ENABLED = auto()
     CUTENESS_ENABLED = auto()
     CYNAN_SOURCE_ENABLED = auto()
+    DISCORD_URL = auto()
     ENABLED = auto()
     GIVE_CUTENESS_ENABLED = auto()
     LOCATION_ID = auto()
@@ -21,7 +22,6 @@ class UserJsonConstant(Enum):
     TIMEZONES = auto()
     TTS_ENABLED = auto()
     TTS_MONSTER_API_USAGE_REPORTING_ENABLED = auto()
-    TWITTER_URL = auto()
     WEATHER_ENABLED = auto()
 
     @property
@@ -35,6 +35,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.CROWD_CONTROL_ENABLED: return 'crowdControlEnabled'
             case UserJsonConstant.CUTENESS_ENABLED: return 'cutenessEnabled'
             case UserJsonConstant.CYNAN_SOURCE_ENABLED: return 'cynanSourceEnabled'
+            case UserJsonConstant.DISCORD_URL: return 'discordUrl'
             case UserJsonConstant.ENABLED: return 'enabled'
             case UserJsonConstant.GIVE_CUTENESS_ENABLED: return 'giveCutenessEnabled'
             case UserJsonConstant.LOCATION_ID: return 'locationId'
@@ -45,6 +46,5 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.TIMEZONES: return 'timeZones'
             case UserJsonConstant.TTS_ENABLED: return 'ttsEnabled'
             case UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED: return 'ttsMonsterApiUsageReportingEnabled'
-            case UserJsonConstant.TWITTER_URL: return 'twitterUrl'
             case UserJsonConstant.WEATHER_ENABLED: return 'weatherEnabled'
             case _: raise ValueError(f'unknown UserJsonConstant value: \"{self}\"')

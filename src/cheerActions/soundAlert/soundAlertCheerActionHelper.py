@@ -1,8 +1,8 @@
 from collections.abc import Collection
 
+from .soundAlertCheerAction import SoundAlertCheerAction
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
-from ..soundAlertCheerAction import SoundAlertCheerAction
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface

@@ -3,15 +3,15 @@ import json
 import pytest
 
 from src.cheerActions.absCheerAction import AbsCheerAction
-from src.cheerActions.beanChanceCheerAction import BeanChanceCheerAction
+from src.cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from src.cheerActions.cheerActionType import CheerActionType
 from src.cheerActions.crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from src.cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
-from src.cheerActions.soundAlertCheerAction import SoundAlertCheerAction
-from src.cheerActions.timeoutCheerAction import TimeoutCheerAction
+from src.cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
+from src.cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
@@ -215,9 +215,10 @@ class TestCheerActionJsonMapper:
         assert dictionary['directory'] == 'soundsDirectory'
 
     @pytest.mark.asyncio
-    async def test_serializeAbsCheerAction_withTimeoutCheerAction(self):
+    async def test_serializeAbsCheerAction_withTimeoutCheerAction1(self):
         cheerAction: AbsCheerAction = TimeoutCheerAction(
             isEnabled = True,
+            isRandomChanceEnabled = True,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 100,
             durationSeconds = 60,
@@ -229,9 +230,31 @@ class TestCheerActionJsonMapper:
 
         dictionary = json.loads(result)
         assert isinstance(dictionary, dict)
-        assert len(dictionary) == 1
+        assert len(dictionary) == 2
 
         assert dictionary['durationSeconds'] == 60
+        assert dictionary['randomChanceEnabled'] == True
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withTimeoutCheerAction2(self):
+        cheerAction: AbsCheerAction = TimeoutCheerAction(
+            isEnabled = True,
+            isRandomChanceEnabled = False,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            bits = 100,
+            durationSeconds = 300,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 2
+
+        assert dictionary['durationSeconds'] == 300
+        assert dictionary['randomChanceEnabled'] == False
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):
