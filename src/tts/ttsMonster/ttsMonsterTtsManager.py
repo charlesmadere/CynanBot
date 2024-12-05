@@ -65,17 +65,15 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
         )
 
-
     async def isPlaying(self) -> bool:
         if self.__isLoading:
             return True
 
-        # TODO Technically this method use is incorrect, as it is possible for SoundPlayerManager
-        #  to be playing media, but it could be media that is completely unrelated to TTS Monster,
-        #  and yet in this scenario, this method would still return true. So for the fix for this
-        #  is probably a way to check if SoundPlayerManager is currently playing, AND also a check
-        #  to see specifically what media it is currently playing.
-        return await self.__soundPlayerManager.isPlaying()
+        playSessionId = self.__playSessionId
+        if not utils.isValidStr(playSessionId):
+            return False
+
+        return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
         if not isinstance(event, TtsEvent):
