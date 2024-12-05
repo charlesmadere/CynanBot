@@ -21,6 +21,7 @@ from ...timber.timberInterface import TimberInterface
 class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
     class PlaybackState(Enum):
+        ENDED = auto()
         ERROR = auto()
         PLAYING = auto()
         STOPPED = auto()
@@ -47,7 +48,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 case 3: return VlcSoundPlayerManager.PlaybackState.PLAYING
                 case 4: return VlcSoundPlayerManager.PlaybackState.STOPPED
                 case 5: return VlcSoundPlayerManager.PlaybackState.STOPPED
-                case 6: return VlcSoundPlayerManager.PlaybackState.STOPPED
+                case 6: return VlcSoundPlayerManager.PlaybackState.ENDED
                 case 7: return VlcSoundPlayerManager.PlaybackState.ERROR
                 case _: raise ValueError(f'Encountered unexpected vlc.State value: \"{state}\"')
 
@@ -299,6 +300,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 mediaPlayerState = VlcSoundPlayerManager.PlaybackState.fromVlcState(mediaPlayer.get_state())
 
                 match mediaPlayerState:
+                    case VlcSoundPlayerManager.PlaybackState.ENDED:
+                        currentPlaylistIndex = None
+
                     case VlcSoundPlayerManager.PlaybackState.ERROR:
                         currentPlaylistIndex = None
 
@@ -314,11 +318,11 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                         else:
                             currentFilePath = playlistFilePaths[currentPlaylistIndex]
                             mediaPlayer.set_media(vlc.Media(currentFilePath))
-                            mediaPlayer.audio_set_volume(volume)
+                            volumeResult = mediaPlayer.audio_set_volume(volume)
                             playbackResult = mediaPlayer.play()
 
                             if playbackResult != 0:
-                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({playSessionId=}) ({mediaPlayer=})')
+                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({volumeResult=}) ({playbackResult=}) ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({playSessionId=}) ({mediaPlayer=})')
                                 currentPlaylistIndex = None
 
                 if currentPlaylistIndex is not None:
@@ -343,7 +347,6 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'Failed to instantiate vlc.MediaPlayer: \"{mediaPlayer}\" ({exception=})', exception, traceback.format_exc())
             raise exception
 
-        mediaPlayer.audio_set_volume(await self.__soundPlayerSettingsRepository.getMediaPlayerVolume())
         return mediaPlayer
 
     async def stop(self) -> bool:
