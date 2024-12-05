@@ -199,13 +199,11 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 self.__timber.log('VlcSoundPlayerManager', f'Encountered bad result code ({addResult}) when trying to add sound \"{filePath}\" from file paths: \"{filePaths}\" ({mediaList=}) ({exception=})', exception, traceback.format_exc())
                 return None
 
+        if not utils.isValidInt(volume):
+            volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
+
         mediaPlayer = await self.__retrieveMediaPlayer()
-
-        if volume is None:
-            mediaPlayer.audio_set_volume(await self.__soundPlayerSettingsRepository.getMediaPlayerVolume())
-        else:
-            mediaPlayer.audio_set_volume(volume)
-
+        mediaPlayer.audio_set_volume(volume)
         newPlaySessionId = await self.__applyNewPlaySessionId()
 
         self.__backgroundTaskHelper.createTask(self.__progressThroughPlaylist(
