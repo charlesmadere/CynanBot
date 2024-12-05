@@ -34,11 +34,11 @@ class DiscordChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        discordUrl = user.getDiscordUrl()
+        discordUrl = user.discordUrl
 
         if not utils.isValidUrl(discordUrl):
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         await self.__twitchUtils.safeSend(
@@ -47,4 +47,4 @@ class DiscordChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('DiscordChatCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('DiscordChatCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

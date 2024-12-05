@@ -38,7 +38,7 @@ class BlueSkyChatCommand(AbsChatCommand):
 
         if not utils.isValidUrl(blueSkyUrl):
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         await self.__twitchUtils.safeSend(
@@ -47,4 +47,4 @@ class BlueSkyChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('BlueSkyChatCommand', f'Handled !bluesky command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('BlueSkyChatCommand', f'Handled !bluesky command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
