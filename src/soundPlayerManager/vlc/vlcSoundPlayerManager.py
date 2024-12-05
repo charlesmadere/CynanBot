@@ -21,7 +21,6 @@ from ...timber.timberInterface import TimberInterface
 class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
     class PlaybackState(Enum):
-        ENDED = auto()
         ERROR = auto()
         PLAYING = auto()
         STOPPED = auto()
@@ -48,7 +47,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 case 3: return VlcSoundPlayerManager.PlaybackState.PLAYING
                 case 4: return VlcSoundPlayerManager.PlaybackState.STOPPED
                 case 5: return VlcSoundPlayerManager.PlaybackState.STOPPED
-                case 6: return VlcSoundPlayerManager.PlaybackState.ENDED
+                case 6: return VlcSoundPlayerManager.PlaybackState.STOPPED
                 case 7: return VlcSoundPlayerManager.PlaybackState.ERROR
                 case _: raise ValueError(f'Encountered unexpected vlc.State value: \"{state}\"')
 
@@ -300,9 +299,6 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                 mediaPlayerState = VlcSoundPlayerManager.PlaybackState.fromVlcState(mediaPlayer.get_state())
 
                 match mediaPlayerState:
-                    case VlcSoundPlayerManager.PlaybackState.ENDED:
-                        currentPlaylistIndex = None
-
                     case VlcSoundPlayerManager.PlaybackState.ERROR:
                         currentPlaylistIndex = None
 
