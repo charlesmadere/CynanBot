@@ -67,39 +67,28 @@ class TtsManager(TtsManagerInterface):
             self.__timber.log('TtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
 
-        proceed = False
-
         match event.provider:
             case TtsProvider.DEC_TALK:
                 self.__backgroundTaskHelper.createTask(self.__decTalkTtsManager.playTtsEvent(event))
                 self.__currentTtsManager = self.__decTalkTtsManager
-                proceed = True
 
             case TtsProvider.GOOGLE:
                 self.__backgroundTaskHelper.createTask(self.__googleTtsManager.playTtsEvent(event))
                 self.__currentTtsManager = self.__googleTtsManager
-                proceed = True
 
             case TtsProvider.HALF_LIFE:
                 self.__backgroundTaskHelper.createTask(self.__halfLifeTtsManager.playTtsEvent(event))
                 self.__currentTtsManager = self.__halfLifeTtsManager
-                proceed = True
 
             case TtsProvider.STREAM_ELEMENTS:
                 self.__backgroundTaskHelper.createTask(self.__streamElementsTtsManager.playTtsEvent(event))
                 self.__currentTtsManager = self.__streamElementsTtsManager
-                proceed = True
 
             case TtsProvider.TTS_MONSTER:
                 self.__backgroundTaskHelper.createTask(self.__ttsMonsterTtsManager.playTtsEvent(event))
                 self.__currentTtsManager = self.__ttsMonsterTtsManager
-                proceed = True
 
-        if proceed:
-            return True
-        else:
-            self.__timber.log('TtsManager', f'Unable to play the given TTS event via the requested TTS provider ({event=}) ({event.provider=})')
-            return False
+        return True
 
     async def stopTtsEvent(self):
         currentTtsManager = self.__currentTtsManager
