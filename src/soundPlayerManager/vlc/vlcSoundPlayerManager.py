@@ -203,7 +203,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
 
         mediaPlayer = await self.__retrieveMediaPlayer()
-        mediaPlayer.audio_set_volume(volume)
+        mediaPlayer.audio_set_volume(0)
+        mediaPlayer.audio_set_volume(volume) # yep this is intentional for now pls hold...
+
         newPlaySessionId = await self.__applyNewPlaySessionId()
 
         self.__backgroundTaskHelper.createTask(self.__progressThroughPlaylist(
