@@ -203,13 +203,11 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
 
         mediaPlayer = await self.__retrieveMediaPlayer()
-        mediaPlayer.audio_set_volume(0)
-        mediaPlayer.audio_set_volume(volume) # yep this is intentional for now pls hold...
-
         newPlaySessionId = await self.__applyNewPlaySessionId()
 
         self.__backgroundTaskHelper.createTask(self.__progressThroughPlaylist(
             playlistFilePaths = frozenFilePaths,
+            volume = volume,
             playSessionId = newPlaySessionId,
             mediaPlayer = mediaPlayer
         ))
@@ -277,11 +275,16 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
     async def __progressThroughPlaylist(
         self,
         playlistFilePaths: FrozenList[str],
+        volume: int,
         playSessionId: str,
         mediaPlayer: vlc.MediaPlayer
     ):
         if not isinstance(playlistFilePaths, FrozenList) or len(playlistFilePaths) == 0:
             raise TypeError(f'playlist argument is malformed: \"{playlistFilePaths}\"')
+        elif not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
+        elif volume < 0 or volume > 100:
+            raise ValueError(f'volume argument is out of bounds: {volume}')
         elif not utils.isValidStr(playSessionId):
             raise TypeError(f'playSessionId argument is malformed: \"{playSessionId}\"')
         elif not isinstance(mediaPlayer, vlc.MediaPlayer):
@@ -311,6 +314,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                         else:
                             currentFilePath = playlistFilePaths[currentPlaylistIndex]
                             mediaPlayer.set_media(vlc.Media(currentFilePath))
+                            mediaPlayer.audio_set_volume(volume)
                             playbackResult = mediaPlayer.play()
 
                             if playbackResult != 0:
