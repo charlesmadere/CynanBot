@@ -849,6 +849,7 @@ cynanBot = CynanBot(
     trollmojiHelper = None,
     trollmojiSettingsRepository = None,
     ttsJsonMapper = None,
+    ttsManager = None,
     ttsMonsterApiTokensRepository = None,
     ttsMonsterKeyAndUserIdRepository = None,
     ttsMonsterTtsManager = None,

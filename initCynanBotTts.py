@@ -1560,6 +1560,7 @@ cynanBot = CynanBot(
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsJsonMapper = ttsJsonMapper,
+    ttsManager = ttsManager,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
     ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
     ttsMonsterTtsManager = ttsMonsterTtsManager,

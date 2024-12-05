@@ -75,6 +75,7 @@ from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurrin
 from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
 from .chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
+from .chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from .chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
@@ -188,6 +189,7 @@ from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from .tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from .tts.ttsManagerInterface import TtsManagerInterface
 from .tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
@@ -338,6 +340,7 @@ class CynanBot(
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
         ttsJsonMapper: TtsJsonMapperInterface | None,
+        ttsManager: TtsManagerInterface | None,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
@@ -553,6 +556,8 @@ class CynanBot(
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
         elif ttsJsonMapper is not None and not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
+        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
+            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif ttsMonsterApiTokensRepository is not None and not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
@@ -822,6 +827,11 @@ class CynanBot(
             self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(cheerActionHelper, timber, twitchUtils, usersRepository)
+
+        if ttsManager is None:
+            self.__skipTtsCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, timber, ttsManager)
 
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
@@ -1673,6 +1683,11 @@ class CynanBot(
     async def command_settwitchcode(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setTwitchCodeCommand.handleCommand(context)
+
+    @commands.command(name = 'skiptts', aliases = [ 'skipTts', 'skipTTS', 'SkipTts', 'Skiptts', 'SkipTTS', 'SKIPTTS' ])
+    async def command_skiptts(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__skipTtsCommand.handleChatCommand(context)
 
     @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'SuperAnswer', 'Superanswer', 'sa', 'SA', 'Sa', 'sA', 'sanswer', 'SANSWER', 'Sanswer' ])
     async def command_superanswer(self, ctx: Context):

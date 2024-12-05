@@ -98,6 +98,7 @@ class TtsManager(TtsManagerInterface):
 
     async def stopTtsEvent(self):
         currentTtsManager = self.__currentTtsManager
+        self.__currentTtsManager = None
 
         if currentTtsManager is not None:
             await currentTtsManager.stopTtsEvent()

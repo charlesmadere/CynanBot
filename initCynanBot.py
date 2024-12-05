@@ -1813,6 +1813,7 @@ cynanBot = CynanBot(
     triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
+    ttsManager = None,
     ttsJsonMapper = None,
     ttsMonsterApiTokensRepository = None,
     ttsMonsterKeyAndUserIdRepository = None,
