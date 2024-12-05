@@ -8,6 +8,7 @@ from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .ttsProvider import TtsProvider
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
 
 
@@ -15,6 +16,7 @@ class TtsManager(TtsManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         decTalkTtsManager: DecTalkTtsManagerInterface | StubTtsManager,
         googleTtsManager: GoogleTtsManagerInterface | StubTtsManager,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | StubTtsManager,
@@ -23,6 +25,8 @@ class TtsManager(TtsManagerInterface):
         ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | StubTtsManager,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         if not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface) and not isinstance(decTalkTtsManager, StubTtsManager):
             raise TypeError(f'decTalkTtsManager argument is malformed: \"{decTalkTtsManager}\"')
         elif not isinstance(googleTtsManager, GoogleTtsManagerInterface) and not isinstance(googleTtsManager, StubTtsManager):
@@ -38,6 +42,7 @@ class TtsManager(TtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__decTalkTtsManager: TtsManagerInterface = decTalkTtsManager
         self.__googleTtsManager: TtsManagerInterface = googleTtsManager
         self.__halfLifeTtsManager: TtsManagerInterface = halfLifeTtsManager
@@ -66,29 +71,29 @@ class TtsManager(TtsManagerInterface):
 
         match event.provider:
             case TtsProvider.DEC_TALK:
-                if await self.__decTalkTtsManager.playTtsEvent(event):
-                    self.__currentTtsManager = self.__decTalkTtsManager
-                    proceed = True
+                self.__backgroundTaskHelper.createTask(self.__decTalkTtsManager.playTtsEvent(event))
+                self.__currentTtsManager = self.__decTalkTtsManager
+                proceed = True
 
             case TtsProvider.GOOGLE:
-                if await self.__googleTtsManager.playTtsEvent(event):
-                    self.__currentTtsManager = self.__googleTtsManager
-                    proceed = True
+                self.__backgroundTaskHelper.createTask(self.__googleTtsManager.playTtsEvent(event))
+                self.__currentTtsManager = self.__googleTtsManager
+                proceed = True
 
             case TtsProvider.HALF_LIFE:
-                if await self.__halfLifeTtsManager.playTtsEvent(event):
-                    self.__currentTtsManager = self.__halfLifeTtsManager
-                    proceed = True
+                self.__backgroundTaskHelper.createTask(self.__halfLifeTtsManager.playTtsEvent(event))
+                self.__currentTtsManager = self.__halfLifeTtsManager
+                proceed = True
 
             case TtsProvider.STREAM_ELEMENTS:
-                if await self.__streamElementsTtsManager.playTtsEvent(event):
-                    self.__currentTtsManager = self.__streamElementsTtsManager
-                    proceed = True
+                self.__backgroundTaskHelper.createTask(self.__streamElementsTtsManager.playTtsEvent(event))
+                self.__currentTtsManager = self.__streamElementsTtsManager
+                proceed = True
 
             case TtsProvider.TTS_MONSTER:
-                if await self.__ttsMonsterTtsManager.playTtsEvent(event):
-                    self.__currentTtsManager = self.__ttsMonsterTtsManager
-                    proceed = True
+                self.__backgroundTaskHelper.createTask(self.__ttsMonsterTtsManager.playTtsEvent(event))
+                self.__currentTtsManager = self.__ttsMonsterTtsManager
+                proceed = True
 
         if proceed:
             return True
@@ -98,7 +103,7 @@ class TtsManager(TtsManagerInterface):
 
     async def stopTtsEvent(self):
         currentTtsManager = self.__currentTtsManager
-        self.__currentTtsManager = None
 
         if currentTtsManager is not None:
             await currentTtsManager.stopTtsEvent()
+            self.__currentTtsManager = None

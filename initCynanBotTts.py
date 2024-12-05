@@ -1076,6 +1076,7 @@ halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
 )
 
 ttsManager: TtsManagerInterface | None = TtsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
