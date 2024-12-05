@@ -179,7 +179,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             startOfGigaShuffleSize = action.startOfGigaShuffleSize
 
             if not entryWithinGigaShuffle and startOfGigaShuffleSize is not None and startOfGigaShuffleSize >= 2:
-                alert = None # TODO set a new alert type here
+                alert = SoundAlert.JACKPOT
         else:
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 
