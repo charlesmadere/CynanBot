@@ -20,8 +20,6 @@ from .soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlay
 from .soundPlayerManager.vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
 from .storage.jsonStaticReader import JsonStaticReader
 from .storage.linesStaticReader import LinesStaticReader
-from .systemCommandHelper.systemCommandHelper import SystemCommandHelper
-from .systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
 from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
 from .trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
@@ -71,10 +69,6 @@ playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
-)
-
-systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
-    timber = timber
 )
 
 soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(

@@ -192,8 +192,6 @@ from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
 from src.streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
-from src.systemCommandHelper.systemCommandHelper import SystemCommandHelper
-from src.systemCommandHelper.systemCommandHelperInterface import SystemCommandHelperInterface
 from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
@@ -677,10 +675,6 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository
-)
-
-systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
-    timber = timber
 )
 
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
