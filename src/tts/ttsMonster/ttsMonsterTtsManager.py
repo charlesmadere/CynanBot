@@ -82,7 +82,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return False
         elif await self.isPlaying():
-            self.__timber.log('ttsMonsterTtsManager', f'There is already an ongoing TTS Monster event!')
+            self.__timber.log('TtsMonsterTtsManager', f'There is already an ongoing TTS Monster event!')
             return False
 
         self.__isLoading = True
@@ -94,14 +94,14 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         )
 
         if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
-            self.__timber.log('ttsMonsterTtsManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterUrls=})')
+            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterUrls=})')
             self.__isLoading = False
             return False
 
         fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
 
         if fileNames is None or len(fileNames) == 0:
-            self.__timber.log('ttsMonsterTtsManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
+            self.__timber.log('TtsMonsterTtsManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
             self.__isLoading = False
             return False
 
@@ -111,7 +111,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             twitchChannel = event.twitchChannel
         )
 
-        self.__timber.log('ttsMonsterTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
+        self.__timber.log('TtsMonsterTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         await self.__executeTts(fileNames = fileNames)
 
         self.__isLoading = False
@@ -139,7 +139,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             usagePercent = str(int(math.ceil((float(characterUsage) / float(characterAllowance)) * float(100)))) + '%'
             usagePercentString = f'({usagePercent} usage)'
 
-        self.__timber.log('ttsMonsterTtsManager', f'Current TTS Monster character usage stats in \"{twitchChannel}\": ({characterUsage=}) ({characterAllowance=}) ({usagePercentString=})')
+        self.__timber.log('TtsMonsterTtsManager', f'Current TTS Monster character usage stats in \"{twitchChannel}\": ({characterUsage=}) ({characterAllowance=}) ({usagePercentString=})')
 
         characterUsageString = locale.format_string("%d", characterUsage, grouping = True)
         messageable = await twitchChannelProvider.getTwitchChannel(twitchChannel)
@@ -166,4 +166,4 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             playSessionId = playSessionId
         )
 
-        self.__timber.log('ttsMonsterTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+        self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
