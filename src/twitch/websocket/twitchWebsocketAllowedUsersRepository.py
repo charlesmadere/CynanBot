@@ -65,7 +65,7 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
 
         for user in users:
             if user.isEnabled:
-                enabledUsers.add(user.getHandle())
+                enabledUsers.add(user.handle)
 
         return enabledUsers
 

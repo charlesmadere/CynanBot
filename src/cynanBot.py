@@ -887,7 +887,7 @@ class CynanBot(
         self.__timber.log('CynanBot', f'Failed to join channel ({channel=}) ({userId=}) ({user=}), disabling this user...')
 
         await self.__usersRepository.setUserEnabled(
-            handle = user.getHandle(),
+            handle = user.handle,
             enabled = False
         )
 

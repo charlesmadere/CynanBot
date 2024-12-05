@@ -58,7 +58,7 @@ class SupStreamerChatAction(AbsChatAction):
             return False
 
         chatMessage = message.getContent()
-        supStreamerMessage = user.getSupStreamerMessage()
+        supStreamerMessage = user.supStreamerMessage
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
@@ -81,15 +81,15 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannelId = await message.getTwitchChannelId()
         )
 
-        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
                 message = f'{message.getAuthorName()} sup',
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),
                 userName = message.getAuthorName(),

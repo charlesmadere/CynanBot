@@ -217,7 +217,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             actionId = actionId,
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId
         ))
@@ -253,7 +253,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             action = action,
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId
         )

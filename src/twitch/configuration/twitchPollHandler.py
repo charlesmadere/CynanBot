@@ -96,7 +96,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             # edge case to handle a situation with a large number of ties
             return
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         votesString = locale.format_string("%d", winningPollChoices[0].votes, grouping = True)
 
         votesPlurality: str
@@ -140,7 +140,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         event = payload.event
 
         if event is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         broadcasterUserId = event.broadcasterUserId
@@ -148,11 +148,11 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         choices = event.choices
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or choices is None or len(choices) == 0:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 
         subscriptionType = payload.requireSubscription().subscriptionType
-        self.__timber.log('TwitchPollHandler', f'\"{user.getHandle()}\" received poll event ({title=}) ({choices=}) ({subscriptionType=})')
+        self.__timber.log('TwitchPollHandler', f'\"{user.handle}\" received poll event ({title=}) ({choices=}) ({subscriptionType=})')
 
         await self.__processTtsEvent(
             broadcasterUserId = broadcasterUserId,
@@ -197,14 +197,14 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = f'A new poll has begun! \"{title}\"',
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
                 userId = userId,
-                userName = user.getHandle(),
+                userName = user.handle,
                 donation = None,
                 provider = TtsProvider.DEC_TALK,
                 raidInfo = None

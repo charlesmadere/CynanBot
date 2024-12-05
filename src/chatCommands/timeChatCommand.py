@@ -35,7 +35,7 @@ class TimeChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         timeZones = user.timeZones
@@ -51,7 +51,7 @@ class TimeChatCommand(AbsChatCommand):
             if first:
                 first = False
                 formattedTime = utils.formatTime(localTime)
-                text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
+                text = f'🕰️ The local time for {user.handle} is {formattedTime}.'
             else:
                 formattedTime = utils.formatTimeShort(localTime)
                 timeZoneName = localTime.strftime('%Z')
@@ -63,4 +63,4 @@ class TimeChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TimeChatCommand', f'Handled !time command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('TimeChatCommand', f'Handled !time command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

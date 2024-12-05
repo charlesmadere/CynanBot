@@ -42,14 +42,14 @@ class AddRecurringSuperTriviaActionChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('AddRecurringSuperTriviaActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddRecurringSuperTriviaActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
         elif not user.areRecurringActionsEnabled:
             return
 
         wizard = await self.__recurringActionsWizard.start(
             recurringActionType = RecurringActionType.SUPER_TRIVIA,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -66,4 +66,4 @@ class AddRecurringSuperTriviaActionChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('AddRecurringSuperTriviaActionChatCommand', f'Handled !addrecurringsupertriviaaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AddRecurringSuperTriviaActionChatCommand', f'Handled !addrecurringsupertriviaaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

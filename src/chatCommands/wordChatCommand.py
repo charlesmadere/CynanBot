@@ -55,7 +55,7 @@ class WordChatCommand(AbsChatCommand):
 
         if not user.isWordOfTheDayEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -108,4 +108,4 @@ class WordChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('WordCommand', f'Handled !word command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('WordCommand', f'Handled !word command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

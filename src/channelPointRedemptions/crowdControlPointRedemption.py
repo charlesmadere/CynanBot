@@ -70,7 +70,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
         actionId = await self.__crowdControlIdGenerator.generateActionId()
-        twitchChannelId = await self.__userIdsRepository.requireUserId(twitchUser.getHandle())
+        twitchChannelId = await self.__userIdsRepository.requireUserId(twitchUser.handle)
 
         if boosterPack.inputType is CrowdControlInputType.GAME_SHUFFLE:
             self.__crowdControlMachine.submitAction(GameShuffleCrowdControlAction(
@@ -80,7 +80,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 actionId = actionId,
                 chatterUserId = twitchChannelPointsMessage.userId,
                 chatterUserName = twitchChannelPointsMessage.userName,
-                twitchChannel = twitchUser.getHandle(),
+                twitchChannel = twitchUser.handle,
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = None
             ))
@@ -109,7 +109,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             actionId = actionId,
             chatterUserId = twitchChannelPointsMessage.userId,
             chatterUserName = twitchChannelPointsMessage.userName,
-            twitchChannel = twitchUser.getHandle(),
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = None
         ))

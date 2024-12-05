@@ -109,7 +109,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
         if not utils.isValidStr(timeoutTargetUserName):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user name: ({message=}) ({timeoutAction=})')
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user name: ({message=}) ({timeoutAction=})')
             return False
 
         timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
@@ -118,7 +118,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         if not utils.isValidStr(timeoutTargetUserId):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
             return False
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(

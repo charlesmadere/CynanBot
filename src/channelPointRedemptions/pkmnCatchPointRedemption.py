@@ -39,7 +39,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
-        if not twitchUser.isPkmnEnabled():
+        if not twitchUser.isPkmnEnabled:
             return False
 
         pkmnCatchBoosterPacks = twitchUser.pkmnCatchBoosterPacks
@@ -58,7 +58,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         actionCompleted = False
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnCatch(
-            twitchChannel = twitchUser.getHandle(),
+            twitchChannel = twitchUser.handle,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.userName,
             funtoonPkmnCatchType = funtoonPkmnCatchType
@@ -69,7 +69,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
             await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.userName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} (catch type: {pkmnCatchBoosterPack.catchType}) in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} (catch type: {pkmnCatchBoosterPack.catchType}) in {twitchUser.handle}')
         return actionCompleted
 
     def __toFuntoonPkmnCatchType(

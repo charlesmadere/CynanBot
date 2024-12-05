@@ -429,7 +429,7 @@ class UsersRepository(UsersRepositoryInterface):
         if len(users) == 0:
             raise NoUsersException(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
-        users.sort(key = lambda element: element.getHandle().casefold())
+        users.sort(key = lambda element: element.handle.casefold())
         frozenUsers: FrozenList[User] = FrozenList(users)
         frozenUsers.freeze()
 

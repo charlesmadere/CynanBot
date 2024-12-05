@@ -48,14 +48,14 @@ class CatJamChatAction(AbsChatAction):
 
         if not generalSettings.isCatJamMessageEnabled():
             return False
-        elif not user.isCatJamMessageEnabled():
+        elif not user.isCatJamMessageEnabled:
             return False
 
         splits = utils.getCleanedSplits(message.getContent())
 
-        if self.__catJamMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if self.__catJamMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             await self.__twitchUtils.safeSend(message.getChannel(), self.__catJamMessage)
-            self.__timber.log('CatJamChatAction', f'Handled {self.__catJamMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
+            self.__timber.log('CatJamChatAction', f'Handled {self.__catJamMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
             return True
         else:
             return False

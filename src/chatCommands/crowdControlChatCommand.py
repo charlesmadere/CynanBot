@@ -61,7 +61,7 @@ class CrowdControlChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('CrowdControlChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('CrowdControlChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
         elif not user.isCrowdControlEnabled:
             return
@@ -85,7 +85,7 @@ class CrowdControlChatCommand(AbsChatCommand):
                 actionId = actionId,
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 twitchChatMessageId = await ctx.getMessageId()
             )
@@ -96,7 +96,7 @@ class CrowdControlChatCommand(AbsChatCommand):
                 actionId = actionId,
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 twitchChatMessageId = await ctx.getMessageId()
             )
@@ -109,4 +109,4 @@ class CrowdControlChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('CrowdControlChatCommand', f'Handled !crowdcontrol command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({button=})')
+        self.__timber.log('CrowdControlChatCommand', f'Handled !crowdcontrol command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({button=})')

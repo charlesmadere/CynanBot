@@ -136,12 +136,12 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         twitchChannel: TwitchMessageable,
         user: UserInterface
     ):
-        self.__timber.log('BeanChanceCheerActionHelper', f'Attempt to bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} but got a bad roll ({randomNumber=}) ({action=})')
+        self.__timber.log('BeanChanceCheerActionHelper', f'Attempt to bean by {cheerUserName}:{cheerUserId} in {user.handle} but got a bad roll ({randomNumber=}) ({action=})')
 
         newBeanStats = await self.__beanStatsRepository.incrementFails(
             chatterUserId = cheerUserId,
             chatterUserName = cheerUserName,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId
         )
 
@@ -165,12 +165,12 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         twitchChannel: TwitchMessageable,
         user: UserInterface
     ):
-        self.__timber.log('BeanChanceCheerActionHelper', f'Successful bean by {cheerUserName}:{cheerUserId} in {user.getHandle()} ({randomNumber=}) ({action=})')
+        self.__timber.log('BeanChanceCheerActionHelper', f'Successful bean by {cheerUserName}:{cheerUserId} in {user.handle} ({randomNumber=}) ({action=})')
 
         newBeanStats = await self.__beanStatsRepository.incrementSuccesses(
             chatterUserId = cheerUserId,
             chatterUserName = cheerUserName,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId
         )
 
@@ -211,7 +211,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         randomNumber = int(round(random.random() * float(100)))
 
         if randomNumber < action.randomChance:

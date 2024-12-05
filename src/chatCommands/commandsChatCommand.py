@@ -38,7 +38,7 @@ class CommandsChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         await self.__twitchUtils.safeSend(
@@ -47,4 +47,4 @@ class CommandsChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('CommandsChatCommand', f'Handled !commands command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('CommandsChatCommand', f'Handled !commands command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

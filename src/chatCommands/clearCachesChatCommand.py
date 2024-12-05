@@ -70,7 +70,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
-        halfLifeService: HalfLifeServiceInterface | None, 
+        halfLifeService: HalfLifeServiceInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
@@ -252,7 +252,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if administrator != ctx.getAuthorId():
-            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             return
 
         for clearable in self.__clearables:
@@ -265,4 +265,4 @@ class ClearCachesChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

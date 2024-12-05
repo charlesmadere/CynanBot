@@ -44,23 +44,23 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
+        userId = await self.__userIdsRepository.requireUserId(user.handle)
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2 or not utils.strContainsAlphanumericCharacters(splits[1]):
-            self.__timber.log('DeleteCheerActionCommand', f'Incorrect arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            self.__timber.log('DeleteCheerActionCommand', f'Incorrect arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Bit amount is necessary for the !deletecheeraction command. Example: !deletecheeraction 100')
             return
 
         try:
             bits = int(splits[1])
         except Exception as e:
-            self.__timber.log('DeleteCheerActionCommand', f'Cheer action was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but was unable to convert: {e}', e, traceback.format_exc())
+            self.__timber.log('DeleteCheerActionCommand', f'Cheer action was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but was unable to convert: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Bit amount is necessary for the !deletecheeraction command. Example: !deletecheeraction 100')
             return
 
@@ -70,9 +70,9 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
         )
 
         if action is None:
-            self.__timber.log('DeleteCheerActionCommand', f'Cheer {bits} was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no corresponding cheer action was found')
+            self.__timber.log('DeleteCheerActionCommand', f'Cheer {bits} was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no corresponding cheer action was found')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Could not find any corresponding cheer action with bits \"{bits}\"')
             return
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted cheer action — {action}')
-        self.__timber.log('DeleteCheerActionCommand', f'Handled !deletecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('DeleteCheerActionCommand', f'Handled !deletecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

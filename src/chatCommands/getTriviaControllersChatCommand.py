@@ -48,18 +48,18 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
 
         twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('GetTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('GetTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         controllers = await self.__triviaGameControllersRepository.getControllers(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId
         )
 
@@ -69,4 +69,4 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('GetTriviaControllersChatCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetTriviaControllersChatCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

@@ -42,12 +42,12 @@ class AddBeanChanceCheerActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('AddBeanChanceCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddBeanChanceCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         wizard = await self.__cheerActionsWizard.start(
             cheerActionType = CheerActionType.BEAN_CHANCE,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -62,4 +62,4 @@ class AddBeanChanceCheerActionCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('AddBeanChanceCheerActionCommand', f'Handled !addbeanchancecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AddBeanChanceCheerActionCommand', f'Handled !addbeanchancecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

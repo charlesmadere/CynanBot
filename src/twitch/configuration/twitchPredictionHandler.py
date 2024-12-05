@@ -91,7 +91,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
             outcomeString = outcomeString + f', {predictorPluralization} {topPredictorsString}!'
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
 
     async def onNewPrediction(
@@ -111,7 +111,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         event = payload.event
 
         if event is None:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         broadcasterUserId = event.broadcasterUserId
@@ -120,11 +120,11 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         winningOutcomeId = event.winningOutcomeId
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or outcomes is None or len(outcomes) == 0:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 
         subscriptionType = payload.requireSubscription().subscriptionType
-        self.__timber.log('TwitchPredictionHandler', f'\"{user.getHandle()}\" received prediction event ({title=}) ({outcomes=}) ({subscriptionType=})')
+        self.__timber.log('TwitchPredictionHandler', f'\"{user.handle}\" received prediction event ({title=}) ({outcomes=}) ({subscriptionType=})')
 
         await self.__notifyChatOfPredictionResults(
             outcomes = outcomes,
@@ -175,14 +175,14 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = f'A new prediction has begun! \"{title}\"',
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
                 userId = userId,
-                userName = user.getHandle(),
+                userName = user.handle,
                 donation = None,
                 provider = user.defaultTtsProvider,
                 raidInfo = None
@@ -212,7 +212,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             return
 
         self.__websocketConnectionServer.submitEvent(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             eventType = WebsocketEventType.CHANNEL_PREDICTION,
             eventData = eventData

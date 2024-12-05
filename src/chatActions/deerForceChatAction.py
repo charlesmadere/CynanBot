@@ -53,9 +53,9 @@ class DeerForceChatAction(AbsChatAction):
 
         splits = utils.getCleanedSplits(message.getContent())
 
-        if self.__deerForceMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if self.__deerForceMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             await self.__twitchUtils.safeSend(message.getChannel(), self.__deerForceMessage)
-            self.__timber.log('DeerForceChatAction', f'Handled {self.__deerForceMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
+            self.__timber.log('DeerForceChatAction', f'Handled {self.__deerForceMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
             return True
         else:
             return False

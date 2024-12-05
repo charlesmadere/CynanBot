@@ -47,11 +47,11 @@ class RemoveRecurringWordOfTheDayActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveWordOfTheDayRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveWordOfTheDayRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         recurringAction = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -64,4 +64,4 @@ class RemoveRecurringWordOfTheDayActionCommand(AbsChatCommand):
 
         await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring word of the day action has been disabled')
-        self.__timber.log('RemoveWordOfTheDayRecurringActionCommand', f'Handled !removewordofthedayrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RemoveWordOfTheDayRecurringActionCommand', f'Handled !removewordofthedayrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

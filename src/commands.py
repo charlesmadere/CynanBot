@@ -70,19 +70,19 @@ class AddUserCommand(AbsCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != administrator:
-            self.__timber.log('AddUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('AddUserCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}')
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddUserCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}')
             return
 
         if await self.__usersRepository.containsUserAsync(userName):
@@ -108,7 +108,7 @@ class AddUserCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ To add user \"{userName}\" ({userId}), please respond with `!confirm`')
-        self.__timber.log('AddUserCommand', f'Handled !adduser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AddUserCommand', f'Handled !adduser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class ConfirmCommand(AbsCommand):
@@ -143,13 +143,13 @@ class ConfirmCommand(AbsCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != administrator:
-            self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         data = await self.__addOrRemoveUserDataHelper.getData()
 
         if data is None:
-            self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried confirming the modification of a user, but there is no persisted user data')
+            self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried confirming the modification of a user, but there is no persisted user data')
             return
 
         match data.actionType:
@@ -163,7 +163,7 @@ class ConfirmCommand(AbsCommand):
                 raise RuntimeError(f'unknown AddOrRemoveUserActionType: \"{data.actionType}\"')
 
         await self.__addOrRemoveUserDataHelper.notifyAddOrRemoveUserEventListenerAndClearData()
-        self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class CynanSourceCommand(AbsCommand):
@@ -200,7 +200,7 @@ class CynanSourceCommand(AbsCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class PbsCommand(AbsCommand):
@@ -229,13 +229,13 @@ class PbsCommand(AbsCommand):
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.hasSpeedrunProfile():
+        if not user.hasSpeedrunProfile:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
-        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {user.getSpeedrunProfile()}')
-        self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        await self.__twitchUtils.safeSend(ctx, f'{user.handle}\'s speedrun profile: {user.speedrunProfile}')
+        self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class PkMonCommand(AbsCommand):
@@ -275,9 +275,9 @@ class PkMonCommand(AbsCommand):
 
         if not generalSettings.isPokepediaEnabled():
             return
-        elif not user.isPokepediaEnabled():
+        elif not user.isPokepediaEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -296,7 +296,7 @@ class PkMonCommand(AbsCommand):
             self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
 
-        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class PkMoveCommand(AbsCommand):
@@ -336,9 +336,9 @@ class PkMoveCommand(AbsCommand):
 
         if not generalSettings.isPokepediaEnabled():
             return
-        elif not user.isPokepediaEnabled():
+        elif not user.isPokepediaEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -357,7 +357,7 @@ class PkMoveCommand(AbsCommand):
             self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
-        self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class RaceCommand(AbsCommand):
@@ -389,13 +389,13 @@ class RaceCommand(AbsCommand):
 
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.isRaceEnabled():
+        if not user.isRaceEnabled:
             return
-        elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         await self.__twitchUtils.safeSend(ctx, '!race')
-        self.__timber.log('RaceCommand', f'Handled !race command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RaceCommand', f'Handled !race command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class RemoveUserCommand(AbsCommand):
@@ -438,19 +438,19 @@ class RemoveUserCommand(AbsCommand):
         administrator = await self.__administratorProvider.getAdministratorUserName()
 
         if ctx.getAuthorName().lower() != administrator.lower():
-            self.__timber.log('RemoveUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('RemoveUserCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}')
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveUserCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !removeuser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}')
             return
 
         if not await self.__usersRepository.containsUserAsync(userName):
@@ -468,7 +468,7 @@ class RemoveUserCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`')
-        self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class SetFuntoonTokenCommand(AbsCommand):
@@ -502,8 +502,8 @@ class SetFuntoonTokenCommand(AbsCommand):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if ctx.getAuthorName().lower() != user.getHandle().lower() and ctx.getAuthorId() != administrator:
-            self.__timber.log('SetFuntoonTokenCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+        if ctx.getAuthorName().lower() != user.handle.lower() and ctx.getAuthorId() != administrator:
+            self.__timber.log('SetFuntoonTokenCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -523,7 +523,7 @@ class SetFuntoonTokenCommand(AbsCommand):
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
-        self.__timber.log('SetFuntoonTokenCommand', f'Handled !setfuntoontoken command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('SetFuntoonTokenCommand', f'Handled !setfuntoontoken command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Funtoon token has been updated')
 
     def __getRandomTokenStr(self) -> str:
@@ -569,7 +569,7 @@ class SetTwitchCodeCommand(AbsCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != twitchChannelId and ctx.getAuthorId() != administrator:
-            self.__timber.log('SetTwitchCodeCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('SetTwitchCodeCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -586,11 +586,11 @@ class SetTwitchCodeCommand(AbsCommand):
 
         await self.__twitchTokensRepository.addUser(
             code = code,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
         )
 
-        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Twitch code has been updated')
 
     def __getRandomCodeStr(self) -> str:
@@ -642,9 +642,9 @@ class SwQuoteCommand(AbsCommand):
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.isStarWarsQuotesEnabled():
+        if not user.isStarWarsQuotesEnabled:
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         randomSpaceEmoji = utils.getRandomSpaceEmoji()
@@ -713,7 +713,7 @@ class TwitchInfoCommand(AbsCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != administrator:
-            self.__timber.log('TwitchInfoCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('TwitchInfoCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
@@ -725,20 +725,20 @@ class TwitchInfoCommand(AbsCommand):
             twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
             if not utils.isValidStr(twitchAccessToken):
-                self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but was unable to retrieve a valid Twitch access token')
+                self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but was unable to retrieve a valid Twitch access token')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve a valid Twitch access token to use with this command!')
                 return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.getHandle()}')
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.handle}')
             return
 
         userName: str | None = splits[1]
         if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
-            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.getHandle()}')
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.handle}')
             return
 
         userDetails: TwitchUserDetails | None = None
@@ -753,7 +753,7 @@ class TwitchInfoCommand(AbsCommand):
             exception = e
 
         if userDetails is None or exception is not None:
-            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the TwitchApiService call failed ({exception=})')
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the TwitchApiService call failed ({exception=})')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info for \"{userName}\" as the Twitch API service call failed')
             return
 
@@ -764,7 +764,7 @@ class TwitchInfoCommand(AbsCommand):
 
         userInfoStr = await self.__toStr(userDetails)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Twitch info for {userName} — {userInfoStr}')
-        self.__timber.log('TwitchInfoCommand', f'Handled !twitchinfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('TwitchInfoCommand', f'Handled !twitchinfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __toStr(self, userInfo: TwitchUserDetails) -> str:
         if not isinstance(userInfo, TwitchUserDetails):

@@ -37,7 +37,7 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
-        if not twitchUser.isPkmnEnabled():
+        if not twitchUser.isPkmnEnabled:
             return False
 
         splits = utils.getCleanedSplits(twitchChannelPointsMessage.redemptionMessage)
@@ -51,7 +51,7 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
         actionCompleted = False
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnBattle(
-            twitchChannel = twitchUser.getHandle(),
+            twitchChannel = twitchUser.handle,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.userName,
             userToBattle = opponentUserName
@@ -62,5 +62,5 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
             await self.__twitchUtils.safeSend(twitchChannel, f'!battle {twitchChannelPointsMessage.userName} {opponentUserName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return actionCompleted

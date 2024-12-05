@@ -52,7 +52,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
 
         if not user.isAnivMessageCopyTimeoutEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         userId = ctx.getAuthorId()
@@ -95,4 +95,4 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('MyAnivTimeoutsChatCommand', f'Handled !myanivtimeouts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('MyAnivTimeoutsChatCommand', f'Handled !myanivtimeouts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

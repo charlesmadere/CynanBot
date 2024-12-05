@@ -50,27 +50,27 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         user = await self.__usersRepository.getUserAsync(twitchChannel)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled:
             return None
 
-        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled()
+        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled
 
-        points = user.getTriviaGamePoints()
+        points = user.triviaGamePoints
         if not utils.isValidInt(points):
             points = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
 
-        secondsToLive = user.getWaitForTriviaAnswerDelay()
+        secondsToLive = user.waitForTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
             secondsToLive = await self.__triviaGameBuilderSettings.getWaitForTriviaAnswerDelay()
 
-        shinyMultiplier = user.getTriviaGameShinyMultiplier()
+        shinyMultiplier = user.triviaGameShinyMultiplier
         if not utils.isValidInt(shinyMultiplier):
             shinyMultiplier = await self.__triviaGameBuilderSettings.getTriviaGameShinyMultiplier()
 
         actionId = await self.__triviaIdGenerator.generateActionId()
 
         triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
@@ -81,7 +81,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
             actionId = actionId,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             userId = userId,
             userName = userName,
@@ -109,44 +109,44 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         user = await self.__usersRepository.getUserAsync(twitchChannel)
 
-        if not user.isSuperTriviaGameEnabled():
+        if not user.isSuperTriviaGameEnabled:
             return None
 
-        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled()
-        isToxicTriviaEnabled = user.isToxicTriviaEnabled and user.isCutenessEnabled()
+        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled
+        isToxicTriviaEnabled = user.isToxicTriviaEnabled and user.isCutenessEnabled
 
-        perUserAttempts = user.getSuperTriviaPerUserAttempts()
+        perUserAttempts = user.superTriviaPerUserAttempts
         if not utils.isValidInt(perUserAttempts):
             perUserAttempts = await self.__triviaGameBuilderSettings.getSuperTriviaGamePerUserAttempts()
 
-        pointsForWinning = user.getSuperTriviaGamePoints()
+        pointsForWinning = user.superTriviaGamePoints
         if not utils.isValidInt(pointsForWinning):
             pointsForWinning = await self.__triviaGameBuilderSettings.getSuperTriviaGamePoints()
 
-        regularTriviaPointsForWinning = user.getTriviaGamePoints()
+        regularTriviaPointsForWinning = user.triviaGamePoints
         if not utils.isValidInt(regularTriviaPointsForWinning):
             regularTriviaPointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
 
-        secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
+        secondsToLive = user.waitForSuperTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
             secondsToLive = await self.__triviaGameBuilderSettings.getWaitForSuperTriviaAnswerDelay()
 
-        shinyMultiplier = user.getSuperTriviaGameShinyMultiplier()
+        shinyMultiplier = user.superTriviaGameShinyMultiplier
         if not utils.isValidInt(shinyMultiplier):
             shinyMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameShinyMultiplier()
 
-        toxicMultiplier = user.getSuperTriviaGameToxicMultiplier()
+        toxicMultiplier = user.superTriviaGameToxicMultiplier
         if not utils.isValidInt(toxicMultiplier):
             toxicMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameToxicMultiplier()
 
-        toxicTriviaPunishmentMultiplier = user.getSuperTriviaGameToxicPunishmentMultiplier()
+        toxicTriviaPunishmentMultiplier = user.superTriviaGameToxicPunishmentMultiplier
         if not utils.isValidInt(toxicTriviaPunishmentMultiplier):
             toxicTriviaPunishmentMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameToxicPunishmentMultiplier()
 
         actionId = await self.__triviaIdGenerator.generateActionId()
 
         triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
             requiredTriviaSource = requiredTriviaSource
@@ -165,7 +165,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             toxicMultiplier = toxicMultiplier,
             toxicTriviaPunishmentMultiplier = toxicTriviaPunishmentMultiplier,
             actionId = actionId,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             triviaFetchOptions = triviaFetchOptions
         )

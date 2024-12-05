@@ -50,9 +50,9 @@ class JishoChatCommand(AbsChatCommand):
 
         if not generalSettings.isJishoEnabled():
             return
-        elif not user.isJishoEnabled():
+        elif not user.isJishoEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReady(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReady(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -73,7 +73,7 @@ class JishoChatCommand(AbsChatCommand):
             )
             return
 
-        self.__lastMessageTimes.update(user.getHandle())
+        self.__lastMessageTimes.update(user.handle)
 
         try:
             strings = await self.__jishoHelper.search(query)
@@ -92,4 +92,4 @@ class JishoChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

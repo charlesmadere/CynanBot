@@ -62,7 +62,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         bits = event.bits
@@ -73,12 +73,12 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         cheerUserName = event.userName
 
         if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
             return
 
-        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
+        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.handle}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
 
-        if user.isSuperTriviaGameEnabled():
+        if user.isSuperTriviaGameEnabled:
             await self.__processSuperTriviaEvent(
                 bits = bits,
                 broadcasterUserId = broadcasterUserId,
@@ -168,11 +168,11 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         if triviaGameBuilder is None or triviaGameMachine is None:
             return
-        elif not user.isSuperTriviaGameEnabled():
+        elif not user.isSuperTriviaGameEnabled:
             return
 
-        superTriviaCheerTriggerAmount = user.getSuperTriviaCheerTriggerAmount()
-        superTriviaCheerTriggerMaximum = user.getSuperTriviaCheerTriggerMaximum()
+        superTriviaCheerTriggerAmount = user.superTriviaCheerTriggerAmount
+        superTriviaCheerTriggerMaximum = user.superTriviaCheerTriggerMaximum
 
         if not utils.isValidNum(superTriviaCheerTriggerAmount) or bits < superTriviaCheerTriggerAmount:
             return
@@ -185,7 +185,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             numberOfGames = superTriviaCheerTriggerMaximum
 
         action = await triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             numberOfGames = numberOfGames
         )
@@ -220,8 +220,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         if not user.isTtsEnabled:
             return
 
-        maximumTtsCheerAmount = user.getMaximumTtsCheerAmount()
-        minimumTtsCheerAmount = user.getMinimumTtsCheerAmount()
+        maximumTtsCheerAmount = user.maximumTtsCheerAmount
+        minimumTtsCheerAmount = user.minimumTtsCheerAmount
 
         if utils.isValidInt(maximumTtsCheerAmount) and utils.isValidInt(minimumTtsCheerAmount) and (bits < minimumTtsCheerAmount or bits > maximumTtsCheerAmount):
             return
@@ -243,11 +243,11 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = message,
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
                 userId = cheerUserId,
                 userName = cheerUserLogin,

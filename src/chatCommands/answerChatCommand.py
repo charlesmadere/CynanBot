@@ -42,7 +42,7 @@ class AnswerChatCommand(AbsChatCommand):
 
         if not generalSettings.isTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled:
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -54,11 +54,11 @@ class AnswerChatCommand(AbsChatCommand):
         self.__triviaGameMachine.submitAction(CheckAnswerTriviaAction(
             actionId = await self.__triviaIdGenerator.generateActionId(),
             answer = answer,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             twitchChatMessageId = await ctx.getMessageId(),
             userId = ctx.getAuthorId(),
             userName = ctx.getAuthorName()
         ))
 
-        self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

@@ -42,12 +42,12 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('AddTimeoutCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddTimeoutCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         wizard = await self.__cheerActionsWizard.start(
             cheerActionType = CheerActionType.TIMEOUT,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId
         )
 
@@ -62,4 +62,4 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('AddTimeoutCheerActionCommand', f'Handled !addtimeoutcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AddTimeoutCheerActionCommand', f'Handled !addtimeoutcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

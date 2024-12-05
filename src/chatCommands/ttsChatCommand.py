@@ -64,7 +64,7 @@ class TtsChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('TtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('TtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
         elif not user.isTtsEnabled:
             return
@@ -108,11 +108,11 @@ class TtsChatCommand(AbsChatCommand):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = userId,
             ttsEvent = TtsEvent(
                 message = message,
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = userId,
                 userId = ctx.getAuthorId(),
                 userName = ctx.getAuthorName(),
@@ -122,4 +122,4 @@ class TtsChatCommand(AbsChatCommand):
             )
         ))
 
-        self.__timber.log('TtsChatCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('TtsChatCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

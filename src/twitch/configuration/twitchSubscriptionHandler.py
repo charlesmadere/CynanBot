@@ -51,7 +51,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         @property
         def twitchChannel(self) -> str:
-            return self.user.getHandle()
+            return self.user.handle
 
     def __init__(
         self,
@@ -142,7 +142,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         subscription = payload.subscription
 
         if event is None or subscription is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         subscriptionType = subscription.subscriptionType
@@ -161,10 +161,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         tier = event.tier
 
         if not utils.isValidStr(broadcasterUserId) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSubGiftThankingEnabled and subGift is not None:
             await self.__processCynanBotAsGiftRecipient(
@@ -173,7 +173,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 user = user
             )
 
-        if user.isSuperTriviaGameEnabled():
+        if user.isSuperTriviaGameEnabled:
             await self.__processSuperTriviaEvent(
                 broadcasterUserId = broadcasterUserId,
                 communitySubGift = communitySubGift,
@@ -232,9 +232,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         emoji1 = random.choice(viableEmotesList)
         emoji2 = random.choice(viableEmotesList)
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')
-        self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.getHandle()} for a gifted sub!')
+        self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.handle} for a gifted sub!')
 
     async def __processGiftSubBatches(self, giftSubBatches: list[GiftSub] | None):
         if giftSubBatches is None or len(giftSubBatches) == 0:
@@ -289,13 +289,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         if triviaGameBuilder is None or triviaGameMachine is None:
             return
-        elif not user.isSuperTriviaGameEnabled():
+        elif not user.isSuperTriviaGameEnabled:
             return
         elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE:
             return
 
-        superTriviaSubscribeTriggerAmount = user.getSuperTriviaSubscribeTriggerAmount()
-        superTriviaSubscribeTriggerMaximum = user.getSuperTriviaSubscribeTriggerMaximum()
+        superTriviaSubscribeTriggerAmount = user.superTriviaSubscribeTriggerAmount
+        superTriviaSubscribeTriggerMaximum = user.superTriviaSubscribeTriggerMaximum
 
         if not utils.isValidNum(superTriviaSubscribeTriggerAmount) or superTriviaSubscribeTriggerAmount <= 0:
             return
@@ -312,7 +312,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             numberOfGames = superTriviaSubscribeTriggerMaximum
 
         action = await triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             numberOfGames = numberOfGames
         )
@@ -422,7 +422,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
             ttsEvent = TtsEvent(
                 message = actualMessage,
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
                 userId = actualUserId,
                 userName = actualUserName,
@@ -433,7 +433,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = SoundAlert.SUBSCRIBE,
-                twitchChannel = user.getHandle(),
+                twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
                 ttsEvent = ttsEvent
             ))

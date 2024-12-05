@@ -442,111 +442,147 @@ class User(UserInterface):
     def chatBackMessages(self) -> FrozenList[str] | None:
         return self.__chatBackMessages
 
-    def getCasualGamePollRewardId(self) -> str | None:
+    @property
+    def casualGamePollRewardId(self) -> str | None:
         return self.__casualGamePollRewardId
 
-    def getCasualGamePollUrl(self) -> str | None:
+    @property
+    def casualGamePollUrl(self) -> str | None:
         return self.__casualGamePollUrl
 
-    def getDiscordUrl(self) -> str | None:
+    @property
+    def discordUrl(self) -> str | None:
         return self.__discordUrl
 
-    def getHandle(self) -> str:
+    @property
+    def handle(self) -> str:
         return self.__handle
 
-    def getInstagramUrl(self) -> str | None:
+    @property
+    def instagramUrl(self) -> str | None:
         return self.__instagram
 
-    def getLocationId(self) -> str | None:
+    @property
+    def locationId(self) -> str | None:
         return self.__locationId
 
-    def getMastodonUrl(self) -> str | None:
+    @property
+    def mastodonUrl(self) -> str | None:
         return self.__mastodonUrl
 
-    def getMaximumTtsCheerAmount(self) -> int | None:
+    @property
+    def maximumTtsCheerAmount(self) -> int | None:
         return self.__maximumTtsCheerAmount
 
-    def getMinimumTtsCheerAmount(self) -> int | None:
+    @property
+    def minimumTtsCheerAmount(self) -> int | None:
         return self.__minimumTtsCheerAmount
 
-    def getPkmnEvolveRewardId(self) -> str | None:
+    @property
+    def pkmnEvolveRewardId(self) -> str | None:
         return self.__pkmnEvolveRewardId
 
-    def getPkmnShinyRewardId(self) -> str | None:
+    @property
+    def pkmnShinyRewardId(self) -> str | None:
         return self.__pkmnShinyRewardId
 
-    def getRandomSoundAlertRewardId(self) -> str | None:
+    @property
+    def randomSoundAlertRewardId(self) -> str | None:
         return self.__randomSoundAlertRewardId
 
-    def getSoundAlertRewardId(self) -> str | None:
+    @property
+    def soundAlertRewardId(self) -> str | None:
         return self.__soundAlertRewardId
 
-    def getSpeedrunProfile(self) -> str | None:
+    @property
+    def speedrunProfile(self) -> str | None:
         return self.__speedrunProfile
 
-    def getSuperTriviaCheerTriggerAmount(self) -> float | None:
+    @property
+    def superTriviaCheerTriggerAmount(self) -> float | None:
         return self.__superTriviaCheerTriggerAmount
 
-    def getSuperTriviaCheerTriggerMaximum(self) -> int | None:
+    @property
+    def superTriviaCheerTriggerMaximum(self) -> int | None:
         return self.__superTriviaCheerTriggerMaximum
 
-    def getSuperTriviaGamePoints(self) -> int | None:
+    @property
+    def superTriviaGamePoints(self) -> int | None:
         return self.__superTriviaGamePoints
 
-    def getSuperTriviaGameRewardId(self) -> str | None:
+    @property
+    def superTriviaGameRewardId(self) -> str | None:
         return self.__superTriviaGameRewardId
 
-    def getSuperTriviaGameShinyMultiplier(self) -> int | None:
+    @property
+    def superTriviaGameShinyMultiplier(self) -> int | None:
         return self.__superTriviaGameShinyMultiplier
 
-    def getSuperTriviaGameToxicMultiplier(self) -> int | None:
+    @property
+    def superTriviaGameToxicMultiplier(self) -> int | None:
         return self.__superTriviaGameToxicMultiplier
 
-    def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int | None:
+    @property
+    def superTriviaGameToxicPunishmentMultiplier(self) -> int | None:
         return self.__superTriviaGameToxicPunishmentMultiplier
 
-    def getSuperTriviaPerUserAttempts(self) -> int | None:
+    @property
+    def superTriviaPerUserAttempts(self) -> int | None:
         return self.__superTriviaPerUserAttempts
 
-    def getSuperTriviaSubscribeTriggerAmount(self) -> float | None:
+    @property
+    def superTriviaSubscribeTriggerAmount(self) -> float | None:
         return self.__superTriviaSubscribeTriggerAmount
 
-    def getSuperTriviaSubscribeTriggerMaximum(self) -> int | None:
+    @property
+    def superTriviaSubscribeTriggerMaximum(self) -> int | None:
         return self.__superTriviaSubscribeTriggerMaximum
 
-    def getSupStreamerMessage(self) -> str | None:
+    @property
+    def supStreamerMessage(self) -> str | None:
         return self.__supStreamerMessage
 
-    def getTriviaGamePoints(self) -> int | None:
+    @property
+    def triviaGamePoints(self) -> int | None:
         return self.__triviaGamePoints
 
-    def getTriviaGameRewardId(self) -> str | None:
+    @property
+    def triviaGameRewardId(self) -> str | None:
         return self.__triviaGameRewardId
 
-    def getTriviaGameShinyMultiplier(self) -> int | None:
+    @property
+    def triviaGameShinyMultiplier(self) -> int | None:
         return self.__triviaGameShinyMultiplier
 
-    def getTwitchUrl(self) -> str:
+    @property
+    def twitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
 
-    def getWaitForSuperTriviaAnswerDelay(self) -> int | None:
+    @property
+    def waitForSuperTriviaAnswerDelay(self) -> int | None:
         return self.__waitForSuperTriviaAnswerDelay
 
-    def getWaitForTriviaAnswerDelay(self) -> int | None:
+    @property
+    def waitForTriviaAnswerDelay(self) -> int | None:
         return self.__waitForTriviaAnswerDelay
 
+    @property
     def hasInstagram(self) -> bool:
         return utils.isValidUrl(self.__instagram)
 
+    @property
     def hasLocationId(self) -> bool:
         return utils.isValidStr(self.__locationId)
 
+    @property
     def hasMastodonUrl(self) -> bool:
         return utils.isValidUrl(self.__mastodonUrl)
 
+    @property
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
 
+    @property
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
 
@@ -562,9 +598,11 @@ class User(UserInterface):
     def isAnivMessageCopyTimeoutEnabled(self) -> bool:
         return self.__isAnivMessageCopyTimeoutEnabled
 
+    @property
     def isCasualGamePollEnabled(self) -> bool:
         return self.__isCasualGamePollEnabled
 
+    @property
     def isCatJamMessageEnabled(self) -> bool:
         return self.__isCatJamMessageEnabled
 
@@ -588,6 +626,7 @@ class User(UserInterface):
     def isCrowdControlEnabled(self) -> bool:
         return self.__isCrowdControlEnabled
 
+    @property
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
 
@@ -599,12 +638,15 @@ class User(UserInterface):
     def isEnabled(self) -> bool:
         return self.__isEnabled
 
+    @property
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled
 
+    @property
     def isJishoEnabled(self) -> bool:
         return self.__isJishoEnabled
 
+    @property
     def isLoremIpsumEnabled(self) -> bool:
         return self.__isLoremIpsumEnabled
 
@@ -616,12 +658,15 @@ class User(UserInterface):
     def isNotifyOfPredictionResultsEnabled(self) -> bool:
         return self.__isNotifyOfPredictionResultsEnabled
 
+    @property
     def isPkmnEnabled(self) -> bool:
         return self.__isPkmnEnabled
 
+    @property
     def isPokepediaEnabled(self) -> bool:
         return self.__isPokepediaEnabled
 
+    @property
     def isRaceEnabled(self) -> bool:
         return self.__isRaceEnabled
 
@@ -629,6 +674,7 @@ class User(UserInterface):
     def isSchubertWalkMessageEnabled(self) -> bool:
         return self.__isSchubertWalkMessageEnabled
 
+    @property
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled
 
@@ -636,6 +682,7 @@ class User(UserInterface):
     def isShizaMessageEnabled(self) -> bool:
         return self.__isShizaMessageEnabled
 
+    @property
     def isStarWarsQuotesEnabled(self) -> bool:
         return self.__isStarWarsQuotesEnabled
 
@@ -643,6 +690,7 @@ class User(UserInterface):
     def isSubGiftThankingEnabled(self) -> bool:
         return self.__isSubGiftThankingEnabled
 
+    @property
     def isSuperTriviaGameEnabled(self) -> bool:
         return self.__isSuperTriviaGameEnabled
 
@@ -666,12 +714,15 @@ class User(UserInterface):
     def isTimeoutCheerActionReverseEnabled(self) -> bool:
         return self.__isTimeoutCheerActionReverseEnabled
 
+    @property
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled
 
+    @property
     def isTranslateEnabled(self) -> bool:
         return self.__isTranslateEnabled
 
+    @property
     def isTriviaGameEnabled(self) -> bool:
         return self.__isTriviaGameEnabled
 

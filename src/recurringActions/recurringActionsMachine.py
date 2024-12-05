@@ -151,7 +151,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         action: RecurringAction | None = None
 
         mostRecentAction = await self.__mostRecentRecurringActionsRepository.getMostRecentRecurringAction(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId
         )
 
@@ -164,25 +164,25 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             match actionType:
                 case RecurringActionType.CUTENESS:
                     action = await self.__recurringActionsRepository.getCutenessRecurringAction(
-                        twitchChannel = user.getHandle(),
+                        twitchChannel = user.handle,
                         twitchChannelId = twitchChannelId
                     )
 
                 case RecurringActionType.SUPER_TRIVIA:
                     action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
-                        twitchChannel = user.getHandle(),
+                        twitchChannel = user.handle,
                         twitchChannelId = twitchChannelId
                     )
 
                 case RecurringActionType.WEATHER:
                     action = await self.__recurringActionsRepository.getWeatherRecurringAction(
-                        twitchChannel = user.getHandle(),
+                        twitchChannel = user.handle,
                         twitchChannelId = twitchChannelId
                     )
 
                 case RecurringActionType.WORD_OF_THE_DAY:
                     action = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
-                        twitchChannel = user.getHandle(),
+                        twitchChannel = user.handle,
                         twitchChannelId = twitchChannelId
                     )
 
@@ -221,13 +221,13 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         leaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId
         )
 
         await self.__submitEvent(CutenessRecurringEvent(
             leaderboard = leaderboard,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId
         ))
 
@@ -280,7 +280,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         newTriviaGame = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId
         )
 
@@ -288,7 +288,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(SuperTriviaRecurringEvent(
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId
         ))
 
@@ -311,7 +311,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if self.__weatherRepository is None:
             return False
 
-        locationId = user.getLocationId()
+        locationId = user.locationId
         if not utils.isValidStr(locationId):
             return False
 
@@ -332,7 +332,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(WeatherRecurringEvent(
             alertsOnly = action.isAlertsOnly,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
             weatherReport = weatherReport
         ))
@@ -362,7 +362,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
             languageEntry = languageEntry,
-            twitchChannel = user.getHandle(),
+            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
             wordOfTheDayResponse = wordOfTheDayResponse
         ))
@@ -376,10 +376,10 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         twitchChannelIds: set[str] = set()
 
         for user in users:
-            twitchChannelId = await self.__userIdsRepository.fetchUserId(user.getHandle())
+            twitchChannelId = await self.__userIdsRepository.fetchUserId(user.handle)
 
             if not utils.isValidStr(twitchChannelId):
-                self.__timber.log('RecurringActionsMachine', f'Unable to find Twitch user ID for \"{user.getHandle()}\" when refreshing recurring actions')
+                self.__timber.log('RecurringActionsMachine', f'Unable to find Twitch user ID for \"{user.handle}\" when refreshing recurring actions')
                 continue
 
             action = await self.__findDueRecurringAction(
