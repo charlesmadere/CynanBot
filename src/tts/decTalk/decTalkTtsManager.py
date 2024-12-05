@@ -50,6 +50,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+        self.__decTalkProcess: Process | None = None
 
     async def __applyRandomVoice(self, command: str) -> str:
         updatedCommand = await self.__decTalkVoiceChooser.choose(command)
@@ -65,29 +66,31 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             raise TypeError(f'command argument is malformed: \"{command}\"')
 
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
-
-        process: Process | None = None
+        decTalkProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
         try:
-            process = await asyncio.create_subprocess_shell(
+            decTalkProcess = await asyncio.create_subprocess_shell(
                 cmd = command,
                 stdout = asyncio.subprocess.PIPE,
                 stderr = asyncio.subprocess.PIPE
             )
 
+            self.__decTalkProcess = decTalkProcess
+
             outputTuple = await asyncio.wait_for(
-                fut = process.communicate(),
+                fut = decTalkProcess.communicate(),
                 timeout = timeoutSeconds
             )
         except BaseException as e:
             exception = e
 
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
-            await self.__killDecTalkProcess(process)
+            await self.__killDecTalkProcess(decTalkProcess)
 
-        process = None
+        decTalkProcess = None
+        self.__decTalkProcess = None
         outputString: str | None = None
 
         if outputTuple is not None and len(outputTuple) >= 2:
@@ -95,18 +98,18 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
         self.__timber.log('DecTalkManager', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
-    async def __killDecTalkProcess(self, process: Process | None):
-        if process is None:
-            self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process is None: \"{process}\"')
+    async def __killDecTalkProcess(self, decTalkProcess: Process | None):
+        if decTalkProcess is None:
+            self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process is None ({decTalkProcess=})')
             return
-        elif not isinstance(process, Process):
-            raise TypeError(f'process argument is malformed: \"{process}\"')
-        elif process.returncode is not None:
-            self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process ({process}) has a return code: \"{process.returncode}\"')
+        elif not isinstance(decTalkProcess, Process):
+            raise TypeError(f'process argument is malformed: \"{decTalkProcess}\"')
+        elif decTalkProcess.returncode is not None:
+            self.__timber.log('DecTalkManager', f'Went to kill a DecTalk process, but the process has a return code ({decTalkProcess=}) ({decTalkProcess.returncode=})')
             return
 
-        self.__timber.log('DecTalkManager', f'Killing DecTalk process ({process=})...')
-        parent = psutil.Process(process.pid)
+        self.__timber.log('DecTalkManager', f'Killing DecTalk process ({decTalkProcess=})...')
+        parent = psutil.Process(decTalkProcess.pid)
         childCount = 0
 
         for child in parent.children(recursive = True):
@@ -114,10 +117,11 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             childCount += 1
 
         parent.terminate()
-        self.__timber.log('DecTalkManager', f'Finished killing DecTalk process ({process=}) ({childCount=})')
+        self.__timber.log('DecTalkManager', f'Finished killing DecTalk process ({decTalkProcess=}) ({childCount=})')
 
     async def isPlaying(self) -> bool:
-        return self.__isLoadingOrPlaying
+        decTalkProcess = self.__decTalkProcess
+        return self.__isLoadingOrPlaying or decTalkProcess is not None
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
         if not isinstance(event, TtsEvent):
@@ -162,5 +166,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         return await self.__decTalkFileManager.writeCommandToNewFile(message)
 
     async def stopTtsEvent(self):
-        # TODO
-        pass
+        decTalkProcess = self.__decTalkProcess
+
+        if decTalkProcess is not None:
+            await self.__killDecTalkProcess(decTalkProcess)
