@@ -6,6 +6,7 @@ class SoundAlert(Enum):
     BEAN = auto()
     CHEER = auto()
     CLICK_NAVIGATION = auto()
+    JACKPOT = auto()
     POINT_REDEMPTION_01 = auto()
     POINT_REDEMPTION_02 = auto()
     POINT_REDEMPTION_03 = auto()
@@ -25,3 +26,4 @@ class SoundAlert(Enum):
     RAID = auto()
     RANDOM_FROM_DIRECTORY = auto()
     SUBSCRIBE = auto()
+    TNT = auto()

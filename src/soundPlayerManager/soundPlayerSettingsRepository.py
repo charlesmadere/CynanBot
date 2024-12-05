@@ -52,6 +52,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Click Navigation.mp3'
                 )
 
+            case SoundAlert.JACKPOT:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'jackpotFilePath',
+                    fallback = 'Jackpot.mp3'
+                )
+
             case SoundAlert.POINT_REDEMPTION_01:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
@@ -176,6 +183,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     d = jsonContents,
                     key = 'subscribeFilePath',
                     fallback = 'Subscribe Alert.mp3'
+                )
+
+            case SoundAlert.TNT:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'tntFilePath',
+                    fallback = 'TNT.mp3'
                 )
 
             case _:

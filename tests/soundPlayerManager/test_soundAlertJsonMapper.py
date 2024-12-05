@@ -29,6 +29,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('')
         assert result is None
 
+    def test_parseSoundAlert_withJackpotString(self):
+        result = self.jsonMapper.parseSoundAlert('jackpot')
+        assert result is SoundAlert.JACKPOT
+
     def test_parseSoundAlert_withNone(self):
         result = self.jsonMapper.parseSoundAlert(None)
         assert result is None
@@ -108,6 +112,10 @@ class TestSoundAlertJsonMapper:
     def test_parseSoundAlert_withSubscribeString(self):
         result = self.jsonMapper.parseSoundAlert('subscribe')
         assert result is SoundAlert.SUBSCRIBE
+
+    def test_parseSoundAlert_withTntString(self):
+        result = self.jsonMapper.parseSoundAlert('tnt')
+        assert result is SoundAlert.TNT
 
     def test_parseSoundAlert_withWhitespaceString(self):
         result = self.jsonMapper.parseSoundAlert(' ')

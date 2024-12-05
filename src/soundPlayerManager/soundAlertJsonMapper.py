@@ -26,6 +26,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'bean': return SoundAlert.BEAN
             case 'cheer': return SoundAlert.CHEER
             case 'click_navigation': return SoundAlert.CLICK_NAVIGATION
+            case 'jackpot': return SoundAlert.JACKPOT
             case 'point_redemption_01': return SoundAlert.POINT_REDEMPTION_01
             case 'point_redemption_02': return SoundAlert.POINT_REDEMPTION_02
             case 'point_redemption_03': return SoundAlert.POINT_REDEMPTION_03
@@ -45,6 +46,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'raid': return SoundAlert.RAID
             case 'random_from_directory': return SoundAlert.RANDOM_FROM_DIRECTORY
             case 'subscribe': return SoundAlert.SUBSCRIBE
+            case 'tnt': return SoundAlert.TNT
             case _:
                 self.__timber.log('SoundAlertJsonMapper', f'Encountered unknown SoundAlert value: \"{jsonString}\"')
                 return None
