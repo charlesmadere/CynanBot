@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..ttsEvent import TtsEvent
+from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -165,3 +166,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         )
 
         self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.TTS_MONSTER
