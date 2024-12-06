@@ -11,6 +11,7 @@ from .decTalkFileManagerInterface import DecTalkFileManagerInterface
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
+from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
@@ -123,15 +124,15 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         decTalkProcess = self.__decTalkProcess
         return self.__isLoadingOrPlaying or decTalkProcess is not None
 
-    async def playTtsEvent(self, event: TtsEvent) -> bool:
+    async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isEnabled():
-            return False
+            return
         elif await self.isPlaying():
             self.__timber.log('DecTalkManager', f'There is already an ongoing DecTalk event!')
-            return False
+            return
 
         self.__isLoadingOrPlaying = True
         fileName = await self.__processTtsEvent(event)
@@ -139,14 +140,12 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
             self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to temporary file ({event=}) ({fileName=})')
             self.__isLoadingOrPlaying = False
-            return False
+            return
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
         await self.__executeTts(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
-
         self.__isLoadingOrPlaying = False
-        return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__decTalkMessageCleaner.clean(event.message)
@@ -170,3 +169,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
         if decTalkProcess is not None:
             await self.__killDecTalkProcess(decTalkProcess)
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.DEC_TALK

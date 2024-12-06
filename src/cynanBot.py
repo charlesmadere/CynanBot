@@ -188,8 +188,8 @@ from .trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryIn
 from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
+from .tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .tts.ttsJsonMapperInterface import TtsJsonMapperInterface
-from .tts.ttsManagerInterface import TtsManagerInterface
 from .tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
@@ -279,6 +279,7 @@ class CynanBot(
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         cheerActionsWizard: CheerActionsWizardInterface | None,
+        compositeTtsManager: CompositeTtsManagerInterface,
         crowdControlActionHandler: CrowdControlActionHandler | None,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
         crowdControlMachine: CrowdControlMachineInterface | None,
@@ -340,7 +341,6 @@ class CynanBot(
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
         ttsJsonMapper: TtsJsonMapperInterface | None,
-        ttsManager: TtsManagerInterface | None,
         ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
@@ -436,6 +436,8 @@ class CynanBot(
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cheerActionsWizard is not None and not isinstance(cheerActionsWizard, CheerActionsWizardInterface):
             raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
+        elif not isinstance(compositeTtsManager, CompositeTtsManagerInterface):
+            raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
         elif crowdControlActionHandler is not None and not isinstance(crowdControlActionHandler, CrowdControlActionHandler):
             raise TypeError(f'crowdControlActionHandler argument is malformed: \"{crowdControlActionHandler}\"')
         elif crowdControlIdGenerator is not None and not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
@@ -556,8 +558,6 @@ class CynanBot(
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
         elif ttsJsonMapper is not None and not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif ttsMonsterApiTokensRepository is not None and not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
@@ -667,6 +667,7 @@ class CynanBot(
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
+        self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManager, timber)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
 
@@ -827,11 +828,6 @@ class CynanBot(
             self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(cheerActionHelper, timber, twitchUtils, usersRepository)
-
-        if ttsManager is None:
-            self.__skipTtsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, timber, ttsManager)
 
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()

@@ -115,6 +115,8 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
+from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
 from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -648,6 +650,13 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
 )
 
 
+################################
+## TTS initialization section ##
+################################
+
+compositeTtsManager: CompositeTtsManagerInterface = StubCompositeTtsManager()
+
+
 ##################################################
 ## Stream Alerts Manager initialization section ##
 ##################################################
@@ -782,6 +791,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = None,
     cheerActionsRepository = None,
     cheerActionsWizard = None,
+    compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = None,
     crowdControlIdGenerator = None,
     crowdControlMachine = None,
@@ -843,7 +853,6 @@ cynanBot = CynanBot(
     trollmojiHelper = None,
     trollmojiSettingsRepository = None,
     ttsJsonMapper = None,
-    ttsManager = None,
     ttsMonsterApiTokensRepository = None,
     ttsMonsterKeyAndUserIdRepository = None,
     ttsMonsterTtsManager = None,

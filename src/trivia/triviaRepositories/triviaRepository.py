@@ -4,6 +4,8 @@ import random
 import traceback
 from queue import SimpleQueue
 
+from frozendict import frozendict
+
 from .bongoTriviaQuestionRepository import BongoTriviaQuestionRepository
 from .funtoonTriviaQuestionRepository import FuntoonTriviaQuestionRepository
 from .glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
@@ -153,7 +155,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__triviaRetrySleepTimeSeconds: float = triviaRetrySleepTimeSeconds
 
         self.__isSpoolerStarted: bool = False
-        self.__triviaSourceToRepositoryMap: dict[TriviaSource, TriviaQuestionRepositoryInterface | None] = self.__createTriviaSourceToRepositoryMap()
+        self.__triviaSourceToRepositoryMap: frozendict[TriviaSource, TriviaQuestionRepositoryInterface | None] = self.__createTriviaSourceToRepositoryMap()
         self.__superTriviaQuestionSpool: SimpleQueue[QuestionAnswerTriviaQuestion] = SimpleQueue()
         self.__triviaQuestionSpool: SimpleQueue[AbsTriviaQuestion] = SimpleQueue()
         self.__twitchChannelId: str | None = None
@@ -194,7 +196,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         return randomlyChosenTriviaRepository
 
-    def __createTriviaSourceToRepositoryMap(self) -> dict[TriviaSource, TriviaQuestionRepositoryInterface | None]:
+    def __createTriviaSourceToRepositoryMap(self) -> frozendict[TriviaSource, TriviaQuestionRepositoryInterface | None]:
         triviaSourceToRepositoryMap: dict[TriviaSource, TriviaQuestionRepositoryInterface | None] = {
             TriviaSource.BONGO: self.__bongoTriviaQuestionRepository,
             TriviaSource.FUNTOON: self.__funtoonTriviaQuestionRepository,
@@ -213,9 +215,9 @@ class TriviaRepository(TriviaRepositoryInterface):
         }
 
         if len(triviaSourceToRepositoryMap.keys()) != len(TriviaSource):
-            raise RuntimeError(f'triviaSourceToRepositoryMap is missing some members of TriviaSource!')
+            raise RuntimeError(f'triviaSourceToRepositoryMap is missing some members of TriviaSource! ({triviaSourceToRepositoryMap=})')
 
-        return triviaSourceToRepositoryMap
+        return frozendict(triviaSourceToRepositoryMap)
 
     async def __getTriviaSource(self, triviaFetchOptions: TriviaFetchOptions) -> TriviaQuestionRepositoryInterface:
         if triviaFetchOptions.requiredTriviaSource is not None:
@@ -359,16 +361,36 @@ class TriviaRepository(TriviaRepositoryInterface):
         return twitchChannelId
 
     async def __isGlacialTriviaQuestionRepositoryAvailable(self) -> bool:
-        return self.__glacialTriviaQuestionRepository is not None
+        glacialTriviaQuestionRepository = self.__glacialTriviaQuestionRepository
+
+        if glacialTriviaQuestionRepository is None:
+            return False
+
+        return await glacialTriviaQuestionRepository.hasQuestionSetAvailable()
 
     async def __isJServiceTriviaQuestionRepositoryAvailable(self) -> bool:
-        return self.__jServiceTriviaQuestionRepository is not None
+        jServiceTriviaQuestionRepository = self.__jServiceTriviaQuestionRepository
+
+        if jServiceTriviaQuestionRepository is None:
+            return False
+
+        return await jServiceTriviaQuestionRepository.hasQuestionSetAvailable()
 
     async def __isLotrTriviaQuestionRepositoryAvailable(self) -> bool:
-        return self.__lotrTriviaQuestionRepository is not None
+        lotrTriviaQuestionRepository = self.__lotrTriviaQuestionRepository
+
+        if lotrTriviaQuestionRepository is None:
+            return False
+
+        return await lotrTriviaQuestionRepository.hasQuestionSetAvailable()
 
     async def __isQuizApiTriviaQuestionRepositoryAvailable(self) -> bool:
-        return self.__quizApiTriviaQuestionRepository is not None
+        quizApiTriviaQuestionRepository = self.__quizApiTriviaQuestionRepository
+
+        if quizApiTriviaQuestionRepository is None:
+            return False
+
+        return await quizApiTriviaQuestionRepository.hasQuestionSetAvailable()
 
     async def __retrieveSpooledTriviaQuestion(
         self,

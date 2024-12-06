@@ -321,6 +321,8 @@ from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
+from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
+from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
 from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
@@ -1429,6 +1431,13 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = StubSoundPla
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
 
 
+################################
+## TTS initialization section ##
+################################
+
+compositeTtsManager: CompositeTtsManagerInterface = StubCompositeTtsManager()
+
+
 ##################################################
 ## Stream Alerts Manager initialization section ##
 ##################################################
@@ -1747,6 +1756,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = None,
     crowdControlIdGenerator = None,
     crowdControlMachine = None,
@@ -1807,7 +1817,6 @@ cynanBot = CynanBot(
     triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
-    ttsManager = None,
     ttsJsonMapper = None,
     ttsMonsterApiTokensRepository = None,
     ttsMonsterKeyAndUserIdRepository = None,

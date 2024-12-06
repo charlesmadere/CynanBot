@@ -335,7 +335,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'george washington'
         if word == 'jakob':
             yield 'jacob'
-        if word in ('jo', 'joey', 'josef', 'joseph'):
+        if word in ('jo', 'joey', 'josef', 'joseph', 'josephine'):
             yield 'joe'
         if word in ('jon', 'jhon'):
             yield 'john'
@@ -753,7 +753,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'www':
             yield 'world wide web'
 
-        # measurements (imperial and metric)
+        # units and measurements (imperial and metric)
         if word == 'atm':
             yield 'atmospheres'
         if word == 'bin':
@@ -820,9 +820,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'l':
             yield 'liter'
             yield 'liters'
+        if word == 'lat':
+            yield 'latitude'
         if word in ('lb', 'lbs'):
             yield 'pound'
             yield 'pounds'
+        if word in ('lon', 'long'):
+            yield 'longitude'
         if word == 'm':
             yield 'meter'
             yield 'minute'

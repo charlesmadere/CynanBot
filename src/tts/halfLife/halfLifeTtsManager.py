@@ -3,6 +3,7 @@ from frozenlist import FrozenList
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
+from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
@@ -70,15 +71,15 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
         return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
 
-    async def playTtsEvent(self, event: TtsEvent) -> bool:
+    async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isEnabled():
-            return False
+            return
         elif await self.isPlaying():
             self.__timber.log('HalfLifeTtsManager', f'There is already an ongoing Half Life TTS event!')
-            return False
+            return
 
         self.__isLoading = True
         fileNames = await self.__processTtsEvent(event)
@@ -86,13 +87,11 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         if fileNames is None or len(fileNames) == 0:
             self.__timber.log('HalfLifeTtsManager', f'Failed to find any TTS files ({event=}) ({fileNames=})')
             self.__isLoading = False
-            return False
+            return
 
         self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileNames = fileNames)
-
+        await self.__executeTts(fileNames)
         self.__isLoading = False
-        return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
         message = await self.__halfLifeMessageCleaner.clean(event.message)
@@ -130,3 +129,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         )
 
         self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.HALF_LIFE

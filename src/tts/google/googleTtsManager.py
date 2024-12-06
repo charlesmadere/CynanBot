@@ -9,6 +9,7 @@ from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
+from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...google.googleApiServiceInterface import GoogleApiServiceInterface
 from ...google.googleTextSynthesisInput import GoogleTextSynthesisInput
@@ -87,15 +88,15 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
         return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
 
-    async def playTtsEvent(self, event: TtsEvent) -> bool:
+    async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isEnabled():
-            return False
+            return
         elif await self.isPlaying():
             self.__timber.log('GoogleTtsManager', f'There is already an ongoing Google TTS event!')
-            return False
+            return
 
         self.__isLoading = True
         fileName = await self.__processTtsEvent(event)
@@ -103,13 +104,11 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
             self.__timber.log('GoogleTtsManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
             self.__isLoading = False
-            return False
+            return
 
         self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        await self.__executeTts(fileName = fileName)
-
+        await self.__executeTts(fileName)
         self.__isLoading = False
-        return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__googleTtsMessageCleaner.clean(event.message)
@@ -117,7 +116,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         fullMessage: str
 
         if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} + {message}'
+            fullMessage = f'{donationPrefix} {message}'
         elif utils.isValidStr(message):
             fullMessage = message
         elif utils.isValidStr(donationPrefix):
@@ -178,3 +177,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         )
 
         self.__timber.log('GoogleTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.GOOGLE

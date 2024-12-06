@@ -4,6 +4,7 @@ from .streamElementsFileManagerInterface import StreamElementsFileManagerInterfa
 from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
+from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -77,15 +78,15 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
 
-    async def playTtsEvent(self, event: TtsEvent) -> bool:
+    async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isEnabled():
-            return False
+            return
         elif await self.isPlaying():
             self.__timber.log('StreamElementsTtsManager', f'There is already an ongoing Stream Elements TTS event!')
-            return False
+            return
 
         self.__isLoading = True
         fileName = await self.__processTtsEvent(event)
@@ -93,13 +94,11 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
             self.__timber.log('StreamElementsTtsManager', f'Failed to write TTS speech in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
             self.__isLoading = False
-            return False
+            return
 
         self.__timber.log('StreamElementsTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        await self.__executeTts(fileName = fileName)
-
+        await self.__executeTts(fileName)
         self.__isLoading = False
-        return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__streamElementsMessageCleaner.clean(event.message)
@@ -138,3 +137,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         )
 
         self.__timber.log('StreamElementsTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.STREAM_ELEMENTS

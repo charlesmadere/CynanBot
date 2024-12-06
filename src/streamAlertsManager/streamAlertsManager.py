@@ -12,7 +12,7 @@ from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..timber.timberInterface import TimberInterface
-from ..tts.ttsManagerInterface import TtsManagerInterface
+from ..tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 
 
 class StreamAlertsManager(StreamAlertsManagerInterface):
@@ -20,23 +20,23 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        compositeTtsManager: CompositeTtsManagerInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
-        ttsManager: TtsManagerInterface,
         queueSleepTimeSeconds: float = 0.25,
         queueTimeoutSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(compositeTtsManager, CompositeTtsManagerInterface):
+            raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
             raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsManager, TtsManagerInterface):
-            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 0.10 or queueSleepTimeSeconds > 8:
@@ -47,10 +47,10 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__compositeTtsManager: CompositeTtsManagerInterface = compositeTtsManager
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = streamAlertsSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__ttsManager: TtsManagerInterface = ttsManager
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
@@ -79,11 +79,11 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
 
         if (currentAlert.alertState is StreamAlertState.NOT_STARTED or currentAlert.alertState is StreamAlertState.TTS_STARTED or currentAlert.alertState is StreamAlertState.SOUND_FINISHED) and ttsEvent is not None:
-            if await self.__ttsManager.isPlaying():
+            if await self.__compositeTtsManager.isPlaying():
                 return True
             elif currentAlert.alertState is StreamAlertState.TTS_STARTED:
                 currentAlert.setAlertState(StreamAlertState.TTS_FINISHED)
-            elif await self.__ttsManager.playTtsEvent(ttsEvent):
+            elif await self.__compositeTtsManager.playTtsEvent(ttsEvent):
                 currentAlert.setAlertState(StreamAlertState.TTS_STARTED)
                 return True
             else:

@@ -1,24 +1,18 @@
 from abc import ABC, abstractmethod
 
 from .ttsEvent import TtsEvent
-from .ttsProvider import TtsProvider
 
 
-class TtsManagerInterface(ABC):
+class CompositeTtsManagerInterface(ABC):
 
     @abstractmethod
     async def isPlaying(self) -> bool:
         pass
 
     @abstractmethod
-    async def playTtsEvent(self, event: TtsEvent):
+    async def playTtsEvent(self, event: TtsEvent) -> bool:
         pass
 
     @abstractmethod
     async def stopTtsEvent(self):
-        pass
-
-    @property
-    @abstractmethod
-    def ttsProvider(self) -> TtsProvider:
         pass

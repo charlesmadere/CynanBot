@@ -1,8 +1,8 @@
+from ..compositeTtsManagerInterface import CompositeTtsManagerInterface
 from ..ttsEvent import TtsEvent
-from ..ttsManagerInterface import TtsManagerInterface
 
 
-class StubTtsManager(TtsManagerInterface):
+class StubCompositeTtsManager(CompositeTtsManagerInterface):
 
     async def isPlaying(self) -> bool:
         # this method is intentionally empty

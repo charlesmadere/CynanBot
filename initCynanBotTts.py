@@ -210,6 +210,8 @@ from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
+from src.tts.compositeTtsManager import CompositeTtsManager
+from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
@@ -233,8 +235,6 @@ from src.tts.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.ttsManager import TtsManager
-from src.tts.ttsManagerInterface import TtsManagerInterface
 from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
 from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
@@ -909,6 +909,39 @@ googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
+    settingsJsonReader = JsonFileReader('halfLifeTtsSettingsRepository.json'),
+    halfLifeJsonParser = halfLifeJsonParser
+)
+
+halfLifeService: HalfLifeServiceInterface = HalfLifeService(
+    timber = timber
+)
+
+halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
+    halfLifeJsonParser = halfLifeJsonParser
+)
+
+halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
+    halfLifeService = halfLifeService,
+    halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
+    halfLifeSettingsRepository = halfLifeSettingsRepository
+)
+
+halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
+halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
+    halfLifeHelper = halfLifeHelper,
+    halfLifeMessageCleaner = halfLifeMessageCleaner,
+    halfLifeSettingsRepository = halfLifeSettingsRepository,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsCommandBuilder = ttsCommandBuilder
+)
+
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
     timber = timber
@@ -1042,40 +1075,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManage
     twitchUtils = twitchUtils
 )
 
-halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
-    settingsJsonReader = JsonFileReader('halfLifeTtsSettingsRepository.json'),
-    halfLifeJsonParser = halfLifeJsonParser
-)
-
-halfLifeService: HalfLifeServiceInterface = HalfLifeService(
-    timber = timber
-)
-
-halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
-    halfLifeJsonParser = halfLifeJsonParser
-)
-
-halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
-    halfLifeService = halfLifeService,
-    halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
-    halfLifeSettingsRepository = halfLifeSettingsRepository
-)
-
-halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
-    halfLifeHelper = halfLifeHelper,
-    halfLifeMessageCleaner = halfLifeMessageCleaner,
-    halfLifeSettingsRepository = halfLifeSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsCommandBuilder = ttsCommandBuilder
-)
-
-ttsManager: TtsManagerInterface | None = TtsManager(
+compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
@@ -1122,19 +1122,20 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None
 )
 
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
-mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
-    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    anivSettingsRepository = anivSettingsRepository,
-    anivUserIdProvider = anivUserIdProvider,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchHandleProvider = authRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchTokensRepository = twitchTokensRepository,
-    twitchUtils = twitchUtils
-)
+if mostRecentAnivMessageRepository is not None:
+    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+        anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+        anivSettingsRepository = anivSettingsRepository,
+        anivUserIdProvider = anivUserIdProvider,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        trollmojiHelper = trollmojiHelper,
+        twitchHandleProvider = authRepository,
+        twitchTimeoutHelper = twitchTimeoutHelper,
+        twitchTokensRepository = twitchTokensRepository,
+        twitchUtils = twitchUtils
+    )
 
 
 ##########################################
@@ -1203,10 +1204,10 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 
 streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
+    compositeTtsManager = compositeTtsManager,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
-    timber = timber,
-    ttsManager = ttsManager
+    timber = timber
 )
 
 
@@ -1494,6 +1495,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = crowdControlActionHandler,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
@@ -1555,7 +1557,6 @@ cynanBot = CynanBot(
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsJsonMapper = ttsJsonMapper,
-    ttsManager = ttsManager,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
     ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
     ttsMonsterTtsManager = ttsMonsterTtsManager,
