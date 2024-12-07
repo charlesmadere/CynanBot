@@ -48,15 +48,15 @@ class TwitchPollHandler(AbsTwitchPollHandler):
     ):
         twitchChannelProvider = self.__twitchChannelProvider
 
-        if twitchChannelProvider is None:
+        if not user.isNotifyOfPollResultsEnabled:
+            return
+        elif twitchChannelProvider is None:
             return
         elif len(pollChoices) == 0:
             return
         elif pollStatus is not TwitchPollStatus.COMPLETED:
             return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
-            return
-        elif not user.isNotifyOfPollResultsEnabled:
             return
 
         largestVoteCount = utils.getIntMinSafeSize()
