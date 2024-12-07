@@ -18,6 +18,7 @@ from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.twitchPollStatus import TwitchPollStatus
 from src.twitch.api.twitchPredictionStatus import TwitchPredictionStatus
+from src.twitch.api.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from src.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from src.twitch.api.twitchStreamType import TwitchStreamType
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
@@ -463,6 +464,41 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parsePredictionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parsePredictionStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withCanceled(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus('canceled')
+        assert result is TwitchRewardRedemptionStatus.CANCELED
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withFulfilledString(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus('fulfilled')
+        assert result is TwitchRewardRedemptionStatus.FULFILLED
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withEmptyString(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withNone(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withUnfulfilledString(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus('unfulfilled')
+        assert result is TwitchRewardRedemptionStatus.UNFULFILLED
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withUnknownString(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus('unknown')
+        assert result is TwitchRewardRedemptionStatus.UNKNOWN
+
+    @pytest.mark.asyncio
+    async def test_parseRewardRedemptionStatus_withWhitespaceString(self):
+        result = await self.jsonMapper.parseRewardRedemptionStatus(' ')
         assert result is None
 
     @pytest.mark.asyncio

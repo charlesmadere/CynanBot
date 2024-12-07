@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 from typing import Any
 
-from .websocket.twitchWebsocketCondition import \
-    TwitchWebsocketCondition
-from .websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
-from .websocket.twitchWebsocketTransport import \
-    TwitchWebsocketTransport
+from .websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from .websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
 from ...misc import utils as utils
 
 

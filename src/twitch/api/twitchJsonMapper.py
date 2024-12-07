@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Any
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .twitchApiScope import TwitchApiScope
@@ -20,6 +21,7 @@ from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchPredictionStatus import TwitchPredictionStatus
+from .twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -324,7 +326,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             tier = await self.parseSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
 
         return TwitchEmoteDetails(
-            images = images,
+            images = frozendict(images),
             formats = frozenset(formats),
             scales = frozenset(scales),
             themeModes = frozenset(themeModes),
@@ -418,9 +420,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'bitstier': return TwitchEmoteType.BITS
             case 'follower': return TwitchEmoteType.FOLLOWER
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteType value: \"{emoteType}\"')
-                return None
+            case _: return None
 
     async def parseOutcomeColor(
         self,
@@ -434,9 +434,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match outcomeColor:
             case 'blue': return TwitchOutcomeColor.BLUE
             case 'pink': return TwitchOutcomeColor.PINK
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchOutcomeColor value: \"{outcomeColor}\"')
-                return None
+            case _: return None
 
     async def parsePaginationResponse(
         self,
@@ -469,9 +467,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'invalid': return TwitchPollStatus.INVALID
             case 'moderated': return TwitchPollStatus.MODERATED
             case 'terminated': return TwitchPollStatus.TERMINATED
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchPollStatus value: \"{pollStatus}\"')
-                return None
+            case _: return None
 
     async def parsePredictionStatus(
         self,
@@ -487,9 +483,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'canceled': return TwitchPredictionStatus.CANCELED
             case 'locked': return TwitchPredictionStatus.LOCKED
             case 'resolved': return TwitchPredictionStatus.RESOLVED
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchPredictionStatus value: \"{predictionStatus}\"')
-                return None
+            case _: return None
+
+    async def parseRewardRedemptionStatus(
+        self,
+        rewardRedemptionStatus: str | Any | None
+    ) -> TwitchRewardRedemptionStatus | None:
+        if not utils.isValidStr(rewardRedemptionStatus):
+            return None
+
+        rewardRedemptionStatus = rewardRedemptionStatus.lower()
+
+        match rewardRedemptionStatus:
+            case 'canceled': return TwitchRewardRedemptionStatus.CANCELED
+            case 'fulfilled': return TwitchRewardRedemptionStatus.FULFILLED
+            case 'unfulfilled': return TwitchRewardRedemptionStatus.UNFULFILLED
+            case 'unknown': return TwitchRewardRedemptionStatus.UNKNOWN
+            case _: return None
 
     async def parseSendChatDropReason(
         self,

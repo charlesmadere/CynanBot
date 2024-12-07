@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from frozendict import frozendict
+
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
@@ -9,7 +11,7 @@ from .twitchThemeMode import TwitchThemeMode
 
 @dataclass(frozen = True)
 class TwitchEmoteDetails:
-    images: dict[TwitchEmoteImageScale, str]
+    images: frozendict[TwitchEmoteImageScale, str]
     formats: frozenset[TwitchEmoteImageFormat]
     scales: frozenset[TwitchEmoteImageScale]
     themeModes: frozenset[TwitchThemeMode]

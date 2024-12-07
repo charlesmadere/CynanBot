@@ -512,7 +512,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         predictionStatus: TwitchPredictionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             pollStatus = await self.__twitchJsonMapper.parsePollStatus(utils.getStrFromDict(eventJson, 'status'))
-            rewardRedemptionStatus = TwitchRewardRedemptionStatus.fromStr(utils.getStrFromDict(eventJson, 'status'))
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
             predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(utils.getStrFromDict(eventJson, 'status'))
 
         communitySubGift: TwitchCommunitySubGift | None = None

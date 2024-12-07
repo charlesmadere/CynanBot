@@ -16,6 +16,7 @@ from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
 from .twitchPredictionStatus import TwitchPredictionStatus
+from .twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from .twitchSendChatDropReason import TwitchSendChatDropReason
 from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -126,6 +127,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         predictionStatus: str | Any | None
     ) -> TwitchPredictionStatus | None:
+        pass
+
+    @abstractmethod
+    async def parseRewardRedemptionStatus(
+        self,
+        rewardRedemptionStatus: str | Any | None
+    ) -> TwitchRewardRedemptionStatus | None:
         pass
 
     @abstractmethod

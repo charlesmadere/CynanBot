@@ -42,25 +42,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
     async def __notifyChatOfPollResults(
         self,
         pollChoices: FrozenList[TwitchPollChoice],
-        broadcasterUserId: str,
-        title: str,
         pollStatus: TwitchPollStatus | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
-        if not isinstance(pollChoices, FrozenList):
-            raise TypeError(f'pollChoices argument is malformed: \"{pollChoices}\"')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(title):
-            raise TypeError(f'title argument is malformed: \"{title}\"')
-        elif pollStatus is not None and not isinstance(pollStatus, TwitchPollStatus):
-            raise TypeError(f'pollStatus argument is malformed: \"{pollStatus}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         twitchChannelProvider = self.__twitchChannelProvider
 
         if twitchChannelProvider is None:
@@ -97,7 +82,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             return
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        votesString = locale.format_string("%d", winningPollChoices[0].votes, grouping = True)
+        votesString = winningPollChoices[0].votesStr
 
         votesPlurality: str
         if winningPollChoices[0].votes == 1:
@@ -164,8 +149,6 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         await self.__notifyChatOfPollResults(
             pollChoices = choices,
-            broadcasterUserId = broadcasterUserId,
-            title = title,
             pollStatus = event.pollStatus,
             subscriptionType = subscriptionType,
             user = user
@@ -179,17 +162,6 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
-        if not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(title):
-            raise TypeError(f'title argument is malformed: \"{title}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         if not user.isTtsEnabled:
             return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
