@@ -1,18 +1,26 @@
 from abc import ABC, abstractmethod
 
+from .crowdControlAutomatorAddResult import CrowdControlAutomatorAddResult
 from .crowdControlAutomatorData import CrowdControlAutomatorData
+from .crowdControlAutomatorRemovalResult import CrowdControlAutomatorRemovalResult
 
 
 class CrowdControlAutomatorInterface(ABC):
 
     @abstractmethod
-    async def applyGameShuffleAutomator(self, automatorData: CrowdControlAutomatorData):
+    async def addGameShuffleAutomator(
+        self,
+        automatorData: CrowdControlAutomatorData
+    ) -> CrowdControlAutomatorAddResult:
+        pass
+
+    @abstractmethod
+    async def removeGameShuffleAutomator(
+        self,
+        twitchChannelId: str
+    ) -> CrowdControlAutomatorRemovalResult:
         pass
 
     @abstractmethod
     def start(self):
-        pass
-
-    @abstractmethod
-    async def stopGameShuffleAutomator(self, twitchChannelId: str):
         pass

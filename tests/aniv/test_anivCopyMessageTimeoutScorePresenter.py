@@ -23,4 +23,4 @@ class TestAnivCopyMessageTimeoutScorePresenter:
         )
 
         printOut = await self.presenter.toString(score)
-        assert printOut == f'@{score.chatterUserName} has no aniv timeouts'
+        assert printOut == f'ⓘ @{score.chatterUserName} has no aniv timeouts'
