@@ -217,7 +217,7 @@ networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
-    settingsJsonReader = JsonFileReader('generalSettingsRepository.json'),
+    settingsJsonReader = JsonFileReader('../config/generalSettingsRepository.json'),
     networkJsonMapper = networkJsonMapper,
     storageJsonMapper = storageJsonMapper
 )
@@ -230,7 +230,7 @@ psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
         psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader('psqlCredentials.json')
+            credentialsJsonReader = JsonFileReader('../config/psqlCredentials.json')
         )
 
         backingDatabase = BackingPsqlDatabase(
@@ -269,7 +269,7 @@ match generalSettingsSnapshot.requireNetworkClientType():
         raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
 
 authRepository = AuthRepository(
-    authJsonReader = JsonFileReader('authRepository.json')
+    authJsonReader = JsonFileReader('../config/authRepository.json')
 )
 
 twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
@@ -307,7 +307,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('../config/twitchTokensRepositorySeedFile.json')
 )
 
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
@@ -435,7 +435,7 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('funtoonTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('../config/funtoonTokensRepositorySeedFile.json')
 )
 
 funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
@@ -632,7 +632,7 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
-    settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
 )
 
 soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
@@ -673,7 +673,7 @@ cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
 )
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('cheerActionSettings.json')
+    settingsJsonReader = JsonFileReader('../config/cheerActionSettings.json')
 )
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(

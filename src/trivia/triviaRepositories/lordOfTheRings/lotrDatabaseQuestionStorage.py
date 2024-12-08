@@ -20,7 +20,7 @@ class LotrDatabaseQuestionStorage(LotrDatabaseQuestionStorageInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        databaseFile: str = 'lotrTriviaQuestionsDatabase.sqlite'
+        databaseFile: str = '../db/lotrTriviaQuestionsDatabase.sqlite'
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

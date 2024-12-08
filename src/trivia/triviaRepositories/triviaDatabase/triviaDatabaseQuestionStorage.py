@@ -28,7 +28,7 @@ class TriviaDatabaseQuestionStorage(TriviaDatabaseQuestionStorageInterface):
         timber: TimberInterface,
         triviaDifficultyParser: TriviaDifficultyParserInterface,
         triviaQuestionTypeParser: TriviaQuestionTypeParserInterface,
-        databaseFile: str = 'triviaDatabaseTriviaQuestionRepository.sqlite'
+        databaseFile: str = '../db/triviaDatabaseTriviaQuestionRepository.sqlite'
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

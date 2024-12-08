@@ -24,7 +24,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = 'wwtbamTriviaQuestionDatabase.sqlite'
+        triviaDatabaseFile: str = '../db/wwtbamTriviaQuestionDatabase.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
 

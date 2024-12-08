@@ -24,7 +24,7 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
         googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        directory: str = 'temp'
+        directory: str = '../temp'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')

@@ -23,7 +23,7 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
-        directory: str = 'temp',
+        directory: str = '../temp',
         fileExtension: str = 'wav'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):

@@ -25,7 +25,7 @@ class OpenTriviaQaQuestionStorage(OpenTriviaQaQuestionStorageInterface):
         self,
         questionTypeParser: OpenTriviaQaQuestionTypeParserInterface,
         timber: TimberInterface,
-        databaseFile: str = 'openTriviaQaTriviaQuestionDatabase.sqlite'
+        databaseFile: str = '../db/openTriviaQaTriviaQuestionDatabase.sqlite'
     ):
         if not isinstance(questionTypeParser, OpenTriviaQaQuestionTypeParserInterface):
             raise TypeError(f'questionTypeParser argument is malformed: \"{questionTypeParser}\"')

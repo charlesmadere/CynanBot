@@ -45,7 +45,7 @@ class GlacialTriviaQuestionRepository(
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        triviaDatabaseFile: str = 'glacialTriviaQuestionsDatabase.sqlite'
+        triviaDatabaseFile: str = '../db/glacialTriviaQuestionsDatabase.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
 

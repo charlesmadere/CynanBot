@@ -164,7 +164,7 @@ timber: TimberInterface = Timber(
 )
 
 authRepository = AuthRepository(
-    authJsonReader = JsonFileReader('authRepository.json')
+    authJsonReader = JsonFileReader('../config/authRepository.json')
 )
 
 backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)

@@ -83,14 +83,14 @@ triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler
 )
 
 authRepository = AuthRepository(
-    authJsonReader = JsonFileReader('authRepository.json')
+    authJsonReader = JsonFileReader('../config/authRepository.json')
 )
 
 networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
-    settingsJsonReader = JsonFileReader('generalSettingsRepository.json'),
+    settingsJsonReader = JsonFileReader('../config/generalSettingsRepository.json'),
     networkJsonMapper = networkJsonMapper,
     storageJsonMapper = storageJsonMapper
 )
@@ -103,7 +103,7 @@ match generalSettingsSnapshot.requireDatabaseType():
         backingDatabase = BackingPsqlDatabase(
             eventLoop = eventLoop,
             psqlCredentialsProvider = PsqlCredentialsProvider(
-                credentialsJsonReader = JsonFileReader('psqlCredentials.json')
+                credentialsJsonReader = JsonFileReader('../config/psqlCredentials.json')
             ),
             timber = timber
         )
@@ -173,7 +173,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('../config/twitchTokensRepositorySeedFile.json')
 )
 
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(

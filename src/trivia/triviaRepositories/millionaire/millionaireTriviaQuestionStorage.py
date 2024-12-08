@@ -19,7 +19,7 @@ class MillionaireTriviaQuestionStorage(MillionaireTriviaQuestionStorageInterface
     def __init__(
         self,
         timber: TimberInterface,
-        databaseFile: str = 'millionaireTriviaQuestionsDatabase.sqlite'
+        databaseFile: str = '../db/millionaireTriviaQuestionsDatabase.sqlite'
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

@@ -25,7 +25,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = 'triviaQuestionCompanyTriviaQuestionRepository.sqlite'
+        triviaDatabaseFile: str = '../db/triviaQuestionCompanyTriviaQuestionRepository.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
 

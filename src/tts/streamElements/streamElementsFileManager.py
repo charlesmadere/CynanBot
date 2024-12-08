@@ -19,7 +19,7 @@ class StreamElementsFileManager(StreamElementsFileManagerInterface):
         self,
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
-        directory: str = 'temp',
+        directory: str = '../temp',
         fileExtension: str = 'mp3'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):

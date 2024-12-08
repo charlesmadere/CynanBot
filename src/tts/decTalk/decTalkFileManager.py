@@ -19,7 +19,7 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
-        directory: str = 'temp'
+        directory: str = '../temp'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

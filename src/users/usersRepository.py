@@ -47,7 +47,7 @@ class UsersRepository(UsersRepositoryInterface):
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
         ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
-        usersFile: str = 'usersRepository.json'
+        usersFile: str = '../config/usersRepository.json'
     ):
         if not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
             raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
