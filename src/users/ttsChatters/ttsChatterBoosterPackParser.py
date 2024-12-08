@@ -55,6 +55,8 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
                 voice = ''
             case TtsProvider.HALF_LIFE:
                 voice = self.__halfLifeJsonParser.parseVoice(voiceStr)
+            case TtsProvider.SINGING_DEC_TALK:
+                voice = ''
             case TtsProvider.STREAM_ELEMENTS:
                 voice = self.__streamElementsJsonParser.parseVoice(voiceStr)
             case TtsProvider.TTS_MONSTER:

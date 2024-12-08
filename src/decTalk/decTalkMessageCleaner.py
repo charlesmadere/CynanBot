@@ -17,7 +17,8 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         self,
         emojiHelper: EmojiHelperInterface,
         timber: TimberInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
+        sing: bool = False
     ):
         if not isinstance(emojiHelper, EmojiHelperInterface):
             raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
@@ -25,6 +26,8 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif not isinstance(sing, bool):
+            raise TypeError(f'sing argument is malformed: \"{sing}\"')
 
         self.__emojiHelper: EmojiHelperInterface = emojiHelper
         self.__timber: TimberInterface = timber
@@ -37,6 +40,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
         # https://dectalk.github.io/dectalk/idh_ref_3_tone_table_2.htm
         self.__durationPitchRegEx: Pattern = re.compile(r'\[.*\<(\d+),?(\d+)?\>.*?]', re.IGNORECASE)
+        self.__sing = sing
 
     def __buildInlineCommandRegExes(self) -> FrozenList[Pattern]:
         inlineCommandRegExes: FrozenList[Pattern] = FrozenList()
@@ -141,17 +145,18 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = await self.__purgeInlineCommands(message)
-        if not utils.isValidStr(message):
-            return None
+        if not self.__sing:
+            message = await self.__purgeInlineCommands(message)
+            if not utils.isValidStr(message):
+                return None
 
-        message = await self.__purgeInputTones(message)
-        if not utils.isValidStr(message):
-            return None
+            message = await self.__purgeInputTones(message)
+            if not utils.isValidStr(message):
+                return None
 
-        message = await self.__purgeIllegalCharacters(message)
-        if not utils.isValidStr(message):
-            return None
+            message = await self.__purgeIllegalCharacters(message)
+            if not utils.isValidStr(message):
+                return None
 
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()

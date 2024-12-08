@@ -216,6 +216,7 @@ from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
 from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
+from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
 from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
 from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
@@ -863,10 +864,26 @@ decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+    emojiHelper = emojiHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository,
+    sing = True
+)
+
 decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
 decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
     decTalkVoiceMapper = decTalkVoiceMapper
+)
+
+singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
+    decTalkFileManager = decTalkFileManager,
+    decTalkMessageCleaner = singingDecTalkMessageCleaner,
+    decTalkVoiceChooser = decTalkVoiceChooser,
+    timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
@@ -1080,6 +1097,7 @@ compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
+    singingDecTalkTtsManager = singingDecTalkTtsManager,
     streamElementsTtsManager = streamElementsTtsManager,
     timber = timber,
     ttsMonsterTtsManager = ttsMonsterTtsManager,
