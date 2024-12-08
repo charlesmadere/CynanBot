@@ -10,5 +10,9 @@ class CrowdControlAutomatorInterface(ABC):
         pass
 
     @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
     async def stopGameShuffleAutomator(self, twitchChannelId: str):
         pass

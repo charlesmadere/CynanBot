@@ -35,10 +35,26 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
+        self.__isStarted: bool = False
+        self.__automatorData: dict[str, CrowdControlAutomatorData | None] = dict()
+
     async def applyGameShuffleAutomator(self, automatorData: CrowdControlAutomatorData):
         if not isinstance(automatorData, CrowdControlAutomatorData):
             raise TypeError(f'automatorData argument is malformed: \"{automatorData}\"')
 
+        # TODO
+        pass
+
+    def start(self):
+        if self.__isStarted:
+            self.__timber.log('CrowdControlAutomator', 'Not starting CrowdControlAutomator as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('CrowdControlAutomator', 'Starting CrowdControlAutomator...')
+        self.__backgroundTaskHelper.createTask(self.__startRefreshLoop())
+
+    async def __startRefreshLoop(self):
         # TODO
         pass
 
