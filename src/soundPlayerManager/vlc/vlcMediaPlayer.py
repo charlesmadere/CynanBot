@@ -70,7 +70,7 @@ class VlcMediaPlayer:
         if not utils.isValidStr(filePath):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
 
-        self.__mediaPlayer.set_media(filePath)
+        self.__mediaPlayer.set_media(vlc.Media(filePath))
 
     async def setVolume(self, volume: int) -> bool:
         if not utils.isValidInt(volume):
