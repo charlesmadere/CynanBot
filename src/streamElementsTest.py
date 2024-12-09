@@ -66,7 +66,6 @@ googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
 )
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonStaticReader(dict())
 )
 

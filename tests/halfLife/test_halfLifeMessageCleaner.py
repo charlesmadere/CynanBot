@@ -1,11 +1,7 @@
 import pytest
 
-from src.google.googleJsonMapper import GoogleJsonMapper
-from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
 from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
-from src.location.timeZoneRepository import TimeZoneRepository
-from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
@@ -17,15 +13,7 @@ class TestHalfLifeMessageCleaner:
 
     timber: TimberInterface = TimberStub()
 
-    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
-
-    googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-        timber = timber,
-        timeZoneRepository = timeZoneRepository
-    )
-
     ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-        googleJsonMapper = googleJsonMapper,
         settingsJsonReader = JsonStaticReader(dict())
     )
 
