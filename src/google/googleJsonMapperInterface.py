@@ -69,6 +69,13 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireVoiceAudioEncoding(
+        self,
+        jsonString: str | None
+    ) -> GoogleVoiceAudioEncoding:
+        pass
+
+    @abstractmethod
     async def parseVoiceGender(
         self,
         jsonString: str | None

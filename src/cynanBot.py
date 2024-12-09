@@ -30,6 +30,7 @@ from .chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatCommands.absChatCommand import AbsChatCommand
 from .chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from .chatCommands.addCrowdControlCheerActionChatCommand import AddCrowdControlCheerActionChatCommand
+from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from .chatCommands.addGameShuffleCheerActionChatCommand import AddGameShuffleCheerActionChatCommand
 from .chatCommands.addGlobalTriviaControllerCommand import AddGlobalTriviaControllerCommand
 from .chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
@@ -69,6 +70,7 @@ from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
+from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
@@ -99,6 +101,7 @@ from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCo
                        PkMonCommand, PkMoveCommand, RaceCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
                        StubCommand, SwQuoteCommand, TwitchInfoCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
+from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
@@ -281,6 +284,7 @@ class CynanBot(
         cheerActionsWizard: CheerActionsWizardInterface | None,
         compositeTtsManager: CompositeTtsManagerInterface,
         crowdControlActionHandler: CrowdControlActionHandler | None,
+        crowdControlAutomator: CrowdControlAutomatorInterface | None,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
         crowdControlMachine: CrowdControlMachineInterface | None,
         crowdControlMessageHandler: CrowdControlMessageHandler | None,
@@ -440,6 +444,8 @@ class CynanBot(
             raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
         elif crowdControlActionHandler is not None and not isinstance(crowdControlActionHandler, CrowdControlActionHandler):
             raise TypeError(f'crowdControlActionHandler argument is malformed: \"{crowdControlActionHandler}\"')
+        elif crowdControlAutomator is not None and not isinstance(crowdControlAutomator, CrowdControlAutomatorInterface):
+            raise TypeError(f'crowdControlAutomator argument is malformed: \"{crowdControlAutomator}\"')
         elif crowdControlIdGenerator is not None and not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
         elif crowdControlMachine is not None and not isinstance(crowdControlMachine, CrowdControlMachineInterface):
@@ -674,7 +680,7 @@ class CynanBot(
         if beanStatsPresenter is None or beanStatsRepository is None:
             self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, usersRepository)
+            self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -697,10 +703,14 @@ class CynanBot(
             self.__enableCheerActionCommand: AbsChatCommand = EnableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
-        if crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
+        if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
+            self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
             self.__crowdControlCommand: AbsChatCommand = StubChatCommand()
+            self.__removeGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
         else:
+            self.__addGameShuffleAutomatorCommand: AbsChatCommand = AddGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchUtils, usersRepository)
             self.__crowdControlCommand: AbsChatCommand = CrowdControlChatCommand(administratorProvider, crowdControlIdGenerator, crowdControlMachine, crowdControlUserInputUtils, timber, timeZoneRepository, twitchUtils, usersRepository)
+            self.__removeGameShuffleAutomatorCommand: AbsChatCommand = RemoveGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchUtils, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
@@ -1410,6 +1420,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGameShuffleCheerActionCommand.handleChatCommand(context)
 
+    @commands.command(name = 'addgameshuffleautomator')
+    async def command_addgameshuffleautomator(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addGameShuffleAutomatorCommand.handleChatCommand(context)
+
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1639,6 +1654,11 @@ class CynanBot(
     async def command_removebannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeBannedTriviaControllerCommand.handleChatCommand(context)
+
+    @commands.command(name = 'removegameshuffleautomator')
+    async def command_removegameshuffleautomator(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeGameShuffleAutomatorCommand.handleChatCommand(context)
 
     @commands.command(name = 'removeglobaltriviacontroller')
     async def command_removeglobaltriviacontroller(self, ctx: Context):

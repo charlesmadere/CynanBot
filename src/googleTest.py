@@ -13,6 +13,8 @@ from .google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from .google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from .google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from .google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from .google.settings.googleSettingsRepository import GoogleSettingsRepository
+from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from .location.timeZoneRepository import TimeZoneRepository
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .misc.backgroundTaskHelper import BackgroundTaskHelper
@@ -29,8 +31,6 @@ from .tts.google.googleTtsFileManager import GoogleTtsFileManager
 from .tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from .tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from .tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
-from .tts.ttsSettingsRepository import TtsSettingsRepository
-from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
 class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
@@ -94,7 +94,7 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
-ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
     googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonStaticReader(dict())
 )
@@ -102,8 +102,8 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    googleSettingsRepository = googleSettingsRepository,
+    timber = timber
 )
 
 googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
@@ -132,9 +132,9 @@ async def main():
     audioConfig = GoogleVoiceAudioConfig(
         pitch = None,
         speakingRate = None,
-        volumeGainDb = await ttsSettingsRepository.getGoogleVolumeGainDb(),
+        volumeGainDb = None,
         sampleRateHertz = None,
-        audioEncoding = await ttsSettingsRepository.getGoogleVoiceAudioEncoding()
+        audioEncoding = await googleSettingsRepository.getVoiceAudioEncoding()
     )
 
     request = GoogleTextSynthesizeRequest(

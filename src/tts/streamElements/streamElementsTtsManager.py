@@ -1,3 +1,5 @@
+import asyncio
+
 import aiofiles.ospath
 
 from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
@@ -7,6 +9,7 @@ from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
@@ -20,6 +23,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         streamElementsFileManager: StreamElementsFileManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
@@ -29,7 +33,9 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(streamElementsFileManager, StreamElementsFileManagerInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
@@ -46,6 +52,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamElementsFileManager: StreamElementsFileManagerInterface = streamElementsFileManager
         self.__streamElementsHelper: StreamElementsHelperInterface = streamElementsHelper
@@ -59,14 +66,20 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         self.__playSessionId: str | None = None
 
     async def __executeTts(self, fileName: str):
+        volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
-        # TODO add logic to stop VLC if it runs too long
+        async def playSoundFile():
+            self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
+                filePath = fileName,
+                volume = volume
+            )
 
-        self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
-            filePath = fileName,
-            volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
-        )
+        try:
+            await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
+        except TimeoutError as e:
+            self.__timber.log('StreamElementsTtsManager', f'Stopping Stream Elements TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
@@ -97,7 +110,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             return
 
         self.__timber.log('StreamElementsTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        await self.__executeTts(fileName)
+        self.__backgroundTaskHelper.createTask(self.__executeTts(fileName))
         self.__isLoading = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:

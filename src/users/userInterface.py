@@ -38,6 +38,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def areBeanStatsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def areRecurringActionsEnabled(self) -> bool:
         pass
 

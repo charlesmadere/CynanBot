@@ -9,7 +9,7 @@ class BeanStatsPresenter(BeanStatsPresenterInterface):
             raise TypeError(f'beanStats argument is malformed: \"{beanStats}\"')
 
         if beanStats.failedBeanAttempts == 0 and beanStats.successfulBeans == 0:
-            return f'@{beanStats.chatterUserName} has no bean attempts'
+            return f'ⓘ @{beanStats.chatterUserName} has no bean attempts'
 
         successesString: str
         if beanStats.successfulBeans == 1:
@@ -33,4 +33,4 @@ class BeanStatsPresenter(BeanStatsPresenterInterface):
             successPercent = round((float(beanStats.successfulBeans) / float(totalSuccessesAndFails)) * float(100), 2)
             successPercentString = f'{successPercent}%'
 
-        return f'@{beanStats.chatterUserName}\'s bean scores — {successesString} and {failsString} (that\'s a {successPercentString} success rate)'
+        return f'ⓘ @{beanStats.chatterUserName}\'s bean scores — {successesString} and {failsString} (that\'s a {successPercentString} success rate)'

@@ -1,61 +1,22 @@
 from typing import Any
 
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..google.googleJsonMapperInterface import GoogleJsonMapperInterface
-from ..google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ..misc import utils as utils
 from ..storage.jsonReaderInterface import JsonReaderInterface
 
 
 class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
-    def __init__(
-        self,
-        googleJsonMapper: GoogleJsonMapperInterface,
-        settingsJsonReader: JsonReaderInterface,
-        defaultGoogleVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.OGG_OPUS
-    ):
-        if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
-            raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
-        elif not isinstance(settingsJsonReader, JsonReaderInterface):
+    def __init__(self, settingsJsonReader: JsonReaderInterface):
+        if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(defaultGoogleVoiceAudioEncoding, GoogleVoiceAudioEncoding):
-            raise TypeError(f'defaultGoogleVoiceAudioEncoding argument is malformed: \"{defaultGoogleVoiceAudioEncoding}\"')
 
-        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultGoogleVoiceAudioEncoding: GoogleVoiceAudioEncoding = defaultGoogleVoiceAudioEncoding
 
         self.__settingsCache: dict[str, Any] | None = None
 
     async def clearCaches(self):
         self.__settingsCache = None
-
-    async def getGoogleVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
-        jsonContents = await self.__readJson()
-
-        defaultAudioEncoding = await self.__googleJsonMapper.serializeVoiceAudioEncoding(
-            voiceAudioEncoding = self.__defaultGoogleVoiceAudioEncoding
-        )
-
-        audioEncodingString = utils.getStrFromDict(
-            d = jsonContents,
-            key = 'googleVoiceAudioEncoding',
-            fallback = defaultAudioEncoding
-        )
-
-        audioEncoding = await self.__googleJsonMapper.parseVoiceAudioEncoding(
-            jsonString = audioEncodingString
-        )
-
-        if audioEncoding is None:
-            return self.__defaultGoogleVoiceAudioEncoding
-        else:
-            return audioEncoding
-
-    async def getGoogleVolumeGainDb(self) -> float | None:
-        jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'googleVolumeGainDb', fallback = -5.25)
 
     async def getMaximumMessageSize(self) -> int:
         jsonContents = await self.__readJson()

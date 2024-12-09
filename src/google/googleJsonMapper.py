@@ -228,6 +228,17 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
                 self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceGender value: \"{jsonString}\"')
                 return None
 
+    async def requireVoiceAudioEncoding(
+        self,
+        jsonString: str | None
+    ) -> GoogleVoiceAudioEncoding:
+        result = await self.parseVoiceAudioEncoding(jsonString)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{jsonString}\" into GoogleVoiceAudioEncoding value!')
+
+        return result
+
     async def serializeGlossaryConfig(
         self,
         glossaryConfig: GoogleTranslateTextGlossaryConfig

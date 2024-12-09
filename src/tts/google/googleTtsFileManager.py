@@ -11,7 +11,7 @@ import aiofiles.ospath
 
 from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
-from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -22,25 +22,25 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
         self,
         eventLoop: AbstractEventLoop,
         googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
+        googleSettingsRepository: GoogleSettingsRepositoryInterface,
         timber: TimberInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
         directory: str = 'temp'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(googleFileExtensionHelper, GoogleFileExtensionHelperInterface):
             raise TypeError(f'googleFileExtensionHelper argument is malformed: \"{googleFileExtensionHelper}\"')
+        elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+            raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
+        self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__directory: str = utils.cleanPath(directory)
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
@@ -65,7 +65,7 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
         return decoded
 
     async def __getGoogleFileExtension(self) -> str:
-        audioEncoding = await self.__ttsSettingsRepository.getGoogleVoiceAudioEncoding()
+        audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
         return await self.__googleFileExtensionHelper.getFileExtension(audioEncoding)
 
     async def writeBase64CommandToNewFile(self, base64Command: str) -> str | None:

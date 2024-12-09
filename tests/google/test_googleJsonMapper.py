@@ -98,6 +98,58 @@ class TestGoogleJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withAlaw(self):
+        result = await self.jsonMapper.requireVoiceAudioEncoding('ALAW')
+        assert result is GoogleVoiceAudioEncoding.ALAW
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withEmptyString(self):
+        result: GoogleVoiceAudioEncoding | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireVoiceAudioEncoding('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withLinear16(self):
+        result = await self.jsonMapper.requireVoiceAudioEncoding('LINEAR16')
+        assert result is GoogleVoiceAudioEncoding.LINEAR_16
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withMp3(self):
+        result = await self.jsonMapper.requireVoiceAudioEncoding('MP3')
+        assert result is GoogleVoiceAudioEncoding.MP3
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withMulaw(self):
+        result = await self.jsonMapper.requireVoiceAudioEncoding('MULAW')
+        assert result is GoogleVoiceAudioEncoding.MULAW
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withNone(self):
+        result: GoogleVoiceAudioEncoding | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireVoiceAudioEncoding(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withOggOpus(self):
+        result = await self.jsonMapper.requireVoiceAudioEncoding('OGG_OPUS')
+        assert result is GoogleVoiceAudioEncoding.OGG_OPUS
+
+    @pytest.mark.asyncio
+    async def test_requireVoiceAudioEncoding_withWhitespaceString(self):
+        result: GoogleVoiceAudioEncoding | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.requireVoiceAudioEncoding(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_serializeScope_withCloudTextToSpeech(self):
         result = await self.jsonMapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
         assert result == 'https://www.googleapis.com/auth/cloud-platform'

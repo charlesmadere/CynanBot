@@ -1,5 +1,6 @@
 from .absChatCommand import AbsChatCommand
 from ..crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
+from ..crowdControl.automator.crowdControlAutomatorRemovalResult import CrowdControlAutomatorRemovalResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -44,5 +45,27 @@ class RemoveGameShuffleAutomatorChatCommand(AbsChatCommand):
             return
         elif not user.isCrowdControlEnabled:
             return
+
+        result = await self.__crowdControlAutomator.removeGameShuffleAutomator(
+            twitchChannelId = await ctx.getTwitchChannelId()
+        )
+
+        match result:
+            case CrowdControlAutomatorRemovalResult.DID_NOT_EXIST:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Attempted to remove the game shuffle automator, but one did not already exist',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case CrowdControlAutomatorRemovalResult.OK:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Removed game shuffle automator',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case _:
+                raise RuntimeError(f'Uknown CrowdControlAutomatorRemovalResult: \"{result}\"')
 
         self.__timber.log('RemoveGameShuffleAutomatorChatCommand', f'Handled !removegameshuffleautomator command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

@@ -48,7 +48,7 @@ class SoundPlayerManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def stop(self) -> str | None:
+    async def stop(self):
         pass
 
     @abstractmethod

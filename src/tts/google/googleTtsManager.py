@@ -1,3 +1,4 @@
+import asyncio
 import traceback
 
 import aiofiles.ospath
@@ -18,6 +19,7 @@ from ...google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ...google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -26,6 +28,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         googleApiService: GoogleApiServiceInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsFileManager: GoogleTtsFileManagerInterface,
@@ -36,7 +39,9 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(googleApiService, GoogleApiServiceInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(googleApiService, GoogleApiServiceInterface):
             raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}"')
         elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
@@ -55,6 +60,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__googleApiService: GoogleApiServiceInterface = googleApiService
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsFileManager: GoogleTtsFileManagerInterface = googleTtsFileManager
@@ -69,14 +75,20 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__playSessionId: str | None = None
 
     async def __executeTts(self, fileName: str):
+        volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
-        # TODO add logic to stop VLC if it runs too long
+        async def playSoundFile():
+            self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
+                filePath = fileName,
+                volume = volume
+            )
 
-        self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
-            filePath = fileName,
-            volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
-        )
+        try:
+            await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
+        except TimeoutError as e:
+            self.__timber.log('GoogleTtsManager', f'Stopping Google TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
@@ -107,7 +119,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             return
 
         self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        await self.__executeTts(fileName)
+        self.__backgroundTaskHelper.createTask(self.__executeTts(fileName))
         self.__isLoading = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
@@ -154,9 +166,9 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         audioConfig = GoogleVoiceAudioConfig(
             pitch = None,
             speakingRate = None,
-            volumeGainDb = await self.__ttsSettingsRepository.getGoogleVolumeGainDb(),
+            volumeGainDb = None,
             sampleRateHertz = None,
-            audioEncoding = await self.__ttsSettingsRepository.getGoogleVoiceAudioEncoding()
+            audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
         )
 
         selectionParams = await self.__googleTtsVoiceChooser.choose()

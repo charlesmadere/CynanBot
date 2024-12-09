@@ -23,4 +23,4 @@ class TestBeanStatsPresenter:
         )
 
         result = await self.presenter.toString(beanStats)
-        assert result == '@stashiocat has no bean attempts'
+        assert result == 'ⓘ @stashiocat has no bean attempts'

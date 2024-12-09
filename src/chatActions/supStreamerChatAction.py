@@ -5,10 +5,9 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
-from ..streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
-from ..supStreamer.supStreamerRepositoryInterface import \
-    SupStreamerRepositoryInterface
+from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
+from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
+from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsEvent import TtsEvent
 from ..tts.ttsProvider import TtsProvider
@@ -21,6 +20,7 @@ class SupStreamerChatAction(AbsChatAction):
     def __init__(
         self,
         streamAlertsManager: StreamAlertsManagerInterface,
+        supStreamerHelper: SupStreamerHelperInterface,
         supStreamerRepository: SupStreamerRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -28,6 +28,8 @@ class SupStreamerChatAction(AbsChatAction):
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(supStreamerHelper, SupStreamerHelperInterface):
+            raise TypeError(f'supStreamerHelper argument is malformed: \"{supStreamerHelper}\"')
         elif not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -38,6 +40,7 @@ class SupStreamerChatAction(AbsChatAction):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
+        self.__supStreamerHelper: SupStreamerHelperInterface = supStreamerHelper
         self.__supStreamerRepository: SupStreamerRepositoryInterface = supStreamerRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -62,7 +65,7 @@ class SupStreamerChatAction(AbsChatAction):
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
-        elif not await self.__isSupStreamerMessage(
+        elif not await self.__supStreamerHelper.isSupStreamerMessage(
             chatMessage = chatMessage,
             supStreamerMessage = supStreamerMessage
         ):
@@ -100,14 +103,3 @@ class SupStreamerChatAction(AbsChatAction):
         ))
 
         return True
-
-    async def __isSupStreamerMessage(
-        self,
-        chatMessage: str | None,
-        supStreamerMessage: str
-    ) -> bool:
-        if not utils.isValidStr(chatMessage):
-            return False
-
-        # TODO better checks to allow slightly more flexibility
-        return chatMessage.casefold() == supStreamerMessage.casefold()
