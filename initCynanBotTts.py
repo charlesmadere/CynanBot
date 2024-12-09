@@ -53,6 +53,8 @@ from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
+from src.crowdControl.automator.crowdControlAutomator import CrowdControlAutomator
+from src.crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
 from src.crowdControl.bizhawk.bizhawkActionHandler import BizhawkActionHandler
 from src.crowdControl.bizhawk.bizhawkKeyMapper import BizhawkKeyMapper
 from src.crowdControl.bizhawk.bizhawkKeyMapperInterface import BizhawkKeyMapperInterface
@@ -190,6 +192,8 @@ from src.streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterfa
     StreamElementsUserKeyRepositoryInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
 from src.streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
+from src.supStreamer.supStreamerHelper import SupStreamerHelper
+from src.supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
@@ -847,7 +851,6 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
 ################################
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonFileReader('../config/ttsSettingsRepository.json')
 )
 
@@ -896,6 +899,7 @@ decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
 )
 
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
+    googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonFileReader('../config/googleSettingsRepository.json')
 )
 
@@ -904,8 +908,8 @@ googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtens
 googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    googleSettingsRepository = googleSettingsRepository,
+    timber = timber
 )
 
 googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageCleaner(
@@ -915,6 +919,7 @@ googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageClea
 googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
 
 googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
     googleApiService = googleApiService,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsFileManager = googleTtsFileManager,
@@ -950,6 +955,7 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
 )
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
@@ -998,6 +1004,7 @@ streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFi
 )
 
 streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamElementsTtsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
@@ -1083,6 +1090,7 @@ ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
 )
 
 ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
@@ -1182,6 +1190,17 @@ crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     timeZoneRepository = timeZoneRepository
+)
+
+crowdControlAutomator: CrowdControlAutomatorInterface = CrowdControlAutomator(
+    backgroundTaskHelper = backgroundTaskHelper,
+    crowdControlIdGenerator = crowdControlIdGenerator,
+    crowdControlMachine = crowdControlMachine,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchHandleProvider = authRepository,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository
 )
 
 crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils()
@@ -1362,8 +1381,7 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
     userIdsRepository = userIdsRepository
 )
 
-saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
-saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = SaveMostRecentAnivMessageChatAction(
     anivUserIdProvider = anivUserIdProvider,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
 )
@@ -1374,9 +1392,11 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
     timeZoneRepository = timeZoneRepository
 )
 
-supStreamerChatAction: SupStreamerChatAction | None = None
-supStreamerChatAction = SupStreamerChatAction(
+supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
+
+supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
     streamAlertsManager = streamAlertsManager,
+    supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository
@@ -1515,6 +1535,7 @@ cynanBot = CynanBot(
     cheerActionsWizard = cheerActionsWizard,
     compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = crowdControlActionHandler,
+    crowdControlAutomator = crowdControlAutomator,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
     crowdControlMessageHandler = crowdControlMessageHandler,

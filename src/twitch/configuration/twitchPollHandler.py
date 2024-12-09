@@ -1,5 +1,3 @@
-import locale
-
 from frozenlist import FrozenList
 
 from .twitchChannelProvider import TwitchChannelProvider

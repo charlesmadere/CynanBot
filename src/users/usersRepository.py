@@ -134,6 +134,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
+        areBeanStatsEnabled = utils.getBoolFromDict(userJson, 'beanStatsEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
@@ -318,6 +319,7 @@ class UsersRepository(UsersRepositoryInterface):
             ttsChatterBoosterPacks = self.__ttsChatterBoosterPackParser.parseBoosterPacks(defaultTtsProvider, ttsChatterBoosterPacksJson)
 
         user = User(
+            areBeanStatsEnabled = areBeanStatsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,

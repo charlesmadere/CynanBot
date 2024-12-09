@@ -1,3 +1,5 @@
+import asyncio
+
 from frozenlist import FrozenList
 
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
@@ -9,6 +11,7 @@ from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerIn
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -17,6 +20,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         halfLifeHelper: HalfLifeHelperInterface,
         halfLifeMessageCleaner: HalfLifeMessageCleanerInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
@@ -25,7 +29,9 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(halfLifeHelper, HalfLifeHelperInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(halfLifeHelper, HalfLifeHelperInterface):
             raise TypeError(f'halfLifeHelper argument is malformed: \"{halfLifeHelper}\"')
         elif not isinstance(halfLifeMessageCleaner, HalfLifeMessageCleanerInterface):
             raise TypeError(f'halfLifeMessageCleaner argument is malformed: \"{halfLifeMessageCleaner}\"')
@@ -40,6 +46,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__halfLifeHelper: HalfLifeHelperInterface = halfLifeHelper
         self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
@@ -52,14 +59,20 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         self.__playSessionId: str | None = None
 
     async def __executeTts(self, fileNames: FrozenList[str]):
+        volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
-        # TODO add logic to stop VLC if it runs too long
+        async def playPlaylist():
+            self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
+                filePaths = fileNames,
+                volume = volume
+            )
 
-        self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
-            filePaths = fileNames,
-            volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
-        )
+        try:
+            await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
+        except TimeoutError as e:
+            self.__timber.log('HalfLifeTtsManager', f'Stopping Half Life TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
@@ -90,7 +103,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             return
 
         self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileNames)
+        self.__backgroundTaskHelper.createTask(self.__executeTts(fileNames))
         self.__isLoading = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:

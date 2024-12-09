@@ -1,3 +1,4 @@
+import asyncio
 import locale
 import math
 
@@ -9,6 +10,7 @@ from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
@@ -21,6 +23,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsMonsterFileManager: TtsMonsterFileManagerInterface,
@@ -29,7 +32,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -44,6 +49,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
@@ -57,14 +63,20 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __executeTts(self, fileNames: FrozenList[str]):
+        volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
-        # TODO add logic to kill TTS Monster if it runs too long
+        async def playPlaylist():
+            self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
+                filePaths = fileNames,
+                volume = volume
+            )
 
-        self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
-            filePaths = fileNames,
-            volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
-        )
+        try:
+            await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
+        except TimeoutError as e:
+            self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS Monster TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
 
     async def isPlaying(self) -> bool:
         if self.__isLoading:
@@ -113,7 +125,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         )
 
         self.__timber.log('TtsMonsterTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileNames)
+        self.__backgroundTaskHelper.createTask(self.__executeTts(fileNames))
         self.__isLoading = False
 
     async def __reportCharacterUsage(
@@ -122,11 +134,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         characterUsage: int | None,
         twitchChannel: str
     ):
-        if not utils.isValidInt(characterUsage):
-            return
-
         twitchChannelProvider = self.__twitchChannelProvider
-        if twitchChannelProvider is None:
+
+        if twitchChannelProvider is None or not utils.isValidInt(characterUsage):
             return
 
         remainingCharactersString = ''

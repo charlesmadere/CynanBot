@@ -44,7 +44,7 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 60)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 48)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

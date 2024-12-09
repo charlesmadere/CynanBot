@@ -19,6 +19,7 @@ class User(UserInterface):
 
     def __init__(
         self,
+        areBeanStatsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
         isAnivContentScanningEnabled: bool,
@@ -113,7 +114,9 @@ class User(UserInterface):
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
         ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None,
     ):
-        if not utils.isValidBool(areRecurringActionsEnabled):
+        if not utils.isValidBool(areBeanStatsEnabled):
+            raise TypeError(f'areBeanStatsEnabled argument is malformed: \"{areBeanStatsEnabled}\"')
+        elif not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
@@ -296,6 +299,7 @@ class User(UserInterface):
         elif ttsChatterBoosterPacks is not None and not isinstance(ttsChatterBoosterPacks, frozendict):
             raise TypeError(f'ttsChatterBoosterPacks argument is malformed: \"{ttsChatterBoosterPacks}\"')
 
+        self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
@@ -405,6 +409,10 @@ class User(UserInterface):
     @property
     def anivMessageCopyTimeoutProbability(self) -> float | None:
         return self.__anivMessageCopyTimeoutProbability
+
+    @property
+    def areBeanStatsEnabled(self) -> bool:
+        return self.__areBeanStatsEnabled
 
     @property
     def areRecurringActionsEnabled(self) -> bool:

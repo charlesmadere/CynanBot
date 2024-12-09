@@ -47,11 +47,10 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
         # this method is intentionally empty
         return None
 
-    async def stop(self) -> str | None:
+    async def stop(self):
         # this method is intentionally empty
-        return None
+        pass
 
     async def stopPlaySessionId(self, playSessionId: str | None) -> bool:
         # this method is intentionally empty
         return False
-

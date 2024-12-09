@@ -1,9 +1,5 @@
 import pytest
 
-from src.google.googleJsonMapper import GoogleJsonMapper
-from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
-from src.location.timeZoneRepository import TimeZoneRepository
-from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
 from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
@@ -17,15 +13,7 @@ class TestStreamElementsMessageCleaner:
 
     timber: TimberInterface = TimberStub()
 
-    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
-
-    googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-        timber = timber,
-        timeZoneRepository = timeZoneRepository
-    )
-
     ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-        googleJsonMapper = googleJsonMapper,
         settingsJsonReader = JsonStaticReader(dict())
     )
 

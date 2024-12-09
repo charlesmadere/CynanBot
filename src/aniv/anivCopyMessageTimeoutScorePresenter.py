@@ -10,7 +10,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             raise TypeError(f'score argument is malformed: \"{score}\"')
 
         if score.dodgeScore == 0 and score.timeoutScore == 0:
-            return f'@{score.chatterUserName} has no aniv timeouts'
+            return f'ⓘ @{score.chatterUserName} has no aniv timeouts'
 
         dodgesString: str
         if score.dodgeScore == 1:
@@ -34,4 +34,4 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             dodgePercent = round((float(score.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
             dodgePercentString = f'{dodgePercent}%'
 
-        return f'@{score.chatterUserName}\'s aniv timeout scores — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
+        return f'ⓘ @{score.chatterUserName}\'s aniv timeout scores — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'

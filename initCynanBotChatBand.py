@@ -793,6 +793,7 @@ cynanBot = CynanBot(
     cheerActionsWizard = None,
     compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = None,
+    crowdControlAutomator = None,
     crowdControlIdGenerator = None,
     crowdControlMachine = None,
     crowdControlMessageHandler = None,
