@@ -24,10 +24,14 @@ class TtsMonsterMessageCleaner(TtsMonsterMessageCleanerInterface):
             return None
 
         message = utils.removeCheerStrings(message.strip()).strip()
-        message = self.__extraWhiteSpaceRegEx.sub(' ', message.strip()).strip()
+        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
         if len(message) > maximumMessageSize:
             message = message[0:maximumMessageSize].strip()
+
+        # this shouldn't be necessary but Python sux at type checking
+        if not utils.isValidStr(message):
+            return None
 
         return message

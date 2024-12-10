@@ -43,6 +43,26 @@ class TestTtsJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_asyncParseProvider_withGoogleString(self):
+        result = await self.jsonMapper.asyncParseProvider('google')
+        assert result is TtsProvider.GOOGLE
+
+    @pytest.mark.asyncio
+    async def test_asyncParseProvider_withHalfLifeString(self):
+        result = await self.jsonMapper.asyncParseProvider('half_life')
+        assert result is TtsProvider.HALF_LIFE
+
+    @pytest.mark.asyncio
+    async def test_asyncParseProvider_withStreamElementsString(self):
+        result = await self.jsonMapper.asyncParseProvider('stream_elements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+    @pytest.mark.asyncio
+    async def test_asyncParseProvider_withTtsMonsterString(self):
+        result = await self.jsonMapper.asyncParseProvider('tts_monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+    @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withDecTalk(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.DEC_TALK)
         assert result == 'dec_talk'
@@ -58,6 +78,10 @@ class TestTtsJsonMapper:
     def test_parseProvider_withGoogleString(self):
         result = self.jsonMapper.parseProvider('google')
         assert result is TtsProvider.GOOGLE
+
+    def test_parseProvider_withHalfLifeString(self):
+        result = self.jsonMapper.parseProvider('half_life')
+        assert result is TtsProvider.HALF_LIFE
 
     def test_parseProvider_withNone(self):
         result = self.jsonMapper.parseProvider(None)
@@ -91,6 +115,10 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.requireProvider('google')
         assert result is TtsProvider.GOOGLE
 
+    def test_requireProvider_withHalfLifeString(self):
+        result = self.jsonMapper.requireProvider('half_life')
+        assert result is TtsProvider.HALF_LIFE
+
     def test_requireProvider_withNone(self):
         result: TtsProvider | None = None
 
@@ -118,6 +146,10 @@ class TestTtsJsonMapper:
     def test_serializeProvider_withGoogle(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.GOOGLE)
         assert result == 'google'
+
+    def test_serializeProvider_withHalfLife(self):
+        result = self.jsonMapper.serializeProvider(TtsProvider.HALF_LIFE)
+        assert result == 'half_life'
 
     def test_serializeProvider_withStreamElements(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.STREAM_ELEMENTS)

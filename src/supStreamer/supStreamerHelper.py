@@ -23,5 +23,20 @@ class SupStreamerHelper(SupStreamerHelperInterface):
         if not utils.isValidStr(chatMessage):
             return False
 
-        cleanedChatMessage = self.__supStreamerRegEx.sub(' ', chatMessage)
-        return supStreamerMessage.casefold() in cleanedChatMessage.casefold()
+        chatMessage = self.__supStreamerRegEx.sub(' ', chatMessage).casefold()
+        supStreamerMessage = self.__supStreamerRegEx.sub(' ', supStreamerMessage).casefold()
+
+        if chatMessage == supStreamerMessage:
+            return True
+
+        supStreamerVariants: set[str] = {
+            f'{supStreamerMessage} ',
+            f' {supStreamerMessage}',
+            f' {supStreamerMessage} '
+        }
+
+        for variant in supStreamerVariants:
+            if variant in chatMessage:
+                return True
+
+        return False

@@ -36,6 +36,33 @@ class TestSupStreamerHelper:
         assert not result
 
     @pytest.mark.asyncio
+    async def test_isSupStreamerMessage_withBadMessagePrefix(self):
+        result = await self.helper.isSupStreamerMessage(
+            chatMessage = 'blahcharles sup',
+            supStreamerMessage = 'charles sup'
+        )
+
+        assert not result
+
+    @pytest.mark.asyncio
+    async def test_isSupStreamerMessage_withBadMessagePrefixAndSuffix(self):
+        result = await self.helper.isSupStreamerMessage(
+            chatMessage = 'blahcharles supblah',
+            supStreamerMessage = 'charles sup'
+        )
+
+        assert not result
+
+    @pytest.mark.asyncio
+    async def test_isSupStreamerMessage_withBadMessageSuffix(self):
+        result = await self.helper.isSupStreamerMessage(
+            chatMessage = 'charles supblah',
+            supStreamerMessage = 'charles sup'
+        )
+
+        assert not result
+
+    @pytest.mark.asyncio
     async def test_isSupStreamerMessage_withEmptyStringChatMessageArgument(self):
         result = await self.helper.isSupStreamerMessage(
             chatMessage = '',

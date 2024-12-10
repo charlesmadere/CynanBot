@@ -120,9 +120,6 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         else:
             return None
 
-        if not utils.isValidStr(message):
-            return None
-
         speechFiles = await self.__halfLifeHelper.getSpeech(fullMessage)
 
         if speechFiles is None or len(speechFiles) == 0:
