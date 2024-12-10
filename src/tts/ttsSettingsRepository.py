@@ -20,21 +20,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
     async def getMaximumMessageSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maxMessageSize', fallback = 250)
-
-    async def getTtsDelayBetweenSeconds(self) -> float:
-        jsonContents = await self.__readJson()
-
-        ttsDelayBetweenSeconds = utils.getFloatFromDict(
-            d = jsonContents,
-            key = 'ttsDelayBetweenSeconds',
-            fallback = 0.25
-        )
-
-        if ttsDelayBetweenSeconds < 0 or ttsDelayBetweenSeconds > 10:
-            raise ValueError(f'ttsDelayBetweenSeconds is out of bounds: \"{ttsDelayBetweenSeconds}\"')
-
-        return ttsDelayBetweenSeconds
+        return utils.getIntFromDict(jsonContents, 'maxMessageSize', fallback = 500)
 
     async def getTtsTimeoutSeconds(self) -> float:
         jsonContents = await self.__readJson()
@@ -42,10 +28,10 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         ttsTimeoutSeconds = utils.getFloatFromDict(
             d = jsonContents,
             key = 'ttsTimeoutSeconds',
-            fallback = 10
+            fallback = 30
         )
 
-        if ttsTimeoutSeconds < 0 or ttsTimeoutSeconds > 30:
+        if ttsTimeoutSeconds < 5 or ttsTimeoutSeconds > 300:
             raise ValueError(f'ttsTimeoutSeconds is out of bounds: \"{ttsTimeoutSeconds}\"')
 
         return ttsTimeoutSeconds
@@ -73,7 +59,12 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
     async def requireDecTalkPath(self) -> str:
         jsonContents = await self.__readJson()
-        decTalkPath = utils.getStrFromDict(jsonContents, 'decTalkPath', fallback = '')
+
+        decTalkPath = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'decTalkPath',
+            fallback = 'dectalk/say.exe'
+        )
 
         if not utils.isValidStr(decTalkPath):
             raise ValueError(f'\"decTalkPath\" value is malformed: \"{decTalkPath}\"')

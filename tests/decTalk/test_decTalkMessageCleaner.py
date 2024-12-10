@@ -192,9 +192,21 @@ class TestDecTalkMessageCleaner:
 
     @pytest.mark.asyncio
     async def test_clean_withOverlyLongMessage(self):
-        result = await self.cleaner.clean('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac velit neque. Suspendisse sed scelerisque metus, eget ultrices mi. Quisque accumsan laoreet sapien, eget euismod ex hendrerit a. Ut mattis ipsum enim, eget ultrices nisl pulvinar at. Sed eu ornare neque. Quisque nec commodo enim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas efficitur odio arcu, vel vestibulum metus porttitor ac. Mauris sollicitudin, velit in malesuada scelerisque, magna nisi posuere nisi, ac sodales dolor massa vitae ex. Sed fermentum purus vel purus efficitur varius id ut lacus. Duis eu neque dapibus, ornare mauris porta, placerat enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut et nisi mi. Donec efficitur sapien a bibendum tincidunt.')
-        assert result == 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac velit neque. Suspendisse sed scelerisque metus, eget ultrices mi. Quisque accumsan laoreet sapien, eget euismod ex hendrerit a. Ut mattis ipsum enim, eget ultrices nisl pulvinar at. Se'
-        assert len(result) == await self.ttsSettingsRepository.getMaximumMessageSize()
+        ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+            settingsJsonReader = JsonStaticReader({
+                'maxMessageSize': 11
+            })
+        )
+
+        cleaner = DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+            emojiHelper = self.emojiHelper,
+            timber = self.timber,
+            ttsSettingsRepository = ttsSettingsRepository
+        )
+
+        result = await cleaner.clean('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac velit neque. Suspendisse sed scelerisque metus, eget ultrices mi. Quisque accumsan laoreet sapien, eget euismod ex hendrerit a. Ut mattis ipsum enim, eget ultrices nisl pulvinar at. Sed eu ornare neque. Quisque nec commodo enim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas efficitur odio arcu, vel vestibulum metus porttitor ac. Mauris sollicitudin, velit in malesuada scelerisque, magna nisi posuere nisi, ac sodales dolor massa vitae ex. Sed fermentum purus vel purus efficitur varius id ut lacus. Duis eu neque dapibus, ornare mauris porta, placerat enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut et nisi mi. Donec efficitur sapien a bibendum tincidunt.')
+        assert result == 'Lorem ipsum'
+        assert len(result) == await ttsSettingsRepository.getMaximumMessageSize()
 
     @pytest.mark.asyncio
     async def test_clean_withPeriodPauseInlineCommand(self):

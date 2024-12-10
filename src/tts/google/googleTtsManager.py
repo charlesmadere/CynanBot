@@ -1,22 +1,14 @@
 import asyncio
-import traceback
 
 import aiofiles.ospath
 
-from .googleTtsChoice import GoogleTtsChoice
-from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
+from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
-from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ...google.googleApiServiceInterface import GoogleApiServiceInterface
-from ...google.googleTextSynthesisInput import GoogleTextSynthesisInput
-from ...google.googleTextSynthesisResponse import GoogleTextSynthesisResponse
-from ...google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from ...google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -29,11 +21,9 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        googleApiService: GoogleApiServiceInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
-        googleTtsFileManager: GoogleTtsFileManagerInterface,
+        googleTtsHelper: GoogleTtsHelperInterface,
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
-        googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -41,16 +31,12 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(googleApiService, GoogleApiServiceInterface):
-            raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}"')
         elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
-        elif not isinstance(googleTtsFileManager, GoogleTtsFileManagerInterface):
-            raise TypeError(f'googleTtsFileManager argument is malformed: \"{googleTtsFileManager}\"')
+        elif not isinstance(googleTtsHelper, GoogleTtsHelperInterface):
+            raise TypeError(f'googleTtsHelper argument is malformed: \"{googleTtsHelper}\"')
         elif not isinstance(googleTtsMessageCleaner, GoogleTtsMessageCleanerInterface):
             raise TypeError(f'googleTtsMessageCleaner argument is malformed: \"{googleTtsMessageCleaner}\"')
-        elif not isinstance(googleTtsVoiceChooser, GoogleTtsVoiceChooserInterface):
-            raise TypeError(f'googleTtsVoiceChooser argument is malformed: \"{googleTtsVoiceChooser}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -61,11 +47,9 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__googleApiService: GoogleApiServiceInterface = googleApiService
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
-        self.__googleTtsFileManager: GoogleTtsFileManagerInterface = googleTtsFileManager
+        self.__googleTtsHelper: GoogleTtsHelperInterface = googleTtsHelper
         self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
-        self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
@@ -136,46 +120,8 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         else:
             return None
 
-        ttsChoice = await self.__randomlyChooseTts()
-
-        request = GoogleTextSynthesizeRequest(
-            synthesisInput = GoogleTextSynthesisInput(
-                text = fullMessage
-            ),
-            voice = ttsChoice.selectionParams,
-            audioConfig = ttsChoice.audioConfig
-        )
-
-        response: GoogleTextSynthesisResponse | None = None
-        exception: Exception | None = None
-
-        try:
-            response = await self.__googleApiService.textToSpeech(request)
-        except Exception as e:
-            exception = e
-
-        if response is None or exception is not None:
-            self.__timber.log('GoogleTtsManager', f'Failed to utilize Google Text to Speech API for TTS event ({event=}) ({response=}): {exception}', exception, traceback.format_exc())
-            return None
-
-        return await self.__googleTtsFileManager.writeBase64CommandToNewFile(
-            base64Command = response.audioContent
-        )
-
-    async def __randomlyChooseTts(self) -> GoogleTtsChoice:
-        audioConfig = GoogleVoiceAudioConfig(
-            pitch = None,
-            speakingRate = None,
-            volumeGainDb = None,
-            sampleRateHertz = None,
-            audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
-        )
-
-        selectionParams = await self.__googleTtsVoiceChooser.choose()
-
-        return GoogleTtsChoice(
-            audioConfig = audioConfig,
-            selectionParams = selectionParams
+        return await self.__googleTtsHelper.getSpeechFile(
+            message = fullMessage
         )
 
     async def stopTtsEvent(self):

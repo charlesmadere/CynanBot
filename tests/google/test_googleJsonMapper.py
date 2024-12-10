@@ -2,7 +2,7 @@ import pytest
 
 from src.google.googleJsonMapper import GoogleJsonMapper
 from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
-from src.google.googleScope import GoogleScope
+from src.google.models.googleScope import GoogleScope
 from src.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from src.google.googleVoiceGender import GoogleVoiceGender
 from src.location.timeZoneRepository import TimeZoneRepository

@@ -10,10 +10,6 @@ class TtsSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def getTtsDelayBetweenSeconds(self) -> float:
-        pass
-
-    @abstractmethod
     async def getTtsTimeoutSeconds(self) -> float:
         pass
 

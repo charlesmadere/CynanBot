@@ -72,7 +72,6 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 )
 
 soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
     playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,

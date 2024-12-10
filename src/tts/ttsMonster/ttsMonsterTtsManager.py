@@ -15,6 +15,7 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
@@ -28,6 +29,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         timber: TimberInterface,
         ttsMonsterFileManager: TtsMonsterFileManagerInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
+        ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
@@ -42,6 +44,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'ttsMonsterFileManager argument is malformed: \"{ttsMonsterFileManager}\"')
         elif not isinstance(ttsMonsterHelper, TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
+        elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
+            raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
@@ -53,6 +57,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
+        self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = ttsMonsterMessageCleaner
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
@@ -127,6 +132,12 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__timber.log('TtsMonsterTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         self.__backgroundTaskHelper.createTask(self.__executeTts(fileNames))
         self.__isLoading = False
+
+    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
+        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
+
+        # TODO
+        return None
 
     async def __reportCharacterUsage(
         self,

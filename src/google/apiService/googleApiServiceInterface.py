@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from .googleTextSynthesisResponse import GoogleTextSynthesisResponse
-from .googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from .googleTranslateTextResponse import GoogleTranslateTextResponse
-from .googleTranslationRequest import GoogleTranslationRequest
+from ..googleTextSynthesisResponse import GoogleTextSynthesisResponse
+from ..googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from ..googleTranslateTextResponse import GoogleTranslateTextResponse
+from ..googleTranslationRequest import GoogleTranslationRequest
 
 
 class GoogleApiServiceInterface(ABC):

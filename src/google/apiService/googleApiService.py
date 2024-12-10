@@ -1,20 +1,20 @@
 import traceback
 
-from .exceptions import GoogleCloudProjectIdUnavailableException
-from .googleAccessToken import GoogleAccessToken
-from .googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from .googleApiServiceInterface import GoogleApiServiceInterface
-from .googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
-from .googleJsonMapperInterface import GoogleJsonMapperInterface
-from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from .googleTextSynthesisResponse import GoogleTextSynthesisResponse
-from .googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from .googleTranslateTextResponse import GoogleTranslateTextResponse
-from .googleTranslationRequest import GoogleTranslationRequest
-from ..misc import utils as utils
-from ..network.exceptions import GenericNetworkException
-from ..network.networkClientProvider import NetworkClientProvider
-from ..timber.timberInterface import TimberInterface
+from ..exceptions import GoogleCloudProjectIdUnavailableException
+from ..googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
+from ..googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
+from ..googleJsonMapperInterface import GoogleJsonMapperInterface
+from ..googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from ..googleTextSynthesisResponse import GoogleTextSynthesisResponse
+from ..googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from ..googleTranslateTextResponse import GoogleTranslateTextResponse
+from ..googleTranslationRequest import GoogleTranslationRequest
+from ..models.googleAccessToken import GoogleAccessToken
+from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...timber.timberInterface import TimberInterface
 
 
 class GoogleApiService(GoogleApiServiceInterface):

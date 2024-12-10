@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .googleAccessToken import GoogleAccessToken
-from .googleScope import GoogleScope
 from .googleTextSynthesisInput import GoogleTextSynthesisInput
 from .googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from .googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
@@ -15,6 +13,8 @@ from .googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from .googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from .googleVoiceGender import GoogleVoiceGender
 from .googleVoiceSelectionParams import GoogleVoiceSelectionParams
+from .models.googleAccessToken import GoogleAccessToken
+from .models.googleScope import GoogleScope
 
 
 class GoogleJsonMapperInterface(ABC):

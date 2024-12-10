@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .googleAccessToken import GoogleAccessToken
+from .models.googleAccessToken import GoogleAccessToken
 
 
 class GoogleApiAccessTokenStorageInterface(ABC):

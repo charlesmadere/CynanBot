@@ -93,10 +93,10 @@ from src.funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from src.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
 from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
+from src.google.apiService.googleApiService import GoogleApiService
+from src.google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
 from src.google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
-from src.google.googleApiService import GoogleApiService
-from src.google.googleApiServiceInterface import GoogleApiServiceInterface
 from src.google.googleJsonMapper import GoogleJsonMapper
 from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.googleJwtBuilder import GoogleJwtBuilder
@@ -225,7 +225,10 @@ from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
 from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
+from src.tts.google.googleTtsHelper import GoogleTtsHelper
+from src.tts.google.googleTtsHelperInterface import GoogleTtsHelperInterface
 from src.tts.google.googleTtsManager import GoogleTtsManager
+from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
 from src.tts.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
 from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
@@ -838,7 +841,6 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 )
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
-    backgroundTaskHelper = backgroundTaskHelper,
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
     playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
@@ -918,13 +920,19 @@ googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageClea
 
 googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
 
-googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
+googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     googleApiService = googleApiService,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsFileManager = googleTtsFileManager,
-    googleTtsMessageCleaner = googleTtsMessageCleaner,
     googleTtsVoiceChooser = googleTtsVoiceChooser,
+    timber = timber
+)
+
+googleTtsManager: GoogleTtsManagerInterface | None = GoogleTtsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
+    googleSettingsRepository = googleSettingsRepository,
+    googleTtsHelper = googleTtsHelper,
+    googleTtsMessageCleaner = googleTtsMessageCleaner,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -1095,6 +1103,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManage
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
     ttsMonsterHelper = ttsMonsterHelper,
+    ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchUtils = twitchUtils
