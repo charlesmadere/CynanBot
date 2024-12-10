@@ -45,10 +45,10 @@ from src.funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from src.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
 from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
+from src.google.apiService.googleApiService import GoogleApiService
+from src.google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
 from src.google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
-from src.google.googleApiService import GoogleApiService
-from src.google.googleApiServiceInterface import GoogleApiServiceInterface
 from src.google.googleJsonMapper import GoogleJsonMapper
 from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.googleJwtBuilder import GoogleJwtBuilder

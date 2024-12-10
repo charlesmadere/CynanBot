@@ -4,7 +4,7 @@ from .googleTtsChoice import GoogleTtsChoice
 from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
-from ...google.googleApiServiceInterface import GoogleApiServiceInterface
+from ...google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
 from ...google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ...google.googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from ...google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest

@@ -4,9 +4,7 @@ from typing import Any
 
 from frozenlist import FrozenList
 
-from .googleAccessToken import GoogleAccessToken
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
-from .googleScope import GoogleScope
 from .googleTextSynthesisInput import GoogleTextSynthesisInput
 from .googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from .googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
@@ -19,6 +17,8 @@ from .googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from .googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from .googleVoiceGender import GoogleVoiceGender
 from .googleVoiceSelectionParams import GoogleVoiceSelectionParams
+from .models.googleAccessToken import GoogleAccessToken
+from .models.googleScope import GoogleScope
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface

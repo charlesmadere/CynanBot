@@ -11,7 +11,7 @@ from .exceptions import (
 from .googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from .googleScope import GoogleScope
+from .models.googleScope import GoogleScope
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 
@@ -23,10 +23,10 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         googleCloudCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
         googleJsonMapper: GoogleJsonMapperInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        googleScopes: set[GoogleScope] = {
+        googleScopes: frozenset[GoogleScope] = frozenset({
             GoogleScope.CLOUD_TEXT_TO_SPEECH,
             GoogleScope.CLOUD_TRANSLATION
-        }
+        })
     ):
         if not isinstance(googleCloudCredentialsProvider, GoogleCloudProjectCredentialsProviderInterface):
             raise TypeError(f'(googleCloudCredentialsProvider argument is malformed: \"{googleCloudCredentialsProvider}\"')
@@ -34,7 +34,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(googleScopes, set):
+        elif not isinstance(googleScopes, frozenset):
             raise TypeError(f'googleScopes argument is malformed: \"{googleScopes}\"')
         elif len(googleScopes) == 0:
             raise ValueError(f'googleScopes argument is empty: \"{googleScopes}\"')
@@ -91,10 +91,9 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
     async def __buildScopesString(self) -> str:
         scopesString = self.__scopesString
 
-        if scopesString is not None:
-            return scopesString
+        if scopesString is None:
+            scopes = list(self.__googleScopes)
+            scopesString = await self.__googleJsonMapper.serializeScopes(scopes)
+            self.__scopesString = scopesString
 
-        scopes = list(self.__googleScopes)
-        scopesString = await self.__googleJsonMapper.serializeScopes(scopes)
-        self.__scopesString = scopesString
         return scopesString
