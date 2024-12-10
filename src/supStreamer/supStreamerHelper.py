@@ -23,8 +23,9 @@ class SupStreamerHelper(SupStreamerHelperInterface):
         if not utils.isValidStr(chatMessage):
             return False
 
-        chatMessage = self.__supStreamerRegEx.sub(' ', chatMessage).casefold()
-        supStreamerMessage = self.__supStreamerRegEx.sub(' ', supStreamerMessage).casefold()
+        # take these incoming message strings and replace every non alphanumeric character with ' '
+        chatMessage = self.__supStreamerRegEx.sub(' ', chatMessage).strip().casefold()
+        supStreamerMessage = self.__supStreamerRegEx.sub(' ', supStreamerMessage).strip().casefold()
 
         if chatMessage == supStreamerMessage:
             return True
