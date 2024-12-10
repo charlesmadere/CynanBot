@@ -42,7 +42,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         ttsTimeoutSeconds = utils.getFloatFromDict(
             d = jsonContents,
             key = 'ttsTimeoutSeconds',
-            fallback = 10
+            fallback = 30
         )
 
         if ttsTimeoutSeconds < 5 or ttsTimeoutSeconds > 300:
