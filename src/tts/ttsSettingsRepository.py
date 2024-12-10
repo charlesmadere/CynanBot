@@ -45,7 +45,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
             fallback = 10
         )
 
-        if ttsTimeoutSeconds < 0 or ttsTimeoutSeconds > 30:
+        if ttsTimeoutSeconds < 5 or ttsTimeoutSeconds > 300:
             raise ValueError(f'ttsTimeoutSeconds is out of bounds: \"{ttsTimeoutSeconds}\"')
 
         return ttsTimeoutSeconds
