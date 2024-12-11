@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from ...google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from ...google.googleVoiceSelectionParams import GoogleVoiceSelectionParams
+from ...google.models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from ...google.models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
 @dataclass(frozen = True)

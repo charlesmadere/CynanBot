@@ -4,16 +4,16 @@ from typing import Any
 
 import jwt
 
-from .exceptions import (
+from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from ..exceptions import (
     GoogleCloudProjectKeyIdUnavailableException,
     GoogleCloudProjectPrivateKeyUnavailableException,
     GoogleCloudServiceAccountEmailUnavailableException)
-from .googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
-from .googleJsonMapperInterface import GoogleJsonMapperInterface
-from .googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from .models.googleScope import GoogleScope
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc import utils as utils
+from ..googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
+from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from ..models.googleScope import GoogleScope
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
 
 
 class GoogleJwtBuilder(GoogleJwtBuilderInterface):

@@ -1,5 +1,5 @@
 from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
-from ...google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from ...google.models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 
 
 class GoogleFileExtensionHelper(GoogleFileExtensionHelperInterface):

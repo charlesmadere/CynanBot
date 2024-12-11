@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from .openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from .openWeatherReport import OpenWeatherReport
-from ..location.location import Location
+from ..openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..openWeatherReport import OpenWeatherReport
+from ...location.location import Location
 
 
 class OpenWeatherApiServiceInterface(ABC):

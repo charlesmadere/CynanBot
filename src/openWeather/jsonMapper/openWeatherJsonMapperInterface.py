@@ -2,15 +2,15 @@ from abc import ABC, abstractmethod
 from datetime import tzinfo
 from typing import Any
 
-from .openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
-from .openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from .openWeatherAlert import OpenWeatherAlert
-from .openWeatherDay import OpenWeatherDay
-from .openWeatherFeelsLike import OpenWeatherFeelsLike
-from .openWeatherMoment import OpenWeatherMoment
-from .openWeatherMomentDescription import OpenWeatherMomentDescription
-from .openWeatherReport import OpenWeatherReport
-from .openWeatherTemperature import OpenWeatherTemperature
+from ..openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
+from ..openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..openWeatherAlert import OpenWeatherAlert
+from ..openWeatherDay import OpenWeatherDay
+from ..openWeatherFeelsLike import OpenWeatherFeelsLike
+from ..openWeatherMoment import OpenWeatherMoment
+from ..openWeatherMomentDescription import OpenWeatherMomentDescription
+from ..openWeatherReport import OpenWeatherReport
+from ..openWeatherTemperature import OpenWeatherTemperature
 
 
 class OpenWeatherJsonMapperInterface(ABC):

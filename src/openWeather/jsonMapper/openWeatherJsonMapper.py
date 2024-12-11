@@ -4,19 +4,19 @@ from typing import Any
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
-from .openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from .openWeatherAlert import OpenWeatherAlert
-from .openWeatherDay import OpenWeatherDay
-from .openWeatherFeelsLike import OpenWeatherFeelsLike
 from .openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
-from .openWeatherMoment import OpenWeatherMoment
-from .openWeatherMomentDescription import OpenWeatherMomentDescription
-from .openWeatherReport import OpenWeatherReport
-from .openWeatherTemperature import OpenWeatherTemperature
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
+from ..openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
+from ..openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..openWeatherAlert import OpenWeatherAlert
+from ..openWeatherDay import OpenWeatherDay
+from ..openWeatherFeelsLike import OpenWeatherFeelsLike
+from ..openWeatherMoment import OpenWeatherMoment
+from ..openWeatherMomentDescription import OpenWeatherMomentDescription
+from ..openWeatherReport import OpenWeatherReport
+from ..openWeatherTemperature import OpenWeatherTemperature
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):

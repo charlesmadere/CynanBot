@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from ..googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ...misc.clearable import Clearable
 
 

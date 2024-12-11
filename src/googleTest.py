@@ -1,18 +1,18 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
+from .google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
+from .google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from .google.apiService.googleApiService import GoogleApiService
 from .google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
-from .google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
-from .google.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from .google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
-from .google.googleJsonMapper import GoogleJsonMapper
-from .google.googleJsonMapperInterface import GoogleJsonMapperInterface
-from .google.googleJwtBuilder import GoogleJwtBuilder
-from .google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from .google.googleTextSynthesisInput import GoogleTextSynthesisInput
-from .google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from .google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from .google.jsonMapper.googleJsonMapper import GoogleJsonMapper
+from .google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from .google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
+from .google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from .google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
+from .google.models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from .google.models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from .google.settings.googleSettingsRepository import GoogleSettingsRepository
 from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from .location.timeZoneRepository import TimeZoneRepository

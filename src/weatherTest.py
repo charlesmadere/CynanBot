@@ -9,11 +9,11 @@ from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
-from src.openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
-from src.openWeather.openWeatherApiService import OpenWeatherApiService
-from src.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
-from src.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from src.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from src.openWeather.apiService.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
+from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
+from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
+from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
+from src.openWeather.jsonMapper.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub

@@ -1,16 +1,16 @@
 import traceback
 
 from .googleApiServiceInterface import GoogleApiServiceInterface
+from ..accessToken.googleAccessToken import GoogleAccessToken
+from ..accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from ..exceptions import GoogleCloudProjectIdUnavailableException
-from ..googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from ..googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
-from ..googleJsonMapperInterface import GoogleJsonMapperInterface
-from ..googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from ..googleTextSynthesisResponse import GoogleTextSynthesisResponse
-from ..googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from ..googleTranslateTextResponse import GoogleTranslateTextResponse
-from ..googleTranslationRequest import GoogleTranslationRequest
-from ..models.googleAccessToken import GoogleAccessToken
+from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from ..jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from ..models.googleTextSynthesisResponse import GoogleTextSynthesisResponse
+from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from ..models.googleTranslateTextResponse import GoogleTranslateTextResponse
+from ..models.googleTranslationRequest import GoogleTranslationRequest
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider

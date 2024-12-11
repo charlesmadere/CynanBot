@@ -1,8 +1,8 @@
 from typing import Any
 
 from .googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ..googleJsonMapperInterface import GoogleJsonMapperInterface
-from ..googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
