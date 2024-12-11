@@ -1,16 +1,16 @@
 import traceback
 
-from .exceptions import OpenWeatherApiKeyUnavailableException
-from .openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
 from .openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from .openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
-from .openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
-from .openWeatherReport import OpenWeatherReport
-from ..location.location import Location
-from ..misc import utils as utils
-from ..network.exceptions import GenericNetworkException
-from ..network.networkClientProvider import NetworkClientProvider
-from ..timber.timberInterface import TimberInterface
+from ..exceptions import OpenWeatherApiKeyUnavailableException
+from ..jsonMapper.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from ..models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..models.openWeatherReport import OpenWeatherReport
+from ...location.location import Location
+from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...timber.timberInterface import TimberInterface
 
 
 class OpenWeatherApiService(OpenWeatherApiServiceInterface):
@@ -42,10 +42,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         self.__timber.log('OpenWeatherApiService', f'Fetching air quality index from OpenWeather... ({location=})')
         clientSession = await self.__networkClientProvider.get()
-
-        openWeatherApiKey = await self.__openWeatherApiKeyProvider.getOpenWeatherApiKey()
-        if not utils.isValidStr(openWeatherApiKey):
-            raise OpenWeatherApiKeyUnavailableException(f'No OpenWeatherApiService API key is available: \"{openWeatherApiKey}\"')
+        openWeatherApiKey = await self.__requireOpenWeatherApiKey()
 
         try:
             response = await clientSession.get(
@@ -80,10 +77,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         self.__timber.log('OpenWeatherApiService', f'Fetching weather report from OpenWeather... ({location=})')
         clientSession = await self.__networkClientProvider.get()
-
-        openWeatherApiKey = await self.__openWeatherApiKeyProvider.getOpenWeatherApiKey()
-        if not utils.isValidStr(openWeatherApiKey):
-            raise OpenWeatherApiKeyUnavailableException(f'No OpenWeatherApiService API key is available: \"{openWeatherApiKey}\"')
+        openWeatherApiKey = await self.__requireOpenWeatherApiKey()
 
         try:
             response = await clientSession.get(
@@ -108,3 +102,11 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
             raise GenericNetworkException(f'OpenWeatherApiService failed to parse JSON response into OpenWeatherReport instance ({location=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({weatherReport=})')
 
         return weatherReport
+
+    async def __requireOpenWeatherApiKey(self) -> str:
+        openWeatherApiKey = await self.__openWeatherApiKeyProvider.getOpenWeatherApiKey()
+
+        if not utils.isValidStr(openWeatherApiKey):
+            raise OpenWeatherApiKeyUnavailableException(f'No OpenWeatherApiService API key is available: \"{openWeatherApiKey}\"')
+
+        return openWeatherApiKey

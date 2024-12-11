@@ -5,10 +5,10 @@ from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ...google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
-from ...google.googleTextSynthesisInput import GoogleTextSynthesisInput
-from ...google.googleTextSynthesisResponse import GoogleTextSynthesisResponse
-from ...google.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from ...google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from ...google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
+from ...google.models.googleTextSynthesisResponse import GoogleTextSynthesisResponse
+from ...google.models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from ...google.models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface

@@ -1,9 +1,9 @@
 from typing import Any
 
 from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
-from .funtoonPkmnCatchType import FuntoonPkmnCatchType
-from .funtoonTriviaQuestion import FuntoonTriviaQuestion
-from ..misc import utils as utils
+from ..funtoonPkmnCatchType import FuntoonPkmnCatchType
+from ..funtoonTriviaQuestion import FuntoonTriviaQuestion
+from ...misc import utils as utils
 
 
 class FuntoonJsonMapper(FuntoonJsonMapperInterface):

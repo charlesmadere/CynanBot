@@ -1,6 +1,6 @@
 import pytest
 
-from src.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from src.google.models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
 from src.tts.google.googleFileExtensionHelperInterface import \
     GoogleFileExtensionHelperInterface

@@ -8,8 +8,8 @@ from ..translationApiSource import TranslationApiSource
 from ..translationResponse import TranslationResponse
 from ...google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
 from ...google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
-from ...google.googleTranslateTextResponse import GoogleTranslateTextResponse
-from ...google.googleTranslationRequest import GoogleTranslationRequest
+from ...google.models.googleTranslateTextResponse import GoogleTranslateTextResponse
+from ...google.models.googleTranslationRequest import GoogleTranslationRequest
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

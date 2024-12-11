@@ -7,14 +7,14 @@ from .contentScanner.contentScanner import ContentScanner
 from .contentScanner.contentScannerInterface import ContentScannerInterface
 from .cuteness.cutenessRepository import CutenessRepository
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from .funtoon.funtoonApiService import FuntoonApiService
-from .funtoon.funtoonApiServiceInterface import FuntoonApiServiceInterface
-from .funtoon.funtoonJsonMapper import FuntoonJsonMapper
-from .funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
-from .funtoon.funtoonRepository import FuntoonRepository
-from .funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
-from .funtoon.funtoonTokensRepository import FuntoonTokensRepository
-from .funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from .funtoon.apiService.funtoonApiService import FuntoonApiService
+from .funtoon.apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
+from .funtoon.funtoonHelper import FuntoonHelper
+from .funtoon.funtoonHelperInterface import FuntoonHelperInterface
+from .funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
+from .funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from .funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
+from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .location.timeZoneRepository import TimeZoneRepository
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .misc.authRepository import AuthRepository
@@ -293,12 +293,14 @@ funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
-funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
+
+funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
     timber = timber
 )
+
 triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     contentScanner = contentScanner,
@@ -331,7 +333,7 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
 )
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
-    funtoonRepository = funtoonRepository,
+    funtoonHelper = funtoonHelper,
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     triviaSettingsRepository = triviaSettingsRepository
 )

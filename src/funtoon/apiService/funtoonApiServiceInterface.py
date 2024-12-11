@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .funtoonTriviaQuestion import FuntoonTriviaQuestion
+from ..funtoonTriviaQuestion import FuntoonTriviaQuestion
 
 
 class FuntoonApiServiceInterface(ABC):

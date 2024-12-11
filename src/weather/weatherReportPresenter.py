@@ -4,8 +4,8 @@ from datetime import datetime
 from .weatherReport import WeatherReport
 from .weatherReportPresenterInterface import WeatherReportPresenterInterface
 from ..misc import utils as utils
-from ..openWeather.openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
-from ..openWeather.openWeatherDay import OpenWeatherDay
+from ..openWeather.models.openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
+from ..openWeather.models.openWeatherDay import OpenWeatherDay
 
 
 class WeatherReportPresenter(WeatherReportPresenterInterface):

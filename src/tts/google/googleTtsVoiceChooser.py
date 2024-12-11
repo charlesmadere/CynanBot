@@ -3,7 +3,7 @@ import random
 from frozendict import frozendict
 
 from .googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
-from ...google.googleVoiceSelectionParams import GoogleVoiceSelectionParams
+from ...google.models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
 class GoogleTtsVoiceChooser(GoogleTtsVoiceChooserInterface):

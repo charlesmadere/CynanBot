@@ -1,6 +1,7 @@
 import asyncio
 import locale
 import math
+from dataclasses import dataclass
 
 from frozenlist import FrozenList
 
@@ -21,6 +22,12 @@ from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
+
+    @dataclass(frozen = True)
+    class TtsMonsterTtsEvent:
+        fileNames: FrozenList[str]
+        characterAllowance: int | None
+        characterUsage: int | None
 
     def __init__(
         self,
@@ -104,40 +111,51 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             return
 
         self.__isLoading = True
+        ttsMonsterTtsEvent = await self.__processTtsEvent(event)
+
+        if ttsMonsterTtsEvent is None or len(ttsMonsterTtsEvent.fileNames) == 0:
+            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterTtsEvent=})')
+            self.__isLoading = False
+            return
+
+        await self.__reportCharacterUsage(
+            characterAllowance = ttsMonsterTtsEvent.characterAllowance,
+            characterUsage = ttsMonsterTtsEvent.characterUsage,
+            twitchChannel = event.twitchChannel
+        )
+
+        self.__timber.log('TtsMonsterTtsManager', f'Playing {len(ttsMonsterTtsEvent.fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
+        self.__backgroundTaskHelper.createTask(self.__executeTts(ttsMonsterTtsEvent.fileNames))
+        self.__isLoading = False
+
+    async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterTtsEvent | None:
+        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
 
         ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
-            message = event.message,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )
 
         if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
-            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterUrls=})')
+            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS URLs ({event=}) ({ttsMonsterUrls=})')
             self.__isLoading = False
             return
 
-        fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(ttsMonsterUrls.urls)
+        fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(
+            ttsUrls = ttsMonsterUrls.urls
+        )
 
         if fileNames is None or len(fileNames) == 0:
             self.__timber.log('TtsMonsterTtsManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
             self.__isLoading = False
             return
 
-        await self.__reportCharacterUsage(
+        return TtsMonsterTtsManager.TtsMonsterTtsEvent(
+            fileNames = fileNames,
             characterAllowance = ttsMonsterUrls.characterAllowance,
-            characterUsage = ttsMonsterUrls.characterUsage,
-            twitchChannel = event.twitchChannel
+            characterUsage = ttsMonsterUrls.characterUsage
         )
-
-        self.__timber.log('TtsMonsterTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        self.__backgroundTaskHelper.createTask(self.__executeTts(fileNames))
-        self.__isLoading = False
-
-    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
-        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
-
-        # TODO
-        return None
 
     async def __reportCharacterUsage(
         self,

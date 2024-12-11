@@ -7,10 +7,10 @@ from ..location.location import Location
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..network.exceptions import GenericNetworkException
+from ..openWeather.apiService.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
+from ..openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
-from ..openWeather.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from ..openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
-from ..openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
+from ..openWeather.models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
 from ..timber.timberInterface import TimberInterface
 
 

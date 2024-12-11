@@ -1,8 +1,8 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from .google.googleJsonMapper import GoogleJsonMapper
-from .google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from .google.jsonMapper.googleJsonMapper import GoogleJsonMapper
+from .google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from .location.timeZoneRepository import TimeZoneRepository
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider

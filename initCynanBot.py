@@ -68,24 +68,24 @@ from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
 from src.emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
-from src.funtoon.funtoonApiService import FuntoonApiService
-from src.funtoon.funtoonApiServiceInterface import FuntoonApiServiceInterface
-from src.funtoon.funtoonJsonMapper import FuntoonJsonMapper
-from src.funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
-from src.funtoon.funtoonRepository import FuntoonRepository
-from src.funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
-from src.funtoon.funtoonTokensRepository import FuntoonTokensRepository
-from src.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from src.funtoon.apiService.funtoonApiService import FuntoonApiService
+from src.funtoon.apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
+from src.funtoon.funtoonHelper import FuntoonHelper
+from src.funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
 from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
+from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
+from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from src.funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
+from src.funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
+from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
 from src.google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
-from src.google.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
-from src.google.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
-from src.google.googleJsonMapper import GoogleJsonMapper
-from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
-from src.google.googleJwtBuilder import GoogleJwtBuilder
-from src.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
+from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
+from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from src.jisho.jishoApiService import JishoApiService
 from src.jisho.jishoApiServiceInterface import JishoApiServiceInterface
 from src.jisho.jishoJsonMapper import JishoJsonMapper
@@ -127,10 +127,10 @@ from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
 from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
-from src.openWeather.openWeatherApiService import OpenWeatherApiService
-from src.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
-from src.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from src.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
+from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
+from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
+from src.openWeather.jsonMapper.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
 from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
@@ -704,7 +704,7 @@ funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
     timber = timber
 )
 
-funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
+funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
@@ -1205,7 +1205,7 @@ millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
 
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
-    funtoonRepository = funtoonRepository,
+    funtoonHelper = funtoonHelper,
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -1772,7 +1772,7 @@ cynanBot = CynanBot(
     cutenessPresenter = cutenessPresenter,
     cutenessRepository = cutenessRepository,
     cutenessUtils = cutenessUtils,
-    funtoonRepository = funtoonRepository,
+    funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     halfLifeService = None,

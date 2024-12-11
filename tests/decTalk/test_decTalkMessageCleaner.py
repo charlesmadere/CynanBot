@@ -198,7 +198,7 @@ class TestDecTalkMessageCleaner:
             })
         )
 
-        cleaner = DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+        cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
             emojiHelper = self.emojiHelper,
             timber = self.timber,
             ttsSettingsRepository = ttsSettingsRepository

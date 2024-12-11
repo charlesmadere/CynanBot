@@ -5,23 +5,23 @@ from typing import Any
 from frozenlist import FrozenList
 
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
-from .googleTextSynthesisInput import GoogleTextSynthesisInput
-from .googleTextSynthesisResponse import GoogleTextSynthesisResponse
-from .googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from .googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
-from .googleTranslateTextResponse import GoogleTranslateTextResponse
-from .googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
-from .googleTranslation import GoogleTranslation
-from .googleTranslationRequest import GoogleTranslationRequest
-from .googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from .googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
-from .googleVoiceGender import GoogleVoiceGender
-from .googleVoiceSelectionParams import GoogleVoiceSelectionParams
-from .models.googleAccessToken import GoogleAccessToken
-from .models.googleScope import GoogleScope
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
+from ..accessToken.googleAccessToken import GoogleAccessToken
+from ..models.googleScope import GoogleScope
+from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
+from ..models.googleTextSynthesisResponse import GoogleTextSynthesisResponse
+from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
+from ..models.googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
+from ..models.googleTranslateTextResponse import GoogleTranslateTextResponse
+from ..models.googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
+from ..models.googleTranslation import GoogleTranslation
+from ..models.googleTranslationRequest import GoogleTranslationRequest
+from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from ..models.googleVoiceGender import GoogleVoiceGender
+from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class GoogleJsonMapper(GoogleJsonMapperInterface):

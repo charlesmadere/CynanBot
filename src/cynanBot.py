@@ -113,8 +113,8 @@ from .crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControl
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
-from .funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
-from .funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from .funtoon.funtoonHelperInterface import FuntoonHelperInterface
+from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from .language.jishoHelperInterface import JishoHelperInterface
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
@@ -294,7 +294,7 @@ class CynanBot(
         cutenessPresenter: CutenessPresenterInterface | None,
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
-        funtoonRepository: FuntoonRepositoryInterface | None,
+        funtoonHelper: FuntoonHelperInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         halfLifeService: HalfLifeServiceInterface | None,
@@ -463,8 +463,8 @@ class CynanBot(
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
             raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif funtoonRepository is not None and not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+        elif funtoonHelper is not None and not isinstance(funtoonHelper, FuntoonHelperInterface):
+            raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif halfLifeService is not None and not isinstance(halfLifeService, HalfLifeServiceInterface):
@@ -857,19 +857,19 @@ class CynanBot(
         else:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = CutenessPointRedemption(cutenessRepository, timber, twitchUtils)
 
-        
+
         self.__decTalkSongPointRedemption: AbsChannelPointRedemption = DecTalkSongPointRedemption(streamAlertsManager, timber)
 
-        if funtoonRepository is None:
+        if funtoonHelper is None:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = PkmnBattlePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = PkmnCatchPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = PkmnBattlePointRedemption(funtoonHelper, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = PkmnCatchPointRedemption(funtoonHelper, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonHelper, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonHelper, generalSettingsRepository, timber, twitchUtils)
 
         if soundPlayerManagerProvider is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()

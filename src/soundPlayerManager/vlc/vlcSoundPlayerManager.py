@@ -218,12 +218,12 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         elif not isinstance(mediaPlayer, VlcMediaPlayer):
             raise TypeError(f'mediaPlayer argument is malformed: \"{mediaPlayer}\"')
 
-        await mediaPlayer.setVolume(volume)
-
         self.__isProgressingThroughPlaylist = True
         playErrorOccurred: bool = False
         currentPlaylistIndex: int = -1
         currentFilePath: str | None = None
+
+        await mediaPlayer.setVolume(volume)
 
         self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) ({playSessionId=}) ({mediaPlayer=})')
 

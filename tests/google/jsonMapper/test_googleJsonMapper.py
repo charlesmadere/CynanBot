@@ -1,10 +1,10 @@
 import pytest
 
-from src.google.googleJsonMapper import GoogleJsonMapper
-from src.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
+from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.models.googleScope import GoogleScope
-from src.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
-from src.google.googleVoiceGender import GoogleVoiceGender
+from src.google.models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from src.google.models.googleVoiceGender import GoogleVoiceGender
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
