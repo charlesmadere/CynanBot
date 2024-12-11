@@ -16,6 +16,7 @@ from .beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from .channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from .channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from .channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
+from .channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from .channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from .channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from .channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -856,6 +857,9 @@ class CynanBot(
         else:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = CutenessPointRedemption(cutenessRepository, timber, twitchUtils)
 
+        
+        self.__decTalkSongPointRedemption: AbsChannelPointRedemption = DecTalkSongPointRedemption(streamAlertsManager, timber)
+
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -1055,6 +1059,7 @@ class CynanBot(
             channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
                 casualGamePollPointRedemption = self.__casualGamePollPointRedemption,
                 cutenessPointRedemption = self.__cutenessPointRedemption,
+                decTalkSongPointRedemption = self.__decTalkSongPointRedemption,
                 pkmnBattlePointRedemption = self.__pkmnBattlePointRedemption,
                 pkmnCatchPointRedemption = self.__pkmnCatchPointRedemption,
                 pkmnEvolvePointRedemption = self.__pkmnEvolvePointRedemption,

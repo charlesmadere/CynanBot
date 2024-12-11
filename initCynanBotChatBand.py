@@ -170,6 +170,9 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
+from src.users.decTalkSongs import decTalkSongBoosterPack
+from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
+from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
 from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
@@ -350,6 +353,8 @@ crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser
 
 cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
 
+decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
+
 pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
     timber = timber
 )
@@ -371,6 +376,7 @@ ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = StubTtsChatt
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
+    decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,

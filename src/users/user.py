@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
+from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
@@ -33,6 +34,7 @@ class User(UserInterface):
         isChatLoggingEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
+        isDecTalkSongsEnabled: bool,
         isDeerForceMessageEnabled: bool,
         isEnabled: bool,
         isGiveCutenessEnabled: bool,
@@ -90,6 +92,7 @@ class User(UserInterface):
         chatBackMessages: FrozenList[str] | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
+        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
         discordUrl: str | None,
         handle: str,
         instagram: str | None,
@@ -142,6 +145,8 @@ class User(UserInterface):
             raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
+        elif not utils.isValidBool(isDecTalkSongsEnabled):
+            raise TypeError(f'isDecTalkSongsEnabled argument is malformed: \"{isDecTalkSongsEnabled}\"')
         elif not utils.isValidBool(isDeerForceMessageEnabled):
             raise TypeError(f'isDeerForceMessageEnabled argument is malformed: \"{isDeerForceMessageEnabled}\"')
         elif not utils.isValidBool(isEnabled):
@@ -254,6 +259,8 @@ class User(UserInterface):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
             raise TypeError(f'crowdControlGameShuffleRewardId argument is malformed: \"{crowdControlGameShuffleRewardId}\"')
+        elif decTalkSongBoosterPacks is not None and not isinstance(decTalkSongBoosterPacks, frozendict):
+            raise TypeError(f'decTalkSongBoosterPacks argument is malformed: \"{decTalkSongBoosterPacks}\"')
         elif discordUrl is not None and not isinstance(discordUrl, str):
             raise TypeError(f'discordUrl argument is malformed: \"{discordUrl}\"')
         elif not utils.isValidStr(handle):
@@ -313,6 +320,7 @@ class User(UserInterface):
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
+        self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
         self.__isEnabled: bool = isEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
@@ -370,6 +378,7 @@ class User(UserInterface):
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
+        self.__decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = decTalkSongBoosterPacks
         self.__discordUrl: str | None = discordUrl
         self.__handle: str = handle
         self.__instagram: str | None = instagram
@@ -457,6 +466,10 @@ class User(UserInterface):
     @property
     def casualGamePollUrl(self) -> str | None:
         return self.__casualGamePollUrl
+
+    @property
+    def decTalkSongBoosterPacks(self) -> frozendict[str, DecTalkSongBoosterPack] | None:
+        return self.__decTalkSongBoosterPacks
 
     @property
     def discordUrl(self) -> str | None:
@@ -637,6 +650,10 @@ class User(UserInterface):
     @property
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
+
+    @property
+    def isDecTalkSongsEnabled(self) -> bool:
+        return self.__isDecTalkSongsEnabled
 
     @property
     def isDeerForceMessageEnabled(self) -> bool:

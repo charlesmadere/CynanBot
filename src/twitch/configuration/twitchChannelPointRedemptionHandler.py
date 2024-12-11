@@ -5,6 +5,7 @@ from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
+from ...channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -27,6 +28,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self,
         casualGamePollPointRedemption: AbsChannelPointRedemption,
         cutenessPointRedemption: AbsChannelPointRedemption,
+        decTalkSongPointRedemption: AbsChannelPointRedemption,
         pkmnBattlePointRedemption: AbsChannelPointRedemption,
         pkmnCatchPointRedemption: AbsChannelPointRedemption,
         pkmnEvolvePointRedemption: AbsChannelPointRedemption,
@@ -43,6 +45,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'casualGamePollPointRedemption argument is malformed: \"{casualGamePollPointRedemption}\"')
         elif not isinstance(cutenessPointRedemption, CutenessPointRedemption) and not isinstance(cutenessPointRedemption, StubPointRedemption):
             raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
+        elif not isinstance(decTalkSongPointRedemption, DecTalkSongPointRedemption) and not isinstance(decTalkSongPointRedemption, StubPointRedemption):
+            raise TypeError(f'decTalkSongPointRedemption argument is malformed: \"{decTalkSongPointRedemption}\"')
         elif not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption) and not isinstance(pkmnBattlePointRedemption, StubPointRedemption):
             raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
         elif not isinstance(pkmnCatchPointRedemption, PkmnCatchPointRedemption) and not isinstance(pkmnCatchPointRedemption, StubPointRedemption):
@@ -68,6 +72,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__casualGamePollPointRedemption: AbsChannelPointRedemption = casualGamePollPointRedemption
         self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
+        self.__decTalkSongPointRedemption: AbsChannelPointRedemption = decTalkSongPointRedemption
         self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
         self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
         self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
@@ -144,6 +149,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.isDecTalkSongsEnabled:
+            if await self.__decTalkSongPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):

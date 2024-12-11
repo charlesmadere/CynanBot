@@ -1,6 +1,17 @@
 {
     "userHandle": {
         "analogueEnabled": true,
+        "decTalkSongsEnabled": true,
+        "decTalkSongBoosterPacks": [
+            {
+                "rewardId": "",
+                "song": "trololo"
+            },
+            {
+                "rewardId": "",
+                "song": "song_of_storms"
+            }
+        ],
         "discord": "https://discord.gg/linkToInviteURL",
         "esWordOfTheDayEnabled": true,
         "jaWordOfTheDayEnabled": true,

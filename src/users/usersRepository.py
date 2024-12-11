@@ -12,6 +12,8 @@ from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
+from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
+from .decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmn.pkmnCatchType import PkmnCatchType
@@ -39,6 +41,7 @@ class UsersRepository(UsersRepositoryInterface):
         self,
         crowdControlJsonParser: CrowdControlJsonParserInterface,
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
+        decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface,
         pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface,
         soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
@@ -53,6 +56,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
         elif not isinstance(cutenessBoosterPackJsonParser, CutenessBoosterPackJsonParserInterface):
             raise TypeError(f'cutenessBoosterPackJsonParser argument is malformed: \"{cutenessBoosterPackJsonParser}\"')
+        elif not isinstance(decTalkSongBoosterPackParser, DecTalkSongBoosterPackParserInterface):
+            raise TypeError(f'decTalkSongBoosterPackParser argument is malformed: \"{decTalkSongBoosterPackParser}\"')
         elif not isinstance(pkmnCatchTypeJsonMapper, PkmnCatchTypeJsonMapperInterface):
             raise TypeError(f'pkmnCatchTypeJsonMapper argument is malformed: \"{pkmnCatchTypeJsonMapper}\"')
         elif not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
@@ -74,6 +79,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
         self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
+        self.__decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = decTalkSongBoosterPackParser
         self.__pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = pkmnCatchTypeJsonMapper
         self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
@@ -148,6 +154,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
+        isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
         isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
         isEnabled = utils.getBoolFromDict(userJson, 'enabled', True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
@@ -178,6 +185,10 @@ class UsersRepository(UsersRepositoryInterface):
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         chatBackMessages = FrozenList(userJson.get('chatBackMessages', None))
+        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = None
+        if isDecTalkSongsEnabled:
+            decTalkSongBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('decTalkSongBoosterPacks')
+            decTalkSongBoosterPacks = self.__decTalkSongBoosterPackParser.parseBoosterPacks(decTalkSongBoosterPacksJson)
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -333,6 +344,7 @@ class UsersRepository(UsersRepositoryInterface):
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
+            isDecTalkSongsEnabled = isDecTalkSongsEnabled,
             isDeerForceMessageEnabled = isDeerForceMessageEnabled,
             isEnabled = isEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
@@ -391,6 +403,7 @@ class UsersRepository(UsersRepositoryInterface):
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discordUrl = discordUrl,
+            decTalkSongBoosterPacks = decTalkSongBoosterPacks,
             handle = handle,
             instagram = instagram,
             locationId = locationId,
