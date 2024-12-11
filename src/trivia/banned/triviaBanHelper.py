@@ -4,7 +4,7 @@ from .triviaBanHelperInterface import TriviaBanHelperInterface
 from ..questions.triviaSource import TriviaSource
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ...funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
+from ...funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ...misc import utils as utils
 
 
@@ -13,21 +13,21 @@ class TriviaBanHelper(TriviaBanHelperInterface):
     def __init__(
         self,
         bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface,
-        funtoonRepository: FuntoonRepositoryInterface,
+        funtoonHelper: FuntoonHelperInterface,
         glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         if not isinstance(bannedTriviaIdsRepository, BannedTriviaIdsRepositoryInterface):
             raise TypeError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
-        elif not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+        elif not isinstance(funtoonHelper, FuntoonHelperInterface):
+            raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
         elif not isinstance(glacialTriviaQuestionRepository, GlacialTriviaQuestionRepositoryInterface):
             raise TypeError(f'glacialTriviaQuestionRepository argument is malformed: \"{glacialTriviaQuestionRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = bannedTriviaIdsRepository
-        self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
+        self.__funtoonHelper: FuntoonHelperInterface = funtoonHelper
         self.__glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = glacialTriviaQuestionRepository
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
@@ -50,7 +50,7 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         )
 
         if triviaSource is TriviaSource.FUNTOON:
-            await self.__funtoonRepository.banTriviaQuestion(triviaId)
+            await self.__funtoonHelper.banTriviaQuestion(triviaId)
             return BanTriviaQuestionResult.BANNED
         else:
             return await self.__bannedTriviaIdsRepository.ban(

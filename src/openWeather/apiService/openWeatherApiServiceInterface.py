@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from ..openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from ..openWeatherReport import OpenWeatherReport
+from ..models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..models.openWeatherReport import OpenWeatherReport
 from ...location.location import Location
 
 

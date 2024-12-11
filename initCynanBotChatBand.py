@@ -35,16 +35,16 @@ from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
 from src.emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
-from src.funtoon.funtoonApiService import FuntoonApiService
-from src.funtoon.funtoonApiServiceInterface import FuntoonApiServiceInterface
-from src.funtoon.funtoonJsonMapper import FuntoonJsonMapper
-from src.funtoon.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
-from src.funtoon.funtoonRepository import FuntoonRepository
-from src.funtoon.funtoonRepositoryInterface import FuntoonRepositoryInterface
-from src.funtoon.funtoonTokensRepository import FuntoonTokensRepository
-from src.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from src.funtoon.apiService.funtoonApiService import FuntoonApiService
+from src.funtoon.apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
+from src.funtoon.funtoonHelper import FuntoonHelper
+from src.funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
 from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
+from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
+from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from src.funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
+from src.funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
@@ -446,7 +446,7 @@ funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
     timber = timber
 )
 
-funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
+funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
@@ -801,7 +801,7 @@ cynanBot = CynanBot(
     cutenessPresenter = None,
     cutenessRepository = None,
     cutenessUtils = None,
-    funtoonRepository = None,
+    funtoonHelper = None,
     funtoonTokensRepository = None,
     generalSettingsRepository = generalSettingsRepository,
     halfLifeService = None,

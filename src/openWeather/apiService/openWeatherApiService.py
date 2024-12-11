@@ -4,8 +4,8 @@ from .openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from .openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from ..exceptions import OpenWeatherApiKeyUnavailableException
 from ..jsonMapper.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
-from ..openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from ..openWeatherReport import OpenWeatherReport
+from ..models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..models.openWeatherReport import OpenWeatherReport
 from ...location.location import Location
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException

@@ -8,7 +8,7 @@ from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositor
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
-from ..funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from ..funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface

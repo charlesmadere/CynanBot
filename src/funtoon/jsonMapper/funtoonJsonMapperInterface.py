@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .funtoonPkmnCatchType import FuntoonPkmnCatchType
-from .funtoonTriviaQuestion import FuntoonTriviaQuestion
+from ..funtoonPkmnCatchType import FuntoonPkmnCatchType
+from ..funtoonTriviaQuestion import FuntoonTriviaQuestion
 
 
 class FuntoonJsonMapperInterface(ABC):

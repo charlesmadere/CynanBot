@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .funtoonPkmnCatchType import FuntoonPkmnCatchType
 
 
-class FuntoonRepositoryInterface(ABC):
+class FuntoonHelperInterface(ABC):
 
     @abstractmethod
     async def banTriviaQuestion(self, triviaId: str) -> bool:

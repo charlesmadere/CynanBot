@@ -10,7 +10,7 @@ from ..network.exceptions import GenericNetworkException
 from ..openWeather.apiService.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from ..openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
-from ..openWeather.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..openWeather.models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
 from ..timber.timberInterface import TimberInterface
 
 

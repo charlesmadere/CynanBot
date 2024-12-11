@@ -12,7 +12,7 @@ from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import GenericTriviaNetworkException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ...funtoon.funtoonApiServiceInterface import FuntoonApiServiceInterface
+from ...funtoon.apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 

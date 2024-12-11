@@ -2,12 +2,12 @@ import traceback
 from typing import Any
 
 from .funtoonApiServiceInterface import FuntoonApiServiceInterface
-from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
-from .funtoonTriviaQuestion import FuntoonTriviaQuestion
-from ..misc import utils as utils
-from ..network.exceptions import GenericNetworkException
-from ..network.networkClientProvider import NetworkClientProvider
-from ..timber.timberInterface import TimberInterface
+from ..funtoonTriviaQuestion import FuntoonTriviaQuestion
+from ..jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from ...misc import utils as utils
+from ...network.exceptions import GenericNetworkException
+from ...network.networkClientProvider import NetworkClientProvider
+from ...timber.timberInterface import TimberInterface
 
 
 class FuntoonApiService(FuntoonApiServiceInterface):
@@ -99,7 +99,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         if responseStatusCode == 200:
             return True
         else:
-            self.__timber.log('FuntoonRepository', f'Error sending custom event ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=}) ({response=}) ({responseStatusCode=})')
+            self.__timber.log('FuntoonApiService', f'Error sending custom event ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=}) ({response=}) ({responseStatusCode=})')
             return False
 
     async def fetchTriviaQuestion(self) -> FuntoonTriviaQuestion:

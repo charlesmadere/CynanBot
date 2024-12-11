@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from ..location.location import Location
-from ..openWeather.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from ..openWeather.openWeatherReport import OpenWeatherReport
+from ..openWeather.models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..openWeather.models.openWeatherReport import OpenWeatherReport
 
 
 @dataclass(frozen = True)

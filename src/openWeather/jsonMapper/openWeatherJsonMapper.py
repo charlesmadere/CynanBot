@@ -5,15 +5,15 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
-from ..openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
-from ..openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
-from ..openWeatherAlert import OpenWeatherAlert
-from ..openWeatherDay import OpenWeatherDay
-from ..openWeatherFeelsLike import OpenWeatherFeelsLike
-from ..openWeatherMoment import OpenWeatherMoment
-from ..openWeatherMomentDescription import OpenWeatherMomentDescription
-from ..openWeatherReport import OpenWeatherReport
-from ..openWeatherTemperature import OpenWeatherTemperature
+from ..models.openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
+from ..models.openWeatherAirPollutionReport import OpenWeatherAirPollutionReport
+from ..models.openWeatherAlert import OpenWeatherAlert
+from ..models.openWeatherDay import OpenWeatherDay
+from ..models.openWeatherFeelsLike import OpenWeatherFeelsLike
+from ..models.openWeatherMoment import OpenWeatherMoment
+from ..models.openWeatherMomentDescription import OpenWeatherMomentDescription
+from ..models.openWeatherReport import OpenWeatherReport
+from ..models.openWeatherTemperature import OpenWeatherTemperature
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface

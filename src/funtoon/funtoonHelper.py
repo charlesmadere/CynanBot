@@ -1,18 +1,18 @@
 import traceback
 from typing import Any
 
+from .apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from .exceptions import NoFuntoonTokenException
-from .funtoonApiServiceInterface import FuntoonApiServiceInterface
-from .funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from .funtoonHelperInterface import FuntoonHelperInterface
 from .funtoonPkmnCatchType import FuntoonPkmnCatchType
-from .funtoonRepositoryInterface import FuntoonRepositoryInterface
-from .funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from .jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
+from .tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..misc import utils as utils
 from ..network.exceptions import GenericNetworkException
 from ..timber.timberInterface import TimberInterface
 
 
-class FuntoonRepository(FuntoonRepositoryInterface):
+class FuntoonHelper(FuntoonHelperInterface):
 
     def __init__(
         self,
@@ -44,7 +44,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         try:
             successfullyBanned = await self.__funtoonApiService.banTriviaQuestion(triviaId = triviaId)
         except GenericNetworkException as e:
-            self.__timber.log('FuntoonRepository', f'Encountered network error when banning trivia question ({triviaId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Encountered network error when banning trivia question ({triviaId=}): {e}', e, traceback.format_exc())
 
         return successfullyBanned
 
@@ -69,7 +69,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnBattle as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnBattle as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
             return False
 
         return await self.__funtoonApiService.customEvent(
@@ -104,7 +104,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnCatch as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnCatch as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
             return False
 
         data: dict[str, Any] | str | None
@@ -145,7 +145,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnGiveEvolve as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnGiveEvolve as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
             return False
 
         return await self.__funtoonApiService.customEvent(
@@ -174,7 +174,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonRepository', f'Can\'t perform pkmnGiveShiny as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnGiveShiny as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
             return False
 
         return await self.__funtoonApiService.customEvent(

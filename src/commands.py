@@ -3,7 +3,7 @@ import uuid
 from abc import ABC, abstractmethod
 from datetime import timedelta
 
-from .funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .misc import utils as utils
 from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
