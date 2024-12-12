@@ -68,6 +68,8 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
                 volume = volume
             )
 
+            self.__isLoading = False
+
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
@@ -104,7 +106,6 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
         self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         self.__backgroundTaskHelper.createTask(self.__executeTts(fileNames))
-        self.__isLoading = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
         message = await self.__halfLifeMessageCleaner.clean(event.message)

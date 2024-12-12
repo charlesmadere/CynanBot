@@ -68,6 +68,8 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
                 volume = volume
             )
 
+            self.__isLoading = False
+
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except TimeoutError as e:
@@ -102,9 +104,8 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             self.__isLoading = False
             return
 
-        self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
+        self.__timber.log('GoogleTtsManager', f'Playing \"{fileName}\" TTS message in \"{event.twitchChannel}\"...')
         self.__backgroundTaskHelper.createTask(self.__executeTts(fileName))
-        self.__isLoading = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__googleTtsMessageCleaner.clean(event.message)

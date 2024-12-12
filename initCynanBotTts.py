@@ -341,8 +341,8 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
-from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
-from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
+from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
@@ -526,7 +526,7 @@ crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser
 
 cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
 
-pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
+pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
 
@@ -557,7 +557,7 @@ ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBo
 usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
-    pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
+    pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,

@@ -1,8 +1,8 @@
 import pytest
 
+from src.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
 from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
-from src.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 
 
 class TestFuntoonJsonMapper:

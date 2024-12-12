@@ -7,7 +7,7 @@ from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmnCatchType import PkmnCatchType
 
 
-class PkmnJsonParserInterface(ABC):
+class PkmnBoosterPackJsonParserInterface(ABC):
 
     @abstractmethod
     def parseBoosterPack(

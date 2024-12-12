@@ -45,6 +45,7 @@ def cleanPath(path: str) -> str:
 
 carrotRemovalRegEx: Pattern = re.compile(r'<\/?\w+>', re.IGNORECASE)
 extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
+ridiculous7tvCharactersRegEx: Pattern = re.compile(r'\U000e0000', re.IGNORECASE)
 
 def cleanStr(
     s: str | None,
@@ -63,6 +64,7 @@ def cleanStr(
         return ''
 
     s = extraWhiteSpaceRegEx.sub(' ', s).strip()
+    s = ridiculous7tvCharactersRegEx.sub('', s).strip()
 
     s = s.replace('\r\n', replacement)\
          .replace('\r', replacement)\

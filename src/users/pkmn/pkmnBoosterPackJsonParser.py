@@ -2,14 +2,14 @@ from typing import Any
 
 from frozendict import frozendict
 
+from .pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from .pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .pkmnCatchType import PkmnCatchType
-from .pkmnJsonParserInterface import PkmnJsonParserInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
-class PkmnJsonParser(PkmnJsonParserInterface):
+class PkmnBoosterPackJsonParser(PkmnBoosterPackJsonParserInterface):
 
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):

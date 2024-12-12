@@ -116,7 +116,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         timeoutData = await self.__determineTimeout(user)
         if timeoutData is None:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv!')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} got away with copying a message from aniv!')
 
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
@@ -138,7 +138,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to timeout user {chatterUserName}:{chatterUserId} after they copied a message from aniv ({timeoutResult=})')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to timeout {chatterUserName}:{chatterUserId} for copying a message from aniv ({timeoutResult=})')
             return False
 
         timeoutScore = await self.__anivCopyMessageTimeoutScoreRepository.incrementTimeoutScore(
@@ -149,7 +149,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             twitchChannelId = twitchChannelId
         )
 
-        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')
+        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')
 
         await self.__ripBozoInChat(
             timeoutScore = timeoutScore,

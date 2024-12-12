@@ -84,6 +84,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
                 volume = volume
             )
 
+            self.__isLoading = False
+
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
@@ -126,7 +128,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         self.__timber.log('TtsMonsterTtsManager', f'Playing {len(ttsMonsterTtsEvent.fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         self.__backgroundTaskHelper.createTask(self.__executeTts(ttsMonsterTtsEvent.fileNames))
-        self.__isLoading = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterTtsEvent | None:
         message = await self.__ttsMonsterMessageCleaner.clean(event.message)
