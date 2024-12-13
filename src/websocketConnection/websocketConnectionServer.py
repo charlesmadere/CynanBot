@@ -13,6 +13,7 @@ from .mapper.websocketEventTypeMapperInterface import WebsocketEventTypeMapperIn
 from .settings.websocketConnectionServerSettingsInterface import WebsocketConnectionServerSettingsInterface
 from .websocketConnectionServerInterface import WebsocketConnectionServerInterface
 from .websocketEvent import WebsocketEvent
+from .websocketEventType import WebsocketEventType
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -106,22 +107,22 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        eventType: str,
+        eventType: WebsocketEventType,
         eventData: dict[str, Any]
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(eventType):
-            raise TypeError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
+        elif not isinstance(eventType, WebsocketEventType):
+            raise TypeError(f'eventType argument is malformed: \"{eventType}\"')
         elif not isinstance(eventData, dict) or len(eventData) == 0:
             raise TypeError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
 
         event: dict[str, Any] = {
             'twitchChannel': twitchChannel,
             'twitchChannelId': twitchChannelId,
-            'eventType': eventType,
+            'eventType': self.__websocketEventTypeMapper.toString(eventType),
             'eventData': eventData
         }
 
