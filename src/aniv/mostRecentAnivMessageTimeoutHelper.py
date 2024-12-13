@@ -116,7 +116,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         timeoutData = await self.__determineTimeout(user)
         if timeoutData is None:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} got away with copying a message from aniv!')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} got away with copying a message from aniv')
 
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
