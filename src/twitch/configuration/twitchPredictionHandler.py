@@ -89,7 +89,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             else:
                 predictorPluralization = 'Top predictors were'
 
-            outcomeString = outcomeString + f'{predictorPluralization} {topPredictorsString}!'
+            outcomeString = outcomeString + f' {predictorPluralization} {topPredictorsString}!'
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
