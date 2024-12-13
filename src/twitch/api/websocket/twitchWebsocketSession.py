@@ -7,7 +7,7 @@ from .twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 @dataclass(frozen = True)
 class TwitchWebsocketSession:
     connectedAt: datetime
-    keepAliveTimeoutSeconds: int
+    keepAliveTimeoutSeconds: int | None
     reconnectUrl: str | None
     sessionId: str
     status: TwitchWebsocketConnectionStatus | None

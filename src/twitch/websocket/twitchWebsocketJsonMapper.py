@@ -722,8 +722,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if not isinstance(sessionJson, dict) or len(sessionJson) == 0:
             return None
 
-        keepAliveTimeoutSeconds = utils.getIntFromDict(sessionJson, 'keepalive_timeout_seconds')
         connectedAt = utils.getDateTimeFromDict(sessionJson, 'connected_at')
+
+        keepAliveTimeoutSeconds: int | None = None
+        if 'keepalive_timeout_seconds' in sessionJson and utils.isValidInt(sessionJson.get('keepalive_timeout_seconds')):
+            keepAliveTimeoutSeconds = utils.getIntFromDict(sessionJson, 'keepalive_timeout_seconds')
+
         sessionId = utils.getStrFromDict(sessionJson, 'id')
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(sessionJson, 'status'))
 
@@ -732,8 +736,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             reconnectUrl = utils.getStrFromDict(sessionJson, 'reconnect_url')
 
         return TwitchWebsocketSession(
-            keepAliveTimeoutSeconds = keepAliveTimeoutSeconds,
             connectedAt = connectedAt,
+            keepAliveTimeoutSeconds = keepAliveTimeoutSeconds,
             reconnectUrl = reconnectUrl,
             sessionId = sessionId,
             status = status
