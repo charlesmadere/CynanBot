@@ -7,6 +7,8 @@ from .twitchBannedUserResponse import TwitchBannedUserResponse
 from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
+from .twitchChannelEditor import TwitchChannelEditor
+from .twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from .twitchEmoteDetails import TwitchEmoteDetails
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
@@ -64,6 +66,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         broadcasterType: str | None
     ) -> TwitchBroadcasterType:
+        pass
+
+    @abstractmethod
+    async def parseChannelEditor(
+        self,
+        jsonResponse: dict[str, Any]
+    ) -> TwitchChannelEditor:
+        pass
+
+    @abstractmethod
+    async def parseChannelEditorsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChannelEditorsResponse | None:
         pass
 
     @abstractmethod

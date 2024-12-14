@@ -854,6 +854,7 @@ cynanBot = CynanBot(
     ttsMonsterStreamerVoicesRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
+    twitchChannelEditorsRepository = None,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,

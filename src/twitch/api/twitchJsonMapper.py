@@ -11,6 +11,8 @@ from .twitchBannedUserResponse import TwitchBannedUserResponse
 from .twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
 from .twitchBroadcasterType import TwitchBroadcasterType
+from .twitchChannelEditor import TwitchChannelEditor
+from .twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from .twitchEmoteDetails import TwitchEmoteDetails
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
@@ -77,6 +79,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:manage:predictions': return TwitchApiScope.CHANNEL_MANAGE_PREDICTIONS
             case 'channel:manage:redemptions': return TwitchApiScope.CHANNEL_MANAGE_REDEMPTIONS
             case 'channel:moderate': return TwitchApiScope.CHANNEL_MODERATE
+            case 'channel:read:editors': return TwitchApiScope.CHANNEL_READ_EDITORS
             case 'channel:read:polls': return TwitchApiScope.CHANNEL_READ_POLLS
             case 'channel:read:predictions': return TwitchApiScope.CHANNEL_READ_PREDICTIONS
             case 'channel:read:redemptions': return TwitchApiScope.CHANNEL_READ_REDEMPTIONS
@@ -244,6 +247,48 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchBroadcasterType value: \"{broadcasterType}\"')
                 return TwitchBroadcasterType.NORMAL
+
+    async def parseChannelEditor(
+        self,
+        jsonResponse: dict[str, Any]
+    ) -> TwitchChannelEditor:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+
+        createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchChannelEditor(
+            createdAt = createdAt,
+            userId = userId,
+            userName = userName
+        )
+
+    async def parseChannelEditorsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChannelEditorsResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        if not isinstance(data, list) or len(data) == 0:
+            return None
+
+        channelEditors: list[TwitchChannelEditor] = list()
+
+        for channelEditorJson in data:
+            channelEditor = await self.parseChannelEditor(channelEditorJson)
+            channelEditors.append(channelEditor)
+
+        channelEditors.sort(key = lambda editor: editor.createdAt)
+        frozenChannelEditors: FrozenList[TwitchChannelEditor] = FrozenList(channelEditors)
+        frozenChannelEditors.freeze()
+
+        return TwitchChannelEditorsResponse(
+            editors = frozenChannelEditors
+        )
 
     async def parseEmoteDetails(
         self,

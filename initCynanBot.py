@@ -337,6 +337,8 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
+from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
@@ -718,6 +720,13 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository
+)
+
+twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
@@ -1352,6 +1361,7 @@ if mostRecentAnivMessageRepository is not None:
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
@@ -1826,6 +1836,7 @@ cynanBot = CynanBot(
     ttsMonsterStreamerVoicesRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,

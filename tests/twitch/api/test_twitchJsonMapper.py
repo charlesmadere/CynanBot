@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Any
 
 import pytest
@@ -9,6 +10,8 @@ from src.timber.timberStub import TimberStub
 from src.twitch.api.twitchApiScope import TwitchApiScope
 from src.twitch.api.twitchBanRequest import TwitchBanRequest
 from src.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from src.twitch.api.twitchChannelEditor import TwitchChannelEditor
+from src.twitch.api.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.twitchEmoteType import TwitchEmoteType
@@ -75,6 +78,11 @@ class TestTwitchJsonMapper:
     async def test_parseApiScope_withChannelModerateString(self):
         result = await self.jsonMapper.parseApiScope('channel:moderate')
         assert result is TwitchApiScope.CHANNEL_MODERATE
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelReadEditorsString(self):
+        result = await self.jsonMapper.parseApiScope('channel:read:editors')
+        assert result is TwitchApiScope.CHANNEL_READ_EDITORS
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withChannelReadPollsString(self):
@@ -250,6 +258,83 @@ class TestTwitchJsonMapper:
     async def test_parseBroadcasterType_withWhitespaceString(self):
         result = await self.jsonMapper.parseBroadcasterType(' ')
         assert result is TwitchBroadcasterType.NORMAL
+
+    @pytest.mark.asyncio
+    async def test_parseChannelEditor(self):
+        createdAt = datetime.now(self.timeZoneRepository.getDefault())
+        userId = 'abc123'
+        userName = 'gaR'
+
+        result = await self.jsonMapper.parseChannelEditor({
+            'created_at': createdAt.isoformat(),
+            'user_id': userId,
+            'user_name': userName
+        })
+
+        assert isinstance(result, TwitchChannelEditor)
+        assert result.createdAt == createdAt
+        assert result.userId == userId
+        assert result.userName == userName
+
+    @pytest.mark.asyncio
+    async def test_parseChannelEditorsResponse(self):
+        now = datetime.now(self.timeZoneRepository.getDefault())
+        tsteineCreatedAt = now - timedelta(weeks = 1)
+        qbitCreatedAt = now - timedelta(weeks = 2)
+
+        tsteine = TwitchChannelEditor(
+            createdAt = tsteineCreatedAt,
+            userId = 'abc123',
+            userName = 'Tsteine'
+        )
+
+        qbit = TwitchChannelEditor(
+            createdAt = qbitCreatedAt,
+            userId = 'def456',
+            userName = 'qbit'
+        )
+
+        result = await self.jsonMapper.parseChannelEditorsResponse({
+            'data': [
+                {
+                    'created_at': tsteineCreatedAt.isoformat(),
+                    'user_id': tsteine.userId,
+                    'user_name': tsteine.userName
+                },
+                {
+                    'created_at': qbitCreatedAt.isoformat(),
+                    'user_id': qbit.userId,
+                    'user_name': qbit.userName
+                }
+            ]
+        })
+
+        assert isinstance(result, TwitchChannelEditorsResponse)
+        assert len(result.editors) == 2
+
+        editor = result.editors[0]
+        assert isinstance(editor, TwitchChannelEditor)
+        assert editor == qbit
+        assert editor.createdAt == qbit.createdAt
+        assert editor.userId == qbit.userId
+        assert editor.userName == qbit.userName
+
+        editor = result.editors[1]
+        assert isinstance(editor, TwitchChannelEditor)
+        assert editor == tsteine
+        assert editor.createdAt == tsteine.createdAt
+        assert editor.userId == tsteine.userId
+        assert editor.userName == tsteine.userName
+
+    @pytest.mark.asyncio
+    async def test_parseChannelEditorsResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChannelEditorsResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChannelEditorsResponse_withNone(self):
+        result = await self.jsonMapper.parseChannelEditorsResponse(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseEmoteFormat_withAnimatedString(self):
