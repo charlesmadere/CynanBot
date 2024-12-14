@@ -165,19 +165,40 @@ class Timber(TimberInterface):
                 await aiofiles.os.makedirs(timberDirectory)
 
             for timberFile, entriesList in timberFileToEntriesDict.items():
-                async with aiofiles.open(timberFile, mode = 'a', encoding = 'utf-8') as file:
+                async with aiofiles.open(
+                    file = timberFile,
+                    mode = 'a',
+                    encoding = 'utf-8',
+                    loop = self.__backgroundTaskHelper.eventLoop
+                ) as file:
                     for entry in entriesList:
-                        logStatement = self.__getLogStatement(True, entry)
+                        logStatement = self.__getLogStatement(
+                            ensureNewLine = True,
+                            timberEntry = entry
+                        )
+
                         await file.write(logStatement)
+
+                    await file.flush()
 
         for timberErrorDirectory, timberErrorFileToEntriesDict in errorStructure.items():
             if not await aiofiles.ospath.exists(timberErrorDirectory):
                 await aiofiles.os.makedirs(timberErrorDirectory)
 
             for timberErrorFile, entriesList in timberErrorFileToEntriesDict.items():
-                async with aiofiles.open(timberErrorFile, mode = 'a', encoding = 'utf-8') as file:
+                async with aiofiles.open(
+                    file = timberErrorFile,
+                    mode = 'a',
+                    encoding = 'utf-8',
+                    loop = self.__backgroundTaskHelper.eventLoop
+                ) as file:
                     for entry in entriesList:
-                        errorStatement = self.__getErrorStatement(True, entry)
+                        errorStatement = self.__getErrorStatement(
+                            ensureNewLine = True,
+                            timberEntry = entry
+                        )
 
                         if utils.isValidStr(errorStatement):
                             await file.write(errorStatement)
+
+                    await file.flush()
