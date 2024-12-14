@@ -4,6 +4,7 @@ from enum import Enum, auto
 class UserJsonConstant(Enum):
 
     ANIV_CONTENT_SCANNING_ENABLED = auto()
+    ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED = auto()
     ANIV_MESSAGE_COPY_TIMEOUT_ENABLED = auto()
     BLUE_SKY_URL = auto()
     CAT_JAM_MESSAGE_ENABLED = auto()
@@ -28,6 +29,7 @@ class UserJsonConstant(Enum):
     def jsonKey(self) -> str:
         match self:
             case UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED: return 'anivContentScanningEnabled'
+            case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED: return 'anivMessageCopyTimeoutChatReportingEnabled'
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED: return 'anivMessageCopyTimeoutEnabled'
             case UserJsonConstant.BLUE_SKY_URL: return 'blueSkyUrl'
             case UserJsonConstant.CAT_JAM_MESSAGE_ENABLED: return 'catJamMessageEnabled'
