@@ -11,7 +11,6 @@ from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerIn
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -20,7 +19,6 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
         halfLifeHelper: HalfLifeHelperInterface,
         halfLifeMessageCleaner: HalfLifeMessageCleanerInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
@@ -29,9 +27,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(halfLifeHelper, HalfLifeHelperInterface):
+        if not isinstance(halfLifeHelper, HalfLifeHelperInterface):
             raise TypeError(f'halfLifeHelper argument is malformed: \"{halfLifeHelper}\"')
         elif not isinstance(halfLifeMessageCleaner, HalfLifeMessageCleanerInterface):
             raise TypeError(f'halfLifeMessageCleaner argument is malformed: \"{halfLifeMessageCleaner}\"')
@@ -46,7 +42,6 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__halfLifeHelper: HalfLifeHelperInterface = halfLifeHelper
         self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
@@ -55,20 +50,19 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__isLoading: bool = False
-        self.__playSessionId: str | None = None
+        self.__isLoadingOrPlaying: bool = False
 
     async def __executeTts(self, fileNames: FrozenList[str]):
         volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():
-            self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
+            await self.__soundPlayerManager.playPlaylist(
                 filePaths = fileNames,
                 volume = volume
             )
 
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
 
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
@@ -76,15 +70,9 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             self.__timber.log('HalfLifeTtsManager', f'Stopping Half Life TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
-    async def isPlaying(self) -> bool:
-        if self.__isLoading:
-            return True
-
-        playSessionId = self.__playSessionId
-        if not utils.isValidStr(playSessionId):
-            return False
-
-        return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
+    @property
+    def isLoadingOrPlaying(self) -> bool:
+        return self.__isLoadingOrPlaying
 
     async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
@@ -92,20 +80,20 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
         if not await self.__ttsSettingsRepository.isEnabled():
             return
-        elif await self.isPlaying():
+        elif self.isLoadingOrPlaying:
             self.__timber.log('HalfLifeTtsManager', f'There is already an ongoing Half Life TTS event!')
             return
 
-        self.__isLoading = True
+        self.__isLoadingOrPlaying = True
         fileNames = await self.__processTtsEvent(event)
 
         if fileNames is None or len(fileNames) == 0:
             self.__timber.log('HalfLifeTtsManager', f'Failed to find any TTS files ({event=}) ({fileNames=})')
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
             return
 
         self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        self.__backgroundTaskHelper.createTask(self.__executeTts(fileNames))
+        await self.__executeTts(fileNames)
 
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
         message = await self.__halfLifeMessageCleaner.clean(event.message)
@@ -130,16 +118,12 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         return speechFiles
 
     async def stopTtsEvent(self):
-        playSessionId = self.__playSessionId
-        if not utils.isValidStr(playSessionId):
+        if not self.isLoadingOrPlaying:
             return
 
-        self.__playSessionId = None
-        stopResult = await self.__soundPlayerManager.stopPlaySessionId(
-            playSessionId = playSessionId
-        )
-
-        self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+        await self.__soundPlayerManager.stop()
+        self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event')
+        self.__isLoadingOrPlaying = False
 
     @property
     def ttsProvider(self) -> TtsProvider:

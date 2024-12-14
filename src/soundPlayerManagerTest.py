@@ -11,8 +11,6 @@ from .contentScanner.contentScanner import ContentScanner
 from .contentScanner.contentScannerInterface import ContentScannerInterface
 from .misc.backgroundTaskHelper import BackgroundTaskHelper
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from .soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
-from .soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import PlaySessionIdGeneratorInterface
 from .soundPlayerManager.soundAlert import SoundAlert
 from .soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from .soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
@@ -27,7 +25,8 @@ from .trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompiler
 from .trivia.triviaSettingsRepository import TriviaSettingsRepository
 from .trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
@@ -65,15 +64,12 @@ triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
 )
 
-playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
-
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
 )
 
 soundPlayerManager: SoundPlayerManagerInterface = VlcSoundPlayerManager(
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
-    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )

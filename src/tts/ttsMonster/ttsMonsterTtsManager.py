@@ -11,7 +11,6 @@ from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
@@ -31,7 +30,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsMonsterFileManager: TtsMonsterFileManagerInterface,
@@ -41,9 +39,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+        if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -60,7 +56,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
@@ -70,8 +65,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
-        self.__isLoading: bool = False
-        self.__playSessionId: str | None = None
+        self.__isLoadingOrPlaying: bool = False
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __executeTts(self, fileNames: FrozenList[str]):
@@ -79,12 +73,12 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():
-            self.__playSessionId = await self.__soundPlayerManager.playPlaylist(
+            await self.__soundPlayerManager.playPlaylist(
                 filePaths = fileNames,
                 volume = volume
             )
 
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
 
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
@@ -92,15 +86,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS Monster TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
-    async def isPlaying(self) -> bool:
-        if self.__isLoading:
-            return True
-
-        playSessionId = self.__playSessionId
-        if not utils.isValidStr(playSessionId):
-            return False
-
-        return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
+    @property
+    def isLoadingOrPlaying(self) -> bool:
+        return self.__isLoadingOrPlaying
 
     async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
@@ -108,16 +96,16 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         if not await self.__ttsSettingsRepository.isEnabled():
             return
-        elif await self.isPlaying():
+        elif self.isLoadingOrPlaying:
             self.__timber.log('TtsMonsterTtsManager', f'There is already an ongoing TTS Monster event!')
             return
 
-        self.__isLoading = True
+        self.__isLoadingOrPlaying = True
         ttsMonsterTtsEvent = await self.__processTtsEvent(event)
 
         if ttsMonsterTtsEvent is None or len(ttsMonsterTtsEvent.fileNames) == 0:
             self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterTtsEvent=})')
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
             return
 
         await self.__reportCharacterUsage(
@@ -127,7 +115,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         )
 
         self.__timber.log('TtsMonsterTtsManager', f'Playing {len(ttsMonsterTtsEvent.fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        self.__backgroundTaskHelper.createTask(self.__executeTts(ttsMonsterTtsEvent.fileNames))
+        await self.__executeTts(ttsMonsterTtsEvent.fileNames)
 
     async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterTtsEvent | None:
         message = await self.__ttsMonsterMessageCleaner.clean(event.message)
@@ -140,7 +128,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
             self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS URLs ({event=}) ({ttsMonsterUrls=})')
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
             return
 
         fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(
@@ -149,7 +137,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         if fileNames is None or len(fileNames) == 0:
             self.__timber.log('TtsMonsterTtsManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
             return
 
         return TtsMonsterTtsManager.TtsMonsterTtsEvent(
@@ -196,16 +184,12 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__twitchChannelProvider = provider
 
     async def stopTtsEvent(self):
-        playSessionId = self.__playSessionId
-        if not utils.isValidStr(playSessionId):
+        if not self.isLoadingOrPlaying:
             return
 
-        self.__playSessionId = None
-        stopResult = await self.__soundPlayerManager.stopPlaySessionId(
-            playSessionId = playSessionId
-        )
-
-        self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+        await self.__soundPlayerManager.stop()
+        self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event')
+        self.__isLoadingOrPlaying = False
 
     @property
     def ttsProvider(self) -> TtsProvider:

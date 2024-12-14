@@ -9,6 +9,8 @@ from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from .network.networkClientProvider import NetworkClientProvider
 from .storage.jsonStaticReader import JsonStaticReader
+from .storage.tempFileHelper import TempFileHelper
+from .storage.tempFileHelperInterface import TempFileHelperInterface
 from .streamElements.apiService.streamElementsApiService import StreamElementsApiService
 from .streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
 from .streamElements.helper.streamElementsHelper import StreamElementsHelper
@@ -32,8 +34,6 @@ from .tts.streamElements.streamElementsFileManagerInterface import StreamElement
 from .tts.ttsSettingsRepository import TtsSettingsRepository
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
-asyncio.set_event_loop(eventLoop)
 
 class FakeStreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
 
@@ -46,9 +46,16 @@ class FakeStreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterfa
     async def set(self, userKey: str | None, twitchChannelId: str):
         raise RuntimeError('Not implemented')
 
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
+
 timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
+tempFileHelper: TempFileHelperInterface = TempFileHelper(
+    eventLoop = eventLoop
+)
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
@@ -99,6 +106,7 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
 
 streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
     eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 

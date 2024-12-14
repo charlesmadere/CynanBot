@@ -146,9 +146,6 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import \
-    PlaySessionIdGeneratorInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -167,6 +164,8 @@ from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
+from src.storage.tempFileHelper import TempFileHelper
+from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
@@ -465,6 +464,10 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchCredentialsProvider = authRepository,
     twitchJsonMapper = twitchJsonMapper,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
+)
+
+tempFileHelper: TempFileHelperInterface = TempFileHelper(
+    eventLoop = eventLoop
 )
 
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
@@ -828,21 +831,18 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 ## Sound Player initialization section ##
 #########################################
 
-playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
-
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
 )
 
 soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
+    eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
-    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -859,7 +859,8 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
-    backgroundTaskHelper = backgroundTaskHelper,
+    eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 
@@ -911,6 +912,7 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 
@@ -929,7 +931,6 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
 )
 
 googleTtsManager: GoogleTtsManagerInterface | None = GoogleTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,
@@ -963,7 +964,6 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
 )
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
@@ -1008,11 +1008,11 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
 
 streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
     eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 
 streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamElementsTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
@@ -1093,12 +1093,12 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
 
 ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
     eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber,
     ttsMonsterApiService = ttsMonsterApiService
 )
 
 ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,

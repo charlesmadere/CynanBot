@@ -50,7 +50,13 @@ class VlcMediaPlayer:
 
     @property
     def isPlaying(self) -> bool:
-        return self.__mediaPlayer.is_playing() == 1
+        isPlaying = self.__mediaPlayer.is_playing() == 1
+
+        if isPlaying:
+            return True
+
+        playbackState = self.playbackState
+        return playbackState is VlcMediaPlayer.PlaybackState.PLAYING
 
     async def play(self) -> bool:
         result = self.__mediaPlayer.play()
@@ -77,8 +83,10 @@ class VlcMediaPlayer:
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
 
         if volume < 0:
+            self.__timber.log('VlcMediaPlayer', f'The given volume parameter was too small and has been coerced to 0 ({volume=})')
             volume = 0
         elif volume > 100:
+            self.__timber.log('VlcMediaPlayer', f'The given volume parameter was too large and has been coerced to 100 ({volume=})')
             volume = 100
 
         result = self.__mediaPlayer.audio_set_volume(volume)
@@ -86,7 +94,7 @@ class VlcMediaPlayer:
         if result == 0:
             return True
         else:
-            self.__timber.log('VlcMediaPlayer', f'Attempted to set volume to {volume}, but received an unexpected result code: {result}')
+            self.__timber.log('VlcMediaPlayer', f'Attempted to set volume but received an unexpected result code ({volume=}) ({result=})')
             return False
 
     async def stop(self):

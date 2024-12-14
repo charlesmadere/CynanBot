@@ -1,9 +1,6 @@
 import base64
-import re
 import traceback
-import uuid
 from asyncio import AbstractEventLoop
-from typing import Pattern
 
 import aiofiles
 import aiofiles.os
@@ -13,6 +10,7 @@ from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterfa
 from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...storage.tempFileHelperInterface import TempFileHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -23,8 +21,8 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
         eventLoop: AbstractEventLoop,
         googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
-        timber: TimberInterface,
-        directory: str = '../temp'
+        tempFileHelper: TempFileHelperInterface,
+        timber: TimberInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -32,18 +30,16 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
             raise TypeError(f'googleFileExtensionHelper argument is malformed: \"{googleFileExtensionHelper}\"')
         elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
+        elif not isinstance(tempFileHelper, TempFileHelperInterface):
+            raise TypeError(f'tempFileHelper argument is malformed: \"{tempFileHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidStr(directory):
-            raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
+        self.__tempFileHelper: TempFileHelperInterface = tempFileHelper
         self.__timber: TimberInterface = timber
-        self.__directory: str = utils.cleanPath(directory)
-
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def __decodeBase64Command(self, base64Command: str | None) -> bytes | None:
         if base64Command is None:
@@ -78,15 +74,10 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
             self.__timber.log('GoogleTtsFileManager', f'Unable to decode base64Command ({base64Command=})')
             return None
 
-        if not await aiofiles.ospath.exists(self.__directory):
-            await aiofiles.os.makedirs(self.__directory)
-
-        fileName: str | None = None
-        fileExtension = await self.__getGoogleFileExtension()
-
-        while not utils.isValidStr(fileName) or await aiofiles.ospath.exists(fileName):
-            randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-            fileName = utils.cleanPath(f'{self.__directory}/google-{randomUuid}.{fileExtension}')
+        fileName = await self.__tempFileHelper.getTempFileName(
+            prefix = 'google',
+            extension = await self.__getGoogleFileExtension()
+        )
 
         try:
             async with aiofiles.open(

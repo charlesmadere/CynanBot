@@ -63,9 +63,6 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             return command
 
     async def __executeTts(self, command: str):
-        if not utils.isValidStr(command):
-            raise TypeError(f'command argument is malformed: \"{command}\"')
-
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
         decTalkProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
@@ -97,15 +94,18 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
+        self.__isLoadingOrPlaying = False
         self.__timber.log('DecTalkManager', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
     async def __killDecTalkProcess(self, decTalkProcess: Process | None):
         if decTalkProcess is None:
+            self.__isLoadingOrPlaying = False
             self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process is None ({decTalkProcess=})')
             return
         elif not isinstance(decTalkProcess, Process):
             raise TypeError(f'process argument is malformed: \"{decTalkProcess}\"')
         elif decTalkProcess.returncode is not None:
+            self.__isLoadingOrPlaying = False
             self.__timber.log('DecTalkManager', f'Went to kill a DecTalk process, but the process has a return code ({decTalkProcess=}) ({decTalkProcess.returncode=})')
             return
 
@@ -118,11 +118,12 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             childCount += 1
 
         parent.terminate()
+        self.__isLoadingOrPlaying = False
         self.__timber.log('DecTalkManager', f'Finished killing DecTalk process ({decTalkProcess=}) ({childCount=})')
 
-    async def isPlaying(self) -> bool:
-        decTalkProcess = self.__decTalkProcess
-        return self.__isLoadingOrPlaying or decTalkProcess is not None
+    @property
+    def isLoadingOrPlaying(self) -> bool:
+        return self.__isLoadingOrPlaying or self.__decTalkProcess is not None
 
     async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
@@ -130,7 +131,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
         if not await self.__ttsSettingsRepository.isEnabled():
             return
-        elif await self.isPlaying():
+        elif self.isLoadingOrPlaying:
             self.__timber.log('DecTalkManager', f'There is already an ongoing DecTalk event!')
             return
 
@@ -143,9 +144,8 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             return
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
-        pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
+        pathToDecTalk = await self.__ttsSettingsRepository.requireDecTalkPath()
         await self.__executeTts(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
-        self.__isLoadingOrPlaying = False
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__decTalkMessageCleaner.clean(event.message)
@@ -165,10 +165,10 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         return await self.__decTalkFileManager.writeCommandToNewFile(message)
 
     async def stopTtsEvent(self):
-        decTalkProcess = self.__decTalkProcess
+        if not self.isLoadingOrPlaying:
+            return
 
-        if decTalkProcess is not None:
-            await self.__killDecTalkProcess(decTalkProcess)
+        await self.__killDecTalkProcess(self.__decTalkProcess)
 
     @property
     def ttsProvider(self) -> TtsProvider:

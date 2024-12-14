@@ -23,6 +23,8 @@ from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from .network.networkClientProvider import NetworkClientProvider
 from .storage.jsonStaticReader import JsonStaticReader
+from .storage.tempFileHelper import TempFileHelper
+from .storage.tempFileHelperInterface import TempFileHelperInterface
 from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
 from .tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
@@ -33,7 +35,7 @@ from .tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from .tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 
 
-class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
+class FakeGoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
 
     async def getGoogleCloudProjectKeyId(self) -> str | None:
         raise RuntimeError('Not implemented')
@@ -47,7 +49,8 @@ class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProvide
     async def getGoogleCloudServiceAccountEmail(self) -> str | None:
         raise RuntimeError('Not implemented')
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
@@ -57,12 +60,16 @@ timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
+tempFileHelper: TempFileHelperInterface = TempFileHelper(
+    eventLoop = eventLoop
+)
+
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
 
-googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = GoogleCloudProjectCredentialsProvider()
+googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = FakeGoogleCloudProjectCredentialsProvider()
 
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber,
@@ -103,6 +110,7 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 

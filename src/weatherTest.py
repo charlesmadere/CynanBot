@@ -23,12 +23,13 @@ from src.weather.weatherRepository import WeatherRepository
 from src.weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
-class OpenWeatherApiKeyProviderStub(OpenWeatherApiKeyProvider):
+class FakeOpenWeatherApiKeyProvider(OpenWeatherApiKeyProvider):
 
     async def getOpenWeatherApiKey(self) -> str | None:
         return None
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 timber: TimberInterface = TimberStub()
 
@@ -70,7 +71,7 @@ openWeatherJsonMapper: OpenWeatherJsonMapperInterface = OpenWeatherJsonMapper(
     timeZoneRepository = timeZoneRepository
 )
 
-openWeatherApiKeyProvider: OpenWeatherApiKeyProvider = OpenWeatherApiKeyProviderStub()
+openWeatherApiKeyProvider: OpenWeatherApiKeyProvider = FakeOpenWeatherApiKeyProvider()
 
 openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
     networkClientProvider = networkClientProvider,

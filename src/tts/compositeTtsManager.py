@@ -75,9 +75,17 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         return frozendict(ttsProviderToManagerMap)
 
-    async def isPlaying(self) -> bool:
+    @property
+    def isLoadingOrPlaying(self) -> bool:
         currentTtsManager = self.__currentTtsManager
-        return currentTtsManager is not None and await currentTtsManager.isPlaying()
+
+        if currentTtsManager is None:
+            return False
+        elif currentTtsManager.isLoadingOrPlaying:
+            return True
+        else:
+            self.__currentTtsManager = None
+            return False
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
         if not isinstance(event, TtsEvent):
@@ -85,17 +93,19 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         if not await self.__ttsSettingsRepository.isEnabled():
             return False
-        elif await self.isPlaying():
-            self.__timber.log('TtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
+        elif self.isLoadingOrPlaying:
+            self.__timber.log('CompositeTtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
 
         ttsManager = self.__ttsProviderToManagerMap.get(event.provider, None)
-        if ttsManager is None:
-            return False
 
-        self.__backgroundTaskHelper.createTask(ttsManager.playTtsEvent(event))
-        self.__currentTtsManager = ttsManager
-        return True
+        if ttsManager is None:
+            self.__currentTtsManager = None
+            return False
+        else:
+            self.__currentTtsManager = ttsManager
+            self.__backgroundTaskHelper.createTask(ttsManager.playTtsEvent(event))
+            return True
 
     async def stopTtsEvent(self):
         currentTtsManager = self.__currentTtsManager

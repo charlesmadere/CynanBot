@@ -6,6 +6,8 @@ from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
+from src.storage.tempFileHelper import TempFileHelper
+from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
@@ -28,8 +30,6 @@ from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonst
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
-asyncio.set_event_loop(eventLoop)
 
 class FakeTtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface):
 
@@ -39,9 +39,16 @@ class FakeTtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInter
     async def get(self, twitchChannel: str) -> TtsMonsterKeyAndUserId | None:
         raise RuntimeError('Not implemented')
 
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
+
 timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+
+tempFileHelper: TempFileHelperInterface = TempFileHelper(
+    eventLoop = eventLoop
+)
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
@@ -70,6 +77,7 @@ ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
 
 ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
     eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber,
     ttsMonsterApiService = ttsMonsterApiService
 )

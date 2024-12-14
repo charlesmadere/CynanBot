@@ -15,6 +15,9 @@ from .transparent.transparentApiServiceInterface import TransparentApiServiceInt
 from .transparent.transparentXmlMapper import TransparentXmlMapper
 from .transparent.transparentXmlMapperInterface import TransparentXmlMapperInterface
 
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
+
 timber: TimberInterface = TimberStub()
 
 languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
@@ -24,8 +27,6 @@ timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 transparentXmlMapper: TransparentXmlMapperInterface = TransparentXmlMapper(
     timeZoneRepository = timeZoneRepository
 )
-
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
