@@ -237,6 +237,8 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         except Exception as e:
             self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
 
+        self.__isProgressingThroughPlaylist = False
+
     async def __retrieveMediaPlayer(self) -> VlcMediaPlayer:
         mediaPlayer = self.__mediaPlayer
 
