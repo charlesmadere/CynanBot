@@ -68,7 +68,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         ttsEvent = currentAlert.ttsEvent
 
         if (currentAlert.alertState is StreamAlertState.NOT_STARTED or currentAlert.alertState is StreamAlertState.SOUND_STARTED) and soundAlert is not None:
-            if self.__soundPlayerManager.isPlaying:
+            if self.__soundPlayerManager.isLoadingOrPlaying:
                 return True
             elif currentAlert.alertState is StreamAlertState.SOUND_STARTED:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)

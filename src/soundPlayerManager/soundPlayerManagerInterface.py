@@ -9,7 +9,7 @@ class SoundPlayerManagerInterface(ABC):
 
     @property
     @abstractmethod
-    def isPlaying(self) -> bool:
+    def isLoadingOrPlaying(self) -> bool:
         pass
 
     @abstractmethod

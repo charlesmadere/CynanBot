@@ -8,7 +8,7 @@ from ...chatBand.chatBandInstrument import ChatBandInstrument
 class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
     @property
-    def isPlaying(self) -> bool:
+    def isLoadingOrPlaying(self) -> bool:
         # this method is intentionally empty
         return False
 
