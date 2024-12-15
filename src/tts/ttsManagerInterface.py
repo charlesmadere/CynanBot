@@ -6,8 +6,9 @@ from .ttsProvider import TtsProvider
 
 class TtsManagerInterface(ABC):
 
+    @property
     @abstractmethod
-    async def isPlaying(self) -> bool:
+    def isLoadingOrPlaying(self) -> bool:
         pass
 
     @abstractmethod

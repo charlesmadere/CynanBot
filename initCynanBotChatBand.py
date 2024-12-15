@@ -84,9 +84,6 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import \
-    PlaySessionIdGeneratorInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -173,8 +170,8 @@ from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBo
 from src.users.decTalkSongs import decTalkSongBoosterPack
 from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
-from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
-from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
+from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
@@ -355,7 +352,7 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
-pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
+pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
 
@@ -377,7 +374,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
-    pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
+    pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
@@ -635,21 +632,18 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 ## Sound Player initialization section ##
 #########################################
 
-playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
-
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
 )
 
 soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
+    eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
-    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -866,6 +860,7 @@ cynanBot = CynanBot(
     ttsMonsterStreamerVoicesRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
+    twitchChannelEditorsRepository = None,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,

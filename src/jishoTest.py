@@ -15,7 +15,8 @@ from .network.networkClientProvider import NetworkClientProvider
 from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 timber: TimberInterface = TimberStub()
 

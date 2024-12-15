@@ -25,16 +25,16 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
     async def getTtsTimeoutSeconds(self) -> float:
         jsonContents = await self.__readJson()
 
-        ttsTimeoutSeconds = utils.getFloatFromDict(
+        timeoutSeconds = utils.getFloatFromDict(
             d = jsonContents,
-            key = 'ttsTimeoutSeconds',
+            key = 'timeoutSeconds',
             fallback = 30
         )
 
-        if ttsTimeoutSeconds < 5 or ttsTimeoutSeconds > 300:
-            raise ValueError(f'ttsTimeoutSeconds is out of bounds: \"{ttsTimeoutSeconds}\"')
+        if timeoutSeconds < 3 or timeoutSeconds > 60:
+            raise ValueError(f'timeoutSeconds is out of bounds: \"{timeoutSeconds}\"')
 
-        return ttsTimeoutSeconds
+        return timeoutSeconds
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
@@ -63,10 +63,10 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         decTalkPath = utils.getStrFromDict(
             d = jsonContents,
             key = 'decTalkPath',
-            fallback = 'dectalk/say.exe'
+            fallback = '../dectalk/say.exe'
         )
 
         if not utils.isValidStr(decTalkPath):
             raise ValueError(f'\"decTalkPath\" value is malformed: \"{decTalkPath}\"')
 
-        return decTalkPath
+        return utils.cleanPath(decTalkPath)

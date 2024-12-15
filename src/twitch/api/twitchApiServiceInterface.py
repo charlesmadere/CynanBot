@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
 from .twitchBannedUserResponse import TwitchBannedUserResponse
+from .twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse
@@ -52,6 +53,14 @@ class TwitchApiServiceInterface(ABC):
         chatterUserId: str,
         twitchAccessToken: str
     ) -> TwitchBannedUserResponse:
+        pass
+
+    @abstractmethod
+    async def fetchChannelEditors(
+        self,
+        broadcasterId: str,
+        twitchAccessToken: str
+    ) -> TwitchChannelEditorsResponse:
         pass
 
     @abstractmethod

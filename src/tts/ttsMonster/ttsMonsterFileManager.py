@@ -1,9 +1,7 @@
 import asyncio
-import re
 import traceback
-import uuid
 from asyncio import AbstractEventLoop
-from typing import Any, Collection, Coroutine, Pattern
+from typing import Any, Collection, Coroutine
 
 import aiofiles
 import aiofiles.os
@@ -12,6 +10,7 @@ from frozenlist import FrozenList
 
 from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from ...misc import utils as utils
+from ...storage.tempFileHelperInterface import TempFileHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 
@@ -21,29 +20,27 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        tempFileHelper: TempFileHelperInterface,
         timber: TimberInterface,
         ttsMonsterApiService: TtsMonsterApiServiceInterface,
-        directory: str = '../temp',
         fileExtension: str = 'wav'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(tempFileHelper, TempFileHelperInterface):
+            raise TypeError(f'tempFileHelper argument is malformed: \"{tempFileHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsMonsterApiService, TtsMonsterApiServiceInterface):
             raise TypeError(f'ttsMonsterApiService argument is malformed: \"{ttsMonsterApiService}\"')
-        elif not utils.isValidStr(directory):
-            raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__tempFileHelper: TempFileHelperInterface = tempFileHelper
         self.__timber: TimberInterface = timber
         self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
-        self.__directory: str = directory
         self.__fileExtension: str = fileExtension
-
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def __fetchAndSaveSoundData(
         self,
@@ -73,31 +70,6 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         except Exception as e:
             self.__timber.log('TtsMonsterFileManager', f'Encountered exception when trying to write TTS Monster sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
             raise e
-
-    async def __generateFileNames(self, size: int) -> FrozenList[str]:
-        if not utils.isValidInt(size):
-            raise TypeError(f'size argument is malformed: \"{size}\"')
-        elif size < 1 or size > utils.getIntMaxSafeSize():
-            raise ValueError(f'size argument is out of bounds: {size}')
-
-        if not await aiofiles.ospath.exists(self.__directory):
-            await aiofiles.os.makedirs(self.__directory)
-
-        fileNames: set[str] = set()
-
-        while len(fileNames) < size:
-            fileName: str | None = None
-
-            while not utils.isValidStr(fileName) or await aiofiles.ospath.exists(fileName):
-                randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-                fileName = utils.cleanPath(f'{self.__directory}/ttsmonster-{randomUuid}.{self.__fileExtension}')
-
-            fileNames.add(fileName)
-
-        frozenFileNames: FrozenList[str] = FrozenList(fileNames)
-        frozenFileNames.freeze()
-
-        return frozenFileNames
 
     async def saveTtsUrlToNewFile(self, ttsUrl: str) -> str | None:
         if not utils.isValidUrl(ttsUrl):
@@ -131,7 +103,12 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
         if len(frozenTtsUrls) == 0:
             return None
 
-        fileNames = await self.__generateFileNames(len(frozenTtsUrls))
+        fileNames = await self.__tempFileHelper.getTempFileNames(
+            amount = len(frozenTtsUrls),
+            prefix = 'ttsmonster',
+            extension = self.__fileExtension
+        )
+
         fetchAndSaveCoroutines: list[Coroutine[Any, Any, Any]] = list()
 
         for index in range(len(frozenTtsUrls)):

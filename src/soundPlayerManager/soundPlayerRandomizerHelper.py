@@ -1,5 +1,6 @@
 import random
 import re
+from asyncio import AbstractEventLoop
 from typing import Pattern
 
 import aiofiles.os
@@ -10,7 +11,6 @@ from .soundPlayerRandomizerDirectoryScanResult import SoundPlayerRandomizerDirec
 from .soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from .soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..misc import utils as utils
-from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
 
 
@@ -18,7 +18,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
+        eventLoop: AbstractEventLoop,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = frozenset({
@@ -40,8 +40,8 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             SoundAlert.POINT_REDEMPTION_16
         })
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -49,7 +49,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         elif pointRedemptionSoundAlerts is not None and not isinstance(pointRedemptionSoundAlerts, frozenset):
             raise TypeError(f'pointRedemptionSoundAlerts argument is malformed: \"{pointRedemptionSoundAlerts}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
         self.__pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = pointRedemptionSoundAlerts

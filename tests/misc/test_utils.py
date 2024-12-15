@@ -177,6 +177,34 @@ class TestUtils:
         assert value is None
         assert exception is not None
 
+    def test_getCleanedSplits_withBasicCommand(self):
+        original = '!supertrivia'
+        result = utils.getCleanedSplits(original)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0] == original
+
+    def test_getCleanedSplits_withBasicCommandAndRidiculous7tvCharacters1(self):
+        original = '!supertrivia \U000e0000'
+        result = utils.getCleanedSplits(original)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0] == '!supertrivia'
+
+    def test_getCleanedSplits_withBasicCommandAndRidiculous7tvCharacters2(self):
+        original = '\U000e0000 !supertrivia'
+        result = utils.getCleanedSplits(original)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0] == '!supertrivia'
+
+    def test_getCleanedSplits_withBasicCommandAndRidiculous7tvCharacters3(self):
+        original = '\U000e0000!supertrivia\U000e0000'
+        result = utils.getCleanedSplits(original)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0] == '!supertrivia'
+
     def test_getCleanedSplits_withEmptyString(self):
         original = ''
         result = utils.getCleanedSplits(original)

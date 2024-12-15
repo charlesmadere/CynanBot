@@ -47,6 +47,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['📊'] = None
         emotesDict['🔋'] = frozenset({ '🪫' })
         emotesDict['🏖️'] = frozenset({ '⛱️', '☂️', '☔' })
+        emotesDict['🦫'] = None
         emotesDict['🫑'] = None
         emotesDict['🐦'] = frozenset({ '🐤' })
         emotesDict['🎂'] = frozenset({ '🍰' })
@@ -124,6 +125,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🚀'] = None
         emotesDict['🎢'] = None
         emotesDict['🏫'] = None
+        emotesDict['🦭'] = None
         emotesDict['🦐'] = frozenset({ '🍤' })
         emotesDict['🧦'] = None
         emotesDict['🐚'] = None

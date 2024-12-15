@@ -1,6 +1,7 @@
 from .decTalkTtsManager import DecTalkTtsManager
 from ..ttsProvider import TtsProvider
 
+
 class SingingDecTalkTtsManager(DecTalkTtsManager):
 
     @property

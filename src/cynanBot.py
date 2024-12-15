@@ -210,6 +210,7 @@ from .twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from .twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
+from .twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
 from .twitch.configuration.channelJoinListener import ChannelJoinListener
 from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
@@ -353,6 +354,7 @@ class CynanBot(
         ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchApiService: TwitchApiServiceInterface,
+        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface | None,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
@@ -579,6 +581,8 @@ class CynanBot(
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif twitchChannelEditorsRepository is not None and not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
+            raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
         elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
@@ -664,7 +668,7 @@ class CynanBot(
 
         self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchUtils, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, crowdControlSettingsRepository, funtoonTokensRepository, generalSettingsRepository, halfLifeService, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterApiTokensRepository, ttsMonsterKeyAndUserIdRepository, ttsMonsterSettingsRepository, ttsMonsterStreamerVoicesRepository, ttsSettingsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, crowdControlSettingsRepository, funtoonTokensRepository, generalSettingsRepository, halfLifeService, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterApiTokensRepository, ttsMonsterKeyAndUserIdRepository, ttsMonsterSettingsRepository, ttsMonsterStreamerVoicesRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)

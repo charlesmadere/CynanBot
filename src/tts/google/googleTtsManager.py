@@ -11,7 +11,6 @@ from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -20,7 +19,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsHelper: GoogleTtsHelperInterface,
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
@@ -29,9 +27,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+        if not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsHelper, GoogleTtsHelperInterface):
             raise TypeError(f'googleTtsHelper argument is malformed: \"{googleTtsHelper}\"')
@@ -46,7 +42,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsHelper: GoogleTtsHelperInterface = googleTtsHelper
         self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
@@ -55,18 +50,19 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__isLoading: bool = False
-        self.__playSessionId: str | None = None
+        self.__isLoadingOrPlaying: bool = False
 
     async def __executeTts(self, fileName: str):
         volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playSoundFile():
-            self.__playSessionId = await self.__soundPlayerManager.playSoundFile(
+            await self.__soundPlayerManager.playSoundFile(
                 filePath = fileName,
                 volume = volume
             )
+
+            self.__isLoadingOrPlaying = False
 
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
@@ -74,15 +70,9 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             self.__timber.log('GoogleTtsManager', f'Stopping Google TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
-    async def isPlaying(self) -> bool:
-        if self.__isLoading:
-            return True
-
-        playSessionId = self.__playSessionId
-        if not utils.isValidStr(playSessionId):
-            return False
-
-        return await self.__soundPlayerManager.getCurrentPlaySessionId() == playSessionId
+    @property
+    def isLoadingOrPlaying(self) -> bool:
+        return self.__isLoadingOrPlaying
 
     async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
@@ -90,21 +80,20 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
         if not await self.__ttsSettingsRepository.isEnabled():
             return
-        elif await self.isPlaying():
+        elif self.isLoadingOrPlaying:
             self.__timber.log('GoogleTtsManager', f'There is already an ongoing Google TTS event!')
             return
 
-        self.__isLoading = True
+        self.__isLoadingOrPlaying = True
         fileName = await self.__processTtsEvent(event)
 
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
             self.__timber.log('GoogleTtsManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
-            self.__isLoading = False
+            self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
-        self.__backgroundTaskHelper.createTask(self.__executeTts(fileName))
-        self.__isLoading = False
+        self.__timber.log('GoogleTtsManager', f'Playing \"{fileName}\" TTS message in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileName)
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         message = await self.__googleTtsMessageCleaner.clean(event.message)
@@ -125,16 +114,12 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         )
 
     async def stopTtsEvent(self):
-        playSessionId = self.__playSessionId
-        if not utils.isValidStr(playSessionId):
+        if not self.isLoadingOrPlaying:
             return
 
-        self.__playSessionId = None
-        stopResult = await self.__soundPlayerManager.stopPlaySessionId(
-            playSessionId = playSessionId
-        )
-
-        self.__timber.log('GoogleTtsManager', f'Stopped TTS event ({playSessionId=}) ({stopResult=})')
+        await self.__soundPlayerManager.stop()
+        self.__timber.log('GoogleTtsManager', f'Stopped TTS event')
+        self.__isLoadingOrPlaying = False
 
     @property
     def ttsProvider(self) -> TtsProvider:

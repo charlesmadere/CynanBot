@@ -146,9 +146,6 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGenerator import PlaySessionIdGenerator
-from src.soundPlayerManager.playSessionIdGenerator.playSessionIdGeneratorInterface import \
-    PlaySessionIdGeneratorInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -167,6 +164,8 @@ from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
+from src.storage.tempFileHelper import TempFileHelper
+from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
@@ -290,6 +289,8 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
+from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
@@ -341,10 +342,11 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
+from src.users.decTalkSongs import decTalkSongBoosterPack
 from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
-from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
-from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
+from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
@@ -469,6 +471,10 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
+tempFileHelper: TempFileHelperInterface = TempFileHelper(
+    eventLoop = eventLoop
+)
+
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
@@ -530,7 +536,7 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
-pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
+pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
 
@@ -562,7 +568,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
-    pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
+    pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
@@ -672,6 +678,13 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository
+)
+
+twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
@@ -833,21 +846,18 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 ## Sound Player initialization section ##
 #########################################
 
-playSessionIdGenerator: PlaySessionIdGeneratorInterface = PlaySessionIdGenerator()
-
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
 )
 
 soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
+    eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
     chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
-    playSessionIdGenerator = playSessionIdGenerator,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -864,7 +874,8 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
-    backgroundTaskHelper = backgroundTaskHelper,
+    eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 
@@ -916,6 +927,7 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 
@@ -934,7 +946,6 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
 )
 
 googleTtsManager: GoogleTtsManagerInterface | None = GoogleTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,
@@ -968,7 +979,6 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
 )
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
@@ -1013,11 +1023,11 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
 
 streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
     eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber
 )
 
 streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamElementsTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
@@ -1098,12 +1108,12 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
 
 ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
     eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
     timber = timber,
     ttsMonsterApiService = ttsMonsterApiService
 )
 
 ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
@@ -1171,6 +1181,7 @@ if mostRecentAnivMessageRepository is not None:
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
@@ -1617,6 +1628,7 @@ cynanBot = CynanBot(
     ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,

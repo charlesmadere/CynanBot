@@ -1,7 +1,5 @@
-import re
 import traceback
-import uuid
-from typing import Pattern
+from asyncio import AbstractEventLoop
 
 import aiofiles
 import aiofiles.os
@@ -9,7 +7,7 @@ import aiofiles.ospath
 
 from .decTalkFileManagerInterface import DecTalkFileManagerInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...storage.tempFileHelperInterface import TempFileHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -17,46 +15,45 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
+        eventLoop: AbstractEventLoop,
+        tempFileHelper: TempFileHelperInterface,
         timber: TimberInterface,
-        directory: str = '../temp'
+        extension: str = 'txt'
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(tempFileHelper, TempFileHelperInterface):
+            raise TypeError(f'tempFileHelper argument is malformed: \"{tempFileHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidStr(directory):
-            raise TypeError(f'directory argument is malformed: \"{directory}\"')
+        elif not utils.isValidStr(extension):
+            raise TypeError(f'extension argument is malformed: \"{extension}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__tempFileHelper: TempFileHelperInterface = tempFileHelper
         self.__timber: TimberInterface = timber
-        self.__directory: str = utils.cleanPath(directory)
-
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__extension: str = extension
 
     async def writeCommandToNewFile(self, command: str) -> str | None:
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
 
-        if not await aiofiles.ospath.exists(self.__directory):
-            await aiofiles.os.makedirs(self.__directory)
-
-        fileName: str | None = None
-
-        while not utils.isValidStr(fileName) or await aiofiles.ospath.exists(fileName):
-            randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-            fileName = utils.cleanPath(f'{self.__directory}/dectalk-{randomUuid}.txt')
+        fileName = await self.__tempFileHelper.getTempFileName(
+            prefix = 'dectalk',
+            extension = self.__extension
+        )
 
         try:
             async with aiofiles.open(
                 file = fileName,
                 mode = 'w',
-                encoding = 'windows-1252' # DECTalk requires Windows-1252 encoding
+                encoding = 'windows-1252', # DECTalk requires Windows-1252 encoding
+                loop = self.__eventLoop
             ) as file:
                 await file.write(command)
                 await file.flush()
         except Exception as e:
             self.__timber.log('DecTalkFileManager', f'Encountered exception when trying to write command to TTS file (\"{fileName}\"): {e}', e, traceback.format_exc())
-            fileName = None
+            return None
 
         return fileName

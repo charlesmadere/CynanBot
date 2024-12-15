@@ -5,8 +5,9 @@ from .ttsEvent import TtsEvent
 
 class CompositeTtsManagerInterface(ABC):
 
+    @property
     @abstractmethod
-    async def isPlaying(self) -> bool:
+    def isLoadingOrPlaying(self) -> bool:
         pass
 
     @abstractmethod

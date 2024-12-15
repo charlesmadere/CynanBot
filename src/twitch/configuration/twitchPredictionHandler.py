@@ -72,10 +72,11 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
         outcomeString = f'🗳️ The winning outcome is \"{winningOutcome.title}\"!'
 
-        if topPredictors is not None and len(topPredictors) > 0:
+        if topPredictors is not None and len(topPredictors) >= 1:
             topPredictorsString = ''
             for index, topPredictor in enumerate(topPredictors):
                 predictorString = f'{topPredictor.userName} ({topPredictor.channelPointsWonStr})'
+
                 if index == 0:
                     topPredictorsString = predictorString
                 elif index + 1 == len(topPredictors):
@@ -85,11 +86,11 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
             predictorPluralization: str
             if len(topPredictors) == 1:
-                predictorPluralization = 'Top predictor was'
+                predictorPluralization = 'The top predictor was'
             else:
-                predictorPluralization = 'Top predictors were'
+                predictorPluralization = 'Top predictors:'
 
-            outcomeString = outcomeString + f'{predictorPluralization} {topPredictorsString}!'
+            outcomeString = outcomeString + f' {predictorPluralization} {topPredictorsString}!'
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, outcomeString)

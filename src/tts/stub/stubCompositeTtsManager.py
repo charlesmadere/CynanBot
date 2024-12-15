@@ -4,7 +4,8 @@ from ..ttsEvent import TtsEvent
 
 class StubCompositeTtsManager(CompositeTtsManagerInterface):
 
-    async def isPlaying(self) -> bool:
+    @property
+    def isLoadingOrPlaying(self) -> bool:
         # this method is intentionally empty
         return False
 

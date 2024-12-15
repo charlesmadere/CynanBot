@@ -337,6 +337,8 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
+from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
@@ -391,8 +393,8 @@ from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPack
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
 from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
-from src.users.pkmn.pkmnCatchTypeJsonMapper import PkmnCatchTypeJsonMapper
-from src.users.pkmn.pkmnCatchTypeJsonMapperInterface import PkmnCatchTypeJsonMapperInterface
+from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
+from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
@@ -577,7 +579,9 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
-pkmnCatchTypeJsonMapper: PkmnCatchTypeJsonMapperInterface = PkmnCatchTypeJsonMapper(
+decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
+
+pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
 
@@ -599,7 +603,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
-    pkmnCatchTypeJsonMapper = pkmnCatchTypeJsonMapper,
+    pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
@@ -723,6 +727,13 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository
+)
+
+twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
@@ -1357,6 +1368,7 @@ if mostRecentAnivMessageRepository is not None:
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
@@ -1831,6 +1843,7 @@ cynanBot = CynanBot(
     ttsMonsterStreamerVoicesRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,

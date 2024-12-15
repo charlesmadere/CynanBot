@@ -152,7 +152,8 @@ from .twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocket
 from .users.userIdsRepository import UserIdsRepository
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(eventLoop = eventLoop)
 

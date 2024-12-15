@@ -7,11 +7,8 @@ from ...chatBand.chatBandInstrument import ChatBandInstrument
 
 class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
-    async def getCurrentPlaySessionId(self) -> str | None:
-        # this method is intentionally empty
-        return None
-
-    async def isPlaying(self) -> bool:
+    @property
+    def isLoadingOrPlaying(self) -> bool:
         # this method is intentionally empty
         return False
 
@@ -19,38 +16,34 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
         self,
         instrument: ChatBandInstrument,
         volume: int | None = None
-    ) -> str | None:
+    ) -> bool:
         # this method is intentionally empty
-        return None
+        return False
 
     async def playPlaylist(
         self,
         filePaths: Collection[str],
         volume: int | None = None
-    ) -> str | None:
+    ) -> bool:
         # this method is intentionally empty
-        return None
+        return False
 
     async def playSoundAlert(
         self,
         alert: SoundAlert,
         volume: int | None = None
-    ) -> str | None:
+    ) -> bool:
         # this method is intentionally empty
-        return None
+        return False
 
     async def playSoundFile(
         self,
         filePath: str | None,
         volume: int | None = None
-    ) -> str | None:
+    ) -> bool:
         # this method is intentionally empty
-        return None
+        return False
 
     async def stop(self):
         # this method is intentionally empty
         pass
-
-    async def stopPlaySessionId(self, playSessionId: str | None) -> bool:
-        # this method is intentionally empty
-        return False

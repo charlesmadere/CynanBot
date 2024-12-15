@@ -6,6 +6,7 @@ from .twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitchBanRequest import TwitchBanRequest
 from .twitchBanResponse import TwitchBanResponse
 from .twitchBannedUserResponse import TwitchBannedUserResponse
+from .twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from .twitchEmotesResponse import TwitchEmotesResponse
 from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchEventSubResponse import TwitchEventSubResponse
@@ -339,6 +340,51 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching banned user ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchBannedUserResponse=})')
 
         return twitchBannedUserResponse
+
+    async def fetchChannelEditors(
+        self,
+        broadcasterId: str,
+        twitchAccessToken: str
+    ) -> TwitchChannelEditorsResponse:
+        if not utils.isValidStr(broadcasterId):
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching channel editors... ({broadcasterId=}) ({twitchAccessToken=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/channels/editors?broadcaster_id={broadcasterId}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+            )
+
+        twitchChannelEditorsResponse = await self.__twitchJsonMapper.parseChannelEditorsResponse(jsonResponse)
+
+        if twitchChannelEditorsResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchChannelEditorsResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchChannelEditorsResponse=})')
+
+        return twitchChannelEditorsResponse
 
     async def fetchEmotes(
         self,

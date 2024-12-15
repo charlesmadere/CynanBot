@@ -17,7 +17,7 @@ from src.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteReposito
 
 class TestTriviaEmoteGenerator:
 
-    eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+    eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 
     backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
         eventLoop = eventLoop
@@ -37,6 +37,9 @@ class TestTriviaEmoteGenerator:
         timber = timber,
         triviaEmoteRepository = triviaEmoteRepository
     )
+
+    def __init__(self):
+        asyncio.set_event_loop(self.eventLoop)
 
     @pytest.mark.asyncio
     async def test_getRandomEmote(self):
@@ -131,6 +134,12 @@ class TestTriviaEmoteGenerator:
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🏖️')
         assert result is not None
         assert result == '🏖️'
+
+    @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withBeaver(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🦫')
+        assert result is not None
+        assert result == '🦫'
 
     @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withBellPepper(self):
@@ -764,6 +773,12 @@ class TestTriviaEmoteGenerator:
         result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🏫')
         assert result is not None
         assert result == '🏫'
+
+    @pytest.mark.asyncio
+    async def test_getValidatedAndNormalizedEmote_withSeal(self):
+        result = await self.triviaEmoteGenerator.getValidatedAndNormalizedEmote('🦭')
+        assert result is not None
+        assert result == '🦭'
 
     @pytest.mark.asyncio
     async def test_getValidatedAndNormalizedEmote_withShark(self):

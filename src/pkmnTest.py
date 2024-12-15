@@ -16,11 +16,11 @@ from .timber.timberInterface import TimberInterface
 from .trivia.triviaFetchOptions import TriviaFetchOptions
 from .trivia.triviaIdGenerator import TriviaIdGenerator
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from .trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
-    PkmnTriviaQuestionRepository
+from .trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
 from .trivia.triviaSettingsRepository import TriviaSettingsRepository
 
-eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
