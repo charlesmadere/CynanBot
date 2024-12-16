@@ -11,3 +11,10 @@ class SoundAlertJsonMapperInterface(ABC):
         jsonString: str | None
     ) -> SoundAlert | None:
         pass
+
+    @abstractmethod
+    def serializeSoundAlert(
+        self,
+        soundAlert: SoundAlert
+    ) -> str:
+        pass

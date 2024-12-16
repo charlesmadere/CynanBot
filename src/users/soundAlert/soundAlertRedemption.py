@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ..soundPlayerManager.soundAlert import SoundAlert
+from ...soundPlayerManager.soundAlert import SoundAlert
 
 
 @dataclass(frozen = True)

@@ -395,6 +395,8 @@ from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoost
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
 from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
+from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemptionJsonParser
+from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
@@ -579,14 +581,16 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
-decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
-
 pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
 
 soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
+)
+
+soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = SoundAlertRedemptionJsonParser(
+    soundAlertJsonMapper = soundAlertJsonMapper
 )
 
 timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
@@ -604,7 +608,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
-    soundAlertJsonMapper = soundAlertJsonMapper,
+    soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
@@ -1491,6 +1495,7 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchConstants = twitchUtils,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,

@@ -7,7 +7,7 @@ from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from .soundAlertRedemption import SoundAlertRedemption
+from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack

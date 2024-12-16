@@ -10,9 +10,5 @@ class StreamAlertsManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def stopCurrentAlert(self):
-        pass
-
-    @abstractmethod
     def submitAlert(self, alert: StreamAlert):
         pass

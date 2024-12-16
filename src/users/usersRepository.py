@@ -17,7 +17,8 @@ from .decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoost
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from .soundAlertRedemption import SoundAlertRedemption
+from .soundAlert.soundAlertRedemption import SoundAlertRedemption
+from .soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
@@ -28,7 +29,6 @@ from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
-from ..soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.ttsProvider import TtsProvider
@@ -42,7 +42,7 @@ class UsersRepository(UsersRepositoryInterface):
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
         decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface,
         pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface,
-        soundAlertJsonMapper: SoundAlertJsonMapperInterface,
+        soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface,
         timber: TimberInterface,
         timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -59,8 +59,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'decTalkSongBoosterPackParser argument is malformed: \"{decTalkSongBoosterPackParser}\"')
         elif not isinstance(pkmnBoosterPackJsonParser, PkmnBoosterPackJsonParserInterface):
             raise TypeError(f'pkmnBoosterPackJsonParser argument is malformed: \"{pkmnBoosterPackJsonParser}\"')
-        elif not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
-            raise TypeError(f'soundAlertJsonMapper argument is malformed: \"{soundAlertJsonMapper}\"')
+        elif not isinstance(soundAlertRedemptionJsonParser, SoundAlertRedemptionJsonParserInterface):
+            raise TypeError(f'soundAlertRedemptionJsonParser argument is malformed: \"{soundAlertRedemptionJsonParser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutBoosterPackJsonParser, TimeoutBoosterPackJsonParserInterface):
@@ -80,7 +80,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
         self.__decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = decTalkSongBoosterPackParser
         self.__pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = pkmnBoosterPackJsonParser
-        self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
+        self.__soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = soundAlertRedemptionJsonParser
         self.__timber: TimberInterface = timber
         self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -184,10 +184,6 @@ class UsersRepository(UsersRepositoryInterface):
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         chatBackMessages = FrozenList(userJson.get('chatBackMessages', None))
-        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = None
-        if isDecTalkSongsEnabled:
-            decTalkSongBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('decTalkSongBoosterPacks')
-            decTalkSongBoosterPacks = self.__decTalkSongBoosterPackParser.parseBoosterPacks(decTalkSongBoosterPacksJson)
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -206,7 +202,7 @@ class UsersRepository(UsersRepositoryInterface):
             if 'anivMessageCopyTimeoutProbability' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutProbability')):
                 anivMessageCopyTimeoutProbability = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutProbability')
 
-            if 'anivMessageCopyMaxAgeSeconds' in userJson and utils.isValidInt(userJson.get('anivCopyMessageMaxAgeSeconds')):
+            if 'anivMessageCopyMaxAgeSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyMaxAgeSeconds')):
                 anivMessageCopyMaxAgeSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyMaxAgeSeconds')
 
             if 'anivMessageCopyTimeoutMinSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutMinSeconds')):
@@ -214,6 +210,11 @@ class UsersRepository(UsersRepositoryInterface):
 
             if 'anivMessageCopyTimeoutMaxSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutMaxSeconds')):
                 anivMessageCopyTimeoutMaxSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutMaxSeconds')
+
+        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = None
+        if isDecTalkSongsEnabled:
+            decTalkSongBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('decTalkSongBoosterPacks')
+            decTalkSongBoosterPacks = self.__decTalkSongBoosterPackParser.parseBoosterPacks(decTalkSongBoosterPacksJson)
 
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
@@ -296,7 +297,7 @@ class UsersRepository(UsersRepositoryInterface):
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = None
         if areSoundAlertsEnabled:
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
-            soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
+            soundAlertRedemptions = self.__soundAlertRedemptionJsonParser.parseRedemptions(soundAlertRedemptionsJson)
 
         timeoutActionFollowShieldDays: int | None = None
         if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
@@ -623,39 +624,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise BadModifyUserValueException(f'Bad modify user value! ({handle=}) ({jsonConstant=}) ({rawValue=})')
 
         userJson[jsonConstant.jsonKey] = value
-
-    def __parseSoundAlertRedemptionsFromJson(
-        self,
-        jsonList: list[dict[str, Any]] | None
-    ) -> frozendict[str, SoundAlertRedemption] | None:
-        if not isinstance(jsonList, list) or len(jsonList) == 0:
-            return None
-
-        redemptions: dict[str, SoundAlertRedemption] = dict()
-
-        for soundAlertJson in jsonList:
-            soundAlertString = utils.getStrFromDict(soundAlertJson, 'soundAlert', '')
-            soundAlert = self.__soundAlertJsonMapper.parseSoundAlert(soundAlertString)
-
-            if soundAlert is None:
-                self.__timber.log('UsersRepository', f'Unable to read string into a valid SoundAlert value ({soundAlertJson=}) ({soundAlertString=}) ({soundAlert=})')
-                continue
-
-            isImmediate = utils.getBoolFromDict(soundAlertJson, 'isImmediate', False)
-            rewardId = utils.getStrFromDict(soundAlertJson, 'rewardId')
-
-            directoryPath: str | None = None
-            if 'directoryPath' in soundAlertJson and utils.isValidStr(soundAlertJson.get('directoryPath')):
-                directoryPath = utils.getStrFromDict(soundAlertJson, 'directoryPath')
-
-            redemptions[rewardId] = SoundAlertRedemption(
-                isImmediate = isImmediate,
-                soundAlert = soundAlert,
-                directoryPath = directoryPath,
-                rewardId = rewardId
-            )
-
-        return frozendict(redemptions)
 
     def __readJson(self) -> dict[str, Any]:
         if self.__jsonCache is not None:

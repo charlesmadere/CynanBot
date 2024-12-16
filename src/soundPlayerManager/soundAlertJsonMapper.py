@@ -50,3 +50,37 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case _:
                 self.__timber.log('SoundAlertJsonMapper', f'Encountered unknown SoundAlert value: \"{jsonString}\"')
                 return None
+
+    def serializeSoundAlert(
+        self,
+        soundAlert: SoundAlert
+    ) -> str:
+        if not isinstance(soundAlert, SoundAlert):
+            raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
+
+        match soundAlert:
+            case SoundAlert.BEAN: return 'bean'
+            case SoundAlert.CHEER: return 'cheer'
+            case SoundAlert.CLICK_NAVIGATION: return 'click_navigation'
+            case SoundAlert.JACKPOT: return 'jackpot'
+            case SoundAlert.POINT_REDEMPTION_01: return 'point_redemption_01'
+            case SoundAlert.POINT_REDEMPTION_02: return 'point_redemption_02'
+            case SoundAlert.POINT_REDEMPTION_03: return 'point_redemption_03'
+            case SoundAlert.POINT_REDEMPTION_04: return 'point_redemption_04'
+            case SoundAlert.POINT_REDEMPTION_05: return 'point_redemption_05'
+            case SoundAlert.POINT_REDEMPTION_06: return 'point_redemption_06'
+            case SoundAlert.POINT_REDEMPTION_07: return 'point_redemption_07'
+            case SoundAlert.POINT_REDEMPTION_08: return 'point_redemption_08'
+            case SoundAlert.POINT_REDEMPTION_09: return 'point_redemption_09'
+            case SoundAlert.POINT_REDEMPTION_10: return 'point_redemption_10'
+            case SoundAlert.POINT_REDEMPTION_11: return 'point_redemption_11'
+            case SoundAlert.POINT_REDEMPTION_12: return 'point_redemption_12'
+            case SoundAlert.POINT_REDEMPTION_13: return 'point_redemption_13'
+            case SoundAlert.POINT_REDEMPTION_14: return 'point_redemption_14'
+            case SoundAlert.POINT_REDEMPTION_15: return 'point_redemption_15'
+            case SoundAlert.POINT_REDEMPTION_16: return 'point_redemption_16'
+            case SoundAlert.RAID: return 'raid'
+            case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
+            case SoundAlert.SUBSCRIBE: return 'subscribe'
+            case SoundAlert.TNT: return 'tnt'
+            case _: raise ValueError(f'Unknown SoundAlert value: \"{soundAlert}\"')

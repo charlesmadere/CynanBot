@@ -167,11 +167,12 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
-from src.users.decTalkSongs import decTalkSongBoosterPack
 from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
 from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
+from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemptionJsonParser
+from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
@@ -360,6 +361,10 @@ soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
 
+soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = SoundAlertRedemptionJsonParser(
+    soundAlertJsonMapper = soundAlertJsonMapper
+)
+
 timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
 
 ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
@@ -375,7 +380,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
-    soundAlertJsonMapper = soundAlertJsonMapper,
+    soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,

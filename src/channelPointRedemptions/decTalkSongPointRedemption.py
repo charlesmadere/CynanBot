@@ -1,13 +1,12 @@
 from frozenlist import FrozenList
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
-from ..misc import utils as utils
 from ..storage.jsonFileReader import JsonFileReader
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
-from ..tts.ttsProvider import TtsProvider
 from ..tts.ttsEvent import TtsEvent
+from ..tts.ttsProvider import TtsProvider
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 

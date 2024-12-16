@@ -13,6 +13,7 @@ from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManag
 from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..tts.ttsEvent import TtsEvent
+from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
@@ -54,6 +55,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
+        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchConstants: TwitchConstantsInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
@@ -75,6 +77,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
+        elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
+            raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
         elif not isinstance(twitchConstants, TwitchConstantsInterface):
             raise TypeError(f'twitchConstants argument is malformed: \"{twitchConstants}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
@@ -93,6 +97,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
+        self.__twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = twitchChannelEditorsRepository
         self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
@@ -242,6 +247,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         twitchChannel: TwitchChannel
     ) -> bool:
         if not await self.__timeoutImmuneUserIdsRepository.isImmune(timeoutTargetUserId):
+            return False
+        elif not await self.__twitchChannelEditorsRepository.isEditor(
+            chatterUserId = timeoutTargetUserId,
+            twitchChannelId = timeoutData.twitchChannelId
+        ):
             return False
 
         await self.__twitchUtils.safeSend(

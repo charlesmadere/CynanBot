@@ -120,3 +120,116 @@ class TestSoundAlertJsonMapper:
     def test_parseSoundAlert_withWhitespaceString(self):
         result = self.jsonMapper.parseSoundAlert(' ')
         assert result is None
+
+    def test_serializeSoundAlert_withAllSoundAlertValues(self):
+        strings: set[str] = set()
+
+        for soundAlert in SoundAlert:
+            serialized = self.jsonMapper.serializeSoundAlert(soundAlert)
+            strings.add(serialized)
+
+            parsed = self.jsonMapper.parseSoundAlert(serialized)
+            assert parsed == soundAlert
+
+        assert len(strings) == len(SoundAlert)
+
+    def test_serializeSoundAlert_withBean(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.BEAN)
+        assert result == 'bean'
+
+    def test_serializeSoundAlert_withCheer(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.CHEER)
+        assert result == 'cheer'
+
+    def test_serializeSoundAlert_withClickNavigation(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.CLICK_NAVIGATION)
+        assert result == 'click_navigation'
+
+    def test_serializeSoundAlert_withJackpot(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.JACKPOT)
+        assert result == 'jackpot'
+
+    def test_serializeSoundAlert_withPointRedemption01(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_01)
+        assert result == 'point_redemption_01'
+
+    def test_serializeSoundAlert_withPointRedemption02(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_02)
+        assert result == 'point_redemption_02'
+
+    def test_serializeSoundAlert_withPointRedemption03(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_03)
+        assert result == 'point_redemption_03'
+
+    def test_serializeSoundAlert_withPointRedemption04(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_04)
+        assert result == 'point_redemption_04'
+
+    def test_serializeSoundAlert_withPointRedemption05(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_05)
+        assert result == 'point_redemption_05'
+
+    def test_serializeSoundAlert_withPointRedemption06(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_06)
+        assert result == 'point_redemption_06'
+
+    def test_serializeSoundAlert_withPointRedemption07(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_07)
+        assert result == 'point_redemption_07'
+
+    def test_serializeSoundAlert_withPointRedemption08(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_08)
+        assert result == 'point_redemption_08'
+
+    def test_serializeSoundAlert_withPointRedemption09(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_09)
+        assert result == 'point_redemption_09'
+
+    def test_serializeSoundAlert_withPointRedemption10(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_10)
+        assert result == 'point_redemption_10'
+
+    def test_serializeSoundAlert_withPointRedemption11(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_11)
+        assert result == 'point_redemption_11'
+
+    def test_serializeSoundAlert_withPointRedemption12(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_12)
+        assert result == 'point_redemption_12'
+
+    def test_serializeSoundAlert_withPointRedemption13(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_13)
+        assert result == 'point_redemption_13'
+
+    def test_serializeSoundAlert_withPointRedemption14(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_14)
+        assert result == 'point_redemption_14'
+
+    def test_serializeSoundAlert_withPointRedemption15(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_15)
+        assert result == 'point_redemption_15'
+
+    def test_serializeSoundAlert_withPointRedemption16(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_16)
+        assert result == 'point_redemption_16'
+
+    def test_serializeSoundAlert_withRaid(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.RAID)
+        assert result == 'raid'
+
+    def test_serializeSoundAlert_withRandomFromDirectory(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.RANDOM_FROM_DIRECTORY)
+        assert result == 'random_from_directory'
+
+    def test_serializeSoundAlert_withSubscribe(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.SUBSCRIBE)
+        assert result == 'subscribe'
+
+    def test_serializeSoundAlert_withTnt(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT)
+        assert result == 'tnt'
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, SoundAlertJsonMapper)
+        assert isinstance(self.jsonMapper, SoundAlertJsonMapperInterface)
