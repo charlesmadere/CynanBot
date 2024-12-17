@@ -1,6 +1,12 @@
 {
     "userHandle": {
         "analogueEnabled": true,
+        "chatBackMessagesEnabled": true,
+        "chatBackMessages": [
+            "jamCAT",
+            "SchubertWalk",
+            "D e e R F o r C e"
+        ],
         "decTalkSongsEnabled": true,
         "decTalkSongBoosterPacks": [
             {

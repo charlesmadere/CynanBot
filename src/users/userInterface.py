@@ -274,11 +274,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def isCatJamMessageEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def isChannelPredictionChartEnabled(self) -> bool:
         pass
 
@@ -310,11 +305,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isDecTalkSongsEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def isDeerForceMessageEnabled(self) -> bool:
         pass
 
     @property
@@ -360,11 +350,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isRaceEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def isSchubertWalkMessageEnabled(self) -> bool:
         pass
 
     @property

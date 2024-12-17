@@ -21,17 +21,14 @@ from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterfac
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
-from src.chatActions.catJamChatAction import CatJamChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
-from src.chatActions.deerForceChatAction import DeerForceChatAction
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
-from src.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
@@ -1594,12 +1591,6 @@ chatBacksChatAction = ChatBackMessagesChatAction(
     twitchUtils = twitchUtils,
 )
 
-catJamChatAction = CatJamChatAction(
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchUtils = twitchUtils
-)
-
 chatLoggerChatAction = ChatLoggerChatAction(
     chatLogger = chatLogger
 )
@@ -1653,26 +1644,15 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         twitchUtils = twitchUtils,
         userIdsRepository = userIdsRepository
     ),
-    catJamChatAction = catJamChatAction,
     chatBackMessagesChatAction = chatBacksChatAction,
     chatLoggerChatAction = chatLoggerChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
-    deerForceChatAction = DeerForceChatAction(
-        generalSettingsRepository = generalSettingsRepository,
-        timber = timber,
-        twitchUtils = twitchUtils
-    ),
     generalSettingsRepository = generalSettingsRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = persistAllUsersChatAction,
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
-    schubertWalkChatAction = SchubertWalkChatAction(
-        generalSettingsRepository = generalSettingsRepository,
-        timber = timber,
-        twitchUtils = twitchUtils
-    ),
     supStreamerChatAction = None,
     timber = timber,
     ttsChattersChatAction = None,

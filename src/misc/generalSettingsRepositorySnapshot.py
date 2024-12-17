@@ -61,14 +61,8 @@ class GeneralSettingsRepositorySnapshot:
     def getWaitForTriviaAnswerDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 30)
 
-    def isCatJamMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'catJamMessageEnabled', False)
-
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
-
-    def isDeerForceMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'deerForceMessageEnabled', False)
 
     def isEventSubEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'eventSubEnabled', False)
@@ -90,9 +84,6 @@ class GeneralSettingsRepositorySnapshot:
 
     def isPubSubPongLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'pubSubPongLoggingEnabled', False)
-
-    def isSchubertWalkMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'schubertWalkMessageEnabled', False)
 
     def isSuperTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'superTriviaGameEnabled', False)
