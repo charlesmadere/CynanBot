@@ -9,7 +9,8 @@ class AnivCopyMessageTimeoutScorePresenterInterface(ABC):
     @abstractmethod
     async def toString(
         self,
-        score: AnivCopyMessageTimeoutScore,
-        language: LanguageEntry
+        score: AnivCopyMessageTimeoutScore | None,
+        language: LanguageEntry,
+        chatterUserName: str
     ) -> str:
         pass
