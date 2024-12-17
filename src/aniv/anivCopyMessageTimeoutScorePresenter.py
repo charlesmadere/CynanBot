@@ -1,14 +1,11 @@
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
-from .anivCopyMessageTimeoutScorePresenterInterface import \
-    AnivCopyMessageTimeoutScorePresenterInterface
+from .anivCopyMessageTimeoutScorePresenterInterface import AnivCopyMessageTimeoutScorePresenterInterface
+from ..language.languageEntry import LanguageEntry
 
 
 class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterInterface):
 
-    async def toString(self, score: AnivCopyMessageTimeoutScore) -> str:
-        if not isinstance(score, AnivCopyMessageTimeoutScore):
-            raise TypeError(f'score argument is malformed: \"{score}\"')
-
+    async def __english(self, score: AnivCopyMessageTimeoutScore) -> str:
         if score.dodgeScore == 0 and score.timeoutScore == 0:
             return f'ⓘ @{score.chatterUserName} has no aniv timeouts'
 
@@ -35,3 +32,48 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             dodgePercentString = f'{dodgePercent}%'
 
         return f'ⓘ @{score.chatterUserName}\'s aniv timeout scores — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
+
+    async def __spanish(self, score: AnivCopyMessageTimeoutScore) -> str:
+        if score.dodgeScore == 0 and score.timeoutScore == 0:
+            return f'ⓘ @{score.chatterUserName} no tiene suspensiones de aniv'
+
+        dodgesString: str
+        if score.dodgeScore == 1:
+            dodgesString = f'{score.dodgeScoreStr} esquive'
+        else:
+            dodgesString = f'{score.dodgeScoreStr} esquives'
+
+        timeoutsString: str
+        if score.timeoutScore == 1:
+            timeoutsString = f'{score.timeoutScoreStr} suspension'
+        else:
+            timeoutsString = f'{score.timeoutScoreStr} suspensiones'
+
+        dodgePercentString: str
+        if score.dodgeScore == 0:
+            dodgePercentString = '0%'
+        elif score.timeoutScore == 0:
+            dodgePercentString = '100%'
+        else:
+            totalDodgesAndTimeouts = score.dodgeScore + score.timeoutScore
+            dodgePercent = round((float(score.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
+            dodgePercentString = f'{dodgePercent}%'
+
+        return f'ⓘ el puntaje de suspension de aniv es @{score.chatterUserName} — {dodgesString} y {timeoutsString} (tasa de esquive de {dodgePercentString})'
+
+    async def toString(
+        self,
+        score: AnivCopyMessageTimeoutScore,
+        language: LanguageEntry
+    ) -> str:
+        if not isinstance(score, AnivCopyMessageTimeoutScore):
+            raise TypeError(f'score argument is malformed: \"{score}\"')
+        elif not isinstance(language, LanguageEntry):
+            raise TypeError(f'language argument is malformed: \"{language}\"')
+
+        match language:
+            case LanguageEntry.SPANISH:
+                return await self.__spanish(score)
+
+            case _:
+                return await self.__english(score)

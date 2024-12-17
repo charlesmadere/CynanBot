@@ -79,7 +79,10 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
         else:
-            printOut = await self.__anivCopyMessageTimeoutScorePresenter.toString(score)
+            printOut = await self.__anivCopyMessageTimeoutScorePresenter.toString(
+                score = score,
+                language = user.defaultLanguage
+            )
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,

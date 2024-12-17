@@ -73,7 +73,12 @@ class DeleteTriviaAnswersChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('DeleteTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but not enough arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to delete additional trivia answers as not enough arguments were given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to delete additional trivia answers as not enough arguments were given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         emote: str | None = splits[1]
@@ -81,7 +86,11 @@ class DeleteTriviaAnswersChatCommand(AbsChatCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('DeleteTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to delete additional trivia answers as an invalid emote argument was given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to delete additional trivia answers as an invalid emote argument was given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
@@ -92,7 +101,11 @@ class DeleteTriviaAnswersChatCommand(AbsChatCommand):
 
         if reference is None:
             self.__timber.log('DeleteTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found with emote \"{emote}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         result = await self.__additionalTriviaAnswersRepository.deleteAdditionalTriviaAnswers(
@@ -102,9 +115,18 @@ class DeleteTriviaAnswersChatCommand(AbsChatCommand):
         )
 
         if result is None:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} There are no additional trivia answers for {reference.triviaSource.toStr()}:{reference.triviaId}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'{reference.emote} There are no additional trivia answers for {reference.triviaSource.toStr()}:{reference.triviaId}',
+                replyMessageId = await ctx.getMessageId()
+            )
         else:
             additionalAnswers = self.__answerDelimiter.join(result.answerStrings)
-            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Deleted additional trivia answers for {result.triviaSource.toStr()}:{result.triviaId} — {additionalAnswers}')
+
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'{reference.emote} Deleted additional trivia answers for {result.triviaSource.toStr()}:{result.triviaId} — {additionalAnswers}',
+                replyMessageId = await ctx.getMessageId()
+            )
 
         self.__timber.log('DeleteTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

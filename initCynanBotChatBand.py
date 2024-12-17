@@ -53,6 +53,8 @@ from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
 from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from src.language.jsonMapper.languageEntryJsonMapper import LanguageEntryJsonMapper
+from src.language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.location.locationsRepository import LocationsRepository
@@ -353,6 +355,8 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
+languageEntryJsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
+
 pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
@@ -379,6 +383,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
+    languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,

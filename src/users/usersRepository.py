@@ -27,6 +27,8 @@ from .ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterP
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
+from ..language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
+from ..language.languageEntry import LanguageEntry
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
@@ -41,6 +43,7 @@ class UsersRepository(UsersRepositoryInterface):
         crowdControlJsonParser: CrowdControlJsonParserInterface,
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
         decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface,
+        languageEntryJsonMapper: LanguageEntryJsonMapperInterface,
         pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface,
         soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface,
         timber: TimberInterface,
@@ -57,6 +60,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'cutenessBoosterPackJsonParser argument is malformed: \"{cutenessBoosterPackJsonParser}\"')
         elif not isinstance(decTalkSongBoosterPackParser, DecTalkSongBoosterPackParserInterface):
             raise TypeError(f'decTalkSongBoosterPackParser argument is malformed: \"{decTalkSongBoosterPackParser}\"')
+        elif not isinstance(languageEntryJsonMapper, LanguageEntryJsonMapperInterface):
+            raise TypeError(f'languageEntryJsonMapper argument is malformed: \"{languageEntryJsonMapper}\"')
         elif not isinstance(pkmnBoosterPackJsonParser, PkmnBoosterPackJsonParserInterface):
             raise TypeError(f'pkmnBoosterPackJsonParser argument is malformed: \"{pkmnBoosterPackJsonParser}\"')
         elif not isinstance(soundAlertRedemptionJsonParser, SoundAlertRedemptionJsonParserInterface):
@@ -79,6 +84,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
         self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
         self.__decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = decTalkSongBoosterPackParser
+        self.__languageEntryJsonMapper: LanguageEntryJsonMapperInterface = languageEntryJsonMapper
         self.__pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = pkmnBoosterPackJsonParser
         self.__soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = soundAlertRedemptionJsonParser
         self.__timber: TimberInterface = timber
@@ -193,6 +199,14 @@ class UsersRepository(UsersRepositoryInterface):
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
+
+        defaultLanguageString = utils.getStrFromDict(
+            d = userJson,
+            key = 'defaultLanguage',
+            fallback = self.__languageEntryJsonMapper.serializeLanguageEntry(LanguageEntry.ENGLISH)
+        )
+
+        defaultLanguage = self.__languageEntryJsonMapper.requireLanguageEntry(defaultLanguageString)
 
         anivMessageCopyTimeoutProbability: float | None = None
         anivMessageCopyMaxAgeSeconds: int | None = None
@@ -396,6 +410,7 @@ class UsersRepository(UsersRepositoryInterface):
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
+            defaultLanguage = defaultLanguage,
             blueSkyUrl = blueSkyUrl,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,

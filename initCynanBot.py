@@ -94,6 +94,8 @@ from src.jisho.jishoPresenter import JishoPresenter
 from src.jisho.jishoPresenterInterface import JishoPresenterInterface
 from src.language.jishoHelper import JishoHelper
 from src.language.jishoHelperInterface import JishoHelperInterface
+from src.language.jsonMapper.languageEntryJsonMapper import LanguageEntryJsonMapper
+from src.language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.language.translation.deepLTranslationApi import DeepLTranslationApi
@@ -581,6 +583,8 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
+languageEntryJsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
+
 pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
@@ -607,6 +611,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
+    languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,
@@ -1370,6 +1375,7 @@ if mostRecentAnivMessageRepository is not None:
         anivUserIdProvider = anivUserIdProvider,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
+        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,

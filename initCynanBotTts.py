@@ -115,6 +115,8 @@ from src.halfLife.service.halfLifeService import HalfLifeService
 from src.halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from src.halfLife.settings.halfLifeSettingsRepository import HalfLifeSettingsRepository
 from src.halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
+from src.language.jsonMapper.languageEntryJsonMapper import LanguageEntryJsonMapper
+from src.language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.location.locationsRepository import LocationsRepository
@@ -537,6 +539,8 @@ cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = Cuteness
 
 decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
 
+languageEntryJsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
+
 pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
     timber = timber
 )
@@ -573,6 +577,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
+    languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,
@@ -1184,6 +1189,7 @@ if mostRecentAnivMessageRepository is not None:
         anivUserIdProvider = anivUserIdProvider,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
+        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,

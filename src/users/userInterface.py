@@ -12,6 +12,7 @@ from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
+from ..language.languageEntry import LanguageEntry
 from ..tts.ttsProvider import TtsProvider
 
 
@@ -80,6 +81,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def decTalkSongBoosterPacks(self) -> frozendict[str, DecTalkSongBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def defaultLanguage(self) -> LanguageEntry:
         pass
 
     @property
