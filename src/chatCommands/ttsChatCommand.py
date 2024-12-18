@@ -52,7 +52,7 @@ class TtsChatCommand(AbsChatCommand):
     async def __getTtsProviderStrings(self) -> list[str]:
         strings: list[str] = list()
 
-        for ttsProvider in list(TtsProvider):
+        for ttsProvider in TtsProvider:
             strings.append(await self.__ttsJsonMapper.asyncSerializeProvider(ttsProvider))
 
         strings.sort(key = lambda ttsProvider: ttsProvider.casefold())
