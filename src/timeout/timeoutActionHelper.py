@@ -193,9 +193,13 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
         failureRoll = int(round(failureProbability * diceRoll.dieSize))
+        if failureRoll > diceRoll.dieSize:
+            failureRoll = diceRoll.dieSize
 
         reverseProbability = await self.__timeoutActionSettingsRepository.getReverseProbability()
         reverseRoll = int(round(reverseProbability * float(diceRoll.dieSize)))
+        if reverseRoll > diceRoll.dieSize:
+            reverseRoll = diceRoll.dieSize
 
         return TimeoutActionHelper.RollFailureData(
             baseFailureProbability = baseFailureProbability,
