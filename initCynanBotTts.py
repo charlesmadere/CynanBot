@@ -73,12 +73,18 @@ from src.crowdControl.message.crowdControlMessagePresenterInterface import Crowd
 from src.crowdControl.utils.crowdControlUserInputUtils import CrowdControlUserInputUtils
 from src.crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from src.cynanBot import CynanBot
+from src.decTalk.apiService.decTalkApiService import DecTalkApiService
+from src.decTalk.apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
 from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
 from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
 from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from src.decTalk.helper.decTalkHelper import DecTalkHelper
+from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
+from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
+from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -896,8 +902,24 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
+    tempFileHelper = tempFileHelper
+)
+
+decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+
+decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
+    decTalkVoiceMapper = decTalkVoiceMapper,
+    settingsJsonReader = JsonFileReader('../config/decTalkSettingsRepository.json')
+)
+
+decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
+    decTalkFileManager = decTalkFileManager,
+    timber = timber,
+    decTalkSettingsRepository = decTalkSettingsRepository
+)
+
+decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
+    apiService = decTalkApiService,
     timber = timber
 )
 
@@ -921,18 +943,22 @@ decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
 )
 
 singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
-    decTalkFileManager = decTalkFileManager,
+    decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = singingDecTalkMessageCleaner,
+    decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
 
 decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
-    decTalkFileManager = decTalkFileManager,
+    decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
+    decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository

@@ -29,6 +29,12 @@ from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatA
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
+from src.decTalk.apiService.decTalkApiService import DecTalkApiService
+from src.decTalk.apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
+from src.decTalk.helper.decTalkHelper import DecTalkHelper
+from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
+from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
+from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
@@ -1630,9 +1636,7 @@ tempFileHelper: TempFileHelperInterface = TempFileHelper(
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
-    timber = timber
+    tempFileHelper = tempFileHelper
 )
 
 decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
@@ -1654,23 +1658,44 @@ decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
     decTalkVoiceMapper = decTalkVoiceMapper
 )
 
-singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
+decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
+    decTalkVoiceMapper = decTalkVoiceMapper,
+    settingsJsonReader = JsonFileReader('../config/decTalkSettingsRepository.json')
+)
+
+decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
     decTalkFileManager = decTalkFileManager,
+    timber = timber,
+    decTalkSettingsRepository = decTalkSettingsRepository
+)
+
+decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
+    apiService = decTalkApiService,
+    timber = timber
+)
+
+singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
+    decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = singingDecTalkMessageCleaner,
+    decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
 
 decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
-    decTalkFileManager = decTalkFileManager,
+    decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
+    decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
+
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
     googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonFileReader('../config/googleSettingsRepository.json')
