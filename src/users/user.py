@@ -7,11 +7,12 @@ from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from .soundAlertRedemption import SoundAlertRedemption
+from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
 from .userInterface import UserInterface
+from ..language.languageEntry import LanguageEntry
 from ..misc import utils as utils
 from ..tts.ttsProvider import TtsProvider
 
@@ -86,6 +87,7 @@ class User(UserInterface):
         triviaGameShinyMultiplier: int | None,
         waitForSuperTriviaAnswerDelay: int | None,
         waitForTriviaAnswerDelay: int | None,
+        defaultLanguage: LanguageEntry,
         blueSkyUrl: str | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
@@ -247,6 +249,8 @@ class User(UserInterface):
             raise TypeError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidInt(waitForTriviaAnswerDelay):
             raise TypeError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
+        elif not isinstance(defaultLanguage, LanguageEntry):
+            raise TypeError(f'defaultLanguage argument is malformed: \"{defaultLanguage}\"')
         elif blueSkyUrl is not None and not isinstance(blueSkyUrl, str):
             raise TypeError(f'blueSkyUrl argument is malformed: \"{blueSkyUrl}\"')
         elif casualGamePollRewardId is not None and not isinstance(casualGamePollRewardId, str):
@@ -372,6 +376,7 @@ class User(UserInterface):
         self.__triviaGameShinyMultiplier: int | None = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: int | None = waitForSuperTriviaAnswerDelay
+        self.__defaultLanguage: LanguageEntry = defaultLanguage
         self.__blueSkyUrl: str | None = blueSkyUrl
         self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
@@ -470,6 +475,10 @@ class User(UserInterface):
     @property
     def decTalkSongBoosterPacks(self) -> frozendict[str, DecTalkSongBoosterPack] | None:
         return self.__decTalkSongBoosterPacks
+
+    @property
+    def defaultLanguage(self) -> LanguageEntry:
+        return self.__defaultLanguage
 
     @property
     def discordUrl(self) -> str | None:

@@ -72,7 +72,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 return True
             elif currentAlert.alertState is StreamAlertState.SOUND_STARTED:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
-            elif await self.__soundPlayerManager.playSoundAlert(soundAlert) is not None:
+            elif await self.__soundPlayerManager.playSoundAlert(soundAlert):
                 currentAlert.setAlertState(StreamAlertState.SOUND_STARTED)
                 return True
             else:
@@ -119,10 +119,6 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 self.__currentAlert = CurrentStreamAlert(newAlert)
 
             await asyncio.sleep(await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds())
-
-    async def stopCurrentAlert(self):
-        # TODO
-        pass
 
     def submitAlert(self, alert: StreamAlert):
         if not isinstance(alert, StreamAlert):

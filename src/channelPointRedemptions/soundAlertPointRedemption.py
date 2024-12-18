@@ -7,7 +7,7 @@ from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..users.soundAlertRedemption import SoundAlertRedemption
+from ..users.soundAlert.soundAlertRedemption import SoundAlertRedemption
 from ..users.userInterface import UserInterface
 
 

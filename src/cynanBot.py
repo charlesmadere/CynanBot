@@ -854,15 +854,13 @@ class CynanBot(
         ########################################################
 
         self.__casualGamePollPointRedemption: AbsChannelPointRedemption = CasualGamePollPointRedemption(timber, twitchUtils)
+        self.__decTalkSongPointRedemption: AbsChannelPointRedemption = DecTalkSongPointRedemption(streamAlertsManager, timber)
         self.__shizaPointRedemption: AbsChannelPointRedemption = ShizaPointRedemption(timber, twitchUtils)
 
         if cutenessRepository is None:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = CutenessPointRedemption(cutenessRepository, timber, twitchUtils)
-
-
-        self.__decTalkSongPointRedemption: AbsChannelPointRedemption = DecTalkSongPointRedemption(streamAlertsManager, timber)
 
         if funtoonHelper is None:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubPointRedemption()

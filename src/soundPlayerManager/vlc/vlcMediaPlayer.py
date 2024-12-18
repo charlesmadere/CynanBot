@@ -64,7 +64,7 @@ class VlcMediaPlayer:
         if result == 0:
             return True
         else:
-            self.__timber.log('VlcMediaPlayer', f'Attempted to play, but received an unexpected result code: {result}')
+            self.__timber.log('VlcMediaPlayer', f'Attempted to play, but received an unexpected result code ({result=})')
             return False
 
     @property
@@ -94,7 +94,7 @@ class VlcMediaPlayer:
         if result == 0:
             return True
         else:
-            self.__timber.log('VlcMediaPlayer', f'Attempted to set volume but received an unexpected result code ({volume=}) ({result=})')
+            self.__timber.log('VlcMediaPlayer', f'Attempted to set volume, but received an unexpected result code ({volume=}) ({result=})')
             return False
 
     async def stop(self):
