@@ -176,7 +176,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 userId = userId,
                 userName = user.handle,
                 donation = None,
-                provider = TtsProvider.DEC_TALK,
+                provider = user.defaultTtsProvider,
                 raidInfo = None
             )
         ))
