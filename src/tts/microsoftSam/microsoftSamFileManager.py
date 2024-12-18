@@ -52,7 +52,7 @@ class MicrosoftSamFileManager(MicrosoftSamFileManagerInterface):
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('MicrosoftSamFileManager', f'Encountered exception when trying to write Stream Elements TTS sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftSamFileManager', f'Encountered exception when trying to write Microsoft Sam TTS sound to file (\"{fileName}\"): {e}', e, traceback.format_exc())
             return None
 
         return fileName
