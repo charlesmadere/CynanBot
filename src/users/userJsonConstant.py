@@ -7,7 +7,6 @@ class UserJsonConstant(Enum):
     ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED = auto()
     ANIV_MESSAGE_COPY_TIMEOUT_ENABLED = auto()
     BLUE_SKY_URL = auto()
-    CAT_JAM_MESSAGE_ENABLED = auto()
     CHEER_ACTIONS_ENABLED = auto()
     CROWD_CONTROL_ENABLED = auto()
     CUTENESS_ENABLED = auto()
@@ -16,7 +15,6 @@ class UserJsonConstant(Enum):
     ENABLED = auto()
     GIVE_CUTENESS_ENABLED = auto()
     LOCATION_ID = auto()
-    RAT_JAM_MESSAGE_ENABLED = auto()
     RECURRING_ACTIONS_ENABLED = auto()
     SOUND_ALERTS_ENABLED = auto()
     TIMEZONE = auto()
@@ -32,7 +30,6 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED: return 'anivMessageCopyTimeoutChatReportingEnabled'
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED: return 'anivMessageCopyTimeoutEnabled'
             case UserJsonConstant.BLUE_SKY_URL: return 'blueSkyUrl'
-            case UserJsonConstant.CAT_JAM_MESSAGE_ENABLED: return 'catJamMessageEnabled'
             case UserJsonConstant.CHEER_ACTIONS_ENABLED: return 'cheerActionsEnabled'
             case UserJsonConstant.CROWD_CONTROL_ENABLED: return 'crowdControlEnabled'
             case UserJsonConstant.CUTENESS_ENABLED: return 'cutenessEnabled'
@@ -41,7 +38,6 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ENABLED: return 'enabled'
             case UserJsonConstant.GIVE_CUTENESS_ENABLED: return 'giveCutenessEnabled'
             case UserJsonConstant.LOCATION_ID: return 'locationId'
-            case UserJsonConstant.RAT_JAM_MESSAGE_ENABLED: return 'ratJamMessageEnabled'
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED: return 'recurringActionsEnabled'
             case UserJsonConstant.SOUND_ALERTS_ENABLED: return 'soundAlertsEnabled'
             case UserJsonConstant.TIMEZONE: return 'timeZone'

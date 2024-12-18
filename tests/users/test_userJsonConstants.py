@@ -27,10 +27,6 @@ class TestUserJsonConstants:
         result = UserJsonConstant.BLUE_SKY_URL.jsonKey
         assert result == 'blueSkyUrl'
 
-    def test_jsonKey_withCatJamMessageEnabled(self):
-        result = UserJsonConstant.CAT_JAM_MESSAGE_ENABLED.jsonKey
-        assert result == 'catJamMessageEnabled'
-
     def test_jsonKey_withCheerActionsEnabled(self):
         result = UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey
         assert result == 'cheerActionsEnabled'
@@ -62,10 +58,6 @@ class TestUserJsonConstants:
     def test_jsonKey_withLocationId(self):
         result = UserJsonConstant.LOCATION_ID.jsonKey
         assert result == 'locationId'
-
-    def test_jsonKey_withRatJamMessageEnabled(self):
-        result = UserJsonConstant.RAT_JAM_MESSAGE_ENABLED.jsonKey
-        assert result == 'ratJamMessageEnabled'
 
     def test_jsonKey_withRecurringActionsEnabled(self):
         result = UserJsonConstant.RECURRING_ACTIONS_ENABLED.jsonKey
