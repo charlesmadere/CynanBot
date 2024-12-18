@@ -4,6 +4,7 @@ from .compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from .google.googleTtsManagerInterface import GoogleTtsManagerInterface
 from .halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
+from .microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from .streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from .ttsEvent import TtsEvent
 from .ttsManagerInterface import TtsManagerInterface
@@ -22,6 +23,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         decTalkTtsManager: DecTalkTtsManagerInterface | None,
         googleTtsManager: GoogleTtsManagerInterface | None,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
+        microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
         singingDecTalkTtsManager: DecTalkTtsManagerInterface | None,
         streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
         timber: TimberInterface,
@@ -36,6 +38,8 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
         elif halfLifeTtsManager is not None and not isinstance(halfLifeTtsManager, HalfLifeTtsManagerInterface):
             raise TypeError(f'halfLifeTtsManager argument is malformed: \"{halfLifeTtsManager}\"')
+        elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
+            raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
         elif singingDecTalkTtsManager is not None and not isinstance(singingDecTalkTtsManager, DecTalkTtsManagerInterface):
             raise TypeError(f'singingDecTalkTtsManager argument is malformed: \"{singingDecTalkTtsManager}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
@@ -51,6 +55,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         self.__decTalkTtsManager: TtsManagerInterface | None = decTalkTtsManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__halfLifeTtsManager: TtsManagerInterface | None = halfLifeTtsManager
+        self.__microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None = microsoftSamTtsManager
         self.__singingDecTalkTtsManager: TtsManagerInterface | None = singingDecTalkTtsManager
         self.__streamElementsTtsManager: TtsManagerInterface | None = streamElementsTtsManager
         self.__timber: TimberInterface = timber
@@ -65,6 +70,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             TtsProvider.DEC_TALK: self.__decTalkTtsManager,
             TtsProvider.GOOGLE: self.__googleTtsManager,
             TtsProvider.HALF_LIFE: self.__halfLifeTtsManager,
+            TtsProvider.MICROSOFT_SAM: self.__microsoftSamTtsManager,
             TtsProvider.SINGING_DEC_TALK: self.__singingDecTalkTtsManager,
             TtsProvider.STREAM_ELEMENTS: self.__streamElementsTtsManager,
             TtsProvider.TTS_MONSTER: self.__ttsMonsterTtsManager
