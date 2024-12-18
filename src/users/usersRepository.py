@@ -152,7 +152,6 @@ class UsersRepository(UsersRepositoryInterface):
         isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED.jsonKey, True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
-        isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
         isChatBackMessagesEnabled = utils.getBoolFromDict(userJson, 'chatBackMessagesEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
@@ -160,7 +159,6 @@ class UsersRepository(UsersRepositoryInterface):
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
-        isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
         isEnabled = utils.getBoolFromDict(userJson, 'enabled', True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
@@ -170,7 +168,6 @@ class UsersRepository(UsersRepositoryInterface):
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
-        isSchubertWalkMessageEnabled = utils.getBoolFromDict(userJson, 'schubertWalkMessageEnabled', False)
         isShizaMessageEnabled = utils.getBoolFromDict(userJson, 'shizaMessageEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
@@ -350,7 +347,6 @@ class UsersRepository(UsersRepositoryInterface):
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
-            isCatJamMessageEnabled = isCatJamMessageEnabled,
             isCasualGamePollEnabled = isCasualGamePollEnabled,
             isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,
             isChatBackMessagesEnabled = isChatBackMessagesEnabled,
@@ -359,7 +355,6 @@ class UsersRepository(UsersRepositoryInterface):
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isDecTalkSongsEnabled = isDecTalkSongsEnabled,
-            isDeerForceMessageEnabled = isDeerForceMessageEnabled,
             isEnabled = isEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
@@ -369,7 +364,6 @@ class UsersRepository(UsersRepositoryInterface):
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
-            isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
             isShizaMessageEnabled = isShizaMessageEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,

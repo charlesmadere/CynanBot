@@ -27,7 +27,6 @@ class User(UserInterface):
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
-        isCatJamMessageEnabled: bool,
         isCasualGamePollEnabled: bool,
         isChannelPredictionChartEnabled: bool,
         isChatBackMessagesEnabled: bool,
@@ -36,7 +35,6 @@ class User(UserInterface):
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
         isDecTalkSongsEnabled: bool,
-        isDeerForceMessageEnabled: bool,
         isEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
@@ -46,7 +44,6 @@ class User(UserInterface):
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
-        isSchubertWalkMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
         isShizaMessageEnabled: bool,
         isStarWarsQuotesEnabled: bool,
@@ -133,8 +130,6 @@ class User(UserInterface):
             raise TypeError(f'isAnivMessageCopyTimeoutEnabled argument is malformed: \"{isAnivMessageCopyTimeoutEnabled}\"')
         elif not utils.isValidBool(isCasualGamePollEnabled):
             raise TypeError(f'isCasualGamePollEnabled argument is malformed: \"{isCasualGamePollEnabled}\"')
-        elif not utils.isValidBool(isCatJamMessageEnabled):
-            raise TypeError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChannelPredictionChartEnabled):
             raise TypeError(f'isChannelPredictionChartEnabled argument is malformed: \"{isChannelPredictionChartEnabled}\"')
         elif not utils.isValidBool(isChatBackMessagesEnabled):
@@ -149,8 +144,6 @@ class User(UserInterface):
             raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
         elif not utils.isValidBool(isDecTalkSongsEnabled):
             raise TypeError(f'isDecTalkSongsEnabled argument is malformed: \"{isDecTalkSongsEnabled}\"')
-        elif not utils.isValidBool(isDeerForceMessageEnabled):
-            raise TypeError(f'isDeerForceMessageEnabled argument is malformed: \"{isDeerForceMessageEnabled}\"')
         elif not utils.isValidBool(isEnabled):
             raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
@@ -169,8 +162,6 @@ class User(UserInterface):
             raise TypeError(f'isPokepediaEnabled argument is malformed: \"{isPokepediaEnabled}\"')
         elif not utils.isValidBool(isRaceEnabled):
             raise TypeError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
-        elif not utils.isValidBool(isSchubertWalkMessageEnabled):
-            raise TypeError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise TypeError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
         elif not utils.isValidBool(isShizaMessageEnabled):
@@ -317,7 +308,6 @@ class User(UserInterface):
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
         self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
-        self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
         self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
@@ -325,7 +315,6 @@ class User(UserInterface):
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
-        self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
         self.__isEnabled: bool = isEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
@@ -335,7 +324,6 @@ class User(UserInterface):
         self.__isPkmnEnabled: bool = isPkmnEnabled
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
         self.__isRaceEnabled: bool = isRaceEnabled
-        self.__isSchubertWalkMessageEnabled: bool = isSchubertWalkMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
         self.__isShizaMessageEnabled: bool = isShizaMessageEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
@@ -633,10 +621,6 @@ class User(UserInterface):
         return self.__isCasualGamePollEnabled
 
     @property
-    def isCatJamMessageEnabled(self) -> bool:
-        return self.__isCatJamMessageEnabled
-
-    @property
     def isChannelPredictionChartEnabled(self) -> bool:
         return self.__isChannelPredictionChartEnabled
 
@@ -663,10 +647,6 @@ class User(UserInterface):
     @property
     def isDecTalkSongsEnabled(self) -> bool:
         return self.__isDecTalkSongsEnabled
-
-    @property
-    def isDeerForceMessageEnabled(self) -> bool:
-        return self.__isDeerForceMessageEnabled
 
     @property
     def isEnabled(self) -> bool:
@@ -703,10 +683,6 @@ class User(UserInterface):
     @property
     def isRaceEnabled(self) -> bool:
         return self.__isRaceEnabled
-
-    @property
-    def isSchubertWalkMessageEnabled(self) -> bool:
-        return self.__isSchubertWalkMessageEnabled
 
     @property
     def isShinyTriviaEnabled(self) -> bool:
