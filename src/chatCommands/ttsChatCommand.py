@@ -87,7 +87,7 @@ class TtsChatCommand(AbsChatCommand):
             )
             return
 
-        ttsProvider: TtsProvider = TtsProvider.DEC_TALK
+        ttsProvider = user.defaultTtsProvider
         ttsProviderMatch = self.__ttsProviderRegEx.fullmatch(message.split()[0])
 
         if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)) and len(splits) >= 3:

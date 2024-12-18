@@ -97,7 +97,7 @@ class SupStreamerChatAction(AbsChatAction):
                 userId = message.getAuthorId(),
                 userName = message.getAuthorName(),
                 donation = None,
-                provider = TtsProvider.DEC_TALK,
+                provider = user.defaultTtsProvider,
                 raidInfo = None
             )
         ))
