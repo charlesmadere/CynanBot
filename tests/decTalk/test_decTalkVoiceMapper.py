@@ -1,13 +1,57 @@
 import pytest
-
-from src.decTalk.decTalkVoice import DecTalkVoice
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from src.decTalk.models.decTalkVoice import DecTalkVoice
 
 
 class TestDecTalkVoiceMapper:
 
     decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+
+    @pytest.mark.asyncio
+    async def test_fromString_withBetty(self):
+        result = await self.decTalkVoiceMapper.fromString('betty')
+        assert result is DecTalkVoice.BETTY
+
+    @pytest.mark.asyncio
+    async def test_fromString_withDennis(self):
+        result = await self.decTalkVoiceMapper.fromString('dennis')
+        assert result is DecTalkVoice.DENNIS
+
+    @pytest.mark.asyncio
+    async def test_fromString_withFrank(self):
+        result = await self.decTalkVoiceMapper.fromString('frank')
+        assert result is DecTalkVoice.FRANK
+
+    @pytest.mark.asyncio
+    async def test_fromString_withHarry(self):
+        result = await self.decTalkVoiceMapper.fromString('harry')
+        assert result is DecTalkVoice.HARRY
+
+    @pytest.mark.asyncio
+    async def test_fromString_withKit(self):
+        result = await self.decTalkVoiceMapper.fromString('kit')
+        assert result is DecTalkVoice.KIT
+
+    @pytest.mark.asyncio
+    async def test_fromString_withPaul(self):
+        result = await self.decTalkVoiceMapper.fromString('paul')
+        assert result is DecTalkVoice.PAUL
+
+    @pytest.mark.asyncio
+    async def test_fromString_withRita(self):
+        result = await self.decTalkVoiceMapper.fromString('rita')
+        assert result is DecTalkVoice.RITA
+
+    @pytest.mark.asyncio
+    async def test_fromString_withUrsula(self):
+        result = await self.decTalkVoiceMapper.fromString('ursula')
+        assert result is DecTalkVoice.URSULA
+
+    @pytest.mark.asyncio
+    async def test_fromString_withWendy(self):
+        result = await self.decTalkVoiceMapper.fromString('wendy')
+        assert result is DecTalkVoice.WENDY
 
     @pytest.mark.asyncio
     async def test_toString_withBetty(self):

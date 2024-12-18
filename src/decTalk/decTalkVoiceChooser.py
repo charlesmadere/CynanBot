@@ -2,9 +2,9 @@ import random
 import re
 from typing import Pattern
 
-from .decTalkVoice import DecTalkVoice
 from .decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from .decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from .models.decTalkVoice import DecTalkVoice
 from ..misc import utils as utils
 
 

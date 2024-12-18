@@ -6,6 +6,7 @@ class TtsProvider(Enum):
     DEC_TALK = auto()
     GOOGLE = auto()
     HALF_LIFE = auto()
+    MICROSOFT_SAM = auto()
     SINGING_DEC_TALK = auto()
     STREAM_ELEMENTS = auto()
     TTS_MONSTER = auto()

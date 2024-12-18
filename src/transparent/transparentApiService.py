@@ -70,13 +70,13 @@ class TransparentApiService(TransparentApiServiceInterface):
 
         xmlRoot: dict[str, Any] | None = xmlResponse.get('xml')
         if not isinstance(xmlRoot, dict) or len(xmlRoot) == 0:
-            self.__timber.log('TransparentApiService', f'Encountered missing/invalid \"xml\" data in XML when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
-            raise GenericNetworkException(f'TransparentApiService encountered missing/invalid \"xml\" data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+            self.__timber.log('TransparentApiService', f'Encountered missing/invalid \"xml\" data in XML when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({xmlRoot=})')
+            raise GenericNetworkException(f'TransparentApiService encountered missing/invalid \"xml\" data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({xmlRoot=})')
 
         transparentResponse = await self.__transparentXmlMapper.parseTransparentResponse(xmlRoot.get('words'))
 
         if transparentResponse is None:
-            self.__timber.log('TransparentApiService', f'Failed to parse JSON response into TransparentResponse instance ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({transparentResponse=})')
-            raise GenericNetworkException(f'TransparentApiService failed to parse JSON response into TransparentResponse instance ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({transparentResponse=})')
+            self.__timber.log('TransparentApiService', f'Failed to parse JSON response into TransparentResponse instance ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({xmlRoot=}) ({transparentResponse=})')
+            raise GenericNetworkException(f'TransparentApiService failed to parse JSON response into TransparentResponse instance ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({xmlRoot=}) ({transparentResponse=})')
 
         return transparentResponse

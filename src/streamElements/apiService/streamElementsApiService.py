@@ -37,6 +37,7 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
         elif not isinstance(voice, StreamElementsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
+        self.__timber.log('StreamElementsApiService', f'Fetching speech... ({text=})')
         clientSession = await self.__networkClientProvider.get()
         text = urllib.parse.quote_plus(text).strip()
 

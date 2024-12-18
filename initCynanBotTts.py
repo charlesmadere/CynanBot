@@ -123,6 +123,14 @@ from src.location.locationsRepository import LocationsRepository
 from src.location.locationsRepositoryInterface import LocationsRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
+from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
+from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
+from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
+from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
+from src.microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
+from src.microsoftSam.settings.microsoftSamSettingsRepository import MicrosoftSamSettingsRepository
+from src.microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from src.misc.administratorProvider import AdministratorProvider
 from src.misc.administratorProviderInterface import AdministratorProviderInterface
 from src.misc.authRepository import AuthRepository
@@ -236,6 +244,10 @@ from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
 from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
+from src.tts.microsoftSam.microsoftSamFileManager import MicrosoftSamFileManager
+from src.tts.microsoftSam.microsoftSamFileManagerInterface import MicrosoftSamFileManagerInterface
+from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
+from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
 from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
@@ -998,6 +1010,41 @@ halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
     ttsCommandBuilder = ttsCommandBuilder
 )
 
+microsoftSamFileManager: MicrosoftSamFileManagerInterface = MicrosoftSamFileManager(
+    eventLoop = eventLoop,
+    tempFileHelper = tempFileHelper,
+    timber = timber
+)
+
+microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
+    apiService = microsoftSamApiService,
+    timber = timber
+)
+
+microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMessageCleaner(
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
+microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
+    settingsJsonReader = JsonFileReader('../config/microsoftSamSettingsRepository.json')
+)
+
+microsoftSamTtsManager: MicrosoftSamTtsManagerInterface = MicrosoftSamTtsManager(
+    microsoftSamFileManager = microsoftSamFileManager,
+    microsoftSamHelper = microsoftSamHelper,
+    microsoftSamMessageCleaner = microsoftSamMessageCleaner,
+    microsoftSamSettingsRepository = microsoftSamSettingsRepository,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
     timber = timber
@@ -1139,6 +1186,7 @@ compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
+    microsoftSamTtsManager = microsoftSamTtsManager,
     singingDecTalkTtsManager = singingDecTalkTtsManager,
     streamElementsTtsManager = streamElementsTtsManager,
     timber = timber,

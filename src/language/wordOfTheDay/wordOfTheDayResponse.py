@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from .languageEntry import LanguageEntry
-from ..transparent.transparentResponse import TransparentResponse
+from ..languageEntry import LanguageEntry
+from ...transparent.transparentResponse import TransparentResponse
 
 
 @dataclass(frozen = True)

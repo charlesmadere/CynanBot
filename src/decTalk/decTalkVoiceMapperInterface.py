@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 
-from .decTalkVoice import DecTalkVoice
+from .models.decTalkVoice import DecTalkVoice
 
 
 class DecTalkVoiceMapperInterface(ABC):
+
+    @abstractmethod
+    async def fromString(self, voice: str) -> DecTalkVoice:
+        pass
 
     @abstractmethod
     async def toString(self, voice: DecTalkVoice) -> str:

@@ -1,10 +1,9 @@
 import pytest
-
-from src.decTalk.decTalkVoice import DecTalkVoice
 from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
 from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from src.decTalk.models.decTalkVoice import DecTalkVoice
 
 
 class TestDecTalkVoiceChooser:

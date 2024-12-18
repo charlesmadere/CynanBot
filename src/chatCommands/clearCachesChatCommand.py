@@ -10,7 +10,7 @@ from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSet
 from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from ..funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
-from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
+from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.authRepository import AuthRepository
