@@ -1,6 +1,6 @@
 from .wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from .wordOfTheDayResponse import WordOfTheDayResponse
-from ..misc import utils as utils
+from ...misc import utils as utils
 
 
 class WordOfTheDayPresenter(WordOfTheDayPresenterInterface):

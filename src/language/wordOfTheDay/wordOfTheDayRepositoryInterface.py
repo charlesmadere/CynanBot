@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
-from .languageEntry import LanguageEntry
 from .wordOfTheDayResponse import WordOfTheDayResponse
-from ..misc.clearable import Clearable
+from ..languageEntry import LanguageEntry
+from ...misc.clearable import Clearable
 
 
 class WordOfTheDayRepositoryInterface(Clearable):

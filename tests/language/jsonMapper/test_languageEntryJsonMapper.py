@@ -1,6 +1,6 @@
-from src.language.languageEntry import LanguageEntry
 from src.language.jsonMapper.languageEntryJsonMapper import LanguageEntryJsonMapper
 from src.language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
+from src.language.languageEntry import LanguageEntry
 
 
 class TestLanguageEntryJsonMapper:

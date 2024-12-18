@@ -148,7 +148,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         # prevent potential for insane answer lengths
         maxPhraseGuessLength = await self.__triviaSettingsRepository.getMaxPhraseGuessLength()
         if utils.isValidStr(answer) and len(answer) > maxPhraseGuessLength:
-            answer = answer[0:maxPhraseGuessLength]
+            answer = answer[0:maxPhraseGuessLength].strip()
 
         compiledUserAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
             answers = [ answer ],
@@ -319,6 +319,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('charlie', 'charly', 'chuck', 'chucky'):
             yield 'charles'
         if word in ('chris', 'christ', 'cris', 'kris'):
+            yield 'christian'
             yield 'christopher'
         if word == 'delanor':
             yield 'delano'

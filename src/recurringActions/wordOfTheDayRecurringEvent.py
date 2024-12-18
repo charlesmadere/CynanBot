@@ -3,7 +3,7 @@ from typing import Any
 from .recurringEvent import RecurringEvent
 from .recurringEventType import RecurringEventType
 from ..language.languageEntry import LanguageEntry
-from ..language.wordOfTheDayResponse import WordOfTheDayResponse
+from ..language.wordOfTheDay.wordOfTheDayResponse import WordOfTheDayResponse
 
 
 class WordOfTheDayRecurringEvent(RecurringEvent):

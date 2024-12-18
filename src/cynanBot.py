@@ -119,8 +119,8 @@ from .halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from .language.jishoHelperInterface import JishoHelperInterface
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from .language.translationHelper import TranslationHelper
-from .language.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
-from .language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
+from .language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
+from .language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .misc import utils as utils

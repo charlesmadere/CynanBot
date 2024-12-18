@@ -4,10 +4,10 @@ import pytest
 
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from src.language.wordOfTheDayPresenter import WordOfTheDayPresenter
-from src.language.wordOfTheDayPresenterInterface import \
+from src.language.wordOfTheDay.wordOfTheDayPresenter import WordOfTheDayPresenter
+from src.language.wordOfTheDay.wordOfTheDayPresenterInterface import \
     WordOfTheDayPresenterInterface
-from src.language.wordOfTheDayResponse import WordOfTheDayResponse
+from src.language.wordOfTheDay.wordOfTheDayResponse import WordOfTheDayResponse
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.transparent.transparentResponse import TransparentResponse

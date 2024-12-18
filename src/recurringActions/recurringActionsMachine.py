@@ -21,7 +21,7 @@ from .weatherRecurringEvent import WeatherRecurringEvent
 from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from .wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from ..language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
+from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
