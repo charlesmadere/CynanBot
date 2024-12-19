@@ -936,11 +936,7 @@ singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCle
     sing = True
 )
 
-decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
-
-decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
-    decTalkVoiceMapper = decTalkVoiceMapper
-)
+decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
 
 singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
     decTalkHelper = decTalkHelper,

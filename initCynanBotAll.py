@@ -1660,10 +1660,6 @@ singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCle
 
 decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
-decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
-    decTalkVoiceMapper = decTalkVoiceMapper
-)
-
 decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
     decTalkVoiceMapper = decTalkVoiceMapper,
     settingsJsonReader = JsonFileReader('../config/decTalkSettingsRepository.json')
@@ -1680,9 +1676,11 @@ decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
     timber = timber
 )
 
-singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
+decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
+
+decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
     decTalkHelper = decTalkHelper,
-    decTalkMessageCleaner = singingDecTalkMessageCleaner,
+    decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
@@ -1691,9 +1689,9 @@ singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsM
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
+singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
     decTalkHelper = decTalkHelper,
-    decTalkMessageCleaner = decTalkMessageCleaner,
+    decTalkMessageCleaner = singingDecTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
@@ -1740,8 +1738,6 @@ googleTtsManager: GoogleTtsManagerInterface | None = GoogleTtsManager(
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
-
-
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/halfLifeTtsSettingsRepository.json'),
