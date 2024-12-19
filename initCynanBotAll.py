@@ -20,6 +20,9 @@ from src.beanStats.beanStatsPresenter import BeanStatsPresenter
 from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
+from src.chatActions.supStreamerChatAction import SupStreamerChatAction
+from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
+from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
@@ -29,50 +32,21 @@ from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatA
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
-from src.decTalk.apiService.decTalkApiService import DecTalkApiService
-from src.decTalk.apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
-from src.decTalk.helper.decTalkHelper import DecTalkHelper
-from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
-from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
-from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
-from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
-from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
-from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
-from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
-from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
-from src.tts.google.googleTtsHelper import GoogleTtsHelper
-from src.tts.google.googleTtsHelperInterface import GoogleTtsHelperInterface
-from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
-from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from src.tts.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
-from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
-from src.tts.microsoftSam.microsoftSamFileManagerInterface import MicrosoftSamFileManagerInterface
-from src.tts.microsoftSam.microsoftSamFileManager import MicrosoftSamFileManager
-from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
-from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
-from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
-from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
-from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
-from src.microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
-from src.microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
-from src.microsoftSam.settings.microsoftSamSettingsRepository import MicrosoftSamSettingsRepository
-from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
-from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
-from src.tts.google.googleTtsManager import GoogleTtsManager
-from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
-from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
-from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
-from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
-from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
-from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
-from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
-from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
-from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
-from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
-from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
-from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
-from src.tts.compositeTtsManager import CompositeTtsManager
+from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
+from src.chatLogger.chatLogger import ChatLogger
+from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
+from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
+from src.cheerActions.cheerActionHelper import CheerActionHelper
+from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
+from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
+from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
+from src.cheerActions.cheerActionSettingsRepository import CheerActionSettingsRepository
+from src.cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
+from src.cheerActions.cheerActionsRepository import CheerActionsRepository
+from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from src.cheerActions.cheerActionsWizard import CheerActionsWizard
+from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
 from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 from src.crowdControl.message.crowdControlMessagePresenterInterface import CrowdControlMessagePresenterInterface
@@ -82,36 +56,47 @@ from src.crowdControl.crowdControlSettingsRepositoryInterface import CrowdContro
 from src.crowdControl.crowdControlSettingsRepository import CrowdControlSettingsRepository
 from src.crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from src.crowdControl.crowdControlMachine import CrowdControlMachine
-from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
-from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
-from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
-from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
-from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
-from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
-from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
-from src.ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
-from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
-from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
-from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import TtsMonsterMessageToVoicesHelper
-from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import TtsMonsterKeyAndUserIdRepositoryInterface
-from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepository import TtsMonsterKeyAndUserIdRepository
-from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
-from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
-from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
-from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
-from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
-from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
-from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepository import TtsMonsterStreamerVoicesRepository
-from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
-from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
-from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
-from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
-from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
-from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
-from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
-from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
-from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
+from src.decTalk.apiService.decTalkApiService import DecTalkApiService
+from src.decTalk.apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
+from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
+from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
+from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
+from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
+from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
+from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from src.decTalk.helper.decTalkHelper import DecTalkHelper
+from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
+from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
+from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
+from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
+from src.halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
+from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
+from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
+from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
+from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
+from src.halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
+from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from src.halfLife.service.halfLifeService import HalfLifeService
+from src.halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
+from src.halfLife.settings.halfLifeSettingsRepository import HalfLifeSettingsRepository
+from src.halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
+from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
+from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
+from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
+from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
+from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
+from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
+from src.microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
+from src.microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
+from src.microsoftSam.settings.microsoftSamSettingsRepository import MicrosoftSamSettingsRepository
+from src.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from src.soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
+from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelper
+from src.soundPlayerManager.vlc.vlcSoundPlayerManagerProvider import VlcSoundPlayerManagerProvider
+from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
+from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
+from src.streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from src.storage.tempFileHelper import TempFileHelper
 from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.streamElements.apiService.streamElementsApiService import StreamElementsApiService
@@ -128,50 +113,70 @@ from src.streamElements.userKeyRepository.streamElementsUserKeyRepository import
 from src.streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import StreamElementsUserKeyRepositoryInterface
 from src.streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from src.streamElements.helper.streamElementsHelper import StreamElementsHelper
+from src.supStreamer.supStreamerHelper import SupStreamerHelper
+from src.supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
+from src.tts.compositeTtsManager import CompositeTtsManager
+from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
+from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
+from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
+from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
+from src.tts.google.googleTtsHelper import GoogleTtsHelper
+from src.tts.google.googleTtsHelperInterface import GoogleTtsHelperInterface
+from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
+from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
+from src.tts.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
+from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
+from src.tts.google.googleTtsManager import GoogleTtsManager
+from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
+from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
+from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
+from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
+from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
+from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
+from src.tts.microsoftSam.microsoftSamFileManagerInterface import MicrosoftSamFileManagerInterface
+from src.tts.microsoftSam.microsoftSamFileManager import MicrosoftSamFileManager
+from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
+from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
+from src.ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
+from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
+from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
+from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
+from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
+from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
+from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
+from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
+from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
+from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import TtsMonsterKeyAndUserIdRepositoryInterface
+from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepository import TtsMonsterKeyAndUserIdRepository
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
+from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
+from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
+from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
+from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
+from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import TtsMonsterMessageToVoicesHelperInterface
+from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import TtsMonsterMessageToVoicesHelper
+from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
+from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepository import TtsMonsterStreamerVoicesRepository
+from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import TtsMonsterStreamerVoicesRepositoryInterface
+from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
+from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
+from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
+from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from src.tts.streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.ttsCommandBuilder import TtsCommandBuilder
-from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
-from src.chatLogger.chatLogger import ChatLogger
-from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
-from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
-from src.cheerActions.cheerActionHelper import CheerActionHelper
-from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
-from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
-from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
-from src.cheerActions.cheerActionSettingsRepository import CheerActionSettingsRepository
-from src.cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from src.cheerActions.cheerActionsRepository import CheerActionsRepository
-from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from src.cheerActions.cheerActionsWizard import CheerActionsWizard
-from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from src.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
-from src.soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
-from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelper
-from src.soundPlayerManager.vlc.vlcSoundPlayerManagerProvider import VlcSoundPlayerManagerProvider
+from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
+from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
+from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
+from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
-from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
-from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
-from src.halfLife.settings.halfLifeSettingsRepository import HalfLifeSettingsRepository
-from src.halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
-from src.halfLife.service.halfLifeService import HalfLifeService
-from src.halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
-from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
-from src.halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
-from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
-from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
-from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
-from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
-from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
-from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
-from src.streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
-from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
-from src.halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
 from src.crowdControl.bizhawk.bizhawkActionHandler import BizhawkActionHandler
 from src.crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from src.crowdControl.automator.crowdControlAutomator import CrowdControlAutomator
@@ -311,7 +316,6 @@ from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProvider
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
-from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
 from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
@@ -2225,6 +2229,20 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
     timeZoneRepository = timeZoneRepository
 )
 
+supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
+
+supStreamerChatAction: AbsChatAction = SupStreamerChatAction(
+    streamAlertsManager = streamAlertsManager,
+    supStreamerHelper = supStreamerHelper,
+    supStreamerRepository = supStreamerRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
+    streamAlertsManager = streamAlertsManager
+)
+
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = AnivCheckChatAction(
@@ -2246,9 +2264,9 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     persistAllUsersChatAction = persistAllUsersChatAction,
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
-    supStreamerChatAction = None,
+    supStreamerChatAction = supStreamerChatAction,
     timber = timber,
-    ttsChattersChatAction = None,
+    ttsChattersChatAction = ttsChattersChatAction,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
@@ -2324,28 +2342,6 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscript
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
 )
-
-
-
-##################################################
-## Stream Alerts Manager initialization section ##
-##################################################
-
-
-streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/streamAlertsSettingsRepository.json')
-)
-
-streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
-    compositeTtsManager = compositeTtsManager,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
-    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
-    timber = timber
-)
-
-
-
 
 ######################################
 ## Chat Band initialization section ##
