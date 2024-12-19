@@ -12,7 +12,6 @@ from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProvider import TtsProvider
 from ...users.userInterface import UserInterface
 
 

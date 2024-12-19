@@ -166,43 +166,6 @@ class ConfirmCommand(AbsCommand):
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
-class CynanSourceCommand(AbsCommand):
-
-    def __init__(
-        self,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
-    ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
-            return
-
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = 'ⓘ My source code is available here: https://github.com/charlesmadere/cynanbot',
-            replyMessageId = await ctx.getMessageId()
-        )
-
-        self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
-
 class PbsCommand(AbsCommand):
 
     def __init__(

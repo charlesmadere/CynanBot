@@ -9,17 +9,22 @@ from ...storage.jsonReaderInterface import JsonReaderInterface
 
 class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
 
-    def __init__(self,
+    def __init__(
+        self,
         decTalkVoiceMapper: DecTalkVoiceMapperInterface,
-        settingsJsonReader: JsonReaderInterface
+        settingsJsonReader: JsonReaderInterface,
+        defaultDecTalkVoice: DecTalkVoice = DecTalkVoice.PAUL
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(defaultDecTalkVoice, DecTalkVoice):
+            raise TypeError(f'defaultDecTalkVoice argument is malformed: \"{defaultDecTalkVoice}\"')
 
         self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__defaultDecTalkVoice: DecTalkVoice = defaultDecTalkVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -28,19 +33,29 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
 
     async def getDecTalkExecutablePath(self) -> str | None:
         jsonContents = await self.__readJson()
-        decTalkPath = utils.getStrFromDict(jsonContents, 'decTalkPath', fallback = "../dectalk/say.exe")
+
+        decTalkPath = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'decTalkPath',
+            fallback = '../dectalk/say.exe'
+        )
 
         return utils.cleanPath(decTalkPath)
 
     async def getDefaultVoice(self) -> DecTalkVoice:
         jsonContents = await self.__readJson()
-        decTalkVoiceStr = utils.getStrFromDict(jsonContents, 'defaultVoice', fallback = DecTalkVoice.PAUL.name)
+
+        decTalkVoiceStr = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'defaultVoice',
+            fallback = self.__defaultDecTalkVoice.name
+        )
 
         return await self.__decTalkVoiceMapper.fromString(decTalkVoiceStr)
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 46)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 46)
 
     async def requireDecTalkExecutablePath(self) -> str:
         decTalkPath = await self.getDecTalkExecutablePath()
@@ -62,7 +77,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
             jsonContents = dict()
 
         if not isinstance(jsonContents, dict):
-            raise IOError(f'Error reading from DecTalk settings file: {self.__settingsJsonReader}')
+            raise IOError(f'Error reading from Dec Talk settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents
         return jsonContents

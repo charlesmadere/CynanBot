@@ -10,7 +10,6 @@ from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsEvent import TtsEvent
-from ..tts.ttsProvider import TtsProvider
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.userInterface import UserInterface
 
