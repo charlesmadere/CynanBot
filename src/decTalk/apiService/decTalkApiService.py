@@ -4,33 +4,37 @@ from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
 from typing import ByteString
 
+import aiofiles
+import aiofiles.os
+import aiofiles.ospath
+import psutil
 
 from .decTalkApiServiceInterface import DecTalkApiServiceInterface
+from ..exceptions import DecTalkFailedToGenerateSpeechFileException
 from ..settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
 
-import psutil
 
 class DecTalkApiService(DecTalkApiServiceInterface):
 
     def __init__(
         self,
         decTalkFileManager: DecTalkFileManagerInterface,
-        timber: TimberInterface,
-        decTalkSettingsRepository: DecTalkSettingsRepositoryInterface
+        decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
+        timber: TimberInterface
     ):
         if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
+        self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__decTalkSettingsRepository = decTalkSettingsRepository
 
     async def generateSpeechFile(self, text: str) -> str:
         if not utils.isValidStr(text):
@@ -63,25 +67,29 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
             await self.__killDecTalkProcess(decTalkProcess)
+            fileName = None
 
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
-        self.__timber.log('DecTalkManager', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
+        self.__timber.log('DecTalkApiService', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
-        return fileName
+        if utils.isValidStr(fileName) and await aiofiles.ospath.exists(fileName) and await aiofiles.ospath.isfile(fileName):
+            return fileName
+        else:
+            raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file for message: \"{text}\"')
 
     async def __killDecTalkProcess(self, decTalkProcess: Process | None):
         if decTalkProcess is None:
-            self.__timber.log('DecTalkManager', f'Went to kill the DecTalk process, but the process is None ({decTalkProcess=})')
+            self.__timber.log('DecTalkApiService', f'Went to kill the DecTalk process, but the process is None ({decTalkProcess=})')
             return
         elif not isinstance(decTalkProcess, Process):
             raise TypeError(f'process argument is malformed: \"{decTalkProcess}\"')
         elif decTalkProcess.returncode is not None:
-            self.__timber.log('DecTalkManager', f'Went to kill a DecTalk process, but the process has a return code ({decTalkProcess=}) ({decTalkProcess.returncode=})')
+            self.__timber.log('DecTalkApiService', f'Went to kill a DecTalk process, but the process has a return code ({decTalkProcess=}) ({decTalkProcess.returncode=})')
             return
 
-        self.__timber.log('DecTalkManager', f'Killing DecTalk process ({decTalkProcess=})...')
+        self.__timber.log('DecTalkApiService', f'Killing DecTalk process ({decTalkProcess=})...')
         parent = psutil.Process(decTalkProcess.pid)
         childCount = 0
 
@@ -90,4 +98,4 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             childCount += 1
 
         parent.terminate()
-        self.__timber.log('DecTalkManager', f'Finished killing DecTalk process ({decTalkProcess=}) ({childCount=})')
+        self.__timber.log('DecTalkApiService', f'Finished killing DecTalk process ({decTalkProcess=}) ({childCount=})')

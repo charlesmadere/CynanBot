@@ -82,9 +82,9 @@ from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterfac
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.decTalk.helper.decTalkHelper import DecTalkHelper
+from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
 from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
-from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -914,8 +914,8 @@ decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsR
 
 decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
     decTalkFileManager = decTalkFileManager,
-    timber = timber,
-    decTalkSettingsRepository = decTalkSettingsRepository
+    decTalkSettingsRepository = decTalkSettingsRepository,
+    timber = timber
 )
 
 decTalkHelper: DecTalkHelperInterface = DecTalkHelper(

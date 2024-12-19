@@ -2,6 +2,7 @@ from .decTalkFileManagerInterface import DecTalkFileManagerInterface
 from ...misc import utils as utils
 from ...storage.tempFileHelperInterface import TempFileHelperInterface
 
+
 class DecTalkFileManager(DecTalkFileManagerInterface):
 
     def __init__(
@@ -17,10 +18,8 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
         self.__tempFileHelper: TempFileHelperInterface = tempFileHelper
         self.__fileExtension: str = fileExtension
 
-    async def generateNewSpeechFile(self) -> str | None:
-        fileName = await self.__tempFileHelper.getTempFileName(
+    async def generateNewSpeechFile(self) -> str:
+        return await self.__tempFileHelper.getTempFileName(
             prefix = 'dectalk',
             extension = self.__fileExtension
         )
-
-        return fileName

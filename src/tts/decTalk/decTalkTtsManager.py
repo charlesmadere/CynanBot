@@ -1,4 +1,5 @@
 import asyncio
+
 import aiofiles.ospath
 
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface

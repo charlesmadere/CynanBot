@@ -55,6 +55,7 @@ from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from .chatCommands.cutenessChatCommand import CutenessChatCommand
 from .chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
+from .chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from .chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
@@ -98,8 +99,8 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, CynanSourceCommand, PbsCommand,
-                       PkMonCommand, PkMoveCommand, RaceCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
+from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, PbsCommand, PkMonCommand,
+                       PkMoveCommand, RaceCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
                        StubCommand, SwQuoteCommand, TwitchInfoCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -671,7 +672,7 @@ class CynanBot(
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, crowdControlSettingsRepository, funtoonTokensRepository, generalSettingsRepository, halfLifeService, isLiveOnTwitchRepository, locationsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterApiTokensRepository, ttsMonsterKeyAndUserIdRepository, ttsMonsterSettingsRepository, ttsMonsterStreamerVoicesRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
-        self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
+        self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchUtils, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
@@ -1555,7 +1556,7 @@ class CynanBot(
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__cynanSourceCommand.handleCommand(context)
+        await self.__cynanSourceCommand.handleChatCommand(context)
 
     @commands.command(name = 'deletecheeraction', aliases = [ 'removecheeraction' ])
     async def command_deletecheeraction(self, ctx: Context):
