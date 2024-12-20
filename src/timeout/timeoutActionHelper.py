@@ -172,7 +172,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         bullyOccurrences = 0
 
-        if timeoutData.user.isTimeoutCheerActionIncreasedBullyFailureEnabled:
+        if timeoutData.isTimeoutCheerActionIncreasedBullyFailureEnabled:
             history = await self.__timeoutActionHistoryRepository.get(
                 chatterUserId = timeoutTargetUserId,
                 twitchChannel = timeoutData.twitchChannel,
@@ -192,14 +192,13 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                     bullyOccurrences += 1
 
         failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
+        failureProbability = min(failureProbability, maxBullyFailureProbability)
         failureRoll = int(round(failureProbability * diceRoll.dieSize))
-        if failureRoll > diceRoll.dieSize:
-            failureRoll = diceRoll.dieSize
+        failureRoll = min(failureRoll, diceRoll.dieSize)
 
         reverseProbability = await self.__timeoutActionSettingsRepository.getReverseProbability()
         reverseRoll = int(round(reverseProbability * float(diceRoll.dieSize)))
-        if reverseRoll > diceRoll.dieSize:
-            reverseRoll = diceRoll.dieSize
+        reverseRoll = min(reverseRoll, diceRoll.dieSize)
 
         return TimeoutActionHelper.RollFailureData(
             baseFailureProbability = baseFailureProbability,

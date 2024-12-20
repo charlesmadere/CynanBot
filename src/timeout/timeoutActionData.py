@@ -37,5 +37,9 @@ class TimeoutActionData:
         return locale.format_string("%d", self.durationSeconds, grouping = True)
 
     @property
+    def isTimeoutCheerActionIncreasedBullyFailureEnabled(self) -> bool:
+        return self.user.isTimeoutCheerActionIncreasedBullyFailureEnabled
+
+    @property
     def twitchChannel(self) -> str:
         return self.user.handle
