@@ -1,4 +1,5 @@
 import pytest
+
 from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
 from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
@@ -10,9 +11,7 @@ class TestDecTalkVoiceChooser:
 
     decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
-    decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
-        decTalkVoiceMapper = decTalkVoiceMapper
-    )
+    decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
 
     @pytest.mark.asyncio
     async def test_choose_withEmptyString(self):
