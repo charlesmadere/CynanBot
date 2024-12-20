@@ -88,10 +88,8 @@ class User(UserInterface):
         blueSkyUrl: str | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
-        chatBackMessages: FrozenList[str] | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
-        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
         discordUrl: str | None,
         handle: str,
         instagram: str | None,
@@ -109,12 +107,14 @@ class User(UserInterface):
         defaultTtsProvider: TtsProvider,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
+        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
         timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None,
-        timeZones: FrozenList[tzinfo] | None,
+        chatBackMessages: FrozenList[str] | None,
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
         ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None,
+        timeZones: FrozenList[tzinfo] | None,
     ):
         if not utils.isValidBool(areBeanStatsEnabled):
             raise TypeError(f'areBeanStatsEnabled argument is malformed: \"{areBeanStatsEnabled}\"')
@@ -248,14 +248,10 @@ class User(UserInterface):
             raise TypeError(f'casualGamePollRewardId argument is malformed: \"{casualGamePollRewardId}\"')
         elif casualGamePollUrl is not None and not isinstance(casualGamePollUrl, str):
             raise TypeError(f'casualGamePollUrl argument is malformed: \"{casualGamePollUrl}\"')
-        elif chatBackMessages is not None and not isinstance(chatBackMessages, FrozenList):
-            raise TypeError(f'chatBackMessages argument is malformed: \"{chatBackMessages}\"')
         elif crowdControlButtonPressRewardId is not None and not isinstance(crowdControlButtonPressRewardId, str):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
             raise TypeError(f'crowdControlGameShuffleRewardId argument is malformed: \"{crowdControlGameShuffleRewardId}\"')
-        elif decTalkSongBoosterPacks is not None and not isinstance(decTalkSongBoosterPacks, frozendict):
-            raise TypeError(f'decTalkSongBoosterPacks argument is malformed: \"{decTalkSongBoosterPacks}\"')
         elif discordUrl is not None and not isinstance(discordUrl, str):
             raise TypeError(f'discordUrl argument is malformed: \"{discordUrl}\"')
         elif not utils.isValidStr(handle):
@@ -288,18 +284,22 @@ class User(UserInterface):
             raise TypeError(f'crowdControlBoosterPacks argument is malformed: \"{crowdControlBoosterPacks}\"')
         elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
             raise TypeError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
+        elif decTalkSongBoosterPacks is not None and not isinstance(decTalkSongBoosterPacks, frozendict):
+            raise TypeError(f'decTalkSongBoosterPacks argument is malformed: \"{decTalkSongBoosterPacks}\"')
         elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, frozendict):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
         elif timeoutBoosterPacks is not None and not isinstance(timeoutBoosterPacks, frozendict):
             raise TypeError(f'timeoutBoosterPacks argument is malformed: \"{timeoutBoosterPacks}\"')
-        elif timeZones is not None and not isinstance(timeZones, FrozenList):
-            raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
+        elif chatBackMessages is not None and not isinstance(chatBackMessages, FrozenList):
+            raise TypeError(f'chatBackMessages argument is malformed: \"{chatBackMessages}\"')
         elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, FrozenList):
             raise TypeError(f'ttsBoosterPacks argument is malformed: \"{ttsBoosterPacks}\"')
         elif ttsChatterBoosterPacks is not None and not isinstance(ttsChatterBoosterPacks, frozendict):
             raise TypeError(f'ttsChatterBoosterPacks argument is malformed: \"{ttsChatterBoosterPacks}\"')
+        elif timeZones is not None and not isinstance(timeZones, FrozenList):
+            raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
         self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
@@ -366,12 +366,10 @@ class User(UserInterface):
         self.__waitForSuperTriviaAnswerDelay: int | None = waitForSuperTriviaAnswerDelay
         self.__defaultLanguage: LanguageEntry = defaultLanguage
         self.__blueSkyUrl: str | None = blueSkyUrl
-        self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
-        self.__decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = decTalkSongBoosterPacks
         self.__discordUrl: str | None = discordUrl
         self.__handle: str = handle
         self.__instagram: str | None = instagram
@@ -389,12 +387,14 @@ class User(UserInterface):
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
+        self.__decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = decTalkSongBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
         self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
-        self.__timeZones: FrozenList[tzinfo] | None = timeZones
+        self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
         self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
         self.__ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = ttsChatterBoosterPacks
+        self.__timeZones: FrozenList[tzinfo] | None = timeZones
 
     @property
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:

@@ -186,7 +186,6 @@ class UsersRepository(UsersRepositoryInterface):
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
-        chatBackMessages = FrozenList(userJson.get('chatBackMessages', None))
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -235,14 +234,6 @@ class UsersRepository(UsersRepositoryInterface):
 
             if 'minimumTtsCheerAmount' in userJson and utils.isValidInt(userJson.get('minimumTtsCheerAmount')):
                 minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount')
-
-        timeZones: FrozenList[tzinfo] | None = None
-        if 'timeZones' in userJson:
-            timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
-        elif 'timeZone' in userJson:
-            timeZones = FrozenList()
-            timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
-            timeZones.freeze()
 
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = None
         if isCutenessEnabled:
@@ -317,15 +308,6 @@ class UsersRepository(UsersRepositoryInterface):
         timeoutBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('timeoutBoosterPacks')
         timeoutBoosterPacks = self.__timeoutBoosterPackJsonParser.parseBoosterPacks(timeoutBoosterPacksJson)
 
-        defaultTtsProvider = TtsProvider.DEC_TALK
-        ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = None
-        if isTtsEnabled:
-            if 'defaultTtsProvider' in userJson and utils.isValidStr(userJson.get('defaultTtsProvider')):
-                defaultTtsProvider = self.__ttsJsonMapper.requireProvider(utils.getStrFromDict(userJson, 'defaultTtsProvider'))
-
-            ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
-            ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
-
         crowdControlButtonPressRewardId: str | None = None
         crowdControlGameShuffleRewardId: str | None = None
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = None
@@ -335,10 +317,34 @@ class UsersRepository(UsersRepositoryInterface):
             crowdControlBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('crowdControlBoosterPacks')
             crowdControlBoosterPacks = self.__crowdControlJsonParser.parseBoosterPacks(crowdControlBoosterPacksJson)
 
+        defaultTtsProvider = TtsProvider.DEC_TALK
+        ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = None
+        if isTtsEnabled:
+            if 'defaultTtsProvider' in userJson and utils.isValidStr(userJson.get('defaultTtsProvider')):
+                defaultTtsProvider = self.__ttsJsonMapper.requireProvider(utils.getStrFromDict(userJson, 'defaultTtsProvider'))
+
+            ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
+            ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
+
         ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = None
         if isTtsChattersEnabled:
             ttsChatterBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsChatterBoosterPacks')
             ttsChatterBoosterPacks = self.__ttsChatterBoosterPackParser.parseBoosterPacks(defaultTtsProvider, ttsChatterBoosterPacksJson)
+
+        chatBackMessages: FrozenList[str] | None = None
+        if isChatBackMessagesEnabled:
+            chatBackMessagesJson: list[str] | Any | None = userJson.get('chatBackMessages', None)
+            if isinstance(chatBackMessagesJson, list) and len(chatBackMessagesJson) >= 1:
+                chatBackMessages = FrozenList(chatBackMessagesJson)
+                chatBackMessages.freeze()
+
+        timeZones: FrozenList[tzinfo] | None = None
+        if 'timeZones' in userJson:
+            timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
+        elif 'timeZone' in userJson:
+            timeZones = FrozenList()
+            timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
+            timeZones.freeze()
 
         user = User(
             areBeanStatsEnabled = areBeanStatsEnabled,
@@ -408,11 +414,9 @@ class UsersRepository(UsersRepositoryInterface):
             blueSkyUrl = blueSkyUrl,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
-            chatBackMessages = chatBackMessages,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discordUrl = discordUrl,
-            decTalkSongBoosterPacks = decTalkSongBoosterPacks,
             handle = handle,
             instagram = instagram,
             locationId = locationId,
@@ -429,12 +433,14 @@ class UsersRepository(UsersRepositoryInterface):
             defaultTtsProvider = defaultTtsProvider,
             crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,
+            decTalkSongBoosterPacks = decTalkSongBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
-            timeZones = timeZones,
             timeoutBoosterPacks = timeoutBoosterPacks,
+            chatBackMessages = chatBackMessages,
             ttsBoosterPacks = ttsBoosterPacks,
-            ttsChatterBoosterPacks = ttsChatterBoosterPacks
+            ttsChatterBoosterPacks = ttsChatterBoosterPacks,
+            timeZones = timeZones,
         )
 
         self.__userCache[handle.casefold()] = user
