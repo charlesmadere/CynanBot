@@ -6,6 +6,8 @@ from .ttsChatterBoosterPack import TtsChatterBoosterPack
 from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from ...microsoftSam.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
@@ -18,17 +20,21 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
     def __init__(
         self,
         halfLifeJsonParser: HalfLifeJsonParserInterface,
+        microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface
     ):
         if not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
+        elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
+            raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
         elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
             raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
 
         self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
+        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
 
@@ -46,7 +52,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         if ttsProvider is None:
             ttsProvider = defaultTtsProvider
 
-        voice: StreamElementsVoice | HalfLifeVoice | str | None
+        voice: MicrosoftSamVoice | StreamElementsVoice | HalfLifeVoice | str | None
 
         match ttsProvider:
             case TtsProvider.DEC_TALK:
@@ -56,7 +62,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
             case TtsProvider.HALF_LIFE:
                 voice = self.__halfLifeJsonParser.parseVoice(voiceStr)
             case TtsProvider.MICROSOFT_SAM:
-                voice = ''
+                voice = self.__microsoftSamJsonParser.parseVoice(voiceStr)
             case TtsProvider.SINGING_DEC_TALK:
                 voice = ''
             case TtsProvider.STREAM_ELEMENTS:

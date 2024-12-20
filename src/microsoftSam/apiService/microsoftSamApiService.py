@@ -23,7 +23,7 @@ class MicrosoftSamApiService(MicrosoftSamApiServiceInterface):
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
 
-    async def getSpeech(self, text: str) -> bytes:
+    async def getSpeech(self, text: str, voice: str, pitch: str, speed: str) -> bytes:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
 
@@ -33,7 +33,7 @@ class MicrosoftSamApiService(MicrosoftSamApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = f'https://www.tetyys.com/SAPI4/SAPI4?text={text}&voice=Sam&pitch=100&speed=150'
+                url = f'https://www.tetyys.com/SAPI4/SAPI4?text={text}&voice={voice}&pitch={pitch}&speed={speed}'
             )
         except GenericNetworkException as e:
             self.__timber.log('MicrosoftSamApiService', f'Encountered network error when fetching speech ({text=}): {e}', e, traceback.format_exc())

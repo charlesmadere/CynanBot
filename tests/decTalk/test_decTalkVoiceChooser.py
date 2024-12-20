@@ -9,10 +9,7 @@ from src.decTalk.models.decTalkVoice import DecTalkVoice
 class TestDecTalkVoiceChooser:
 
     decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
-
-    decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
-        decTalkVoiceMapper = decTalkVoiceMapper
-    )
+    decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
 
     @pytest.mark.asyncio
     async def test_choose_withEmptyString(self):

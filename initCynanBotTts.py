@@ -129,10 +129,16 @@ from src.location.locationsRepository import LocationsRepository
 from src.location.locationsRepositoryInterface import LocationsRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.microsoftSam.microsoftSamVoiceMapper import MicrosoftSamVoiceMapper
+from src.microsoftSam.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
 from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
 from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
 from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
+from .src.microsoftSam.parser.microsoftSamMessageVoiceParser import MicrosoftSamMessageVoiceParser
+from .src.microsoftSam.parser.microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
+from .src.microsoftSam.microsoftSamVoiceMapperInterface import MicrosoftSamVoiceMapperInterface
+from .src.microsoftSam.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
 from src.microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from src.microsoftSam.settings.microsoftSamSettingsRepository import MicrosoftSamSettingsRepository
@@ -585,8 +591,11 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
 
 halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
 
+microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+
 ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
     halfLifeJsonParser = halfLifeJsonParser,
+    microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     ttsJsonMapper = ttsJsonMapper
 )
@@ -1043,8 +1052,20 @@ microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService
     timber = timber
 )
 
+microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
+    microsoftSamJsonParser = microsoftSamJsonParser,
+    settingsJsonReader = JsonFileReader('../config/microsoftSamSettingsRepository.json')
+)
+
+microsoftSamVoiceMapper: MicrosoftSamVoiceMapperInterface = MicrosoftSamVoiceMapper()
+
+microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser()
+
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
     apiService = microsoftSamApiService,
+    microsoftSamMessageVoiceParser = microsoftSamMessageVoiceParser,
+    microsoftSamSettingsRepository = microsoftSamSettingsRepository,
+    microsoftSamVoiceMapper = microsoftSamVoiceMapper,
     timber = timber
 )
 
@@ -1053,6 +1074,7 @@ microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMe
 )
 
 microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
+    microsoftSamJsonParser = microsoftSamJsonParser,
     settingsJsonReader = JsonFileReader('../config/microsoftSamSettingsRepository.json')
 )
 

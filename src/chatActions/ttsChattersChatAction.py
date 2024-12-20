@@ -1,5 +1,6 @@
 from .absChatAction import AbsChatAction
 from ..halfLife.models.halfLifeVoice import HalfLifeVoice
+from ..microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
@@ -49,6 +50,9 @@ class TtsChattersChatAction(AbsChatAction):
         match boosterPack.ttsProvider:
             case TtsProvider.HALF_LIFE:
                 if isinstance(boosterPack.voice, HalfLifeVoice):
+                    voice = f'{boosterPack.voice.value}: '
+            case TtsProvider.MICROSOFT_SAM:
+                if isinstance(boosterPack.voice, MicrosoftSamVoice):
                     voice = f'{boosterPack.voice.value}: '
             case TtsProvider.STREAM_ELEMENTS:
                 if isinstance(boosterPack.voice, StreamElementsVoice):
