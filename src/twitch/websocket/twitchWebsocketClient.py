@@ -15,6 +15,7 @@ from ..api.twitchEventSubRequest import TwitchEventSubRequest
 from ..api.twitchEventSubResponse import TwitchEventSubResponse
 from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -35,6 +36,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     class ConnectionAction(Enum):
         CLOSE_AND_RECONNECT = auto()
+        CREATE_EVENT_SUB_SUBSCRIPTIONS = auto()
+        DISCONNECT = auto()
         OK = auto()
 
     def __init__(
@@ -49,7 +52,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
-        websocketSleepTimeSeconds: float = 3,
         subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
@@ -65,7 +67,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         }),
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
-        maxMessageAge: timedelta = timedelta(minutes = 3)
+        maxMessageAge: timedelta = timedelta(minutes = 1, seconds = 30)
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -93,10 +95,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'websocketCreationDelayTimeSeconds argument is malformed: \"{websocketCreationDelayTimeSeconds}\"')
         elif websocketCreationDelayTimeSeconds < 0.1 or websocketCreationDelayTimeSeconds > 8:
             raise ValueError(f'websocketCreationDelayTimeSeconds argument is out of bounds: {websocketCreationDelayTimeSeconds}')
-        elif not utils.isValidNum(websocketSleepTimeSeconds):
-            raise TypeError(f'websocketSleepTimeSeconds argument is malformed: \"{websocketSleepTimeSeconds}\"')
-        elif websocketSleepTimeSeconds < 3 or websocketSleepTimeSeconds > 15:
-            raise ValueError(f'websocketSleepTimeSeconds argument is out of bounds: {websocketSleepTimeSeconds}')
         elif not isinstance(subscriptionTypes, frozenset):
             raise TypeError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
         elif not utils.isValidUrl(twitchWebsocketUrl):
@@ -114,7 +112,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
-        self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
         self.__subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
 
@@ -126,11 +123,18 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__dataBundleQueue: SimpleQueue[TwitchWebsocketDataBundle] = SimpleQueue()
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
-    async def __createEventSubSubscription(self, sessionId: str, user: TwitchWebsocketUser):
-        if not utils.isValidStr(sessionId):
-            raise TypeError(f'sessionId argument is malformed: \"{sessionId}\"')
-        elif not isinstance(user, TwitchWebsocketUser):
+    async def __createEventSubSubscription(
+        self,
+        user: TwitchWebsocketUser
+    ):
+        if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        sessionId = self.__sessionIdFor[user]
+
+        if not utils.isValidStr(sessionId):
+            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscription(s) for {user} ({sessionId=})')
+            return
 
         transport = TwitchWebsocketTransport(
             sessionId = sessionId,
@@ -142,7 +146,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         for subscriptionType in self.__subscriptionTypes:
             if subscriptionType in self.__badSubscriptionTypesFor[user]:
-                self.__timber.log('TwitchWebsocketClient', f'Skipping {subscriptionType} for {user}')
+                self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscription for {user} ({subscriptionType=}) ({sessionId=})')
                 continue
 
             condition = await self.__createWebsocketCondition(
@@ -172,7 +176,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             if response is None or exception is not None:
                 self.__badSubscriptionTypesFor[user].add(subscriptionType)
 
-        self.__timber.log('TwitchWebsocketClient', f'Finished creating EventSub subscription(s) for {user}: {results}')
+        self.__timber.log('TwitchWebsocketClient', f'Finished creating EventSub subscription(s) for {user} ({sessionId=}) ({results=})')
 
     async def __createWebsocketCondition(
         self,
@@ -229,13 +233,13 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __handleConnectionRelatedMessageFor(
         self,
-        user: TwitchWebsocketUser,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
+        user: TwitchWebsocketUser
     ) -> ConnectionAction:
-        if not isinstance(user, TwitchWebsocketUser):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
+        if not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        elif not isinstance(user, TwitchWebsocketUser):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         payload = dataBundle.payload
 
@@ -251,55 +255,36 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         newTwitchWebsocketUrl = session.reconnectUrl
 
         if utils.isValidUrl(newTwitchWebsocketUrl) and oldTwitchWebsocketUrl != newTwitchWebsocketUrl:
-            await self.__handleNewTwitchWebsocketUrlFor(
-                newTwitchWebsocketUrl = newTwitchWebsocketUrl,
-                oldTwitchWebsocketUrl = oldTwitchWebsocketUrl,
-                user = user
-            )
+            self.__twitchWebsocketUrlFor[user] = newTwitchWebsocketUrl
+            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket URL for \"{user}\" has been changed ({newTwitchWebsocketUrl=}) ({oldTwitchWebsocketUrl=}) ({payload=})')
 
         oldSessionId = self.__sessionIdFor[user]
         newSessionId = session.sessionId
 
-        if oldSessionId != newSessionId:
-            await self.__handleNewSessionIdFor(
-                newSessionId = newSessionId,
-                oldSessionId = oldSessionId,
-                user = user
-            )
+        if utils.isValidStr(newSessionId) and oldSessionId != newSessionId:
+            self.__sessionIdFor[user] = newSessionId
+            self.__timber.log('TwitchWebsocketClient', f'Twitch session ID for \"{user}\" has been changed ({newSessionId=}) ({oldSessionId=}) ({payload=})')
 
-        return TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT
+        messageType = dataBundle.metadata.messageType
 
-    async def __handleNewSessionIdFor(
-        self,
-        newSessionId: str,
-        oldSessionId: str | None,
-        user: TwitchWebsocketUser
-    ):
-        if not utils.isValidStr(newSessionId):
-            raise TypeError(f'newSessionId argument is malformed: \"{newSessionId}\"')
-        elif oldSessionId is not None and not isinstance(oldSessionId, str):
-            raise TypeError(f'oldSessionId argument is malformed: \"{oldSessionId}\"')
-        elif not isinstance(user, TwitchWebsocketUser):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        if messageType is None:
+            return TwitchWebsocketClient.ConnectionAction.OK
 
-        self.__sessionIdFor[user] = newSessionId
-        self.__timber.log('TwitchWebsocketClient', f'Session ID for \"{user}\" has been changed to \"{newSessionId}\" from \"{oldSessionId}\"')
+        match messageType:
+            case TwitchWebsocketMessageType.KEEP_ALIVE:
+                return TwitchWebsocketClient.ConnectionAction.OK
 
-    async def __handleNewTwitchWebsocketUrlFor(
-        self,
-        newTwitchWebsocketUrl: str,
-        oldTwitchWebsocketUrl: str,
-        user: TwitchWebsocketUser
-    ):
-        if not utils.isValidUrl(newTwitchWebsocketUrl):
-            raise TypeError(f'newTwitchWebsocketUrl argument is malformed: \"{newTwitchWebsocketUrl}\"')
-        elif not utils.isValidUrl(oldTwitchWebsocketUrl):
-            raise TypeError(f'oldTwitchWebsocketUrl argument is malformed: \"{oldTwitchWebsocketUrl}\"')
-        elif not isinstance(user, TwitchWebsocketUser):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+            case TwitchWebsocketMessageType.NOTIFICATION:
+                return TwitchWebsocketClient.ConnectionAction.OK
 
-        self.__twitchWebsocketUrlFor[user] = newTwitchWebsocketUrl
-        self.__timber.log('TwitchWebsocketClient', f'Twitch websocket URL for \"{user}\" has been changed to \"{newTwitchWebsocketUrl}\" from \"{oldTwitchWebsocketUrl}\"')
+            case TwitchWebsocketMessageType.RECONNECT:
+                return TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT
+
+            case TwitchWebsocketMessageType.REVOCATION:
+                return TwitchWebsocketClient.ConnectionAction.DISCONNECT
+
+            case TwitchWebsocketMessageType.WELCOME:
+                return TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTIONS
 
     async def __isValidMessage(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -348,7 +333,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to parse message into JSON dictionary ({message=}) ({user=}): {e}', e, traceback.format_exc())
             return None
 
-        if dictionary is None or not isinstance(dictionary, dict) or len(dictionary) == 0:
+        if not isinstance(dictionary, dict) or len(dictionary) == 0:
             self.__timber.log('TwitchWebsocketClient', f'Message was parsed into an unexpected or malformed type ({dictionary=}) ({message=}) ({user=})')
             return None
 
@@ -363,11 +348,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if exception is not None:
             self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=}): {exception}', exception, traceback.format_exc())
             return None
-        elif dataBundle is None:
+        elif isinstance(dataBundle, TwitchWebsocketDataBundle):
+            return dataBundle
+        else:
             self.__timber.log('TwitchWebsocketClient', f'Received `None` when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=})')
             return None
-        else:
-            return dataBundle
 
     def setDataBundleListener(self, listener: TwitchWebsocketDataBundleListener | None):
         if listener is not None and not isinstance(listener, TwitchWebsocketDataBundleListener):
@@ -399,13 +384,10 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                     self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Empty when building up dataBundles list (queue size: {self.__dataBundleQueue.qsize()}) (dataBundles size: {len(dataBundles)}): {e}', e, traceback.format_exc())
 
                 for dataBundle in dataBundles:
-                    if not await self.__isValidMessage(dataBundle):
-                        continue
-
                     try:
                         await dataBundleListener.onNewWebsocketDataBundle(dataBundle)
                     except Exception as e:
-                        self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({dataBundle=}): {e}', e, traceback.format_exc())
+                        self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({dataBundle=}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
@@ -413,46 +395,43 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        remainConnected = True
+        twitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
+        self.__timber.log('TwitchWebsocketClient', f'Connecting to websocket \"{twitchWebsocketUrl}\" for \"{user}\"...')
 
-        while remainConnected:
-            twitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
-            self.__timber.log('TwitchWebsocketClient', f'Connecting to websocket \"{twitchWebsocketUrl}\" for \"{user}\"...')
+        try:
+            async with websockets.connect(twitchWebsocketUrl) as websocket:
+                async for message in websocket:
+                    dataBundle = await self.__parseMessageToDataBundleFor(
+                        message = message,
+                        user = user
+                    )
 
-            try:
-                async with websockets.connect(twitchWebsocketUrl) as websocket:
-                    async for message in websocket:
-                        dataBundle = await self.__parseMessageToDataBundleFor(message, user)
+                    if dataBundle is None or not await self.__isValidMessage(dataBundle):
+                        continue
 
-                        if dataBundle is None:
-                            continue
+                    connectionAction = await self.__handleConnectionRelatedMessageFor(
+                        dataBundle = dataBundle,
+                        user = user
+                    )
 
-                        await self.__submitDataBundle(dataBundle)
-                        connectionAction = await self.__handleConnectionRelatedMessageFor(user, dataBundle)
+                    match connectionAction:
+                        case TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT:
+                            self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
 
-                        match connectionAction:
-                            case TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT:
-                                remainConnected = False
-                                await websocket.close()
+                        case TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTIONS:
+                            await self.__createEventSubSubscription(user)
 
-                            case TwitchWebsocketClient.ConnectionAction.OK:
-                                # this path is intentionally empty
-                                pass
-            except Exception as e:
-                self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception for \"{user}\" when connected to \"{twitchWebsocketUrl}\": {e}', e, traceback.format_exc())
+                        case TwitchWebsocketClient.ConnectionAction.DISCONNECT:
+                            self.__timber.log('TwitchWebsocketClient', f'Websocket connection for \"{user}\" was revoked when connected to \"{twitchWebsocketUrl=}\"')
+                            await websocket.close()
 
-            if remainConnected:
-                await asyncio.sleep(self.__websocketSleepTimeSeconds)
+                        case TwitchWebsocketClient.ConnectionAction.OK:
+                            # this path is intentionally empty
+                            pass
 
-        sessionId = self.__sessionIdFor[user]
-
-        if utils.isValidStr(sessionId):
-            await self.__createEventSubSubscription(
-                sessionId = sessionId,
-                user = user
-            )
-        else:
-            self.__timber.log('TwitchWebsocketClient', f'Attempted to re-establish websocket connections for \"{user}\", but no session ID is available ({sessionId=})')
+                    await self.__submitDataBundle(dataBundle)
+        except Exception as e:
+            self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception for \"{user}\" when connected to \"{twitchWebsocketUrl}\": {e}', e, traceback.format_exc())
 
     async def __startWebsocketConnections(self):
         users = await self.__twitchWebsocketAllowedUsersRepository.getUsers()

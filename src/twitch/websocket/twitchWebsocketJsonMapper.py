@@ -287,6 +287,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         transportMethod = transportMethod.lower()
 
         match transportMethod:
+            case 'conduit': return TwitchWebsocketTransportMethod.CONDUIT
             case 'webhook': return TwitchWebsocketTransportMethod.WEBHOOK
             case 'websocket': return TwitchWebsocketTransportMethod.WEBSOCKET
             case _: raise ValueError(f'Encountered unknown TwitchWebsocketTransportMethod: \"{transportMethod}\"')

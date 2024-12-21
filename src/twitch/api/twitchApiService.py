@@ -189,14 +189,6 @@ class TwitchApiService(TwitchApiServiceInterface):
             userId = utils.getStrFromDict(entry, 'user_id')
         )
 
-    async def __calculateExpirationTime(self, expiresInSeconds: int | None) -> datetime:
-        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
-
-        if utils.isValidInt(expiresInSeconds) and expiresInSeconds > 0:
-            return nowDateTime + timedelta(seconds = expiresInSeconds)
-        else:
-            return nowDateTime - timedelta(weeks = 1)
-
     async def createEventSubSubscription(
         self,
         twitchAccessToken: str,

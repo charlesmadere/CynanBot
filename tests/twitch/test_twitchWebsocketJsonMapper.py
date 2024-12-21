@@ -39,6 +39,11 @@ class TestTwitchWebsocketJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseTransportMethod_withConduit(self):
+        result = await self.websocketJsonMapper.parseTransportMethod('conduit')
+        assert result is TwitchWebsocketTransportMethod.CONDUIT
+
+    @pytest.mark.asyncio
     async def test_parseTransportMethod_withWebhook(self):
         result = await self.websocketJsonMapper.parseTransportMethod('webhook')
         assert result is TwitchWebsocketTransportMethod.WEBHOOK
@@ -214,6 +219,11 @@ class TestTwitchWebsocketJsonMapper:
             result = await self.websocketJsonMapper.requireTransportMethod(None)
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireTransportMethod_withConduit(self):
+        result = await self.websocketJsonMapper.requireTransportMethod('conduit')
+        assert result is TwitchWebsocketTransportMethod.CONDUIT
 
     @pytest.mark.asyncio
     async def test_requireTransportMethod_withWebhook(self):
