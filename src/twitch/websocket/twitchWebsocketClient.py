@@ -49,6 +49,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
+        isFullJsonLoggingEnabled: bool = False,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
@@ -85,6 +86,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketAllowedUsersRepository argument is malformed: \"{twitchWebsocketAllowedUsersRepository}\"')
         elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
             raise TypeError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
+        elif not utils.isValidBool(isFullJsonLoggingEnabled):
+            raise TypeError(f'isFullJsonLoggingEnabled argument is malformed: \"{isFullJsonLoggingEnabled}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
@@ -111,6 +114,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = twitchWebsocketAllowedUsersRepository
         self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
+        self.__isFullJsonLoggingEnabled: bool = isFullJsonLoggingEnabled
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
@@ -346,6 +350,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             dataBundle = await self.__twitchWebsocketJsonMapper.parseWebsocketDataBundle(dictionary)
         except Exception as e:
             exception = e
+
+        if self.__isFullJsonLoggingEnabled:
+            self.__timber.log('TwitchWebsocketClient', f'Full message output: ({user=}) ({message=})')
+            self.__timber.log('TwitchWebsocketClient', f'Full JSON output: ({user=}) ({dictionary=})')
+            self.__timber.log('TwitchWebsocketClient', f'Full dataBundle output: ({user=}) ({dataBundle=})')
 
         if exception is not None:
             self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=}): {exception}', exception, traceback.format_exc())
