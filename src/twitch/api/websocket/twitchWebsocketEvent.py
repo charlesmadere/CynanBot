@@ -20,6 +20,7 @@ from ..twitchSubscriberTier import TwitchSubscriberTier
 @dataclass(frozen = True)
 class TwitchWebsocketEvent:
     isAnonymous: bool | None = None
+    isChatterAnonymous: bool | None = None
     isGift: bool | None = None
     endedAt: datetime | None = None
     endsAt: datetime | None = None
@@ -32,6 +33,7 @@ class TwitchWebsocketEvent:
     choices: FrozenList[TwitchPollChoice] | None = None
     bits: int | None = None
     cumulativeMonths: int | None = None
+    cumulativeTotal: int | None = None
     total: int | None = None
     viewers: int | None = None
     broadcasterUserId: str | None = None
@@ -39,6 +41,8 @@ class TwitchWebsocketEvent:
     broadcasterUserName: str | None = None
     categoryId: str | None = None
     categoryName: str | None = None
+    chatterUserId: str | None = None
+    chatterUserName: str | None = None
     eventId: str | None = None
     fromBroadcasterUserId: str | None = None
     fromBroadcasterUserLogin: str | None = None

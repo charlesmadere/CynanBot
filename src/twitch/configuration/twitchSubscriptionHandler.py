@@ -1,11 +1,8 @@
-import asyncio
 import math
-import queue
 import random
 import traceback
 from collections import defaultdict
 from dataclasses import dataclass
-from queue import SimpleQueue
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -20,7 +17,6 @@ from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...network.exceptions import GenericNetworkException
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -30,7 +26,6 @@ from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterf
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsEvent import TtsEvent
 from ...tts.ttsSubscriptionDonation import TtsSubscriptionDonation
-from ...tts.ttsSubscriptionDonationGiftType import TtsSubscriptionDonationGiftType
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
@@ -45,7 +40,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         subGiftGiverUserId: str
         subGiftGiverUserName: str
         twitchChannelId: str
-        giftType: TtsSubscriptionDonationGiftType
         tier: TwitchSubscriberTier
         user: UserInterface
 
@@ -55,7 +49,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
@@ -67,9 +60,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         userIdsRepository: UserIdsRepositoryInterface,
         sleepTimeSeconds: float = 3
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -92,7 +83,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
@@ -105,7 +95,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__sleepTimeSeconds: float = sleepTimeSeconds
 
         self.__isStarted: bool = False
-        self.__giftSubQueue: SimpleQueue[TwitchSubscriptionHandler.GiftSub] = SimpleQueue()
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __isRedundantSubscriptionAlert(
@@ -154,6 +143,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         eventId = event.eventId
         resub = event.resub
         subGift = event.subGift
+        total = event.total
         eventUserId = event.userId
         eventUserInput = event.userInput
         eventUserLogin = event.userLogin
@@ -161,10 +151,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         tier = event.tier
 
         if not utils.isValidStr(broadcasterUserId) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSubGiftThankingEnabled and subGift is not None:
             await self.__processCynanBotAsGiftRecipient(
@@ -185,6 +175,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             await self.__processTtsEvent(
                 isAnonymous = isAnonymous,
                 isGift = isGift,
+                total = total,
                 broadcasterUserId = broadcasterUserId,
                 message = message,
                 userId = eventUserId,
@@ -254,8 +245,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     cumulativeMonths = None,
                     durationMonths = None,
                     numberOfGiftedSubs = len(giftSubList),
-                    subGiftGiverDisplayName = firstGiftSub.subGiftGiverUserName,
-                    giftType = firstGiftSub.giftType,
                     tier = firstGiftSub.tier
                 )
 
@@ -324,6 +313,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self,
         isAnonymous: bool | None,
         isGift: bool | None,
+        total: int | None,
         broadcasterUserId: str,
         message: str | None,
         userId: str | None,
@@ -339,11 +329,16 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     ):
         if not user.isTtsEnabled:
             return
+        elif isGift is True:
+            # Community gift sub bombs will send out an event where this is true for every single
+            # individual person who received a gifted sub. We don't want to do a TTS alert for all
+            # users who received a gifted sub, so we're going to return here.
+            return
         elif await self.__isRedundantSubscriptionAlert(
             isGift = isGift,
             subscriptionType = subscriptionType
         ):
-            self.__timber.log('TwitchSubscriptionHandler', f'Encountered redundant subscription alert event ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({subscriptionType=}) ({user=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Encountered redundant subscription alert event ({isGift=}) ({total=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({subscriptionType=}) ({user=})')
             return
 
         actualMessage = message
@@ -374,94 +369,44 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=}) ({communitySubGift=}) ({subscriptionType=})')
                 return
 
-        giftType: TtsSubscriptionDonationGiftType | None = None
-
-        if isGift == True:
-            giftType = TtsSubscriptionDonationGiftType.RECEIVER
-        elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
-            giftType = TtsSubscriptionDonationGiftType.GIVER
+        if total is None and communitySubGift is not None:
+            total = communitySubGift.total
 
         cumulativeMonths: int | None = None
         durationMonths: int | None = None
-        subGiftGiverUserId: str | None = None
-        subGiftGiverUserName: str | None = None
 
         if resub is not None:
             cumulativeMonths = resub.cumulativeMonths
             durationMonths = resub.durationMonths
 
-            if giftType is TtsSubscriptionDonationGiftType.RECEIVER and not isAnonymous and utils.isValidStr(resub.gifterUserId) and utils.isValidStr(resub.gifterUserName) and actualUserId != resub.gifterUserId:
-                subGiftGiverUserId = resub.gifterUserId
-                subGiftGiverUserName = resub.gifterUserName
+        donation = TtsSubscriptionDonation(
+            isAnonymous = isAnonymous,
+            cumulativeMonths = cumulativeMonths,
+            durationMonths = durationMonths,
+            numberOfGiftedSubs = total,
+            tier = tier
+        )
 
-        if giftType is not None and utils.isValidStr(subGiftGiverUserId) and utils.isValidStr(subGiftGiverUserName):
-            try:
-                self.__giftSubQueue.put_nowait(TwitchSubscriptionHandler.GiftSub(
-                    isAnonymous = isAnonymous,
-                    receiverUserId = actualUserId,
-                    receiverUserName = actualUserName,
-                    subGiftGiverUserId = subGiftGiverUserId,
-                    subGiftGiverUserName = subGiftGiverUserName,
-                    twitchChannelId = broadcasterUserId,
-                    giftType = giftType,
-                    tier = tier,
-                    user = user
-                ))
-            except queue.Full as e:
-                self.__timber.log('TwitchSubscriptionHandler', f'Encountered queue.Full when submitting a new gift sub into the giftSub queue (queue size: {self.__giftSubQueue.qsize()}): {e}', e, traceback.format_exc())
-        else:
-            donation = TtsSubscriptionDonation(
-                isAnonymous = isAnonymous,
-                cumulativeMonths = cumulativeMonths,
-                durationMonths = durationMonths,
-                numberOfGiftedSubs = None,
-                subGiftGiverDisplayName = subGiftGiverUserName,
-                giftType = giftType,
-                tier = tier
-            )
+        ttsEvent = TtsEvent(
+            message = actualMessage,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId,
+            userId = actualUserId,
+            userName = actualUserName,
+            donation = donation,
+            provider = user.defaultTtsProvider,
+            raidInfo = None
+        )
 
-            ttsEvent = TtsEvent(
-                message = actualMessage,
-                twitchChannel = user.handle,
-                twitchChannelId = broadcasterUserId,
-                userId = actualUserId,
-                userName = actualUserName,
-                donation = donation,
-                provider = user.defaultTtsProvider,
-                raidInfo = None
-            )
-
-            self.__streamAlertsManager.submitAlert(StreamAlert(
-                soundAlert = SoundAlert.SUBSCRIBE,
-                twitchChannel = user.handle,
-                twitchChannelId = broadcasterUserId,
-                ttsEvent = ttsEvent
-            ))
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = SoundAlert.SUBSCRIBE,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId,
+            ttsEvent = ttsEvent
+        ))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         self.__twitchChannelProvider = provider
-
-    def start(self):
-        if self.__isStarted:
-            self.__timber.log('TwitchSubscriptionHandler', 'Not starting TwitchSubscriptionHandler as it has already been started')
-            return
-
-        self.__isStarted = True
-        self.__timber.log('TwitchSubscriptionHandler', 'Starting TwitchSubscriptionHandler...')
-        self.__backgroundTaskHelper.createTask(self.__startGiftSubBatchingLoop())
-
-    async def __startGiftSubBatchingLoop(self):
-        while True:
-            giftSubs: list[TwitchSubscriptionHandler.GiftSub] = list()
-
-            try:
-                while not self.__giftSubQueue.empty():
-                    giftSubs.append(self.__giftSubQueue.get_nowait())
-            except queue.Empty as e:
-                self.__timber.log('TwitchSubscriptionHandler', f'Encountered queue.Empty when building up giftSubs list (queue size: {self.__giftSubQueue.qsize()}) (giftSubs size: {len(giftSubs)}): {e}', e, traceback.format_exc())
-
-            await self.__processGiftSubBatches(giftSubs)
-            await asyncio.sleep(self.__sleepTimeSeconds)

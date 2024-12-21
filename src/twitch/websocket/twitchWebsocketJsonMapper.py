@@ -320,8 +320,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         isAnonymous: bool | None = None
-        if 'is_anonymous' in eventJson and eventJson.get('is_anonymous') is not None:
+        if 'is_anonymous' in eventJson and utils.isValidBool(eventJson.get('is_anonymous')):
             isAnonymous = utils.getBoolFromDict(eventJson, 'is_anonymous')
+
+        isChatterAnonymous: bool | None = None
+        if 'chatter_is_anonymous' in eventJson and utils.isValidBool(eventJson.get('chatter_is_anonymous')):
+            isChatterAnonymous = utils.getBoolFromDict(eventJson, 'chatter_is_anonymous')
 
         isGift: bool | None = None
         if 'is_gift' in eventJson and eventJson.get('is_gift') is not None:
@@ -338,6 +342,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         cumulativeMonths: int | None = None
         if 'cumulative_months' in eventJson and utils.isValidInt(eventJson.get('cumulative_months')):
             cumulativeMonths = utils.getIntFromDict(eventJson, 'cumulative_months')
+
+        cumulativeTotal: int | None = None
+        if 'cumulative_total' in eventJson and utils.isValidInt(eventJson.get('cumulative_total')):
+            cumulativeTotal = utils.getIntFromDict(eventJson, 'cumulative_total')
 
         total: int | None = None
         if 'total' in eventJson and utils.isValidInt(eventJson.get('total')):
@@ -426,6 +434,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         categoryName: str | None = None
         if 'category_name' in eventJson and utils.isValidStr(eventJson.get('category_name')):
             categoryName = utils.getStrFromDict(eventJson, 'category_name')
+
+        chatterUserId: str | None = None
+        if 'chatter_user_id' in eventJson and utils.isValidStr(eventJson.get('chatter_user_id')):
+            chatterUserId = utils.getStrFromDict(eventJson, 'chatter_user_id')
+
+        chatterUserName: str | None = None
+        if 'chatter_user_name' in eventJson and utils.isValidStr(eventJson.get('chatter_user_name')):
+            chatterUserName = utils.getStrFromDict(eventJson, 'chatter_user_name')
 
         eventId: str | None = None
         if 'id' in eventJson and utils.isValidStr(eventJson.get('id')):
@@ -538,6 +554,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
+            isChatterAnonymous = isChatterAnonymous,
             isGift = isGift,
             endedAt = endedAt,
             endsAt = endsAt,
@@ -550,6 +567,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             choices = frozenChoices,
             bits = bits,
             cumulativeMonths = cumulativeMonths,
+            cumulativeTotal = cumulativeTotal,
             total = total,
             viewers = viewers,
             broadcasterUserId = broadcasterUserId,
@@ -557,6 +575,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             broadcasterUserName = broadcasterUserName,
             categoryId = categoryId,
             categoryName = categoryName,
+            chatterUserId = chatterUserId,
+            chatterUserName = chatterUserName,
             eventId = eventId,
             fromBroadcasterUserId = fromBroadcasterUserId,
             fromBroadcasterUserLogin = fromBroadcasterUserLogin,

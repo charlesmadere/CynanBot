@@ -1095,7 +1095,6 @@ class CynanBot(
 
             if self.__twitchSubscriptionHandler is not None:
                 self.__twitchSubscriptionHandler.setTwitchChannelProvider(self)
-                self.__twitchSubscriptionHandler.start()
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = channelPointRedemptionHandler,
