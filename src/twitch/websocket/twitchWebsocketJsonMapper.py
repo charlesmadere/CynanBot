@@ -85,7 +85,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseWebsocketCommunitySubGift(
         self,
-        giftJson: dict[str, Any] | None
+        giftJson: dict[str, Any] | Any | None
     ) -> TwitchCommunitySubGift | None:
         if not isinstance(giftJson, dict) or len(giftJson) == 0:
             return None
@@ -94,7 +94,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'cumulative_total' in giftJson and utils.isValidInt(giftJson.get('cumulative_total')):
             cumulativeTotal = utils.getIntFromDict(giftJson, 'cumulative_total')
 
-        total = utils.getIntFromDict(giftJson, 'total', fallback = 0)
+        total = utils.getIntFromDict(giftJson, 'total')
         communitySubGiftId = utils.getStrFromDict(giftJson, 'id')
         subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(giftJson, 'sub_tier'))
 
@@ -509,12 +509,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
         pollStatus: TwitchPollStatus | None = None
-        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         predictionStatus: TwitchPredictionStatus | None = None
+        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             pollStatus = await self.__twitchJsonMapper.parsePollStatus(utils.getStrFromDict(eventJson, 'status'))
-            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
             predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(utils.getStrFromDict(eventJson, 'status'))
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
 
         communitySubGift: TwitchCommunitySubGift | None = None
         if 'community_sub_gift' in eventJson:
