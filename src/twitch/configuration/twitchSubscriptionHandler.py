@@ -1,8 +1,6 @@
 import math
 import random
 import traceback
-from collections import defaultdict
-from dataclasses import dataclass
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -32,21 +30,6 @@ from ...users.userInterface import UserInterface
 
 class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
-    @dataclass(frozen = True)
-    class GiftSub:
-        isAnonymous: bool
-        receiverUserId: str
-        receiverUserName: str
-        subGiftGiverUserId: str
-        subGiftGiverUserName: str
-        twitchChannelId: str
-        tier: TwitchSubscriberTier
-        user: UserInterface
-
-        @property
-        def twitchChannel(self) -> str:
-            return self.user.handle
-
     def __init__(
         self,
         streamAlertsManager: StreamAlertsManagerInterface,
@@ -57,8 +40,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        sleepTimeSeconds: float = 3
+        userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
@@ -78,10 +60,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not utils.isValidNum(sleepTimeSeconds):
-            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
-            raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
 
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
@@ -92,9 +70,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
 
-        self.__isStarted: bool = False
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __isRedundantSubscriptionAlert(
@@ -226,45 +202,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')
         self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.handle} for a gifted sub!')
-
-    async def __processGiftSubBatches(self, giftSubBatches: list[GiftSub] | None):
-        if giftSubBatches is None or len(giftSubBatches) == 0:
-            return
-
-        giftSubGroups: dict[str, dict[str, list[TwitchSubscriptionHandler.GiftSub]]] = defaultdict(lambda: defaultdict(lambda: list()))
-
-        for giftSubBatch in giftSubBatches:
-            giftSubGroups[giftSubBatch.twitchChannelId][giftSubBatch.subGiftGiverUserId].append(giftSubBatch)
-
-        for giftSubGroup in giftSubGroups.values():
-            for giftSubList in giftSubGroup.values():
-                firstGiftSub = giftSubList[0]
-
-                donation = TtsSubscriptionDonation(
-                    isAnonymous = firstGiftSub.isAnonymous,
-                    cumulativeMonths = None,
-                    durationMonths = None,
-                    numberOfGiftedSubs = len(giftSubList),
-                    tier = firstGiftSub.tier
-                )
-
-                ttsEvent = TtsEvent(
-                    message = None,
-                    twitchChannel = firstGiftSub.twitchChannel,
-                    twitchChannelId = firstGiftSub.twitchChannelId,
-                    userId = firstGiftSub.receiverUserId,
-                    userName = firstGiftSub.receiverUserName,
-                    donation = donation,
-                    provider = firstGiftSub.user.defaultTtsProvider,
-                    raidInfo = None
-                )
-
-                self.__streamAlertsManager.submitAlert(StreamAlert(
-                    soundAlert = SoundAlert.SUBSCRIBE,
-                    twitchChannel = firstGiftSub.twitchChannel,
-                    twitchChannelId = firstGiftSub.twitchChannelId,
-                    ttsEvent = ttsEvent
-                ))
 
     async def __processSuperTriviaEvent(
         self,

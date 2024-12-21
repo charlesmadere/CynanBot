@@ -2315,7 +2315,6 @@ twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
