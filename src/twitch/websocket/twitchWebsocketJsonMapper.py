@@ -85,7 +85,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseWebsocketCommunitySubGift(
         self,
-        giftJson: dict[str, Any] | None
+        giftJson: dict[str, Any] | Any | None
     ) -> TwitchCommunitySubGift | None:
         if not isinstance(giftJson, dict) or len(giftJson) == 0:
             return None
@@ -94,7 +94,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'cumulative_total' in giftJson and utils.isValidInt(giftJson.get('cumulative_total')):
             cumulativeTotal = utils.getIntFromDict(giftJson, 'cumulative_total')
 
-        total = utils.getIntFromDict(giftJson, 'total', fallback = 0)
+        total = utils.getIntFromDict(giftJson, 'total')
         communitySubGiftId = utils.getStrFromDict(giftJson, 'id')
         subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(giftJson, 'sub_tier'))
 
@@ -287,6 +287,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         transportMethod = transportMethod.lower()
 
         match transportMethod:
+            case 'conduit': return TwitchWebsocketTransportMethod.CONDUIT
             case 'webhook': return TwitchWebsocketTransportMethod.WEBHOOK
             case 'websocket': return TwitchWebsocketTransportMethod.WEBSOCKET
             case _: raise ValueError(f'Encountered unknown TwitchWebsocketTransportMethod: \"{transportMethod}\"')
@@ -319,8 +320,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         isAnonymous: bool | None = None
-        if 'is_anonymous' in eventJson and eventJson.get('is_anonymous') is not None:
+        if 'is_anonymous' in eventJson and utils.isValidBool(eventJson.get('is_anonymous')):
             isAnonymous = utils.getBoolFromDict(eventJson, 'is_anonymous')
+
+        isChatterAnonymous: bool | None = None
+        if 'chatter_is_anonymous' in eventJson and utils.isValidBool(eventJson.get('chatter_is_anonymous')):
+            isChatterAnonymous = utils.getBoolFromDict(eventJson, 'chatter_is_anonymous')
 
         isGift: bool | None = None
         if 'is_gift' in eventJson and eventJson.get('is_gift') is not None:
@@ -337,6 +342,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         cumulativeMonths: int | None = None
         if 'cumulative_months' in eventJson and utils.isValidInt(eventJson.get('cumulative_months')):
             cumulativeMonths = utils.getIntFromDict(eventJson, 'cumulative_months')
+
+        cumulativeTotal: int | None = None
+        if 'cumulative_total' in eventJson and utils.isValidInt(eventJson.get('cumulative_total')):
+            cumulativeTotal = utils.getIntFromDict(eventJson, 'cumulative_total')
 
         total: int | None = None
         if 'total' in eventJson and utils.isValidInt(eventJson.get('total')):
@@ -426,6 +435,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'category_name' in eventJson and utils.isValidStr(eventJson.get('category_name')):
             categoryName = utils.getStrFromDict(eventJson, 'category_name')
 
+        chatterUserId: str | None = None
+        if 'chatter_user_id' in eventJson and utils.isValidStr(eventJson.get('chatter_user_id')):
+            chatterUserId = utils.getStrFromDict(eventJson, 'chatter_user_id')
+
+        chatterUserName: str | None = None
+        if 'chatter_user_name' in eventJson and utils.isValidStr(eventJson.get('chatter_user_name')):
+            chatterUserName = utils.getStrFromDict(eventJson, 'chatter_user_name')
+
         eventId: str | None = None
         if 'id' in eventJson and utils.isValidStr(eventJson.get('id')):
             eventId = utils.getStrFromDict(eventJson, 'id')
@@ -508,12 +525,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
         pollStatus: TwitchPollStatus | None = None
-        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         predictionStatus: TwitchPredictionStatus | None = None
+        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             pollStatus = await self.__twitchJsonMapper.parsePollStatus(utils.getStrFromDict(eventJson, 'status'))
-            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
             predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(utils.getStrFromDict(eventJson, 'status'))
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
 
         communitySubGift: TwitchCommunitySubGift | None = None
         if 'community_sub_gift' in eventJson:
@@ -537,6 +554,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
+            isChatterAnonymous = isChatterAnonymous,
             isGift = isGift,
             endedAt = endedAt,
             endsAt = endsAt,
@@ -549,6 +567,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             choices = frozenChoices,
             bits = bits,
             cumulativeMonths = cumulativeMonths,
+            cumulativeTotal = cumulativeTotal,
             total = total,
             viewers = viewers,
             broadcasterUserId = broadcasterUserId,
@@ -556,6 +575,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             broadcasterUserName = broadcasterUserName,
             categoryId = categoryId,
             categoryName = categoryName,
+            chatterUserId = chatterUserId,
+            chatterUserName = chatterUserName,
             eventId = eventId,
             fromBroadcasterUserId = fromBroadcasterUserId,
             fromBroadcasterUserLogin = fromBroadcasterUserLogin,

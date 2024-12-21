@@ -43,7 +43,7 @@ class TwitchWebsocketJsonMapperInterface(ABC):
     @abstractmethod
     async def parseWebsocketCommunitySubGift(
         self,
-        giftJson: dict[str, Any] | None
+        giftJson: dict[str, Any] | Any | None
     ) -> TwitchCommunitySubGift | None:
         pass
 
