@@ -54,7 +54,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         self,
         twitchChannelId: str
     ) -> ChannelEditorsData:
-        editorsData: TwitchChannelEditorsRepository.ChannelEditorsData | None = self.__cache.get(twitchChannelId, None)
+        editorsData = self.__cache.get(twitchChannelId, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
         mustFetch: bool
 
@@ -86,6 +86,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
                 )
             except Exception as e:
                 self.__timber.log('TwitchChannelEditorsRepository', f'Failed to fetch channel editors ({twitchChannelId=}): {e}', e, traceback.format_exc())
+                editorsData = None
 
         if editorsData is None:
             editorsData = TwitchChannelEditorsRepository.ChannelEditorsData(
