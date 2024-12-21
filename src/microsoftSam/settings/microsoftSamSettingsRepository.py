@@ -33,7 +33,7 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 44)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 44)
 
     async def getDefaultVoice(self) -> MicrosoftSamVoice | None:
         jsonContents = await self.__readJson()
