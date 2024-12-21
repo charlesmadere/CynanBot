@@ -4,6 +4,7 @@ import queue
 import traceback
 from collections import OrderedDict, defaultdict
 from datetime import datetime, timedelta
+from enum import Enum, auto
 from queue import SimpleQueue
 from typing import Any
 
@@ -31,6 +32,10 @@ from ...timber.timberInterface import TimberInterface
 
 
 class TwitchWebsocketClient(TwitchWebsocketClientInterface):
+
+    class ConnectionAction(Enum):
+        CLOSE_AND_RECONNECT = auto()
+        OK = auto()
 
     def __init__(
         self,
@@ -226,7 +231,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self,
         user: TwitchWebsocketUser,
         dataBundle: TwitchWebsocketDataBundle
-    ):
+    ) -> ConnectionAction:
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -235,12 +240,12 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         payload = dataBundle.payload
 
         if payload is None:
-            return
+            return TwitchWebsocketClient.ConnectionAction.OK
 
         session = payload.session
 
         if session is None:
-            return
+            return TwitchWebsocketClient.ConnectionAction.OK
 
         oldTwitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
         newTwitchWebsocketUrl = session.reconnectUrl
@@ -262,6 +267,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 user = user
             )
 
+        return TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT
+
     async def __handleNewSessionIdFor(
         self,
         newSessionId: str,
@@ -276,12 +283,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         self.__sessionIdFor[user] = newSessionId
-        self.__timber.log('TwitchWebsocketClient', f'Session ID for \"{user}\" has been changed to \"{newSessionId}\" from \"{oldSessionId}\". Creating EventSub subscription(s)...')
-
-        await self.__createEventSubSubscription(
-            sessionId = newSessionId,
-            user = user
-        )
+        self.__timber.log('TwitchWebsocketClient', f'Session ID for \"{user}\" has been changed to \"{newSessionId}\" from \"{oldSessionId}\"')
 
     async def __handleNewTwitchWebsocketUrlFor(
         self,
@@ -411,7 +413,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        while True:
+        remainConnected = True
+
+        while remainConnected:
             twitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
             self.__timber.log('TwitchWebsocketClient', f'Connecting to websocket \"{twitchWebsocketUrl}\" for \"{user}\"...')
 
@@ -423,13 +427,32 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                         if dataBundle is None:
                             continue
 
-                        await self.__handleConnectionRelatedMessageFor(user, dataBundle)
                         await self.__submitDataBundle(dataBundle)
+                        connectionAction = await self.__handleConnectionRelatedMessageFor(user, dataBundle)
+
+                        match connectionAction:
+                            case TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT:
+                                remainConnected = False
+                                await websocket.close()
+
+                            case TwitchWebsocketClient.ConnectionAction.OK:
+                                # this path is intentionally empty
+                                pass
             except Exception as e:
                 self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception for \"{user}\" when connected to \"{twitchWebsocketUrl}\": {e}', e, traceback.format_exc())
-                self.__sessionIdFor[user] = ''
 
-            await asyncio.sleep(self.__websocketSleepTimeSeconds)
+            if remainConnected:
+                await asyncio.sleep(self.__websocketSleepTimeSeconds)
+
+        sessionId = self.__sessionIdFor[user]
+
+        if utils.isValidStr(sessionId):
+            await self.__createEventSubSubscription(
+                sessionId = sessionId,
+                user = user
+            )
+        else:
+            self.__timber.log('TwitchWebsocketClient', f'Attempted to re-establish websocket connections for \"{user}\", but no session ID is available ({sessionId=})')
 
     async def __startWebsocketConnections(self):
         users = await self.__twitchWebsocketAllowedUsersRepository.getUsers()
