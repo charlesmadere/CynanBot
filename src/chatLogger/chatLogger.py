@@ -27,7 +27,7 @@ class ChatLogger(ChatLoggerInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = 'logs/chatLogger'
+        logRootDirectory: str = '../logs/chatLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

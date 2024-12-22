@@ -26,7 +26,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = 'logs/sentMessageLogger'
+        logRootDirectory: str = '../logs/sentMessageLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
