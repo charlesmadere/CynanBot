@@ -1,7 +1,6 @@
-from .models.microsoftSamVoiceData import MicrosoftSamVoiceData
 from .microsoftSamVoiceMapperInterface import MicrosoftSamVoiceMapperInterface
 from .models.microsoftSamVoice import MicrosoftSamVoice
-from ..misc import utils as utils
+from .models.microsoftSamVoiceData import MicrosoftSamVoiceData
 
 
 class MicrosoftSamVoiceMapper(MicrosoftSamVoiceMapperInterface):

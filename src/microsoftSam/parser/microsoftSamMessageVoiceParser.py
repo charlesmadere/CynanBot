@@ -1,7 +1,7 @@
 import re
 from typing import Pattern
 
-from src.microsoftSam.parser.microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
+from .microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
 from ..models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc import utils as utils
 

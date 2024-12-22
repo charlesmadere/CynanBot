@@ -1,5 +1,6 @@
 from enum import Enum, auto
 
+
 class MicrosoftSamVoice(Enum):
 
     ADULT_FEMALE_1 = auto()

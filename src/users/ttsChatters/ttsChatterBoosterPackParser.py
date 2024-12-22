@@ -6,8 +6,8 @@ from .ttsChatterBoosterPack import TtsChatterBoosterPack
 from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
-from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
+from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
