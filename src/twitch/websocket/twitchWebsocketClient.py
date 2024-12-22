@@ -388,45 +388,52 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        twitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
-        self.__timber.log('TwitchWebsocketClient', f'Connecting to websocket \"{twitchWebsocketUrl}\" for \"{user}\"...')
+        retry = True
 
-        try:
-            async with websockets.connect(twitchWebsocketUrl) as websocket:
-                async for message in websocket:
-                    dataBundle = await self.__parseMessageToDataBundleFor(
-                        message = message,
-                        user = user
-                    )
+        while retry:
+            twitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
+            self.__timber.log('TwitchWebsocketClient', f'Connecting to websocket \"{twitchWebsocketUrl}\" for \"{user}\"...')
 
-                    if dataBundle is None or not await self.__isValidMessage(dataBundle):
-                        continue
+            try:
+                async with websockets.connect(twitchWebsocketUrl) as websocket:
+                    async for message in websocket:
+                        dataBundle = await self.__parseMessageToDataBundleFor(
+                            message = message,
+                            user = user
+                        )
 
-                    connectionAction = await self.__handleConnectionRelatedMessageFor(
-                        dataBundle = dataBundle,
-                        user = user
-                    )
+                        if dataBundle is None or not await self.__isValidMessage(dataBundle):
+                            continue
 
-                    match connectionAction:
-                        case TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
-                            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" is asking for EventSub subscription(s) to be created ({connectionAction=})')
-                            await self.__createEventSubSubscription(user)
+                        connectionAction = await self.__handleConnectionRelatedMessageFor(
+                            dataBundle = dataBundle,
+                            user = user
+                        )
 
-                        case TwitchWebsocketClient.ConnectionAction.DISCONNECT:
-                            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" was revoked when connected to \"{twitchWebsocketUrl=}\" ({connectionAction=})')
-                            await websocket.close()
+                        match connectionAction:
+                            case TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
+                                self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" is asking for EventSub subscription(s) to be created ({connectionAction=})')
+                                await self.__createEventSubSubscription(user)
 
-                        case TwitchWebsocketClient.ConnectionAction.OK:
-                            # this path is intentionally empty
-                            pass
+                            case TwitchWebsocketClient.ConnectionAction.DISCONNECT:
+                                retry = False
+                                self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" was revoked when connected to \"{twitchWebsocketUrl=}\" ({connectionAction=})')
+                                await websocket.close()
 
-                        case TwitchWebsocketClient.ConnectionAction.RECONNECT:
-                            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" is asking for a new connection to be made ({connectionAction=})')
-                            self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
+                            case TwitchWebsocketClient.ConnectionAction.OK:
+                                # this path is intentionally empty
+                                pass
 
-                    await self.__submitDataBundle(dataBundle)
-        except Exception as e:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception for \"{user}\" when connected to \"{twitchWebsocketUrl}\": {e}', e, traceback.format_exc())
+                            case TwitchWebsocketClient.ConnectionAction.RECONNECT:
+                                retry = False
+                                self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" is asking for a new connection to be made ({connectionAction=})')
+                                self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
+
+                        await self.__submitDataBundle(dataBundle)
+            except Exception as e:
+                self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception for \"{user}\" when connected to \"{twitchWebsocketUrl}\": {e}', e, traceback.format_exc())
+
+            await asyncio.sleep(3)
 
     async def __startWebsocketConnections(self):
         users = await self.__twitchWebsocketAllowedUsersRepository.getUsers()
