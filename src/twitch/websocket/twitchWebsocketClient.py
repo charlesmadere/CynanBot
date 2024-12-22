@@ -344,11 +344,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if exception is not None:
             self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=}): {exception}', exception, traceback.format_exc())
             return None
-        elif isinstance(dataBundle, TwitchWebsocketDataBundle):
-            return dataBundle
-        else:
+        elif dataBundle is None:
             self.__timber.log('TwitchWebsocketClient', f'Received `None` when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=})')
             return None
+        else:
+            return dataBundle
 
     def setDataBundleListener(self, listener: TwitchWebsocketDataBundleListener | None):
         if listener is not None and not isinstance(listener, TwitchWebsocketDataBundleListener):
