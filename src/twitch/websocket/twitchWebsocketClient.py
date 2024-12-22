@@ -152,9 +152,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         for subscriptionType in self.__subscriptionTypes:
             for user in users:
-                # if subscriptionType in self.__badSubscriptionTypesFor[user]:
-                #     self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscription for {user} ({subscriptionType=}) ({sessionId=})')
-                #     continue
+                if subscriptionType in self.__badSubscriptionTypesFor[user]:
+                    self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscription for {user} ({subscriptionType=}) ({sessionId=})')
+                    continue
 
                 condition = await self.__createWebsocketCondition(
                     user = user,
