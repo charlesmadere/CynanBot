@@ -30,6 +30,7 @@ from ..api.websocket.twitchWebsocketSubscription import TwitchWebsocketSubscript
 from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
+from ..exceptions import TwitchJsonException
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -245,9 +246,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscription = subscription
         )
 
-    async def __parseTransport(
+    async def parseWebsocketTransport(
         self,
-        transportJson: dict[str, Any] | None
+        transportJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketTransport | None:
         if not isinstance(transportJson, dict) or len(transportJson) == 0:
             return None
@@ -259,6 +260,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         disconnectedAt: datetime | None = None
         if 'disconnected_at' in transportJson and utils.isValidStr(transportJson.get('disconnected_at')):
             disconnectedAt = utils.getDateTimeFromDict(transportJson, 'disconnected_at')
+
+        conduitId: str | None = None
+        if 'conduit_id' in transportJson and utils.isValidStr(transportJson.get('conduit_id')):
+            conduitId = utils.getStrFromDict(transportJson, 'conduit_id')
 
         secret: str | None = None
         if 'secret' in transportJson and utils.isValidStr(transportJson.get('secret')):
@@ -273,6 +278,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         return TwitchWebsocketTransport(
             connectedAt = connectedAt,
             disconnectedAt = disconnectedAt,
+            conduitId = conduitId,
             secret = secret,
             sessionId = sessionId,
             method = method
@@ -824,11 +830,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         condition = await self.parseWebsocketCondition(subscriptionJson.get('condition'))
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(subscriptionJson, 'status'))
         subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(subscriptionJson, 'type'))
-        transport = await self.__parseTransport(subscriptionJson.get('transport'))
+        transport = await self.requireWebsocketTransport(subscriptionJson.get('transport'))
 
-        assert condition and status and subscriptionType and transport, (
-            f"{condition=} {status=} {subscriptionType=} {transport=}"
-        )
+        if condition is None or status is None or subscriptionType is None:
+            raise TwitchJsonException(f'Missing required \"condition\", \"status\", or \"subscriptionType\" values ({subscriptionJson=})')
 
         return TwitchWebsocketSubscription(
             cost = cost,
@@ -860,5 +865,16 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{messageType}\" into TwitchWebsocketMessageType value!')
+
+        return result
+
+    async def requireWebsocketTransport(
+        self,
+        transportJson: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketTransport:
+        result = await self.parseWebsocketTransport(transportJson)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{transportJson}\" into TwitchWebsocketTransport value!')
 
         return result

@@ -9,6 +9,7 @@ from ....misc import utils as utils
 class TwitchWebsocketTransport:
     connectedAt: datetime | None = None
     disconnectedAt: datetime | None = None
+    conduitId: str | None = None
     secret: str | None = None
     sessionId: str | None = None
     method: TwitchWebsocketTransportMethod = TwitchWebsocketTransportMethod.WEBSOCKET

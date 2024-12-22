@@ -23,7 +23,6 @@ from .twitchUserSubscription import TwitchUserSubscription
 from .twitchValidationResponse import TwitchValidationResponse
 from .websocket.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from .websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..exceptions import (TwitchErrorException, TwitchJsonException,
                           TwitchPasswordChangedException, TwitchStatusCodeException,
                           TwitchTokenIsExpiredException)
@@ -265,11 +264,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        transport = TwitchWebsocketTransport(
-            connectedAt = utils.getDateTimeFromDict(transportJson, 'connected_at'),
-            sessionId = utils.getStrFromDict(transportJson, 'session_id'),
-            method = await self.__twitchWebsocketJsonMapper.requireTransportMethod(utils.getStrFromDict(transportJson, 'method'))
-        )
+        transport = await self.__twitchWebsocketJsonMapper.requireWebsocketTransport(transportJson)
 
         return TwitchEventSubResponse(
             cost = cost,
