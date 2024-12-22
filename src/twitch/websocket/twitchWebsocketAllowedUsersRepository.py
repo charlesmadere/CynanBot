@@ -40,7 +40,6 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
             twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(userName)
 
             if not utils.isValidStr(twitchAccessToken):
-                self.__timber.log('TwitchWebsocketAllowedUsersRepository', f'Unable to find Twitch access token when building up Twitch Websocket user list ({userName=}) ({twitchAccessToken=})')
                 continue
 
             userId = await self.__userIdsRepository.fetchUserId(
