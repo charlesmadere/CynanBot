@@ -127,10 +127,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__dataBundleQueue: SimpleQueue[TwitchWebsocketDataBundle] = SimpleQueue()
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
-    async def __createEventSubSubscription(
-        self,
-        user: TwitchWebsocketUser
-    ):
+    async def __createEventSubSubscription(self, user: TwitchWebsocketUser):
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -412,10 +409,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
                     match connectionAction:
                         case TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
+                            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" is asking for EventSub subscription(s) to be created ({connectionAction=})')
                             await self.__createEventSubSubscription(user)
 
                         case TwitchWebsocketClient.ConnectionAction.DISCONNECT:
-                            self.__timber.log('TwitchWebsocketClient', f'Websocket connection for \"{user}\" was revoked when connected to \"{twitchWebsocketUrl=}\"')
+                            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" was revoked when connected to \"{twitchWebsocketUrl=}\" ({connectionAction=})')
                             await websocket.close()
 
                         case TwitchWebsocketClient.ConnectionAction.OK:
@@ -423,6 +421,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                             pass
 
                         case TwitchWebsocketClient.ConnectionAction.RECONNECT:
+                            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection for \"{user}\" is asking for a new connection to be made ({connectionAction=})')
                             self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
 
                     await self.__submitDataBundle(dataBundle)
