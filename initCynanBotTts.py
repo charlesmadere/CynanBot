@@ -852,6 +852,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         twitchApiService = twitchApiService,
+        twitchHandleProvider = authRepository,
         twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
