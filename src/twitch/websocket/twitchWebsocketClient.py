@@ -176,7 +176,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
     async def __createWebsocketCondition(
         self,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: TwitchWebsocketUser,
+        user: TwitchWebsocketUser
     ) -> TwitchWebsocketCondition:
         if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
