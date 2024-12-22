@@ -10,5 +10,5 @@ class TwitchWebsocketMetadata:
     messageTimestamp: datetime
     messageId: str
     subscriptionVersion: str | None
-    messageType: TwitchWebsocketMessageType | None
+    messageType: TwitchWebsocketMessageType
     subscriptionType: TwitchWebsocketSubscriptionType | None

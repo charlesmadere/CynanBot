@@ -7,6 +7,7 @@ from src.timber.timberStub import TimberStub
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from src.twitch.api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
@@ -244,6 +245,99 @@ class TestTwitchWebsocketJsonMapper:
 
         assert result is None
 
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withEmptyString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withNone(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withNotificationString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType('notification')
+        assert result is TwitchWebsocketMessageType.NOTIFICATION
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withRevocationString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType('revocation')
+        assert result is TwitchWebsocketMessageType.REVOCATION
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withSessionKeepAliveString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType('session_keepalive')
+        assert result is TwitchWebsocketMessageType.KEEP_ALIVE
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withSessionReconnectString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType('session_reconnect')
+        assert result is TwitchWebsocketMessageType.RECONNECT
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withSessionWelcomeString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType('session_welcome')
+        assert result is TwitchWebsocketMessageType.WELCOME
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketMessageType_withWhitespaceString(self):
+        result = await self.websocketJsonMapper.parseWebsocketMessageType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withEmptyString(self):
+        result: TwitchWebsocketMessageType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.websocketJsonMapper.requireWebsocketMessageType('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withNone(self):
+        result: TwitchWebsocketMessageType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.websocketJsonMapper.requireWebsocketMessageType(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withNotificationString(self):
+        result = await self.websocketJsonMapper.requireWebsocketMessageType('notification')
+        assert result is TwitchWebsocketMessageType.NOTIFICATION
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withRevocationString(self):
+        result = await self.websocketJsonMapper.requireWebsocketMessageType('revocation')
+        assert result is TwitchWebsocketMessageType.REVOCATION
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withSessionKeepAliveString(self):
+        result = await self.websocketJsonMapper.requireWebsocketMessageType('session_keepalive')
+        assert result is TwitchWebsocketMessageType.KEEP_ALIVE
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withSessionReconnectString(self):
+        result = await self.websocketJsonMapper.requireWebsocketMessageType('session_reconnect')
+        assert result is TwitchWebsocketMessageType.RECONNECT
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withSessionWelcomeString(self):
+        result = await self.websocketJsonMapper.requireWebsocketMessageType('session_welcome')
+        assert result is TwitchWebsocketMessageType.WELCOME
+
+    @pytest.mark.asyncio
+    async def test_requireWebsocketMessageType_withWhitespaceString(self):
+        result: TwitchWebsocketMessageType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.websocketJsonMapper.requireWebsocketMessageType(' ')
+
+        assert result is None
+
     def test_sanity(self):
         assert self.websocketJsonMapper is not None
+        assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapper)
         assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapperInterface)

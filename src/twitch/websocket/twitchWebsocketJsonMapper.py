@@ -209,11 +209,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         messageTimestamp = utils.getDateTimeFromDict(metadataJson, 'message_timestamp')
         messageId = utils.getStrFromDict(metadataJson, 'message_id')
-        messageType = TwitchWebsocketMessageType.fromStr(utils.getStrFromDict(metadataJson, 'message_type'))
 
         subscriptionVersion: str | None = None
         if 'subscription_version' in metadataJson and utils.isValidStr(metadataJson.get('subscription_version')):
             subscriptionVersion = utils.getStrFromDict(metadataJson, 'subscription_version')
+
+        messageType = await self.requireWebsocketMessageType(utils.getStrFromDict(metadataJson, 'message_type'))
 
         subscriptionType: TwitchWebsocketSubscriptionType | None = None
         if 'subscription_type' in metadataJson and utils.isValidStr(metadataJson.get('subscription_type')):
@@ -606,6 +607,23 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subGift = subGift
         )
 
+    async def parseWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType | None:
+        if not utils.isValidStr(messageType):
+            return None
+
+        messageType = messageType.lower()
+
+        match messageType:
+            case 'session_keepalive': return TwitchWebsocketMessageType.KEEP_ALIVE
+            case 'notification': return TwitchWebsocketMessageType.NOTIFICATION
+            case 'session_reconnect': return TwitchWebsocketMessageType.RECONNECT
+            case 'revocation': return TwitchWebsocketMessageType.REVOCATION
+            case 'session_welcome': return TwitchWebsocketMessageType.WELCOME
+            case _: return None
+
     async def parseTwitchOutcome(
         self,
         outcomeJson: dict[str, Any] | None
@@ -831,5 +849,16 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{transportMethod}\" into TwitchWebsocketTransportMethod value!')
+
+        return result
+
+    async def requireWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType:
+        result = await self.parseWebsocketMessageType(messageType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{messageType}\" into TwitchWebsocketMessageType value!')
 
         return result

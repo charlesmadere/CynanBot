@@ -12,6 +12,7 @@ from ..api.websocket.twitchWebsocketChannelPointsVoting import TwitchWebsocketCh
 from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
+from ..api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..api.websocket.twitchWebsocketSession import TwitchWebsocketSession
 from ..api.websocket.twitchWebsocketSubscription import TwitchWebsocketSubscription
 from ..api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -69,6 +70,13 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType | None:
+        pass
+
+    @abstractmethod
     async def parseTwitchOutcome(
         self,
         outcomeJson: dict[str, Any] | None
@@ -122,4 +130,11 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         transportMethod: str | Any | None
     ) -> TwitchWebsocketTransportMethod:
+        pass
+
+    @abstractmethod
+    async def requireWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType:
         pass
