@@ -268,12 +268,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             self.__sessionIdFor[user] = newSessionId
             self.__timber.log('TwitchWebsocketClient', f'Twitch session ID for \"{user}\" has been changed ({newSessionId=}) ({oldSessionId=}) ({dataBundle=})')
 
-        messageType = dataBundle.metadata.messageType
-
-        if messageType is None:
-            return TwitchWebsocketClient.ConnectionAction.OK
-
-        match messageType:
+        match dataBundle.metadata.messageType:
             case TwitchWebsocketMessageType.KEEP_ALIVE:
                 return TwitchWebsocketClient.ConnectionAction.OK
 
