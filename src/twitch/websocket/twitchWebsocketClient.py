@@ -257,17 +257,16 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         oldTwitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
         newTwitchWebsocketUrl = session.reconnectUrl
-
-        if utils.isValidUrl(newTwitchWebsocketUrl) and oldTwitchWebsocketUrl != newTwitchWebsocketUrl:
-            self.__twitchWebsocketUrlFor[user] = newTwitchWebsocketUrl
-            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket URL for \"{user}\" has been changed ({newTwitchWebsocketUrl=}) ({oldTwitchWebsocketUrl=}) ({payload=})')
-
         oldSessionId = self.__sessionIdFor[user]
         newSessionId = session.sessionId
 
+        if utils.isValidUrl(newTwitchWebsocketUrl) and oldTwitchWebsocketUrl != newTwitchWebsocketUrl:
+            self.__twitchWebsocketUrlFor[user] = newTwitchWebsocketUrl
+            self.__timber.log('TwitchWebsocketClient', f'Twitch websocket URL for \"{user}\" has been changed ({newTwitchWebsocketUrl=}) ({oldTwitchWebsocketUrl=}) ({dataBundle=})')
+
         if utils.isValidStr(newSessionId) and oldSessionId != newSessionId:
             self.__sessionIdFor[user] = newSessionId
-            self.__timber.log('TwitchWebsocketClient', f'Twitch session ID for \"{user}\" has been changed ({newSessionId=}) ({oldSessionId=}) ({payload=})')
+            self.__timber.log('TwitchWebsocketClient', f'Twitch session ID for \"{user}\" has been changed ({newSessionId=}) ({oldSessionId=}) ({dataBundle=})')
 
         messageType = dataBundle.metadata.messageType
 
