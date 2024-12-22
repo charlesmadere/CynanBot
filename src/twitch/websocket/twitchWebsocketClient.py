@@ -35,10 +35,10 @@ from ...timber.timberInterface import TimberInterface
 class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     class ConnectionAction(Enum):
-        CLOSE_AND_RECONNECT = auto()
-        CREATE_EVENT_SUB_SUBSCRIPTIONS = auto()
+        CREATE_EVENT_SUB_SUBSCRIPTION = auto()
         DISCONNECT = auto()
         OK = auto()
+        RECONNECT = auto()
 
     def __init__(
         self,
@@ -269,13 +269,13 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 return TwitchWebsocketClient.ConnectionAction.OK
 
             case TwitchWebsocketMessageType.RECONNECT:
-                return TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT
+                return TwitchWebsocketClient.ConnectionAction.RECONNECT
 
             case TwitchWebsocketMessageType.REVOCATION:
                 return TwitchWebsocketClient.ConnectionAction.DISCONNECT
 
             case TwitchWebsocketMessageType.WELCOME:
-                return TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTIONS
+                return TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION
 
     async def __isValidMessage(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -411,10 +411,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                     )
 
                     match connectionAction:
-                        case TwitchWebsocketClient.ConnectionAction.CLOSE_AND_RECONNECT:
-                            self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
-
-                        case TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTIONS:
+                        case TwitchWebsocketClient.ConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
                             await self.__createEventSubSubscription(user)
 
                         case TwitchWebsocketClient.ConnectionAction.DISCONNECT:
@@ -424,6 +421,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                         case TwitchWebsocketClient.ConnectionAction.OK:
                             # this path is intentionally empty
                             pass
+
+                        case TwitchWebsocketClient.ConnectionAction.RECONNECT:
+                            self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
 
                     await self.__submitDataBundle(dataBundle)
         except Exception as e:
