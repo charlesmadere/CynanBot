@@ -95,6 +95,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
                 twitchChannelId = twitchChannelId
             )
 
+        self.__cache[twitchChannelId] = editorsData
         return editorsData
 
     async def isEditor(
@@ -107,10 +108,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        editorsData = await self.__fetchEditorsData(
-            twitchChannelId = twitchChannelId
-        )
-
+        editorsData = await self.__fetchEditorsData(twitchChannelId)
         return chatterUserId in editorsData.editors
 
     async def __mapEditorsResponseToEditorsData(
