@@ -9,7 +9,6 @@ from ..api.twitchResub import TwitchResub
 from ..api.twitchReward import TwitchReward
 from ..api.twitchSubGift import TwitchSubGift
 from ..api.websocket.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
-from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
@@ -47,13 +46,6 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         giftJson: dict[str, Any] | Any | None
     ) -> TwitchCommunitySubGift | None:
-        pass
-
-    @abstractmethod
-    async def parseWebsocketCondition(
-        self,
-        conditionJson: dict[str, Any] | None
-    ) -> TwitchWebsocketCondition | None:
         pass
 
     @abstractmethod

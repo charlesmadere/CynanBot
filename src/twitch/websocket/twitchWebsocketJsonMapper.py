@@ -17,7 +17,6 @@ from ..api.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..api.twitchSubGift import TwitchSubGift
 from ..api.twitchSubscriberTier import TwitchSubscriberTier
 from ..api.websocket.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
-from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.websocket.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
@@ -104,101 +103,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             total = total,
             communitySubGiftId = communitySubGiftId,
             subTier = subTier
-        )
-
-    async def parseWebsocketCondition(
-        self,
-        conditionJson: dict[str, Any] | None
-    ) -> TwitchWebsocketCondition | None:
-        if not isinstance(conditionJson, dict):
-            return None
-
-        broadcasterUserId: str | None = None
-        if 'broadcaster_user_id' in conditionJson and utils.isValidStr(conditionJson.get('broadcaster_user_id')):
-            broadcasterUserId = utils.getStrFromDict(conditionJson, 'broadcaster_user_id')
-
-        broadcasterUserLogin: str | None = None
-        if 'broadcaster_user_login' in conditionJson and utils.isValidStr(conditionJson.get('broadcaster_user_login')):
-            broadcasterUserLogin = utils.getStrFromDict(conditionJson, 'broadcaster_user_login')
-
-        broadcasterUserName: str | None = None
-        if 'broadcaster_user_name' in conditionJson and utils.isValidStr(conditionJson.get('broadcaster_user_name')):
-            broadcasterUserName = utils.getStrFromDict(conditionJson, 'broadcaster_user_name')
-
-        clientId: str | None = None
-        if 'client_id' in conditionJson and utils.isValidStr(conditionJson.get('client_id')):
-            clientId = utils.getStrFromDict(conditionJson, 'client_id')
-
-        fromBroadcasterUserId: str | None = None
-        if 'from_broadcaster_user_id' in conditionJson and utils.isValidStr(conditionJson.get('from_broadcaster_user_id')):
-            fromBroadcasterUserId = utils.getStrFromDict(conditionJson, 'from_broadcaster_user_id')
-
-        fromBroadcasterUserLogin: str | None = None
-        if 'from_broadcaster_user_login' in conditionJson and utils.isValidStr(conditionJson.get('from_broadcaster_user_login')):
-            fromBroadcasterUserLogin = utils.getStrFromDict(conditionJson, 'from_broadcaster_user_login')
-
-        fromBroadcasterUserName: str | None = None
-        if 'from_broadcaster_user_name' in conditionJson and utils.isValidStr(conditionJson.get('from_broadcaster_user_name')):
-            fromBroadcasterUserName = utils.getStrFromDict(conditionJson, 'from_broadcaster_user_name')
-
-        moderatorUserId: str | None = None
-        if 'moderator_user_id' in conditionJson and utils.isValidStr(conditionJson.get('moderator_user_id')):
-            moderatorUserId = utils.getStrFromDict(conditionJson, 'moderator_user_id')
-
-        moderatorUserLogin: str | None = None
-        if 'moderator_user_login' in conditionJson and utils.isValidStr(conditionJson.get('moderator_user_login')):
-            moderatorUserLogin = utils.getStrFromDict(conditionJson, 'moderator_user_login')
-
-        moderatorUserName: str | None = None
-        if 'moderator_user_name' in conditionJson and utils.isValidStr(conditionJson.get('moderator_user_name')):
-            moderatorUserName = utils.getStrFromDict(conditionJson, 'moderator_user_name')
-
-        rewardId: str | None = None
-        if 'reward_id' in conditionJson and utils.isValidStr(conditionJson.get('reward_id')):
-            rewardId = utils.getStrFromDict(conditionJson, 'reward_id')
-
-        toBroadcasterUserId: str | None = None
-        if 'to_broadcaster_user_id' in conditionJson and utils.isValidStr(conditionJson.get('to_broadcaster_user_id')):
-            toBroadcasterUserId = utils.getStrFromDict(conditionJson, 'to_broadcaster_user_id')
-
-        toBroadcasterUserLogin: str | None = None
-        if 'to_broadcaster_user_login' in conditionJson and utils.isValidStr(conditionJson.get('to_broadcaster_user_login')):
-            toBroadcasterUserLogin = utils.getStrFromDict(conditionJson, 'to_broadcaster_user_login')
-
-        toBroadcasterUserName: str | None = None
-        if 'to_broadcaster_user_name' in conditionJson and utils.isValidStr(conditionJson.get('to_broadcaster_user_name')):
-            toBroadcasterUserName = utils.getStrFromDict(conditionJson, 'to_broadcaster_user_name')
-
-        userId: str | None = None
-        if 'user_id' in conditionJson and utils.isValidStr(conditionJson.get('user_id')):
-            userId = utils.getStrFromDict(conditionJson, 'user_id')
-
-        userLogin: str | None = None
-        if 'user_login' in conditionJson and utils.isValidStr(conditionJson.get('user_login')):
-            userLogin = utils.getStrFromDict(conditionJson, 'user_login')
-
-        userName: str | None = None
-        if 'user_name' in conditionJson and utils.isValidStr(conditionJson.get('user_name')):
-            userName = utils.getStrFromDict(conditionJson, 'user_name')
-
-        return TwitchWebsocketCondition(
-            broadcasterUserId = broadcasterUserId,
-            broadcasterUserLogin = broadcasterUserLogin,
-            broadcasterUserName = broadcasterUserName,
-            clientId = clientId,
-            fromBroadcasterUserId = fromBroadcasterUserId,
-            fromBroadcasterUserLogin = fromBroadcasterUserLogin,
-            fromBroadcasterUserName = fromBroadcasterUserName,
-            moderatorUserId = moderatorUserId,
-            moderatorUserLogin = moderatorUserLogin,
-            moderatorUserName = moderatorUserName,
-            rewardId = rewardId,
-            toBroadcasterUserId = toBroadcasterUserId,
-            toBroadcasterUserLogin = toBroadcasterUserLogin,
-            toBroadcasterUserName = toBroadcasterUserName,
-            userId = userId,
-            userLogin = userLogin,
-            userName = userName
         )
 
     async def __parseMetadata(
@@ -827,7 +731,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         createdAt = utils.getDateTimeFromDict(subscriptionJson, 'created_at')
         subscriptionId = utils.getStrFromDict(subscriptionJson, 'id')
         version = utils.getStrFromDict(subscriptionJson, 'version')
-        condition = await self.parseWebsocketCondition(subscriptionJson.get('condition'))
+        condition = await self.__twitchJsonMapper.parseCondition(subscriptionJson.get('condition'))
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(subscriptionJson, 'status'))
         subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(subscriptionJson, 'type'))
         transport = await self.requireWebsocketTransport(subscriptionJson.get('transport'))

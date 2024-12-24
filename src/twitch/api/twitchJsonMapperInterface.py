@@ -14,6 +14,7 @@ from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 from .twitchEmoteImageScale import TwitchEmoteImageScale
 from .twitchEmoteType import TwitchEmoteType
 from .twitchEmotesResponse import TwitchEmotesResponse
+from .twitchEventSubRequest import TwitchEventSubRequest
 from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchPaginationResponse import TwitchPaginationResponse
 from .twitchPollStatus import TwitchPollStatus
@@ -29,6 +30,8 @@ from .twitchTokensDetails import TwitchTokensDetails
 from .twitchUserSubscription import TwitchUserSubscription
 from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
+from .websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
 
 
 class TwitchJsonMapperInterface(ABC):
@@ -80,6 +83,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchChannelEditorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseCondition(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketCondition | None:
         pass
 
     @abstractmethod
@@ -237,8 +247,29 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def serializeCondition(
+        self,
+        condition: TwitchWebsocketCondition
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeEventSubRequest(
+        self,
+        eventSubRequest: TwitchEventSubRequest
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
     async def serializeSendChatMessageRequest(
         self,
         chatRequest: TwitchSendChatMessageRequest
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTransport(
+        self,
+        transport: TwitchWebsocketTransport
     ) -> dict[str, Any]:
         pass

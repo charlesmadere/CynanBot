@@ -6,7 +6,6 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
-from src.twitch.api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from src.twitch.api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -87,40 +86,6 @@ class TestTwitchWebsocketJsonMapper:
     @pytest.mark.asyncio
     async def test_parseWebsocketCommunitySubGift_withNone(self):
         result = await self.websocketJsonMapper.parseWebsocketCommunitySubGift(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketCondition_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseWebsocketCondition(dict())
-        assert isinstance(result, TwitchWebsocketCondition)
-        assert result.broadcasterUserId is None
-        assert result.broadcasterUserLogin is None
-        assert result.broadcasterUserName is None
-        assert result.clientId is None
-        assert result.fromBroadcasterUserId is None
-        assert result.fromBroadcasterUserLogin is None
-        assert result.fromBroadcasterUserName is None
-        assert result.moderatorUserId is None
-        assert result.moderatorUserLogin is None
-        assert result.moderatorUserName is None
-        assert result.rewardId is None
-        assert result.toBroadcasterUserId is None
-        assert result.toBroadcasterUserLogin is None
-        assert result.toBroadcasterUserName is None
-        assert result.userId is None
-        assert result.userLogin is None
-        assert result.userName is None
-
-        broadcasterUserId: str | None = None
-
-        with pytest.raises(Exception):
-            broadcasterUserId = result.requireBroadcasterUserId()
-
-        assert broadcasterUserId is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketCondition_withNone(self):
-        result = await self.websocketJsonMapper.parseWebsocketCondition(None)
         assert result is None
 
     @pytest.mark.asyncio

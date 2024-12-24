@@ -207,9 +207,10 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = 'https://api.twitch.tv/helix/eventsub/subscriptions',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
+                    'Client-Id': twitchClientId,
+                    'Content-Type': 'application/json'
                 },
-                json = eventSubRequest.toJson()
+                json = await self.__twitchJsonMapper.serializeEventSubRequest(eventSubRequest)
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=})): {e}', e, traceback.format_exc())
@@ -254,7 +255,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketConnectionStatus instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketConnectionStatus instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        condition = await self.__twitchWebsocketJsonMapper.parseWebsocketCondition(dataJson.get('condition'))
+        condition = await self.__twitchJsonMapper.parseCondition(dataJson.get('condition'))
         if condition is None:
             self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketCondition instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketCondition instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
@@ -891,7 +892,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/moderation/moderators?broadcaster_id={broadcasterId}&user_id={moderatorId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId,
+                    'Client-Id': twitchClientId
                 }
             )
         except GenericNetworkException as e:

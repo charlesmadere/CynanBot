@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-from typing import Any
 
 from .websocket.twitchWebsocketCondition import TwitchWebsocketCondition
 from .websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
-from ...misc import utils as utils
 
 
 # This class intends to directly correspond to Twitch's "Create EventSub Subscription" API:
@@ -14,39 +12,3 @@ class TwitchEventSubRequest:
     condition: TwitchWebsocketCondition
     subscriptionType: TwitchWebsocketSubscriptionType
     transport: TwitchWebsocketTransport
-
-    def toJson(self) -> dict[str, Any]:
-        dictionary: dict[str, Any] = {
-            'transport': {
-                'method': self.transport.method.toStr(),
-                'session_id': self.transport.requireSessionId()
-            },
-            'type': self.subscriptionType.toStr(),
-            'version': self.subscriptionType.getVersion()
-        }
-
-        condition: dict[str, Any] = dict()
-        dictionary['condition'] = condition
-
-        if utils.isValidStr(self.condition.broadcasterUserId):
-            condition['broadcaster_user_id'] = self.condition.requireBroadcasterUserId()
-
-        if utils.isValidStr(self.condition.clientId):
-            condition['client_id'] = self.condition.requireClientId()
-
-        if utils.isValidStr(self.condition.fromBroadcasterUserId):
-            condition['from_broadcaster_user_id'] = self.condition.requireFromBroadcasterUserId()
-
-        if utils.isValidStr(self.condition.moderatorUserId):
-            condition['moderator_user_id'] = self.condition.requireModeratorUserId()
-
-        if utils.isValidStr(self.condition.rewardId):
-            condition['reward_id'] = self.condition.requireRewardId()
-
-        if utils.isValidStr(self.condition.toBroadcasterUserId):
-            condition['to_broadcaster_user_id'] = self.condition.requireToBroadcasterUserId()
-
-        if utils.isValidStr(self.condition.userId):
-            condition['user_id'] = self.condition.requireUserId()
-
-        return dictionary

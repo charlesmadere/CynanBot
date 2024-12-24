@@ -15,6 +15,7 @@ from src.twitch.api.twitchChannelEditorsResponse import TwitchChannelEditorsResp
 from src.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.twitchEmoteType import TwitchEmoteType
+from src.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
@@ -26,6 +27,10 @@ from src.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageReq
 from src.twitch.api.twitchStreamType import TwitchStreamType
 from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.twitchUserType import TwitchUserType
+from src.twitch.api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from src.twitch.api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from src.twitch.api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
+from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
 
 class TestTwitchJsonMapper:
@@ -334,6 +339,40 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseChannelEditorsResponse_withNone(self):
         result = await self.jsonMapper.parseChannelEditorsResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCondition_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseCondition(dict())
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId is None
+        assert result.broadcasterUserLogin is None
+        assert result.broadcasterUserName is None
+        assert result.clientId is None
+        assert result.fromBroadcasterUserId is None
+        assert result.fromBroadcasterUserLogin is None
+        assert result.fromBroadcasterUserName is None
+        assert result.moderatorUserId is None
+        assert result.moderatorUserLogin is None
+        assert result.moderatorUserName is None
+        assert result.rewardId is None
+        assert result.toBroadcasterUserId is None
+        assert result.toBroadcasterUserLogin is None
+        assert result.toBroadcasterUserName is None
+        assert result.userId is None
+        assert result.userLogin is None
+        assert result.userName is None
+
+        broadcasterUserId: str | None = None
+
+        with pytest.raises(Exception):
+            broadcasterUserId = result.requireBroadcasterUserId()
+
+        assert broadcasterUserId is None
+
+    @pytest.mark.asyncio
+    async def test_parseCondition_withNone(self):
+        result = await self.jsonMapper.parseCondition(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -844,6 +883,140 @@ class TestTwitchJsonMapper:
         assert len(data) == 2
         assert data['reason'] == request.reason
         assert data['user_id'] == request.userIdToBan
+
+    @pytest.mark.asyncio
+    async def test_serializeEventSubRequest1(self):
+        condition = TwitchWebsocketCondition(
+            broadcasterUserId = 'abc123'
+        )
+
+        subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+
+        transport = TwitchWebsocketTransport(
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
+            sessionId = 'qwerty'
+        )
+
+        request = TwitchEventSubRequest(
+            condition = condition,
+            subscriptionType = subscriptionType,
+            transport = transport
+        )
+
+        dictionary = await self.jsonMapper.serializeEventSubRequest(request)
+        assert isinstance(dictionary, dict)
+
+        assert 'condition' in dictionary
+        assert 'broadcaster_user_id' in dictionary['condition']
+        assert condition.broadcasterUserId == dictionary['condition']['broadcaster_user_id']
+        assert 'client_id' not in dictionary['condition']
+        assert 'from_broadcaster_user_id' not in dictionary['condition']
+        assert 'moderator_user_id' not in dictionary['condition']
+        assert 'reward_id' not in dictionary['condition']
+        assert 'to_broadcaster_user_id' not in dictionary['condition']
+        assert 'user_id' not in dictionary['condition']
+
+        assert 'transport' in dictionary
+        assert 'method' in dictionary['transport']
+        assert dictionary['transport']['method'] == transport.method.toStr()
+        assert 'session_id' in dictionary['transport']
+        assert dictionary['transport']['session_id'] == transport.sessionId
+
+        assert 'type' in dictionary
+        assert dictionary['type'] == subscriptionType.toStr()
+
+        assert 'version' in dictionary
+        assert dictionary['version'] == subscriptionType.getVersion()
+
+    @pytest.mark.asyncio
+    async def test_serializeEventSubRequest2(self):
+        condition = TwitchWebsocketCondition(
+            broadcasterUserId = 'def987'
+        )
+
+        subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIBE
+
+        transport = TwitchWebsocketTransport(
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
+            sessionId = 'azerty'
+        )
+
+        request = TwitchEventSubRequest(
+            condition = condition,
+            subscriptionType = subscriptionType,
+            transport = transport
+        )
+
+        dictionary = await self.jsonMapper.serializeEventSubRequest(request)
+        assert isinstance(dictionary, dict)
+
+        assert 'condition' in dictionary
+        assert 'broadcaster_user_id' in dictionary['condition']
+        assert condition.broadcasterUserId == dictionary['condition']['broadcaster_user_id']
+        assert 'client_id' not in dictionary['condition']
+        assert 'from_broadcaster_user_id' not in dictionary['condition']
+        assert 'moderator_user_id' not in dictionary['condition']
+        assert 'reward_id' not in dictionary['condition']
+        assert 'to_broadcaster_user_id' not in dictionary['condition']
+        assert 'user_id' not in dictionary['condition']
+
+        assert 'transport' in dictionary
+        assert 'method' in dictionary['transport']
+        assert dictionary['transport']['method'] == transport.method.toStr()
+        assert 'session_id' in dictionary['transport']
+        assert dictionary['transport']['session_id'] == transport.sessionId
+
+        assert 'type' in dictionary
+        assert dictionary['type'] == subscriptionType.toStr()
+
+        assert 'version' in dictionary
+        assert dictionary['version'] == subscriptionType.getVersion()
+
+    @pytest.mark.asyncio
+    async def test_serializeEventSubRequest3(self):
+        condition = TwitchWebsocketCondition(
+            broadcasterUserId = 'foo',
+            moderatorUserId = 'bar'
+        )
+
+        subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIBE
+
+        transport = TwitchWebsocketTransport(
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
+            sessionId = 'azerty'
+        )
+
+        request = TwitchEventSubRequest(
+            condition = condition,
+            subscriptionType = subscriptionType,
+            transport = transport
+        )
+
+        dictionary = await self.jsonMapper.serializeEventSubRequest(request)
+        assert isinstance(dictionary, dict)
+
+        assert 'condition' in dictionary
+        assert 'broadcaster_user_id' in dictionary['condition']
+        assert condition.broadcasterUserId == dictionary['condition']['broadcaster_user_id']
+        assert 'client_id' not in dictionary['condition']
+        assert 'from_broadcaster_user_id' not in dictionary['condition']
+        assert 'moderator_user_id' in dictionary['condition']
+        assert condition.moderatorUserId == dictionary['condition']['moderator_user_id']
+        assert 'reward_id' not in dictionary['condition']
+        assert 'to_broadcaster_user_id' not in dictionary['condition']
+        assert 'user_id' not in dictionary['condition']
+
+        assert 'transport' in dictionary
+        assert 'method' in dictionary['transport']
+        assert dictionary['transport']['method'] == transport.method.toStr()
+        assert 'session_id' in dictionary['transport']
+        assert dictionary['transport']['session_id'] == transport.sessionId
+
+        assert 'type' in dictionary
+        assert dictionary['type'] == subscriptionType.toStr()
+
+        assert 'version' in dictionary
+        assert dictionary['version'] == subscriptionType.getVersion()
 
     @pytest.mark.asyncio
     async def test_serializeSendChatMessageRequest(self):
