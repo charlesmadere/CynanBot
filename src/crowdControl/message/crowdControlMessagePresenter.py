@@ -20,6 +20,4 @@ class CrowdControlMessagePresenter(CrowdControlMessagePresenterInterface):
             return None
 
         gottemEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
-        gigaShuffleSize = message.requireStartOfGigaShuffleSize()
-
-        return f'{gottemEmote} just started a {gigaShuffleSize} GIGA SHUFFLE {gottemEmote}'
+        return f'{gottemEmote} just started a {message.startOfGigaShuffleSizeStr} GIGA SHUFFLE {gottemEmote}'

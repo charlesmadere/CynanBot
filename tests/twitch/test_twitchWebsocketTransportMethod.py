@@ -3,6 +3,10 @@ from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsoc
 
 class TestTwitchWebsocketTransportMethod:
 
+    def test_toStr_withConduit(self):
+        string = TwitchWebsocketTransportMethod.CONDUIT.toStr()
+        assert string == 'conduit'
+
     def test_toStr_withWebhook(self):
         string = TwitchWebsocketTransportMethod.WEBHOOK.toStr()
         assert string == 'webhook'

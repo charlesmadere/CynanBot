@@ -67,8 +67,8 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
 
         if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('TwitchEmotesHelper', f'No Twitch access token is available to use for fetching viable subscription emotes ({twitchHandle=}) ({twitchId=}) ({twitchAccessToken=})')
-            emptySet = frozenset()
+            self.__timber.log('TwitchEmotesHelper', f'No Twitch access token is available to use for fetching viable subscription emotes ({twitchChannelId=}) ({twitchHandle=}) ({twitchId=}) ({twitchAccessToken=})')
+            emptySet: frozenset[str] = frozenset()
             self.__cache[twitchChannelId] = emptySet
             return emptySet
 
@@ -87,14 +87,14 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
                 twitchAccessToken = twitchAccessToken
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
-            self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({emotesResponse=}) ({userSubscription=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchChannelId=}) ({twitchHandle=}) ({twitchId=}) ({twitchAccessToken=}) ({emotesResponse=}) ({userSubscription=}): {e}', e, traceback.format_exc())
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(
             emotesResponse = emotesResponse,
             userSubscription = userSubscription
         )
 
-        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({viableEmoteNames=}) ({twitchAccessToken=}) ({twitchChannelId=}) ({twitchId=}) ({userSubscription=})')
+        self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({twitchChannelId=}) ({twitchHandle=}) ({twitchId=}) ({twitchAccessToken=}) ({emotesResponse=}) ({userSubscription=}) ({viableEmoteNames=})')
         self.__cache[twitchChannelId] = viableEmoteNames
         return viableEmoteNames
 

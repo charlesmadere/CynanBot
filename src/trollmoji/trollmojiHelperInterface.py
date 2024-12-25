@@ -26,6 +26,10 @@ class TrollmojiHelperInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getHypeEmoteOrBackup(self) -> str:
+        pass
+
+    @abstractmethod
     async def getShrugEmote(self) -> str | None:
         pass
 
@@ -34,5 +38,13 @@ class TrollmojiHelperInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getThumbsDownEmoteOrBackup(self) -> str:
+        pass
+
+    @abstractmethod
     async def getThumbsUpEmote(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getThumbsUpEmoteOrBackup(self) -> str:
         pass

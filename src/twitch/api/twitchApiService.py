@@ -265,7 +265,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        transport = await self.__twitchWebsocketJsonMapper.requireWebsocketTransport(transportJson)
+        transport = await self.__twitchJsonMapper.requireTransport(transportJson)
 
         return TwitchEventSubResponse(
             cost = cost,

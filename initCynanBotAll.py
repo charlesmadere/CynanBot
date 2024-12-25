@@ -2062,8 +2062,8 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
     beanStatsRepository = beanStatsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
+    trollmojiHelper = trollmojiHelper,
     twitchEmotesHelper = twitchEmotesHelper,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchUtils = twitchUtils
 )
 

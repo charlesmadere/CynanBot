@@ -54,12 +54,12 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         if not utils.isValidStr(emoteText):
             return None
 
-        isAvailable = self.__isAvailableCache.get(emoteText, None)
+        isAvailable = self.__isAvailableCache.get(emoteText, False)
         cachedTime = self.__timeCache.get(emoteText, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if cachedTime is not None and cachedTime >= now:
-            if isAvailable is True:
+            if isAvailable:
                 return emoteText
             else:
                 return None
@@ -109,7 +109,15 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             twitchEmoteChannelId = hypeEmote.twitchChannelId
         )
 
-    async def getShrugEmote(self):
+    async def getHypeEmoteOrBackup(self) -> str:
+        hypeEmote = await self.getHypeEmote()
+
+        if utils.isValidStr(hypeEmote):
+            return hypeEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getHypeEmoteBackup()
+
+    async def getShrugEmote(self) -> str | None:
         shrugEmote = await self.__trollmojiSettingsRepository.getShrugEmote()
 
         if shrugEmote is None:
@@ -120,7 +128,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             twitchEmoteChannelId = shrugEmote.twitchChannelId
         )
 
-    async def getThumbsDownEmote(self):
+    async def getThumbsDownEmote(self) -> str | None:
         thumbsDownEmote = await self.__trollmojiSettingsRepository.getThumbsDownEmote()
 
         if thumbsDownEmote is None:
@@ -131,7 +139,15 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             twitchEmoteChannelId = thumbsDownEmote.twitchChannelId
         )
 
-    async def getThumbsUpEmote(self):
+    async def getThumbsDownEmoteOrBackup(self) -> str:
+        thumbsDownEmote = await self.getThumbsDownEmote()
+
+        if utils.isValidStr(thumbsDownEmote):
+            return thumbsDownEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getThumbsDownEmoteBackup()
+
+    async def getThumbsUpEmote(self) -> str | None:
         thumbsUpEmote = await self.__trollmojiSettingsRepository.getThumbsUpEmote()
 
         if thumbsUpEmote is None:
@@ -141,3 +157,11 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             emoteText = thumbsUpEmote.emoteText,
             twitchEmoteChannelId = thumbsUpEmote.twitchChannelId
         )
+
+    async def getThumbsUpEmoteOrBackup(self) -> str:
+        thumbsUpEmote = await self.getThumbsUpEmote()
+
+        if utils.isValidStr(thumbsUpEmote):
+            return thumbsUpEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getThumbsUpEmoteBackup()

@@ -36,7 +36,9 @@ from .twitchUserSubscription import TwitchUserSubscription
 from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
 from .websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from .websocket.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
+from .websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -565,9 +567,33 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
             case _: return None
 
+    async def parseNoticeType(
+        self,
+        noticeType: str | Any | None
+    ) -> TwitchWebsocketNoticeType | None:
+        if not utils.isValidStr(noticeType):
+            return None
+
+        noticeType = noticeType.lower()
+
+        match noticeType:
+            case 'announcement': return TwitchWebsocketNoticeType.ANNOUNCEMENT
+            case 'bits_badge_tier': return TwitchWebsocketNoticeType.BITS_BADGE_TIER
+            case 'charity_donation': return TwitchWebsocketNoticeType.CHARITY_DONATION
+            case 'community_sub_gift': return TwitchWebsocketNoticeType.COMMUNITY_SUB_GIFT
+            case 'gift_paid_upgrade':  return TwitchWebsocketNoticeType.GIFT_PAID_UPGRADE
+            case 'pay_it_forward': return TwitchWebsocketNoticeType.PAY_IT_FORWARD
+            case 'prime_paid_upgrade': return TwitchWebsocketNoticeType.PRIME_PAID_UPGRADE
+            case 'raid': return TwitchWebsocketNoticeType.RAID
+            case 'resub': return TwitchWebsocketNoticeType.RE_SUB
+            case 'sub': return TwitchWebsocketNoticeType.SUB
+            case 'sub_gift': return TwitchWebsocketNoticeType.SUB_GIFT
+            case 'unraid': return TwitchWebsocketNoticeType.UN_RAID
+            case _: return None
+
     async def parseOutcomeColor(
         self,
-        outcomeColor: str | None
+        outcomeColor: str | Any | None
     ) -> TwitchOutcomeColor | None:
         if not utils.isValidStr(outcomeColor):
             return None
@@ -763,6 +789,59 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             refreshToken = refreshToken
         )
 
+    async def parseTransport(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketTransport | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        connectedAt: datetime | None = None
+        if 'connected_at' in jsonResponse and utils.isValidStr(jsonResponse.get('connected_at')):
+            connectedAt = utils.getDateTimeFromDict(jsonResponse, 'connected_at')
+
+        disconnectedAt: datetime | None = None
+        if 'disconnected_at' in jsonResponse and utils.isValidStr(jsonResponse.get('disconnected_at')):
+            disconnectedAt = utils.getDateTimeFromDict(jsonResponse, 'disconnected_at')
+
+        conduitId: str | None = None
+        if 'conduit_id' in jsonResponse and utils.isValidStr(jsonResponse.get('conduit_id')):
+            conduitId = utils.getStrFromDict(jsonResponse, 'conduit_id')
+
+        secret: str | None = None
+        if 'secret' in jsonResponse and utils.isValidStr(jsonResponse.get('secret')):
+            secret = utils.getStrFromDict(jsonResponse, 'secret')
+
+        sessionId: str | None = None
+        if 'session_id' in jsonResponse and utils.isValidBool(jsonResponse.get('session_id')):
+            sessionId = utils.getStrFromDict(jsonResponse, 'session_id')
+
+        method = await self.requireTransportMethod(utils.getStrFromDict(jsonResponse, 'method'))
+
+        return TwitchWebsocketTransport(
+            connectedAt = connectedAt,
+            disconnectedAt = disconnectedAt,
+            conduitId = conduitId,
+            secret = secret,
+            sessionId = sessionId,
+            method = method
+        )
+
+    async def parseTransportMethod(
+        self,
+        transportMethod: str | Any | None
+    ) -> TwitchWebsocketTransportMethod | None:
+        if not utils.isValidStr(transportMethod):
+            return None
+
+        transportMethod = transportMethod.lower()
+
+        match transportMethod:
+            case 'conduit': return TwitchWebsocketTransportMethod.CONDUIT
+            case 'webhook': return TwitchWebsocketTransportMethod.WEBHOOK
+            case 'websocket': return TwitchWebsocketTransportMethod.WEBSOCKET
+            case _: return None
+
     async def parseUserSubscription(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -859,9 +938,20 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId
         )
 
+    async def requireNoticeType(
+        self,
+        noticeType: str | Any | None
+    ) -> TwitchWebsocketNoticeType:
+        result = await self.parseNoticeType(noticeType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{noticeType}\" into TwitchWebsocketNoticeType value!')
+
+        return result
+
     async def requireOutcomeColor(
         self,
-        outcomeColor: str | None
+        outcomeColor: str | Any | None
     ) -> TwitchOutcomeColor:
         result = await self.parseOutcomeColor(outcomeColor)
 
@@ -878,6 +968,28 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{subscriberTier}\" into TwitchSubscriberTier value!')
+
+        return result
+
+    async def requireTransport(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketTransport:
+        result = await self.parseTransport(jsonResponse)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{jsonResponse}\" into TwitchWebsocketTransport value!')
+
+        return result
+
+    async def requireTransportMethod(
+        self,
+        transportMethod: str | Any | None
+    ) -> TwitchWebsocketTransportMethod:
+        result = await self.parseTransportMethod(transportMethod)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{transportMethod}\" into TwitchWebsocketTransportMethod value!')
 
         return result
 

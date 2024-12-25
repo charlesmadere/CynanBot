@@ -7,7 +7,6 @@ from src.timber.timberStub import TimberStub
 from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
-from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 
@@ -27,36 +26,6 @@ class TestTwitchWebsocketJsonMapper:
         timber = timber,
         twitchJsonMapper = jsonMapper
     )
-
-    @pytest.mark.asyncio
-    async def test_parseTransportMethod_withEmptyString(self):
-        result = await self.websocketJsonMapper.parseTransportMethod('')
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseTransportMethod_withNone(self):
-        result = await self.websocketJsonMapper.parseTransportMethod(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseTransportMethod_withConduit(self):
-        result = await self.websocketJsonMapper.parseTransportMethod('conduit')
-        assert result is TwitchWebsocketTransportMethod.CONDUIT
-
-    @pytest.mark.asyncio
-    async def test_parseTransportMethod_withWebhook(self):
-        result = await self.websocketJsonMapper.parseTransportMethod('webhook')
-        assert result is TwitchWebsocketTransportMethod.WEBHOOK
-
-    @pytest.mark.asyncio
-    async def test_parseTransportMethod_withWebsocket(self):
-        result = await self.websocketJsonMapper.parseTransportMethod('websocket')
-        assert result is TwitchWebsocketTransportMethod.WEBSOCKET
-
-    @pytest.mark.asyncio
-    async def test_parseTransportMethod_withWhitespaceString(self):
-        result = await self.websocketJsonMapper.parseTransportMethod(' ')
-        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketChannelPointsVoting_withEmptyDictionary(self):
@@ -166,48 +135,6 @@ class TestTwitchWebsocketJsonMapper:
     @pytest.mark.asyncio
     async def test_parseWebsocketSubscription_withNone(self):
         result = await self.websocketJsonMapper.parseWebsocketSubscription(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withEmptyString(self):
-        result: TwitchWebsocketTransportMethod | None = None
-
-        with pytest.raises(Exception):
-            result = await self.websocketJsonMapper.requireTransportMethod('')
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withNone(self):
-        result: TwitchWebsocketTransportMethod | None = None
-
-        with pytest.raises(Exception):
-            result = await self.websocketJsonMapper.requireTransportMethod(None)
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withConduit(self):
-        result = await self.websocketJsonMapper.requireTransportMethod('conduit')
-        assert result is TwitchWebsocketTransportMethod.CONDUIT
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withWebhook(self):
-        result = await self.websocketJsonMapper.requireTransportMethod('webhook')
-        assert result is TwitchWebsocketTransportMethod.WEBHOOK
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withWebsocket(self):
-        result = await self.websocketJsonMapper.requireTransportMethod('websocket')
-        assert result is TwitchWebsocketTransportMethod.WEBSOCKET
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withWhitespaceString(self):
-        result: TwitchWebsocketTransportMethod | None = None
-
-        with pytest.raises(Exception):
-            result = await self.websocketJsonMapper.requireTransportMethod(' ')
-
         assert result is None
 
     @pytest.mark.asyncio

@@ -7,12 +7,12 @@ from ....misc import utils as utils
 
 @dataclass(frozen = True)
 class TwitchWebsocketTransport:
-    connectedAt: datetime | None = None
-    disconnectedAt: datetime | None = None
-    conduitId: str | None = None
-    secret: str | None = None
-    sessionId: str | None = None
-    method: TwitchWebsocketTransportMethod = TwitchWebsocketTransportMethod.WEBSOCKET
+    connectedAt: datetime | None
+    disconnectedAt: datetime | None
+    conduitId: str | None
+    secret: str | None
+    sessionId: str | None
+    method: TwitchWebsocketTransportMethod
 
     def requireSessionId(self) -> str:
         if not utils.isValidStr(self.sessionId):

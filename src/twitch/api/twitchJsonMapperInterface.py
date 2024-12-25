@@ -31,7 +31,9 @@ from .twitchUserSubscription import TwitchUserSubscription
 from .twitchUserType import TwitchUserType
 from .twitchValidationResponse import TwitchValidationResponse
 from .websocket.twitchWebsocketCondition import TwitchWebsocketCondition
+from .websocket.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from .websocket.twitchWebsocketTransport import TwitchWebsocketTransport
+from .websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
 
 class TwitchJsonMapperInterface(ABC):
@@ -128,9 +130,16 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseNoticeType(
+        self,
+        noticeType: str | Any | None
+    ) -> TwitchWebsocketNoticeType | None:
+        pass
+
+    @abstractmethod
     async def parseOutcomeColor(
         self,
-        outcomeColor: str | None
+        outcomeColor: str | Any | None
     ) -> TwitchOutcomeColor | None:
         pass
 
@@ -205,6 +214,20 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseTransport(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketTransport | None:
+        pass
+
+    @abstractmethod
+    async def parseTransportMethod(
+        self,
+        transportMethod: str | Any | None
+    ) -> TwitchWebsocketTransportMethod | None:
+        pass
+
+    @abstractmethod
     async def parseUserSubscription(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -226,9 +249,16 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireNoticeType(
+        self,
+        noticeType: str | Any | None
+    ) -> TwitchWebsocketNoticeType:
+        pass
+
+    @abstractmethod
     async def requireOutcomeColor(
         self,
-        outcomeColor: str | None
+        outcomeColor: str | Any | None
     ) -> TwitchOutcomeColor:
         pass
 
@@ -237,6 +267,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         subscriberTier: str | None
     ) -> TwitchSubscriberTier:
+        pass
+
+    @abstractmethod
+    async def requireTransport(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketTransport:
+        pass
+
+    @abstractmethod
+    async def requireTransportMethod(
+        self,
+        transportMethod: str | Any | None
+    ) -> TwitchWebsocketTransportMethod:
         pass
 
     @abstractmethod

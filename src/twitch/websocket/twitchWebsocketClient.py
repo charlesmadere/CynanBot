@@ -143,6 +143,10 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             return
 
         transport = TwitchWebsocketTransport(
+            connectedAt = None,
+            disconnectedAt = None,
+            conduitId = None,
+            secret = None,
             sessionId = twitchSessionId,
             method = TwitchWebsocketTransportMethod.WEBSOCKET
         )

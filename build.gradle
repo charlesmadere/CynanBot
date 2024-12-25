@@ -22,7 +22,7 @@ python {
     pip 'attrs:24.3.0'
     pip 'certifi:2024.12.14'
     pip 'cffi:1.17.1'
-    pip 'charset-normalizer:3.4.0'
+    pip 'charset-normalizer:3.4.1'
     pip 'cryptography:43.0.3'
     pip 'docopt:0.6.2'
     pip 'emoji:2.14.0'

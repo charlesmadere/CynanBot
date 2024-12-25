@@ -132,10 +132,12 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
-        if user.isSubGiftThankingEnabled and subGift is not None:
+        if user.isSubGiftThankingEnabled:
             await self.__processCynanBotAsGiftRecipient(
                 broadcasterUserId = broadcasterUserId,
+                eventUserId = eventUserId,
                 subGift = subGift,
+                subscriptionType = subscriptionType,
                 user = user
             )
 
@@ -156,7 +158,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 message = message,
                 userId = eventUserId,
                 userInput = eventUserInput,
-                userLogin = eventUserLogin,
                 userName = eventUserName,
                 communitySubGift = communitySubGift,
                 resub = resub,
@@ -169,7 +170,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     async def __processCynanBotAsGiftRecipient(
         self,
         broadcasterUserId: str,
-        subGift: TwitchSubGift,
+        eventUserId: str,
+        subGift: TwitchSubGift | None,
+        subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
         if not user.isSubGiftThankingEnabled:
@@ -179,29 +182,33 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if twitchChannelProvider is None:
             return
 
+        recipientUserId: str
+
+        if subGift is None:
+            recipientUserId = eventUserId
+        else:
+            recipientUserId = subGift.recipientUserId
+
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
 
-        if not utils.isValidStr(twitchId) or twitchId != subGift.recipientUserId:
+        if not utils.isValidStr(twitchId) or twitchId != recipientUserId:
             return
 
-        allViableEmotes: set[str] = { 'KomodoHype' }
+        viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
+            twitchChannelId = broadcasterUserId
+        )
 
-        try:
-            channelSpecificViableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-                twitchChannelId = broadcasterUserId
-            )
-            allViableEmotes.update(channelSpecificViableEmotes)
-        except GenericNetworkException as e:
-            self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch viable Twitch emote names ({broadcasterUserId=}) ({subGift=}) ({user=}): {e}', e, traceback.format_exc())
+        allViableEmotes: set[str] = { 'KomodoHype' }
+        allViableEmotes.update(viableEmoteNames)
 
         viableEmotesList: list[str] = list(allViableEmotes)
         emoji1 = random.choice(viableEmotesList)
         emoji2 = random.choice(viableEmotesList)
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub @{subGift.recipientUserLogin} {emoji2}')
-        self.__timber.log('TwitchSubscriptionHandler', f'Thanked {subGift.recipientUserId}:{subGift.recipientUserLogin} in {user.handle} for a gifted sub!')
+        await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub!!! {emoji2}')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received and thanked in {user.handle} for a gifted sub! ({broadcasterUserId=}) ({eventUserId=}) ({subGift=}) ({subscriptionType=}) ({user=})')
 
     async def __processSuperTriviaEvent(
         self,
@@ -255,7 +262,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         message: str | None,
         userId: str | None,
         userInput: str | None,
-        userLogin: str | None,
         userName: str | None,
         communitySubGift: TwitchCommunitySubGift | None,
         resub: TwitchResub | None,

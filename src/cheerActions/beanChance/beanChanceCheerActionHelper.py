@@ -10,10 +10,10 @@ from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...timber.timberInterface import TimberInterface
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchMessageable import TwitchMessageable
 from ...twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
-from ...twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userInterface import UserInterface
 
@@ -25,8 +25,8 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         beanStatsRepository: BeanStatsRepositoryInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(beanStatsRepository, BeanStatsRepositoryInterface):
@@ -35,18 +35,18 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
-        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
-            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__beanStatsRepository: BeanStatsRepositoryInterface = beanStatsRepository
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__timber: TimberInterface = timber
+        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
-        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -56,36 +56,6 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             raise TypeError(f'beanStats argument is malformed: \"{beanStats}\"')
 
         return f'(bean stats: {beanStats.successfulBeansStr}W - {beanStats.failedBeanAttemptsStr}L)'
-
-    async def __getHypeEmote(self) -> str:
-        charlesUserId = await self.__twitchFriendsUserIdRepository.getCharlesUserId()
-
-        if not utils.isValidStr(charlesUserId):
-            return '🎉'
-
-        viableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-            twitchChannelId = charlesUserId
-        )
-
-        if 'samusHype' in viableEmotes:
-            return 'samusHype'
-        else:
-            return '🎉'
-
-    async def __getSadEmote(self) -> str:
-        charlesUserId = await self.__twitchFriendsUserIdRepository.getCharlesUserId()
-
-        if not utils.isValidStr(charlesUserId):
-            return utils.getRandomSadEmoji()
-
-        viableEmotes = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-            twitchChannelId = charlesUserId
-        )
-
-        if 'samusBad' in viableEmotes:
-            return 'samusBad'
-        else:
-            return utils.getRandomSadEmoji()
 
     async def handleBeanChanceCheerAction(
         self,
@@ -146,7 +116,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         )
 
         beanStatsMessage = await self.__beanStatsToString(newBeanStats)
-        emote = await self.__getSadEmote()
+        emote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup()
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -175,7 +145,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         )
 
         beanStatsMessage = await self.__beanStatsToString(newBeanStats)
-        emote = await self.__getHypeEmote()
+        emote = await self.__trollmojiHelper.getHypeEmoteOrBackup()
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
