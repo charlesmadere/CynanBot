@@ -1,13 +1,13 @@
 from typing import Any
 
-from .cutenessRecurringAction import CutenessRecurringAction
-from .recurringAction import RecurringAction
-from .recurringActionType import RecurringActionType
-from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
+from .actions.cutenessRecurringAction import CutenessRecurringAction
+from .actions.recurringAction import RecurringAction
+from .actions.recurringActionType import RecurringActionType
+from .actions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from .actions.weatherRecurringAction import WeatherRecurringAction
+from .actions.wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
+from .jsonParser.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
-from .superTriviaRecurringAction import SuperTriviaRecurringAction
-from .weatherRecurringAction import WeatherRecurringAction
-from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection

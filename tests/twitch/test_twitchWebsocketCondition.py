@@ -1,6 +1,6 @@
 import pytest
 
-from src.twitch.api.websocket.twitchWebsocketCondition import \
+from src.twitch.api.models.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 
 

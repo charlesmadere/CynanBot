@@ -1,4 +1,4 @@
-from src.twitch.api.websocket.twitchWebsocketConnectionStatus import \
+from src.twitch.api.models.twitchWebsocketConnectionStatus import \
     TwitchWebsocketConnectionStatus
 
 

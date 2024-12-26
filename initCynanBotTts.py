@@ -311,10 +311,10 @@ from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
@@ -1595,6 +1595,7 @@ twitchFollowHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
 twitchPollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    twitchApiService = twitchApiService,
     twitchUtils = twitchUtils
 )
 

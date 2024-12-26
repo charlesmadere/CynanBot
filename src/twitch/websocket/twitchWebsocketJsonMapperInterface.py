@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..api.twitchCommunitySubGift import TwitchCommunitySubGift
-from ..api.twitchOutcome import TwitchOutcome
-from ..api.twitchOutcomePredictor import TwitchOutcomePredictor
-from ..api.twitchPollChoice import TwitchPollChoice
-from ..api.twitchResub import TwitchResub
-from ..api.twitchReward import TwitchReward
-from ..api.twitchSubGift import TwitchSubGift
-from ..api.websocket.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from ..api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
-from ..api.websocket.twitchWebsocketSession import TwitchWebsocketSession
-from ..api.websocket.twitchWebsocketSubscription import TwitchWebsocketSubscription
+from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
+from ..api.models.twitchOutcome import TwitchOutcome
+from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
+from ..api.models.twitchPollChoice import TwitchPollChoice
+from ..api.models.twitchResub import TwitchResub
+from ..api.models.twitchReward import TwitchReward
+from ..api.models.twitchSubGift import TwitchSubGift
+from ..api.models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
+from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
+from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
+from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
 
 
 class TwitchWebsocketJsonMapperInterface(ABC):

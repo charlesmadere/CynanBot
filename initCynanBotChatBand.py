@@ -120,10 +120,10 @@ from src.tts.ttsJsonMapper import TtsJsonMapper
 from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration

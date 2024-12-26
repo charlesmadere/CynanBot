@@ -4,9 +4,9 @@ from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsReposit
 from .twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutResult import TwitchTimeoutResult
+from ..api.models.twitchBanRequest import TwitchBanRequest
+from ..api.models.twitchModUser import TwitchModUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchBanRequest import TwitchBanRequest
-from ..api.twitchModUser import TwitchModUser
 from ..twitchConstantsInterface import TwitchConstantsInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils

@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from .cutenessRecurringAction import CutenessRecurringAction
-from .recurringAction import RecurringAction
-from .superTriviaRecurringAction import SuperTriviaRecurringAction
-from .weatherRecurringAction import WeatherRecurringAction
-from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
+from .actions.cutenessRecurringAction import CutenessRecurringAction
+from .actions.recurringAction import RecurringAction
+from .actions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from .actions.weatherRecurringAction import WeatherRecurringAction
+from .actions.wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 
 
 class RecurringActionsRepositoryInterface(ABC):

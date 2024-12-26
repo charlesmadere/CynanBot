@@ -164,7 +164,9 @@ class UsersRepository(UsersRepositoryInterface):
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
         isNotifyOfPollResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollResultsEnabled', True)
+        isNotifyOfPollStartEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollStartEnabled', True)
         isNotifyOfPredictionResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPredictionResultsEnabled', True)
+        isNotifyOfPredictionStartEnabled = utils.getBoolFromDict(userJson, 'notifyOfPredictionStartEnabled', True)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
@@ -366,7 +368,9 @@ class UsersRepository(UsersRepositoryInterface):
             isJishoEnabled = isJishoEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
             isNotifyOfPollResultsEnabled = isNotifyOfPollResultsEnabled,
+            isNotifyOfPollStartEnabled = isNotifyOfPollStartEnabled,
             isNotifyOfPredictionResultsEnabled = isNotifyOfPredictionResultsEnabled,
+            isNotifyOfPredictionStartEnabled = isNotifyOfPredictionStartEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,

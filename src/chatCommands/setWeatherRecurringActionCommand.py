@@ -1,12 +1,12 @@
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..recurringActions.recurringActionType import RecurringActionType
+from ..recurringActions.actions.recurringActionType import RecurringActionType
 from ..recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
 from ..recurringActions.recurringActionsWizardInterface import \
     RecurringActionsWizardInterface
-from ..recurringActions.wizards.weatherStep import WeatherStep
-from ..recurringActions.wizards.weatherWizard import WeatherWizard
+from ..recurringActions.wizards.weather.weatherStep import WeatherStep
+from ..recurringActions.wizards.weather.weatherWizard import WeatherWizard
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

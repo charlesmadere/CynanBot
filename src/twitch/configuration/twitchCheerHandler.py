@@ -2,7 +2,7 @@ import math
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchCheerHandler import AbsTwitchCheerHandler
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert

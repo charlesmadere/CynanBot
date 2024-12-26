@@ -3,9 +3,9 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Any
 
+from .api.models.twitchTokensDetails import TwitchTokensDetails
+from .api.models.twitchValidationResponse import TwitchValidationResponse
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .api.twitchTokensDetails import TwitchTokensDetails
-from .api.twitchValidationResponse import TwitchValidationResponse
 from .exceptions import (TwitchAccessTokenMissingException,
                          TwitchPasswordChangedException,
                          TwitchStatusCodeException)

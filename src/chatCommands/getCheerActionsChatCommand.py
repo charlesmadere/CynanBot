@@ -63,10 +63,10 @@ class GetCheerActionsChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-            for index, action in enumerate(actions):
+            for action in actions:
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
-                    message = f'Action #{(index + 1)} — {action.printOut()}',
+                    message = f'Action {action.bits} — {action.printOut()}',
                     replyMessageId = await ctx.getMessageId()
                 )
 

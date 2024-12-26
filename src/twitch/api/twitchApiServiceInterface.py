@@ -1,22 +1,23 @@
 from abc import ABC, abstractmethod
 
-from .twitchBanRequest import TwitchBanRequest
-from .twitchBanResponse import TwitchBanResponse
-from .twitchBannedUserResponse import TwitchBannedUserResponse
-from .twitchChannelEditorsResponse import TwitchChannelEditorsResponse
-from .twitchEmotesResponse import TwitchEmotesResponse
-from .twitchEventSubRequest import TwitchEventSubRequest
-from .twitchEventSubResponse import TwitchEventSubResponse
-from .twitchFollower import TwitchFollower
-from .twitchLiveUserDetails import TwitchLiveUserDetails
-from .twitchModUser import TwitchModUser
-from .twitchSendChatMessageRequest import TwitchSendChatMessageRequest
-from .twitchSendChatMessageResponse import TwitchSendChatMessageResponse
-from .twitchTokensDetails import TwitchTokensDetails
-from .twitchUnbanRequest import TwitchUnbanRequest
-from .twitchUserDetails import TwitchUserDetails
-from .twitchUserSubscription import TwitchUserSubscription
-from .twitchValidationResponse import TwitchValidationResponse
+from .models.twitchBanRequest import TwitchBanRequest
+from .models.twitchBanResponse import TwitchBanResponse
+from .models.twitchBannedUserResponse import TwitchBannedUserResponse
+from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from .models.twitchEmotesResponse import TwitchEmotesResponse
+from .models.twitchEventSubRequest import TwitchEventSubRequest
+from .models.twitchEventSubResponse import TwitchEventSubResponse
+from .models.twitchFollower import TwitchFollower
+from .models.twitchLiveUserDetails import TwitchLiveUserDetails
+from .models.twitchModUser import TwitchModUser
+from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
+from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from .models.twitchTokensDetails import TwitchTokensDetails
+from .models.twitchUnbanRequest import TwitchUnbanRequest
+from .models.twitchUserDetails import TwitchUserDetails
+from .models.twitchUserSubscription import TwitchUserSubscription
+from .models.twitchValidationResponse import TwitchValidationResponse
 
 
 class TwitchApiServiceInterface(ABC):
@@ -136,6 +137,14 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         moderatorId: str,
         twitchAccessToken: str
+    ) -> bool:
+        pass
+
+    @abstractmethod
+    async def sendChatAnnouncement(
+        self,
+        twitchAccessToken: str,
+        announcementRequest: TwitchSendChatAnnouncementRequest
     ) -> bool:
         pass
 

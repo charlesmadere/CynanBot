@@ -1,6 +1,6 @@
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..recurringActions.recurringAction import RecurringAction
+from ..recurringActions.actions.recurringAction import RecurringAction
 from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -71,7 +71,7 @@ class GetRecurringActionsCommand(AbsChatCommand):
         recurringActionsStrs: list[str] = list()
 
         for recurringAction in recurringActions:
-            recurringActionsStrs.append(recurringAction.actionType.toReadableStr())
+            recurringActionsStrs.append(recurringAction.actionType.humanReadableString)
 
         recurringActionsStr = self.__delimiter.join(recurringActionsStrs)
         return f'ⓘ Your channel\'s recurring action(s): {recurringActionsStr}'

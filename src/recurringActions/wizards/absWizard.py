@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from .absSteps import AbsSteps
-from ..recurringActionType import RecurringActionType
+from ..actions.recurringActionType import RecurringActionType
 from ...misc import utils as utils
 
 

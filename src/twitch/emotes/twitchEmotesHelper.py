@@ -2,11 +2,11 @@ import traceback
 from datetime import timedelta
 
 from .twitchEmotesHelperInterface import TwitchEmotesHelperInterface
+from ..api.models.twitchEmoteType import TwitchEmoteType
+from ..api.models.twitchEmotesResponse import TwitchEmotesResponse
+from ..api.models.twitchThemeMode import TwitchThemeMode
+from ..api.models.twitchUserSubscription import TwitchUserSubscription
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchEmoteType import TwitchEmoteType
-from ..api.twitchEmotesResponse import TwitchEmotesResponse
-from ..api.twitchThemeMode import TwitchThemeMode
-from ..api.twitchUserSubscription import TwitchUserSubscription
 from ..exceptions import TwitchStatusCodeException, TwitchJsonException
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface

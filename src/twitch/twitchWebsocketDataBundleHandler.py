@@ -5,9 +5,9 @@ from .absTwitchPollHandler import AbsTwitchPollHandler
 from .absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .absTwitchRaidHandler import AbsTwitchRaidHandler
 from .absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
-from .api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from .api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from .api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from .api.models.twitchWebsocketEvent import TwitchWebsocketEvent
+from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .websocket.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface

@@ -1,10 +1,10 @@
-from .cutenessRecurringAction import CutenessRecurringAction
-from .recurringAction import RecurringAction
+from .actions.cutenessRecurringAction import CutenessRecurringAction
+from .actions.recurringAction import RecurringAction
+from .actions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from .actions.weatherRecurringAction import WeatherRecurringAction
+from .actions.wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from .recurringActionsHelperInterface import RecurringActionsHelperInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
-from .superTriviaRecurringAction import SuperTriviaRecurringAction
-from .weatherRecurringAction import WeatherRecurringAction
-from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
 from ..timber.timberInterface import TimberInterface
 
 

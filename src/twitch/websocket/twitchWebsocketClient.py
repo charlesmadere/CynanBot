@@ -10,15 +10,15 @@ from typing import Any, Coroutine
 
 import websockets
 
+from ..api.models.twitchEventSubRequest import TwitchEventSubRequest
+from ..api.models.twitchEventSubResponse import TwitchEventSubResponse
+from ..api.models.twitchWebsocketCondition import TwitchWebsocketCondition
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
+from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.models.twitchWebsocketTransport import TwitchWebsocketTransport
+from ..api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchEventSubRequest import TwitchEventSubRequest
-from ..api.twitchEventSubResponse import TwitchEventSubResponse
-from ..api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..api.websocket.twitchWebsocketMessageType import TwitchWebsocketMessageType
-from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from ..api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
-from ..api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..websocket.twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
 from ..websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface

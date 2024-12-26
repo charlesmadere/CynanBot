@@ -4,9 +4,9 @@ import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
+from .api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from .api.models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
-from .api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .configuration.twitchMessageable import TwitchMessageable
 from .outboundMessage import OutboundMessage
 from .twitchHandleProviderInterface import TwitchHandleProviderInterface

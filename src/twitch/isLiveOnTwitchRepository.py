@@ -2,8 +2,8 @@ from datetime import timedelta
 
 from frozendict import frozendict
 
+from .api.models.twitchStreamType import TwitchStreamType
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .api.twitchStreamType import TwitchStreamType
 from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..misc import utils as utils

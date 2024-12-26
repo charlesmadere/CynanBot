@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .recurringEvent import RecurringEvent
+from .events.recurringEvent import RecurringEvent
 
 
 class RecurringActionEventListener(ABC):

@@ -8,8 +8,8 @@ from lru import LRU
 
 from .twitchFollowingStatus import TwitchFollowingStatus
 from .twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from ..api.models.twitchFollower import TwitchFollower
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchFollower import TwitchFollower
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...storage.backingDatabase import BackingDatabase

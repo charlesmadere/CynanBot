@@ -2,10 +2,10 @@ from typing import Any, Collection
 
 from frozenlist import FrozenList
 
-from .api.twitchOutcome import TwitchOutcome
-from .api.twitchOutcomeColor import TwitchOutcomeColor
-from .api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from .api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .api.models.twitchOutcome import TwitchOutcome
+from .api.models.twitchOutcomeColor import TwitchOutcomeColor
+from .api.models.twitchWebsocketEvent import TwitchWebsocketEvent
+from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ..misc import utils as utils
 

@@ -1,6 +1,6 @@
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchRaidHandler import AbsTwitchRaidHandler
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert

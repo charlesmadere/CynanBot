@@ -41,10 +41,10 @@ from src.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface impo
     GlacialTriviaQuestionRepositoryInterface
 from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from src.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.twitchTokensRepository import TwitchTokensRepository

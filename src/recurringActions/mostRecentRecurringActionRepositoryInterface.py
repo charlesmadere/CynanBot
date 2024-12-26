@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
+from .actions.recurringAction import RecurringAction
 from .mostRecentRecurringAction import MostRecentRecurringAction
-from .recurringAction import RecurringAction
 
 
 class MostRecentRecurringActionRepositoryInterface(ABC):

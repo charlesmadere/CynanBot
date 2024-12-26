@@ -2,7 +2,7 @@ from datetime import datetime
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchFollowHandler import AbsTwitchFollowHandler
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface

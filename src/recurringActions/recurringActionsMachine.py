@@ -5,21 +5,21 @@ import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
-from .cutenessRecurringAction import CutenessRecurringAction
-from .cutenessRecurringEvent import CutenessRecurringEvent
+from .actions.cutenessRecurringAction import CutenessRecurringAction
+from .actions.recurringAction import RecurringAction
+from .actions.recurringActionType import RecurringActionType
+from .actions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from .actions.weatherRecurringAction import WeatherRecurringAction
+from .actions.wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
+from .events.cutenessRecurringEvent import CutenessRecurringEvent
+from .events.recurringEvent import RecurringEvent
+from .events.superTriviaRecurringEvent import SuperTriviaRecurringEvent
+from .events.weatherRecurringEvent import WeatherRecurringEvent
+from .events.wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
 from .mostRecentRecurringActionRepositoryInterface import MostRecentRecurringActionRepositoryInterface
-from .recurringAction import RecurringAction
 from .recurringActionEventListener import RecurringActionEventListener
-from .recurringActionType import RecurringActionType
 from .recurringActionsMachineInterface import RecurringActionsMachineInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
-from .recurringEvent import RecurringEvent
-from .superTriviaRecurringAction import SuperTriviaRecurringAction
-from .superTriviaRecurringEvent import SuperTriviaRecurringEvent
-from .weatherRecurringAction import WeatherRecurringAction
-from .weatherRecurringEvent import WeatherRecurringEvent
-from .wordOfTheDayRecurringAction import WordOfTheDayRecurringAction
-from .wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.exceptions import NoSuchLocationException
@@ -198,7 +198,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                     minutesBetweenInt = action.minutesBetween
 
                     if not utils.isValidInt(minutesBetweenInt):
-                        minutesBetweenInt = action.actionType.getDefaultRecurringActionTimingMinutes()
+                        minutesBetweenInt = action.actionType.defaultRecurringActionTimingMinutes
 
                     minutesBetween = timedelta(minutes = minutesBetweenInt)
 

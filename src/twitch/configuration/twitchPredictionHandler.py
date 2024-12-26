@@ -1,11 +1,11 @@
 from frozenlist import FrozenList
 
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
-from ..api.twitchOutcome import TwitchOutcome
-from ..api.twitchPredictionStatus import TwitchPredictionStatus
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..api.websocket.twitchWebsocketEvent import TwitchWebsocketEvent
-from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.models.twitchOutcome import TwitchOutcome
+from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
+from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..configuration.twitchChannelProvider import TwitchChannelProvider
 from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface

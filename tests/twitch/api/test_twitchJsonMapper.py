@@ -7,31 +7,33 @@ from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from src.twitch.api.twitchApiScope import TwitchApiScope
-from src.twitch.api.twitchBanRequest import TwitchBanRequest
-from src.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
-from src.twitch.api.twitchChannelEditor import TwitchChannelEditor
-from src.twitch.api.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
-from src.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
-from src.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
-from src.twitch.api.twitchEmoteType import TwitchEmoteType
-from src.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
-from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
-from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
-from src.twitch.api.twitchPaginationResponse import TwitchPaginationResponse
-from src.twitch.api.twitchPollStatus import TwitchPollStatus
-from src.twitch.api.twitchPredictionStatus import TwitchPredictionStatus
-from src.twitch.api.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
-from src.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
-from src.twitch.api.twitchStreamType import TwitchStreamType
-from src.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
-from src.twitch.api.twitchUserType import TwitchUserType
-from src.twitch.api.websocket.twitchWebsocketCondition import TwitchWebsocketCondition
-from src.twitch.api.websocket.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
-from src.twitch.api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from src.twitch.api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
-from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
+from src.twitch.api.models.twitchApiScope import TwitchApiScope
+from src.twitch.api.models.twitchBanRequest import TwitchBanRequest
+from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
+from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
+from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
+from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
+from src.twitch.api.models.twitchEventSubRequest import TwitchEventSubRequest
+from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
+from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
+from src.twitch.api.models.twitchPollStatus import TwitchPollStatus
+from src.twitch.api.models.twitchPredictionStatus import TwitchPredictionStatus
+from src.twitch.api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
+from src.twitch.api.models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
+from src.twitch.api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from src.twitch.api.models.twitchStreamType import TwitchStreamType
+from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
+from src.twitch.api.models.twitchUserType import TwitchUserType
+from src.twitch.api.models.twitchWebsocketCondition import TwitchWebsocketCondition
+from src.twitch.api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
+from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from src.twitch.api.models.twitchWebsocketTransport import TwitchWebsocketTransport
+from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
 
 class TestTwitchJsonMapper:
@@ -1120,6 +1122,31 @@ class TestTwitchJsonMapper:
         assert data['user_id'] == request.userIdToBan
 
     @pytest.mark.asyncio
+    async def test_serializeChatAnnouncementColor_withBlue(self):
+        result = await self.jsonMapper.serializeChatAnnouncementColor(TwitchChatAnnouncementColor.BLUE)
+        assert result == 'blue'
+
+    @pytest.mark.asyncio
+    async def test_serializeChatAnnouncementColor_withGreen(self):
+        result = await self.jsonMapper.serializeChatAnnouncementColor(TwitchChatAnnouncementColor.GREEN)
+        assert result == 'green'
+
+    @pytest.mark.asyncio
+    async def test_serializeChatAnnouncementColor_withOrange(self):
+        result = await self.jsonMapper.serializeChatAnnouncementColor(TwitchChatAnnouncementColor.ORANGE)
+        assert result == 'orange'
+
+    @pytest.mark.asyncio
+    async def test_serializeChatAnnouncementColor_withPrimary(self):
+        result = await self.jsonMapper.serializeChatAnnouncementColor(TwitchChatAnnouncementColor.PRIMARY)
+        assert result == 'primary'
+
+    @pytest.mark.asyncio
+    async def test_serializeChatAnnouncementColor_withPurple(self):
+        result = await self.jsonMapper.serializeChatAnnouncementColor(TwitchChatAnnouncementColor.PURPLE)
+        assert result == 'purple'
+
+    @pytest.mark.asyncio
     async def test_serializeEventSubRequest1(self):
         condition = TwitchWebsocketCondition(
             broadcasterUserId = 'abc123'
@@ -1264,6 +1291,38 @@ class TestTwitchJsonMapper:
 
         assert 'version' in dictionary
         assert dictionary['version'] == subscriptionType.getVersion()
+
+    @pytest.mark.asyncio
+    async def test_serializeSendChatAnnouncementRequest_withColorPurple(self):
+        request = TwitchSendChatAnnouncementRequest(
+            broadcasterId = 'abc123',
+            message = 'Hello, World!',
+            moderatorId = 'def456',
+            color = TwitchChatAnnouncementColor.PURPLE
+        )
+
+        result = await self.jsonMapper.serializeSendChatAnnouncementRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 2
+
+        assert result['color'] == 'purple'
+        assert result['message'] == request.message
+
+    @pytest.mark.asyncio
+    async def test_serializeSendChatAnnouncementRequest_withoutColor(self):
+        request = TwitchSendChatAnnouncementRequest(
+            broadcasterId = 'abc123',
+            message = 'Hello, World!',
+            moderatorId = 'def456',
+            color = None
+        )
+
+        result = await self.jsonMapper.serializeSendChatAnnouncementRequest(request)
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        assert 'color' not in result
+        assert result['message'] == request.message
 
     @pytest.mark.asyncio
     async def test_serializeSendChatMessageRequest(self):

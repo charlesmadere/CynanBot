@@ -136,13 +136,13 @@ from src.pkmn.pokepediaRepository import PokepediaRepository
 from src.pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from src.puptime.puptimeUserIdProvider import PuptimeUserIdProvider
 from src.puptime.puptimeUserIdProviderInterface import PuptimeUserIdProviderInterface
+from src.recurringActions.jsonParser.recurringActionsJsonParser import RecurringActionsJsonParser
+from src.recurringActions.jsonParser.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from src.recurringActions.mostRecentRecurringActionRepository import MostRecentRecurringActionRepository
 from src.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
 from src.recurringActions.recurringActionsHelper import RecurringActionsHelper
 from src.recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
-from src.recurringActions.recurringActionsJsonParser import RecurringActionsJsonParser
-from src.recurringActions.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from src.recurringActions.recurringActionsMachine import RecurringActionsMachine
 from src.recurringActions.recurringActionsMachineInterface import RecurringActionsMachineInterface
 from src.recurringActions.recurringActionsRepository import RecurringActionsRepository
@@ -332,10 +332,10 @@ from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from src.twitch.api.twitchJsonMapper import TwitchJsonMapper
-from src.twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
@@ -1700,6 +1700,7 @@ twitchFollowHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
 twitchPollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    twitchApiService = twitchApiService,
     twitchUtils = twitchUtils
 )
 

@@ -7,8 +7,8 @@ from ..aniv.anivUserIdProviderInterface import AnivUserIdProviderInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
+from ..twitch.api.models.twitchBanRequest import TwitchBanRequest
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitch.api.twitchBanRequest import TwitchBanRequest
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchTokensRepositoryInterface import \

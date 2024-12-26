@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from .recurringActionType import RecurringActionType
+from .actions.recurringActionType import RecurringActionType
 
 
 @dataclass(frozen = True)

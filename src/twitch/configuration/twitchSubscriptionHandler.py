@@ -1,21 +1,19 @@
 import math
 import random
-import traceback
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
-from ..api.twitchCommunitySubGift import TwitchCommunitySubGift
-from ..api.twitchResub import TwitchResub
-from ..api.twitchSubGift import TwitchSubGift
-from ..api.twitchSubscriberTier import TwitchSubscriberTier
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
+from ..api.models.twitchResub import TwitchResub
+from ..api.models.twitchSubGift import TwitchSubGift
+from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface
 from ...misc import utils as utils
-from ...network.exceptions import GenericNetworkException
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -126,7 +124,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         eventUserName = event.userName
         tier = event.tier
 
-        if not utils.isValidStr(broadcasterUserId) or tier is None:
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(eventUserId) or tier is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
@@ -207,7 +205,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         emoji2 = random.choice(viableEmotesList)
 
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        await self.__twitchUtils.safeSend(twitchChannel, f'{emoji1} thanks for the sub!!! {emoji2}')
+
+        await self.__twitchUtils.waitThenSend(
+            messageable = twitchChannel,
+            delaySeconds = 3,
+            message = f'{emoji1} thanks for the sub!!! {emoji2}'
+        )
+
         self.__timber.log('TwitchSubscriptionHandler', f'Received and thanked in {user.handle} for a gifted sub! ({broadcasterUserId=}) ({eventUserId=}) ({subGift=}) ({subscriptionType=}) ({user=})')
 
     async def __processSuperTriviaEvent(

@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from .twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from ..api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..api.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils

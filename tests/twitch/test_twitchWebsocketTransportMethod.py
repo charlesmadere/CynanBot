@@ -1,4 +1,4 @@
-from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
+from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
 
 class TestTwitchWebsocketTransportMethod:

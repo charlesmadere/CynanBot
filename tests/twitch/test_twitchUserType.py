@@ -1,4 +1,4 @@
-from src.twitch.api.twitchUserType import TwitchUserType
+from src.twitch.api.models.twitchUserType import TwitchUserType
 
 
 class TestTwitchUserType:

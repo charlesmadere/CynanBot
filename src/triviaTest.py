@@ -135,10 +135,10 @@ from .trollmoji.trollmojiHelper import TrollmojiHelper
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
+from .twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from .twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .twitch.api.twitchApiService import TwitchApiService
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .twitch.api.twitchJsonMapper import TwitchJsonMapper
-from .twitch.api.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository

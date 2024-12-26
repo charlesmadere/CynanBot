@@ -1,7 +1,7 @@
 import pytest
 
-from src.twitch.api.websocket.twitchWebsocketTransport import TwitchWebsocketTransport
-from src.twitch.api.websocket.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
+from src.twitch.api.models.twitchWebsocketTransport import TwitchWebsocketTransport
+from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
 
 class TestTwitchWebsocketTransport:

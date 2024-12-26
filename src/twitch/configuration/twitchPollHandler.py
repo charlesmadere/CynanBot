@@ -2,10 +2,11 @@ from frozenlist import FrozenList
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchPollHandler import AbsTwitchPollHandler
-from ..api.twitchPollChoice import TwitchPollChoice
-from ..api.twitchPollStatus import TwitchPollStatus
-from ..api.websocket.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.models.twitchPollChoice import TwitchPollChoice
+from ..api.models.twitchPollStatus import TwitchPollStatus
+from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -21,17 +22,21 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         self,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
+        twitchApiService: TwitchApiServiceInterface,
         twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
+        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -43,17 +48,17 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
-        twitchChannelProvider = self.__twitchChannelProvider
-
         if not user.isNotifyOfPollResultsEnabled:
-            return
-        elif twitchChannelProvider is None:
             return
         elif len(pollChoices) == 0:
             return
         elif pollStatus is not TwitchPollStatus.COMPLETED:
             return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
+            return
+
+        twitchChannelProvider = self.__twitchChannelProvider
+        if twitchChannelProvider is None:
             return
 
         largestVoteCount = utils.getIntMinSafeSize()
@@ -105,6 +110,20 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The poll winners are {winningTitlesString}, with {votesString} {votesPlurality}!')
 
+    async def __notifyChatOfPollStart(
+        self,
+        title: str,
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        user: UserInterface
+    ):
+        if not user.isNotifyOfPollStartEnabled:
+            return
+        elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
+            return
+
+        # TODO
+        pass
+
     async def onNewPoll(
         self,
         userId: str,
@@ -120,36 +139,46 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         payload = dataBundle.requirePayload()
         event = payload.event
+        subscription = payload.subscription
 
-        if event is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
+        if event is None or subscription is None:
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing event and/or subscription data (channel=\"{user.handle}\") ({dataBundle=})')
             return
 
         broadcasterUserId = event.broadcasterUserId
         title = event.title
         choices = event.choices
+        subscriptionType = subscription.subscriptionType
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or choices is None or len(choices) == 0:
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 
-        subscriptionType = payload.requireSubscription().subscriptionType
-        self.__timber.log('TwitchPollHandler', f'\"{user.handle}\" received poll event ({title=}) ({choices=}) ({subscriptionType=})')
+        self.__timber.log('TwitchPollHandler', f'\"{user.handle}\" received poll event ({broadcasterUserId=}) ({title=}) ({choices=}) ({subscriptionType=})')
 
-        await self.__processTtsEvent(
-            broadcasterUserId = broadcasterUserId,
-            title = title,
-            userId = userId,
-            subscriptionType = subscriptionType,
-            user = user
-        )
+        if user.isTtsEnabled:
+            await self.__processTtsEvent(
+                broadcasterUserId = broadcasterUserId,
+                title = title,
+                userId = userId,
+                subscriptionType = subscriptionType,
+                user = user
+            )
 
-        await self.__notifyChatOfPollResults(
-            pollChoices = choices,
-            pollStatus = event.pollStatus,
-            subscriptionType = subscriptionType,
-            user = user
-        )
+        if user.isNotifyOfPollStartEnabled:
+            await self.__notifyChatOfPollStart(
+                title = title,
+                subscriptionType = subscriptionType,
+                user = user
+            )
+
+        if user.isNotifyOfPollResultsEnabled:
+            await self.__notifyChatOfPollResults(
+                pollChoices = choices,
+                pollStatus = event.pollStatus,
+                subscriptionType = subscriptionType,
+                user = user
+            )
 
     async def __processTtsEvent(
         self,

@@ -11,8 +11,8 @@ from .misc.timedDict import TimedDict
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from .starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from .timber.timberInterface import TimberInterface
+from .twitch.api.models.twitchUserDetails import TwitchUserDetails
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .twitch.api.twitchUserDetails import TwitchUserDetails
 from .twitch.configuration.twitchContext import TwitchContext
 from .twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from .twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface

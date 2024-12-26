@@ -2,9 +2,9 @@ from typing import Any
 
 import pytest
 
-from src.twitch.api.twitchOutcome import TwitchOutcome
-from src.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
-from src.twitch.api.websocket.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from src.twitch.api.models.twitchOutcome import TwitchOutcome
+from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
+from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 

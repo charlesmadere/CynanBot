@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .recurringActionType import RecurringActionType
+from .actions.recurringActionType import RecurringActionType
 from .wizards.absWizard import AbsWizard
 
 

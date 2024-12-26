@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .recurringAction import RecurringAction
+from .actions.recurringAction import RecurringAction
 
 
 class RecurringActionsHelperInterface(ABC):

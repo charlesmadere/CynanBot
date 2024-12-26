@@ -340,7 +340,17 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isNotifyOfPollStartEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isNotifyOfPredictionResultsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isNotifyOfPredictionStartEnabled(self) -> bool:
         pass
 
     @property
