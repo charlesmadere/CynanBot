@@ -340,6 +340,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         ########################
 
         if user.areValorantTimeoutsEnabled and total is not None and total >= 1 and actualUserId == '490592527' and self.__battleshipTimeoutHelper is not None:
+            total = total * 3
             for _ in range(total):
                 await self.__battleshipTimeoutHelper.fire(
                     broadcasterUserId = broadcasterUserId,
