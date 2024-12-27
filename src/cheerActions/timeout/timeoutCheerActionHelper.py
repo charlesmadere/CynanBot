@@ -14,6 +14,7 @@ from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
@@ -32,6 +33,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
         timeoutCheerActionMapper: TimeoutCheerActionMapper,
+        timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
@@ -43,6 +45,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
         elif not isinstance(timeoutCheerActionMapper, TimeoutCheerActionMapper):
             raise TypeError(f'timeoutCheerActionMapper argument is malformed: \"{timeoutCheerActionMapper}\"')
+        elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
+            raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -52,6 +56,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
         self.__timeoutCheerActionMapper: TimeoutCheerActionMapper = timeoutCheerActionMapper
+        self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
@@ -74,7 +79,17 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({chatters=})')
             return None
 
-        randomChatter = random.choice(frozenChatters)
+        eligibleChatters: list[ActiveChatter] = list()
+
+        for chatter in frozenChatters:
+            if not await self.__timeoutImmuneUserIdsRepository.isImmune(chatter.chatterUserId):
+                eligibleChatters.append(chatter)
+
+        if len(eligibleChatters) == 0:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({chatters=})')
+            return None
+
+        randomChatter = random.choice(eligibleChatters)
 
         return TimeoutCheerActionHelper.TimeoutTarget(
             userId = randomChatter.chatterUserId,

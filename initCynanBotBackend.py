@@ -1557,6 +1557,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutCheerActionMapper = timeoutCheerActionMapper,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     userIdsRepository = userIdsRepository
 )
