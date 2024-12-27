@@ -414,6 +414,10 @@ chatLogger: ChatLoggerInterface = ChatLogger(
     timeZoneRepository = timeZoneRepository
 )
 
+activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+    timeZoneRepository = timeZoneRepository
+)
+
 
 #####################################
 ## CynanBot initialization section ##
@@ -715,10 +719,6 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ## Chat Actions initialization section ##
 #########################################
 
-activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
-    timeZoneRepository = timeZoneRepository
-)
-
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
     timber = timber
 )
@@ -774,6 +774,7 @@ cynanBot = CynanBot(
     twitchPredictionHandler = None,
     twitchRaidHandler = None,
     twitchSubscriptionHandler = None,
+    activeChattersRepository = activeChattersRepository,
     additionalTriviaAnswersRepository = None,
     addOrRemoveUserDataHelper = addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,

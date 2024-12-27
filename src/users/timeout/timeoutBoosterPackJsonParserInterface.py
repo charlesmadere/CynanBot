@@ -4,6 +4,7 @@ from typing import Any
 from frozendict import frozendict
 
 from .timeoutBoosterPack import TimeoutBoosterPack
+from .timeoutBoosterPackType import TimeoutBoosterPackType
 
 
 class TimeoutBoosterPackJsonParserInterface(ABC):
@@ -13,6 +14,13 @@ class TimeoutBoosterPackJsonParserInterface(ABC):
         self,
         jsonContents: dict[str, Any]
     ) -> TimeoutBoosterPack:
+        pass
+
+    @abstractmethod
+    def parseBoosterPackType(
+        self,
+        boosterPackType: str
+    ) -> TimeoutBoosterPackType:
         pass
 
     @abstractmethod

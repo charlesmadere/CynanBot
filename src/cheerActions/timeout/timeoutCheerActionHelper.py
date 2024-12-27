@@ -1,5 +1,8 @@
+import random
 from dataclasses import dataclass
 from typing import Collection
+
+from frozenlist import FrozenList
 
 from .timeoutCheerAction import TimeoutCheerAction
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
@@ -9,6 +12,8 @@ from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
+from ...twitch.activeChatters.activeChatter import ActiveChatter
+from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
@@ -17,31 +22,22 @@ from ...users.userInterface import UserInterface
 class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     @dataclass(frozen = True)
-    class DiceRoll:
-        dieSize: int
-        roll: int
-
-    @dataclass(frozen = True)
-    class RollFailureData:
-        baseFailureProbability: float
-        failureProbability: float
-        maxBullyFailureProbability: float
-        perBullyFailureProbabilityIncrease: float
-        reverseProbability: float
-        bullyOccurrences: int
-        failureRoll: int
-        maxBullyFailureOccurrences: int
-        reverseRoll: int
+    class TimeoutTarget:
+        userId: str
+        userName: str
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
         timeoutCheerActionMapper: TimeoutCheerActionMapper,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
             raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
@@ -52,11 +48,94 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
         self.__timeoutCheerActionMapper: TimeoutCheerActionMapper = timeoutCheerActionMapper
         self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+    async def __determineRandomTimeoutTarget(
+        self,
+        broadcasterUserId: str,
+        cheerUserId: str,
+        cheerUserName: str,
+        timeoutAction: TimeoutCheerAction,
+        user: UserInterface
+    ) -> TimeoutTarget | None:
+        chatters = await self.__activeChattersRepository.get(
+            twitchChannelId = broadcasterUserId
+        )
+
+        frozenChatters: FrozenList[ActiveChatter] = FrozenList(chatters)
+        frozenChatters.freeze()
+
+        if len(frozenChatters) == 0:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({chatters=})')
+            return None
+
+        randomChatter = random.choice(frozenChatters)
+
+        return TimeoutCheerActionHelper.TimeoutTarget(
+            userId = randomChatter.chatterUserId,
+            userName = randomChatter.chatterUserName
+        )
+
+    async def __determineTimeoutTarget(
+        self,
+        broadcasterUserId: str,
+        cheerUserId: str,
+        cheerUserName: str,
+        message: str,
+        userTwitchAccessToken: str,
+        timeoutAction: TimeoutCheerAction,
+        user: UserInterface
+    ) -> TimeoutTarget | None:
+        if timeoutAction.targetsRandomActiveChatter:
+            return await self.__determineRandomTimeoutTarget(
+                broadcasterUserId = broadcasterUserId,
+                cheerUserId = cheerUserId,
+                cheerUserName = cheerUserName,
+                timeoutAction = timeoutAction,
+                user = user
+            )
+        else:
+            return await self.__determineUserTimeoutTarget(
+                cheerUserId = cheerUserId,
+                cheerUserName = cheerUserName,
+                message = message,
+                userTwitchAccessToken = userTwitchAccessToken,
+                timeoutAction = timeoutAction,
+                user = user
+            )
+
+    async def __determineUserTimeoutTarget(
+        self,
+        cheerUserId: str,
+        cheerUserName: str,
+        message: str,
+        userTwitchAccessToken: str,
+        timeoutAction: TimeoutCheerAction,
+        user: UserInterface
+    ) -> TimeoutTarget | None:
+        timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
+        if not utils.isValidStr(timeoutTargetUserName):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user name: ({message=}) ({timeoutAction=})')
+            return None
+
+        timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
+            userName = timeoutTargetUserName,
+            twitchAccessToken = userTwitchAccessToken
+        )
+
+        if not utils.isValidStr(timeoutTargetUserId):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
+            return None
+
+        return TimeoutCheerActionHelper.TimeoutTarget(
+            userId = timeoutTargetUserId,
+            userName = timeoutTargetUserName
+        )
 
     async def handleTimeoutCheerAction(
         self,
@@ -107,18 +186,17 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         if timeoutAction is None:
             return False
 
-        timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
-        if not utils.isValidStr(timeoutTargetUserName):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user name: ({message=}) ({timeoutAction=})')
-            return False
-
-        timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
-            userName = timeoutTargetUserName,
-            twitchAccessToken = userTwitchAccessToken
+        timeoutTarget = await self.__determineTimeoutTarget(
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            userTwitchAccessToken = userTwitchAccessToken,
+            timeoutAction = timeoutAction,
+            user = user
         )
 
-        if not utils.isValidStr(timeoutTargetUserId):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
+        if timeoutTarget is None:
             return False
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(
@@ -137,8 +215,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             pointRedemptionEventId = None,
             pointRedemptionMessage = None,
             pointRedemptionRewardId = None,
-            timeoutTargetUserId = timeoutTargetUserId,
-            timeoutTargetUserName = timeoutTargetUserName,
+            timeoutTargetUserId = timeoutTarget.userId,
+            timeoutTargetUserName = timeoutTarget.userName,
             twitchChannelId = broadcasterUserId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,

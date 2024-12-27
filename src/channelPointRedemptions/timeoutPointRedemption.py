@@ -1,21 +1,37 @@
+import random
+from dataclasses import dataclass
+
+from frozenlist import FrozenList
+
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..timeout.timeoutActionData import TimeoutActionData
 from ..timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
+from ..twitch.activeChatters.activeChatter import ActiveChatter
+from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
+from ..users.timeout.timeoutBoosterPack import TimeoutBoosterPack
+from ..users.timeout.timeoutBoosterPackType import TimeoutBoosterPackType
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..users.userInterface import UserInterface
 
 
 class TimeoutPointRedemption(AbsChannelPointRedemption):
 
+    @dataclass(frozen = True)
+    class TimeoutTarget:
+        userId: str
+        userName: str
+
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -24,7 +40,9 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
             raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
@@ -39,6 +57,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
@@ -46,6 +65,107 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+    async def __determineRandomTimeoutTarget(
+        self,
+        twitchChannel: TwitchChannel,
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+    ) -> TimeoutTarget | None:
+        chatters = await self.__activeChattersRepository.get(
+            twitchChannelId = await twitchChannel.getTwitchChannelId()
+        )
+
+        frozenChatters: FrozenList[ActiveChatter] = FrozenList(chatters)
+        frozenChatters.freeze()
+
+        if len(frozenChatters) == 0:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}, but was unable to find an active chatter: ({twitchChannelPointsMessage=}) ({chatters=})')
+
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, no chatter was found'
+            )
+
+            return None
+
+        randomChatter = random.choice(frozenChatters)
+
+        return TimeoutPointRedemption.TimeoutTarget(
+            userId = randomChatter.chatterUserId,
+            userName = randomChatter.chatterUserName
+        )
+
+    async def __determineTimeoutTarget(
+        self,
+        message: str | None,
+        userTwitchAccessToken: str,
+        timeoutBoosterPack: TimeoutBoosterPack,
+        twitchChannel: TwitchChannel,
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        twitchUser: UserInterface
+    ) -> TimeoutTarget | None:
+        timeoutType = timeoutBoosterPack.timeoutType
+
+        match timeoutType:
+            case TimeoutBoosterPackType.RANDOM_TARGET:
+                return await self.__determineRandomTimeoutTarget(
+                    twitchChannel = twitchChannel,
+                    twitchChannelPointsMessage = twitchChannelPointsMessage
+                )
+
+            case TimeoutBoosterPackType.USER_TARGET:
+                return await self.__determineUserTimeoutTarget(
+                    message = message,
+                    userTwitchAccessToken = userTwitchAccessToken,
+                    twitchChannel = twitchChannel,
+                    twitchChannelPointsMessage = twitchChannelPointsMessage,
+                    twitchUser = twitchUser
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unknown TimeoutBoosterPackType: \"{timeoutType}\"')
+
+    async def __determineUserTimeoutTarget(
+        self,
+        message: str | None,
+        userTwitchAccessToken: str,
+        twitchChannel: TwitchChannel,
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        twitchUser: UserInterface
+    ) -> TimeoutTarget | None:
+        timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromMessage(
+            message = message
+        )
+
+        if not utils.isValidStr(timeoutTargetUserName):
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}, but was unable to find a user name: ({twitchChannelPointsMessage=})')
+
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, please specify a valid username to be timed out'
+            )
+
+            return None
+
+        timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
+            userName = timeoutTargetUserName,
+            twitchAccessToken = userTwitchAccessToken
+        )
+
+        if not utils.isValidStr(timeoutTargetUserId):
+            self.__timber.log('TimeoutPointRedemption', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}, but was unable to find a user ID: ({twitchChannelPointsMessage=})')
+
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, no user ID for \"{timeoutTargetUserName}\" was able to be found'
+            )
+
+            return None
+
+        return TimeoutPointRedemption.TimeoutTarget(
+            userId = timeoutTargetUserId,
+            userName = timeoutTargetUserName
+        )
 
     async def handlePointRedemption(
         self,
@@ -84,33 +204,16 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         if not utils.isValidStr(moderatorUserId):
             return False
 
-        timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromMessage(
-            message = twitchChannelPointsMessage.redemptionMessage
+        timeoutTarget = await self.__determineTimeoutTarget(
+            message = twitchChannelPointsMessage.redemptionMessage,
+            userTwitchAccessToken = userTwitchAccessToken,
+            timeoutBoosterPack = timeoutBoosterPack,
+            twitchChannel = twitchChannel,
+            twitchChannelPointsMessage = twitchChannelPointsMessage,
+            twitchUser = twitchUser
         )
 
-        if not utils.isValidStr(timeoutTargetUserName):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}, but was unable to find a user name: ({twitchChannelPointsMessage=})')
-
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, please specify a valid username to be timed out'
-            )
-
-            return False
-
-        timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
-            userName = timeoutTargetUserName,
-            twitchAccessToken = userTwitchAccessToken
-        )
-
-        if not utils.isValidStr(timeoutTargetUserId):
-            self.__timber.log('TimeoutPointRedemption', f'Attempted to timeout \"{timeoutTargetUserName}\" from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}, but was unable to find a user ID: ({twitchChannelPointsMessage=})')
-
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, no user ID for \"{timeoutTargetUserName}\" was able to be found'
-            )
-
+        if timeoutTarget is None:
             return False
 
         await self.__timeoutActionHelper.timeout(TimeoutActionData(
@@ -125,8 +228,8 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
             pointRedemptionEventId = twitchChannelPointsMessage.eventId,
             pointRedemptionMessage = twitchChannelPointsMessage.redemptionMessage,
             pointRedemptionRewardId = twitchChannelPointsMessage.rewardId,
-            timeoutTargetUserId = timeoutTargetUserId,
-            timeoutTargetUserName = timeoutTargetUserName,
+            timeoutTargetUserId = timeoutTarget.userId,
+            timeoutTargetUserName = timeoutTarget.userName,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             twitchChatMessageId = None,
             userTwitchAccessToken = userTwitchAccessToken,

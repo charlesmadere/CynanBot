@@ -8,6 +8,7 @@ from .timeoutActionHelperInterface import TimeoutActionHelperInterface
 from .timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from .timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..soundPlayerManager.soundAlert import SoundAlert
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
@@ -127,7 +128,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         )
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = None,
+            soundAlert = SoundAlert.TNT,
             twitchChannel = timeoutData.twitchChannel,
             twitchChannelId = timeoutData.twitchChannelId,
             ttsEvent = ttsEvent

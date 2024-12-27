@@ -219,6 +219,7 @@ class TestCheerActionJsonMapper:
         cheerAction: AbsCheerAction = TimeoutCheerAction(
             isEnabled = True,
             isRandomChanceEnabled = True,
+            targetsRandomActiveChatter = True,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 100,
             durationSeconds = 60,
@@ -230,16 +231,18 @@ class TestCheerActionJsonMapper:
 
         dictionary = json.loads(result)
         assert isinstance(dictionary, dict)
-        assert len(dictionary) == 2
+        assert len(dictionary) == 3
 
         assert dictionary['durationSeconds'] == 60
         assert dictionary['randomChanceEnabled'] == True
+        assert dictionary['targetsRandomActiveChatter'] == True
 
     @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withTimeoutCheerAction2(self):
         cheerAction: AbsCheerAction = TimeoutCheerAction(
             isEnabled = True,
             isRandomChanceEnabled = False,
+            targetsRandomActiveChatter = False,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 100,
             durationSeconds = 300,
@@ -251,10 +254,11 @@ class TestCheerActionJsonMapper:
 
         dictionary = json.loads(result)
         assert isinstance(dictionary, dict)
-        assert len(dictionary) == 2
+        assert len(dictionary) == 3
 
         assert dictionary['durationSeconds'] == 300
         assert dictionary['randomChanceEnabled'] == False
+        assert dictionary['targetsRandomActiveChatter'] == False
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):

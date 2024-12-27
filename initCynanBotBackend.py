@@ -640,6 +640,10 @@ chatLogger: ChatLoggerInterface = ChatLogger(
     timeZoneRepository = timeZoneRepository
 )
 
+activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+    timeZoneRepository = timeZoneRepository
+)
+
 
 #####################################
 ## CynanBot initialization section ##
@@ -1549,6 +1553,7 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
 timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
+    activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutCheerActionMapper = timeoutCheerActionMapper,
@@ -1603,10 +1608,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 #########################################
 ## Chat Actions initialization section ##
 #########################################
-
-activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
-    timeZoneRepository = timeZoneRepository
-)
 
 anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
@@ -1748,6 +1749,7 @@ cynanBot = CynanBot(
     twitchPollHandler = twitchPollHandler,
     twitchPredictionHandler = twitchPredictionHandler,
     twitchRaidHandler = twitchRaidHandler,
+    activeChattersRepository = activeChattersRepository,
     twitchSubscriptionHandler = twitchSubscriptionHandler,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     addOrRemoveUserDataHelper= addOrRemoveUserDataHelper,

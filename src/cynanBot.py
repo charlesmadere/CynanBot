@@ -198,6 +198,7 @@ from .twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from .twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from .twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
+from .twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
@@ -253,6 +254,7 @@ class CynanBot(
         twitchPredictionHandler: AbsTwitchPredictionHandler | None,
         twitchRaidHandler: AbsTwitchRaidHandler | None,
         twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
         addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
@@ -392,6 +394,8 @@ class CynanBot(
             raise TypeError(f'twitchRaidHandler argument is malformed: \"{twitchRaidHandler}\"')
         elif twitchSubscriptionHandler is not None and not isinstance(twitchSubscriptionHandler, AbsTwitchSubscriptionHandler):
             raise TypeError(f'twitchSubscriptionHandler argument is malformed: \"{twitchSubscriptionHandler}\"')
+        elif not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
@@ -874,7 +878,7 @@ class CynanBot(
         if timeoutActionHelper is None:
             self.__timeoutPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__timeoutPointRedemption: AbsChannelPointRedemption = TimeoutPointRedemption(timber, timeoutActionHelper, authRepository, twitchMessageStringUtils, twitchTokensRepository, twitchUtils, userIdsRepository)
+            self.__timeoutPointRedemption: AbsChannelPointRedemption = TimeoutPointRedemption(activeChattersRepository, timber, timeoutActionHelper, authRepository, twitchMessageStringUtils, twitchTokensRepository, twitchUtils, userIdsRepository)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()

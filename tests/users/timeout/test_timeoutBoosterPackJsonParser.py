@@ -5,6 +5,7 @@ from frozendict import frozendict
 from src.users.timeout.timeoutBoosterPack import TimeoutBoosterPack
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
+from src.users.timeout.timeoutBoosterPackType import TimeoutBoosterPackType
 
 
 class TestTimoutBoosterPackJsonParser:
@@ -48,6 +49,29 @@ class TestTimoutBoosterPackJsonParser:
         assert result.randomChanceEnabled
         assert result.durationSeconds == 300
         assert result.rewardId == 'xyz789'
+
+    def test_parseBoosterPack4(self):
+        jsonContents: dict[str, Any] = {
+            'durationSeconds': 30,
+            'randomChanceEnabled': True,
+            'rewardId': 'lolomg',
+            'timeoutType': 'random'
+        }
+
+        result = self.jsonParser.parseBoosterPack(jsonContents)
+        assert isinstance(result, TimeoutBoosterPack)
+        assert result.randomChanceEnabled
+        assert result.durationSeconds == 30
+        assert result.rewardId == 'lolomg'
+        assert result.timeoutType is TimeoutBoosterPackType.RANDOM_TARGET
+
+    def test_parseBoosterPackType_withRandomString(self):
+        result = self.jsonParser.parseBoosterPackType('random')
+        assert result is TimeoutBoosterPackType.RANDOM_TARGET
+
+    def test_parseBoosterPackType_withUserString(self):
+        result = self.jsonParser.parseBoosterPackType('user')
+        assert result is TimeoutBoosterPackType.USER_TARGET
 
     def test_parseBoosterPacks(self):
         jsonContents: list[dict[str, Any]] = [

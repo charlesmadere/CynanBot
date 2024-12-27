@@ -1238,6 +1238,10 @@ compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+    timeZoneRepository = timeZoneRepository
+)
+
 
 #################################
 ## Aniv initialization section ##
@@ -1466,6 +1470,7 @@ timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = Timeou
 timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
+    activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutCheerActionMapper = timeoutCheerActionMapper,
@@ -1488,10 +1493,6 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 #########################################
 ## Chat Actions initialization section ##
 #########################################
-
-activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
-    timeZoneRepository = timeZoneRepository
-)
 
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
     timber = timber
@@ -1636,6 +1637,7 @@ cynanBot = CynanBot(
     twitchPredictionHandler = twitchPredictionHandler,
     twitchRaidHandler = twitchRaidHandler,
     twitchSubscriptionHandler = twitchSubscriptionHandler,
+    activeChattersRepository = activeChattersRepository,
     additionalTriviaAnswersRepository = None,
     addOrRemoveUserDataHelper = addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,
