@@ -13,10 +13,8 @@ from ..aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMes
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
-from ..timber.timberInterface import TimberInterface
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
@@ -38,9 +36,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         recurringActionsWizardChatAction: RecurringActionsWizardChatAction | None,
         saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None,
         supStreamerChatAction: SupStreamerChatAction | None,
-        timber: TimberInterface,
         ttsChattersChatAction: TtsChattersChatAction | None,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -68,12 +64,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'saveMostRecentAnivMessageChatAction argument is malformed: \"{saveMostRecentAnivMessageChatAction}\"')
         elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
             raise TypeError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif ttsChattersChatAction is not None and not isinstance(ttsChattersChatAction, TtsChattersChatAction):
             raise TypeError(f'ttsChattersChatAction argument is malformed: \"{ttsChattersChatAction}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -90,9 +82,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__recurringActionsWizardChatAction: AbsChatAction | None = recurringActionsWizardChatAction
         self.__saveMostRecentAnivMessageChatAction: AbsChatAction | None = saveMostRecentAnivMessageChatAction
         self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
-        self.__timber: TimberInterface = timber
         self.__ttsChattersChatAction: AbsChatAction | None = ttsChattersChatAction
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def __handleAnivChatActions(

@@ -20,7 +20,6 @@ from src.beanStats.beanStatsPresenter import BeanStatsPresenter
 from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
-from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatActionsManager import ChatActionsManager
 from src.chatActions.chatActionsManagerInterface import ChatActionsManagerInterface
@@ -2210,6 +2209,17 @@ activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepo
     timeZoneRepository = timeZoneRepository
 )
 
+anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
+    anivContentScanner = anivContentScanner,
+    anivUserIdProvider = anivUserIdProvider,
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository
+)
+
 chatBacksChatAction = ChatBackMessagesChatAction(
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
@@ -2259,7 +2269,7 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
 
 supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
 
-supStreamerChatAction: AbsChatAction = SupStreamerChatAction(
+supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
     streamAlertsManager = streamAlertsManager,
     supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
@@ -2267,22 +2277,13 @@ supStreamerChatAction: AbsChatAction = SupStreamerChatAction(
     timeZoneRepository = timeZoneRepository
 )
 
-ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
+ttsChattersChatAction: TtsChattersChatAction | None = TtsChattersChatAction(
     streamAlertsManager = streamAlertsManager
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
-    anivCheckChatAction = AnivCheckChatAction(
-        anivContentScanner = anivContentScanner,
-        anivUserIdProvider = anivUserIdProvider,
-        timber = timber,
-        twitchApiService = twitchApiService,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils,
-        userIdsRepository = userIdsRepository
-    ),
+    anivCheckChatAction = anivCheckChatAction,
     chatBackMessagesChatAction = chatBacksChatAction,
     chatLoggerChatAction = chatLoggerChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
@@ -2293,9 +2294,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     supStreamerChatAction = supStreamerChatAction,
-    timber = timber,
     ttsChattersChatAction = ttsChattersChatAction,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )

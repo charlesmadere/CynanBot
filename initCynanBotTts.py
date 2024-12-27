@@ -1531,7 +1531,7 @@ supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
     timeZoneRepository = timeZoneRepository
 )
 
-ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
+ttsChattersChatAction: TtsChattersChatAction | None = TtsChattersChatAction(
     streamAlertsManager = streamAlertsManager
 )
 
@@ -1548,9 +1548,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     recurringActionsWizardChatAction = None,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     supStreamerChatAction = supStreamerChatAction,
-    timber = timber,
     ttsChattersChatAction = ttsChattersChatAction,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )

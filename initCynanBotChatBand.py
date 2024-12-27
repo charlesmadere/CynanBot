@@ -749,9 +749,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     recurringActionsWizardChatAction = None,
     saveMostRecentAnivMessageChatAction = None,
     supStreamerChatAction = None,
-    timber = timber,
     ttsChattersChatAction = None,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )

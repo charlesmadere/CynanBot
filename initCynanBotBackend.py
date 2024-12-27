@@ -177,8 +177,6 @@ from src.streamElements.streamElementsUserIdProvider import StreamElementsUserId
 from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
 from src.streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
-from src.supStreamer.supStreamerRepository import SupStreamerRepository
-from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
@@ -1610,6 +1608,17 @@ activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepo
     timeZoneRepository = timeZoneRepository
 )
 
+anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
+    anivContentScanner = anivContentScanner,
+    anivUserIdProvider = anivUserIdProvider,
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository
+)
+
 chatBacksChatAction = ChatBackMessagesChatAction(
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
@@ -1651,24 +1660,9 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
     )
 
-supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
-)
-
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
-    anivCheckChatAction = AnivCheckChatAction(
-        anivContentScanner = anivContentScanner,
-        anivUserIdProvider = anivUserIdProvider,
-        timber = timber,
-        twitchApiService = twitchApiService,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils,
-        userIdsRepository = userIdsRepository
-    ),
+    anivCheckChatAction = anivCheckChatAction,
     chatBackMessagesChatAction = chatBacksChatAction,
     chatLoggerChatAction = chatLoggerChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
@@ -1679,9 +1673,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     supStreamerChatAction = None,
-    timber = timber,
     ttsChattersChatAction = None,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
@@ -1817,7 +1809,7 @@ cynanBot = CynanBot(
     streamAlertsSettingsRepository = None,
     streamElementsSettingsRepository = None,
     streamElementsUserKeyRepository = None,
-    supStreamerRepository = supStreamerRepository,
+    supStreamerRepository = None,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
