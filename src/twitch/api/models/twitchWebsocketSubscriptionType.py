@@ -16,6 +16,8 @@ class TwitchWebsocketSubscriptionType(Enum):
     CHEER = auto()
     FOLLOW = auto()
     RAID = auto()
+    STREAM_OFFLINE = auto()
+    STREAM_ONLINE = auto()
     SUBSCRIBE = auto()
     SUBSCRIPTION_GIFT = auto()
     SUBSCRIPTION_MESSAGE = auto()
@@ -37,7 +39,10 @@ class TwitchWebsocketSubscriptionType(Enum):
             case TwitchWebsocketSubscriptionType.CHEER: return '1'
             case TwitchWebsocketSubscriptionType.FOLLOW: return '2'
             case TwitchWebsocketSubscriptionType.RAID: return '1'
+            case TwitchWebsocketSubscriptionType.STREAM_OFFLINE: return '1'
+            case TwitchWebsocketSubscriptionType.STREAM_ONLINE: return '1'
             case TwitchWebsocketSubscriptionType.SUBSCRIBE: return '1'
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT: return '1'
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE: return '1'
+            case TwitchWebsocketSubscriptionType.USER_UPDATE: return '1'
             case _: raise RuntimeError(f'unknown TwitchWebsocketSubscriptionType: \"{self}\"')

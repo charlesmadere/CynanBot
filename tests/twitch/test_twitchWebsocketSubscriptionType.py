@@ -56,6 +56,14 @@ class TestTwitchWebsocketSubscriptionType:
         version = TwitchWebsocketSubscriptionType.RAID.version
         assert version == '1'
 
+    def test_version_withStreamOffline(self):
+        version = TwitchWebsocketSubscriptionType.STREAM_OFFLINE.version
+        assert version == '1'
+
+    def test_version_withStreamOnline(self):
+        version = TwitchWebsocketSubscriptionType.STREAM_ONLINE.version
+        assert version == '1'
+
     def test_version_withSubscribe(self):
         version = TwitchWebsocketSubscriptionType.SUBSCRIBE.version
         assert version == '1'
@@ -66,4 +74,8 @@ class TestTwitchWebsocketSubscriptionType:
 
     def test_version_withSubscriptionMessage(self):
         version = TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE.version
+        assert version == '1'
+
+    def test_version_withUserUpdate(self):
+        version = TwitchWebsocketSubscriptionType.USER_UPDATE.version
         assert version == '1'
