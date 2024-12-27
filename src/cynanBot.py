@@ -171,7 +171,6 @@ from .trivia.gameController.triviaGameGlobalControllersRepositoryInterface impor
 from .trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from .trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
 from .trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
-from .trivia.triviaEventListener import TriviaEventListener
 from .trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from .trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
@@ -241,7 +240,6 @@ class CynanBot(
     AddOrRemoveUserEventListener,
     ChannelJoinListener,
     RecurringActionEventListener,
-    TriviaEventListener,
     TwitchChannelProvider,
     TwitchConnectionReadinessProvider
 ):
