@@ -805,6 +805,46 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelPollBeginString(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.poll.begin')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelPollEndString(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.poll.end')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelProgressString(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.poll.progress')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelPredictionBeginString(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.prediction.begin')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withEmptyString(self):
+        result = await self.jsonMapper.parseSubscriptionType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withNone(self):
+        result = await self.jsonMapper.parseSubscriptionType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withUserUpdateString(self):
+        result = await self.jsonMapper.parseSubscriptionType('user.update')
+        assert result is TwitchWebsocketSubscriptionType.USER_UPDATE
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseSubscriptionType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseTransportMethod_withEmptyString(self):
         result = await self.jsonMapper.parseTransportMethod('')
         assert result is None

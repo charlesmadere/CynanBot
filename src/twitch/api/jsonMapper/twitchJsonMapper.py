@@ -808,6 +808,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT
             case 'channel.subscription.message':
                 return TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+            case 'user.update':
+                return TwitchWebsocketSubscriptionType.USER_UPDATE
             case _:
                 return None
 
@@ -1243,6 +1245,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.subscription.gift'
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
                 return 'channel.subscription.message'
+            case TwitchWebsocketSubscriptionType.USER_UPDATE:
+                return 'user.update'
             case _:
                 raise RuntimeError(f'unknown TwitchWebsocketSubscriptionType: \"{self}\"')
 

@@ -25,6 +25,7 @@ from ..api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
 from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
+from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -115,7 +116,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscriptionVersion = utils.getStrFromDict(metadataJson, 'subscription_version')
 
         messageType = await self.requireWebsocketMessageType(utils.getStrFromDict(metadataJson, 'message_type'))
-        subscriptionType = await self.__twitchJsonMapper.parseSubscriptionType(utils.getStrFromDict(metadataJson, 'subscription_type'))
+
+        subscriptionType: TwitchWebsocketSubscriptionType | None = None
+        if 'subscription_type' in metadataJson and utils.isValidStr(metadataJson.get('subscription_type')):
+            subscriptionType = await self.__twitchJsonMapper.parseSubscriptionType(utils.getStrFromDict(metadataJson, 'subscription_type'))
 
         return TwitchWebsocketMetadata(
             messageTimestamp = messageTimestamp,

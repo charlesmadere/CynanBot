@@ -19,6 +19,7 @@ class TwitchWebsocketSubscriptionType(Enum):
     SUBSCRIBE = auto()
     SUBSCRIPTION_GIFT = auto()
     SUBSCRIPTION_MESSAGE = auto()
+    USER_UPDATE = auto()
 
     @property
     def version(self) -> str:
