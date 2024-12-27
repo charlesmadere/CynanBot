@@ -24,6 +24,7 @@ class User(UserInterface):
         areBeanStatsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
+        areValorantTimeoutsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
@@ -310,6 +311,7 @@ class User(UserInterface):
         self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
+        self.__areValorantTimeoutsEnabled: bool = areValorantTimeoutsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
@@ -431,6 +433,10 @@ class User(UserInterface):
     @property
     def areSoundAlertsEnabled(self) -> bool:
         return self.__areSoundAlertsEnabled
+
+    @property
+    def areValorantTimeoutsEnabled(self) -> bool:
+        return self.__areValorantTimeoutsEnabled
 
     @property
     def blueSkyUrl(self) -> str | None:

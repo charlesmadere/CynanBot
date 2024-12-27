@@ -221,6 +221,8 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.timeout.battleship.battleshipTimeoutHelper import BattleshipTimeoutHelper
+from src.timeout.battleship.battleshipTimeoutHelperInterface import BattleshipTimeoutHelperInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.timeout.timeoutActionHelper import TimeoutActionHelper
@@ -1416,6 +1418,16 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     twitchUtils = twitchUtils
 )
 
+battleshipTimeoutHelper: BattleshipTimeoutHelperInterface | None = BattleshipTimeoutHelper(
+    activeChattersRepository = activeChattersRepository,
+    timber = timber,
+    timeoutActionHelper = timeoutActionHelper,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
+
 
 ##########################################
 ## Cheer Actions initialization section ##
@@ -1614,6 +1626,7 @@ twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
+    battleshipTimeoutHelper = battleshipTimeoutHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,

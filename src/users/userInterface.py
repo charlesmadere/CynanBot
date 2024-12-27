@@ -55,6 +55,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def areValorantTimeoutsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def blueSkyUrl(self) -> str | None:
         pass
 
