@@ -802,6 +802,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.FOLLOW
             case 'channel.raid':
                 return TwitchWebsocketSubscriptionType.RAID
+            case 'stream.offline':
+                return TwitchWebsocketSubscriptionType.STREAM_OFFLINE
+            case 'stream.online':
+                return TwitchWebsocketSubscriptionType.STREAM_ONLINE
             case 'channel.subscribe':
                 return TwitchWebsocketSubscriptionType.SUBSCRIBE
             case 'channel.subscription.gift':
@@ -1055,7 +1059,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         self,
         subscriptionType: str | Any | None
     ) -> TwitchWebsocketSubscriptionType:
-        result = await self.requireSubscriptionType(subscriptionType)
+        result = await self.parseSubscriptionType(subscriptionType)
 
         if result is None:
             raise ValueError(f'Unable to parse \"{subscriptionType}\" into TwitchWebsocketSubscriptionType value!')
@@ -1239,6 +1243,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.follow'
             case TwitchWebsocketSubscriptionType.RAID:
                 return 'channel.raid'
+            case TwitchWebsocketSubscriptionType.STREAM_OFFLINE:
+                return 'stream.offline'
+            case TwitchWebsocketSubscriptionType.STREAM_ONLINE:
+                return 'stream.online'
             case TwitchWebsocketSubscriptionType.SUBSCRIBE:
                 return 'channel.subscribe'
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
