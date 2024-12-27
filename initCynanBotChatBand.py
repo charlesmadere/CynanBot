@@ -846,6 +846,7 @@ cynanBot = CynanBot(
     translationHelper = None,
     triviaBanHelper = None,
     triviaEmoteGenerator = None,
+    triviaEventHandler = None,
     triviaGameBuilder = None,
     triviaGameControllersRepository = None,
     triviaGameGlobalControllersRepository = None,

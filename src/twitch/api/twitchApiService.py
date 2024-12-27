@@ -21,8 +21,6 @@ from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
 from .models.twitchUserSubscription import TwitchUserSubscription
 from .models.twitchValidationResponse import TwitchValidationResponse
-from .models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
-from .models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import (TwitchErrorException, TwitchJsonException,
                           TwitchPasswordChangedException, TwitchStatusCodeException,
@@ -246,12 +244,12 @@ class TwitchApiService(TwitchApiServiceInterface):
         subscriptionId = utils.getStrFromDict(dataJson, 'id')
         version = utils.getStrFromDict(dataJson, 'version')
 
-        subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(dataJson, 'type'))
+        subscriptionType = await self.__twitchJsonMapper.parseSubscriptionType(utils.getStrFromDict(dataJson, 'type'))
         if subscriptionType is None:
             self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketSubscriptionType instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketSubscriptionType instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(dataJson, 'status'))
+        status = await self.__twitchJsonMapper.parseConnectionStatus(utils.getStrFromDict(dataJson, 'status'))
         if status is None:
             self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketConnectionStatus instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketConnectionStatus instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')

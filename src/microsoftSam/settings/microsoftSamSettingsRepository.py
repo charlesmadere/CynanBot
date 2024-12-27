@@ -31,20 +31,20 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
     async def clearCaches(self):
         self.__cache = None
 
-    async def getMediaPlayerVolume(self) -> int | None:
-        jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 44)
-
     async def getDefaultVoice(self) -> MicrosoftSamVoice | None:
         jsonContents = await self.__readJson()
 
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
-            key = 'default_voice',
+            key = 'defaultVoice',
             fallback = self.__microsoftSamJsonParser.serializeVoice(self.__defaultVoice)
         )
 
         return self.__microsoftSamJsonParser.requireVoice(defaultVoice)
+
+    async def getMediaPlayerVolume(self) -> int | None:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 46)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

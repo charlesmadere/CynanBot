@@ -7,6 +7,8 @@ from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
+from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
+from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.models.twitchApiScope import TwitchApiScope
 from src.twitch.api.models.twitchBanRequest import TwitchBanRequest
 from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
@@ -17,8 +19,6 @@ from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.models.twitchEventSubRequest import TwitchEventSubRequest
-from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
-from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.models.twitchPollStatus import TwitchPollStatus
@@ -30,6 +30,7 @@ from src.twitch.api.models.twitchStreamType import TwitchStreamType
 from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.models.twitchUserType import TwitchUserType
 from src.twitch.api.models.twitchWebsocketCondition import TwitchWebsocketCondition
+from src.twitch.api.models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from src.twitch.api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from src.twitch.api.models.twitchWebsocketTransport import TwitchWebsocketTransport
@@ -376,6 +377,51 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseCondition_withNone(self):
         result = await self.jsonMapper.parseCondition(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withAuthorizationRevokedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('authorization_revoked')
+        assert result is TwitchWebsocketConnectionStatus.REVOKED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withEmptyString(self):
+        result = await self.jsonMapper.parseConnectionStatus('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withConnectedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('connected')
+        assert result is TwitchWebsocketConnectionStatus.CONNECTED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withEnabledString(self):
+        result = await self.jsonMapper.parseConnectionStatus('enabled')
+        assert result is TwitchWebsocketConnectionStatus.ENABLED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withNone(self):
+        result = await self.jsonMapper.parseConnectionStatus(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withReconnectingString(self):
+        result = await self.jsonMapper.parseConnectionStatus('reconnecting')
+        assert result is TwitchWebsocketConnectionStatus.RECONNECTING
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withUserRemovedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('user_removed')
+        assert result is TwitchWebsocketConnectionStatus.USER_REMOVED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withVersionRemovedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('version_removed')
+        assert result is TwitchWebsocketConnectionStatus.VERSION_REMOVED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWhitespaceString(self):
+        result = await self.jsonMapper.parseConnectionStatus(' ')
         assert result is None
 
     @pytest.mark.asyncio
@@ -819,6 +865,63 @@ class TestTwitchJsonMapper:
         assert result is TwitchUserType.NORMAL
 
     @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withAuthorizationRevokedString(self):
+        result = await self.jsonMapper.requireConnectionStatus('authorization_revoked')
+        assert result is TwitchWebsocketConnectionStatus.REVOKED
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withEmptyString(self):
+        result: TwitchWebsocketConnectionStatus | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireConnectionStatus('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withConnectedString(self):
+        result = await self.jsonMapper.requireConnectionStatus('connected')
+        assert result is TwitchWebsocketConnectionStatus.CONNECTED
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withEnabledString(self):
+        result = await self.jsonMapper.requireConnectionStatus('enabled')
+        assert result is TwitchWebsocketConnectionStatus.ENABLED
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withNone(self):
+        result: TwitchWebsocketConnectionStatus | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireConnectionStatus(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withReconnectingString(self):
+        result = await self.jsonMapper.requireConnectionStatus('reconnecting')
+        assert result is TwitchWebsocketConnectionStatus.RECONNECTING
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withUserRemovedString(self):
+        result = await self.jsonMapper.requireConnectionStatus('user_removed')
+        assert result is TwitchWebsocketConnectionStatus.USER_REMOVED
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withVersionRemovedString(self):
+        result = await self.jsonMapper.requireConnectionStatus('version_removed')
+        assert result is TwitchWebsocketConnectionStatus.VERSION_REMOVED
+
+    @pytest.mark.asyncio
+    async def test_requireConnectionStatus_withWhitespaceString(self):
+        result: TwitchWebsocketConnectionStatus | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireConnectionStatus(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_requireNoticeType_withAnnouncementString(self):
         result = await self.jsonMapper.requireNoticeType('announcement')
         assert result is TwitchWebsocketNoticeType.ANNOUNCEMENT
@@ -1189,10 +1292,10 @@ class TestTwitchJsonMapper:
         assert dictionary['transport']['session_id'] == transport.sessionId
 
         assert 'type' in dictionary
-        assert dictionary['type'] == subscriptionType.toStr()
+        assert dictionary['type'] == await self.jsonMapper.serializeSubscriptionType(subscriptionType)
 
         assert 'version' in dictionary
-        assert dictionary['version'] == subscriptionType.getVersion()
+        assert dictionary['version'] == subscriptionType.version
 
     @pytest.mark.asyncio
     async def test_serializeEventSubRequest2(self):
@@ -1237,10 +1340,10 @@ class TestTwitchJsonMapper:
         assert dictionary['transport']['session_id'] == transport.sessionId
 
         assert 'type' in dictionary
-        assert dictionary['type'] == subscriptionType.toStr()
+        assert dictionary['type'] == await self.jsonMapper.serializeSubscriptionType(subscriptionType)
 
         assert 'version' in dictionary
-        assert dictionary['version'] == subscriptionType.getVersion()
+        assert dictionary['version'] == subscriptionType.version
 
     @pytest.mark.asyncio
     async def test_serializeEventSubRequest3(self):
@@ -1287,10 +1390,10 @@ class TestTwitchJsonMapper:
         assert dictionary['transport']['session_id'] == transport.sessionId
 
         assert 'type' in dictionary
-        assert dictionary['type'] == subscriptionType.toStr()
+        assert dictionary['type'] == await self.jsonMapper.serializeSubscriptionType(subscriptionType)
 
         assert 'version' in dictionary
-        assert dictionary['version'] == subscriptionType.getVersion()
+        assert dictionary['version'] == subscriptionType.version
 
     @pytest.mark.asyncio
     async def test_serializeSendChatAnnouncementRequest_withColorPurple(self):
@@ -1358,3 +1461,78 @@ class TestTwitchJsonMapper:
         assert result['message'] == request.message
         assert result['reply_parent_message_id'] == request.replyParentMessageId
         assert result['sender_id'] == request.senderId
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPointsRedemption(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION)
+        assert string == 'channel.channel_points_custom_reward_redemption.add'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPollBegin(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN)
+        assert string == 'channel.poll.begin'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPollEnd(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_POLL_END)
+        assert string == 'channel.poll.end'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPollProgress(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS)
+        assert string == 'channel.poll.progress'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPredictionBegin(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN)
+        assert string == 'channel.prediction.begin'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPredictionEnd(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END)
+        assert string == 'channel.prediction.end'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPredictionLock(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK)
+        assert string == 'channel.prediction.lock'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelPredictionProgress(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS)
+        assert string == 'channel.prediction.progress'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChatMessage(self):
+        result = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHAT_MESSAGE)
+        assert result == 'channel.chat.message'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withCheer(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHEER)
+        assert string == 'channel.cheer'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withFollow(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.FOLLOW)
+        assert string == 'channel.follow'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withRaid(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.RAID)
+        assert string == 'channel.raid'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withSubscribe(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.SUBSCRIBE)
+        assert string == 'channel.subscribe'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withSubscriptionGift(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT)
+        assert string == 'channel.subscription.gift'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withSubscriptionMessage(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE)
+        assert string == 'channel.subscription.message'

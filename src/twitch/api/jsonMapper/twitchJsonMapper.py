@@ -38,7 +38,9 @@ from ..models.twitchUserSubscription import TwitchUserSubscription
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
+from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
+from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ....location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -391,6 +393,24 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userLogin = userLogin,
             userName = userName
         )
+
+    async def parseConnectionStatus(
+        self,
+        connectionStatus: str | Any | None
+    ) -> TwitchWebsocketConnectionStatus | None:
+        if not utils.isValidStr(connectionStatus):
+            return None
+
+        connectionStatus = connectionStatus.lower()
+
+        match connectionStatus:
+            case 'connected': return TwitchWebsocketConnectionStatus.CONNECTED
+            case 'enabled': return TwitchWebsocketConnectionStatus.ENABLED
+            case 'reconnecting': return TwitchWebsocketConnectionStatus.RECONNECTING
+            case 'authorization_revoked': return TwitchWebsocketConnectionStatus.REVOKED
+            case 'user_removed': return TwitchWebsocketConnectionStatus.USER_REMOVED
+            case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
+            case _: return None
 
     async def parseEmoteDetails(
         self,
@@ -746,6 +766,51 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchSubscriberTier value: \"{subscriberTier}\"')
                 return None
 
+    async def parseSubscriptionType(
+        self,
+        subscriptionType: str | Any | None
+    ) -> TwitchWebsocketSubscriptionType | None:
+        if not utils.isValidStr(subscriptionType):
+            return None
+
+        subscriptionType = subscriptionType.lower()
+
+        match subscriptionType:
+            case 'channel.channel_points_custom_reward_redemption.add':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+            case 'channel.poll.begin':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+            case 'channel.poll.end':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POLL_END
+            case 'channel.poll.progress':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+            case 'channel.prediction.begin':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
+            case 'channel.prediction.end':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END
+            case 'channel.prediction.lock':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK
+            case 'channel.prediction.progress':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
+            case 'channel.update':
+                return TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
+            case 'channel.chat.message':
+                return TwitchWebsocketSubscriptionType.CHAT_MESSAGE
+            case 'channel.cheer':
+                return TwitchWebsocketSubscriptionType.CHEER
+            case 'channel.follow':
+                return TwitchWebsocketSubscriptionType.FOLLOW
+            case 'channel.raid':
+                return TwitchWebsocketSubscriptionType.RAID
+            case 'channel.subscribe':
+                return TwitchWebsocketSubscriptionType.SUBSCRIBE
+            case 'channel.subscription.gift':
+                return TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT
+            case 'channel.subscription.message':
+                return TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+            case _:
+                return None
+
     async def parseThemeMode(
         self,
         themeMode: str | None
@@ -940,6 +1005,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId
         )
 
+    async def requireConnectionStatus(
+        self,
+        connectionStatus: str | Any | None
+    ) -> TwitchWebsocketConnectionStatus:
+        result = await self.parseConnectionStatus(connectionStatus)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{connectionStatus}\" into TwitchWebsocketConnectionStatus value!')
+
+        return result
+
     async def requireNoticeType(
         self,
         noticeType: str | Any | None
@@ -970,6 +1046,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{subscriberTier}\" into TwitchSubscriberTier value!')
+
+        return result
+
+    async def requireSubscriptionType(
+        self,
+        subscriptionType: str | Any | None
+    ) -> TwitchWebsocketSubscriptionType:
+        result = await self.requireSubscriptionType(subscriptionType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{subscriptionType}\" into TwitchWebsocketSubscriptionType value!')
 
         return result
 
@@ -1070,15 +1157,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(eventSubRequest, TwitchEventSubRequest):
             raise TypeError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')
 
-        dictionary: dict[str, Any] = {
-            'type': eventSubRequest.subscriptionType.toStr(),
-            'version': eventSubRequest.subscriptionType.getVersion()
+        condition = await self.serializeCondition(eventSubRequest.condition)
+        eventSubType = await self.serializeSubscriptionType(eventSubRequest.subscriptionType)
+        transport = await self.serializeTransport(eventSubRequest.transport)
+
+        return {
+            'condition': condition,
+            'transport': transport,
+            'type': eventSubType,
+            'version': eventSubRequest.subscriptionType.version
         }
-
-        dictionary['condition'] = await self.serializeCondition(eventSubRequest.condition)
-        dictionary['transport'] = await self.serializeTransport(eventSubRequest.transport)
-
-        return dictionary
 
     async def serializeSendChatAnnouncementRequest(
         self,
@@ -1114,6 +1202,49 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             dictionary['reply_parent_message_id'] = chatRequest.replyParentMessageId
 
         return dictionary
+
+    async def serializeSubscriptionType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType
+    ) -> str:
+        if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+
+        match subscriptionType:
+            case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
+                return 'channel.channel_points_custom_reward_redemption.add'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
+                return 'channel.poll.begin'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
+                return 'channel.poll.end'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
+                return 'channel.poll.progress'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
+                return 'channel.prediction.begin'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
+                return 'channel.prediction.end'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
+                return 'channel.prediction.lock'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
+                return 'channel.prediction.progress'
+            case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
+                return 'channel.update'
+            case TwitchWebsocketSubscriptionType.CHAT_MESSAGE:
+                return 'channel.chat.message'
+            case TwitchWebsocketSubscriptionType.CHEER:
+                return 'channel.cheer'
+            case TwitchWebsocketSubscriptionType.FOLLOW:
+                return 'channel.follow'
+            case TwitchWebsocketSubscriptionType.RAID:
+                return 'channel.raid'
+            case TwitchWebsocketSubscriptionType.SUBSCRIBE:
+                return 'channel.subscribe'
+            case TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
+                return 'channel.subscription.gift'
+            case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
+                return 'channel.subscription.message'
+            case _:
+                raise RuntimeError(f'unknown TwitchWebsocketSubscriptionType: \"{self}\"')
 
     async def serializeTransport(
         self,

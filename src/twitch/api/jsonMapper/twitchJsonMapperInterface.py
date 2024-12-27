@@ -33,7 +33,9 @@ from ..models.twitchUserSubscription import TwitchUserSubscription
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
+from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
+from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 
@@ -94,6 +96,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchWebsocketCondition | None:
+        pass
+
+    @abstractmethod
+    async def parseConnectionStatus(
+        self,
+        connectionStatus: str | Any | None
+    ) -> TwitchWebsocketConnectionStatus | None:
         pass
 
     @abstractmethod
@@ -202,6 +211,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseSubscriptionType(
+        self,
+        subscriptionType: str | Any | None
+    ) -> TwitchWebsocketSubscriptionType | None:
+        pass
+
+    @abstractmethod
     async def parseThemeMode(
         self,
         themeMode: str | None
@@ -251,6 +267,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireConnectionStatus(
+        self,
+        connectionStatus: str | Any | None
+    ) -> TwitchWebsocketConnectionStatus:
+        pass
+
+    @abstractmethod
     async def requireNoticeType(
         self,
         noticeType: str | Any | None
@@ -269,6 +292,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         subscriberTier: str | None
     ) -> TwitchSubscriberTier:
+        pass
+
+    @abstractmethod
+    async def requireSubscriptionType(
+        self,
+        subscriptionType: str | Any | None
+    ) -> TwitchWebsocketSubscriptionType:
         pass
 
     @abstractmethod
@@ -325,6 +355,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         chatRequest: TwitchSendChatMessageRequest
     ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeSubscriptionType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType
+    ) -> str:
         pass
 
     @abstractmethod

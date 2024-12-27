@@ -13,7 +13,7 @@ class TwitchWebsocketSubscription:
     cost: int
     subscriptionId: str
     version: str
-    condition: TwitchWebsocketCondition
+    condition: TwitchWebsocketCondition | None
     status: TwitchWebsocketConnectionStatus
     subscriptionType: TwitchWebsocketSubscriptionType
     transport: TwitchWebsocketTransport

@@ -303,6 +303,8 @@ from src.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from src.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from src.trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
 from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
+from src.trivia.configuration.absTriviaEventHandler import AbsTriviaEventHandler
+from src.trivia.configuration.triviaEventHandler import TriviaEventHandler
 from src.trivia.content.triviaContentScanner import TriviaContentScanner
 from src.trivia.content.triviaContentScannerInterface import TriviaContentScannerInterface
 from src.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
@@ -318,6 +320,7 @@ from src.trivia.gameController.triviaGameGlobalControllersRepositoryInterface im
     TriviaGameGlobalControllersRepositoryInterface
 from src.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from src.trivia.games.triviaGameStore import TriviaGameStore
+from src.trivia.games.triviaGameStoreInterface import TriviaGameStoreInterface
 from src.trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from src.trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
@@ -1206,12 +1209,14 @@ bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInte
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+
 triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+
 triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = TriviaGameGlobalControllersRepository(
     administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
@@ -1468,6 +1473,8 @@ triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = TriviaTwitchEmoteHel
     trollmojiHelper = trollmojiHelper,
 )
 
+triviaGameStore: TriviaGameStoreInterface = TriviaGameStore()
+
 triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
@@ -1490,7 +1497,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     triviaEmoteGenerator = triviaEmoteGenerator,
-    triviaGameStore = TriviaGameStore(),
+    triviaGameStore = triviaGameStore,
     triviaIdGenerator = triviaIdGenerator,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
@@ -1498,6 +1505,13 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
+)
+
+triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
+    timber = timber,
+    triviaUtils = triviaUtils,
+    twitchUtils = twitchUtils,
+    usersRepository = usersRepository
 )
 
 

@@ -17,7 +17,6 @@ from ..api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStat
 from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
 from ..api.models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
-from ..api.models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
@@ -26,8 +25,6 @@ from ..api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
 from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
-from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from ..exceptions import TwitchJsonException
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -118,10 +115,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscriptionVersion = utils.getStrFromDict(metadataJson, 'subscription_version')
 
         messageType = await self.requireWebsocketMessageType(utils.getStrFromDict(metadataJson, 'message_type'))
-
-        subscriptionType: TwitchWebsocketSubscriptionType | None = None
-        if 'subscription_type' in metadataJson and utils.isValidStr(metadataJson.get('subscription_type')):
-            subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(metadataJson, 'subscription_type'))
+        subscriptionType = await self.__twitchJsonMapper.parseSubscriptionType(utils.getStrFromDict(metadataJson, 'subscription_type'))
 
         return TwitchWebsocketMetadata(
             messageTimestamp = messageTimestamp,
@@ -623,7 +617,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             keepAliveTimeoutSeconds = utils.getIntFromDict(sessionJson, 'keepalive_timeout_seconds')
 
         sessionId = utils.getStrFromDict(sessionJson, 'id')
-        status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(sessionJson, 'status'))
+        status = await self.__twitchJsonMapper.requireConnectionStatus(utils.getStrFromDict(sessionJson, 'status'))
 
         reconnectUrl: str | None = None
         if 'reconnect_url' in sessionJson and utils.isValidUrl(sessionJson.get('reconnect_url')):
@@ -677,12 +671,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         subscriptionId = utils.getStrFromDict(subscriptionJson, 'id')
         version = utils.getStrFromDict(subscriptionJson, 'version')
         condition = await self.__twitchJsonMapper.parseCondition(subscriptionJson.get('condition'))
-        status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(subscriptionJson, 'status'))
-        subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(subscriptionJson, 'type'))
+        status = await self.__twitchJsonMapper.requireConnectionStatus(utils.getStrFromDict(subscriptionJson, 'status'))
+        subscriptionType = await self.__twitchJsonMapper.requireSubscriptionType(utils.getStrFromDict(subscriptionJson, 'type'))
         transport = await self.__twitchJsonMapper.requireTransport(subscriptionJson.get('transport'))
-
-        if condition is None or status is None or subscriptionType is None:
-            raise TwitchJsonException(f'Missing required \"condition\", \"status\", or \"subscriptionType\" values ({subscriptionJson=})')
 
         return TwitchWebsocketSubscription(
             cost = cost,

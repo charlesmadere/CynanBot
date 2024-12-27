@@ -162,20 +162,9 @@ from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import
 from .trivia.banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from .trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from .trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
+from .trivia.configuration.absTriviaEventHandler import AbsTriviaEventHandler
 from .trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from .trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
-from .trivia.events.absTriviaEvent import AbsTriviaEvent
-from .trivia.events.clearedSuperTriviaQueueTriviaEvent import ClearedSuperTriviaQueueTriviaEvent
-from .trivia.events.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
-from .trivia.events.correctSuperAnswerTriviaEvent import CorrectSuperAnswerTriviaEvent
-from .trivia.events.failedToFetchQuestionSuperTriviaEvent import FailedToFetchQuestionSuperTriviaEvent
-from .trivia.events.failedToFetchQuestionTriviaEvent import FailedToFetchQuestionTriviaEvent
-from .trivia.events.incorrectAnswerTriviaEvent import IncorrectAnswerTriviaEvent
-from .trivia.events.invalidAnswerInputTriviaEvent import InvalidAnswerInputTriviaEvent
-from .trivia.events.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
-from .trivia.events.newTriviaGameEvent import NewTriviaGameEvent
-from .trivia.events.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
-from .trivia.events.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from .trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
@@ -220,6 +209,7 @@ from .twitch.configuration.twitchChannel import TwitchChannel
 from .twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
 from .twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from .twitch.configuration.twitchConfiguration import TwitchConfiguration
+from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
@@ -252,7 +242,8 @@ class CynanBot(
     ChannelJoinListener,
     RecurringActionEventListener,
     TriviaEventListener,
-    TwitchChannelProvider
+    TwitchChannelProvider,
+    TwitchConnectionReadinessProvider
 ):
 
     def __init__(
@@ -334,6 +325,7 @@ class CynanBot(
         translationHelper: TranslationHelper | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface | None,
+        triviaEventHandler: AbsTriviaEventHandler | None,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
@@ -540,6 +532,8 @@ class CynanBot(
             raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
         elif triviaEmoteGenerator is not None and not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif triviaEventHandler is not None and not isinstance(triviaEventHandler, AbsTriviaEventHandler):
+            raise TypeError(f'triviaEventHandler argument is malformed: \"{triviaEventHandler}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
@@ -647,9 +641,9 @@ class CynanBot(
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface | None = timeoutActionHelper
+        self.__triviaEventHandler: AbsTriviaEventHandler | None = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
-        self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
         self.__ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = ttsMonsterTtsManager
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
@@ -947,7 +941,7 @@ class CynanBot(
 
     async def event_reconnect(self):
         self.__timber.log('CynanBot', f'Received new reconnect event')
-        await self.wait_for_ready()
+        await self.waitForReady()
         self.__timber.log('CynanBot', f'Finished reconnecting')
 
     async def event_usernotice_subscription(self, metadata):
@@ -1039,12 +1033,16 @@ class CynanBot(
         if self.__twitchTimeoutRemodHelper is not None:
             self.__twitchTimeoutRemodHelper.start()
 
+        if self.__triviaEventHandler is not None:
+            self.__triviaEventHandler.setTwitchChannelProvider(self)
+            self.__triviaEventHandler.setTwitchConnectionReadinessProvider(self)
+
+            if self.__triviaGameMachine is not None:
+                self.__triviaGameMachine.setEventListener(self.__triviaEventHandler)
+                self.__triviaGameMachine.startMachine()
+
         if self.__triviaRepository is not None:
             self.__triviaRepository.startSpooler()
-
-        if self.__triviaGameMachine is not None:
-            self.__triviaGameMachine.setEventListener(self)
-            self.__triviaGameMachine.startMachine()
 
         if self.__ttsMonsterTtsManager is not None:
             self.__ttsMonsterTtsManager.setTwitchChannelProvider(self)
@@ -1180,237 +1178,8 @@ class CynanBot(
 
         await self.__twitchUtils.safeSend(twitchChannel, wordOfTheDayString)
 
-    async def onNewTriviaEvent(self, event: AbsTriviaEvent):
+    async def waitForReady(self):
         await self.wait_for_ready()
-
-        self.__timber.log('CynanBot', f'Received new trivia event: \"{event}\"')
-
-        if isinstance(event, ClearedSuperTriviaQueueTriviaEvent):
-            await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
-        elif isinstance(event, CorrectAnswerTriviaEvent):
-            await self.__handleCorrectAnswerTriviaEvent(event)
-        elif isinstance(event, FailedToFetchQuestionTriviaEvent):
-            await self.__handleFailedToFetchQuestionTriviaEvent(event)
-        elif isinstance(event, OutOfTimeTriviaEvent):
-            await self.__handleGameOutOfTimeTriviaEvent(event)
-        elif isinstance(event, IncorrectAnswerTriviaEvent):
-            await self.__handleIncorrectAnswerTriviaEvent(event)
-        elif isinstance(event, InvalidAnswerInputTriviaEvent):
-            await self.__handleInvalidAnswerInputTriviaEvent(event)
-        elif isinstance(event, NewTriviaGameEvent):
-            await self.__handleNewTriviaGameEvent(event)
-        elif isinstance(event, NewSuperTriviaGameEvent):
-            await self.__handleNewSuperTriviaGameEvent(event)
-        elif isinstance(event, FailedToFetchQuestionSuperTriviaEvent):
-            await self.__handleFailedToFetchQuestionSuperTriviaEvent(event)
-        elif isinstance(event, CorrectSuperAnswerTriviaEvent):
-            await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
-        elif isinstance(event, OutOfTimeSuperTriviaEvent):
-            await self.__handleSuperGameOutOfTimeTriviaEvent(event)
-
-    async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        message = await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
-            numberOfGamesRemoved = event.numberOfGamesRemoved
-        )
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
-        )
-
-    async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
-        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        message = await self.__triviaUtils.getCorrectAnswerReveal(
-            question = event.triviaQuestion,
-            newCuteness = event.cutenessResult,
-            celebratoryEmote = event.celebratoryTwitchEmote,
-            emote = event.emote,
-            userNameThatRedeemed = event.userName,
-            twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
-        )
-
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
-        )
-
-    async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-        await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch trivia question')
-
-    async def __handleFailedToFetchQuestionSuperTriviaEvent(self, event: FailedToFetchQuestionSuperTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-        await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch super trivia question')
-
-    async def __handleGameOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getOutOfTimeAnswerReveal(
-            question = event.triviaQuestion,
-            emote = event.emote,
-            outOfTimeEmote = event.outOfTimeEmote,
-            userNameThatRedeemed = event.userName,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
-
-    async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        message = await self.__triviaUtils.getIncorrectAnswerReveal(
-            question = event.triviaQuestion,
-            emote = event.emote,
-            userNameThatRedeemed = event.userName,
-            wrongAnswerEmote = event.wrongAnswerEmote,
-            specialTriviaStatus = event.specialTriviaStatus
-        )
-
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
-        )
-
-    async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        message = await self.__triviaUtils.getInvalidAnswerInputPrompt(
-            question = event.triviaQuestion,
-            emote = event.emote,
-            userNameThatRedeemed = event.userName,
-            specialTriviaStatus = event.specialTriviaStatus
-        )
-
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
-        )
-
-    async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getTriviaGameQuestionPrompt(
-            triviaQuestion = event.triviaQuestion,
-            delaySeconds = event.secondsToLive,
-            points = event.pointsForWinning,
-            emote = event.emote,
-            userNameThatRedeemed = event.userName,
-            twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
-
-    async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
-            triviaQuestion = event.triviaQuestion,
-            delaySeconds = event.secondsToLive,
-            points = event.pointsForWinning,
-            emote = event.emote,
-            twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
-
-    async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        message = await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
-            question = event.triviaQuestion,
-            newCuteness = event.cutenessResult,
-            points = event.pointsForWinning,
-            celebratoryEmote = event.celebratoryTwitchEmote,
-            emote = event.emote,
-            userName = event.userName,
-            twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
-        )
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
-        )
-
-        toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
-            emote = event.emote,
-            twitchUser = twitchUser
-        )
-
-        if utils.isValidStr(toxicTriviaPunishmentPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, toxicTriviaPunishmentPrompt)
-
-        launchpadPrompt = await self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
-            remainingQueueSize = event.remainingQueueSize
-        )
-
-        if utils.isValidStr(launchpadPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
-
-    async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
-        twitchChannel = await self.__getChannel(event.twitchChannel)
-        twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
-
-        if not isinstance(self.__triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{self.__triviaUtils}\"')
-
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
-            question = event.triviaQuestion,
-            emote = event.emote,
-            outOfTimeEmote = event.outOfTimeEmote,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
-
-        toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
-            emote = event.emote,
-            twitchUser = twitchUser
-        )
-
-        if utils.isValidStr(toxicTriviaPunishmentPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, toxicTriviaPunishmentPrompt)
-
-        launchpadPrompt = await self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
-            remainingQueueSize = event.remainingQueueSize
-        )
-
-        if utils.isValidStr(launchpadPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
 
     @commands.command(name = 'addbannedtriviacontroller')
     async def command_addbannedtriviacontroller(self, ctx: Context):

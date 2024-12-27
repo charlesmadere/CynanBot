@@ -10,4 +10,4 @@ class TwitchWebsocketSession:
     keepAliveTimeoutSeconds: int | None
     reconnectUrl: str | None
     sessionId: str
-    status: TwitchWebsocketConnectionStatus | None
+    status: TwitchWebsocketConnectionStatus
