@@ -448,13 +448,14 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         self.__timber.log('TimeoutActionHelper', f'Timed out {timeoutTargetUserName}:{timeoutTargetUserId} in \"{timeoutData.twitchChannel}\" from {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} ({diceRoll=}) ({rollFailureData=}) ({timeoutResult=}) ({timeoutData=})')
 
-        await self.__timeoutActionHistoryRepository.add(
-            durationSeconds = timeoutData.durationSeconds,
-            chatterUserId = timeoutTargetUserId,
-            timedOutByUserId = timeoutData.instigatorUserId,
-            twitchChannel = timeoutData.twitchChannel,
-            twitchChannelId = timeoutData.twitchChannelId
-        )
+        if timeoutData.isRandomChanceEnabled:
+            await self.__timeoutActionHistoryRepository.add(
+                durationSeconds = timeoutData.durationSeconds,
+                chatterUserId = timeoutTargetUserId,
+                timedOutByUserId = timeoutData.instigatorUserId,
+                twitchChannel = timeoutData.twitchChannel,
+                twitchChannelId = timeoutData.twitchChannelId
+            )
 
         await self.__alertViaTextToSpeech(
             isReverse = isReverse,
