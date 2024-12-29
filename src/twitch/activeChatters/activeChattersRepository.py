@@ -17,7 +17,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         self,
         timeZoneRepository: TimeZoneRepositoryInterface,
         maxActiveChattersSize: int = 128,
-        maxActiveChattersTimeToLive: timedelta = timedelta(minutes = 45)
+        maxActiveChattersTimeToLive: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
