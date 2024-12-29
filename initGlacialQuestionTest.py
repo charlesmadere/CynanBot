@@ -45,8 +45,6 @@ from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
-from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.twitchTokensRepository import TwitchTokensRepository
 from src.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -157,11 +155,8 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
-
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
-    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchApiService = twitchApiService
 )

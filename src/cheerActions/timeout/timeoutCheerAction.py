@@ -12,7 +12,6 @@ class TimeoutCheerAction(AbsCheerAction):
         self,
         isEnabled: bool,
         isRandomChanceEnabled: bool,
-        targetsRandomActiveChatter: bool,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         durationSeconds: int,
@@ -27,15 +26,12 @@ class TimeoutCheerAction(AbsCheerAction):
 
         if not utils.isValidBool(isRandomChanceEnabled):
             raise TypeError(f'isRandomChanceEnabled argument is malformed: \"{isRandomChanceEnabled}\"')
-        elif not utils.isValidBool(targetsRandomActiveChatter):
-            raise TypeError(f'targetsRandomActiveChatter argument is malformed: \"{targetsRandomActiveChatter}\"')
         elif not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
         elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
 
         self.__isRandomChanceEnabled: bool = isRandomChanceEnabled
-        self.__targetsRandomActiveChatter: bool = targetsRandomActiveChatter
         self.__durationSeconds: int = durationSeconds
 
     @property
@@ -55,8 +51,4 @@ class TimeoutCheerAction(AbsCheerAction):
         return self.__isRandomChanceEnabled
 
     def printOut(self) -> str:
-        return f'isEnabled={self.isEnabled}, isRandomChanceEnabled={self.isRandomChanceEnabled}, targetsRandomActiveChatter={self.targetsRandomActiveChatter}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, durationSeconds={self.__durationSeconds}'
-
-    @property
-    def targetsRandomActiveChatter(self) -> bool:
-        return self.__targetsRandomActiveChatter
+        return f'isEnabled={self.isEnabled}, isRandomChanceEnabled={self.isRandomChanceEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, durationSeconds={self.__durationSeconds}'

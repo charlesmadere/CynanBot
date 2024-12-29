@@ -146,9 +146,9 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
         areBeanStatsEnabled = utils.getBoolFromDict(userJson, 'beanStatsEnabled', False)
+        areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
-        areValorantTimeoutsEnabled = utils.getBoolFromDict(userJson, 'valorantTimeoutsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey, False)
         isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED.jsonKey, True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
@@ -351,9 +351,9 @@ class UsersRepository(UsersRepositoryInterface):
 
         user = User(
             areBeanStatsEnabled = areBeanStatsEnabled,
+            areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
-            areValorantTimeoutsEnabled = areValorantTimeoutsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,

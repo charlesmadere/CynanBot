@@ -413,16 +413,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
-            case TimeoutStep.TARGETS_RANDOM_ACTIVE_CHATTER:
-                try:
-                    targetsRandomActiveChatter = utils.strictStrToBool(content)
-                    wizard.setTargetsRandomActiveChatter(targetsRandomActiveChatter)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set targetsRandomActiveChatter value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
             case _:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
                 await self.__send(message, f'⚠ The Timeout wizard is in an invalid state, please try again')
@@ -438,7 +428,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsRepository.setAction(TimeoutCheerAction(
                     isEnabled = True,
                     isRandomChanceEnabled = wizard.requireRandomChanceEnabled(),
-                    targetsRandomActiveChatter = wizard.requireTargetsRandomActiveChatter(),
                     streamStatusRequirement = wizard.requireStreamStatus(),
                     bits = wizard.requireBits(),
                     durationSeconds = wizard.requireDurationSeconds(),
@@ -483,10 +472,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
                 streamStatusString = ', '.join(streamStatusStrings)
                 await self.__send(message, f'ⓘ Next, please specify the Timeout\'s required stream status. The value must be one of the following: {streamStatusString}.')
-                return True
-
-            case TimeoutStep.TARGETS_RANDOM_ACTIVE_CHATTER:
-                await self.__send(message, f'ⓘ Next, please specify whether or not the Timeout should target a random active chatter (true or false)')
                 return True
 
             case _:

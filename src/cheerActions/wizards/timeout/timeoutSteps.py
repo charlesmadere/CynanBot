@@ -24,15 +24,11 @@ class TimeoutSteps(AbsSteps):
                 return StepResult.NEXT
 
             case TimeoutStep.RANDOM_CHANCE_ENABLED:
-                self.__step = TimeoutStep.TARGETS_RANDOM_ACTIVE_CHATTER
+                self.__step = TimeoutStep.STREAM_STATUS
                 return StepResult.NEXT
 
             case TimeoutStep.STREAM_STATUS:
                 return StepResult.DONE
-
-            case TimeoutStep.TARGETS_RANDOM_ACTIVE_CHATTER:
-                self.__step = TimeoutStep.STREAM_STATUS
-                return StepResult.NEXT
 
             case _:
                 raise RuntimeError(f'unknown next TimeoutStep: \"{currentStep}\"')

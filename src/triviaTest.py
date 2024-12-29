@@ -197,7 +197,6 @@ officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterfac
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
-    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchApiService = twitchApiService
 )

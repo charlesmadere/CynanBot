@@ -21,7 +21,6 @@ class TimeoutWizard(AbsWizard):
 
         self.__steps = TimeoutSteps()
         self.__randomChanceEnabled: bool | None = None
-        self.__targetsRandomActiveChatter: bool | None = None
         self.__streamStatus: CheerActionStreamStatusRequirement | None = None
         self.__bits: int | None = None
         self.__durationSeconds: int | None = None
@@ -34,7 +33,7 @@ class TimeoutWizard(AbsWizard):
         return self.__steps
 
     def printOut(self) -> str:
-        return f'{self.__randomChanceEnabled=}, {self.__targetsRandomActiveChatter=}, {self.__streamStatus=}, {self.__bits=}, {self.__durationSeconds=}'
+        return f'{self.__randomChanceEnabled=}, {self.__streamStatus=}, {self.__bits=}, {self.__durationSeconds=}'
 
     def requireBits(self) -> int:
         bits = self.__bits
@@ -68,14 +67,6 @@ class TimeoutWizard(AbsWizard):
 
         return streamStatus
 
-    def requireTargetsRandomActiveChatter(self) -> bool:
-        targetsRandomActiveChatter = self.__targetsRandomActiveChatter
-
-        if targetsRandomActiveChatter is None:
-            raise ValueError(f'targetsRandomActiveChatter value has not been set: ({self=})')
-
-        return targetsRandomActiveChatter
-
     def setBits(self, bits: int):
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
@@ -98,12 +89,6 @@ class TimeoutWizard(AbsWizard):
 
         self.__randomChanceEnabled = randomChanceEnabled
 
-    def setTargetsRandomActiveChatter(self, targetsRandomActiveChatter: bool):
-        if not utils.isValidBool(targetsRandomActiveChatter):
-            raise TypeError(f'targetsRandomActiveChatter argument is malformed: \"{targetsRandomActiveChatter}\"')
-
-        self.__targetsRandomActiveChatter = targetsRandomActiveChatter
-
     def setStreamStatus(self, streamStatus: CheerActionStreamStatusRequirement):
         if not isinstance(streamStatus, CheerActionStreamStatusRequirement):
             raise TypeError(f'streamStatus argument is malformed: \"{streamStatus}\"')
@@ -118,7 +103,6 @@ class TimeoutWizard(AbsWizard):
             'randomChanceEnabled': self.__randomChanceEnabled,
             'steps': self.__steps,
             'streamStatus': self.__streamStatus,
-            'targetsRandomActiveChatter': self.__targetsRandomActiveChatter,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId
         }

@@ -31,6 +31,7 @@ from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWiz
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
+from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
 from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -272,8 +273,6 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
-from src.timeout.battleship.battleshipTimeoutHelper import BattleshipTimeoutHelper
-from src.timeout.battleship.battleshipTimeoutHelperInterface import BattleshipTimeoutHelperInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.timeout.timeoutActionHelper import TimeoutActionHelper
@@ -512,8 +511,8 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
     TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
-from src.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
+from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
@@ -686,7 +685,6 @@ officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterfac
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
-    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchApiService = twitchApiService
 )
@@ -1639,15 +1637,12 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 #########################################
 ## Sound Player initialization section ##
 #########################################
-#########################################
-## Sound Player initialization section ##
-#########################################
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
 )
 
-soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = SoundPlayerRandomizerHelper(
+soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerRandomizerHelper(
     eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
@@ -1658,7 +1653,6 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayer
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
-
 
 
 ################################
@@ -1979,7 +1973,7 @@ ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
     ttsMonsterApiService = ttsMonsterApiService
 )
 
-ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
+ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterFileManager = ttsMonsterFileManager,
@@ -1990,7 +1984,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManage
     twitchUtils = twitchUtils
 )
 
-compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
+compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
@@ -2056,16 +2050,6 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchUtils = twitchUtils
-)
-
-battleshipTimeoutHelper: BattleshipTimeoutHelperInterface | None = BattleshipTimeoutHelper(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
 )
 
 
@@ -2292,7 +2276,7 @@ supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
     timeZoneRepository = timeZoneRepository
 )
 
-ttsChattersChatAction: TtsChattersChatAction | None = TtsChattersChatAction(
+ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
     streamAlertsManager = streamAlertsManager
 )
 
@@ -2315,6 +2299,16 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 )
 
 
+######################################
+## Chat Band initialization section ##
+######################################
+
+chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface = ChatBandInstrumentSoundsRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
+
+
 ########################################################
 ## Websocket Connection Server initialization section ##
 ########################################################
@@ -2334,12 +2328,11 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 )
 
 
-
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
 
-twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
+twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -2347,19 +2340,19 @@ twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
     triviaGameMachine = triviaGameMachine
 )
 
-twitchFollowHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
+twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     timber = timber,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository
 )
 
-twitchPollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
+twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchUtils = twitchUtils
 )
 
-twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHandler(
+twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchUtils = twitchUtils,
@@ -2367,14 +2360,14 @@ twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHan
     websocketConnectionServer = websocketConnectionServer
 )
 
-twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
+twitchRaidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
     chatLogger = chatLogger,
     streamAlertsManager = streamAlertsManager,
     timber = timber
 )
 
-twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
-    battleshipTimeoutHelper = battleshipTimeoutHelper,
+twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
@@ -2386,186 +2379,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscript
     userIdsRepository = userIdsRepository
 )
 
-######################################
-## Chat Band initialization section ##
-######################################
 
-chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = None
-
-
-
-###############
-
-
-
-halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/halfLifeTtsSettingsRepository.json'),
-    halfLifeJsonParser = halfLifeJsonParser
-)
-
-halfLifeService: HalfLifeServiceInterface = HalfLifeService(
-    timber = timber
-)
-
-halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
-    halfLifeJsonParser = halfLifeJsonParser
-)
-
-halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
-    halfLifeService = halfLifeService,
-    halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
-    halfLifeSettingsRepository = halfLifeSettingsRepository
-)
-
-halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
-    halfLifeHelper = halfLifeHelper,
-    halfLifeMessageCleaner = halfLifeMessageCleaner,
-    halfLifeSettingsRepository = halfLifeSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsCommandBuilder = ttsCommandBuilder
-)
-
-streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
-    networkClientProvider = networkClientProvider,
-    timber = timber
-)
-
-streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
-
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
-
-streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/streamElementsSettingsRepository.json'),
-    streamElementsJsonParser = streamElementsJsonParser
-)
-
-streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = StreamElementsUserKeyRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/streamElementsUserKeyRepositorySeedFile.json')
-)
-
-streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
-    streamElementsApiService = streamElementsApiService,
-    streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
-    streamElementsSettingsRepository = streamElementsSettingsRepository,
-    streamElementsUserKeyRepository = streamElementsUserKeyRepository,
-    timber = timber
-)
-
-streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
-    timber = timber
-)
-
-streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamElementsTtsManager(
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
-    streamElementsFileManager = streamElementsFileManager,
-    streamElementsHelper = streamElementsHelper,
-    streamElementsMessageCleaner = streamElementsMessageCleaner,
-    streamElementsSettingsRepository = streamElementsSettingsRepository,
-    timber = timber,
-    ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/ttsMonsterApiTokensRepositorySeedFile.json')
-)
-
-ttsMonsterWebsiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
-
-ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
-    ttsMonsterWebsiteVoiceMapper = ttsMonsterWebsiteVoiceMapper,
-    settingsJsonReader = JsonFileReader('../config/ttsMonsterSettingsRepository.json')
-)
-
-ttsMonsterJsonMapper: TtsMonsterJsonMapperInterface = TtsMonsterJsonMapper(
-    timber = timber,
-    websiteVoiceMapper = ttsMonsterWebsiteVoiceMapper
-)
-
-ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
-    networkClientProvider = networkClientProvider,
-    timber = timber,
-    ttsMonsterJsonMapper = ttsMonsterJsonMapper
-)
-
-ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
-)
-
-ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = TtsMonsterKeyAndUserIdRepository(
-    settingsJsonReader = JsonFileReader('../config/ttsMonsterKeyAndUserIdRepository.json')
-)
-
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper()
-
-ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
-    networkClientProvider = networkClientProvider,
-    timber = timber,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
-)
-
-ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
-    timber = timber,
-    ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
-    ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
-)
-
-ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface = TtsMonsterStreamerVoicesRepository(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    ttsMonsterApiService = ttsMonsterApiService,
-    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository
-)
-
-ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
-    timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService,
-    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
-    ttsMonsterMessageToVoicesHelper = ttsMonsterMessageToVoicesHelper,
-    ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository
-)
-
-ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
-    timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService
-)
-
-ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
-    timber = timber,
-    ttsMonsterFileManager = ttsMonsterFileManager,
-    ttsMonsterHelper = ttsMonsterHelper,
-    ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsSettingsRepository = ttsSettingsRepository,
-    twitchUtils = twitchUtils
-)
 
 #####################################
 ## CynanBot initialization section ##

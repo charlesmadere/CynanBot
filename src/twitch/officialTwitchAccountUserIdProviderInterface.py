@@ -10,3 +10,7 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
     @abstractmethod
     async def getTwitchAnonymousGifterUserId(self) -> str:
         pass
+
+    @abstractmethod
+    async def getValorantUserId(self) -> str:
+        pass

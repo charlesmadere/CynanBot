@@ -85,16 +85,17 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-        if await self.__processCheerAction(
-            bits = bits,
-            broadcasterUserId = broadcasterUserId,
-            cheerUserId = cheerUserId,
-            cheerUserLogin = cheerUserLogin,
-            message = message,
-            messageId = event.messageId,
-            user = user
-        ):
-            return
+        if user.areCheerActionsEnabled:
+            if await self.__processCheerAction(
+                bits = bits,
+                broadcasterUserId = broadcasterUserId,
+                cheerUserId = cheerUserId,
+                cheerUserLogin = cheerUserLogin,
+                message = message,
+                messageId = event.messageId,
+                user = user
+            ):
+                return
 
         if user.isTtsEnabled:
             await self.__processTtsEvent(
@@ -116,22 +117,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         messageId: str | None,
         user: UserInterface
     ) -> bool:
-        if not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
-            raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(cheerUserId):
-            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserLogin):
-            raise TypeError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
-        elif message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif messageId is not None and not isinstance(messageId, str):
-            raise TypeError(f'messageId argument is malformed: \"{messageId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        if not user.areCheerActionsEnabled:
+            return False
 
         cheerActionHelper = self.__cheerActionHelper
 
@@ -154,21 +141,13 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         broadcasterUserId: str,
         user: UserInterface
     ):
-        if not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
-            raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        if not user.isSuperTriviaGameEnabled:
+            return
 
         triviaGameBuilder = self.__triviaGameBuilder
         triviaGameMachine = self.__triviaGameMachine
 
         if triviaGameBuilder is None or triviaGameMachine is None:
-            return
-        elif not user.isSuperTriviaGameEnabled:
             return
 
         superTriviaCheerTriggerAmount = user.superTriviaCheerTriggerAmount
@@ -202,21 +181,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         message: str | None,
         user: UserInterface
     ):
-        if not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
-            raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(cheerUserId):
-            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserLogin):
-            raise TypeError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
-        elif message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         if not user.isTtsEnabled:
             return
 

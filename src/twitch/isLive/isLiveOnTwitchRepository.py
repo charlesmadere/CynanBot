@@ -2,14 +2,14 @@ from datetime import timedelta
 
 from frozendict import frozendict
 
-from .api.models.twitchStreamType import TwitchStreamType
-from .api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
-from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..misc import utils as utils
-from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..misc.timedDict import TimedDict
-from ..timber.timberInterface import TimberInterface
+from ..api.models.twitchStreamType import TwitchStreamType
+from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ...misc import utils as utils
+from ...misc.administratorProviderInterface import AdministratorProviderInterface
+from ...misc.timedDict import TimedDict
+from ...timber.timberInterface import TimberInterface
 
 
 class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):

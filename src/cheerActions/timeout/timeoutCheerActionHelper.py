@@ -2,8 +2,6 @@ import random
 from dataclasses import dataclass
 from typing import Collection
 
-from frozenlist import FrozenList
-
 from .timeoutCheerAction import TimeoutCheerAction
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionMapper import TimeoutCheerActionMapper
@@ -72,24 +70,27 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             twitchChannelId = broadcasterUserId
         )
 
-        frozenChatters: FrozenList[ActiveChatter] = FrozenList(chatters)
-        frozenChatters.freeze()
+        eligibleChatters: dict[str, ActiveChatter] = dict()
 
-        if len(frozenChatters) == 0:
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({chatters=})')
-            return None
-
-        eligibleChatters: list[ActiveChatter] = list()
-
-        for chatter in frozenChatters:
-            if not await self.__timeoutImmuneUserIdsRepository.isImmune(chatter.chatterUserId):
-                eligibleChatters.append(chatter)
+        for chatter in chatters:
+            eligibleChatters[chatter.chatterUserId] = chatter
 
         if len(eligibleChatters) == 0:
             self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({chatters=})')
             return None
 
-        randomChatter = random.choice(eligibleChatters)
+        eligibleChatters.pop(broadcasterUserId, None)
+        immuneUserIds = await self.__timeoutImmuneUserIdsRepository.getUserIds()
+
+        for immuneUserId  in immuneUserIds:
+            eligibleChatters.pop(immuneUserId, None)
+
+        if len(eligibleChatters) == 0:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({chatters=})')
+            return None
+
+        eligibleChattersList: list[ActiveChatter] = list(eligibleChatters.values())
+        randomChatter = random.choice(eligibleChattersList)
 
         return TimeoutCheerActionHelper.TimeoutTarget(
             userId = randomChatter.chatterUserId,
@@ -106,23 +107,25 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timeoutAction: TimeoutCheerAction,
         user: UserInterface
     ) -> TimeoutTarget | None:
-        if timeoutAction.targetsRandomActiveChatter:
-            return await self.__determineRandomTimeoutTarget(
-                broadcasterUserId = broadcasterUserId,
-                cheerUserId = cheerUserId,
-                cheerUserName = cheerUserName,
-                timeoutAction = timeoutAction,
-                user = user
-            )
-        else:
-            return await self.__determineUserTimeoutTarget(
-                cheerUserId = cheerUserId,
-                cheerUserName = cheerUserName,
-                message = message,
-                userTwitchAccessToken = userTwitchAccessToken,
-                timeoutAction = timeoutAction,
-                user = user
-            )
+        specificUserTimeoutTarget = await self.__determineUserTimeoutTarget(
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            userTwitchAccessToken = userTwitchAccessToken,
+            timeoutAction = timeoutAction,
+            user = user
+        )
+
+        if specificUserTimeoutTarget is not None:
+            return specificUserTimeoutTarget
+
+        return await self.__determineRandomTimeoutTarget(
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            timeoutAction = timeoutAction,
+            user = user
+        )
 
     async def __determineUserTimeoutTarget(
         self,

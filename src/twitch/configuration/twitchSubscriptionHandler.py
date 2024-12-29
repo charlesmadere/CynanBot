@@ -1,7 +1,6 @@
 import math
 import random
 
-from ...timeout.battleship.battleshipTimeoutHelperInterface import BattleshipTimeoutHelperInterface
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
@@ -11,6 +10,7 @@ from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
+from ..officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitchUtilsInterface import TwitchUtilsInterface
@@ -31,7 +31,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
-        battleshipTimeoutHelper: BattleshipTimeoutHelperInterface | None,
+        officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
@@ -42,9 +42,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if battleshipTimeoutHelper is not None and not isinstance(battleshipTimeoutHelper, BattleshipTimeoutHelperInterface):
-            raise TypeError(f'battleshipTimeoutHelper argument is malformed: \"{battleshipTimeoutHelper}\"')
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
+            raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -63,7 +63,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__battleshipTimeoutHelper: BattleshipTimeoutHelperInterface | None = battleshipTimeoutHelper
+        self.__officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = officialTwitchAccountUserIdProvider
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
@@ -270,6 +270,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             # individual person who received a gifted sub. We don't want to do a TTS alert for all
             # users who received a gifted sub, so we're going to return here.
             return
+        elif isGift is False and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE:
+            # These are events where people have resubscribed, but haven't clicked the little chat
+            # button to actually announce this to everyone yet. Such an announcement will have a
+            # subscription type of SUBSCRIPTION_MESSAGE.
+            return
 
         actualMessage = message
         if not utils.isValidStr(actualMessage):
@@ -290,9 +295,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     twitchChannelId = broadcasterUserId
                 )
 
-                actualUserId = await self.__userIdsRepository.requireAnonymousUserId()
+                actualUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
 
-                actualUserName = await self.__userIdsRepository.requireAnonymousUserName(
+                actualUserName = await self.__userIdsRepository.requireUserName(
+                    userId = actualUserId,
                     twitchAccessToken = twitchAccessToken
                 )
             else:
@@ -334,20 +340,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             twitchChannelId = broadcasterUserId,
             ttsEvent = ttsEvent
         ))
-
-        ########################
-        ## VALORANT JUNK HERE ##
-        ########################
-
-        if user.areValorantTimeoutsEnabled and total is not None and total >= 1 and actualUserId == '490592527' and self.__battleshipTimeoutHelper is not None:
-            total = total * 3
-            for _ in range(total):
-                await self.__battleshipTimeoutHelper.fire(
-                    broadcasterUserId = broadcasterUserId,
-                    originUserId = actualUserId,
-                    originUserName = actualUserName,
-                    user = user
-                )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

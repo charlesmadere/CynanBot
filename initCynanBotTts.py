@@ -27,7 +27,6 @@ from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
-from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
@@ -221,8 +220,6 @@ from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
-from src.timeout.battleship.battleshipTimeoutHelper import BattleshipTimeoutHelper
-from src.timeout.battleship.battleshipTimeoutHelperInterface import BattleshipTimeoutHelperInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.timeout.timeoutActionHelper import TimeoutActionHelper
@@ -334,8 +331,8 @@ from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFol
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from src.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
-from src.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
+from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
@@ -508,7 +505,6 @@ officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterfac
 
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
-    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchApiService = twitchApiService
 )
@@ -874,13 +870,6 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 )
 
 
-######################################
-## Chat Band initialization section ##
-######################################
-
-chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = None
-
-
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -896,7 +885,7 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None = Sound
 )
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
-    chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
+    chatBandInstrumentSoundsRepository = None,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -1418,16 +1407,6 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     twitchUtils = twitchUtils
 )
 
-battleshipTimeoutHelper: BattleshipTimeoutHelperInterface | None = BattleshipTimeoutHelper(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
-)
-
 
 ##########################################
 ## Cheer Actions initialization section ##
@@ -1626,7 +1605,7 @@ twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
-    battleshipTimeoutHelper = battleshipTimeoutHelper,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,

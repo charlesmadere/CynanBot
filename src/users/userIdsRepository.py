@@ -13,7 +13,6 @@ from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType
 from ..timber.timberInterface import TimberInterface
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitch.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 
 
 class UserIdsRepository(UserIdsRepositoryInterface):
@@ -21,7 +20,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         cacheSize: int = 256
@@ -30,8 +28,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
-            raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not utils.isValidInt(cacheSize):
@@ -40,7 +36,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = officialTwitchAccountUserIdProvider
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
 
@@ -50,20 +45,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     async def clearCaches(self):
         self.__cache.clear()
         self.__timber.log('UserIdsRepository', 'Caches cleared')
-
-    async def fetchAnonymousUserId(self) -> str:
-        return await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
-
-    async def fetchAnonymousUserName(self, twitchAccessToken: str) -> str | None:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
-        anonymousUserId = await self.fetchAnonymousUserId()
-
-        return await self.fetchUserName(
-            userId = anonymousUserId,
-            twitchAccessToken = twitchAccessToken
-        )
 
     async def fetchUserId(
         self,
@@ -245,27 +226,16 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         await connection.close()
 
     async def optionallySetUser(self, userId: str | None, userName: str | None):
+        if userId is not None and not isinstance(userId, str):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif userName is not None and not isinstance(userName, str):
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+
         if utils.isValidStr(userId) and utils.isValidStr(userName):
-            await self.setUser(userId = userId, userName = userName)
-
-    async def requireAnonymousUserId(self) -> str:
-        anonymousUserId = await self.fetchAnonymousUserId()
-
-        if not utils.isValidStr(anonymousUserId):
-            raise NoSuchUserException(f'Unable to fetch Twitch user ID for anonymous user')
-
-        return anonymousUserId
-
-    async def requireAnonymousUserName(self, twitchAccessToken: str) -> str:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
-        anonymousUserName = await self.fetchAnonymousUserName(twitchAccessToken)
-
-        if not utils.isValidStr(anonymousUserName):
-            raise NoSuchUserException(f'Unable to fetch Twitch user name for anonymous user')
-
-        return anonymousUserName
+            await self.setUser(
+                userId = userId,
+                userName = userName
+            )
 
     async def requireUserId(
         self,

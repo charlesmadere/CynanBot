@@ -48,7 +48,7 @@ from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import \
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
-from ..twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from ..twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface

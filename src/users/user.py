@@ -22,9 +22,9 @@ class User(UserInterface):
     def __init__(
         self,
         areBeanStatsEnabled: bool,
+        areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
-        areValorantTimeoutsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
@@ -121,6 +121,8 @@ class User(UserInterface):
     ):
         if not utils.isValidBool(areBeanStatsEnabled):
             raise TypeError(f'areBeanStatsEnabled argument is malformed: \"{areBeanStatsEnabled}\"')
+        elif not utils.isValidBool(areCheerActionsEnabled):
+            raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
@@ -309,9 +311,9 @@ class User(UserInterface):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
         self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
+        self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
-        self.__areValorantTimeoutsEnabled: bool = areValorantTimeoutsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
@@ -427,16 +429,16 @@ class User(UserInterface):
         return self.__areBeanStatsEnabled
 
     @property
+    def areCheerActionsEnabled(self) -> bool:
+        return self.__areCheerActionsEnabled
+
+    @property
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
 
     @property
     def areSoundAlertsEnabled(self) -> bool:
         return self.__areSoundAlertsEnabled
-
-    @property
-    def areValorantTimeoutsEnabled(self) -> bool:
-        return self.__areValorantTimeoutsEnabled
 
     @property
     def blueSkyUrl(self) -> str | None:

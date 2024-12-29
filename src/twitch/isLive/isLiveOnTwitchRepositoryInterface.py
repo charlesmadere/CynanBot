@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from frozendict import frozendict
 
-from ..misc.clearable import Clearable
+from ...misc.clearable import Clearable
 
 
 class IsLiveOnTwitchRepositoryInterface(Clearable):

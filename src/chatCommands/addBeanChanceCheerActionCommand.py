@@ -38,6 +38,10 @@ class AddBeanChanceCheerActionCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+
+        if not user.areCheerActionsEnabled:
+            return
+
         userId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 

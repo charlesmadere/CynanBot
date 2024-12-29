@@ -6,14 +6,6 @@ from ..misc.clearable import Clearable
 class UserIdsRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def fetchAnonymousUserId(self) -> str:
-        pass
-
-    @abstractmethod
-    async def fetchAnonymousUserName(self, twitchAccessToken: str) -> str | None:
-        pass
-
-    @abstractmethod
     async def fetchUserId(
         self,
         userName: str,
@@ -43,14 +35,6 @@ class UserIdsRepositoryInterface(Clearable):
         userId: str | None,
         userName: str | None
     ):
-        pass
-
-    @abstractmethod
-    async def requireAnonymousUserId(self) -> str:
-        pass
-
-    @abstractmethod
-    async def requireAnonymousUserName(self, twitchAccessToken: str) -> str:
         pass
 
     @abstractmethod

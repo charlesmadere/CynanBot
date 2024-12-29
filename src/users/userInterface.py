@@ -45,17 +45,17 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def areCheerActionsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def areRecurringActionsEnabled(self) -> bool:
         pass
 
     @property
     @abstractmethod
     def areSoundAlertsEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def areValorantTimeoutsEnabled(self) -> bool:
         pass
 
     @property

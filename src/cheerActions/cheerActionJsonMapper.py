@@ -183,16 +183,9 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             fallback = True
         )
 
-        targetsRandomActiveChatter = utils.getBoolFromDict(
-            d = jsonContents,
-            key = 'targetsRandomActiveChatter',
-            fallback = False
-        )
-
         return TimeoutCheerAction(
             isEnabled = isEnabled,
             isRandomChanceEnabled = isRandomChanceEnabled,
-            targetsRandomActiveChatter = targetsRandomActiveChatter,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             durationSeconds = durationSeconds,
@@ -433,8 +426,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] = {
             'durationSeconds': cheerAction.durationSeconds,
-            'randomChanceEnabled': cheerAction.isRandomChanceEnabled,
-            'targetsRandomActiveChatter': cheerAction.targetsRandomActiveChatter
+            'randomChanceEnabled': cheerAction.isRandomChanceEnabled
         }
 
         return json.dumps(jsonContents)
