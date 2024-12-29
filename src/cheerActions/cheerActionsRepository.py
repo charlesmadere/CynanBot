@@ -145,7 +145,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         await connection.execute(
             '''
                 DELETE FROM cheeractions
-                WHERE bits = $1 AND userid = $2
+                WHERE bits = $1 AND twitchchannelid = $2
             ''',
             bits, twitchChannelId
         )
