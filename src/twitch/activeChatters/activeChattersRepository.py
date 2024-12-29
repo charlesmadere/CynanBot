@@ -148,3 +148,24 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             )
 
         return frozenActiveChatters
+
+    async def remove(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ):
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        activeChatters = self.__twitchChannelIdToActiveChatters[twitchChannelId]
+        chatter: ActiveChatter | None = None
+
+        for activeChatter in activeChatters:
+            if activeChatter.chatterUserId == chatterUserId:
+                chatter = activeChatter
+                break
+
+        if chatter is not None:
+            activeChatters.remove(chatter)

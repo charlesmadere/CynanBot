@@ -93,6 +93,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         eligibleChattersList: list[ActiveChatter] = list(eligibleChatters.values())
         randomChatter = random.choice(eligibleChattersList)
 
+        await self.__activeChattersRepository.remove(
+            chatterUserId = randomChatter.chatterUserId,
+            twitchChannelId = broadcasterUserId
+        )
+
         return TimeoutCheerActionHelper.TimeoutTarget(
             isRandomChanceEnabled = False,
             userId = randomChatter.chatterUserId,

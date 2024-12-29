@@ -22,3 +22,11 @@ class ActiveChattersRepositoryInterface(ABC):
         count: int | None = None
     ) -> Collection[ActiveChatter]:
         pass
+
+    @abstractmethod
+    async def remove(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ):
+        pass
