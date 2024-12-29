@@ -185,11 +185,25 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Subscribe Alert.mp3'
                 )
 
-            case SoundAlert.TNT:
+            case SoundAlert.TNT_1:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'tntFilePath',
-                    fallback = 'TNT.mp3'
+                    fallback = 'TNT 1.mp3'
+                )
+
+            case SoundAlert.TNT_2:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'tntFilePath',
+                    fallback = 'TNT 2.mp3'
+                )
+
+            case SoundAlert.TNT_3:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'tntFilePath',
+                    fallback = 'TNT 3.mp3'
                 )
 
             case _:

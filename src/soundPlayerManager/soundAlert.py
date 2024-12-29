@@ -26,4 +26,6 @@ class SoundAlert(Enum):
     RAID = auto()
     RANDOM_FROM_DIRECTORY = auto()
     SUBSCRIBE = auto()
-    TNT = auto()
+    TNT_1 = auto()
+    TNT_2 = auto()
+    TNT_3 = auto()

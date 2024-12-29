@@ -46,7 +46,9 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'raid': return SoundAlert.RAID
             case 'random_from_directory': return SoundAlert.RANDOM_FROM_DIRECTORY
             case 'subscribe': return SoundAlert.SUBSCRIBE
-            case 'tnt': return SoundAlert.TNT
+            case 'tnt_1': return SoundAlert.TNT_1
+            case 'tnt_2': return SoundAlert.TNT_2
+            case 'tnt_3': return SoundAlert.TNT_3
             case _:
                 self.__timber.log('SoundAlertJsonMapper', f'Encountered unknown SoundAlert value: \"{jsonString}\"')
                 return None
@@ -82,5 +84,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.RAID: return 'raid'
             case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
             case SoundAlert.SUBSCRIBE: return 'subscribe'
-            case SoundAlert.TNT: return 'tnt'
+            case SoundAlert.TNT_1: return 'tnt_1'
+            case SoundAlert.TNT_2: return 'tnt_2'
+            case SoundAlert.TNT_3: return 'tnt_3'
             case _: raise ValueError(f'Unknown SoundAlert value: \"{soundAlert}\"')

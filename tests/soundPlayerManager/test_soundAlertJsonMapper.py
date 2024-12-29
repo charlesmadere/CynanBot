@@ -113,9 +113,17 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('subscribe')
         assert result is SoundAlert.SUBSCRIBE
 
-    def test_parseSoundAlert_withTntString(self):
-        result = self.jsonMapper.parseSoundAlert('tnt')
-        assert result is SoundAlert.TNT
+    def test_parseSoundAlert_withTnt_1String(self):
+        result = self.jsonMapper.parseSoundAlert('tnt_1')
+        assert result is SoundAlert.TNT_1
+
+    def test_parseSoundAlert_withTnt_2String(self):
+        result = self.jsonMapper.parseSoundAlert('tnt_2')
+        assert result is SoundAlert.TNT_2
+
+    def test_parseSoundAlert_withTnt_3String(self):
+        result = self.jsonMapper.parseSoundAlert('tnt_3')
+        assert result is SoundAlert.TNT_3
 
     def test_parseSoundAlert_withWhitespaceString(self):
         result = self.jsonMapper.parseSoundAlert(' ')
@@ -225,9 +233,17 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.SUBSCRIBE)
         assert result == 'subscribe'
 
-    def test_serializeSoundAlert_withTnt(self):
-        result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT)
-        assert result == 'tnt'
+    def test_serializeSoundAlert_withTnt_1(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT_1)
+        assert result == 'tnt_1'
+
+    def test_serializeSoundAlert_withTnt_2(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT_2)
+        assert result == 'tnt_2'
+
+    def test_serializeSoundAlert_withTnt_3(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT_3)
+        assert result == 'tnt_3'
 
     def test_sanity(self):
         assert self.jsonMapper is not None

@@ -128,7 +128,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         )
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = SoundAlert.TNT,
+            soundAlert = await self.__chooseRandomTntSoundAlert(),
             twitchChannel = timeoutData.twitchChannel,
             twitchChannelId = timeoutData.twitchChannelId,
             ttsEvent = ttsEvent
@@ -158,6 +158,15 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             message = message,
             replyMessageId = timeoutData.twitchChatMessageId
         )
+
+    async def __chooseRandomTntSoundAlert(self):
+        soundAlerts: list[SoundAlert] = [
+            SoundAlert.TNT_1,
+            SoundAlert.TNT_2,
+            SoundAlert.TNT_3
+        ]
+
+        return random.choice(soundAlerts)
 
     async def __generateRollFailureData(
         self,
