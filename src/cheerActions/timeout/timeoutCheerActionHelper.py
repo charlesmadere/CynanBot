@@ -22,6 +22,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     @dataclass(frozen = True)
     class TimeoutTarget:
+        isRandomChanceEnabled: bool
         userId: str
         userName: str
 
@@ -93,6 +94,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         randomChatter = random.choice(eligibleChattersList)
 
         return TimeoutCheerActionHelper.TimeoutTarget(
+            isRandomChanceEnabled = False,
             userId = randomChatter.chatterUserId,
             userName = randomChatter.chatterUserName
         )
@@ -151,6 +153,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             return None
 
         return TimeoutCheerActionHelper.TimeoutTarget(
+            isRandomChanceEnabled = timeoutAction.isRandomChanceEnabled,
             userId = timeoutTargetUserId,
             userName = timeoutTargetUserName
         )
@@ -222,7 +225,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         )
 
         return await self.__timeoutActionHelper.timeout(TimeoutActionData(
-            isRandomChanceEnabled = timeoutAction.isRandomChanceEnabled,
+            isRandomChanceEnabled = timeoutTarget.isRandomChanceEnabled,
             bits = bits,
             durationSeconds = timeoutAction.durationSeconds,
             chatMessage = message,
