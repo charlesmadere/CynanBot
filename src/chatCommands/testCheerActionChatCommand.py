@@ -34,6 +34,10 @@ class TestCheerActionChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+
+        if not user.areCheerActionsEnabled:
+            return
+
         twitchChannelId = await ctx.getTwitchChannelId()
 
         if twitchChannelId != ctx.getAuthorId():
