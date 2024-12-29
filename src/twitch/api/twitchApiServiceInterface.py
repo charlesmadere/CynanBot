@@ -4,6 +4,8 @@ from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
 from .models.twitchBannedUserResponse import TwitchBannedUserResponse
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from .models.twitchChattersResponse import TwitchChattersResponse
+from .models.twitchChattersRequest import TwitchChattersRequest
 from .models.twitchEmotesResponse import TwitchEmotesResponse
 from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
@@ -62,6 +64,14 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str
     ) -> TwitchChannelEditorsResponse:
+        pass
+
+    @abstractmethod
+    async def fetchChatters(
+        self,
+        twitchAccessToken: str,
+        chattersRequest: TwitchChattersRequest
+    ) -> TwitchChattersResponse:
         pass
 
     @abstractmethod

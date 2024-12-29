@@ -7,6 +7,8 @@ from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
 from .models.twitchBannedUserResponse import TwitchBannedUserResponse
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from .models.twitchChattersRequest import TwitchChattersRequest
+from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
 from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
@@ -372,6 +374,19 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchChannelEditorsResponse=})')
 
         return twitchChannelEditorsResponse
+
+    async def fetchChatters(
+        self,
+        twitchAccessToken: str,
+        chattersRequest: TwitchChattersRequest
+    ) -> TwitchChattersResponse:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not isinstance(chattersRequest, TwitchChattersRequest):
+            raise TypeError(f'chattersRequest argument is malformed: \"{chattersRequest}\"')
+
+        # TODO
+        raise RuntimeError()
 
     async def fetchEmotes(
         self,
