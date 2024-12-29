@@ -16,7 +16,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     def __init__(
         self,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        maxActiveChattersSize: int = 128,
+        maxActiveChattersSize: int = 200,
         maxActiveChattersTimeToLive: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
