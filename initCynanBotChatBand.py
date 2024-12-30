@@ -290,8 +290,7 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchCredentialsProvider = authRepository,
-    twitchJsonMapper = twitchJsonMapper,
-    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
+    twitchJsonMapper = twitchJsonMapper
 )
 
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
