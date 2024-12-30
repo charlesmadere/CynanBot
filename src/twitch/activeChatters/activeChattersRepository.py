@@ -160,12 +160,12 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         activeChatters = self.__twitchChannelIdToActiveChatters[twitchChannelId]
-        chatter: ActiveChatter | None = None
+        indexToDelete: int | None = None
 
-        for activeChatter in activeChatters:
+        for index, activeChatter in enumerate(activeChatters):
             if activeChatter.chatterUserId == chatterUserId:
-                chatter = activeChatter
+                indexToDelete = index
                 break
 
-        if chatter is not None:
-            activeChatters.remove(chatter)
+        if indexToDelete is not None:
+            del activeChatters[indexToDelete]
