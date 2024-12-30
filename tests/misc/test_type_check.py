@@ -240,12 +240,15 @@ def test_enum() -> None:
 
 
 def test_str_annotations() -> None:
-    """ str annotations not supported """
+    """ str annotations supported """
 
+    @type_check
+    def f(x: float, y: "str", z: object) -> object:
+        return x
+
+    f(3.9, "2", None)
     with pytest.raises(TypeError):
-        @type_check
-        def f(x: float, y: "str", z: object) -> object:
-            return x
+        f(3.9, 2, None)  # type: ignore
 
 
 def test_second_arg() -> None:

@@ -3,7 +3,7 @@ import typing
 from collections.abc import Iterable, Iterator, Mapping
 from inspect import signature
 from types import GenericAlias, UnionType
-from typing import Any, Callable, NoReturn, ParamSpec, TypeGuard, TypeVar
+from typing import Any, Callable, NoReturn, ParamSpec, TypeGuard, TypeVar, get_type_hints
 
 _Checkable = type | UnionType | GenericAlias | None
 
@@ -24,11 +24,10 @@ def validate_typeddict[T](obj: dict[str, Any] | Any, t_dict: type[T], value_name
     # but that doesn't work if the `TypedDict` came from `typing_extensions`
     if not isinstance(obj, Mapping):
         return False
-    for name, type_ in t_dict.__annotations__.items():
+    for name, type_ in get_type_hints(t_dict).items():
         required = True
-        if repr(type_).startswith("typing.NotRequired"):  # maybe not the best way
+        if repr(t_dict.__annotations__[name]).startswith("typing.NotRequired"):  # maybe not the best way
             required = False
-            type_ = type_.__args__[0]
 
         if required and name not in obj:
             return False
@@ -150,14 +149,14 @@ def _is_checkable(annotations: dict[str, object]) -> TypeGuard[dict[str, _Checka
     )
 
 
-_P = ParamSpec('_P')
+_P = ParamSpec("_P")
 _RT = TypeVar("_RT")
 
 
 def type_check(func: Callable[_P, _RT]) -> Callable[_P, _RT]:
     """ apply run-time type checking to the parameters of this function """
 
-    annotations = func.__annotations__
+    annotations = get_type_hints(func)
     assert _is_checkable(annotations)
     sig = signature(func)
     params = sig.parameters
