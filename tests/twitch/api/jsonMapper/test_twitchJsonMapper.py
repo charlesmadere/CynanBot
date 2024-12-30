@@ -15,6 +15,7 @@ from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
 from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from src.twitch.api.models.twitchChatter import TwitchChatter
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
@@ -346,6 +347,41 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseChatter(self):
+        userId = 'abc123'
+        userLogin = 'stashiocat'
+        userName = 'stashiocat'
+
+        result = await self.jsonMapper.parseChatter({
+            'user_id': userId,
+            'user_login': userLogin,
+            'user_name': userName
+        })
+
+        assert isinstance(result, TwitchChatter)
+        assert result.userId == userId
+        assert result.userLogin == userLogin
+        assert result.userName == userName
+
+    @pytest.mark.asyncio
+    async def test_parseChatter_withEmptyDictionary(self):
+        result: TwitchChatter | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.parseChatter(dict())
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatter_withNone(self):
+        result: TwitchChatter | None = None
+
+        with pytest.raises(Exception):
+            result = await self.jsonMapper.parseChatter(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseCondition_withEmptyDictionary(self):
         result = await self.jsonMapper.parseCondition(dict())
         assert isinstance(result, TwitchWebsocketCondition)
@@ -626,13 +662,24 @@ class TestTwitchJsonMapper:
 
     @pytest.mark.asyncio
     async def test_parsePaginationResponse(self):
-        jsonResponse: dict[str, Any] = {
-            'cursor': 'abc123'
-        }
+        cursor = 'abc123'
 
-        result = await self.jsonMapper.parsePaginationResponse(jsonResponse)
+        result = await self.jsonMapper.parsePaginationResponse({
+            'cursor': cursor
+        })
+
         assert isinstance(result, TwitchPaginationResponse)
         assert result.cursor == 'abc123'
+
+    @pytest.mark.asyncio
+    async def test_parsePaginationResponse_withBlankCursor(self):
+        cursor = ''
+
+        result = await self.jsonMapper.parsePaginationResponse({
+            'cursor': cursor
+        })
+
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parsePaginationResponse_withEmptyDictionary(self):
@@ -642,6 +689,16 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parsePaginationResponse_withNone(self):
         result = await self.jsonMapper.parsePaginationResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePaginationResponse_withNoneCursor(self):
+        cursor: str | None = None
+
+        result = await self.jsonMapper.parsePaginationResponse({
+            'cursor': cursor
+        })
+
         assert result is None
 
     @pytest.mark.asyncio

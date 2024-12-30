@@ -28,7 +28,6 @@ from ..exceptions import (TwitchErrorException, TwitchJsonException,
                           TwitchPasswordChangedException, TwitchStatusCodeException,
                           TwitchTokenIsExpiredException)
 from ..twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
-from ..websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -44,8 +43,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchCredentialsProvider: TwitchCredentialsProviderInterface,
-        twitchJsonMapper: TwitchJsonMapperInterface,
-        twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface
+        twitchJsonMapper: TwitchJsonMapperInterface
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -57,15 +55,12 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TypeError(f'twitchCredentialsProvider argument is malformed: \"{twitchCredentialsProvider}\"')
         elif not isinstance(twitchJsonMapper, TwitchJsonMapperInterface):
             raise TypeError(f'twitchJsonMapper argument is malformed: \"{twitchJsonMapper}\"')
-        elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
-            raise TypeError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchCredentialsProvider: TwitchCredentialsProviderInterface = twitchCredentialsProvider
         self.__twitchJsonMapper: TwitchJsonMapperInterface = twitchJsonMapper
-        self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
 
     async def addModerator(
         self,
@@ -385,8 +380,45 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif not isinstance(chattersRequest, TwitchChattersRequest):
             raise TypeError(f'chattersRequest argument is malformed: \"{chattersRequest}\"')
 
-        # TODO
-        raise RuntimeError()
+        first = chattersRequest.first
+
+        if first is None or first < 1 or first > 1000:
+            first = 100
+
+        self.__timber.log('TwitchApiService', f'Fetching chatters... ({twitchAccessToken=}) ({chattersRequest=}) ({first=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/chat/chatters?broadcaster_id={chattersRequest.broadcasterId}&moderator_id={chattersRequest.moderatorId}&first={first}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching chatters ({twitchAccessToken=}) ({chattersRequest=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching chatters ({twitchAccessToken=}) ({chattersRequest=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching chatters ({twitchAccessToken=}) ({chattersRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching chatters ({twitchAccessToken=}) ({chattersRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+            )
+
+        twitchChattersResponse = await self.__twitchJsonMapper.parseChattersResponse(jsonResponse)
+
+        if twitchChattersResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching chatters ({twitchAccessToken=}) ({chattersRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchChattersResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching chatters ({twitchAccessToken=}) ({chattersRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchChattersResponse=})')
+
+        return twitchChattersResponse
 
     async def fetchEmotes(
         self,

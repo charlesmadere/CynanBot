@@ -15,6 +15,8 @@ from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from ..models.twitchChatter import TwitchChatter
+from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -297,6 +299,56 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchChannelEditorsResponse(
             editors = frozenChannelEditors
+        )
+
+    async def parseChatter(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatter:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchChatter(
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName
+        )
+
+    async def parseChattersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChattersResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        frozenChatters: FrozenList[TwitchChatter]
+
+        if isinstance(data, list) and len(data) >= 1:
+            chatters: list[TwitchChatter] = list()
+
+            for chatterJson in data:
+                chatter = await self.parseChatter(chatterJson)
+                chatters.append(chatter)
+
+            chatters.sort(key = lambda chatter: chatter.userName)
+            frozenChatters = FrozenList(chatters)
+        else:
+            frozenChatters = FrozenList()
+
+        frozenChatters.freeze()
+
+        return TwitchChattersResponse(
+            data = frozenChatters,
+            total = total,
+            pagination = pagination
         )
 
     async def parseCondition(

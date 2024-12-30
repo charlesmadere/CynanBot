@@ -10,6 +10,8 @@ from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from ..models.twitchChatter import TwitchChatter
+from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -89,6 +91,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchChannelEditorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseChatter(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatter:
+        pass
+
+    @abstractmethod
+    async def parseChattersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChattersResponse | None:
         pass
 
     @abstractmethod
