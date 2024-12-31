@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Collection
@@ -73,30 +72,6 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             activeChatters = activeChatters
         )
 
-    async def __chooseRandomActiveChatters(
-        self,
-        count: int | None,
-        activeChatters: list[ActiveChatter]
-    ) -> FrozenList[ActiveChatter]:
-        if not utils.isValidInt(count):
-            raise TypeError(f'count argument is malformed: \"{count}\"')
-        elif count is not None and (count < 1 or count > utils.getIntMaxSafeSize()):
-            raise ValueError(f'count argument is out of bounds: {count}')
-        elif not isinstance(activeChatters, list):
-            raise TypeError(f'activeChatters argument is malformed: \"{activeChatters}\"')
-
-        if count is None:
-            count = utils.getIntMaxSafeSize()
-
-        selectedChatters: set[ActiveChatter] = set()
-
-        while len(selectedChatters) < count and len(selectedChatters) < len(activeChatters):
-            selectedChatters.add(random.choice(activeChatters))
-
-        frozenSelectedChatters: FrozenList[ActiveChatter] = FrozenList(selectedChatters)
-        frozenSelectedChatters.freeze()
-        return frozenSelectedChatters
-
     async def __clean(
         self,
         now: datetime,
@@ -118,15 +93,10 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
     async def get(
         self,
-        twitchChannelId: str,
-        count: int | None = None
+        twitchChannelId: str
     ) -> Collection[ActiveChatter]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif count is not None and not utils.isValidInt(count):
-            raise TypeError(f'count argument is malformed: \"{count}\"')
-        elif count is not None and (count < 1 or count > utils.getIntMaxSafeSize()):
-            raise ValueError(f'count argument is out of bounds: {count}')
 
         activeChatters = self.__twitchChannelIdToActiveChatters[twitchChannelId]
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -136,16 +106,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             activeChatters = activeChatters
         )
 
-        frozenActiveChatters: FrozenList[ActiveChatter]
-
-        if count is None:
-            frozenActiveChatters = FrozenList(activeChatters)
-            frozenActiveChatters.freeze()
-        else:
-            frozenActiveChatters = await self.__chooseRandomActiveChatters(
-                activeChatters = activeChatters,
-                count = count
-            )
+        frozenActiveChatters: FrozenList[ActiveChatter] = FrozenList(activeChatters)
+        frozenActiveChatters.freeze()
 
         return frozenActiveChatters
 
