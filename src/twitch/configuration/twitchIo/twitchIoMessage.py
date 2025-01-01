@@ -64,15 +64,15 @@ class TwitchIoMessage(TwitchMessage):
 
         rawTagsDictionary: dict[Any, Any] | Any | None = self.__message.tags
         if not isinstance(rawTagsDictionary, dict) or len(rawTagsDictionary) == 0:
-            raise TwitchIoHasMalformedTagsException(f'Encountered malformed TwitchIO tags ({rawTagsDictionary=}) ({self=}) ({self.__message})')
+            raise TwitchIoHasMalformedTagsException(f'Encountered malformed TwitchIO tags ({rawTagsDictionary=}) ({self.__message=})')
 
         messageId: str | Any | None = rawTagsDictionary.get('id', None)
         if not utils.isValidStr(messageId):
-            raise TwitchIoTagsIsMissingMessageIdException(f'Twitch message tags are missing \"id\" value ({messageId=}) ({tags=})')
+            raise TwitchIoTagsIsMissingMessageIdException(f'Twitch message tags are missing \"id\" value ({messageId=}) ({rawTagsDictionary=}) ({self.__message=})')
 
         roomId: str | Any | None = rawTagsDictionary.get('room-id', None)
         if not utils.isValidStr(roomId):
-            raise TwitchIoTagsIsMissingRoomIdException(f'Twitch message tags are missing \"room-id\" value ({roomId=}) ({tags=})')
+            raise TwitchIoTagsIsMissingRoomIdException(f'Twitch message tags are missing \"room-id\" value ({roomId=}) ({rawTagsDictionary=}) ({self.__message=})')
 
         replyParentMsgBody: str | Any | None = rawTagsDictionary.get('reply-parent-msg-body', None)
         replyParentMsgId: str | Any | None = rawTagsDictionary.get('reply-parent-msg-id', None)
