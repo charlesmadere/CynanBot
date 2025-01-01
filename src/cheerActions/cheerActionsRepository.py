@@ -1,7 +1,6 @@
 import traceback
-from typing import Collection
 
-from frozenlist import FrozenList
+from frozendict import frozendict
 
 from .absCheerAction import AbsCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
@@ -47,7 +46,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, FrozenList[AbsCheerAction] | None] = dict()
+        self.__cache: dict[str, frozendict[int, AbsCheerAction] | None] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -251,20 +250,16 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         actions = await self.getActions(twitchChannelId = twitchChannelId)
 
-        if actions is None or len(actions) == 0:
+        if actions is None:
             return None
+        else:
+            return actions.get(bits, None)
 
-        for action in actions:
-            if action.bits == bits:
-                return action
-
-        return None
-
-    async def getActions(self, twitchChannelId: str) -> Collection[AbsCheerAction]:
+    async def getActions(self, twitchChannelId: str) -> frozendict[int, AbsCheerAction]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        cachedActions: FrozenList[AbsCheerAction] | None = self.__cache.get(twitchChannelId, None)
+        cachedActions: frozendict[int, AbsCheerAction] | None = self.__cache.get(twitchChannelId, None)
 
         if cachedActions is not None:
             return cachedActions
@@ -280,7 +275,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         )
 
         await connection.close()
-        actions: list[AbsCheerAction] = list()
+        actions: dict[int, AbsCheerAction] = dict()
 
         if records is not None and len(records) >= 1:
             for record in records:
@@ -299,12 +294,9 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     twitchChannelId = twitchChannelId
                 )
 
-                actions.append(cheerAction)
+                actions[bits] = cheerAction
 
-        actions.sort(key = lambda action: action.bits, reverse = True)
-        frozenActions = FrozenList(actions)
-        frozenActions.freeze()
-
+        frozenActions: frozendict[int, AbsCheerAction] = frozendict(actions)
         self.__cache[twitchChannelId] = frozenActions
         return frozenActions
 

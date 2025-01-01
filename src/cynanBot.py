@@ -703,7 +703,7 @@ class CynanBot(
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__enableCheerActionCommand: AbsChatCommand = EnableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
-            self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
 
         if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()

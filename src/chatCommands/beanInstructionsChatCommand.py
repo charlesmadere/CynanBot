@@ -44,7 +44,7 @@ class BeanInstructionsChatCommand(AbsChatCommand):
 
         beanCheerActions: list[BeanChanceCheerAction] = list()
 
-        for cheerAction in cheerActions:
+        for cheerAction in cheerActions.values():
             if isinstance(cheerAction, BeanChanceCheerAction):
                 beanCheerActions.append(cheerAction)
 

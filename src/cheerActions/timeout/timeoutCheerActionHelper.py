@@ -1,6 +1,7 @@
 import random
 from dataclasses import dataclass
-from typing import Collection
+
+from frozendict import frozendict
 
 from .timeoutCheerAction import TimeoutCheerAction
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
@@ -165,7 +166,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def handleTimeoutCheerAction(
         self,
-        actions: Collection[AbsCheerAction],
+        actions: frozendict[int, AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -177,7 +178,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not isinstance(actions, Collection):
+        if not isinstance(actions, frozendict):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
         elif not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
@@ -202,14 +203,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        timeoutAction: TimeoutCheerAction | None = None
+        action = actions.get(bits, None)
 
-        for action in actions:
-            if isinstance(action, TimeoutCheerAction) and action.isEnabled and action.bits == bits:
-                timeoutAction = action
-                break
-
-        if timeoutAction is None:
+        if not isinstance(action, TimeoutCheerAction):
+            return False
+        elif not action.isEnabled:
             return False
 
         timeoutTarget = await self.__determineTimeoutTarget(
@@ -218,7 +216,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             cheerUserName = cheerUserName,
             message = message,
             userTwitchAccessToken = userTwitchAccessToken,
-            timeoutAction = timeoutAction,
+            timeoutAction = action,
             user = user
         )
 
@@ -226,13 +224,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             return False
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(
-            streamStatusRequirement = timeoutAction.streamStatusRequirement
+            streamStatusRequirement = action.streamStatusRequirement
         )
 
         return await self.__timeoutActionHelper.timeout(TimeoutActionData(
             isRandomChanceEnabled = timeoutTarget.isRandomChanceEnabled,
             bits = bits,
-            durationSeconds = timeoutAction.durationSeconds,
+            durationSeconds = action.durationSeconds,
             chatMessage = message,
             instigatorUserId = cheerUserId,
             instigatorUserName = cheerUserName,

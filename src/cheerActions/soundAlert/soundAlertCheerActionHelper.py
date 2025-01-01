@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from frozendict import frozendict
 
 from .soundAlertCheerAction import SoundAlertCheerAction
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
@@ -36,7 +36,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
     async def handleSoundAlertCheerAction(
         self,
-        actions: Collection[AbsCheerAction],
+        actions: frozendict[int, AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -47,7 +47,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not isinstance(actions, Collection):
+        if not isinstance(actions, frozendict):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
         elif not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
@@ -73,18 +73,15 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not user.areSoundAlertsEnabled:
             return False
 
-        soundAlertAction: SoundAlertCheerAction | None = None
+        action = actions.get(bits, None)
 
-        for action in actions:
-            if isinstance(action, SoundAlertCheerAction) and action.isEnabled and action.bits == bits:
-                soundAlertAction = action
-                break
-
-        if soundAlertAction is None:
+        if not isinstance(action, SoundAlertCheerAction):
+            return False
+        elif not action.isEnabled:
             return False
 
         return await self.__playSoundAlert(
-            action = soundAlertAction,
+            action = action,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             twitchChannelId = broadcasterUserId,
@@ -99,17 +96,6 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         twitchChannelId: str,
         user: UserInterface
     ):
-        if not isinstance(action, SoundAlertCheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-        elif not utils.isValidStr(cheerUserId):
-            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserName):
-            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         if not await self.__isLiveOnTwitchRepository.isLive(twitchChannelId):
             self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.handle=}) ({action=})')
             return False
@@ -121,6 +107,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not utils.isValidStr(soundAlertPath):
             return False
 
+        self.__timber.log('SoundAlertCheertActionHelper', f'Playing sound alert CheerAction from {cheerUserName}:{cheerUserId} ({soundAlertPath=}) ({user.handle=}) ({action=})')
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
         await soundPlayerManager.playSoundFile(soundAlertPath)
 

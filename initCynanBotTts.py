@@ -1431,7 +1431,6 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     trollmojiHelper = trollmojiHelper,
-    twitchEmotesHelper = twitchEmotesHelper,
     twitchUtils = twitchUtils
 )
 
@@ -1475,6 +1474,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
+    tntCheerActionHelper = None,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository

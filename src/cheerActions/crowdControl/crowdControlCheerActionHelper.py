@@ -2,6 +2,7 @@ import random
 from datetime import datetime
 from typing import Collection
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
@@ -121,7 +122,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
     async def handleCrowdControlCheerAction(
         self,
-        actions: Collection[AbsCheerAction],
+        actions: frozendict[int, AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -133,26 +134,41 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
+        if not isinstance(actions, frozendict):
+            raise TypeError(f'actions argument is malformed: \"{actions}\"')
+        elif not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        elif not utils.isValidStr(cheerUserId):
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserName):
+            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
+        elif not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(moderatorTwitchAccessToken):
+            raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
+        elif not utils.isValidStr(moderatorUserId):
+            raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+        elif not utils.isValidStr(userTwitchAccessToken):
+            raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
         if not user.isCrowdControlEnabled:
             return False
 
-        crowdControlAction: AbsCheerAction | None = None
+        action = actions.get(bits, None)
 
-        for action in actions:
-            if not isinstance(action, CrowdControlButtonPressCheerAction) and not isinstance(action, CrowdControlGameShuffleCheerAction):
-                continue
-            elif not action.isEnabled or action.bits != bits:
-                continue
-            else:
-                crowdControlAction = action
-                break
-
-        if crowdControlAction is None:
+        if action is None:
             return False
-
-        elif isinstance(crowdControlAction, CrowdControlButtonPressCheerAction):
+        elif not action.isEnabled:
+            return False
+        elif isinstance(action, CrowdControlButtonPressCheerAction):
             return await self.__inputButtonPressIntoCrowdControl(
-                action = crowdControlAction,
+                action = action,
                 chatterUserId = cheerUserId,
                 chatterUserName = cheerUserName,
                 message = message,
@@ -160,20 +176,17 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 twitchChatMessageId = twitchChatMessageId,
                 user = user
             )
-
-        elif isinstance(crowdControlAction, CrowdControlGameShuffleCheerAction):
+        elif isinstance(action, CrowdControlGameShuffleCheerAction):
             return await self.__inputGameShuffleIntoCrowdControl(
-                action = crowdControlAction,
+                action = action,
                 chatterUserId = cheerUserId,
                 chatterUserName = cheerUserName,
-                message = message,
                 twitchChannelId = broadcasterUserId,
                 twitchChatMessageId = twitchChatMessageId,
                 user = user
             )
-
         else:
-            raise RuntimeError(f'Encountered unknown AbsCheerAction value: \"{crowdControlAction}\"')
+            return False
 
     async def __inputButtonPressIntoCrowdControl(
         self,
@@ -185,21 +198,6 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         twitchChatMessageId: str | None,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, CrowdControlButtonPressCheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-        elif not utils.isValidStr(chatterUserId):
-            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(chatterUserName):
-            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
-        elif message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
-            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
             userInput = message
         )
@@ -229,26 +227,10 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         action: CrowdControlGameShuffleCheerAction,
         chatterUserId: str,
         chatterUserName: str,
-        message: str | None,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, CrowdControlGameShuffleCheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-        elif not utils.isValidStr(chatterUserId):
-            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(chatterUserName):
-            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
-        elif message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
-            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         gameShuffleActions = await self.__createGameShuffleActions(
             action = action,
             chatterUserId = chatterUserId,

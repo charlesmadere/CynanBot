@@ -4,6 +4,7 @@ from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from .timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
+from .tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from ..misc import utils as utils
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -20,6 +21,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
+        tntCheerActionHelper: TntCheerActionHelperInterface | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface
@@ -34,6 +36,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
         elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
             raise TypeError(f'timeoutCheerActionHelper argument is malformed: \"{timeoutCheerActionHelper}\"')
+        elif tntCheerActionHelper is not None and not isinstance(tntCheerActionHelper, TntCheerActionHelperInterface):
+            raise TypeError(f'tntCheerActionHelper argument is malformed: \"{tntCheerActionHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -46,6 +50,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None = crowdControlCheerActionHelper
         self.__soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = soundAlertCheerActionHelper
         self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper
+        self.__tntCheerActionHelper: TntCheerActionHelperInterface | None = tntCheerActionHelper
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -90,12 +95,14 @@ class CheerActionHelper(CheerActionHelperInterface):
             twitchAccessToken = userTwitchAccessToken
         )
 
-        actions = await self.__cheerActionsRepository.getActions(broadcasterUserId)
+        actions = await self.__cheerActionsRepository.getActions(
+            twitchChannelId = broadcasterUserId
+        )
 
         if actions is None or len(actions) == 0:
             return False
 
-        if self.__beanChanceCheerActionHelper is not None and await self.__beanChanceCheerActionHelper.handleBeanChanceCheerAction(
+        elif self.__beanChanceCheerActionHelper is not None and await self.__beanChanceCheerActionHelper.handleBeanChanceCheerAction(
             actions = actions,
             bits = bits,
             broadcasterUserId = broadcasterUserId,
@@ -110,7 +117,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             return True
 
-        if self.__crowdControlCheerActionHelper is not None and await self.__crowdControlCheerActionHelper.handleCrowdControlCheerAction(
+        elif self.__crowdControlCheerActionHelper is not None and await self.__crowdControlCheerActionHelper.handleCrowdControlCheerAction(
             actions = actions,
             bits = bits,
             broadcasterUserId = broadcasterUserId,
@@ -125,7 +132,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             return True
 
-        if self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
+        elif self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
             actions = actions,
             bits = bits,
             broadcasterUserId = broadcasterUserId,
@@ -139,7 +146,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             return True
 
-        if self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
+        elif self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
             actions = actions,
             bits = bits,
             broadcasterUserId = broadcasterUserId,
@@ -154,5 +161,22 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             return True
 
-        # if we have more cheer actions in the future, those would go here
-        return False
+        elif self.__tntCheerActionHelper is not None and await self.__tntCheerActionHelper.handleTntCheerAction(
+            actions = actions,
+            bits = bits,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            twitchChatMessageId = twitchChatMessageId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user
+        ):
+            return True
+
+        # if and/or when we add more cheer actions in the future, those would go here
+
+        else:
+            return False

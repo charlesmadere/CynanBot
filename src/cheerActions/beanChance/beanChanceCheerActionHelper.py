@@ -1,5 +1,6 @@
 import random
-from typing import Collection
+
+from frozendict import frozendict
 
 from .beanChanceCheerAction import BeanChanceCheerAction
 from .beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
@@ -13,7 +14,6 @@ from ...timber.timberInterface import TimberInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchMessageable import TwitchMessageable
-from ...twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userInterface import UserInterface
 
@@ -26,7 +26,6 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         trollmojiHelper: TrollmojiHelperInterface,
-        twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(beanStatsRepository, BeanStatsRepositoryInterface):
@@ -37,8 +36,6 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
-            raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
@@ -46,7 +43,6 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__timber: TimberInterface = timber
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
-        self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -59,7 +55,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
 
     async def handleBeanChanceCheerAction(
         self,
-        actions: Collection[AbsCheerAction],
+        actions: frozendict[int, AbsCheerAction],
         bits: int,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -71,29 +67,48 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        beanAction: BeanChanceCheerAction | None = None
+        if not isinstance(actions, frozendict):
+            raise TypeError(f'actions argument is malformed: \"{actions}\"')
+        elif not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        elif not utils.isValidStr(cheerUserId):
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserName):
+            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
+        elif not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(moderatorTwitchAccessToken):
+            raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
+        elif not utils.isValidStr(moderatorUserId):
+            raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+        elif not utils.isValidStr(userTwitchAccessToken):
+            raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        for action in actions:
-            if isinstance(action, BeanChanceCheerAction) and action.isEnabled and action.bits == bits:
-                beanAction = action
-                break
-
-        if beanAction is None:
-            return False
-
+        action = actions.get(bits, None)
         twitchChannelProvider = self.__twitchChannelProvider
-        if twitchChannelProvider is None:
-            return False
 
-        return await self.__rollBeanChance(
-            action = beanAction,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            twitchChannelId = broadcasterUserId,
-            twitchChatMessageId = twitchChatMessageId,
-            twitchChannelProvider = twitchChannelProvider,
-            user = user
-        )
+        if not isinstance(action, BeanChanceCheerAction):
+            return False
+        elif not action.isEnabled:
+            return False
+        elif twitchChannelProvider is None:
+            return False
+        else:
+            return await self.__rollBeanChance(
+                action = action,
+                cheerUserId = cheerUserId,
+                cheerUserName = cheerUserName,
+                twitchChannelId = broadcasterUserId,
+                twitchChatMessageId = twitchChatMessageId,
+                twitchChannelProvider = twitchChannelProvider,
+                user = user
+            )
 
     async def __handleFailRoll(
         self,
@@ -166,21 +181,6 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         twitchChannelProvider: TwitchChannelProvider,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, BeanChanceCheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-        elif not utils.isValidStr(cheerUserId):
-            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserName):
-            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
-            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         randomNumber = int(round(random.random() * float(100)))
 

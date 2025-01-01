@@ -49,6 +49,8 @@ from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdControlCheerActionHelper
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
+from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
+from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
@@ -2053,90 +2055,6 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
 
 
 ##########################################
-## Cheer Actions initialization section ##
-##########################################
-
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
-    timber = timber
-)
-
-cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/cheerActionSettings.json')
-)
-
-cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
-    backingDatabase = backingDatabase,
-    cheerActionJsonMapper = cheerActionJsonMapper,
-    cheerActionSettingsRepository = cheerActionSettingsRepository,
-    timber = timber
-)
-
-beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
-    beanStatsRepository = beanStatsRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    timber = timber,
-    trollmojiHelper = trollmojiHelper,
-    twitchEmotesHelper = twitchEmotesHelper,
-    twitchUtils = twitchUtils
-)
-
-timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
-
-timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
-    timeoutCheerActionMapper = timeoutCheerActionMapper,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    userIdsRepository = userIdsRepository
-)
-
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
-    cheerActionsRepository = cheerActionsRepository,
-    crowdControlCheerActionHelper = None,
-    soundAlertCheerActionHelper = None,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
-)
-
-
-#############################################
-## Star Wars Quotes initialization section ##
-#############################################
-
-starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
-    quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
-)
-
-
-##################################
-## Jisho initialization section ##
-##################################
-
-jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
-    timber = timber
-)
-
-jishoApiService: JishoApiServiceInterface = JishoApiService(
-    jishoJsonMapper = jishoJsonMapper,
-    networkClientProvider = networkClientProvider,
-    timber = timber
-)
-
-jishoPresenter: JishoPresenterInterface = JishoPresenter()
-
-jishoHelper: JishoHelperInterface = JishoHelper(
-    jishoApiService = jishoApiService,
-    jishoPresenter = jishoPresenter,
-    timber = timber
-)
-
-
-##########################################
 ## Crowd Control initialization section ##
 ##########################################
 
@@ -2200,6 +2118,97 @@ crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository
+)
+
+
+##########################################
+## Cheer Actions initialization section ##
+##########################################
+
+cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
+    timber = timber
+)
+
+cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
+    settingsJsonReader = JsonFileReader('../config/cheerActionSettings.json')
+)
+
+cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
+    backingDatabase = backingDatabase,
+    cheerActionJsonMapper = cheerActionJsonMapper,
+    cheerActionSettingsRepository = cheerActionSettingsRepository,
+    timber = timber
+)
+
+beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(
+    beanStatsRepository = beanStatsRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    timber = timber,
+    trollmojiHelper = trollmojiHelper,
+    twitchUtils = twitchUtils
+)
+
+soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
+    timber = timber
+)
+
+timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
+
+timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
+    activeChattersRepository = activeChattersRepository,
+    timber = timber,
+    timeoutActionHelper = timeoutActionHelper,
+    timeoutCheerActionMapper = timeoutCheerActionMapper,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    userIdsRepository = userIdsRepository
+)
+
+cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    cheerActionsRepository = cheerActionsRepository,
+    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
+    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
+    timeoutCheerActionHelper = timeoutCheerActionHelper,
+    tntCheerActionHelper = None,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
+
+
+#############################################
+## Star Wars Quotes initialization section ##
+#############################################
+
+starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
+    quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
+)
+
+
+##################################
+## Jisho initialization section ##
+##################################
+
+jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+    timber = timber
+)
+
+jishoApiService: JishoApiServiceInterface = JishoApiService(
+    jishoJsonMapper = jishoJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+jishoPresenter: JishoPresenterInterface = JishoPresenter()
+
+jishoHelper: JishoHelperInterface = JishoHelper(
+    jishoApiService = jishoApiService,
+    jishoPresenter = jishoPresenter,
+    timber = timber
 )
 
 

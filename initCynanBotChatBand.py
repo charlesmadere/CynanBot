@@ -707,6 +707,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     crowdControlCheerActionHelper = None,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timeoutCheerActionHelper = None,
+    tntCheerActionHelper = None,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
