@@ -214,7 +214,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         currentPlaylistIndex: int = -1
         currentFilePath: str | None = None
 
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) (({mediaPlayer=})')
+        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) ({mediaPlayer=})')
 
         try:
             while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlistFilePaths) or mediaPlayer.isPlaying):
