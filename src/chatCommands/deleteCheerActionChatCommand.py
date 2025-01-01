@@ -44,6 +44,10 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+
+        if not user.areCheerActionsEnabled:
+            return
+
         userId = await self.__userIdsRepository.requireUserId(user.handle)
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
