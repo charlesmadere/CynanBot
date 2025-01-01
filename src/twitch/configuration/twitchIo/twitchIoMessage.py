@@ -3,8 +3,9 @@ from typing import Any
 from frozendict import frozendict
 from twitchio import Message
 
-from .exceptions import TwitchIoHasMalformedTagsException, TwitchIoTagsIsMissingMessageIdException, \
-    TwitchIoTagsIsMissingRoomIdException
+from .exceptions import (TwitchIoHasMalformedTagsException,
+                         TwitchIoTagsIsMissingMessageIdException,
+                         TwitchIoTagsIsMissingRoomIdException)
 from .twitchIoAuthor import TwitchIoAuthor
 from .twitchIoChannel import TwitchIoChannel
 from ..twitchAuthor import TwitchAuthor
