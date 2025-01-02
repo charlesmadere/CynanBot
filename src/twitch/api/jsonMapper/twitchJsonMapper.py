@@ -17,6 +17,7 @@ from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
+from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -350,6 +351,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             data = frozenChatters,
             total = total,
             pagination = pagination
+        )
+
+    async def parseCheerMetadata(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchCheerMetadata | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        bits = utils.getIntFromDict(jsonResponse, 'bits')
+
+        return TwitchCheerMetadata(
+            bits = bits
         )
 
     async def parseCondition(

@@ -12,6 +12,7 @@ from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
+from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -106,6 +107,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchChattersResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseCheerMetadata(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchCheerMetadata | None:
         pass
 
     @abstractmethod

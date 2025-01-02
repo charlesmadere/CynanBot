@@ -3,6 +3,7 @@ from datetime import datetime
 
 from frozenlist import FrozenList
 
+from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchOutcome import TwitchOutcome
 from .twitchPollChoice import TwitchPollChoice
@@ -60,6 +61,7 @@ class TwitchWebsocketEvent:
     userLogin: str | None = None
     userName: str | None = None
     winningOutcomeId: str | None = None
+    cheer: TwitchCheerMetadata | None = None
     tier: TwitchSubscriberTier | None = None
     channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
     pollStatus: TwitchPollStatus | None = None

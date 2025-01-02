@@ -16,6 +16,7 @@ from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from src.twitch.api.models.twitchChatter import TwitchChatter
+from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
@@ -380,6 +381,27 @@ class TestTwitchJsonMapper:
         with pytest.raises(Exception):
             result = await self.jsonMapper.parseChatter(None)
 
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCheer(self):
+        bits = 250
+
+        result = await self.jsonMapper.parseCheerMetadata({
+            'bits': bits
+        })
+
+        assert isinstance(result, TwitchCheerMetadata)
+        assert result.bits == bits
+
+    @pytest.mark.asyncio
+    async def test_parseCheer_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseCheerMetadata(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCheer_withNone(self):
+        result = await self.jsonMapper.parseCheerMetadata(None)
         assert result is None
 
     @pytest.mark.asyncio

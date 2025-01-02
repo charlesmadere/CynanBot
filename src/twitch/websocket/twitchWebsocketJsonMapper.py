@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
@@ -369,6 +370,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
             winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
 
+        cheer: TwitchCheerMetadata | None = None
+        if 'cheer' in eventJson:
+            cheer = await self.__twitchJsonMapper.parseCheerMetadata(eventJson.get('cheer'))
+
         tier: TwitchSubscriberTier | None = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = await self.__twitchJsonMapper.parseSubscriberTier(eventJson.get('tier'))
@@ -447,8 +452,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             winningOutcomeId = winningOutcomeId,
-            channelPointsVoting = channelPointsVoting,
+            cheer = cheer,
             tier = tier,
+            channelPointsVoting = channelPointsVoting,
             pollStatus = pollStatus,
             predictionStatus = predictionStatus,
             resub = resub,
