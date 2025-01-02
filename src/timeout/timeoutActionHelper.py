@@ -304,6 +304,9 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ) -> bool:
+        if not timeoutData.isRandomChanceEnabled:
+            return False
+
         followShieldDays = timeoutData.user.timeoutActionFollowShieldDays
 
         if followShieldDays is None:
