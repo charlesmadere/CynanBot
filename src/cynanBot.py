@@ -71,6 +71,8 @@ from .chatCommands.giveCutenessCommand import GiveCutenessCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from .chatCommands.pkMonChatCommand import PkMonChatCommand
+from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
@@ -99,9 +101,9 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, PbsCommand, PkMonCommand,
-                       PkMoveCommand, RaceCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
-                       StubCommand, SwQuoteCommand, TwitchInfoCommand)
+from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, PbsCommand,
+                       SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand,
+                       SwQuoteCommand, TwitchInfoCommand)
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
@@ -673,7 +675,6 @@ class CynanBot(
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchUtils, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
-        self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManager, timber)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
@@ -810,11 +811,11 @@ class CynanBot(
             self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if pokepediaRepository is None:
-            self.__pkMonCommand: AbsCommand = StubCommand()
-            self.__pkMoveCommand: AbsCommand = StubCommand()
+            self.__pkMonCommand: AbsChatCommand = StubChatCommand()
+            self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__pkMonCommand: AbsCommand = PkMonCommand(generalSettingsRepository, pokepediaRepository, timber, twitchUtils, usersRepository)
-            self.__pkMoveCommand: AbsCommand = PkMoveCommand(generalSettingsRepository, pokepediaRepository, timber, twitchUtils, usersRepository)
+            self.__pkMonCommand: AbsChatCommand = PkMonChatCommand(pokepediaRepository, timber, twitchUtils, usersRepository)
+            self.__pkMoveCommand: AbsChatCommand = PkMoveChatCommand(pokepediaRepository, timber, twitchUtils, usersRepository)
 
         if starWarsQuotesRepository is None:
             self.__swQuoteCommand: AbsCommand = StubCommand()
@@ -1416,17 +1417,12 @@ class CynanBot(
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pkMonCommand.handleCommand(context)
+        await self.__pkMonCommand.handleChatCommand(context)
 
     @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
     async def command_pkmove(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pkMoveCommand.handleCommand(context)
-
-    @commands.command(name = 'race')
-    async def command_race(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__raceCommand.handleCommand(context)
+        await self.__pkMoveCommand.handleChatCommand(context)
 
     @commands.command(name = 'removebannedtriviacontroller')
     async def command_removebannedtriviacontroller(self, ctx: Context):

@@ -1,4 +1,3 @@
-import traceback
 import uuid
 from abc import ABC, abstractmethod
 from datetime import timedelta
@@ -6,9 +5,7 @@ from datetime import timedelta
 from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .misc import utils as utils
 from .misc.administratorProviderInterface import AdministratorProviderInterface
-from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .misc.timedDict import TimedDict
-from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from .starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from .timber.timberInterface import TimberInterface
 from .twitch.api.models.twitchUserDetails import TwitchUserDetails
@@ -199,166 +196,6 @@ class PbsCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, f'{user.handle}\'s speedrun profile: {user.speedrunProfile}')
         self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
-
-class PkMonCommand(AbsCommand):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        pokepediaRepository: PokepediaRepositoryInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 10)
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
-            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isPokepediaEnabled():
-            return
-        elif not user.isPokepediaEnabled:
-            return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
-
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
-            return
-
-        name: str = splits[1]
-
-        try:
-            mon = await self.__pokepediaRepository.searchPokemon(name)
-
-            for string in mon.toStrList():
-                await self.__twitchUtils.safeSend(ctx, string)
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
-
-        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
-
-class PkMoveCommand(AbsCommand):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        pokepediaRepository: PokepediaRepositoryInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 10)
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
-            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isPokepediaEnabled():
-            return
-        elif not user.isPokepediaEnabled:
-            return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
-
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, '⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
-            return
-
-        name = ' '.join(splits[1:])
-
-        try:
-            move = await self.__pokepediaRepository.searchMoves(name)
-
-            for string in move.toStrList():
-                await self.__twitchUtils.safeSend(ctx, string)
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
-
-        self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
-
-class RaceCommand(AbsCommand):
-
-    def __init__(
-        self,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(minutes = 1)
-    ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        if not ctx.isAuthorMod():
-            return
-
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.isRaceEnabled:
-            return
-        elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.handle):
-            return
-
-        await self.__twitchUtils.safeSend(ctx, '!race')
-        self.__timber.log('RaceCommand', f'Handled !race command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class RemoveUserCommand(AbsCommand):
