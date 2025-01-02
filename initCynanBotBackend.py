@@ -1504,6 +1504,7 @@ timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = Timeou
 )
 
 timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
+    activeChattersRepository = activeChattersRepository,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,

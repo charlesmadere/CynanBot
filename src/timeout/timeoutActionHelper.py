@@ -14,6 +14,7 @@ from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManag
 from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..tts.ttsEvent import TtsEvent
+from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
@@ -47,6 +48,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
@@ -62,7 +64,9 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
@@ -89,6 +93,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
@@ -450,6 +455,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             return False
 
         self.__timber.log('TimeoutActionHelper', f'Timed out {timeoutTargetUserName}:{timeoutTargetUserId} in \"{timeoutData.twitchChannel}\" from {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} ({diceRoll=}) ({rollFailureData=}) ({timeoutResult=}) ({timeoutData=})')
+
+        await self.__activeChattersRepository.remove(
+            chatterUserId = timeoutTargetUserId,
+            twitchChannelId = timeoutData.twitchChannelId
+        )
 
         if timeoutData.isRandomChanceEnabled:
             await self.__timeoutActionHistoryRepository.add(
