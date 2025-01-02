@@ -270,11 +270,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             # individual person who received a gifted sub. We don't want to do a TTS alert for all
             # users who received a gifted sub, so we're going to return here.
             return
-        elif isGift is False and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE:
-            # These are events where people have resubscribed, but haven't clicked the little chat
-            # button to actually announce this to everyone yet. Such an announcement will have a
-            # subscription type of SUBSCRIPTION_MESSAGE.
-            return
 
         actualMessage = message
         if not utils.isValidStr(actualMessage):

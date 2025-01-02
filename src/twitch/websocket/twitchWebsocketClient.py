@@ -64,7 +64,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
             TwitchWebsocketSubscriptionType.CHEER,
             TwitchWebsocketSubscriptionType.RAID,
-            TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         }),
