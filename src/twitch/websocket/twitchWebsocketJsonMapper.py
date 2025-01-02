@@ -314,12 +314,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         message: str | None = None
         if 'message' in eventJson:
-            messageItem: Any | None = eventJson.get('message')
+            messageElement: str | Any | None = eventJson.get('message')
 
-            if utils.isValidStr(messageItem):
+            if utils.isValidStr(messageElement):
                 message = utils.getStrFromDict(eventJson, 'message', clean = True)
-            elif isinstance(messageItem, dict) and utils.isValidStr(messageItem.get('text')):
-                message = utils.getStrFromDict(messageItem, 'text', clean = True)
+            elif isinstance(messageElement, dict) and utils.isValidStr(messageElement.get('text')):
+                message = utils.getStrFromDict(messageElement, 'text', clean = True)
 
         messageId: str | None = None
         if 'message_id' in eventJson and utils.isValidStr(eventJson.get('message_id')):
