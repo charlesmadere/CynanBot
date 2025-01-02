@@ -41,6 +41,7 @@ from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
+from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
@@ -1063,6 +1064,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId
         )
 
+    async def parseWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType | None:
+        if not utils.isValidStr(messageType):
+            return None
+
+        messageType = messageType.lower()
+
+        match messageType:
+            case 'session_keepalive': return TwitchWebsocketMessageType.KEEP_ALIVE
+            case 'notification': return TwitchWebsocketMessageType.NOTIFICATION
+            case 'session_reconnect': return TwitchWebsocketMessageType.RECONNECT
+            case 'revocation': return TwitchWebsocketMessageType.REVOCATION
+            case 'session_welcome': return TwitchWebsocketMessageType.WELCOME
+            case _: return None
+
     async def requireConnectionStatus(
         self,
         connectionStatus: str | Any | None
@@ -1325,3 +1343,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             dictionary['session_id'] = transport.sessionId
 
         return dictionary
+
+    async def requireWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType:
+        result = await self.parseWebsocketMessageType(messageType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{messageType}\" into TwitchWebsocketMessageType value!')
+
+        return result

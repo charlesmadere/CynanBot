@@ -11,7 +11,6 @@ from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
-from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
 from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
 
@@ -51,13 +50,6 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         eventJson: dict[str, Any] | None
     ) -> TwitchWebsocketEvent | None:
-        pass
-
-    @abstractmethod
-    async def parseWebsocketMessageType(
-        self,
-        messageType: str | Any | None
-    ) -> TwitchWebsocketMessageType | None:
         pass
 
     @abstractmethod
@@ -107,11 +99,4 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         subscriptionJson: dict[str, Any] | None
     ) -> TwitchWebsocketSubscription | None:
-        pass
-
-    @abstractmethod
-    async def requireWebsocketMessageType(
-        self,
-        messageType: str | Any | None
-    ) -> TwitchWebsocketMessageType:
         pass

@@ -36,6 +36,7 @@ from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
+from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
@@ -283,6 +284,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType | None:
+        pass
+
+    @abstractmethod
     async def requireConnectionStatus(
         self,
         connectionStatus: str | Any | None
@@ -329,6 +337,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         transportMethod: str | Any | None
     ) -> TwitchWebsocketTransportMethod:
+        pass
+
+    @abstractmethod
+    async def requireWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType:
         pass
 
     @abstractmethod
