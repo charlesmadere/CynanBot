@@ -1,6 +1,6 @@
 from .administratorProviderInterface import AdministratorProviderInterface
 from .generalSettingsRepository import GeneralSettingsRepository
-from ..twitch.twitchTokensRepository import TwitchTokensRepositoryInterface
+from ..twitch.tokens.twitchTokensRepository import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 

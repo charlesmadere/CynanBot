@@ -10,7 +10,7 @@ from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
-from ...twitch.twitchTokensRepositoryInterface import \
+from ...twitch.tokens.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 

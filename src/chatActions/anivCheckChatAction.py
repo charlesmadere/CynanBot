@@ -10,9 +10,9 @@ from ..timber.timberInterface import TimberInterface
 from ..twitch.api.models.twitchBanRequest import TwitchBanRequest
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchTokensRepositoryInterface import \
+from ..twitch.tokens.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface

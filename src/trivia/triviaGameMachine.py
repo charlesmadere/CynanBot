@@ -60,7 +60,7 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 

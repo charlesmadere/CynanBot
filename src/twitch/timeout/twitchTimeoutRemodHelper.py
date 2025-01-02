@@ -7,7 +7,7 @@ from .twitchTimeoutRemodData import TwitchTimeoutRemodData
 from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface

@@ -1,6 +1,6 @@
 from .twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
 from .twitchWebsocketUser import TwitchWebsocketUser
-from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface

@@ -1,5 +1,5 @@
 from .officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
-from ..misc import utils as utils
+from ...misc import utils as utils
 
 
 class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInterface):

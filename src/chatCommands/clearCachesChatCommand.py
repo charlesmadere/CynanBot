@@ -49,7 +49,7 @@ from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
-from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface

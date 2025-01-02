@@ -1,8 +1,8 @@
-from .exceptions import TwitchAccessTokenMissingException
 from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..misc import utils as utils
-from ..misc.administratorProviderInterface import AdministratorProviderInterface
+from ..exceptions import TwitchAccessTokenMissingException
+from ...misc import utils as utils
+from ...misc.administratorProviderInterface import AdministratorProviderInterface
 
 
 class TwitchTokensUtils(TwitchTokensUtilsInterface):

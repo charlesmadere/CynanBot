@@ -8,8 +8,8 @@ from ..api.models.twitchThemeMode import TwitchThemeMode
 from ..api.models.twitchUserSubscription import TwitchUserSubscription
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchStatusCodeException, TwitchJsonException
+from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...misc import utils as utils
 from ...misc.timedDict import TimedDict
 from ...network.exceptions import GenericNetworkException

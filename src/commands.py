@@ -14,8 +14,8 @@ from .timber.timberInterface import TimberInterface
 from .twitch.api.models.twitchUserDetails import TwitchUserDetails
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitch.configuration.twitchContext import TwitchContext
+from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from .twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchUtilsInterface import TwitchUtilsInterface
 from .users.addOrRemoveUserActionType import AddOrRemoveUserActionType
 from .users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface

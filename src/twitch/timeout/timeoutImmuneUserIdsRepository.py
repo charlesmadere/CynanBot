@@ -1,6 +1,6 @@
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from ..officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
+from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 from ...misc import utils as utils

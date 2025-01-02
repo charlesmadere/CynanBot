@@ -20,9 +20,9 @@ from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...storage.exceptions import DatabaseOperationalError
 from ...timber.timberInterface import TimberInterface
-from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...twitch.twitchTokensRepositoryInterface import \
+from ...twitch.tokens.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 

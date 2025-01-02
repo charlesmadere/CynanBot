@@ -19,8 +19,8 @@ from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ..twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userInterface import UserInterface
 

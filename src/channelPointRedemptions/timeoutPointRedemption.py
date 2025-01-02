@@ -12,9 +12,9 @@ from ..twitch.activeChatters.activeChatter import ActiveChatter
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
-from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.timeout.timeoutBoosterPack import TimeoutBoosterPack
 from ..users.timeout.timeoutBoosterPackType import TimeoutBoosterPackType

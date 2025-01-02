@@ -19,7 +19,7 @@ from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscrip
 from ..api.models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..websocket.twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
 from ..websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from ..websocket.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener

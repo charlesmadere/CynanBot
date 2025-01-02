@@ -5,7 +5,7 @@ from frozendict import frozendict
 from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..api.models.twitchStreamType import TwitchStreamType
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...misc.timedDict import TimedDict

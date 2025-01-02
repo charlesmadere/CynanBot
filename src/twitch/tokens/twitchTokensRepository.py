@@ -3,23 +3,23 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Any
 
-from .api.models.twitchTokensDetails import TwitchTokensDetails
-from .api.models.twitchValidationResponse import TwitchValidationResponse
-from .api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .exceptions import (TwitchAccessTokenMissingException,
-                         TwitchPasswordChangedException,
-                         TwitchStatusCodeException)
 from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc import utils as utils
-from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..network.exceptions import GenericNetworkException
-from ..storage.backingDatabase import BackingDatabase
-from ..storage.databaseConnection import DatabaseConnection
-from ..storage.databaseType import DatabaseType
-from ..storage.jsonReaderInterface import JsonReaderInterface
-from ..timber.timberInterface import TimberInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..api.models.twitchTokensDetails import TwitchTokensDetails
+from ..api.models.twitchValidationResponse import TwitchValidationResponse
+from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..exceptions import (TwitchAccessTokenMissingException,
+                          TwitchPasswordChangedException,
+                          TwitchStatusCodeException)
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...network.exceptions import GenericNetworkException
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
+from ...storage.jsonReaderInterface import JsonReaderInterface
+from ...timber.timberInterface import TimberInterface
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchTokensRepository(TwitchTokensRepositoryInterface):

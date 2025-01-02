@@ -45,8 +45,8 @@ from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from src.twitch.twitchTokensRepository import TwitchTokensRepository
-from src.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from src.twitch.tokens.twitchTokensRepository import TwitchTokensRepository
+from src.twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 

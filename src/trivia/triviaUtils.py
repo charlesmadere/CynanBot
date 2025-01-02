@@ -22,7 +22,7 @@ from ..cuteness.cutenessResult import CutenessResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface

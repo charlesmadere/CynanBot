@@ -9,8 +9,8 @@ from .api.models.twitchSendChatMessageResponse import TwitchSendChatMessageRespo
 from .api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .configuration.twitchMessageable import TwitchMessageable
 from .outboundMessage import OutboundMessage
+from .tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitchHandleProviderInterface import TwitchHandleProviderInterface
-from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitchUtilsInterface import TwitchUtilsInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils

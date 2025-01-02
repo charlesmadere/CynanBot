@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from .twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
