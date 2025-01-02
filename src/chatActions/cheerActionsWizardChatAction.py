@@ -460,7 +460,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 return True
 
             case TimeoutStep.RANDOM_CHANCE_ENABLED:
-                await self.__send(message, f'ⓘ Next, please specify whether or not the Timeout should have a random chance (true or false)')
+                await self.__send(message, f'ⓘ Next, please specify whether or not the Timeout should have a random failure chance (true or false). This failure chance will increase on a user-vs-user basis, so as to prevent bullying.')
                 return True
 
             case TimeoutStep.STREAM_STATUS:
