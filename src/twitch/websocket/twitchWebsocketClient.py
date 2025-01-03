@@ -49,7 +49,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
-        isFullJsonLoggingEnabled: bool = False,
+        isFullJsonLoggingEnabled: bool = True,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
