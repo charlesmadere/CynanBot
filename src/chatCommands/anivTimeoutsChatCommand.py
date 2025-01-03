@@ -84,4 +84,4 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('MyAnivTimeoutsChatCommand', f'Handled !myanivtimeouts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('AnivTimeoutsChatCommand', f'Handled !anivtimeouts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
