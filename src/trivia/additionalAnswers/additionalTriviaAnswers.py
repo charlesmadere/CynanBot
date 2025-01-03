@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .additionalTriviaAnswer import AdditionalTriviaAnswer
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
@@ -7,7 +9,7 @@ from ..questions.triviaSource import TriviaSource
 
 @dataclass(frozen = True)
 class AdditionalTriviaAnswers:
-    answers: list[AdditionalTriviaAnswer]
+    answers: FrozenList[AdditionalTriviaAnswer]
     triviaId: str
     triviaQuestionType: TriviaQuestionType
     triviaSource: TriviaSource

@@ -1,10 +1,11 @@
 import traceback
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .additionalTriviaAnswer import AdditionalTriviaAnswer
 from .additionalTriviaAnswers import AdditionalTriviaAnswers
-from .additionalTriviaAnswersRepositoryInterface import \
-    AdditionalTriviaAnswersRepositoryInterface
+from .additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..triviaExceptions import (
@@ -12,16 +13,14 @@ from ..triviaExceptions import (
     AdditionalTriviaAnswerIsMalformedException,
     AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
     TooManyAdditionalTriviaAnswersException)
-from ..triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...storage.exceptions import DatabaseOperationalError
 from ...timber.timberInterface import TimberInterface
-from ...twitch.tokens.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -124,6 +123,8 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             userName = userName
         ))
 
+        additionalAnswersList.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
+
         if len(additionalAnswersList) > await self.__triviaSettingsRepository.getMaxAdditionalTriviaAnswers():
             raise TooManyAdditionalTriviaAnswersException(
                 answerCount = len(additionalAnswersList),
@@ -152,16 +153,19 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to insert additional trivia answer ({additionalAnswer=}) ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=}): {exception}', exception, traceback.format_exc())
 
             raise AdditionalTriviaAnswerAlreadyExistsException(
-                message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it already exists ({triviaQuestionType=}) ({reference=})',
+                message = f'Attempted to add additional answer for {triviaSource.toStr()}:{triviaId}, but it already exists ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})',
                 triviaId = triviaId,
                 triviaQuestionType = triviaQuestionType,
                 triviaSource = triviaSource
             )
 
-        self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer (\"{additionalAnswer}\") for {triviaSource.toStr()}:{triviaId}, all answers: {additionalAnswersList}')
+        self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer for {triviaSource.toStr()}:{triviaId} ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})')
+
+        frozenAnswers: FrozenList[AdditionalTriviaAnswer] = FrozenList(additionalAnswersList)
+        frozenAnswers.freeze()
 
         return AdditionalTriviaAnswers(
-            answers = additionalAnswersList,
+            answers = frozenAnswers,
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
             triviaSource = triviaSource
@@ -215,7 +219,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         )
 
         if reference is None:
-            self.__timber.log('AdditionalTriviaAnswersRepository', f'Attempted to delete additional answers for {triviaSource.toStr()}:{triviaId}, but there were none')
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Attempted to delete additional answers for {triviaSource.toStr()}:{triviaId}, but there were none ({reference=})')
             return None
 
         connection = await self.__getDatabaseConnection()
@@ -228,7 +232,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         )
 
         await connection.close()
-        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers for {triviaSource.toStr()}:{triviaId} (existing additional answers were {reference.answers})')
+        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers for {triviaSource.toStr()}:{triviaId} ({reference=})')
 
         return reference
 
@@ -280,8 +284,11 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
 
         additionalAnswers.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
 
+        frozenAnswers: FrozenList[AdditionalTriviaAnswer] = FrozenList(additionalAnswers)
+        frozenAnswers.freeze()
+
         return AdditionalTriviaAnswers(
-            answers = additionalAnswers,
+            answers = frozenAnswers,
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
             triviaSource = triviaSource
