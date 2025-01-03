@@ -30,14 +30,6 @@ class UserIdsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def optionallySetUser(
-        self,
-        userId: str | None,
-        userName: str | None
-    ):
-        pass
-
-    @abstractmethod
     async def requireUserId(
         self,
         userName: str,
@@ -63,4 +55,8 @@ class UserIdsRepositoryInterface(Clearable):
 
     @abstractmethod
     async def setUser(self, userId: str, userName: str):
+        pass
+
+    @abstractmethod
+    async def setUsers(self, userIdToUserName: dict[str, str]):
         pass

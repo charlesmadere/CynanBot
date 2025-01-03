@@ -5,8 +5,7 @@ import aiosqlite
 
 from .databaseConnection import DatabaseConnection
 from .databaseType import DatabaseType
-from .exceptions import (DatabaseConnectionIsClosedException,
-                         DatabaseOperationalError)
+from .exceptions import DatabaseConnectionIsClosedException, DatabaseOperationalError
 from ..misc import utils as utils
 
 
@@ -44,6 +43,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
+
         cursor = await self.__connection.execute(query, args)
         await self.__connection.commit()
         await cursor.close()

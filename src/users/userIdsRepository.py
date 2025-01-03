@@ -225,18 +225,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         await connection.close()
 
-    async def optionallySetUser(self, userId: str | None, userName: str | None):
-        if userId is not None and not isinstance(userId, str):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif userName is not None and not isinstance(userName, str):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
-        if utils.isValidStr(userId) and utils.isValidStr(userName):
-            await self.setUser(
-                userId = userId,
-                userName = userName
-            )
-
     async def requireUserId(
         self,
         userName: str,
@@ -315,3 +303,25 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         await connection.close()
         self.__cache[userId] = userName
+
+    async def setUsers(self, userIdToUserName: dict[str, str]):
+        if not isinstance(userIdToUserName, dict):
+            raise TypeError(f'userIdToUserName argument is malformed: \"{userIdToUserName}\"')
+        elif len(userIdToUserName) == 0:
+            return
+
+        connection = await self.__getDatabaseConnection()
+
+        for userId, userName in userIdToUserName.items():
+            await connection.execute(
+                '''
+                    INSERT INTO userids (userid, username)
+                    VALUES ($1, $2)
+                    ON CONFLICT (userid) DO UPDATE SET username = EXCLUDED.username
+                ''',
+                userId, userName
+            )
+
+            self.__cache[userId] = userName
+
+        await connection.close()

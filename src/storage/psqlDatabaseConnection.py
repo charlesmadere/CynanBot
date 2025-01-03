@@ -57,6 +57,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
+
         record = await self.__connection.fetchrow(query, *args)
 
         if record is None or len(record) == 0:
@@ -69,6 +70,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
+
         records = await self.__connection.fetch(query, *args)
 
         if records is None or len(records) == 0:

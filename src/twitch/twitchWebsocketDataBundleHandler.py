@@ -218,31 +218,14 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif not isinstance(event, TwitchWebsocketEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        await self.__userIdsRepository.optionallySetUser(
-            userId = event.broadcasterUserId,
-            userName = event.broadcasterUserLogin
-        )
-
-        await self.__userIdsRepository.optionallySetUser(
-            userId = event.fromBroadcasterUserId,
-            userName = event.fromBroadcasterUserLogin
-        )
-
-        await self.__userIdsRepository.optionallySetUser(
-            userId = event.toBroadcasterUserId,
-            userName = event.toBroadcasterUserLogin
-        )
-
-        await self.__userIdsRepository.optionallySetUser(
-            userId = event.userId,
-            userName = event.userLogin
-        )
+        userIdsToUserNames: dict[str, str] = dict()
+        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.broadcasterUserId, event.broadcasterUserLogin)
+        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.fromBroadcasterUserId, event.fromBroadcasterUserLogin)
+        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.toBroadcasterUserId, event.toBroadcasterUserLogin)
+        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.userId, event.userLogin)
 
         if event.subGift is not None:
-            await self.__userIdsRepository.setUser(
-                userId = event.subGift.recipientUserId,
-                userName = event.subGift.recipientUserLogin
-            )
+            await self.__addToUserIdsToUserNames(userIdsToUserNames, event.subGift.recipientUserId, event.subGift.recipientUserLogin)
 
         if event.outcomes is not None and len(event.outcomes) >= 1:
             for outcome in event.outcomes:
@@ -250,7 +233,18 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
                 if topPredictors is not None and len(topPredictors) >= 1:
                     for topPredictor in topPredictors:
-                        await self.__userIdsRepository.setUser(
-                            userId = topPredictor.userId,
-                            userName = topPredictor.userLogin
-                        )
+                        await self.__addToUserIdsToUserNames(userIdsToUserNames, topPredictor.userId, topPredictor.userLogin)
+
+        if len(userIdsToUserNames) >= 1:
+            await self.__userIdsRepository.setUsers(userIdsToUserNames)
+
+    async def __addToUserIdsToUserNames(
+        self,
+        userIdsToUserNames: dict[str, str],
+        userId: str | None,
+        userLogin: str | None
+    ):
+        if not utils.isValidStr(userId) or not utils.isValidStr(userLogin):
+            return
+
+        userIdsToUserNames[userId] = userLogin
