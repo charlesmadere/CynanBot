@@ -244,7 +244,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         frozenOutcomes: FrozenList[TwitchOutcome] | None = None
         if 'outcomes' in eventJson:
-            outcomesItem: Any = eventJson.get('outcomes')
+            outcomesItem: Any | None = eventJson.get('outcomes')
 
             if isinstance(outcomesItem, list) and len(outcomesItem) >= 1:
                 outcomes: list[TwitchOutcome] = list()
@@ -262,7 +262,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         frozenChoices: FrozenList[TwitchPollChoice] | None = None
         if 'choices' in eventJson:
-            choicesItem: Any = eventJson.get('choices')
+            choicesItem: Any | None = eventJson.get('choices')
 
             if isinstance(choicesItem, list) and len(choicesItem) >= 1:
                 choices: list[TwitchPollChoice] = list()
