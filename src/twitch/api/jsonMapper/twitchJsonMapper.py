@@ -44,6 +44,7 @@ from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
+from ..models.twitchWebsocketSub import TwitchWebsocketSub
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -1094,6 +1095,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'revocation': return TwitchWebsocketMessageType.REVOCATION
             case 'session_welcome': return TwitchWebsocketMessageType.WELCOME
             case _: return None
+
+    async def parseWebsocketSub(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketSub | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        isPrime = utils.getBoolFromDict(jsonResponse, 'is_prime', fallback = False)
+        durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
+        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
+
+        return TwitchWebsocketSub(
+            isPrime = isPrime,
+            durationMonths = durationMonths,
+            subTier = subTier
+        )
 
     async def requireConnectionStatus(
         self,

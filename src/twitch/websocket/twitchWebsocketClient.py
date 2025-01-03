@@ -65,6 +65,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.CHEER,
             TwitchWebsocketSubscriptionType.FOLLOW,
             TwitchWebsocketSubscriptionType.RAID,
+            TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         }),

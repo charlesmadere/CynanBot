@@ -7,6 +7,7 @@ from .twitchSubscriberTier import TwitchSubscriberTier
 class TwitchResub:
     gifterIsAnonymous: bool | None
     isGift: bool
+    isPrime: bool
     cumulativeMonths: int
     durationMonths: int
     streakMonths: int

@@ -24,6 +24,7 @@ from ..api.models.twitchWebsocketMetadata import TwitchWebsocketMetadata
 from ..api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
+from ..api.models.twitchWebsocketSub import TwitchWebsocketSub
 from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ...misc import utils as utils
@@ -200,6 +201,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         cumulativeTotal: int | None = None
         if 'cumulative_total' in eventJson and utils.isValidInt(eventJson.get('cumulative_total')):
             cumulativeTotal = utils.getIntFromDict(eventJson, 'cumulative_total')
+
+        durationMonths: int | None = None
+        if 'duration_months' in eventJson and utils.isValidInt(eventJson.get('duration_months')):
+            durationMonths = utils.getIntFromDict(eventJson, 'duration_months')
+
+        streakMonths: int | None = None
+        if 'streak_months' in eventJson and utils.isValidInt(eventJson.get('streak_months')):
+            streakMonths = utils.getIntFromDict(eventJson, 'streak_months')
 
         total: int | None = None
         if 'total' in eventJson and utils.isValidInt(eventJson.get('total')):
@@ -410,6 +419,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'sub_gift' in eventJson:
             subGift = await self.parseWebsocketSubGift(eventJson.get('sub_gift'))
 
+        sub: TwitchWebsocketSub | None = None
+        if 'sub' in eventJson:
+            sub = await self.__twitchJsonMapper.parseWebsocketSub(eventJson.get('sub'))
+
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
             isChatterAnonymous = isChatterAnonymous,
@@ -426,6 +439,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             bits = bits,
             cumulativeMonths = cumulativeMonths,
             cumulativeTotal = cumulativeTotal,
+            durationMonths = durationMonths,
+            streakMonths = streakMonths,
             total = total,
             viewers = viewers,
             broadcasterUserId = broadcasterUserId,
@@ -462,7 +477,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             communitySubGift = communitySubGift,
             noticeType = noticeType,
             reward = reward,
-            subGift = subGift
+            subGift = subGift,
+            sub = sub
         )
 
     async def parseTwitchOutcome(
@@ -542,6 +558,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             gifterIsAnonymous = utils.getBoolFromDict(resubJson, 'gifter_is_anonymous')
 
         isGift = utils.getBoolFromDict(resubJson, 'is_gift', fallback = False)
+        isPrime = utils.getBoolFromDict(resubJson, 'is_prime', fallback = False)
         cumulativeMonths = utils.getIntFromDict(resubJson, 'cumulative_months')
         durationMonths = utils.getIntFromDict(resubJson, 'duration_months')
         streakMonths = utils.getIntFromDict(resubJson, 'streak_months')
@@ -563,6 +580,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         return TwitchResub(
             gifterIsAnonymous = gifterIsAnonymous,
             isGift = isGift,
+            isPrime = isPrime,
             cumulativeMonths = cumulativeMonths,
             durationMonths = durationMonths,
             streakMonths = streakMonths,

@@ -35,6 +35,7 @@ from src.twitch.api.models.twitchWebsocketCondition import TwitchWebsocketCondit
 from src.twitch.api.models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from src.twitch.api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from src.twitch.api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
+from src.twitch.api.models.twitchWebsocketSub import TwitchWebsocketSub
 from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from src.twitch.api.models.twitchWebsocketTransport import TwitchWebsocketTransport
 from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -1070,6 +1071,33 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseWebsocketSub(self):
+        isPrime = False
+        durationMonths = 12
+        subTier = '1000'
+
+        result = await self.jsonMapper.parseWebsocketSub({
+            'is_prime': isPrime,
+            'duration_months': durationMonths,
+            'sub_tier': subTier
+        })
+
+        assert isinstance(result, TwitchWebsocketSub)
+        assert result.isPrime == isPrime
+        assert result.durationMonths == durationMonths
+        assert result.subTier is TwitchSubscriberTier.TIER_ONE
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketSub_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseWebsocketSub(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketSub_withNone(self):
+        result = await self.jsonMapper.parseWebsocketSub(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_requireConnectionStatus_withAuthorizationRevokedString(self):
         result = await self.jsonMapper.requireConnectionStatus('authorization_revoked')
         assert result is TwitchWebsocketConnectionStatus.REVOKED
@@ -1827,3 +1855,8 @@ class TestTwitchJsonMapper:
     async def test_serializeSubscriptionType_withUserUpdate(self):
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.USER_UPDATE)
         assert string == 'user.update'
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, TwitchJsonMapper)
+        assert isinstance(self.jsonMapper, TwitchJsonMapperInterface)

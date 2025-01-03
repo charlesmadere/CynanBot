@@ -16,6 +16,7 @@ from .twitchSubGift import TwitchSubGift
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from .twitchWebsocketNoticeType import TwitchWebsocketNoticeType
+from .twitchWebsocketSub import TwitchWebsocketSub
 
 
 @dataclass(frozen = True)
@@ -35,6 +36,8 @@ class TwitchWebsocketEvent:
     bits: int | None = None
     cumulativeMonths: int | None = None
     cumulativeTotal: int | None = None
+    durationMonths: int | None = None
+    streakMonths: int | None = None
     total: int | None = None
     viewers: int | None = None
     broadcasterUserId: str | None = None
@@ -72,3 +75,4 @@ class TwitchWebsocketEvent:
     noticeType: TwitchWebsocketNoticeType | None = None
     reward: TwitchReward | None = None
     subGift: TwitchSubGift | None = None
+    sub: TwitchWebsocketSub | None = None
