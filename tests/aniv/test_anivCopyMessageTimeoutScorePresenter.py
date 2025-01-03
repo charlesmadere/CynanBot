@@ -11,6 +11,16 @@ class TestAnivCopyMessageTimeoutScorePresenter:
     presenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
 
     @pytest.mark.asyncio
+    async def test_getChannelEditorsCantPlayString_withEnglish(self):
+        printOut = await self.presenter.getChannelEditorsCantPlayString(LanguageEntry.ENGLISH)
+        assert printOut == 'ⓘ Sorry, Twitch channel editors can\'t participate in the aniv timeout game'
+
+    @pytest.mark.asyncio
+    async def test_getChannelEditorsCantPlayString_withSpanish(self):
+        printOut = await self.presenter.getChannelEditorsCantPlayString(LanguageEntry.SPANISH)
+        assert printOut == 'ⓘ Lo sentimos, los moderadores editores no pueden participar en el juego de suspensiones de aniv'
+
+    @pytest.mark.asyncio
     async def test_toString_with0Dodges0TimeoutsScoreAndEnglish(self):
         chatterUserName = 'stashiocat'
 

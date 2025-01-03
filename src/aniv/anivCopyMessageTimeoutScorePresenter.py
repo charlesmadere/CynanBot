@@ -38,6 +38,20 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
 
         return f'ⓘ @{chatterUserName}\'s aniv timeout scores — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
 
+    async def getChannelEditorsCantPlayString(
+        self,
+        language: LanguageEntry
+    ) -> str:
+        if not isinstance(language, LanguageEntry):
+            raise TypeError(f'language argument is malformed: \"{language}\"')
+
+        match language:
+            case LanguageEntry.SPANISH:
+                return 'ⓘ Lo sentimos, los moderadores editores no pueden participar en el juego de suspensiones de aniv'
+
+            case _:
+                return 'ⓘ Sorry, Twitch channel editors can\'t participate in the aniv timeout game'
+
     async def __spanish(
         self,
         score: AnivCopyMessageTimeoutScore | None,

@@ -349,7 +349,7 @@ class CynanBot(
         ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchApiService: TwitchApiServiceInterface,
-        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface | None,
+        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
@@ -580,7 +580,7 @@ class CynanBot(
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif twitchChannelEditorsRepository is not None and not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
+        elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
             raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
         elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
@@ -808,7 +808,7 @@ class CynanBot(
         if anivCopyMessageTimeoutScorePresenter is None or anivCopyMessageTimeoutScoreRepository is None:
             self.__anivTimeoutsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchChannelEditorsRepository, twitchUtils, userIdsRepository, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()

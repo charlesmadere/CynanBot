@@ -124,6 +124,8 @@ from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
+from src.twitch.channelEditors.stub.stubTwitchChannelEditorsRepository import StubTwitchChannelEditorsRepository
+from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
@@ -484,6 +486,8 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
+
+twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = StubTwitchChannelEditorsRepository()
 
 languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
 
@@ -867,7 +871,7 @@ cynanBot = CynanBot(
     ttsMonsterStreamerVoicesRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
-    twitchChannelEditorsRepository = None,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,
