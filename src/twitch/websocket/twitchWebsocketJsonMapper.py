@@ -306,6 +306,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'chatter_user_name' in eventJson and utils.isValidStr(eventJson.get('chatter_user_name')):
             chatterUserName = utils.getStrFromDict(eventJson, 'chatter_user_name')
 
+        clientId: str | None = None
+        if 'client_id' in eventJson and utils.isValidStr(eventJson.get('client_id')):
+            clientId = utils.getStrFromDict(eventJson, 'client_id')
+
         eventId: str | None = None
         if 'id' in eventJson and utils.isValidStr(eventJson.get('id')):
             eventId = utils.getStrFromDict(eventJson, 'id')
@@ -450,6 +454,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             categoryName = categoryName,
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
+            clientId = clientId,
             eventId = eventId,
             fromBroadcasterUserId = fromBroadcasterUserId,
             fromBroadcasterUserLogin = fromBroadcasterUserLogin,
