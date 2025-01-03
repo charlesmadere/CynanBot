@@ -5,8 +5,6 @@ from frozendict import frozendict
 from src.soundPlayerManager.soundAlert import SoundAlert
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from src.timber.timberInterface import TimberInterface
-from src.timber.timberStub import TimberStub
 from src.users.soundAlert.soundAlertRedemption import SoundAlertRedemption
 from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemptionJsonParser
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
@@ -14,11 +12,7 @@ from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAl
 
 class TestSoundAlertRedemptionJsonParser:
 
-    timber: TimberInterface = TimberStub()
-
-    soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
-        timber = timber
-    )
+    soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper()
 
     jsonParser: SoundAlertRedemptionJsonParserInterface = SoundAlertRedemptionJsonParser(
         soundAlertJsonMapper = soundAlertJsonMapper

@@ -567,9 +567,7 @@ pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJ
     timber = timber
 )
 
-soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
-    timber = timber
-)
+soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper()
 
 soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = SoundAlertRedemptionJsonParser(
     soundAlertJsonMapper = soundAlertJsonMapper

@@ -1,24 +1,18 @@
+from typing import Any
+
 from .soundAlert import SoundAlert
 from .soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from ..timber.timberInterface import TimberInterface
+from ..misc import utils as utils
 
 
 class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
 
-    def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-
-        self.__timber: TimberInterface = timber
-
     def parseSoundAlert(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None
     ) -> SoundAlert | None:
-        if jsonString is None:
+        if not utils.isValidStr(jsonString):
             return None
-        elif not isinstance(jsonString, str):
-            raise TypeError(f'jsonString argument is malformed: \"{jsonString}\"')
 
         jsonString = jsonString.lower()
 
@@ -49,9 +43,18 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'tnt_1': return SoundAlert.TNT_1
             case 'tnt_2': return SoundAlert.TNT_2
             case 'tnt_3': return SoundAlert.TNT_3
-            case _:
-                self.__timber.log('SoundAlertJsonMapper', f'Encountered unknown SoundAlert value: \"{jsonString}\"')
-                return None
+            case _: return None
+
+    def requireSoundAlert(
+        self,
+        jsonString: str | Any | None
+    ) -> SoundAlert:
+        result = self.parseSoundAlert(jsonString)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{jsonString}\" into SoundAlert value!')
+
+        return result
 
     def serializeSoundAlert(
         self,

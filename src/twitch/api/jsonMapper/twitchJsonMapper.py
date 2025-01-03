@@ -341,7 +341,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 chatter = await self.parseChatter(chatterJson)
                 chatters.append(chatter)
 
-            chatters.sort(key = lambda chatter: chatter.userName)
+            chatters.sort(key = lambda chatter: chatter.userName.casefold())
             frozenChatters = FrozenList(chatters)
         else:
             frozenChatters = FrozenList()

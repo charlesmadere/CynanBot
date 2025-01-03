@@ -1,17 +1,13 @@
+import pytest
+
 from src.soundPlayerManager.soundAlert import SoundAlert
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from src.timber.timberInterface import TimberInterface
-from src.timber.timberStub import TimberStub
 
 
 class TestSoundAlertJsonMapper:
 
-    timber: TimberInterface = TimberStub()
-
-    jsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
-        timber = timber
-    )
+    jsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper()
 
     def test_parseSoundAlert_withBeanString(self):
         result = self.jsonMapper.parseSoundAlert('bean')
@@ -127,6 +123,30 @@ class TestSoundAlertJsonMapper:
 
     def test_parseSoundAlert_withWhitespaceString(self):
         result = self.jsonMapper.parseSoundAlert(' ')
+        assert result is None
+
+    def test_requireSoundAlert_withEmptyString(self):
+        result: SoundAlert | None = None
+
+        with pytest.raises(Exception):
+            result = self.jsonMapper.requireSoundAlert('')
+
+        assert result is None
+
+    def test_requireSoundAlert_withNone(self):
+        result: SoundAlert | None = None
+
+        with pytest.raises(Exception):
+            result = self.jsonMapper.requireSoundAlert(None)
+
+        assert result is None
+
+    def test_requireSoundAlert_withWhitespaceString(self):
+        result: SoundAlert | None = None
+
+        with pytest.raises(Exception):
+            result = self.jsonMapper.requireSoundAlert(' ')
+
         assert result is None
 
     def test_serializeSoundAlert_withAllSoundAlertValues(self):

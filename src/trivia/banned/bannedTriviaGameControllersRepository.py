@@ -118,7 +118,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
             ))
 
         await connection.close()
-        controllers.sort(key = lambda controller: controller.userName.lower())
+        controllers.sort(key = lambda controller: controller.userName.casefold())
 
         return controllers
 
