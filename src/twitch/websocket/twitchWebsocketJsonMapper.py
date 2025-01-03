@@ -501,10 +501,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         frozenTopPredictors: FrozenList[TwitchOutcomePredictor] | None = None
         if 'top_predictors' in outcomeJson:
-            topPredictorsItem: Any = outcomeJson.get('top_predictors')
+            topPredictorsItem: Any | None = outcomeJson.get('top_predictors')
 
             if isinstance(topPredictorsItem, list) and len(topPredictorsItem) >= 1:
-                topPredictors = list()
+                topPredictors: list[TwitchOutcomePredictor] = list()
 
                 for topPredictorItem in topPredictorsItem:
                     topPredictor = await self.parseTwitchOutcomePredictor(topPredictorItem)
