@@ -1,0 +1,5 @@
+{
+  "media_player_volume": 70,
+  "decTalkPath": "../dectalk/say.exe",
+  "defaultVoice": "betty"
+}

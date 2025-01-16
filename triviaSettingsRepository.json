@@ -1,0 +1,61 @@
+{
+    "scraper_enabled": true,
+    "trivia_sources": {
+        "bongo": {
+            "is_enabled": true,
+            "weight": 600
+        },
+        "funtoon": {
+            "is_enabled": true,
+            "weight": 1000
+        },
+        "glacial": {
+            "is_enabled": true,
+            "weight": 5
+        },
+        "j_service": {
+            "is_enabled": false,
+            "weight": 100
+        },
+        "lord_of_the_rings": {
+            "is_enabled": true,
+            "weight": 2
+        },
+        "millionaire": {
+            "is_enabled": true,
+            "weight": 600
+        },
+        "open_trivia": {
+            "is_enabled": true,
+            "weight": 1000
+        },
+        "open_trivia_qa": {
+            "is_enabled": true,
+            "weight": 500
+        },
+        "poke_api": {
+            "is_enabled": true,
+            "weight": 50
+        },
+        "quiz_api": {
+            "is_enabled": true,
+            "weight": 5
+        },
+        "the_question_co": {
+            "is_enabled": true,
+            "weight": 400
+        },
+        "trivia_database": {
+            "is_enabled": true,
+            "weight": 700
+        },
+        "will_fry_trivia": {
+            "is_enabled": true,
+            "weight": 800
+        },
+        "wwtbam": {
+            "is_enabled": true,
+            "weight": 250
+        }
+    }
+}

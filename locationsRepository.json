@@ -1,0 +1,176 @@
+{
+    "524901": {
+        "lat": 55.75222,
+        "lon": 37.615555,
+        "name": "Moscow",
+        "timeZone": "Europe/Moscow"
+    },
+    "1835847": {
+        "lat": 37.583328,
+        "lon": 127.0,
+        "name": "Seoul",
+        "timeZone": "Asia/Seoul"
+    },
+    "1850147": {
+        "lat": 35.689499,
+        "lon": 139.691711,
+        "name": "Tokyo",
+        "timeZone": "Asia/Tokyo"
+    },
+    "1853908": {
+        "lat": 35.950001,
+        "lon": 137.266663,
+        "name": "Osaka",
+        "timeZone": "Japan"
+    },
+    "2128295": {
+        "lat": 43.064171,
+        "lon": 141.346939,
+        "name": "Sapporo",
+        "timeZone": "Japan"
+    },
+    "2643743": {
+        "lat": 51.50853,
+        "lon": -0.12574,
+        "name": "London",
+        "timeZone": "Europe/London"
+    },
+    "2673730": {
+        "lat": 59.332581,
+        "lon": 18.064899,
+        "name": "Stockholm",
+        "timeZone": "Europe/Stockholm"
+    },
+    "2692969": {
+        "lat": 55.605869,
+        "lon": 13.00073,
+        "name": "Malmö",
+        "timeZone": "Europe/Stockholm"
+    },
+    "2950159": {
+        "lat": 52.524368,
+        "lon": 13.41053,
+        "name": "Berlin",
+        "timeZone": "Europe/Berlin"
+    },
+    "3143244": {
+        "lat": 59.912731,
+        "lon": 10.74609,
+        "name": "Oslo",
+        "timeZone": "Europe/Oslo"
+    },
+    "3895114": {
+        "lat": -30.0,
+        "lon": -71.0,
+        "name": "Republic of Chile",
+        "timeZone": "Chile/Continental"
+    },
+    "4140963": {
+        "lat": 38.9072,
+        "lon": -77.0369,
+        "name": "Washington, D.C.",
+        "timeZone": "America/New_York"
+    },
+    "4164138": {
+        "lat": 25.774269,
+        "lon": -80.193657,
+        "name": "Miami",
+        "timeZone": "America/New_York"
+    },
+    "4167147": {
+        "lat": 28.53834,
+        "lon": -81.379242,
+        "name": "Orlando",
+        "timeZone": "America/New_York"
+    },
+    "4335045": {
+        "lat": 29.954651,
+        "lon": -90.075073,
+        "name": "New Orleans",
+        "timeZone": "US/Central"
+    },
+    "4641239": {
+        "lat": 35.1495,
+        "lon": -90.0490,
+        "name": "Memphis",
+        "timeZone": "America/Chicago"
+    },
+    "4671654": {
+        "lat": 30.267151,
+        "lon": -97.743057,
+        "name": "Austin",
+        "timeZone": "America/Chicago"
+    },
+    "4887398": {
+        "lat": 41.850029,
+        "lon": -87.650047,
+        "name": "Chicago",
+        "timeZone": "America/Chicago"
+    },
+    "5128581": {
+        "lat": 40.714272,
+        "lon": -74.005966,
+        "name": "New York City",
+        "timeZone": "America/New_York"
+    },
+    "5327684": {
+        "lat": 37.87159,
+        "lon": -122.272751,
+        "name": "Berkeley",
+        "timeZone": "America/Los_Angeles"
+    },
+    "5368361": {
+        "lat": 34.052231,
+        "lon": -118.243683,
+        "name": "Los Angeles",
+        "timeZone": "America/Los_Angeles"
+    },
+    "5378538": {
+        "lat": 37.804371,
+        "lon": -122.270798,
+        "name": "Oakland",
+        "timeZone": "America/Los_Angeles"
+    },
+    "5379513": {
+        "lat": 33.787788,
+        "lon": -117.853111,
+        "name": "Orange",
+        "timeZone": "America/Los_Angeles"
+    },
+    "5391959": {
+        "lat": 37.774929,
+        "lon": -122.419418,
+        "name": "San Francisco",
+        "timeZone": "America/Los_Angeles"
+    },
+    "5506956": {
+        "lat": 36.174969,
+        "lon": -115.137222,
+        "name": "Las Vegas",
+        "timeZone": "US/Mountain"
+    },
+    "5746545": {
+        "lat": 45.523449,
+        "lon": -122.676208,
+        "name": "Portland",
+        "timeZone": "US/Pacific"
+    },
+    "5809844": {
+        "lat": 47.606209,
+        "lon": -122.332069,
+        "name": "Seattle",
+        "timeZone": "US/Pacific"
+    },
+    "6455259": {
+        "lat": 48.856461,
+        "lon": 2.35236,
+        "name": "Paris",
+        "timeZone": "Europe/Paris"
+    },
+    "6691319": {
+        "lat": 47.375999,
+        "lon": -71.123367,
+        "name": "Capitale-Nationale",
+        "timeZone": "Canada/Eastern"
+    }
+}

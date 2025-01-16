@@ -1,0 +1,50 @@
+{
+    "userHandle": {
+        "analogueEnabled": true,
+        "chatSoundAlertsEnabled": true,
+        "chatSoundAlerts": [
+            {
+                "qualifier": "contains",
+                "alertType": "file_path",
+                "filePath": "grenade.wav",
+                "message": "hit the deck",
+                "volume": 50
+            },
+            {
+                "qualifier": "exact",
+                "alertType": "file_path",
+                "filePath": "ecco.ogg",
+                "message": "samusEccoSmile"
+            }
+        ],
+        "chatBackMessagesEnabled": true,
+        "chatBackMessages": [
+            "jamCAT",
+            "SchubertWalk",
+            "D e e R F o r C e"
+        ],
+        "decTalkSongsEnabled": true,
+        "decTalkSongBoosterPacks": [
+            {
+                "rewardId": "",
+                "song": "trololo"
+            },
+            {
+                "rewardId": "",
+                "song": "song_of_storms"
+            }
+        ],
+        "discord": "https://discord.gg/linkToInviteURL",
+        "esWordOfTheDayEnabled": true,
+        "jaWordOfTheDayEnabled": true,
+        "picOfTheDayEnabled": true,
+        "picOfTheDayFile": "/home/userHandle/potd.txt",
+        "picOfTheDayRewardId": "DB66F35F-19DC-99EA-50E6-97AEF5F439CA",
+        "speedrunProfile": "https://www.speedrun.com/user/someHandle",
+        "timeZone": "America/Los_Angeles",
+        "twitter": "https://twitter.com/userHandle"
+    },
+    "anotherUser": {
+        // ...
+    }
+}

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "CynanBot"
+version = "0.0.1"
+authors = [
+  { name = "charlesmadere", email = "" },
+]
+description = "CynanBot"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Public Domain",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/charlesmadere/CynanBot"
+Issues = "https://github.com/charlesmadere/CynanBot/issues"
