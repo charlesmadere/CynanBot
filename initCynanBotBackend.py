@@ -165,6 +165,8 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
+from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
+from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from src.soundPlayerManager.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
@@ -471,11 +473,13 @@ timber: TimberInterface = Timber(
 )
 
 networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
+soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = SoundPlayerJsonMapper()
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/generalSettingsRepository.json'),
     networkJsonMapper = networkJsonMapper,
+    soundPlayerJsonMapper = soundPlayerJsonMapper,
     storageJsonMapper = storageJsonMapper
 )
 

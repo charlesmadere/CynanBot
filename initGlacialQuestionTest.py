@@ -18,6 +18,8 @@ from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requests.requestsClientProvider import RequestsClientProvider
+from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
+from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.backingPsqlDatabase import BackingPsqlDatabase
 from src.storage.backingSqliteDatabase import BackingSqliteDatabase
@@ -83,11 +85,13 @@ authRepository = AuthRepository(
 )
 
 networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
+soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = SoundPlayerJsonMapper()
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('../config/generalSettingsRepository.json'),
     networkJsonMapper = networkJsonMapper,
+    soundPlayerJsonMapper = soundPlayerJsonMapper,
     storageJsonMapper = storageJsonMapper
 )
 

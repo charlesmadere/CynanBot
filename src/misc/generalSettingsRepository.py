@@ -4,38 +4,51 @@ from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from ..network.networkClientType import NetworkClientType
 from ..network.networkJsonMapperInterface import NetworkJsonMapperInterface
+from ..soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
+from ..soundPlayerManager.soundPlayerType import SoundPlayerType
 from ..storage.databaseType import DatabaseType
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from ..trivia.builder.triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
 
 
-class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
+class GeneralSettingsRepository(
+    Clearable,
+    TriviaGameBuilderSettingsInterface
+):
 
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
         networkJsonMapper: NetworkJsonMapperInterface,
+        soundPlayerJsonMapper: SoundPlayerJsonMapperInterface,
         storageJsonMapper: StorageJsonMapperInterface,
         defaultDatabaseType: DatabaseType = DatabaseType.SQLITE,
         defaultNetworkClientType: NetworkClientType = NetworkClientType.AIOHTTP,
+        defaultSoundPlayerType: SoundPlayerType = SoundPlayerType.VLC,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(networkJsonMapper, NetworkJsonMapperInterface):
             raise TypeError(f'networkJsonMapper argument is malformed: \"{networkJsonMapper}\"')
+        elif not isinstance(soundPlayerJsonMapper, SoundPlayerJsonMapperInterface):
+            raise TypeError(f'soundPlayerJsonMapper argument is malformed: \"{soundPlayerJsonMapper}\"')
         elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
             raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
         elif not isinstance(defaultDatabaseType, DatabaseType):
             raise TypeError(f'defaultDatabaseType argument is malformed: \"{defaultDatabaseType}\"')
         elif not isinstance(defaultNetworkClientType, NetworkClientType):
             raise TypeError(f'defaultNetworkClientType argument is malformed: \"{defaultNetworkClientType}\"')
+        elif not isinstance(defaultSoundPlayerType, SoundPlayerType):
+            raise TypeError(f'defaultSoundPlayerType argument is malformed: \"{defaultSoundPlayerType}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__networkJsonMapper: NetworkJsonMapperInterface = networkJsonMapper
+        self.__soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = soundPlayerJsonMapper
         self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
         self.__defaultDatabaseType: DatabaseType = defaultDatabaseType
         self.__defaultNetworkClientType: NetworkClientType = defaultNetworkClientType
+        self.__defaultSoundPlayerType: SoundPlayerType = defaultSoundPlayerType
 
         self.__cache: GeneralSettingsRepositorySnapshot | None = None
 
@@ -51,11 +64,14 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
             return self.__cache
 
         jsonContents = self.__readJson()
+
         snapshot = GeneralSettingsRepositorySnapshot(
             defaultDatabaseType = self.__defaultDatabaseType,
             defaultNetworkClientType = self.__defaultNetworkClientType,
             jsonContents = jsonContents,
             networkJsonMapper = self.__networkJsonMapper,
+            soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
+            defaultSoundPlayerType = self.__defaultSoundPlayerType,
             storageJsonMapper = self.__storageJsonMapper
         )
 
@@ -67,11 +83,14 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
             return self.__cache
 
         jsonContents = await self.__readJsonAsync()
+
         snapshot = GeneralSettingsRepositorySnapshot(
             defaultDatabaseType = self.__defaultDatabaseType,
             defaultNetworkClientType = self.__defaultNetworkClientType,
             jsonContents = jsonContents,
             networkJsonMapper = self.__networkJsonMapper,
+            soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
+            defaultSoundPlayerType = self.__defaultSoundPlayerType,
             storageJsonMapper = self.__storageJsonMapper
         )
 
