@@ -1,3 +1,5 @@
+from audioplayer import AudioPlayer
+
 from ...timber.timberInterface import TimberInterface
 
 
@@ -12,9 +14,13 @@ class AudioPlayerMediaPlayer:
 
         self.__timber: TimberInterface = timber
 
+        self.__audioPlayer: AudioPlayer | None = None
+        self.__isPlaying: bool = False
+        self.__volume: int = 100
+
     @property
     def isPlaying(self) -> bool:
-        return False
+        return self.__isPlaying
 
     async def play(self):
         # TODO
@@ -25,14 +31,8 @@ class AudioPlayerMediaPlayer:
         pass
 
     async def setVolume(self, volume: int):
-        # TODO
-        pass
+        self.__volume = volume
 
     async def stop(self):
         # TODO
         pass
-
-    @property
-    def volume(self) -> int:
-        # TODO
-        return 100

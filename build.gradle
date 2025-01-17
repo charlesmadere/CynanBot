@@ -20,6 +20,7 @@ python {
     pip 'aiosqlite:0.20.0'
     pip 'asyncpg:0.30.0'
     pip 'attrs:24.3.0'
+    pip 'audioplayer:0.6'
     pip 'certifi:2024.12.14'
     pip 'cffi:1.17.1'
     pip 'charset-normalizer:3.4.1'
