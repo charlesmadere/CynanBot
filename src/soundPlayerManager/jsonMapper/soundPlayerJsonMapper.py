@@ -2,7 +2,6 @@ from typing import Any
 
 from .soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from ..soundPlayerType import SoundPlayerType
-from ...misc import utils as utils
 
 
 class SoundPlayerJsonMapper(SoundPlayerJsonMapperInterface):

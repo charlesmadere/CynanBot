@@ -235,6 +235,8 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
 from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
+from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManagerProvider import \
+    AudioPlayerSoundPlayerManagerProvider
 from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
 from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
@@ -244,6 +246,8 @@ from src.soundPlayerManager.soundPlayerRandomizerHelper import SoundPlayerRandom
 from src.soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from src.soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
 from src.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from src.soundPlayerManager.soundPlayerType import SoundPlayerType
+from src.soundPlayerManager.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
 from src.soundPlayerManager.vlc.vlcSoundPlayerManagerProvider import VlcSoundPlayerManagerProvider
 from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
 from src.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
@@ -1721,11 +1725,28 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerR
     timber = timber
 )
 
-soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = VlcSoundPlayerManagerProvider(
-    chatBandInstrumentSoundsRepository = None,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber
-)
+soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
+
+match generalSettingsSnapshot.requireSoundPlayerType():
+    case SoundPlayerType.AUDIO_PLAYER:
+        soundPlayerManagerProvider = AudioPlayerSoundPlayerManagerProvider(
+            chatBandInstrumentSoundsRepository = None,
+            soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+            timber = timber
+        )
+
+    case SoundPlayerType.STUB:
+        soundPlayerManagerProvider = StubSoundPlayerManagerProvider()
+
+    case SoundPlayerType.VLC:
+        soundPlayerManagerProvider = VlcSoundPlayerManagerProvider(
+            chatBandInstrumentSoundsRepository = None,
+            soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+            timber = timber
+        )
+
+    case _:
+        raise RuntimeError(f'Unknown/misconfigured SoundPlayerType: \"{generalSettingsSnapshot.requireSoundPlayerType()}\"')
 
 
 ################################
