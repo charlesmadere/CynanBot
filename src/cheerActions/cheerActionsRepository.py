@@ -122,6 +122,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     twitchChannelId = twitchChannelId
                 )
 
+            case CheerActionType.TNT:
+                return await self.__cheerActionJsonMapper.requireTntCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId
+                )
+
             case _:
                 raise RuntimeError(f'unknown CheerActionType: \"{actionType}\"')
 

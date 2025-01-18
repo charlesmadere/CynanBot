@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from .absCheerAction import AbsCheerAction
 from .beanChance.beanChanceCheerAction import BeanChanceCheerAction
@@ -8,6 +9,7 @@ from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonP
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
+from .tnt.tntCheerAction import TntCheerAction
 
 
 class CheerActionJsonMapperInterface(ABC):
@@ -26,14 +28,14 @@ class CheerActionJsonMapperInterface(ABC):
     @abstractmethod
     async def parseCheerActionType(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None
     ) -> CheerActionType | None:
         pass
 
     @abstractmethod
     async def parseCheerActionStreamStatusRequirement(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None
     ) -> CheerActionStreamStatusRequirement | None:
         pass
 
@@ -82,6 +84,17 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseTntCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> TntCheerAction | None:
+        pass
+
+    @abstractmethod
     async def requireBeanChanceCheerAction(
         self,
         isEnabled: bool,
@@ -95,14 +108,14 @@ class CheerActionJsonMapperInterface(ABC):
     @abstractmethod
     async def requireCheerActionStreamStatusRequirement(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None
     ) -> CheerActionStreamStatusRequirement:
         pass
 
     @abstractmethod
     async def requireCheerActionType(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None
     ) -> CheerActionType:
         pass
 
@@ -148,6 +161,17 @@ class CheerActionJsonMapperInterface(ABC):
         jsonString: str | None,
         twitchChannelId: str
     ) -> TimeoutCheerAction:
+        pass
+
+    @abstractmethod
+    async def requireTntCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> TntCheerAction:
         pass
 
     @abstractmethod

@@ -8,3 +8,4 @@ class CheerActionType(Enum):
     GAME_SHUFFLE = auto()
     SOUND_ALERT = auto()
     TIMEOUT = auto()
+    TNT = auto()
