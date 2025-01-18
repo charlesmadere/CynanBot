@@ -1711,6 +1711,16 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 )
 
 
+######################################
+## Chat Band initialization section ##
+######################################
+
+chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface = ChatBandInstrumentSoundsRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
+
+
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -1730,7 +1740,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
 match generalSettingsSnapshot.requireSoundPlayerType():
     case SoundPlayerType.AUDIO_PLAYER:
         soundPlayerManagerProvider = AudioPlayerSoundPlayerManagerProvider(
-            chatBandInstrumentSoundsRepository = None,
+            chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber
         )
@@ -1740,7 +1750,7 @@ match generalSettingsSnapshot.requireSoundPlayerType():
 
     case SoundPlayerType.VLC:
         soundPlayerManagerProvider = VlcSoundPlayerManagerProvider(
-            chatBandInstrumentSoundsRepository = None,
+            chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber
         )
@@ -2513,16 +2523,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
 )
 
 
-######################################
-## Chat Band initialization section ##
-######################################
-
-chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface = ChatBandInstrumentSoundsRepository(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber
-)
-
-
 ########################################################
 ## Websocket Connection Server initialization section ##
 ########################################################
@@ -2593,7 +2593,6 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
 )
-
 
 
 #####################################

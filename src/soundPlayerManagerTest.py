@@ -59,7 +59,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
 match soundPlayerType:
     case SoundPlayerType.AUDIO_PLAYER:
         soundPlayerManagerProvider = AudioPlayerSoundPlayerManagerProvider(
-            chatBandInstrumentSoundsRepository = None,
+            chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber
         )
@@ -69,7 +69,7 @@ match soundPlayerType:
 
     case SoundPlayerType.VLC:
         soundPlayerManagerProvider = VlcSoundPlayerManagerProvider(
-            chatBandInstrumentSoundsRepository = None,
+            chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber
         )
