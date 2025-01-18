@@ -962,6 +962,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'accommodate'
         if word in ('acheive', 'acheeve'):
             yield 'achieve'
+        if word == 'anice':
+            yield 'anise'
         if word == 'aquire':
             yield 'acquire'
         if word == 'aquit':
