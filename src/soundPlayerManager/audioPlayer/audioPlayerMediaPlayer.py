@@ -48,10 +48,10 @@ class AudioPlayerMediaPlayer:
 
         audioPlayer.play(
             loop = False,
-            block = False
+            block = True
         )
 
-        # TODO HOW DO I KNOW WHEN THIS IS DONE PLAYING???
+        self.__isPlaying = False
 
     async def setMedia(self, filePath: str):
         if not utils.isValidStr(filePath):
