@@ -217,7 +217,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         currentPlaylistIndex: int = -1
         currentFilePath: str | None = None
 
-        self.__timber.log('AudioPlaySoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) ({mediaPlayer=})')
+        self.__timber.log('AudioPlayerSoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) ({mediaPlayer=})')
 
         try:
             while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlistFilePaths) or mediaPlayer.isPlaying):
@@ -234,12 +234,12 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
                         await mediaPlayer.setMedia(currentFilePath)
 
                         if not await mediaPlayer.play():
-                            self.__timber.log('AudioPlaySoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=})')
+                            self.__timber.log('AudioPlayerSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=})')
                             playErrorOccurred = True
 
                 await asyncio.sleep(self.__playbackLoopSleepTimeSeconds)
         except Exception as e:
-            self.__timber.log('AudioPlaySoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
+            self.__timber.log('AudioPlayerSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
 
         self.__isLoadingOrPlaying = False
 
