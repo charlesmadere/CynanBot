@@ -36,7 +36,7 @@ class SkipTtsChatCommand(AbsChatCommand):
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
-        if administrator != ctx.getAuthorId() or ctx.getAuthorId() not in editorIds:
+        if administrator != ctx.getAuthorId() and ctx.getAuthorId() not in editorIds:
             self.__timber.log('SkipTtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} tried using this command!')
             return
 
