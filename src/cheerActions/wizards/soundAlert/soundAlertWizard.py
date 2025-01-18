@@ -18,7 +18,7 @@ class SoundAlertWizard(AbsWizard):
             twitchChannelId = twitchChannelId
         )
 
-        self.__steps = SoundAlertSteps()
+        self.__steps: SoundAlertSteps = SoundAlertSteps()
         self.__bits: int | None = None
         self.__directory: str | None = None
 

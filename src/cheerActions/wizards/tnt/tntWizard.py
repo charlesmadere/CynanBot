@@ -1,13 +1,12 @@
 from typing import Any
 
-from .timeoutSteps import TimeoutSteps
+from .tntSteps import TntSteps
 from ..absWizard import AbsWizard
-from ...cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ...cheerActionType import CheerActionType
 from ....misc import utils as utils
 
 
-class TimeoutWizard(AbsWizard):
+class TntWizard(AbsWizard):
 
     def __init__(
         self,
@@ -19,21 +18,21 @@ class TimeoutWizard(AbsWizard):
             twitchChannelId = twitchChannelId
         )
 
-        self.__steps: TimeoutSteps = TimeoutSteps()
-        self.__randomChanceEnabled: bool | None = None
-        self.__streamStatus: CheerActionStreamStatusRequirement | None = None
+        self.__steps: TntSteps = TntSteps()
         self.__bits: int | None = None
         self.__durationSeconds: int | None = None
+        self.__maxTimeoutChatters: int | None = None
+        self.__minTimeoutChatters: int | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
-        return CheerActionType.TIMEOUT
+        return CheerActionType.TNT
 
-    def getSteps(self) -> TimeoutSteps:
+    def getSteps(self) -> TntSteps:
         return self.__steps
 
     def printOut(self) -> str:
-        return f'{self.__randomChanceEnabled=}, {self.__streamStatus=}, {self.__bits=}, {self.__durationSeconds=}'
+        return f'{self.__bits=}, {self.__durationSeconds=}, {self.__maxTimeoutChatters=}, {self.__minTimeoutChatters=}'
 
     def requireBits(self) -> int:
         bits = self.__bits
@@ -51,21 +50,21 @@ class TimeoutWizard(AbsWizard):
 
         return durationSeconds
 
-    def requireRandomChanceEnabled(self) -> bool:
-        randomChanceEnabled = self.__randomChanceEnabled
+    def requireMaxTimeoutChatters(self) -> int:
+        maxTimeoutChatters = self.__maxTimeoutChatters
 
-        if randomChanceEnabled is None:
-            raise ValueError(f'randomChanceEnabled value has not been set: ({self=})')
+        if maxTimeoutChatters is None:
+            raise ValueError(f'maxTimeoutChatters value has not been set: ({self=})')
 
-        return randomChanceEnabled
+        return maxTimeoutChatters
 
-    def requireStreamStatus(self) -> CheerActionStreamStatusRequirement:
-        streamStatus = self.__streamStatus
+    def requireMinTimeoutChatters(self) -> int:
+        minTimeoutChatters = self.__minTimeoutChatters
 
-        if streamStatus is None:
-            raise ValueError(f'streamStatus value has not been set: ({self=})')
+        if minTimeoutChatters is None:
+            raise ValueError(f'minTimeoutChatters value has not been set: ({self=})')
 
-        return streamStatus
+        return minTimeoutChatters
 
     def setBits(self, bits: int):
         if not utils.isValidInt(bits):
@@ -83,26 +82,26 @@ class TimeoutWizard(AbsWizard):
 
         self.__durationSeconds = durationSeconds
 
-    def setRandomChanceEnabled(self, randomChanceEnabled: bool):
-        if not utils.isValidBool(randomChanceEnabled):
-            raise TypeError(f'randomChanceEnabled argument is malformed: \"{randomChanceEnabled}\"')
+    def setMaxTimeoutChatters(self, maxTimeoutChatters: int):
+        if not utils.isValidInt(maxTimeoutChatters):
+            raise TypeError(f'maxTimeoutChatters argument is malformed: \"{maxTimeoutChatters}\"')
 
-        self.__randomChanceEnabled = randomChanceEnabled
+        self.__maxTimeoutChatters = maxTimeoutChatters
 
-    def setStreamStatus(self, streamStatus: CheerActionStreamStatusRequirement):
-        if not isinstance(streamStatus, CheerActionStreamStatusRequirement):
-            raise TypeError(f'streamStatus argument is malformed: \"{streamStatus}\"')
+    def setMinTimeoutChatters(self, minTimeoutChatters: int):
+        if not utils.isValidInt(minTimeoutChatters):
+            raise TypeError(f'minTimeoutChatters argument is malformed: \"{minTimeoutChatters}\"')
 
-        self.__streamStatus = streamStatus
+        self.__minTimeoutChatters = minTimeoutChatters
 
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
             'durationSeconds': self.__durationSeconds,
-            'randomChanceEnabled': self.__randomChanceEnabled,
+            'maxTimeoutChatters': self.__maxTimeoutChatters,
+            'minTimeoutChatters': self.__minTimeoutChatters,
             'steps': self.__steps,
-            'streamStatus': self.__streamStatus,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId
         }

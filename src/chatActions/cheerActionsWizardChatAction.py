@@ -10,6 +10,7 @@ from ..cheerActions.crowdControl.crowdControlButtonPressCheerAction import Crowd
 from ..cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from ..cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
+from ..cheerActions.tnt.tntCheerAction import TntCheerAction
 from ..cheerActions.wizards.beanChance.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChance.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.crowdControl.crowdControlStep import CrowdControlStep
@@ -21,6 +22,8 @@ from ..cheerActions.wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from ..cheerActions.wizards.stepResult import StepResult
 from ..cheerActions.wizards.timeout.timeoutStep import TimeoutStep
 from ..cheerActions.wizards.timeout.timeoutWizard import TimeoutWizard
+from ..cheerActions.wizards.tnt.tntStep import TntStep
+from ..cheerActions.wizards.tnt.tntWizard import TntWizard
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
@@ -480,6 +483,117 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
+    async def __configureTntWizard(
+        self,
+        content: str,
+        wizard: TntWizard,
+        message: TwitchMessage
+    ) -> bool:
+        steps = wizard.getSteps()
+        step = steps.getStep()
+
+        match step:
+            case TntStep.BITS:
+                try:
+                    bits = int(content)
+                    wizard.setBits(bits)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case TntStep.DURATION_SECONDS:
+                try:
+                    durationSeconds = int(content)
+                    wizard.setDurationSeconds(durationSeconds)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set durationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case TntStep.MAXIMUM_CHATTERS:
+                try:
+                    maximumChatters = int(content)
+                    wizard.setMaxTimeoutChatters(maximumChatters)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case TntStep.MINIMUM_CHATTERS:
+                try:
+                    minimumChatters = int(content)
+                    wizard.setMinTimeoutChatters(minimumChatters)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minimumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__cheerActionsRepository.setAction(TntCheerAction(
+                    isEnabled = True,
+                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
+                    bits = wizard.requireBits(),
+                    durationSeconds = wizard.requireDurationSeconds(),
+                    maxTimeoutChatters = wizard.requireMaxTimeoutChatters(),
+                    minTimeoutChatters = wizard.requireMinTimeoutChatters(),
+                    twitchChannelId = wizard.twitchChannelId
+                ))
+
+                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring TNT wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__send(message, f'ⓘ Finished configuring TNT ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                # this is intentionally empty
+                pass
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        match steps.getStep():
+            case TntStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case TntStep.DURATION_SECONDS:
+                await self.__send(message, f'ⓘ Next, please specify the TNT\'s timeout duration (in seconds)')
+                return True
+
+            case TntStep.MAXIMUM_CHATTERS:
+                await self.__send(message, f'ⓘ Next, please specify the TNT\'s maximum number of chatters that should be timed out')
+                return True
+
+            case TntStep.MINIMUM_CHATTERS:
+                await self.__send(message, f'ⓘ Next, please specify the TNT\'s minimum number of chatters that should be timed out')
+                return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
     async def handleChat(
         self,
         mostRecentChat: MostRecentChat | None,
@@ -523,6 +637,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
         elif isinstance(wizard, TimeoutWizard):
             return await self.__configureTimeoutWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+
+        elif isinstance(wizard, TntWizard):
+            return await self.__configureTntWizard(
                 content = content,
                 wizard = wizard,
                 message = message
