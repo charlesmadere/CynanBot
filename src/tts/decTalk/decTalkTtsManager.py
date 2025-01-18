@@ -3,7 +3,7 @@ import asyncio
 import aiofiles.ospath
 
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
-from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface

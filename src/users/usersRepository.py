@@ -34,7 +34,7 @@ from ..language.languageEntry import LanguageEntry
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
-from ..tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.ttsProvider import TtsProvider
 
 

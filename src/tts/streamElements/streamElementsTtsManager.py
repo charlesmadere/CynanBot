@@ -4,7 +4,7 @@ import aiofiles.ospath
 
 from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface

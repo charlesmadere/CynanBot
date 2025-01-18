@@ -9,7 +9,7 @@ from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsEvent import TtsEvent
-from ..tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.ttsProvider import TtsProvider
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

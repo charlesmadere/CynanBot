@@ -165,7 +165,7 @@ from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from .tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
-from .tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from .tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface

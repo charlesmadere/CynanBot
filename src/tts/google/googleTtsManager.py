@@ -5,7 +5,7 @@ import aiofiles.ospath
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
-from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface

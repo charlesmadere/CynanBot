@@ -225,7 +225,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                         pass
 
                     case VlcMediaPlayer.PlaybackState.STOPPED:
-                        if currentPlaylistIndex == -1:
+                        if currentPlaylistIndex < 0:
                             currentPlaylistIndex = 0
                         else:
                             currentPlaylistIndex += 1

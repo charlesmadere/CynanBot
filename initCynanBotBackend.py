@@ -334,9 +334,9 @@ from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
-from src.tts.ttsJsonMapper import TtsJsonMapper
-from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler

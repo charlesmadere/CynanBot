@@ -3,7 +3,7 @@ import asyncio
 from frozenlist import FrozenList
 
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
-from ..ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface

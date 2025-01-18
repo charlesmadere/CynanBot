@@ -245,6 +245,8 @@ from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
+from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
+from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.compositeTtsManager import CompositeTtsManager
 from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
@@ -266,6 +268,8 @@ from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
 from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.microsoftSam.microsoftSamFileManager import MicrosoftSamFileManager
 from src.tts.microsoftSam.microsoftSamFileManagerInterface import MicrosoftSamFileManagerInterface
 from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
@@ -274,10 +278,6 @@ from src.tts.streamElements.streamElementsFileManager import StreamElementsFileM
 from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from src.tts.streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from src.tts.ttsCommandBuilder import TtsCommandBuilder
-from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from src.tts.ttsJsonMapper import TtsJsonMapper
-from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
 from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
@@ -946,6 +946,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
 match generalSettingsSnapshot.requireSoundPlayerType():
     case SoundPlayerType.AUDIO_PLAYER:
         soundPlayerManagerProvider = AudioPlayerSoundPlayerManagerProvider(
+            backgroundTaskHelper = backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = None,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber

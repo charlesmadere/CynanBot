@@ -5,12 +5,15 @@ from frozenlist import FrozenList
 from .ttsBoosterPack import TtsBoosterPack
 from .ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from ...misc import utils as utils
-from ...tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ...tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 
 
 class TtsBoosterPackParser(TtsBoosterPackParserInterface):
 
-    def __init__(self, ttsJsonMapper: TtsJsonMapperInterface):
+    def __init__(
+        self,
+        ttsJsonMapper: TtsJsonMapperInterface
+    ):
         if not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
 

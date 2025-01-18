@@ -1,5 +1,5 @@
-from src.tts.ttsCommandBuilder import TtsCommandBuilder
-from src.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
+from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 
 
 class TestTtsCommandBuilder:

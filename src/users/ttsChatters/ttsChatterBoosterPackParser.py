@@ -11,7 +11,7 @@ from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
-from ...tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ...tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ...tts.ttsProvider import TtsProvider
 
 

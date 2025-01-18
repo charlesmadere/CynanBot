@@ -59,6 +59,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
 match soundPlayerType:
     case SoundPlayerType.AUDIO_PLAYER:
         soundPlayerManagerProvider = AudioPlayerSoundPlayerManagerProvider(
+            backgroundTaskHelper = backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber

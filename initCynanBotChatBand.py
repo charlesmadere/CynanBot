@@ -120,9 +120,9 @@ from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderI
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
-from src.tts.ttsJsonMapper import TtsJsonMapper
-from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -708,6 +708,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface
 match generalSettingsSnapshot.requireSoundPlayerType():
     case SoundPlayerType.AUDIO_PLAYER:
         soundPlayerManagerProvider = AudioPlayerSoundPlayerManagerProvider(
+            backgroundTaskHelper = backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
             timber = timber

@@ -3,6 +3,7 @@ from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -10,10 +11,13 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface
     ):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         if chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
             raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -21,6 +25,7 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
@@ -29,6 +34,7 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
 
     def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
         return AudioPlayerSoundPlayerManager(
+            backgroundTaskHelper = self.__backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
             timber = self.__timber

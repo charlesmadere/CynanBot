@@ -2,8 +2,8 @@ import pytest
 
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from src.tts.ttsJsonMapper import TtsJsonMapper
-from src.tts.ttsJsonMapperInterface import TtsJsonMapperInterface
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.ttsProvider import TtsProvider
 
 

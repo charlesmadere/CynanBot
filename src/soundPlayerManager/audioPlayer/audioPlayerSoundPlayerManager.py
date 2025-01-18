@@ -1,3 +1,5 @@
+import asyncio
+import traceback
 from typing import Collection
 
 import aiofiles.ospath
@@ -10,6 +12,7 @@ from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsReposito
 from ...chatBand.chatBandInstrument import ChatBandInstrument
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...misc import utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -17,11 +20,14 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         playbackLoopSleepTimeSeconds: float = 0.25
     ):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         if chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
             raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -33,6 +39,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         elif playbackLoopSleepTimeSeconds < 0.25 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
@@ -206,7 +213,33 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
         await mediaPlayer.setVolume(volume)
 
-        # TODO
+        playErrorOccurred: bool = False
+        currentPlaylistIndex: int = -1
+        currentFilePath: str | None = None
+
+        self.__timber.log('AudioPlaySoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) ({mediaPlayer=})')
+
+        try:
+            while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlistFilePaths) or mediaPlayer.isPlaying):
+                if mediaPlayer.isPlaying:
+                    pass
+                else:
+                    if currentPlaylistIndex < 0:
+                        currentPlaylistIndex = 0
+                    else:
+                        currentPlaylistIndex += 1
+
+                    if currentPlaylistIndex < len(playlistFilePaths):
+                        currentFilePath = playlistFilePaths[currentPlaylistIndex]
+                        await mediaPlayer.setMedia(currentFilePath)
+
+                        if not await mediaPlayer.play():
+                            self.__timber.log('AudioPlaySoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=})')
+                            playErrorOccurred = True
+
+                await asyncio.sleep(self.__playbackLoopSleepTimeSeconds)
+        except Exception as e:
+            self.__timber.log('AudioPlaySoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
 
         self.__isLoadingOrPlaying = False
 
@@ -214,7 +247,11 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         mediaPlayer = self.__mediaPlayer
 
         if mediaPlayer is None:
-            mediaPlayer = AudioPlayerMediaPlayer(timber = self.__timber)
+            mediaPlayer = AudioPlayerMediaPlayer(
+                backgroundTaskHelper = self.__backgroundTaskHelper,
+                timber = self.__timber
+            )
+
             self.__mediaPlayer = mediaPlayer
             self.__timber.log('AudioPlayerSoundPlayerManager', f'Created new AudioPlayerMediaPlayer instance: \"{mediaPlayer}\"')
 
