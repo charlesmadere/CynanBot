@@ -321,6 +321,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('chris', 'christ', 'cris', 'kris'):
             yield 'christian'
             yield 'christopher'
+        if word in ('claire', 'clare'):
+            yield 'clair'
         if word == 'delanor':
             yield 'delano'
         if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
