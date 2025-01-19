@@ -56,7 +56,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
         self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
         self.__soundAlertCache: dict[SoundAlert, str | None] | None = None
-        self.__soundFileRegEx: Pattern = re.compile(r'^\w[\w\s-]*\s?(\(shiny\))?\.(mp3|ogg|wav|flac)$', re.IGNORECASE)
+        self.__soundFileRegEx: Pattern = re.compile(r'^\w[\w\s-]*\s?(\(shiny\))?\.(flac|mp3|ogg|wav)$', re.IGNORECASE)
 
     async def clearCaches(self):
         self.__scanResultCache.clear()
