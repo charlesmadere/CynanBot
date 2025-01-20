@@ -491,10 +491,8 @@ class CheerActionsWizardChatAction(AbsChatAction):
     ) -> bool:
         steps = wizard.getSteps()
         step = steps.getStep()
+        response = utils.cleanStr(content)
 
-        # twitch sometimes adds `\U000e0000` to the end of messages which is breaking the integer parsing,
-        # take the first split to prevent this
-        response = content.split()[0]
         match step:
             case TntStep.BITS:
                 try:
