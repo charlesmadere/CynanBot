@@ -9,14 +9,16 @@ class SoundAlertChatSoundAlert(AbsChatSoundAlert):
     def __init__(
         self,
         qualifier: ChatSoundAlertQualifer,
+        cooldownSeconds: int | None,
+        volume: int | None,
         soundAlert: SoundAlert,
-        message: str,
-        volume: int | None
+        message: str
     ):
         super().__init__(
             qualifier = qualifier,
-            message = message,
-            volume = volume
+            cooldownSeconds = cooldownSeconds,
+            volume = volume,
+            message = message
         )
 
         if not isinstance(soundAlert, SoundAlert):

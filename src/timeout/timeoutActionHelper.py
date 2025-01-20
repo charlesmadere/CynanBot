@@ -153,6 +153,10 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                     timeoutData = timeoutData
                 )
 
+            case TimeoutActionType.TNT:
+                # TNT actions don't play alerts here
+                pass
+
             case _:
                 raise ValueError(f'Unknown TimeoutActionType: \"{timeoutData}\"')
 
@@ -231,9 +235,9 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
     async def __chooseRandomGrenadeSoundAlert(self):
         soundAlerts: list[SoundAlert] = [
-            SoundAlert.TNT_1,
-            SoundAlert.TNT_2,
-            SoundAlert.TNT_3
+            SoundAlert.GRENADE_1,
+            SoundAlert.GRENADE_2,
+            SoundAlert.GRENADE_3
         ]
 
         return random.choice(soundAlerts)

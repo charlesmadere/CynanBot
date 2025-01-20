@@ -20,6 +20,9 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'bean': return SoundAlert.BEAN
             case 'cheer': return SoundAlert.CHEER
             case 'click_navigation': return SoundAlert.CLICK_NAVIGATION
+            case 'grenade_1': return SoundAlert.GRENADE_1
+            case 'grenade_2': return SoundAlert.GRENADE_2
+            case 'grenade_3': return SoundAlert.GRENADE_3
             case 'jackpot': return SoundAlert.JACKPOT
             case 'point_redemption_01': return SoundAlert.POINT_REDEMPTION_01
             case 'point_redemption_02': return SoundAlert.POINT_REDEMPTION_02
@@ -40,9 +43,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'raid': return SoundAlert.RAID
             case 'random_from_directory': return SoundAlert.RANDOM_FROM_DIRECTORY
             case 'subscribe': return SoundAlert.SUBSCRIBE
-            case 'tnt_1': return SoundAlert.TNT_1
-            case 'tnt_2': return SoundAlert.TNT_2
-            case 'tnt_3': return SoundAlert.TNT_3
+            case 'tnt': return SoundAlert.TNT
             case _: return None
 
     def requireSoundAlert(
@@ -67,6 +68,9 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.BEAN: return 'bean'
             case SoundAlert.CHEER: return 'cheer'
             case SoundAlert.CLICK_NAVIGATION: return 'click_navigation'
+            case SoundAlert.GRENADE_1: return 'grenade_1'
+            case SoundAlert.GRENADE_2: return 'grenade_2'
+            case SoundAlert.GRENADE_3: return 'grenade_3'
             case SoundAlert.JACKPOT: return 'jackpot'
             case SoundAlert.POINT_REDEMPTION_01: return 'point_redemption_01'
             case SoundAlert.POINT_REDEMPTION_02: return 'point_redemption_02'
@@ -87,7 +91,5 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.RAID: return 'raid'
             case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
             case SoundAlert.SUBSCRIBE: return 'subscribe'
-            case SoundAlert.TNT_1: return 'tnt_1'
-            case SoundAlert.TNT_2: return 'tnt_2'
-            case SoundAlert.TNT_3: return 'tnt_3'
+            case SoundAlert.TNT: return 'tnt'
             case _: raise ValueError(f'Unknown SoundAlert value: \"{soundAlert}\"')

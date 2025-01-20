@@ -8,6 +8,7 @@ from .wizards.crowdControl.crowdControlWizard import CrowdControlWizard
 from .wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
 from .wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from .wizards.timeout.timeoutWizard import TimeoutWizard
+from .wizards.tnt.tntWizard import TntWizard
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
@@ -85,6 +86,12 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
             case CheerActionType.TIMEOUT:
                 return await self.__startNewTimeoutWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
+            case CheerActionType.TNT:
+                return await self.__startNewTntWizard(
                     twitchChannel = twitchChannel,
                     twitchChannelId = twitchChannelId
                 )
@@ -189,5 +196,25 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
         self.__wizards[twitchChannelId] = wizard
         self.__timber.log('CheerActionsWizard', f'Started new Timeout wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
+
+    async def __startNewTntWizard(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> TntWizard:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        wizard = TntWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('CheerActionsWizard', f'Started new TNT wizard for {twitchChannel}:{twitchChannelId}')
 
         return wizard

@@ -26,6 +26,7 @@ from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeath
 from .chatCommands.addRecurringWordOfTheDayActionChatCommand import AddRecurringWordOfTheDayActionChatCommand
 from .chatCommands.addSoundAlertCheerActionCommand import AddSoundAlertCheerActionCommand
 from .chatCommands.addTimeoutCheerActionCommand import AddTimeoutCheerActionCommand
+from .chatCommands.addTntCheerActionWizard import AddTntCheerActionCommand
 from .chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
@@ -674,6 +675,7 @@ class CynanBot(
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addTntCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__beanInstructionsCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__disableCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -684,6 +686,7 @@ class CynanBot(
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = AddGameShuffleCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addTntCheerActionCommand: AbsChatCommand = AddTntCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__beanInstructionsCommand: AbsChatCommand = BeanInstructionsChatCommand(cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
@@ -1102,6 +1105,11 @@ class CynanBot(
     async def command_addtimeoutcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addTimeoutCheerActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'addtntcheeraction')
+    async def command_addtimeoutcheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addTntCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtriviaanswer')
     async def command_addtriviaanswer(self, ctx: Context):

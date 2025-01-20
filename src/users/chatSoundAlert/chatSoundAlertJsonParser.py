@@ -62,35 +62,43 @@ class ChatSoundAlertJsonParser(ChatSoundAlertJsonParserInterface):
 
         qualifier = self.parseAlertQualifier(utils.getStrFromDict(jsonContents, 'qualifier'))
         alertType = self.parseAlertType(utils.getStrFromDict(jsonContents, 'alertType'))
-        message = utils.getStrFromDict(jsonContents, 'message')
+
+        cooldownSeconds: int | None = None
+        if 'cooldownSeconds' in jsonContents and utils.isValidInt(jsonContents.get('cooldownSeconds')):
+            cooldownSeconds = utils.getIntFromDict(jsonContents, 'cooldownSeconds')
 
         volume: int | None = None
         if 'volume' in jsonContents and utils.isValidInt(jsonContents.get('volume')):
             volume = utils.getIntFromDict(jsonContents, 'volume')
+
+        message = utils.getStrFromDict(jsonContents, 'message')
 
         match alertType:
             case ChatSoundAlertType.DIRECTORY_PATH:
                 return self.__parseDirectoryPathChatSoundAlert(
                     qualifier = qualifier,
                     jsonContents = jsonContents,
-                    message = message,
-                    volume = volume
+                    cooldownSeconds = cooldownSeconds,
+                    volume = volume,
+                    message = message
                 )
 
             case ChatSoundAlertType.FILE_PATH:
                 return self.__parseFilePathChatSoundAlert(
                     qualifier = qualifier,
                     jsonContents = jsonContents,
-                    message = message,
-                    volume = volume
+                    cooldownSeconds = cooldownSeconds,
+                    volume = volume,
+                    message = message
                 )
 
             case ChatSoundAlertType.SOUND_ALERT:
                 return self.__parseSoundAlertChatSoundAlert(
                     qualifier = qualifier,
                     jsonContents = jsonContents,
-                    message = message,
-                    volume = volume
+                    cooldownSeconds = cooldownSeconds,
+                    volume = volume,
+                    message = message
                 )
 
             case _:
@@ -120,47 +128,53 @@ class ChatSoundAlertJsonParser(ChatSoundAlertJsonParserInterface):
         self,
         qualifier: ChatSoundAlertQualifer,
         jsonContents: dict[str, Any],
-        message: str,
-        volume: int | None
+        cooldownSeconds: int | None,
+        volume: int | None,
+        message: str
     ) -> DirectoryPathChatSoundAlert:
         directoryPath = utils.getStrFromDict(jsonContents, 'directoryPath')
 
         return DirectoryPathChatSoundAlert(
             qualifier = qualifier,
+            cooldownSeconds = cooldownSeconds,
+            volume = volume,
             directoryPath = directoryPath,
-            message = message,
-            volume = volume
+            message = message
         )
 
     def __parseFilePathChatSoundAlert(
         self,
         qualifier: ChatSoundAlertQualifer,
         jsonContents: dict[str, Any],
-        message: str,
-        volume: int | None
+        cooldownSeconds: int | None,
+        volume: int | None,
+        message: str
     ) -> FilePathChatSoundAlert:
         filePath = utils.getStrFromDict(jsonContents, 'filePath')
 
         return FilePathChatSoundAlert(
             qualifier = qualifier,
+            cooldownSeconds = cooldownSeconds,
+            volume = volume,
             filePath = filePath,
-            message = message,
-            volume = volume
+            message = message
         )
 
     def __parseSoundAlertChatSoundAlert(
         self,
         qualifier: ChatSoundAlertQualifer,
         jsonContents: dict[str, Any],
-        message: str,
-        volume: int | None
+        cooldownSeconds: int | None,
+        volume: int | None,
+        message: str
     ) -> SoundAlertChatSoundAlert:
         soundAlertString = utils.getStrFromDict(jsonContents, 'soundAlert')
         soundAlert = self.__soundAlertJsonMapper.requireSoundAlert(soundAlertString)
 
         return SoundAlertChatSoundAlert(
             qualifier = qualifier,
+            cooldownSeconds = cooldownSeconds,
+            volume = volume,
             soundAlert = soundAlert,
-            message = message,
-            volume = volume
+            message = message
         )

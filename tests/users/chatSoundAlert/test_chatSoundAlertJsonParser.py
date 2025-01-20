@@ -43,20 +43,24 @@ class TestChatSoundAlertJsonParser:
     def test_parseChatSoundAlert_withDirectoryPathChatSoundAlert(self):
         chatSoundAlert = DirectoryPathChatSoundAlert(
             qualifier = ChatSoundAlertQualifer.CONTAINS,
+            cooldownSeconds = None,
+            volume = None,
             directoryPath = 'directoryPath',
-            message = 'hello',
-            volume = None
+            message = 'hello'
         )
 
         result = self.jsonParser.parseChatSoundAlert({
             'alertType': chatSoundAlert.alertType.name.lower(),
-            'qualifier': chatSoundAlert.qualifier.name.lower(),
+            'cooldownSeconds': chatSoundAlert.cooldownSeconds,
             'directoryPath': chatSoundAlert.directoryPath,
-            'message': chatSoundAlert.message
+            'message': chatSoundAlert.message,
+            'qualifier': chatSoundAlert.qualifier.name.lower(),
+            'volume': chatSoundAlert.volume
         })
 
         assert isinstance(result, DirectoryPathChatSoundAlert)
         assert result.alertType is chatSoundAlert.alertType
+        assert result.cooldownSeconds == chatSoundAlert.cooldownSeconds
         assert result.directoryPath == chatSoundAlert.directoryPath
         assert result.message == chatSoundAlert.message
         assert result.qualifier is chatSoundAlert.qualifier
@@ -64,43 +68,50 @@ class TestChatSoundAlertJsonParser:
     def test_parseChatSoundAlert_withFilePathChatSoundAlert(self):
         chatSoundAlert = FilePathChatSoundAlert(
             qualifier = ChatSoundAlertQualifer.EXACT,
+            cooldownSeconds = None,
+            volume = None,
             filePath = 'filePath',
-            message = 'hello',
-            volume = None
+            message = 'hello'
         )
 
         result = self.jsonParser.parseChatSoundAlert({
             'alertType': chatSoundAlert.alertType.name.lower(),
-            'qualifier': chatSoundAlert.qualifier.name.lower(),
+            'cooldownSeconds': chatSoundAlert.cooldownSeconds,
             'filePath': chatSoundAlert.filePath,
             'message': chatSoundAlert.message,
+            'qualifier': chatSoundAlert.qualifier.name.lower(),
             'volume': chatSoundAlert.volume
         })
 
         assert isinstance(result, FilePathChatSoundAlert)
         assert result.alertType is chatSoundAlert.alertType
+        assert result.cooldownSeconds == chatSoundAlert.cooldownSeconds
         assert result.filePath == chatSoundAlert.filePath
         assert result.message == chatSoundAlert.message
-        assert result.volume == chatSoundAlert.volume
         assert result.qualifier is chatSoundAlert.qualifier
+        assert result.volume == chatSoundAlert.volume
 
     def test_parseChatSoundAlert_withSoundAlertChatSoundAlert(self):
         chatSoundAlert = SoundAlertChatSoundAlert(
             qualifier = ChatSoundAlertQualifer.CONTAINS,
-            soundAlert = SoundAlert.TNT_1,
-            message = 'hello',
-            volume = None
+            cooldownSeconds = None,
+            volume = None,
+            soundAlert = SoundAlert.GRENADE_1,
+            message = 'hello'
         )
 
         result = self.jsonParser.parseChatSoundAlert({
             'alertType': chatSoundAlert.alertType.name.lower(),
-            'qualifier': chatSoundAlert.qualifier.name.lower(),
+            'cooldownSeconds': chatSoundAlert.cooldownSeconds,
             'message': chatSoundAlert.message,
-            'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(chatSoundAlert.soundAlert)
+            'qualifier': chatSoundAlert.qualifier.name.lower(),
+            'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(chatSoundAlert.soundAlert),
+            'volume': chatSoundAlert.volume,
         })
 
         assert isinstance(result, SoundAlertChatSoundAlert)
         assert result.alertType is chatSoundAlert.alertType
+        assert result.cooldownSeconds == chatSoundAlert.cooldownSeconds
         assert result.message == chatSoundAlert.message
         assert result.qualifier is chatSoundAlert.qualifier
         assert result.soundAlert == chatSoundAlert.soundAlert
@@ -108,16 +119,18 @@ class TestChatSoundAlertJsonParser:
     def test_parseChatSoundAlerts(self):
         contains = FilePathChatSoundAlert(
             qualifier = ChatSoundAlertQualifer.CONTAINS,
+            cooldownSeconds = None,
+            volume = 100,
             filePath = 'world.mp3',
-            message = 'world',
-            volume = 100
+            message = 'world'
         )
 
         exact = FilePathChatSoundAlert(
             qualifier = ChatSoundAlertQualifer.EXACT,
+            cooldownSeconds = None,
+            volume = None,
             filePath = 'hello.mp3',
-            message = 'hello',
-            volume = None
+            message = 'hello'
         )
 
         # This method is intended to output the results list in a particular order (alerts with
@@ -146,17 +159,19 @@ class TestChatSoundAlertJsonParser:
         element = results[0]
         assert isinstance(element, FilePathChatSoundAlert)
         assert element.alertType is exact.alertType
-        assert element.qualifier is exact.qualifier
+        assert element.cooldownSeconds == exact.cooldownSeconds
         assert element.filePath == exact.filePath
         assert element.message == exact.message
+        assert element.qualifier is exact.qualifier
         assert element.volume == exact.volume
 
         element = results[1]
         assert isinstance(element, FilePathChatSoundAlert)
         assert element.alertType is contains.alertType
-        assert element.qualifier is contains.qualifier
+        assert element.cooldownSeconds == exact.cooldownSeconds
         assert element.filePath == contains.filePath
         assert element.message == contains.message
+        assert element.qualifier is contains.qualifier
         assert element.volume == contains.volume
 
     def test_sanity(self):

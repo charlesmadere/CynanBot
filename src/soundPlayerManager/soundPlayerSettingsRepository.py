@@ -52,6 +52,27 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Click Navigation.mp3'
                 )
 
+            case SoundAlert.GRENADE_1:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'grenade1FilePath',
+                    fallback = 'Grenade 1.mp3'
+                )
+
+            case SoundAlert.GRENADE_2:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'grenade2FilePath',
+                    fallback = 'Grenade 2.mp3'
+                )
+
+            case SoundAlert.GRENADE_3:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'grenade3FilePath',
+                    fallback = 'Grenade 3.mp3'
+                )
+
             case SoundAlert.JACKPOT:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
@@ -185,25 +206,11 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Subscribe Alert.mp3'
                 )
 
-            case SoundAlert.TNT_1:
+            case SoundAlert.TNT:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'tntFilePath',
-                    fallback = 'TNT 1.mp3'
-                )
-
-            case SoundAlert.TNT_2:
-                filePath = utils.getStrFromDict(
-                    d = jsonContents,
-                    key = 'tntFilePath',
-                    fallback = 'TNT 2.mp3'
-                )
-
-            case SoundAlert.TNT_3:
-                filePath = utils.getStrFromDict(
-                    d = jsonContents,
-                    key = 'tntFilePath',
-                    fallback = 'TNT 3.mp3'
+                    fallback = 'TNT.mp3'
                 )
 
             case _:

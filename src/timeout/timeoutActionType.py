@@ -5,3 +5,4 @@ class TimeoutActionType(Enum):
 
     GRENADE = auto()
     TARGETED = auto()
+    TNT = auto()
