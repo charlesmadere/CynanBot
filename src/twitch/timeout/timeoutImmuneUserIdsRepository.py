@@ -11,6 +11,7 @@ from ...seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInter
 from ...streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from ...streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from ...tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
+from ...theRun.theRunBotUserIdProviderInterface import TheRunBotUserIdProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -27,6 +28,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         streamElementsUserIdProvider: StreamElementsUserIdProviderInterface,
         streamLabsUserIdProvider: StreamLabsUserIdProviderInterface,
         tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface,
+        theRunBotUserIdProvider: TheRunBotUserIdProviderInterface,
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -50,6 +52,8 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'streamLabsUserIdProvider argument is malformed: \"{streamLabsUserIdProvider}\"')
         elif not isinstance(tangiaBotUserIdProvider, TangiaBotUserIdProviderInterface):
             raise TypeError(f'tangiaBotUserIdProvider argument is malformed: \"{tangiaBotUserIdProvider}\"')
+        elif not isinstance(theRunBotUserIdProvider, TheRunBotUserIdProviderInterface):
+            raise TypeError(f'theRunBotUserIdProvider argument is malformed: \"{theRunBotUserIdProvider}\"')
         elif not isinstance(twitchFriendsUserIdProvider, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdProvider argument is malformed: \"{twitchFriendsUserIdProvider}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
@@ -68,6 +72,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = streamElementsUserIdProvider
         self.__streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = streamLabsUserIdProvider
         self.__tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = tangiaBotUserIdProvider
+        self.__theRunBotUserIdProvider: TheRunBotUserIdProviderInterface = theRunBotUserIdProvider
         self.__twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -141,6 +146,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         tangiaBotUserId = await self.__tangiaBotUserIdProvider.getTangiaBotUserId()
         if utils.isValidStr(tangiaBotUserId):
             newUserIds.add(tangiaBotUserId)
+
+        theRunBotUserId = await self.__theRunBotUserIdProvider.getTheRunBotUserId()
+        if utils.isValidStr(theRunBotUserId):
+            newUserIds.add(theRunBotUserId)
 
         twitchAccountUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAccountUserId()
         if utils.isValidStr(twitchAccountUserId):

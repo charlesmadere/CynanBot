@@ -9,7 +9,8 @@ from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManagerProvider import AudioPlayerSoundPlayerManagerProvider
+from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManagerProvider import \
+    AudioPlayerSoundPlayerManagerProvider
 from src.soundPlayerManager.soundAlert import SoundAlert
 from src.soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.soundPlayerSettingsRepository import SoundPlayerSettingsRepository

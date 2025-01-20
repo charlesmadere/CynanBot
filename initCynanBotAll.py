@@ -294,6 +294,8 @@ from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
 from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
+from src.theRun.theRunBotUserIdProvider import TheRunBotUserIdProvider
+from src.theRun.theRunBotUserIdProviderInterface import TheRunBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
@@ -1039,6 +1041,8 @@ streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElem
 
 streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
 
+theRunBotUserIdProvider: TheRunBotUserIdProviderInterface = TheRunBotUserIdProvider()
+
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
@@ -1049,6 +1053,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
     streamElementsUserIdProvider = streamElementsUserIdProvider,
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
+    theRunBotUserIdProvider = theRunBotUserIdProvider,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository
