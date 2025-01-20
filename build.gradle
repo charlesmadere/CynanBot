@@ -58,7 +58,7 @@ python {
     pip 'twitchio:2.10.0'
     pip 'typing_extensions:4.12.2'
     pip 'urllib3:2.3.0'
-    pip 'websockets:14.1'
+    pip 'websockets:14.2'
     pip 'xmltodict:0.14.2'
     pip 'yarl:1.18.3'
 }

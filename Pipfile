@@ -37,7 +37,7 @@ roman = "5.0"
 twitchio = "2.10.0"
 typing_extensions = "4.12.2"
 urllib3 = '2.3.0'
-websockets = "14.1"
+websockets = "14.2"
 xmltodict = "0.14.2"
 yarl = "1.18.3"
 
