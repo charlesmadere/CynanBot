@@ -1107,7 +1107,7 @@ class CynanBot(
         await self.__addTimeoutCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtntcheeraction')
-    async def command_addtimeoutcheeraction(self, ctx: Context):
+    async def command_addtntcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addTntCheerActionCommand.handleChatCommand(context)
 

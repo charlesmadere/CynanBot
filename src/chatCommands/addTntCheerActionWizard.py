@@ -2,6 +2,7 @@ from .absChatCommand import AbsChatCommand
 from ..cheerActions.cheerActionType import CheerActionType
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from ..cheerActions.wizards.timeout.timeoutStep import TimeoutStep
+from ..cheerActions.wizards.tnt.tntStep import TntStep
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -57,7 +58,7 @@ class AddTntCheerActionCommand(AbsChatCommand):
 
         step = wizard.getSteps().getStep()
 
-        if step is not TimeoutStep.BITS:
+        if step is not TntStep.BITS:
             raise RuntimeError(f'unknown TimeoutStep: \"{step}\"')
 
         await self.__twitchUtils.safeSend(

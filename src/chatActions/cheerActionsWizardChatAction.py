@@ -492,10 +492,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
         steps = wizard.getSteps()
         step = steps.getStep()
 
+        # twitch sometimes adds `\U000e0000` to the end of messages which is breaking the integer parsing,
+        # take the first split to prevent this
+        response = content.split()[0]
         match step:
             case TntStep.BITS:
                 try:
-                    bits = int(content)
+                    bits = int(response)
                     wizard.setBits(bits)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
@@ -505,7 +508,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
             case TntStep.DURATION_SECONDS:
                 try:
-                    durationSeconds = int(content)
+                    durationSeconds = int(response)
                     wizard.setDurationSeconds(durationSeconds)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set durationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
@@ -515,7 +518,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
             case TntStep.MAXIMUM_CHATTERS:
                 try:
-                    maximumChatters = int(content)
+                    maximumChatters = int(response)
                     wizard.setMaxTimeoutChatters(maximumChatters)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
@@ -525,7 +528,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
             case TntStep.MINIMUM_CHATTERS:
                 try:
-                    minimumChatters = int(content)
+                    minimumChatters = int(response)
                     wizard.setMinTimeoutChatters(minimumChatters)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minimumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
