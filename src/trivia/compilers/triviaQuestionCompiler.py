@@ -2,6 +2,8 @@ import html
 import re
 from typing import Collection, Pattern
 
+from frozendict import frozendict
+
 from .triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -30,9 +32,9 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         self.__weirdEllipsisRegEx: Pattern = re.compile(r'\.\s\.\s\.', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-        self.__textReplacements: dict[str, str | None] = {
+        self.__textReplacements: frozendict[str, str | None] = frozendict({
             'the ukraine': 'Ukraine',
-        }
+        })
 
     async def compileCategory(
         self,
@@ -144,7 +146,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         replacement = self.__textReplacements.get(text.lower(), None)
 
         if utils.isValidStr(replacement):
-            self.__timber.log('TriviaQuestionCompiler', f'Found replacement text for \"{text}\": \"{replacement}\"')
+            self.__timber.log('TriviaQuestionCompiler', f'Found replacement text ({text=}) ({replacement=})')
             return replacement
         elif utils.isValidStr(text):
             return text
@@ -162,8 +164,16 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
         allWords: set[str] = set()
-        await self.__findAndAddWords(allWords, category)
-        await self.__findAndAddWords(allWords, question)
+
+        await self.__findAndAddWords(
+            allWords = allWords,
+            string = category
+        )
+
+        await self.__findAndAddWords(
+            allWords = allWords,
+            string = question
+        )
 
         return frozenset(allWords)
 

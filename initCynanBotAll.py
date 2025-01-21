@@ -315,6 +315,7 @@ from src.transparent.transparentXmlMapperInterface import TransparentXmlMapperIn
 from src.trivia.additionalAnswers.additionalTriviaAnswersRepository import AdditionalTriviaAnswersRepository
 from src.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
+from src.trivia.answerChecker.triviaAnswerChecker import TriviaAnswerChecker
 from src.trivia.banned.bannedTriviaGameControllersRepository import BannedTriviaGameControllersRepository
 from src.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
@@ -346,6 +347,8 @@ from src.trivia.gameController.triviaGameGlobalControllersRepositoryInterface im
 from src.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from src.trivia.games.triviaGameStore import TriviaGameStore
 from src.trivia.games.triviaGameStoreInterface import TriviaGameStoreInterface
+from src.trivia.history.triviaHistoryRepository import TriviaHistoryRepository
+from src.trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from src.trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from src.trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
@@ -361,11 +364,8 @@ from src.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from src.trivia.specialStatus.toxicTriviaOccurencesRepository import ToxicTriviaOccurencesRepository
 from src.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from src.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
-from src.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from src.trivia.triviaGameMachine import TriviaGameMachine
 from src.trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from src.trivia.triviaHistoryRepository import TriviaHistoryRepository
-from src.trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from src.trivia.triviaIdGenerator import TriviaIdGenerator
 from src.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from src.trivia.triviaQuestionPresenter import TriviaQuestionPresenter

@@ -73,7 +73,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             'allWords': self.allWords,
             'category': self.category,
             'categoryId': self.categoryId,
-            'compiled': self.__compiledCorrectAnswers,
+            'compiledCorrectAnswers': self.__compiledCorrectAnswers,
             'correctAnswers': self.__correctAnswers,
             'originalCorrectAnswers': self.__originalCorrectAnswers,
             'originalTriviaSource': self.originalTriviaSource,

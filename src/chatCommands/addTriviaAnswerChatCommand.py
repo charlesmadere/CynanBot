@@ -7,11 +7,11 @@ from ..timber.timberInterface import TimberInterface
 from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.triviaExceptions import (AdditionalTriviaAnswerAlreadyExistsException,
                                        AdditionalTriviaAnswerIsMalformedException,
                                        AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
                                        TooManyAdditionalTriviaAnswersException)
-from ..trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

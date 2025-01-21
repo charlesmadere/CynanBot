@@ -365,11 +365,11 @@ class TestUtils:
 
     def test_isValidBool_withTrue(self):
         result = utils.isValidBool(True)
-        assert result is True
+        assert result == True
 
     def test_isValidInt_withNan(self):
         result = utils.isValidInt(math.nan)
-        assert result is False
+        assert result == False
 
     def test_isValidInt_withNegativeOne(self):
         result = utils.isValidInt(-1)
@@ -738,11 +738,20 @@ class TestUtils:
 
     def test_strictStrToBool_withF(self):
         result = utils.strictStrToBool('f')
-        assert result is False
+        assert result == False
+
+        result = utils.strictStrToBool('F')
+        assert result == False
 
     def test_strictStrToBool_withFalse(self):
         result = utils.strictStrToBool('false')
-        assert result is False
+        assert result == False
+
+        result = utils.strictStrToBool('False')
+        assert result == False
+
+        result = utils.strictStrToBool('FALSE')
+        assert result == False
 
     def test_strictStrToBool_withNewLineString(self):
         result: bool | None = None
@@ -762,11 +771,20 @@ class TestUtils:
 
     def test_strictStrToBool_withT(self):
         result = utils.strictStrToBool('t')
-        assert result is True
+        assert result == True
+
+        result = utils.strictStrToBool('T')
+        assert result == True
 
     def test_strictStrToBool_withTrue(self):
         result = utils.strictStrToBool('true')
-        assert result is True
+        assert result == True
+
+        result = utils.strictStrToBool('True')
+        assert result == True
+
+        result = utils.strictStrToBool('TRUE')
+        assert result == True
 
     def test_strictStrToBool_withWhitespaceString(self):
         result: bool | None = None
@@ -778,32 +796,32 @@ class TestUtils:
 
     def test_strToBool_withEmptyString(self):
         result = utils.strToBool('')
-        assert result is True
+        assert result == True
 
     def test_strToBool_withF(self):
         result = utils.strToBool('f')
-        assert result is False
+        assert result == False
 
     def test_strToBool_withFalse(self):
         result = utils.strToBool('false')
-        assert result is False
+        assert result == False
 
     def test_strToBool_withNewLineString(self):
         result = utils.strToBool('\n')
-        assert result is True
+        assert result == True
 
     def test_strToBool_withNone(self):
         result = utils.strToBool(None)
-        assert result is True
+        assert result == True
 
     def test_strToBool_withT(self):
         result = utils.strToBool('t')
-        assert result is True
+        assert result == True
 
     def test_strToBool_withTrue(self):
         result = utils.strToBool('true')
-        assert result is True
+        assert result == True
 
     def test_strToBool_withWhitespaceString(self):
         result = utils.strToBool(' ')
-        assert result is True
+        assert result == True

@@ -2,11 +2,11 @@ from .banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from .content.triviaContentCode import TriviaContentCode
 from .content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
+from .history.triviaHistoryRepositoryInterface import \
+    TriviaHistoryRepositoryInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .questions.triviaQuestionType import TriviaQuestionType
 from .triviaFetchOptions import TriviaFetchOptions
-from .triviaHistoryRepositoryInterface import \
-    TriviaHistoryRepositoryInterface
 from .triviaVerifierInterface import TriviaVerifierInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
@@ -80,7 +80,7 @@ class TriviaVerifier(TriviaVerifierInterface):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         contentCode = await self.__triviaHistoryRepository.verify(
-            question = question, 
+            question = question,
             emote = emote,
             twitchChannel = triviaFetchOptions.twitchChannel,
             twitchChannelId = triviaFetchOptions.twitchChannelId

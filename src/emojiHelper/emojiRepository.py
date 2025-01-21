@@ -54,7 +54,7 @@ class EmojiRepository(EmojiRepositoryInterface):
         self,
         emojiDict: EmojiJson
     ) -> EmojiInfo:
-        codes = set(emojiDict['code'])
+        codes = frozenset(emojiDict['code'])
         category = emojiDict['category']
         emoji = emojiDict['emoji']
         name = emojiDict['name']

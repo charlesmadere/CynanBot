@@ -5,7 +5,7 @@ from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.banTriviaQuestionResult import BanTriviaQuestionResult
 from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
-from ..trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

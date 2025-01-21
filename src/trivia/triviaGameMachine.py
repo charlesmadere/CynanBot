@@ -12,6 +12,8 @@ from .actions.clearSuperTriviaQueueTriviaAction import ClearSuperTriviaQueueTriv
 from .actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from .actions.startNewTriviaGameAction import StartNewTriviaGameAction
 from .actions.triviaActionType import TriviaActionType
+from .answerChecker.triviaAnswerCheckResult import TriviaAnswerCheckResult
+from .answerChecker.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from .emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from .events.absTriviaEvent import AbsTriviaEvent
@@ -45,8 +47,6 @@ from .specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from .specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
 from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
-from .triviaAnswerCheckResult import TriviaAnswerCheckResult
-from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .triviaEventListener import TriviaEventListener
 from .triviaExceptions import (TooManyTriviaFetchAttemptsException,
                                UnknownTriviaActionTypeException,

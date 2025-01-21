@@ -1,7 +1,6 @@
 from .absChatCommand import AbsChatCommand
 from ..cheerActions.cheerActionType import CheerActionType
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
-from ..cheerActions.wizards.timeout.timeoutStep import TimeoutStep
 from ..cheerActions.wizards.tnt.tntStep import TntStep
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface

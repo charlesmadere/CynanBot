@@ -34,6 +34,8 @@ from .timber.timberInterface import TimberInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepository import AdditionalTriviaAnswersRepository
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
+from .trivia.answerChecker.triviaAnswerChecker import TriviaAnswerChecker
+from .trivia.answerChecker.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .trivia.banned.bannedTriviaIdsRepository import BannedTriviaIdsRepository
 from .trivia.banned.bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
 from .trivia.banned.triviaBanHelper import TriviaBanHelper
@@ -53,6 +55,8 @@ from .trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchE
 from .trivia.events.absTriviaEvent import AbsTriviaEvent
 from .trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from .trivia.games.triviaGameStore import TriviaGameStore
+from .trivia.history.triviaHistoryRepository import TriviaHistoryRepository
+from .trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from .trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from .trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from .trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
@@ -71,14 +75,10 @@ from .trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from .trivia.specialStatus.toxicTriviaOccurencesRepository import ToxicTriviaOccurencesRepository
 from .trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from .trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
-from .trivia.triviaAnswerChecker import TriviaAnswerChecker
-from .trivia.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from .trivia.triviaDifficulty import TriviaDifficulty
 from .trivia.triviaEventListener import TriviaEventListener
 from .trivia.triviaFetchOptions import TriviaFetchOptions
 from .trivia.triviaGameMachine import TriviaGameMachine
-from .trivia.triviaHistoryRepository import TriviaHistoryRepository
-from .trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from .trivia.triviaIdGenerator import TriviaIdGenerator
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from .trivia.triviaRepositories.bongo.bongoApiService import BongoApiService

@@ -104,18 +104,18 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if answer is not None and not isinstance(answer, str):
             raise BadTriviaAnswerException(f'answer can\'t be compiled to bool ({answer=})')
 
-        cleanedAnswer = await self.compileTextAnswer(answer)
+        cleanedAnswer = utils.cleanStr(answer)
 
         try:
             return utils.strictStrToBool(cleanedAnswer)
-        except (TypeError, ValueError) as e:
+        except Exception as e:
             raise BadTriviaAnswerException(f'answer can\'t be compiled to bool ({answer=}) ({cleanedAnswer=}): {e}')
 
     async def compileMultipleChoiceAnswer(self, answer: str | None) -> int:
         if not utils.isValidStr(answer):
-            raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal (answer=\"{answer}\")')
+            raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal ({answer=})')
 
-        answer = answer.strip()
+        answer = utils.cleanStr(answer)
         cleanedAnswer: str | None = None
 
         # check if the answer is just an alphabetical character from A to Z

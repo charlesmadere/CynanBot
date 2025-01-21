@@ -5,18 +5,18 @@ from typing import Any, Generator, Pattern
 
 import polyleven
 
-from .compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
-from .questions.absTriviaQuestion import AbsTriviaQuestion
-from .questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from .questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
-from .questions.triviaQuestionType import TriviaQuestionType
-from .questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 from .triviaAnswerCheckResult import TriviaAnswerCheckResult
 from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
-from .triviaExceptions import BadTriviaAnswerException, UnsupportedTriviaTypeException
-from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
+from ..compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
+from ..questions.absTriviaQuestion import AbsTriviaQuestion
+from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
+from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
+from ..questions.triviaQuestionType import TriviaQuestionType
+from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from ..triviaExceptions import BadTriviaAnswerException, UnsupportedTriviaTypeException
+from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class TriviaAnswerChecker(TriviaAnswerCheckerInterface):

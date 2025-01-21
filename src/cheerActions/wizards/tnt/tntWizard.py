@@ -85,12 +85,16 @@ class TntWizard(AbsWizard):
     def setMaxTimeoutChatters(self, maxTimeoutChatters: int):
         if not utils.isValidInt(maxTimeoutChatters):
             raise TypeError(f'maxTimeoutChatters argument is malformed: \"{maxTimeoutChatters}\"')
+        elif self.__minTimeoutChatters is not None and maxTimeoutChatters < self.__minTimeoutChatters:
+            raise ValueError(f'maxTimeoutChatters argument can\'t be less than minTimeoutChatters ({maxTimeoutChatters=}) ({self.__minTimeoutChatters=})')
 
         self.__maxTimeoutChatters = maxTimeoutChatters
 
     def setMinTimeoutChatters(self, minTimeoutChatters: int):
         if not utils.isValidInt(minTimeoutChatters):
             raise TypeError(f'minTimeoutChatters argument is malformed: \"{minTimeoutChatters}\"')
+        elif self.__maxTimeoutChatters is not None and minTimeoutChatters > self.__maxTimeoutChatters:
+            raise ValueError(f'minTimeoutChatters argument can\'t be more than maxTimeoutChatters ({minTimeoutChatters=}) ({self.__maxTimeoutChatters=})')
 
         self.__minTimeoutChatters = minTimeoutChatters
 

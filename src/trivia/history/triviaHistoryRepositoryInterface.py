@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from .content.triviaContentCode import TriviaContentCode
-from .questions.absTriviaQuestion import AbsTriviaQuestion
-from .questions.triviaQuestionReference import TriviaQuestionReference
+from ..content.triviaContentCode import TriviaContentCode
+from ..questions.absTriviaQuestion import AbsTriviaQuestion
+from ..questions.triviaQuestionReference import TriviaQuestionReference
 
 
 class TriviaHistoryRepositoryInterface(ABC):

@@ -36,7 +36,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(playbackLoopSleepTimeSeconds):
             raise TypeError(f'playbackLoopSleepTimeSeconds argument is malformed: \"{playbackLoopSleepTimeSeconds}\"')
-        elif playbackLoopSleepTimeSeconds < 0.25 or playbackLoopSleepTimeSeconds > 1:
+        elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
@@ -249,7 +249,8 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         if mediaPlayer is None:
             mediaPlayer = AudioPlayerMediaPlayer(
                 backgroundTaskHelper = self.__backgroundTaskHelper,
-                timber = self.__timber
+                timber = self.__timber,
+                playbackLoopSleepTimeSeconds = self.__playbackLoopSleepTimeSeconds
             )
 
             self.__mediaPlayer = mediaPlayer
