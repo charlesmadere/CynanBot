@@ -69,23 +69,6 @@ class SupStreamerChatAction(AbsChatAction):
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + self.__cooldown) > now:
             return False
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await message.getTwitchChannelId()
-        )
-
-        if not utils.isValidStr(twitchAccessToken):
-            return False
-
-        followingStatus = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId()
-        )
-
-        if followingStatus is None:
-            # only allow sup streamer messages from chatters who are following
-            return False
-
         chatMessage = message.getContent()
         supStreamerMessage = user.supStreamerMessage
 
@@ -103,6 +86,10 @@ class SupStreamerChatAction(AbsChatAction):
         )
 
         if supStreamerChatData is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
+            return False
+
+        # only allow sup streamer messages from chatters who are following
+        if not await self.__isFollowing(message):
             return False
 
         await self.__supStreamerRepository.set(
@@ -129,3 +116,22 @@ class SupStreamerChatAction(AbsChatAction):
         ))
 
         return True
+
+    async def __isFollowing(self, message: TwitchMessage) -> bool:
+        if not isinstance(message, TwitchMessage):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = await message.getTwitchChannelId()
+        )
+
+        if not utils.isValidStr(twitchAccessToken):
+            return False
+
+        followingStatus = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = await message.getTwitchChannelId(),
+            userId = message.getAuthorId()
+        )
+
+        return followingStatus is not None
