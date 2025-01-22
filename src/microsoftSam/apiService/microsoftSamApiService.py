@@ -30,6 +30,7 @@ class MicrosoftSamApiService(MicrosoftSamApiServiceInterface):
         self.__timber.log('MicrosoftSamApiService', f'Fetching speech... ({text=})')
         clientSession = await self.__networkClientProvider.get()
         text = urllib.parse.quote_plus(text).strip()
+        voice = urllib.parse.quote_plus(voice).strip()
 
         try:
             response = await clientSession.get(
