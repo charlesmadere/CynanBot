@@ -954,7 +954,8 @@ match generalSettingsSnapshot.requireSoundPlayerType():
             backgroundTaskHelper = backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = None,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-            timber = timber
+            timber = timber,
+            timeZoneRepository = timeZoneRepository
         )
 
     case SoundPlayerType.STUB:

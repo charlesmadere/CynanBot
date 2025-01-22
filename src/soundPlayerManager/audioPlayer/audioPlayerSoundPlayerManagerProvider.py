@@ -3,6 +3,7 @@ from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -14,7 +15,8 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -24,11 +26,14 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__soundPlayerManager: SoundPlayerManagerInterface | None = None
 
@@ -37,7 +42,8 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
             backgroundTaskHelper = self.__backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
-            timber = self.__timber
+            timber = self.__timber,
+            timeZoneRepository = self.__timeZoneRepository
         )
 
     def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:

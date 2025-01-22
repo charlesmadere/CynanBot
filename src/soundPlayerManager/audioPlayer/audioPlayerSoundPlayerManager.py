@@ -11,6 +11,7 @@ from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ...chatBand.chatBandInstrument import ChatBandInstrument
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -24,6 +25,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         playbackLoopSleepTimeSeconds: float = 0.25
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
@@ -34,6 +36,8 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidNum(playbackLoopSleepTimeSeconds):
             raise TypeError(f'playbackLoopSleepTimeSeconds argument is malformed: \"{playbackLoopSleepTimeSeconds}\"')
         elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
@@ -43,6 +47,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
 
         self.__isLoadingOrPlaying: bool = False
@@ -250,6 +255,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
             mediaPlayer = AudioPlayerMediaPlayer(
                 backgroundTaskHelper = self.__backgroundTaskHelper,
                 timber = self.__timber,
+                timeZoneRepository = self.__timeZoneRepository,
                 playbackLoopSleepTimeSeconds = self.__playbackLoopSleepTimeSeconds
             )
 

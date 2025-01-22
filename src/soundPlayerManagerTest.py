@@ -7,6 +7,8 @@ from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
+from src.location.timeZoneRepository import TimeZoneRepository
+from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManagerProvider import \
@@ -33,6 +35,8 @@ backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
 )
 
 timber: TimberInterface = TimberStub()
+
+timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     bannedWordsLinesReader = LinesStaticReader(
@@ -63,7 +67,8 @@ match soundPlayerType:
             backgroundTaskHelper = backgroundTaskHelper,
             chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
             soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-            timber = timber
+            timber = timber,
+            timeZoneRepository = timeZoneRepository
         )
 
     case SoundPlayerType.STUB:
