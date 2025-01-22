@@ -92,7 +92,7 @@ class AudioPlayerMediaPlayer:
         durationSeconds: float | Any | None = None
 
         try:
-            durationSeconds = librosa.get_duration(filename = task.filePath)
+            durationSeconds = librosa.get_duration(path = task.filePath)
         except Exception as e:
             self.__playbackTask = None
             self.__isPlayingOrLoading = False
