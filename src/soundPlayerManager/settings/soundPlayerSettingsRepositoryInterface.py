@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from .soundAlert import SoundAlert
-from ..misc.clearable import Clearable
+from ..soundAlert import SoundAlert
+from ...misc.clearable import Clearable
 
 
 class SoundPlayerSettingsRepositoryInterface(Clearable):

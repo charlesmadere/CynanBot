@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 
 
 class SoundPlayerManagerProviderInterface(ABC):

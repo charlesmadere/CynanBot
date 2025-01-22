@@ -1,8 +1,8 @@
 import pytest
 
 from src.soundPlayerManager.soundAlert import SoundAlert
-from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
-from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
+from src.soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 
 
 class TestSoundAlertJsonMapper:

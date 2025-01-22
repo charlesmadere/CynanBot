@@ -1,6 +1,6 @@
-from .stubSoundPlayerManager import StubSoundPlayerManager
-from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ...soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ...stub.stubSoundPlayerManager import StubSoundPlayerManager
 
 
 class StubSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):

@@ -1,8 +1,8 @@
 from frozenlist import FrozenList
 
 from src.soundPlayerManager.soundAlert import SoundAlert
-from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
-from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
+from src.soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParser import ChatSoundAlertJsonParser
 from src.users.chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from src.users.chatSoundAlert.chatSoundAlertQualifier import ChatSoundAlertQualifer

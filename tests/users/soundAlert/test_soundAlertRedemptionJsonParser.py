@@ -3,8 +3,8 @@ import pytest
 from frozendict import frozendict
 
 from src.soundPlayerManager.soundAlert import SoundAlert
-from src.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
-from src.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
+from src.soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.users.soundAlert.soundAlertRedemption import SoundAlertRedemption
 from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemptionJsonParser
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface

@@ -6,9 +6,9 @@ import aiofiles.ospath
 from frozenlist import FrozenList
 
 from .vlcMediaPlayer import VlcMediaPlayer
+from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
-from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ...chatBand.chatBandInstrument import ChatBandInstrument
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...misc import utils as utils

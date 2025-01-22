@@ -4,8 +4,9 @@ from .soundAlertCheerAction import SoundAlertCheerAction
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ...misc import utils as utils
-from ...soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from ...soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
+from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...users.userInterface import UserInterface

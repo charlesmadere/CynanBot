@@ -5,7 +5,7 @@ from frozendict import frozendict
 from .soundAlertRedemption import SoundAlertRedemption
 from .soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from ...misc import utils as utils
-from ...soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from ...soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 
 
 class SoundAlertRedemptionJsonParser(SoundAlertRedemptionJsonParserInterface):

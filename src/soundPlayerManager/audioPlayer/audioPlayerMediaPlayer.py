@@ -2,6 +2,7 @@ import time
 import traceback
 from datetime import datetime, timedelta
 from threading import Thread
+from typing import Any
 
 import aiofiles.ospath
 import librosa
@@ -10,7 +11,6 @@ from audioplayer import AudioPlayer
 from .audioPlayerPlaybackTask import AudioPlayerPlaybackTask
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -18,14 +18,11 @@ class AudioPlayerMediaPlayer:
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         playbackLoopSleepTimeSeconds: float = 0.125
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
@@ -34,15 +31,14 @@ class AudioPlayerMediaPlayer:
         elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
 
+        self.__playbackTask: AudioPlayerPlaybackTask | None = None
         self.__isPlayingOrLoading: bool = False
         self.__volume: int = 100
         self.__filePath: str | None = None
-        self.__playbackTask: AudioPlayerPlaybackTask | None = None
 
     @property
     def isPlaying(self) -> bool:
@@ -65,29 +61,14 @@ class AudioPlayerMediaPlayer:
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath points to a directory instead of a file ({filePath=})')
             return False
 
-        try:
-            durationSeconds = librosa.get_duration(filename = filePath)
-        except Exception as e:
-            self.__isPlayingOrLoading = False
-            self.__timber.log('AudioPlayerMediaPlayer', f'Encountered exception when trying to determine duration seconds ({filePath=}): {e}', e, traceback.format_exc())
-            return False
-
         playbackTask = AudioPlayerPlaybackTask(
-            durationSeconds = durationSeconds,
             volume = self.__volume,
             filePath = filePath
         )
 
-        try:
-            audioPlayer = AudioPlayer(filename = playbackTask.filePath)
-        except Exception as e:
-            self.__isPlayingOrLoading = False
-            self.__timber.log('AudioPlayerMediaPlayer', f'Encountered exception when trying to create new AudioPlayer instance ({playbackTask=}): {e}', e, traceback.format_exc())
-            return False
-
         playbackThread = Thread(
             target = self.__play,
-            args = ( audioPlayer, playbackTask, )
+            args = ( playbackTask, )
         )
 
         self.__playbackTask = playbackTask
@@ -95,17 +76,38 @@ class AudioPlayerMediaPlayer:
 
         return True
 
-    def __play(
-        self,
-        audioPlayer: AudioPlayer,
-        task: AudioPlayerPlaybackTask
-    ):
-        if not isinstance(audioPlayer, AudioPlayer):
-            raise TypeError(f'audioPlayer argument is malformed: \"{audioPlayer}\"')
-        elif not isinstance(task, AudioPlayerPlaybackTask):
+    def __play(self, task: AudioPlayerPlaybackTask):
+        if not isinstance(task, AudioPlayerPlaybackTask):
             raise TypeError(f'task argument is malformed: \"{task}\"')
 
+        try:
+            audioPlayer = AudioPlayer(filename = task.filePath)
+        except Exception as e:
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            self.__timber.log('AudioPlayerMediaPlayer', f'Encountered exception when trying to create new AudioPlayer instance ({task=}): {e}', e, traceback.format_exc())
+            return
+
         audioPlayer.volume = task.volume
+        durationSeconds: float | Any | None = None
+
+        try:
+            durationSeconds = librosa.get_duration(filename = task.filePath)
+        except Exception as e:
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            self.__timber.log('AudioPlayerMediaPlayer', f'Attemped to play, but encountered exception when trying to determine duration seconds ({task=}) ({audioPlayer=}) ({durationSeconds=}): {e}', e, traceback.format_exc())
+            return
+
+        if not utils.isValidNum(durationSeconds) or durationSeconds < 0 or durationSeconds > utils.getIntMaxSafeSize():
+            # This is an extremely gratuitous check, but I want to be absolutely sure that I fully
+            # understand the durationSeconds value being provided by librosa. For the purpose of
+            # determining a sound file's length, I picked the librosa library rather quickly, and
+            # so, I want to be very sure and mindful of its output.
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but encountered bizarre durationSeconds value ({task=}) ({audioPlayer=}) ({durationSeconds=})')
+            return
 
         audioPlayer.play(
             loop = False,
@@ -114,11 +116,11 @@ class AudioPlayerMediaPlayer:
 
         isStillPlaying = True
         timeZone = self.__timeZoneRepository.getDefault()
-        endTime = datetime.now(timeZone) + timedelta(seconds = task.durationSeconds)
+        endTime = datetime.now(timeZone) + timedelta(seconds = durationSeconds)
 
         while isStillPlaying and not task.isCanceled:
             if task.isCanceled:
-                continue
+                break
 
             now = datetime.now(timeZone)
 
@@ -160,3 +162,4 @@ class AudioPlayerMediaPlayer:
 
         if playbackTask is not None:
             playbackTask.cancel()
+            playbackTask = None

@@ -8,8 +8,8 @@ from ..absCheerAction import AbsCheerAction
 from ...beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from ...beanStats.chatterBeanStats import ChatterBeanStats
 from ...misc import utils as utils
+from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
-from ...soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...timber.timberInterface import TimberInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider

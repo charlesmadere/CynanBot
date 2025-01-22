@@ -17,8 +17,9 @@ from ..misc.authRepository import AuthRepository
 from ..misc.clearable import Clearable
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
-from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
-from ..soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
+from ..soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from ..streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from ..streamElements.settings.streamElementsSettingsRepositoryInterface import \

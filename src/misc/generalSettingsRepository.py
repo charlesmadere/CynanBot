@@ -25,7 +25,7 @@ class GeneralSettingsRepository(
         storageJsonMapper: StorageJsonMapperInterface,
         defaultDatabaseType: DatabaseType = DatabaseType.SQLITE,
         defaultNetworkClientType: NetworkClientType = NetworkClientType.AIOHTTP,
-        defaultSoundPlayerType: SoundPlayerType = SoundPlayerType.VLC,
+        defaultSoundPlayerType: SoundPlayerType = SoundPlayerType.AUDIO_PLAYER,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')

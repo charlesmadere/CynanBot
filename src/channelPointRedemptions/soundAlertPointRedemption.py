@@ -1,8 +1,9 @@
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
+from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
-from ..soundPlayerManager.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from ..soundPlayerManager.soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel

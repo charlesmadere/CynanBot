@@ -6,9 +6,9 @@ import aiofiles.ospath
 from frozenlist import FrozenList
 
 from .audioPlayerMediaPlayer import AudioPlayerMediaPlayer
+from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
-from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ...chatBand.chatBandInstrument import ChatBandInstrument
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -253,7 +253,6 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
         if mediaPlayer is None:
             mediaPlayer = AudioPlayerMediaPlayer(
-                backgroundTaskHelper = self.__backgroundTaskHelper,
                 timber = self.__timber,
                 timeZoneRepository = self.__timeZoneRepository,
                 playbackLoopSleepTimeSeconds = self.__playbackLoopSleepTimeSeconds

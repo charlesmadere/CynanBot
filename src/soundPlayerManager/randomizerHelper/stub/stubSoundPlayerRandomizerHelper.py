@@ -1,10 +1,13 @@
-from ..soundAlert import SoundAlert
 from ..soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
+from ...soundAlert import SoundAlert
 
 
 class StubSoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
-    async def chooseRandomFromDirectorySoundAlert(self, directoryPath: str | None) -> str | None:
+    async def chooseRandomFromDirectorySoundAlert(
+        self,
+        directoryPath: str | None
+    ) -> str | None:
         # this method is intentionally empty
         return None
 

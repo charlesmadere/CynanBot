@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .soundAlert import SoundAlert
+from ..soundAlert import SoundAlert
 
 
 class SoundAlertJsonMapperInterface(ABC):

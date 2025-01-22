@@ -1,27 +1,34 @@
-from .audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
+from .soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..audioPlayer.audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
+from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
-from ..soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from ..soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from ..soundPlayerType import SoundPlayerType
+from ..stub.stubSoundPlayerManager import StubSoundPlayerManager
+from ..vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...timber.timberInterface import TimberInterface
 
 
-class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
+class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
+        generalSettingsRepository: GeneralSettingsRepository,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        if chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
+        elif chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
             raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
+        elif generalSettingsRepository is not None and not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -31,6 +38,7 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -38,13 +46,31 @@ class AudioPlayerSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface)
         self.__soundPlayerManager: SoundPlayerManagerInterface | None = None
 
     def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
-        return AudioPlayerSoundPlayerManager(
-            backgroundTaskHelper = self.__backgroundTaskHelper,
-            chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
-            soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
-            timber = self.__timber,
-            timeZoneRepository = self.__timeZoneRepository
-        )
+        snapshot = self.__generalSettingsRepository.getAll()
+        soundPlayerType = snapshot.requireSoundPlayerType()
+
+        match soundPlayerType:
+            case SoundPlayerType.AUDIO_PLAYER:
+                return AudioPlayerSoundPlayerManager(
+                    backgroundTaskHelper = self.__backgroundTaskHelper,
+                    chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
+                    soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
+                    timber = self.__timber,
+                    timeZoneRepository = self.__timeZoneRepository
+                )
+
+            case SoundPlayerType.STUB:
+                return StubSoundPlayerManager()
+
+            case SoundPlayerType.VLC:
+                return VlcSoundPlayerManager(
+                    chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
+                    soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
+                    timber = self.__timber
+                )
+
+            case _:
+                raise RuntimeError(f'Unknown SoundPlayerType value: \"{soundPlayerType}\"')
 
     def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
         soundPlayerManager = self.__soundPlayerManager

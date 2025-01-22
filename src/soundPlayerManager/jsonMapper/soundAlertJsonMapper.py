@@ -1,8 +1,8 @@
 from typing import Any
 
-from .soundAlert import SoundAlert
 from .soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from ..misc import utils as utils
+from ..soundAlert import SoundAlert
+from ...misc import utils as utils
 
 
 class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):

@@ -10,7 +10,7 @@ from .directoryPathChatSoundAlert import DirectoryPathChatSoundAlert
 from .filePathChatSoundAlert import FilePathChatSoundAlert
 from .soundAlertChatSoundAlert import SoundAlertChatSoundAlert
 from ...misc import utils as utils
-from ...soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from ...soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 
 
 class ChatSoundAlertJsonParser(ChatSoundAlertJsonParserInterface):
