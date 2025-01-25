@@ -33,6 +33,9 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             else:
                 return False
 
+        def __hash__(self) -> int:
+            return hash(self.userId)
+
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
