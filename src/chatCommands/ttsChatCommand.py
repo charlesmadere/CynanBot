@@ -80,7 +80,14 @@ class TtsChatCommand(AbsChatCommand):
         sortedTtsBoosterPacks.sort(key = lambda boosterPack: boosterPack.cheerAmount)
 
         for ttsBoosterPack in sortedTtsBoosterPacks:
-            string = f'{ttsBoosterPack.ttsProvider.humanName} {ttsBoosterPack.cheerAmountStr}'
+            bitsString: str
+
+            if ttsBoosterPack.cheerAmount == 1:
+                bitsString = 'bit'
+            else:
+                bitsString = 'bits'
+
+            string = f'{ttsBoosterPack.cheerAmountStr} {bitsString} or more for {ttsBoosterPack.ttsProvider.humanName}'
             strings.append(string)
 
         return strings
