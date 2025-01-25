@@ -12,8 +12,10 @@ from ..decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSetting
 from ..funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ..halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
+from ..halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
+from ..microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.authRepository import AuthRepository
 from ..misc.clearable import Clearable
@@ -78,8 +80,10 @@ class ClearCachesChatCommand(AbsChatCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
         halfLifeService: HalfLifeServiceInterface | None,
+        halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
+        microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface | None,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
@@ -139,10 +143,14 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif halfLifeService is not None and not isinstance(halfLifeService, HalfLifeServiceInterface):
             raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeService}\"')
+        elif halfLifeSettingsRepository is not None and not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
+            raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+        elif microsoftSamSettingsRepository is not None and not isinstance(microsoftSamSettingsRepository, MicrosoftSamSettingsRepositoryInterface):
+            raise TypeError(f'microsoftSamSettingsRepository argument is malformed: \"{microsoftSamSettingsRepository}\"')
         elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
@@ -224,8 +232,10 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(googleSettingsRepository)
         self.__clearables.append(halfLifeService)
+        self.__clearables.append(halfLifeSettingsRepository)
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)
+        self.__clearables.append(microsoftSamSettingsRepository)
         self.__clearables.append(mostRecentAnivMessageRepository)
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseSessionTokenRepository)

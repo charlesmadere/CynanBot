@@ -39,6 +39,7 @@ class MicrosoftSamVoice(Enum):
         match self:
             case MicrosoftSamVoice.ADULT_FEMALE_1: return 'adult_female_1'
             case MicrosoftSamVoice.ADULT_FEMALE_2: return 'adult_female_2'
+            case MicrosoftSamVoice.ADULT_FEMALE_WHISPER: return 'adult_female_whisper'
             case MicrosoftSamVoice.ADULT_MALE_1: return 'adult_male_1'
             case MicrosoftSamVoice.ADULT_MALE_2: return 'adult_male_2'
             case MicrosoftSamVoice.ADULT_MALE_3: return 'adult_male_3'
@@ -47,8 +48,8 @@ class MicrosoftSamVoice(Enum):
             case MicrosoftSamVoice.ADULT_MALE_6: return 'adult_male_6'
             case MicrosoftSamVoice.ADULT_MALE_7: return 'adult_male_7'
             case MicrosoftSamVoice.ADULT_MALE_8: return 'adult_male_8'
-            case MicrosoftSamVoice.ADULT_FEMALE_WHISPER: return 'adult_female_whisper'
             case MicrosoftSamVoice.ADULT_MALE_WHISPER: return 'adult_male_whisper'
+            case MicrosoftSamVoice.BONZI_BUDDY: return 'bonzi_buddy'
             case MicrosoftSamVoice.MARY: return 'mary'
             case MicrosoftSamVoice.MARY_TELEPHONE: return 'mary_telephone'
             case MicrosoftSamVoice.MARY_HALL: return 'mary_hall'
@@ -66,5 +67,4 @@ class MicrosoftSamVoice(Enum):
             case MicrosoftSamVoice.ROBO_5: return 'robo_5'
             case MicrosoftSamVoice.ROBO_6: return 'robo_6'
             case MicrosoftSamVoice.SAM: return 'sam'
-            case MicrosoftSamVoice.BONZI_BUDDY: return 'bonzi_buddy'
             case _: raise RuntimeError(f'unknown Microsoft Sam voice: \"{self}\"')
