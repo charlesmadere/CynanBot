@@ -9,6 +9,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
     def __init__(
         self,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
+        bombEmoteBackup: str = '💣',
         gottemEmoteBackup: str = 'RIPBOZO',
         hypeEmoteBackup: str = '🎉',
         thumbsDownEmoteBackup: str = '👎',
@@ -16,6 +17,8 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
     ):
         if not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
+        elif not utils.isValidStr(bombEmoteBackup):
+            raise TypeError(f'bombEmoteBackup argument is malformed: \"{bombEmoteBackup}\"')
         elif not utils.isValidStr(gottemEmoteBackup):
             raise TypeError(f'gottemEmoteBackup argument is malformed: \"{gottemEmoteBackup}\"')
         elif not utils.isValidStr(hypeEmoteBackup):
@@ -26,6 +29,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'thumbsUpEmoteBackup argument is malformed: \"{thumbsUpEmoteBackup}\"')
 
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
+        self.__bombEmoteBackup: str = bombEmoteBackup
         self.__gottemEmoteBackup: str = gottemEmoteBackup
         self.__hypeEmoteBackup: str = hypeEmoteBackup
         self.__thumbsDownEmoteBackup: str = thumbsDownEmoteBackup
@@ -34,6 +38,12 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
     async def clearCaches(self):
         # this method is intentionally empty
         pass
+
+    async def getBombEmote(self) -> TrollmojiDetails | None:
+        return await self.__getMandoooEmote('mandoooTNT')
+
+    async def getBombEmoteBackup(self) -> str:
+        return self.__bombEmoteBackup
 
     async def getGottemEmote(self) -> TrollmojiDetails | None:
         return await self.__getSamusEmote('samusGOTTEM')
@@ -46,6 +56,22 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
     async def getHypeEmoteBackup(self) -> str:
         return self.__hypeEmoteBackup
+
+    async def __getMandoooEmote(
+        self,
+        emoteText: str | None
+    ) -> TrollmojiDetails | None:
+        if not utils.isValidStr(emoteText):
+            return None
+
+        twitchChannelId = await self.__twitchFriendsUserIdRepository.getEddieUserId()
+        if not utils.isValidStr(twitchChannelId):
+            return None
+
+        return TrollmojiDetails(
+            emoteText = emoteText,
+            twitchChannelId = twitchChannelId
+        )
 
     async def __getSamusEmote(
         self,

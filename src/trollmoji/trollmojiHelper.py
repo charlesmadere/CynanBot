@@ -41,6 +41,25 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         self.__timeCache.clear()
         self.__timber.log('TrollmojiHelper', 'Caches cleared')
 
+    async def getBombEmote(self) -> str | None:
+        bombEmote = await self.__trollmojiSettingsRepository.getBombEmote()
+
+        if bombEmote is None:
+            return None
+
+        return await self.getEmote(
+            emoteText = bombEmote.emoteText,
+            twitchEmoteChannelId = bombEmote.twitchChannelId
+        )
+
+    async def getBombEmoteOrBackup(self) -> str:
+        bombEmote = await self.getBombEmote()
+
+        if utils.isValidStr(bombEmote):
+            return bombEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getBombEmoteBackup()
+
     async def getEmote(
         self,
         emoteText: str | None,

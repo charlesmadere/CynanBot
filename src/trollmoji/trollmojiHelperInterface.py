@@ -6,6 +6,14 @@ from ..misc.clearable import Clearable
 class TrollmojiHelperInterface(Clearable):
 
     @abstractmethod
+    async def getBombEmote(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getBombEmoteOrBackup(self) -> str:
+        pass
+
+    @abstractmethod
     async def getEmote(
         self,
         emoteText: str | None,

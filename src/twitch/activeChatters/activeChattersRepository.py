@@ -22,7 +22,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidInt(maxActiveChattersSize):
             raise TypeError(f'cacheSize argument is malformed: \"{maxActiveChattersSize}\"')
-        elif maxActiveChattersSize < 64 or maxActiveChattersSize > 512:
+        elif maxActiveChattersSize < 16 or maxActiveChattersSize > 512:
             raise ValueError(f'maxActiveChattersSize argument is out of bounds: {maxActiveChattersSize}')
         elif not isinstance(maxActiveChattersTimeToLive, timedelta):
             raise TypeError(f'maxActiveChattersTimeToLive argument is malformed: \"{maxActiveChattersTimeToLive}\"')

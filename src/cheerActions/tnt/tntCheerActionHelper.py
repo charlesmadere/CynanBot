@@ -9,14 +9,20 @@ from .tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ..timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ...misc import utils as utils
+from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ...soundPlayerManager.soundAlert import SoundAlert
 from ...timber.timberInterface import TimberInterface
+from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from ...timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
+from ...timeout.timeoutActionType import TimeoutActionType
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userInterface import UserInterface
 
 
@@ -39,16 +45,21 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface,
         timeoutCheerActionMapper: TimeoutCheerActionMapper,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        twitchUtils: TwitchUtilsInterface,
+        messageDelaySeconds: int = 3
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
@@ -61,16 +72,58 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not utils.isValidInt(messageDelaySeconds):
+            raise TypeError(f'messageDelaySeconds argument is malformed: \"{messageDelaySeconds}\"')
+        elif messageDelaySeconds < 0 or messageDelaySeconds > 16:
+            raise ValueError(f'messageDelaySeconds argument is out of bounds: {messageDelaySeconds}')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
+        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
         self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
         self.__timeoutCheerActionMapper: TimeoutCheerActionMapper = timeoutCheerActionMapper
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__messageDelaySeconds: int = messageDelaySeconds
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
+
+    async def __alertViaTwitchChat(
+        self,
+        tntTargets: frozenset[TntTarget],
+        user: UserInterface
+    ):
+        if len(tntTargets) == 0:
+            return
+
+        twitchChannelProvider = self.__twitchChannelProvider
+
+        if twitchChannelProvider is None:
+            return
+
+        userNames: list[str] = list()
+
+        for tntTarget in tntTargets:
+            userNames.append(tntTarget.userName)
+
+        userNames.sort(key = lambda userName: userName.casefold())
+        userNamesString = ', '.join(userNames)
+
+        bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
+        message = f'{bombEmote} {userNamesString} {bombEmote}'
+
+        await self.__twitchUtils.waitThenSend(
+            messageable = twitchChannel,
+            delaySeconds = self.__messageDelaySeconds,
+            message = message
+        )
 
     async def __determineTntTargets(
         self,
@@ -190,27 +243,43 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             streamStatusRequirement = action.streamStatusRequirement
         )
 
-        # TODO
-        # self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
-        #     isRandomChanceEnabled = False,
-        #     bits = bits,
-        #     durationSeconds = action.durationSeconds,
-        #     chatMessage = message,
-        #     instigatorUserId = cheerUserId,
-        #     instigatorUserName = cheerUserName,
-        #     moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-        #     moderatorUserId = moderatorUserId,
-        #     pointRedemptionEventId = None,
-        #     pointRedemptionMessage = None,
-        #     pointRedemptionRewardId = None,
-        #     timeoutTargetUserId = timeoutTarget.userId,
-        #     timeoutTargetUserName = timeoutTarget.userName,
-        #     twitchChannelId = broadcasterUserId,
-        #     twitchChatMessageId = twitchChatMessageId,
-        #     userTwitchAccessToken = userTwitchAccessToken,
-        #     actionType = actionType,
-        #     streamStatusRequirement = streamStatusRequirement,
-        #     user = user
-        # ))
+        for tntTarget in tntTargets:
+            self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
+                isRandomChanceEnabled = False,
+                bits = bits,
+                durationSeconds = action.durationSeconds,
+                chatMessage = message,
+                instigatorUserId = cheerUserId,
+                instigatorUserName = cheerUserName,
+                moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+                moderatorUserId = moderatorUserId,
+                pointRedemptionEventId = None,
+                pointRedemptionMessage = None,
+                pointRedemptionRewardId = None,
+                timeoutTargetUserId = tntTarget.userId,
+                timeoutTargetUserName = tntTarget.userName,
+                twitchChannelId = broadcasterUserId,
+                twitchChatMessageId = twitchChatMessageId,
+                userTwitchAccessToken = userTwitchAccessToken,
+                actionType = TimeoutActionType.TNT,
+                streamStatusRequirement = streamStatusRequirement,
+                user = user
+            ))
 
+        await self.__alertViaTwitchChat(
+            tntTargets = tntTargets,
+            user = user
+        )
+
+        await self.__playSoundAlert()
         return True
+
+    async def __playSoundAlert(self):
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        await soundPlayerManager.playSoundAlert(SoundAlert.TNT)
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self._twitchChannelProvider = provider

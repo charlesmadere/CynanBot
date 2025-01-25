@@ -218,6 +218,10 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ):
+        if timeoutData.actionType is TimeoutActionType.TNT:
+            # TNT actions don't send Twitch chats here
+            return
+
         message: str
 
         if isGuaranteed or timeoutData.actionType is TimeoutActionType.GRENADE:
