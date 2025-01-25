@@ -499,14 +499,14 @@ class TwitchApiService(TwitchApiServiceInterface):
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}) ({response=}): {responseStatusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}) ({response=}): {responseStatusCode}')
 
         twitchFollowersResponse = await self.__twitchJsonMapper.parseFollowersResponse(jsonResponse)
 
         if twitchFollowersResponse is None:
-            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchFollowersResponse=})')
-            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchFollowersResponse=})')
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchFollowersResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchFollowersResponse=})')
 
         for follower in twitchFollowersResponse.followers:
             if follower.userId == userId:

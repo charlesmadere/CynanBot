@@ -153,7 +153,6 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         )
 
         twitchFollower: TwitchFollower | None = None
-        exception: GenericNetworkException | None =  None
 
         try:
             twitchFollower = await self.__twitchApiService.fetchFollower(
@@ -162,19 +161,18 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                 userId = userId
             )
         except GenericNetworkException as e:
-            exception = e
+            self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
 
-        if twitchFollower is None or exception is not None:
-            self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchFollower=}) ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {exception}', exception, traceback.format_exc())
+        if twitchFollower is None:
             return None
-
-        return TwitchFollowingStatus(
-            followedAt = twitchFollower.followedAt,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            userId = userId,
-            userName = userName
-        )
+        else:
+            return TwitchFollowingStatus(
+                followedAt = twitchFollower.followedAt,
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId,
+                userId = userId,
+                userName = userName
+            )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
