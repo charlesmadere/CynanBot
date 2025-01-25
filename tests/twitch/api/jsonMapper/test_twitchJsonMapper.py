@@ -328,17 +328,17 @@ class TestTwitchJsonMapper:
 
         editor = result.editors[0]
         assert isinstance(editor, TwitchChannelEditor)
-        assert editor == qbit
-        assert editor.createdAt == qbit.createdAt
-        assert editor.userId == qbit.userId
-        assert editor.userName == qbit.userName
-
-        editor = result.editors[1]
-        assert isinstance(editor, TwitchChannelEditor)
         assert editor == tsteine
         assert editor.createdAt == tsteine.createdAt
         assert editor.userId == tsteine.userId
         assert editor.userName == tsteine.userName
+
+        editor = result.editors[1]
+        assert isinstance(editor, TwitchChannelEditor)
+        assert editor == qbit
+        assert editor.createdAt == qbit.createdAt
+        assert editor.userId == qbit.userId
+        assert editor.userName == qbit.userName
 
     @pytest.mark.asyncio
     async def test_parseChannelEditorsResponse_withEmptyDictionary(self):
