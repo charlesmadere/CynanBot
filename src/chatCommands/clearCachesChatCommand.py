@@ -8,7 +8,9 @@ from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositor
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
+from ..decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ..funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from ..google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ..halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -71,8 +73,10 @@ class ClearCachesChatCommand(AbsChatCommand):
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
+        decTalkSettingsRepository: DecTalkSettingsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
+        googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
         halfLifeService: HalfLifeServiceInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
@@ -125,10 +129,14 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif crowdControlSettingsRepository is not None and not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
+        elif decTalkSettingsRepository is not None and not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
+            raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
         elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif googleSettingsRepository is not None and not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+            raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif halfLifeService is not None and not isinstance(halfLifeService, HalfLifeServiceInterface):
             raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeService}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -211,6 +219,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(cheerActionSettingsRepository)
         self.__clearables.append(cheerActionsRepository)
         self.__clearables.append(crowdControlSettingsRepository)
+        self.__clearables.append(decTalkSettingsRepository)
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(halfLifeService)
