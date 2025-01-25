@@ -1,18 +1,17 @@
 import random
 from dataclasses import dataclass
+from typing import Any
 
 from frozendict import frozendict
 
-from .timeoutCheerAction import TimeoutCheerAction
-from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from .timeoutCheerActionMapper import TimeoutCheerActionMapper
+from .tntCheerAction import TntCheerAction
+from .tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
+from ..timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from ...timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
-from ...timeout.timeoutActionType import TimeoutActionType
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
@@ -21,14 +20,18 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
 
-class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
+class TntCheerActionHelper(TntCheerActionHelperInterface):
 
     @dataclass(frozen = True)
-    class TimeoutTarget:
-        isRandomChanceEnabled: bool
-        isRandomTarget: bool
+    class TntTarget:
         userId: str
         userName: str
+
+        def __eq__(self, value: Any) -> bool:
+            if isinstance(value, TntCheerActionHelper.TntTarget):
+                return self.userId == value.userId
+            else:
+                return False
 
     def __init__(
         self,
@@ -64,29 +67,25 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
         self.__timeoutCheerActionMapper: TimeoutCheerActionMapper = timeoutCheerActionMapper
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
-        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
-    async def __determineRandomTimeoutTarget(
+    async def __determineTntTargets(
         self,
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
-        timeoutAction: TimeoutCheerAction,
-        user: UserInterface
-    ) -> TimeoutTarget | None:
+        tntAction: TntCheerAction
+    ) -> frozenset[TntTarget]:
+        tntTargets: set[TntCheerActionHelper.TntTarget] = set()
+
         additionalReverseProbability = await self.__timeoutActionSettingsRepository.getGrenadeAdditionalReverseProbability()
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout random target from {cheerUserName}:{cheerUserId} in {user.handle}, but they got the additional reverse probability RNG ({timeoutAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=})')
-
-            return TimeoutCheerActionHelper.TimeoutTarget(
-                isRandomChanceEnabled = False,
-                isRandomTarget = True,
+            tntTargets.add(TntCheerActionHelper.TntTarget(
                 userId = cheerUserId,
                 userName = cheerUserName
-            )
+            ))
 
         chatters = await self.__activeChattersRepository.get(
             twitchChannelId = broadcasterUserId
@@ -103,84 +102,30 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         for immuneUserId in immuneUserIds:
             eligibleChatters.pop(immuneUserId, None)
 
-        if len(eligibleChatters) == 0:
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout random target from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({chatters=})')
-            return None
-
+        tntTargetCount = random.randint(tntAction.minTimeoutChatters, tntAction.maxTimeoutChatters)
         eligibleChattersList: list[ActiveChatter] = list(eligibleChatters.values())
-        randomChatter = random.choice(eligibleChattersList)
 
-        await self.__activeChattersRepository.remove(
-            chatterUserId = randomChatter.chatterUserId,
-            twitchChannelId = broadcasterUserId
-        )
+        while len(tntTargets) < tntTargetCount and len(eligibleChattersList) >= 1:
+            randomChatterIndex = random.randint(0, len(eligibleChattersList) - 1)
+            randomChatter = eligibleChattersList[randomChatterIndex]
+            del eligibleChattersList[randomChatterIndex]
 
-        return TimeoutCheerActionHelper.TimeoutTarget(
-            isRandomChanceEnabled = False,
-            isRandomTarget = True,
-            userId = randomChatter.chatterUserId,
-            userName = randomChatter.chatterUserName
-        )
+            tntTargets.add(TntCheerActionHelper.TntTarget(
+                userId = randomChatter.chatterUserId,
+                userName = randomChatter.chatterUserName
+            ))
 
-    async def __determineTimeoutTarget(
-        self,
-        broadcasterUserId: str,
-        cheerUserId: str,
-        cheerUserName: str,
-        message: str,
-        userTwitchAccessToken: str,
-        timeoutAction: TimeoutCheerAction,
-        user: UserInterface
-    ) -> TimeoutTarget | None:
-        specificUserTimeoutTarget = await self.__determineUserTimeoutTarget(
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            message = message,
-            userTwitchAccessToken = userTwitchAccessToken,
-            timeoutAction = timeoutAction,
-            user = user
-        )
+        frozenTntTargets: frozenset[TntCheerActionHelper.TntTarget] = frozenset(tntTargets)
 
-        if specificUserTimeoutTarget is not None:
-            return specificUserTimeoutTarget
+        for tntTarget in frozenTntTargets:
+            await self.__activeChattersRepository.remove(
+                chatterUserId = tntTarget.userId,
+                twitchChannelId = broadcasterUserId
+            )
 
-        return await self.__determineRandomTimeoutTarget(
-            broadcasterUserId = broadcasterUserId,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            timeoutAction = timeoutAction,
-            user = user
-        )
+        self.__timber.log('TntCheerActionHelper', f'Selected TNT target(s) ({tntAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({tntTargetCount=}) ({frozenTntTargets=})')
 
-    async def __determineUserTimeoutTarget(
-        self,
-        cheerUserId: str,
-        cheerUserName: str,
-        message: str,
-        userTwitchAccessToken: str,
-        timeoutAction: TimeoutCheerAction,
-        user: UserInterface
-    ) -> TimeoutTarget | None:
-        timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
-        if not utils.isValidStr(timeoutTargetUserName):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user name ({message=}) ({timeoutAction=})')
-            return None
-
-        timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
-            userName = timeoutTargetUserName,
-            twitchAccessToken = userTwitchAccessToken
-        )
-
-        if not utils.isValidStr(timeoutTargetUserId):
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout \"{timeoutTargetUserName}\" from {cheerUserName}:{cheerUserId} in {user.handle}, but was unable to find a user ID ({message=}) ({timeoutAction=})')
-            return None
-
-        return TimeoutCheerActionHelper.TimeoutTarget(
-            isRandomChanceEnabled = timeoutAction.isRandomChanceEnabled,
-            isRandomTarget = False,
-            userId = timeoutTargetUserId,
-            userName = timeoutTargetUserName
-        )
+        return frozenTntTargets
 
     async def handleTimeoutCheerAction(
         self,
@@ -223,55 +168,46 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         action = actions.get(bits, None)
 
-        if not isinstance(action, TimeoutCheerAction):
+        if not isinstance(action, TntCheerAction):
             return False
         elif not action.isEnabled:
             return False
 
-        timeoutTarget = await self.__determineTimeoutTarget(
+        tntTargets = await self.__determineTntTargets(
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
-            message = message,
-            userTwitchAccessToken = userTwitchAccessToken,
-            timeoutAction = action,
-            user = user
+            tntAction = action
         )
 
-        if timeoutTarget is None:
-            return False
-
-        actionType: TimeoutActionType
-
-        if timeoutTarget.isRandomTarget:
-            actionType = TimeoutActionType.GRENADE
-        else:
-            actionType = TimeoutActionType.TARGETED
+        if len(tntTargets) == 0:
+            return True
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(
             streamStatusRequirement = action.streamStatusRequirement
         )
 
-        self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
-            isRandomChanceEnabled = timeoutTarget.isRandomChanceEnabled,
-            bits = bits,
-            durationSeconds = action.durationSeconds,
-            chatMessage = message,
-            instigatorUserId = cheerUserId,
-            instigatorUserName = cheerUserName,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
-            pointRedemptionEventId = None,
-            pointRedemptionMessage = None,
-            pointRedemptionRewardId = None,
-            timeoutTargetUserId = timeoutTarget.userId,
-            timeoutTargetUserName = timeoutTarget.userName,
-            twitchChannelId = broadcasterUserId,
-            twitchChatMessageId = twitchChatMessageId,
-            userTwitchAccessToken = userTwitchAccessToken,
-            actionType = actionType,
-            streamStatusRequirement = streamStatusRequirement,
-            user = user
-        ))
+        # TODO
+        # self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
+        #     isRandomChanceEnabled = False,
+        #     bits = bits,
+        #     durationSeconds = action.durationSeconds,
+        #     chatMessage = message,
+        #     instigatorUserId = cheerUserId,
+        #     instigatorUserName = cheerUserName,
+        #     moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+        #     moderatorUserId = moderatorUserId,
+        #     pointRedemptionEventId = None,
+        #     pointRedemptionMessage = None,
+        #     pointRedemptionRewardId = None,
+        #     timeoutTargetUserId = timeoutTarget.userId,
+        #     timeoutTargetUserName = timeoutTarget.userName,
+        #     twitchChannelId = broadcasterUserId,
+        #     twitchChatMessageId = twitchChatMessageId,
+        #     userTwitchAccessToken = userTwitchAccessToken,
+        #     actionType = actionType,
+        #     streamStatusRequirement = streamStatusRequirement,
+        #     user = user
+        # ))
 
         return True
