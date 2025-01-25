@@ -222,6 +222,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(decTalkSettingsRepository)
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
+        self.__clearables.append(googleSettingsRepository)
         self.__clearables.append(halfLifeService)
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)
