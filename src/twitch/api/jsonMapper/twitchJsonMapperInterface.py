@@ -19,6 +19,8 @@ from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
 from ..models.twitchEmoteType import TwitchEmoteType
 from ..models.twitchEmotesResponse import TwitchEmotesResponse
 from ..models.twitchEventSubRequest import TwitchEventSubRequest
+from ..models.twitchFollower import TwitchFollower
+from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
@@ -167,6 +169,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         emoteType: str | None
     ) -> TwitchEmoteType | None:
+        pass
+
+    @abstractmethod
+    async def parseFollower(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchFollower:
+        pass
+
+    @abstractmethod
+    async def parseFollowersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchFollowersResponse | None:
         pass
 
     @abstractmethod

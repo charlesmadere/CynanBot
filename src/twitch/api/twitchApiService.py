@@ -498,32 +498,21 @@ class TwitchApiService(TwitchApiServiceInterface):
         jsonResponse = await response.json()
         await response.close()
 
-        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
-            self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
-            raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
-        elif responseStatusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
 
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
+        twitchFollowersResponse = await self.__twitchJsonMapper.parseFollowersResponse(jsonResponse)
 
-        if not isinstance(data, list) or len(data) == 0:
-            return None
+        if twitchFollowersResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchFollowersResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({twitchFollowersResponse=})')
 
-        for dataEntry in data:
-            dataEntryUserId = utils.getStrFromDict(dataEntry, 'user_id')
+        for follower in twitchFollowersResponse.followers:
+            if follower.userId == userId:
+                return follower
 
-            if dataEntryUserId == userId:
-                return TwitchFollower(
-                    followedAt = utils.getDateTimeFromDict(dataEntry, 'followed_at'),
-                    userId = dataEntryUserId,
-                    userLogin = utils.getStrFromDict(dataEntry, 'user_login'),
-                    userName = utils.getStrFromDict(dataEntry, 'user_name')
-                )
-
+        # the requested user is not following
         return None
 
     async def fetchLiveUserDetails(

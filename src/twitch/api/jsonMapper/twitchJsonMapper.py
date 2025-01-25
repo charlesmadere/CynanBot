@@ -24,6 +24,8 @@ from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
 from ..models.twitchEmoteType import TwitchEmoteType
 from ..models.twitchEmotesResponse import TwitchEmotesResponse
 from ..models.twitchEventSubRequest import TwitchEventSubRequest
+from ..models.twitchFollower import TwitchFollower
+from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
@@ -289,17 +291,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        if not isinstance(data, list) or len(data) == 0:
-            return None
-
         channelEditors: list[TwitchChannelEditor] = list()
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
 
-        for channelEditorJson in data:
-            channelEditor = await self.parseChannelEditor(channelEditorJson)
-            channelEditors.append(channelEditor)
+        if isinstance(data, list) and len(data) >= 1:
+            for channelEditorJson in data:
+                channelEditor = await self.parseChannelEditor(channelEditorJson)
+                channelEditors.append(channelEditor)
 
-        channelEditors.sort(key = lambda editor: editor.createdAt)
+            channelEditors.sort(key = lambda editor: editor.createdAt, reverse = True)
+
         frozenChannelEditors: FrozenList[TwitchChannelEditor] = FrozenList(channelEditors)
         frozenChannelEditors.freeze()
 
@@ -659,6 +660,54 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'follower': return TwitchEmoteType.FOLLOWER
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
             case _: return None
+
+    async def parseFollower(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchFollower:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+
+        followedAt = utils.getDateTimeFromDict(jsonResponse, 'followed_at')
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchFollower(
+            followedAt = followedAt,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName
+        )
+
+    async def parseFollowersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchFollowersResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        followers: list[TwitchFollower] = list()
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+
+        if isinstance(data, list) and len(data) >= 1:
+            for followerJson in data:
+                follower = await self.parseFollower(followerJson)
+                followers.append(follower)
+
+            followers.sort(key = lambda follower: follower.followedAt, reverse = True)
+
+        frozenFollowers: FrozenList[TwitchFollower] = FrozenList(followers)
+        frozenFollowers.freeze()
+
+        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        return TwitchFollowersResponse(
+            followers = frozenFollowers,
+            total = total,
+            pagination = pagination
+        )
 
     async def parseNoticeType(
         self,
