@@ -17,6 +17,15 @@ class TwitchFollowingStatusRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def isFollowing(
+        self,
+        twitchAccessToken: str,
+        twitchChannelId: str,
+        userId: str
+    ) -> bool:
+        pass
+
+    @abstractmethod
     async def persistFollowingStatus(
         self,
         followedAt: datetime | None,

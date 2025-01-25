@@ -215,6 +215,27 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
         await connection.close()
 
+    async def isFollowing(
+        self,
+        twitchAccessToken: str,
+        twitchChannelId: str,
+        userId: str
+    ) -> bool:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        followingStatus = await self.fetchFollowingStatus(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId,
+            userId = userId
+        )
+
+        return followingStatus is not None
+
     async def persistFollowingStatus(
         self,
         followedAt: datetime | None,

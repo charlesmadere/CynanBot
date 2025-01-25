@@ -128,10 +128,8 @@ class SupStreamerChatAction(AbsChatAction):
         if not utils.isValidStr(twitchAccessToken):
             return False
 
-        followingStatus = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
+        return await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = await message.getTwitchChannelId(),
             userId = message.getAuthorId()
         )
-
-        return followingStatus is not None
