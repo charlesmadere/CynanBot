@@ -106,8 +106,8 @@ from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from .decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from .funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
-from .halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from .halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from .language.jishoHelperInterface import JishoHelperInterface
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from .language.translationHelper import TranslationHelper
