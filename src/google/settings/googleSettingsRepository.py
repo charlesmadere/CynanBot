@@ -13,7 +13,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         self,
         googleJsonMapper: GoogleJsonMapperInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.OGG_OPUS
+        defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.MP3
     ):
         if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
@@ -33,7 +33,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 50)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 32)
 
     async def getVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
         jsonContents = await self.__readJson()
