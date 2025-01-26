@@ -9,7 +9,7 @@ class TwitchIrcTagsParserInterface(ABC):
     @abstractmethod
     async def parseSubscriberTier(
         self,
-        subscriberTierString: str | Any | None
+        badgesString: str | Any | None
     ) -> TwitchIrcTags.SubscriberTier:
         pass
 

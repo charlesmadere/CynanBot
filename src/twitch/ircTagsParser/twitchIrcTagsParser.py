@@ -1,10 +1,9 @@
+import re
 import traceback
-from typing import Any
+from typing import Any, Pattern
 
 from frozendict import frozendict
 
-from ...misc import utils as utils
-from ...timber.timberInterface import TimberInterface
 from .exceptions import TwitchIrcTagsAreMissingDisplayNameException, \
     TwitchIrcTagsAreMalformedException, \
     TwitchIrcTagsAreMissingMessageIdException, \
@@ -12,6 +11,8 @@ from .exceptions import TwitchIrcTagsAreMissingDisplayNameException, \
     TwitchIrcTagsAreMissingUserIdException
 from .twitchIrcTags import TwitchIrcTags
 from .twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
@@ -22,23 +23,27 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
 
         self.__timber: TimberInterface = timber
 
+        self.__badgesStringSubscriberRegEx: Pattern = re.compile(r'subscriber\/(\d{2})', re.IGNORECASE)
+
     async def parseSubscriberTier(
         self,
-        subscriberTierString: str | Any | None
+        badgesString: str | Any | None
     ) -> TwitchIrcTags.SubscriberTier:
+        if not utils.isValidStr(badgesString):
+            return TwitchIrcTags.SubscriberTier.NONE
+
+        subscriberStringMatch = self.__badgesStringSubscriberRegEx.search(badgesString)
+        if subscriberStringMatch is None:
+            return TwitchIrcTags.SubscriberTier.NONE
+
+        subscriberTierString = subscriberStringMatch.group(1)
         if not utils.isValidStr(subscriberTierString):
             return TwitchIrcTags.SubscriberTier.NONE
 
-        try:
-            subscriberTierInt = int(subscriberTierString)
-        except Exception as e:
-            self.__timber.log('TwitchIrcTagsParser', f'Failed to parse subscriberTierString into an int ({subscriberTierString=}): {e}', e, traceback.format_exc())
-            return TwitchIrcTags.SubscriberTier.NONE
-
-        match subscriberTierInt:
-            case 1: return TwitchIrcTags.SubscriberTier.TIER_1
-            case 2: return TwitchIrcTags.SubscriberTier.TIER_2
-            case 3: return TwitchIrcTags.SubscriberTier.TIER_3
+        match subscriberTierString:
+            case '10': return TwitchIrcTags.SubscriberTier.TIER_1
+            case '20': return TwitchIrcTags.SubscriberTier.TIER_2
+            case '30': return TwitchIrcTags.SubscriberTier.TIER_3
             case _: return TwitchIrcTags.SubscriberTier.NONE
 
     async def parseTwitchIrcTags(
@@ -71,8 +76,8 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
         sourceMessageId: str | Any | None = rawIrcTags.get('source-id', None)
         sourceTwitchChannelId: str | Any | None = rawIrcTags.get('source-room-id', None)
 
-        subscriberTierString: str | Any | None = rawIrcTags.get('subscriber', None)
-        subscriberTier = await self.parseSubscriberTier(subscriberTierString)
+        badgesString: str | Any | None = rawIrcTags.get('badges', None)
+        subscriberTier = await self.parseSubscriberTier(badgesString)
 
         return TwitchIrcTags(
             rawTags = frozendict(rawIrcTags),

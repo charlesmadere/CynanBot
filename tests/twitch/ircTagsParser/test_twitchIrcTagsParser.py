@@ -24,29 +24,29 @@ class TestTwitchIrcTagsParser:
     )
 
     @pytest.mark.asyncio
-    async def test_parseSubscriberTier_with0(self):
-        result = await self.parser.parseSubscriberTier('0')
+    async def test_parseSubscriberTier_withEmptyString(self):
+        result = await self.parser.parseSubscriberTier('')
         assert result is TwitchIrcTags.SubscriberTier.NONE
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_with1(self):
-        result = await self.parser.parseSubscriberTier('1')
-        assert result is TwitchIrcTags.SubscriberTier.TIER_1
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_with2(self):
-        result = await self.parser.parseSubscriberTier('2')
-        assert result is TwitchIrcTags.SubscriberTier.TIER_2
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_with3(self):
-        result = await self.parser.parseSubscriberTier('3')
-        assert result is TwitchIrcTags.SubscriberTier.TIER_3
 
     @pytest.mark.asyncio
     async def test_parseSubscriberTier_withNone(self):
         result = await self.parser.parseSubscriberTier(None)
         assert result is TwitchIrcTags.SubscriberTier.NONE
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withStreamerString(self):
+        result = await self.parser.parseSubscriberTier('broadcaster/1,subscriber/3054,partner/1')
+        assert result is TwitchIrcTags.SubscriberTier.TIER_3
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withTier2String(self):
+        result = await self.parser.parseSubscriberTier('moderator/1,subscriber/2036')
+        assert result is TwitchIrcTags.SubscriberTier.TIER_2
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriberTier_withTier3String(self):
+        result = await self.parser.parseSubscriberTier('moderator/1,subscriber/3030')
+        assert result is TwitchIrcTags.SubscriberTier.TIER_3
 
     @pytest.mark.asyncio
     async def test_parseTwitchIrcTags(self):
@@ -57,7 +57,7 @@ class TestTwitchIrcTagsParser:
 
         rawIrcTags: dict[Any, Any] = {
             '@badge-info': 'subscriber/10',
-            'badges': 'vip/1,subscriber/3009,turbo/1',
+            'badges': 'vip/1,subscriber/1009,turbo/1',
             'client-nonce': 'abc123',
             'color': '#FF69B4',
             'display-name': displayName,
