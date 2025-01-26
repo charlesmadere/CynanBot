@@ -1,5 +1,4 @@
 import re
-import traceback
 from typing import Any, Pattern
 
 from frozendict import frozendict
@@ -44,7 +43,9 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
             case '10': return TwitchIrcTags.SubscriberTier.TIER_1
             case '20': return TwitchIrcTags.SubscriberTier.TIER_2
             case '30': return TwitchIrcTags.SubscriberTier.TIER_3
-            case _: return TwitchIrcTags.SubscriberTier.NONE
+            case _:
+                self.__timber.log('TwitchIrcTagsParser', f'Encountered unknown subscriber tier string format ({badgesString=}) ({subscriberTierString=})')
+                return TwitchIrcTags.SubscriberTier.NONE
 
     async def parseTwitchIrcTags(
         self,
