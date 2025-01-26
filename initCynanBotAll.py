@@ -2,6 +2,8 @@ import asyncio
 import locale
 from asyncio import AbstractEventLoop
 
+from src.accessLevelChecking.accessLevelCheckingRepository import AccessLevelCheckingRepository
+from src.accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
 from src.aniv.anivContentScanner import AnivContentScanner
 from src.aniv.anivContentScannerInterface import AnivContentScannerInterface
 from src.aniv.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
@@ -600,6 +602,8 @@ from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJso
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
+from src.users.accessLevel.accessLevelParser import AccessLevelJsonParser
+from src.users.accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from src.users.ttsChatters.ttsChatterBoosterPackParser import TtsChatterBoosterPackParser
 from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
@@ -811,6 +815,8 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
+accessLevelJsonParser: AccessLevelJsonParserInterface = AccessLevelJsonParser()
+
 halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
 
 microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
@@ -821,6 +827,7 @@ ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBo
     halfLifeJsonParser = halfLifeJsonParser,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
+    accessLevelJsonParser = accessLevelJsonParser,
     ttsJsonMapper = ttsJsonMapper
 )
 
@@ -2319,6 +2326,11 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 ## Chat Actions initialization section ##
 #########################################
 
+accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface = AccessLevelCheckingRepository(
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository
+)
+
 anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
     anivUserIdProvider = anivUserIdProvider,
@@ -2396,7 +2408,8 @@ supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
 )
 
 ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
-    streamAlertsManager = streamAlertsManager
+    streamAlertsManager = streamAlertsManager,
+    accessLevelCheckingRepository = accessLevelCheckingRepository
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(

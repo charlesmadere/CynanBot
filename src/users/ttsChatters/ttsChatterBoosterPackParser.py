@@ -4,6 +4,8 @@ from frozendict import frozendict
 
 from .ttsChatterBoosterPack import TtsChatterBoosterPack
 from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
+from ..accessLevel.accessLevel import AccessLevel
+from ..accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
 from ...microsoftSam.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
@@ -22,6 +24,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         halfLifeJsonParser: HalfLifeJsonParserInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
+        accessLevelJsonParser: AccessLevelJsonParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface
     ):
         if not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
@@ -36,6 +39,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
+        self.__ttsChatterAccessLevelParser: AccessLevelJsonParserInterface = accessLevelJsonParser
         self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
 
     def parseBoosterPack(
@@ -46,6 +50,9 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
 
         userName = utils.getStrFromDict(jsonContents, 'userName')
         voiceStr = utils.getStrFromDict(jsonContents, 'voice', '')
+
+        accessLevelStr = utils.getStrFromDict(jsonContents, 'access', '')
+        accessLevel = self.__ttsChatterAccessLevelParser.parseAccessLevel(AccessLevel.SUBSCRIBER, accessLevelStr)
 
         ttsProviderStr = utils.getStrFromDict(jsonContents, 'ttsProvider')
         ttsProvider = self.__ttsJsonMapper.parseProvider(ttsProviderStr)
@@ -71,9 +78,10 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
                 voice = voiceStr
 
         return TtsChatterBoosterPack(
+            accessLevel = accessLevel,
+            ttsProvider = ttsProvider,
             userName = userName,
-            voice = voice,
-            ttsProvider = ttsProvider
+            voice = voice
         )
 
     def parseBoosterPacks(

@@ -1,3 +1,4 @@
+from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
 from .absChatAction import AbsChatAction
 from ..halfLife.models.halfLifeVoice import HalfLifeVoice
 from ..microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
@@ -17,11 +18,15 @@ class TtsChattersChatAction(AbsChatAction):
 
     def __init__(
         self,
+        accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface
     ):
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(accessLevelCheckingRepository, AccessLevelCheckingRepositoryInterface):
+            raise TypeError(f'accessLevelCheckingRepository argument is malformed: \"{accessLevelCheckingRepository}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
 
+        self.__accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface = accessLevelCheckingRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
 
     async def handleChat(
@@ -60,6 +65,9 @@ class TtsChattersChatAction(AbsChatAction):
             case TtsProvider.TTS_MONSTER:
                 if utils.isValidStr(boosterPack.voice):
                     voice = f'{boosterPack.voice}: '
+
+        if not self.__accessLevelCheckingRepository.checkStatus(boosterPack.accessLevel, message):
+            return False
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,

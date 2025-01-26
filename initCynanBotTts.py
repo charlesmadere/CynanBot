@@ -2,6 +2,8 @@ import asyncio
 import locale
 from asyncio import AbstractEventLoop
 
+from src.accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
+from src.accessLevelChecking.accessLevelCheckingRepository import AccessLevelCheckingRepository
 from src.aniv.anivContentScanner import AnivContentScanner
 from src.aniv.anivContentScannerInterface import AnivContentScannerInterface
 from src.aniv.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
@@ -390,6 +392,8 @@ from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
+from src.users.accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
+from src.users.accessLevel.accessLevelParser import AccessLevelJsonParser
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParser import ChatSoundAlertJsonParser
@@ -621,6 +625,8 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
+ttsChatterAccessLevelParser: AccessLevelJsonParserInterface = AccessLevelJsonParser()
+
 halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
 
 microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
@@ -629,6 +635,7 @@ ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBo
     halfLifeJsonParser = halfLifeJsonParser,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
+    accessLevelJsonParser = ttsChatterAccessLevelParser,
     ttsJsonMapper = ttsJsonMapper
 )
 
@@ -1560,6 +1567,11 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ## Chat Actions initialization section ##
 #########################################
 
+accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface = AccessLevelCheckingRepository(
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository
+)
+
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
     timber = timber
 )
@@ -1608,7 +1620,8 @@ supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
 )
 
 ttsChattersChatAction: TtsChattersChatAction | None = TtsChattersChatAction(
-    streamAlertsManager = streamAlertsManager
+    streamAlertsManager = streamAlertsManager,
+    accessLevelCheckingRepository = accessLevelCheckingRepository
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
