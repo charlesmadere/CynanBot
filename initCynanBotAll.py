@@ -584,6 +584,8 @@ from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
+from src.users.accessLevel.accessLevelParser import AccessLevelJsonParser
+from src.users.accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParser import ChatSoundAlertJsonParser
@@ -602,8 +604,6 @@ from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJso
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from src.users.accessLevel.accessLevelParser import AccessLevelJsonParser
-from src.users.accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from src.users.ttsChatters.ttsChatterBoosterPackParser import TtsChatterBoosterPackParser
 from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository

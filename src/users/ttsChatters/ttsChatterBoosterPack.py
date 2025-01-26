@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 from ..accessLevel.accessLevel import AccessLevel
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice

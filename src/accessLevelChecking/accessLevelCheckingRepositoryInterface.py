@@ -11,5 +11,5 @@ class AccessLevelCheckingRepositoryInterface(ABC):
         self,
         requiredAccessLevel: AccessLevel,
         twitchMessage: TwitchMessage
-    ):
+    ) -> bool:
         pass

@@ -1,6 +1,5 @@
-from src.misc import utils
-
 from .accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
+from ..misc import utils
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.ircTagsParser.twitchIrcTags import TwitchIrcTags
@@ -27,7 +26,7 @@ class AccessLevelCheckingRepository(AccessLevelCheckingRepositoryInterface):
         self,
         requiredAccessLevel: AccessLevel,
         twitchMessage: TwitchMessage
-    ):
+    ) -> bool:
         # TODO More checking can be done to allow for restricted access for higher subscription tiers
         # TODO a ranking system to simplify managing access would be helpful to reduce the amount of checks needed
         match requiredAccessLevel:
@@ -49,6 +48,9 @@ class AccessLevelCheckingRepository(AccessLevelCheckingRepositoryInterface):
                     and not twitchMessage.getAuthor().isMod() \
                     and not twitchMessage.getAuthor().isVip():
                     return False
+
+        # TODO what should this return here?
+        return False
 
     async def __isFollowing(self, message: TwitchMessage) -> bool:
         if not isinstance(message, TwitchMessage):

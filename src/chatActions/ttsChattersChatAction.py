@@ -1,5 +1,5 @@
-from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
 from .absChatAction import AbsChatAction
+from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
 from ..halfLife.models.halfLifeVoice import HalfLifeVoice
 from ..microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ..misc import utils as utils
