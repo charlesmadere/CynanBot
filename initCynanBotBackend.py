@@ -372,6 +372,8 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
     TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
+from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
@@ -803,7 +805,12 @@ pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
     timber = timber
 )
 
+twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser(
+    timber = timber
+)
+
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
+    twitchIrcTagsParser = twitchIrcTagsParser,
     userIdsRepository = userIdsRepository
 )
 

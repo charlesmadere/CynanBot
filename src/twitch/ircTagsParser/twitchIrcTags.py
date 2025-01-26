@@ -23,4 +23,5 @@ class TwitchIrcTags:
     sourceMessageId: str | None
     sourceTwitchChannelId: str | None
     twitchChannelId: str
-    tier: SubscriberTier
+    userId: str
+    subscriberTier: SubscriberTier

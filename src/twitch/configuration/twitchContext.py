@@ -2,8 +2,8 @@ from abc import abstractmethod
 
 from .twitchAuthor import TwitchAuthor
 from .twitchConfigurationType import TwitchConfigurationType
-from .twitchMessageTags import TwitchMessageTags
 from .twitchMessageable import TwitchMessageable
+from ..ircTagsParser.twitchIrcTags import TwitchIrcTags
 
 
 class TwitchContext(TwitchMessageable):
@@ -33,11 +33,15 @@ class TwitchContext(TwitchMessageable):
         pass
 
     @abstractmethod
-    async def getMessageTags(self) -> TwitchMessageTags:
+    async def getMessageTags(self) -> TwitchIrcTags:
         pass
 
     @abstractmethod
     def getTwitchChannelName(self) -> str:
+        pass
+
+    @abstractmethod
+    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
         pass
 
     @abstractmethod

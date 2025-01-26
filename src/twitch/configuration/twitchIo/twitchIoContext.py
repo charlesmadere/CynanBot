@@ -6,8 +6,9 @@ from ..twitchAuthor import TwitchAuthor
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchContext import TwitchContext
 from ..twitchMessage import TwitchMessage
-from ..twitchMessageTags import TwitchMessageTags
 from ..twitchMessageable import TwitchMessageable
+from ...ircTagsParser.twitchIrcTags import TwitchIrcTags
+from ...ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -16,10 +17,13 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     def __init__(
         self,
         context: Context,
+        twitchIrcTagsParser: TwitchIrcTagsParserInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(context, Context):
             raise TypeError(f'context argument is malformed: \"{context}\"')
+        elif not isinstance(twitchIrcTagsParser, TwitchIrcTagsParserInterface):
+            raise TypeError(f'twitchIrcTagsParser argument is malformed: \"{twitchIrcTagsParser}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
@@ -31,6 +35,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
 
         self.__message: TwitchMessage = TwitchIoMessage(
             message = context.message,
+            twitchIrcTagsParser = twitchIrcTagsParser,
             userIdsRepository = userIdsRepository
         )
 
@@ -52,7 +57,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     async def getMessageId(self) -> str:
         return await self.__message.getMessageId()
 
-    async def getMessageTags(self) -> TwitchMessageTags:
+    async def getMessageTags(self) -> TwitchIrcTags:
         return await self.__message.getTags()
 
     async def getTwitchChannelId(self) -> str:
@@ -60,6 +65,9 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
 
     def getTwitchChannelName(self) -> str:
         return self.__context.channel.name
+
+    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
+        return await self.__message.getTwitchSubscriberTier()
 
     def isAuthorMod(self) -> bool:
         return self.__author.isMod()

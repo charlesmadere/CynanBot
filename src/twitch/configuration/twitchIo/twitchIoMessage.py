@@ -1,18 +1,15 @@
 from typing import Any
 
-from frozendict import frozendict
 from twitchio import Message
 
-from .exceptions import (TwitchIoHasMalformedTagsException,
-                         TwitchIoTagsIsMissingMessageIdException,
-                         TwitchIoTagsIsMissingRoomIdException)
 from .twitchIoAuthor import TwitchIoAuthor
 from .twitchIoChannel import TwitchIoChannel
 from ..twitchAuthor import TwitchAuthor
 from ..twitchChannel import TwitchChannel
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchMessage import TwitchMessage
-from ..twitchMessageTags import TwitchMessageTags
+from ...ircTagsParser.twitchIrcTags import TwitchIrcTags
+from ...ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from ....misc import utils as utils
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -22,21 +19,29 @@ class TwitchIoMessage(TwitchMessage):
     def __init__(
         self,
         message: Message,
+        twitchIrcTagsParser: TwitchIrcTagsParserInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(message, Message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(twitchIrcTagsParser, TwitchIrcTagsParserInterface):
+            raise TypeError(f'twitchIrcTagsParser argument is malformed: \"{twitchIrcTagsParser}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__message: Message = message
-        self.__author: TwitchAuthor = TwitchIoAuthor(message.author)
+        self.__twitchIrcTagsParser: TwitchIrcTagsParserInterface = twitchIrcTagsParser
+
+        self.__author: TwitchAuthor = TwitchIoAuthor(
+            author = message.author
+        )
+
         self.__channel: TwitchChannel = TwitchIoChannel(
             channel = message.channel,
             userIdsRepository = userIdsRepository
         )
 
-        self.__tags: TwitchMessageTags | None = None
+        self.__tags: TwitchIrcTags | None = None
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -57,41 +62,16 @@ class TwitchIoMessage(TwitchMessage):
         tags = await self.getTags()
         return tags.messageId
 
-    async def getTags(self) -> TwitchMessageTags:
+    async def getTags(self) -> TwitchIrcTags:
         tags = self.__tags
 
         if tags is not None:
             return tags
 
-        rawTagsDictionary: dict[Any, Any] | Any | None = self.__message.tags
-        if not isinstance(rawTagsDictionary, dict) or len(rawTagsDictionary) == 0:
-            raise TwitchIoHasMalformedTagsException(f'Encountered malformed TwitchIO tags ({rawTagsDictionary=}) ({self.__message=})')
+        rawIrcTags: dict[Any, Any] | Any | None = self.__message.tags
 
-        messageId: str | Any | None = rawTagsDictionary.get('id', None)
-        if not utils.isValidStr(messageId):
-            raise TwitchIoTagsIsMissingMessageIdException(f'Twitch message tags are missing \"id\" value ({messageId=}) ({rawTagsDictionary=}) ({self.__message=})')
-
-        roomId: str | Any | None = rawTagsDictionary.get('room-id', None)
-        if not utils.isValidStr(roomId):
-            raise TwitchIoTagsIsMissingRoomIdException(f'Twitch message tags are missing \"room-id\" value ({roomId=}) ({rawTagsDictionary=}) ({self.__message=})')
-
-        replyParentMsgBody: str | Any | None = rawTagsDictionary.get('reply-parent-msg-body', None)
-        replyParentMsgId: str | Any | None = rawTagsDictionary.get('reply-parent-msg-id', None)
-        replyParentUserId: str | Any | None = rawTagsDictionary.get('reply-parent-user-id', None)
-        replyParentUserLogin: str | Any | None = rawTagsDictionary.get('reply-parent-user-login', None)
-        sourceMessageId: str | Any | None = rawTagsDictionary.get('source-id', None)
-        sourceTwitchChannelId: str | Any | None = rawTagsDictionary.get('source-room-id', None)
-
-        tags = TwitchMessageTags(
-            rawTags = frozendict(rawTagsDictionary),
-            messageId = messageId,
-            replyParentMsgBody = replyParentMsgBody,
-            replyParentMsgId = replyParentMsgId,
-            replyParentUserId = replyParentUserId,
-            replyParentUserLogin = replyParentUserLogin,
-            sourceMessageId = sourceMessageId,
-            sourceTwitchChannelId = sourceTwitchChannelId,
-            twitchChannelId = roomId
+        tags = await self.__twitchIrcTagsParser.parseTwitchIrcTags(
+            rawIrcTags = rawIrcTags
         )
 
         self.__tags = tags
@@ -103,6 +83,10 @@ class TwitchIoMessage(TwitchMessage):
 
     def getTwitchChannelName(self) -> str:
         return self.__channel.getTwitchChannelName()
+
+    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
+        tags = await self.getTags()
+        return tags.subscriberTier
 
     @property
     def isEcho(self) -> bool:

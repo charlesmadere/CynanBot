@@ -10,15 +10,23 @@ from ..twitchConfiguration import TwitchConfiguration
 from ..twitchConfigurationType import TwitchConfigurationType
 from ..twitchContext import TwitchContext
 from ..twitchMessage import TwitchMessage
+from ...ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchIoConfiguration(TwitchConfiguration):
 
-    def __init__(self, userIdsRepository: UserIdsRepositoryInterface):
-        if not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+    def __init__(
+        self,
+        twitchIrcTagsParser: TwitchIrcTagsParserInterface,
+        userIdsRepository: UserIdsRepositoryInterface
+    ):
+        if not isinstance(twitchIrcTagsParser, TwitchIrcTagsParserInterface):
+            raise TypeError(f'twitchIrcTagsParser argument is malformed: \"{twitchIrcTagsParser}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__twitchIrcTagsParser: TwitchIrcTagsParserInterface = twitchIrcTagsParser
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     def getChannel(self, channel: Channel) -> TwitchChannel:
@@ -36,6 +44,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
 
         return TwitchIoContext(
             context = context,
+            twitchIrcTagsParser = self.__twitchIrcTagsParser,
             userIdsRepository = self.__userIdsRepository
         )
 
@@ -45,6 +54,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
 
         return TwitchIoMessage(
             message = message,
+            twitchIrcTagsParser = self.__twitchIrcTagsParser,
             userIdsRepository = self.__userIdsRepository
         )
 

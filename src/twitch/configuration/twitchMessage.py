@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .twitchAuthor import TwitchAuthor
 from .twitchChannel import TwitchChannel
 from .twitchConfigurationType import TwitchConfigurationType
-from .twitchMessageTags import TwitchMessageTags
+from ..ircTagsParser.twitchIrcTags import TwitchIrcTags
 
 
 class TwitchMessage(ABC):
@@ -33,7 +33,7 @@ class TwitchMessage(ABC):
         pass
 
     @abstractmethod
-    async def getTags(self) -> TwitchMessageTags:
+    async def getTags(self) -> TwitchIrcTags:
         pass
 
     @abstractmethod
@@ -42,6 +42,10 @@ class TwitchMessage(ABC):
 
     @abstractmethod
     def getTwitchChannelName(self) -> str:
+        pass
+
+    @abstractmethod
+    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
         pass
 
     @property
