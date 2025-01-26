@@ -3,14 +3,15 @@ from typing import Any
 
 from frozendict import frozendict
 
-from .exceptions import TwitchIrcTagsAreMalformedException, \
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
+from .exceptions import TwitchIrcTagsAreMissingDisplayNameException, \
+    TwitchIrcTagsAreMalformedException, \
     TwitchIrcTagsAreMissingMessageIdException, \
     TwitchIrcTagsAreMissingRoomIdException, \
     TwitchIrcTagsAreMissingUserIdException
 from .twitchIrcTags import TwitchIrcTags
 from .twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
-from ...misc import utils as utils
-from ...timber.timberInterface import TimberInterface
 
 
 class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
@@ -47,6 +48,10 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
         if not isinstance(rawIrcTags, dict) or len(rawIrcTags) == 0:
             raise TwitchIrcTagsAreMalformedException(f'rawIrcTags argument is malformed: \"{rawIrcTags}\"')
 
+        displayName: str | Any | None = rawIrcTags.get('display-name', None)
+        if not utils.isValidStr(displayName):
+            raise TwitchIrcTagsAreMissingDisplayNameException(f'Twitch message tags are missing \"display-name\" value ({displayName=}) ({rawIrcTags=})')
+
         messageId: str | Any | None = rawIrcTags.get('id', None)
         if not utils.isValidStr(messageId):
             raise TwitchIrcTagsAreMissingMessageIdException(f'Twitch message tags are missing \"id\" value ({messageId=}) ({rawIrcTags=})')
@@ -71,6 +76,7 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
 
         return TwitchIrcTags(
             rawTags = frozendict(rawIrcTags),
+            displayName = displayName,
             messageId = messageId,
             replyParentMsgBody = replyParentMsgBody,
             replyParentMsgId = replyParentMsgId,

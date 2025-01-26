@@ -15,6 +15,7 @@ class TwitchIrcTags:
         TIER_3 = auto()
 
     rawTags: frozendict[Any, Any]
+    displayName: str
     messageId: str
     replyParentMsgBody: str | None
     replyParentMsgId: str | None

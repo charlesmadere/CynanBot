@@ -4,6 +4,12 @@ class TwitchIrcTagsAreMalformedException(Exception):
         super().__init__(message)
 
 
+class TwitchIrcTagsAreMissingDisplayNameException(Exception):
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
 class TwitchIrcTagsAreMissingMessageIdException(Exception):
 
     def __init__(self, message: str):
