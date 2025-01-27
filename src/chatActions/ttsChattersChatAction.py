@@ -66,7 +66,7 @@ class TtsChattersChatAction(AbsChatAction):
                 if utils.isValidStr(boosterPack.voice):
                     voice = f'{boosterPack.voice}: '
 
-        if not self.__accessLevelCheckingRepository.checkStatus(boosterPack.accessLevel, message):
+        if not await self.__accessLevelCheckingRepository.checkStatus(boosterPack.accessLevel, message):
             return False
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
