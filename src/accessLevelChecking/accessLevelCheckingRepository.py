@@ -49,8 +49,7 @@ class AccessLevelCheckingRepository(AccessLevelCheckingRepositoryInterface):
                     and not twitchMessage.getAuthor().isVip():
                     return False
 
-        # TODO what should this return here?
-        return False
+        return True
 
     async def __isFollowing(self, message: TwitchMessage) -> bool:
         if not isinstance(message, TwitchMessage):
