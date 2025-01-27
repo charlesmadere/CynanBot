@@ -30,9 +30,11 @@ class MultipleChoicePokepediaTriviaQuestion(PokepediaTriviaQuestion):
         self.__incorrectAnswers: FrozenList[str] = incorrectAnswers
         self.__correctAnswer: str = correctAnswer
 
+    @property
     def correctAnswer(self) -> str:
         return self.__correctAnswer
 
+    @property
     def incorrectAnswers(self) -> FrozenList[str]:
         return self.__incorrectAnswers
 

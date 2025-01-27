@@ -1,4 +1,5 @@
 import random
+from enum import Enum, auto
 
 from frozenlist import FrozenList
 
@@ -24,6 +25,12 @@ from ....timber.timberInterface import TimberInterface
 
 
 class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface):
+
+    class MoveQuestionType(Enum):
+        CONTEST = auto()
+        DAMAGE_CLASS = auto()
+        IS_AVAILABLE_AS_MACHINE = auto()
+        IS_AVAILABLE_AS_WHICH_MACHINE = auto()
 
     def __init__(
         self,
@@ -97,6 +104,10 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             question = f'In Pokémon, the move {move.getName()} has which damage class?'
         )
 
+    async def __createMoveQuestion(self) -> PokepediaTriviaQuestion:
+        # TODO
+        raise RuntimeError()
+
     async def __createNatureBerryFlavorQuestion(
         self,
         nature: PokepediaNature,
@@ -138,12 +149,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         )
 
     async def __createPhysicalOrSpecialDamageClassQuestion(self) -> PokepediaTriviaQuestion:
-        applicableDamageClasses: FrozenList[PokepediaDamageClass] = FrozenList([
-            PokepediaDamageClass.PHYSICAL, PokepediaDamageClass.SPECIAL
-        ])
-        applicableDamageClasses.freeze()
-
-        actualDamageClass = random.choice(applicableDamageClasses)
+        actualDamageClass = random.choice([ PokepediaDamageClass.PHYSICAL, PokepediaDamageClass.SPECIAL ])
 
         applicableElementTypes: FrozenList[PokepediaElementType] = FrozenList([
             PokepediaElementType.BUG, PokepediaElementType.DARK, PokepediaElementType.DRAGON,
@@ -224,33 +230,25 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             question = f'In Pokémon, the {stat.toStr()} stat is positively impacted by the {randomNature.toStr()} nature.'
         )
 
-    async def __determinePokepediaTriviaType(self) -> PokepediaTriviaQuestionType:
-        # TODO this should be weighted
-        enabledQuestionTypes: FrozenList[PokepediaTriviaQuestionType] = FrozenList(self.__enabledQuestionTypes)
-        enabledQuestionTypes.freeze()
-
-        return random.choice(enabledQuestionTypes)
+    async def __createStatOrNatureQuestion(self) -> PokepediaTriviaQuestion:
+        # TODO
+        raise RuntimeError()
 
     async def fetchTriviaQuestion(self) -> PokepediaTriviaQuestion:
-        pokepediaTriviaType = await self.__determinePokepediaTriviaType()
+        # TODO this should be weighted to prioritize certain question types
+        pokepediaTriviaQuestionType = random.choice(list(PokepediaTriviaQuestionType))
 
-        match pokepediaTriviaType:
-            case PokepediaTriviaQuestionType.DAMAGE_CLASS:
-                pass
-
+        match pokepediaTriviaQuestionType:
             case PokepediaTriviaQuestionType.MOVE:
-                pass
+                return await self.__createMoveQuestion()
 
             case PokepediaTriviaQuestionType.POKEMON:
                 return await self.__createPokemonQuestion()
 
             case PokepediaTriviaQuestionType.STAT_OR_NATURE:
-                pass
+                return await self.__createStatOrNatureQuestion()
 
-            case _:
-                return await self.__createPokemonQuestion()
-
-        raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaType=})')
+        raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaQuestionType=})')
 
     async def __selectRandomFalseBerryFlavors(
         self,

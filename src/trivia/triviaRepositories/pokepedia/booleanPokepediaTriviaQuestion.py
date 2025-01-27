@@ -22,6 +22,7 @@ class BooleanPokepediaTriviaQuestion(PokepediaTriviaQuestion):
 
         self.__correctAnswer: bool = correctAnswer
 
+    @property
     def correctAnswer(self) -> bool:
         return self.__correctAnswer
 
