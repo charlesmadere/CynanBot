@@ -5,7 +5,6 @@ from .openTriviaDatabase.booleanOpenTriviaDatabaseQuestion import BooleanOpenTri
 from .openTriviaDatabase.multipleOpenTriviaDatabaseQuestion import MultipleOpenTriviaDatabaseQuestion
 from .openTriviaDatabase.openTriviaDatabaseQuestionFetcherInterface import OpenTriviaDatabaseQuestionFetcherInterface
 from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
-from ..misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
@@ -27,7 +26,6 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaQuestionTypeParser: TriviaQuestionTypeParserInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         super().__init__(
@@ -42,14 +40,11 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
-        elif not isinstance(triviaQuestionTypeParser, TriviaQuestionTypeParserInterface):
-            raise TypeError(f'triviaQuestionTypeParser argument is malformed: \"{triviaQuestionTypeParser}\"')
 
         self.__openTriviaDatabaseQuestionFetcher: OpenTriviaDatabaseQuestionFetcherInterface = openTriviaDatabaseQuestionFetcher
         self.__timber: TimberInterface = timber
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
-        self.__triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = triviaQuestionTypeParser
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -83,6 +78,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 originalTriviaSource = None,
                 triviaSource = self.triviaSource
             )
+
         elif isinstance(openTriviaQuestion, MultipleOpenTriviaDatabaseQuestion):
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
                 response = openTriviaQuestion.correctAnswer
@@ -110,6 +106,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 originalTriviaSource = None,
                 triviaSource = self.triviaSource
             )
+
         else:
             raise UnsupportedTriviaTypeException(f'Encountered unknown OpenTriviaDatabaseQuestion instance: ({openTriviaQuestion=})')
 

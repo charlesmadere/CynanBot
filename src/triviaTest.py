@@ -25,6 +25,7 @@ from .network.requests.requestsClientProvider import RequestsClientProvider
 from .pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from .pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from .pkmn.pokepediaRepository import PokepediaRepository
+from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from .storage.backingDatabase import BackingDatabase
 from .storage.backingSqliteDatabase import BackingSqliteDatabase
 from .storage.jsonFileReader import JsonFileReader
@@ -116,6 +117,9 @@ from .trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionTypeParserInter
     OpenTriviaQaQuestionTypeParserInterface
 from .trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import OpenTriviaQaTriviaQuestionRepository
 from .trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
+from .trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGenerator import PokepediaTriviaQuestionGenerator
+from .trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGeneratorInterface import \
+    PokepediaTriviaQuestionGeneratorInterface
 from .trivia.triviaRepositories.triviaDatabase import triviaDatabaseQuestionStorage
 from .trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import TriviaDatabaseTriviaQuestionRepository
 from .trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
@@ -395,21 +399,33 @@ trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSet
 )
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
-    timber=timber,
-    twitchApiService=twitchApiService,
-    twitchHandleProvider=authRepository,
-    twitchTokensRepository=twitchTokensRepository,
-    userIdsRepository=userIdsRepository
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
 
-)
 trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(
-    timber= timber,
-    timeZoneRepository=timeZoneRepository,
-    trollmojiSettingsRepository=trollmojiSettingsRepository,
-    twitchEmotesHelper=twitchEmotesHelper
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiSettingsRepository = trollmojiSettingsRepository,
+    twitchEmotesHelper = twitchEmotesHelper
 )
+
 triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = TriviaTwitchEmoteHelper(
     trollmojiHelper = trollmojiHelper
+)
+
+pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
+    networkClientProvider = networkClientProvider,
+    pokepediaJsonMapper = pokepediaJsonMapper,
+    timber = timber
+)
+
+pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(
+    pokepediaRepository = pokepediaRepository,
+    triviaSettingsRepository = triviaSettingsRepository
 )
 
 triviaGameMachine = TriviaGameMachine(
@@ -477,7 +493,6 @@ triviaGameMachine = TriviaGameMachine(
             timber = timber,
             triviaIdGenerator = triviaIdGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
-            triviaQuestionTypeParser = triviaQuestionTypeParser,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
@@ -486,13 +501,9 @@ triviaGameMachine = TriviaGameMachine(
             triviaSettingsRepository = triviaSettingsRepository
         ),
         pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
-            pokepediaRepository = PokepediaRepository(
-                networkClientProvider = networkClientProvider,
-                pokepediaJsonMapper = pokepediaJsonMapper,
-                timber = timber
-            ),
-            timber = timber,
+            pokepediaTriviaQuestionGenerator = pokepediaTriviaQuestionGenerator,
             triviaIdGenerator = triviaIdGenerator,
+            triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         quizApiTriviaQuestionRepository = None,

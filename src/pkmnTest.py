@@ -13,10 +13,15 @@ from .pkmn.pokepediaRepository import PokepediaRepository
 from .storage.jsonFileReader import JsonFileReader
 from .timber.timber import Timber
 from .timber.timberInterface import TimberInterface
+from .trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
+from .trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from .trivia.triviaFetchOptions import TriviaFetchOptions
 from .trivia.triviaIdGenerator import TriviaIdGenerator
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from .trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
+from .trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGenerator import PokepediaTriviaQuestionGenerator
+from .trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGeneratorInterface import \
+    PokepediaTriviaQuestionGeneratorInterface
 from .trivia.triviaSettingsRepository import TriviaSettingsRepository
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
@@ -47,16 +52,25 @@ pokepediaRepository = PokepediaRepository(
     timber = timber
 )
 
-triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
-
 triviaSettingsRepository = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
 
-pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
+pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(
     pokepediaRepository = pokepediaRepository,
-    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
+triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
+triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
+    timber = timber
+)
+
+pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
+    pokepediaTriviaQuestionGenerator = pokepediaTriviaQuestionGenerator,
     triviaIdGenerator = triviaIdGenerator,
+    triviaQuestionCompiler = triviaQuestionCompiler,
     triviaSettingsRepository = triviaSettingsRepository
 )
 

@@ -310,6 +310,9 @@ from src.trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionTypeParserIn
     OpenTriviaQaQuestionTypeParserInterface
 from src.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import OpenTriviaQaTriviaQuestionRepository
 from src.trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQuestionRepository
+from src.trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGenerator import PokepediaTriviaQuestionGenerator
+from src.trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGeneratorInterface import \
+    PokepediaTriviaQuestionGeneratorInterface
 from src.trivia.triviaRepositories.quizApiTriviaQuestionRepository import QuizApiTriviaQuestionRepository
 from src.trivia.triviaRepositories.triviaDatabase.triviaDatabaseQuestionStorage import TriviaDatabaseQuestionStorage
 from src.trivia.triviaRepositories.triviaDatabase.triviaDatabaseQuestionStorageInterface import \
@@ -1208,7 +1211,6 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     timber = timber,
     triviaIdGenerator = triviaIdGenerator,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaQuestionTypeParser = triviaQuestionTypeParser,
     triviaSettingsRepository = triviaSettingsRepository
 )
 
@@ -1290,6 +1292,11 @@ millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(
+    pokepediaRepository = pokepediaRepository,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     funtoonHelper = funtoonHelper,
@@ -1336,9 +1343,9 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     openTriviaQaTriviaQuestionRepository = openTriviaQaTriviaQuestionRepository,
     pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
-        pokepediaRepository = pokepediaRepository,
-        timber = timber,
+        pokepediaTriviaQuestionGenerator = pokepediaTriviaQuestionGenerator,
         triviaIdGenerator = triviaIdGenerator,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
