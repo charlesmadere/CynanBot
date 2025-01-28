@@ -38,13 +38,13 @@ class AccessLevelCheckingRepository(AccessLevelCheckingRepositoryInterface):
                     and not twitchMessage.getAuthor().isMod():
                     return False
             case AccessLevel.SUBSCRIBER:
-                if twitchMessage.getTwitchSubscriberTier() == TwitchIrcTags.SubscriberTier.NONE \
+                if await twitchMessage.getTwitchSubscriberTier() == TwitchIrcTags.SubscriberTier.NONE \
                     and not twitchMessage.getAuthor().isMod() \
                     and not twitchMessage.getAuthor().isVip():
                     return False
             case AccessLevel.FOLLOWER:
-                if not self.__isFollowing(twitchMessage) \
-                    and twitchMessage.getTwitchSubscriberTier() == TwitchIrcTags.SubscriberTier.NONE \
+                if not await self.__isFollowing(twitchMessage) \
+                    and await twitchMessage.getTwitchSubscriberTier() == TwitchIrcTags.SubscriberTier.NONE \
                     and not twitchMessage.getAuthor().isMod() \
                     and not twitchMessage.getAuthor().isVip():
                     return False
