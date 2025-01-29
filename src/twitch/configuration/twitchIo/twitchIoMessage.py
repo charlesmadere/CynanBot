@@ -84,9 +84,13 @@ class TwitchIoMessage(TwitchMessage):
     def getTwitchChannelName(self) -> str:
         return self.__channel.getTwitchChannelName()
 
-    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
-        tags = await self.getTags()
-        return tags.subscriberTier
+    @property
+    def isAuthorMod(self) -> bool:
+        return self.__author.isMod
+
+    @property
+    def isAuthorVip(self) -> bool:
+        return self.__author.isVip
 
     @property
     def isEcho(self) -> bool:
@@ -104,6 +108,10 @@ class TwitchIoMessage(TwitchMessage):
     async def isReply(self) -> bool:
         tags = await self.getTags()
         return utils.isValidStr(tags.replyParentMsgId)
+
+    async def isTwitchSubscriber(self) -> bool:
+        tags = await self.getTags()
+        return tags.isSubscribed
 
     @property
     def twitchConfigurationType(self) -> TwitchConfigurationType:

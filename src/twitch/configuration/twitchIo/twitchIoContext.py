@@ -66,14 +66,13 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     def getTwitchChannelName(self) -> str:
         return self.__context.channel.name
 
-    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
-        return await self.__message.getTwitchSubscriberTier()
-
+    @property
     def isAuthorMod(self) -> bool:
-        return self.__author.isMod()
+        return self.__author.isMod
 
+    @property
     def isAuthorVip(self) -> bool:
-        return self.__author.isVip()
+        return self.__author.isVip
 
     async def isMessageFromExternalSharedChat(self) -> bool:
         return await self.__message.isMessageFromExternalSharedChat()

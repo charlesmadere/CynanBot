@@ -17,10 +17,12 @@ class TwitchAuthor(ABC):
     def getName(self) -> str:
         pass
 
+    @property
     @abstractmethod
     def isMod(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isVip(self) -> bool:
         pass

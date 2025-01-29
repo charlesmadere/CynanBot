@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum, auto
 from typing import Any
 
 from frozendict import frozendict
@@ -7,14 +6,8 @@ from frozendict import frozendict
 
 @dataclass(frozen = True)
 class TwitchIrcTags:
-
-    class SubscriberTier(Enum):
-        NONE = auto()
-        TIER_1 = auto()
-        TIER_2 = auto()
-        TIER_3 = auto()
-
     rawTags: frozendict[Any, Any]
+    isSubscribed: bool
     displayName: str
     messageId: str
     replyParentMsgBody: str | None
@@ -25,4 +18,3 @@ class TwitchIrcTags:
     sourceTwitchChannelId: str | None
     twitchChannelId: str
     userId: str
-    subscriberTier: SubscriberTier

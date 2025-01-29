@@ -44,8 +44,14 @@ class TwitchMessage(ABC):
     def getTwitchChannelName(self) -> str:
         pass
 
+    @property
     @abstractmethod
-    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
+    def isAuthorMod(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isAuthorVip(self) -> bool:
         pass
 
     @property
@@ -59,6 +65,10 @@ class TwitchMessage(ABC):
 
     @abstractmethod
     async def isReply(self) -> bool:
+        pass
+
+    @abstractmethod
+    async def isTwitchSubscriber(self) -> bool:
         pass
 
     @property

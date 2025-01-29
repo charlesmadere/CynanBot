@@ -31,22 +31,22 @@ class AccessLevelCheckingRepository(AccessLevelCheckingRepositoryInterface):
         # TODO a ranking system to simplify managing access would be helpful to reduce the amount of checks needed
         match requiredAccessLevel:
             case AccessLevel.MODERATOR:
-                if not twitchMessage.getAuthor().isMod():
+                if not twitchMessage.isAuthorMod:
                     return False
             case AccessLevel.VIP:
-                if not twitchMessage.getAuthor().isVip() \
-                    and not twitchMessage.getAuthor().isMod():
+                if not twitchMessage.isAuthorVip \
+                    and not twitchMessage.isAuthorMod:
                     return False
             case AccessLevel.SUBSCRIBER:
-                if await twitchMessage.getTwitchSubscriberTier() == TwitchIrcTags.SubscriberTier.NONE \
-                    and not twitchMessage.getAuthor().isMod() \
-                    and not twitchMessage.getAuthor().isVip():
+                if not await twitchMessage.isTwitchSubscriber() \
+                    and not twitchMessage.isAuthorMod \
+                    and not twitchMessage.isAuthorVip:
                     return False
             case AccessLevel.FOLLOWER:
                 if not await self.__isFollowing(twitchMessage) \
-                    and await twitchMessage.getTwitchSubscriberTier() == TwitchIrcTags.SubscriberTier.NONE \
-                    and not twitchMessage.getAuthor().isMod() \
-                    and not twitchMessage.getAuthor().isVip():
+                    and not await twitchMessage.isTwitchSubscriber() \
+                    and not twitchMessage.isAuthorMod \
+                    and not twitchMessage.isAuthorVip:
                     return False
 
         return True

@@ -41,10 +41,6 @@ class TwitchContext(TwitchMessageable):
         pass
 
     @abstractmethod
-    async def getTwitchSubscriberTier(self) -> TwitchIrcTags.SubscriberTier:
-        pass
-
-    @abstractmethod
     def isAuthorMod(self) -> bool:
         pass
 

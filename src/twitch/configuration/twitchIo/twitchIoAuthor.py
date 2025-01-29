@@ -39,6 +39,7 @@ class TwitchIoAuthor(TwitchAuthor):
 
         return authorName
 
+    @property
     def isMod(self) -> bool:
         isMod: bool | None = self.__author.is_mod # type: ignore
 
@@ -47,6 +48,7 @@ class TwitchIoAuthor(TwitchAuthor):
 
         return isMod
 
+    @property
     def isVip(self) -> bool:
         isVip: bool | None = self.__author.is_vip # type: ignore
 

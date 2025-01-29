@@ -3,8 +3,6 @@ from typing import Any
 import pytest
 from frozendict import frozendict
 
-from src.timber.timberInterface import TimberInterface
-from src.timber.timberStub import TimberStub
 from src.twitch.ircTagsParser.exceptions import TwitchIrcTagsAreMalformedException, \
     TwitchIrcTagsAreMissingDisplayNameException, \
     TwitchIrcTagsAreMissingMessageIdException, \
@@ -17,36 +15,7 @@ from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsP
 
 class TestTwitchIrcTagsParser:
 
-    timber: TimberInterface = TimberStub()
-
-    parser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser(
-        timber = timber
-    )
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_withEmptyString(self):
-        result = await self.parser.parseSubscriberTier('')
-        assert result is TwitchIrcTags.SubscriberTier.NONE
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_withNone(self):
-        result = await self.parser.parseSubscriberTier(None)
-        assert result is TwitchIrcTags.SubscriberTier.NONE
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_withStreamerString(self):
-        result = await self.parser.parseSubscriberTier('broadcaster/1,subscriber/3054,partner/1')
-        assert result is TwitchIrcTags.SubscriberTier.TIER_3
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_withTier2String(self):
-        result = await self.parser.parseSubscriberTier('moderator/1,subscriber/2036')
-        assert result is TwitchIrcTags.SubscriberTier.TIER_2
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriberTier_withTier3String(self):
-        result = await self.parser.parseSubscriberTier('moderator/1,subscriber/3030')
-        assert result is TwitchIrcTags.SubscriberTier.TIER_3
+    parser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser()
 
     @pytest.mark.asyncio
     async def test_parseTwitchIrcTags(self):
@@ -77,10 +46,10 @@ class TestTwitchIrcTagsParser:
         }
 
         result = await self.parser.parseTwitchIrcTags(rawIrcTags)
+        assert result.isSubscribed == True
         assert result.displayName == displayName
         assert result.messageId == messageId
         assert result.rawTags == frozendict(rawIrcTags)
-        assert result.subscriberTier is TwitchIrcTags.SubscriberTier.TIER_1
         assert result.twitchChannelId == twitchChannelId
         assert result.userId == userId
 

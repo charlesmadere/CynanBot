@@ -7,13 +7,6 @@ from .twitchIrcTags import TwitchIrcTags
 class TwitchIrcTagsParserInterface(ABC):
 
     @abstractmethod
-    async def parseSubscriberTier(
-        self,
-        badgesString: str | Any | None
-    ) -> TwitchIrcTags.SubscriberTier:
-        pass
-
-    @abstractmethod
     async def parseTwitchIrcTags(
         self,
         rawIrcTags: dict[Any, Any] | Any | None
