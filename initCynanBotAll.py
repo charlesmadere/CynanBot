@@ -1003,9 +1003,7 @@ pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
     timber = timber
 )
 
-twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser(
-    timber = timber
-)
+twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser()
 
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     twitchIrcTagsParser = twitchIrcTagsParser,

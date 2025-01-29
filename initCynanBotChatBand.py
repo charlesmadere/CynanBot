@@ -526,9 +526,7 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
     timeZoneRepository = timeZoneRepository
 )
 
-twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser(
-    timber = timber
-)
+twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser()
 
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     twitchIrcTagsParser = twitchIrcTagsParser,
