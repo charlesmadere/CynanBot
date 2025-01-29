@@ -49,7 +49,7 @@ python {
     pip 'pyflakes:3.2.0'
     pip 'PyJWT:2.10.1'
     pip 'pytest:8.3.4'
-    pip 'pytest-asyncio:0.25.2'
+    pip 'pytest-asyncio:0.25.3'
     pip 'python-vlc:3.0.21203'
     pip 'pytz:2024.2'
     pip 'pywin32:308'
