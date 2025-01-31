@@ -58,7 +58,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         self.__maxActiveChattersSize: int = maxActiveChattersSize
         self.__maxActiveChattersTimeToLive: timedelta = maxActiveChattersTimeToLive
 
-        self.__twitchChannelIdToActiveChatters: dict[str, list[ActiveChatter]] = dict()
+        self.__twitchChannelIdToActiveChatters: dict[str, list[ActiveChatter] | None] = dict()
 
     async def add(
         self,
@@ -172,7 +172,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
                     moderatorId = twitchId
                 )
             )
-        except GenericNetworkException as e:
+        except Exception as e:
             self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({twitchId=}) ({first=}): {e}', e, traceback.format_exc())
             self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
             return currentActiveChatters
