@@ -38,7 +38,7 @@ class TtsChattersChatAction(AbsChatAction):
         if not user.isTtsChattersEnabled or not user.isTtsEnabled:
             return False
 
-        chatMessage = message.getContent()
+        chatMessage = utils.cleanStr(message.getContent())
         if not utils.isValidStr(chatMessage):
             return False
 
