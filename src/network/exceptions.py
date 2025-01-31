@@ -3,7 +3,11 @@ from ..misc import utils as utils
 
 class GenericNetworkException(Exception):
 
-    def __init__(self, message: str, statusCode: int | None = None):
+    def __init__(
+        self,
+        message: str,
+        statusCode: int | None = None
+    ):
         super().__init__(message)
 
         if statusCode is not None and not utils.isValidInt(statusCode):

@@ -8,6 +8,7 @@ from .activeChatter import ActiveChatter
 from .activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..api.models.twitchChattersRequest import TwitchChattersRequest
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..exceptions import TwitchJsonException, TwitchStatusCodeException
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -145,7 +146,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        currentActiveChatters: list[ActiveChatter] | None = self.__twitchChannelIdToActiveChatters.get(twitchChannelId, None)
+        currentActiveChatters = self.__twitchChannelIdToActiveChatters.get(twitchChannelId, None)
 
         if currentActiveChatters is not None:
             return currentActiveChatters
@@ -172,7 +173,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
                     moderatorId = twitchId
                 )
             )
-        except Exception as e:
+        except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
             self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({twitchId=}) ({first=}): {e}', e, traceback.format_exc())
             self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
             return currentActiveChatters
