@@ -151,18 +151,22 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if currentActiveChatters is not None:
             return currentActiveChatters
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
         currentActiveChatters = list()
-
-        if not utils.isValidStr(twitchAccessToken):
-            self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
-            return currentActiveChatters
+        self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
-        first = round(self.__maxActiveChattersSize / 2)
+        twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
 
-        self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({twitchId=}) ({first=})')
+        if not utils.isValidStr(twitchId):
+            return currentActiveChatters
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
+
+        if not utils.isValidStr(twitchAccessToken):
+            return currentActiveChatters
+
+        first = round(self.__maxActiveChattersSize / 2)
+        self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({first=})')
 
         try:
             chatters = await self.__twitchApiService.fetchChatters(
@@ -174,8 +178,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
                 )
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
-            self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({twitchId=}) ({first=}): {e}', e, traceback.format_exc())
-            self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
+            self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({first=}): {e}', e, traceback.format_exc())
             return currentActiveChatters
 
         index = 0
@@ -192,7 +195,6 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
             index += 1
 
-        self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
         return currentActiveChatters
 
     async def remove(
