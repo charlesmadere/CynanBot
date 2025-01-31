@@ -191,7 +191,7 @@ class PbsCommand(AbsCommand):
 
         if not user.hasSpeedrunProfile:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         await self.__twitchUtils.safeSend(ctx, f'{user.handle}\'s speedrun profile: {user.speedrunProfile}')
@@ -444,7 +444,7 @@ class SwQuoteCommand(AbsCommand):
 
         if not user.isStarWarsQuotesEnabled:
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        elif not ctx.isAuthorMod and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         randomSpaceEmoji = utils.getRandomSpaceEmoji()

@@ -52,7 +52,7 @@ class JishoChatCommand(AbsChatCommand):
             return
         elif not user.isJishoEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReady(user.handle):
+        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReady(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())

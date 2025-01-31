@@ -40,10 +40,12 @@ class TwitchContext(TwitchMessageable):
     def getTwitchChannelName(self) -> str:
         pass
 
+    @property
     @abstractmethod
     def isAuthorMod(self) -> bool:
         pass
 
+    @property
     @abstractmethod
     def isAuthorVip(self) -> bool:
         pass

@@ -38,7 +38,7 @@ class CommandsChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        if not ctx.isAuthorMod and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         await self.__twitchUtils.safeSend(

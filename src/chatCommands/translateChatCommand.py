@@ -67,7 +67,7 @@ class TranslateChatCommand(AbsChatCommand):
 
         if not generalSettings.isTranslateEnabled() or not user.isTranslateEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())

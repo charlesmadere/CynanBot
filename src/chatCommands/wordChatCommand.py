@@ -55,7 +55,7 @@ class WordChatCommand(AbsChatCommand):
 
         if not user.isWordOfTheDayEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())

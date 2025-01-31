@@ -60,7 +60,7 @@ class CutenessHistoryChatCommand(AbsChatCommand):
 
         if not user.isCutenessEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         userName = ctx.getAuthorName()

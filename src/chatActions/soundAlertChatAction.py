@@ -1,5 +1,9 @@
 from typing import Collection
 
+from ..users.accessLevel.accessLevel import AccessLevel
+
+from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
+
 from .absChatAction import AbsChatAction
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -20,17 +24,21 @@ class SoundAlertChatAction(AbsChatAction):
 
     def __init__(
         self,
+        accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         timber: TimberInterface
     ):
-        if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+        if not isinstance(accessLevelCheckingRepository, AccessLevelCheckingRepositoryInterface):
+            raise TypeError(f'accessLevelCheckingRepository argument is malformed: \"{accessLevelCheckingRepository}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface = accessLevelCheckingRepository
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__timber: TimberInterface = timber
@@ -72,6 +80,9 @@ class SoundAlertChatAction(AbsChatAction):
         )
 
         if chatSoundAlert is None:
+            return False
+
+        if not await self.__accessLevelCheckingRepository.checkStatus(AccessLevel.SUBSCRIBER, message):
             return False
 
         if await self.__playChatSoundAlert(chatSoundAlert):

@@ -2389,6 +2389,7 @@ if mostRecentAnivMessageRepository is not None:
     )
 
 soundAlertChatAction: SoundAlertChatAction = SoundAlertChatAction(
+    accessLevelCheckingRepository = accessLevelCheckingRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     timber = timber

@@ -55,7 +55,7 @@ class WeatherChatCommand(AbsChatCommand):
 
         if not user.isWeatherEnabled:
             return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
+        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         locationId = user.locationId
