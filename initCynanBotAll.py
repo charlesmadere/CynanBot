@@ -871,7 +871,12 @@ chatLogger: ChatLoggerInterface = ChatLogger(
 )
 
 activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
-    timeZoneRepository = timeZoneRepository
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
 )
 
 

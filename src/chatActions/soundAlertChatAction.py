@@ -1,10 +1,7 @@
 from typing import Collection
 
-from ..users.accessLevel.accessLevel import AccessLevel
-
-from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
-
 from .absChatAction import AbsChatAction
+from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -12,6 +9,7 @@ from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface 
     SoundPlayerRandomizerHelperInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
+from ..users.accessLevel.accessLevel import AccessLevel
 from ..users.chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from ..users.chatSoundAlert.chatSoundAlertQualifier import ChatSoundAlertQualifer
 from ..users.chatSoundAlert.directoryPathChatSoundAlert import DirectoryPathChatSoundAlert

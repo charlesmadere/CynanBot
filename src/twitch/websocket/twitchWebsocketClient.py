@@ -17,12 +17,14 @@ from .listener.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundl
 from .sessionIdHelper.twitchWebsocketSessionIdHelperInterface import TwitchWebsocketSessionIdHelperInterface
 from .twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
 from .twitchWebsocketClientInterface import TwitchWebsocketClientInterface
+from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from .twitchWebsocketUser import TwitchWebsocketUser
 from ..api.models.twitchEventSubRequest import TwitchEventSubRequest
 from ..api.models.twitchEventSubResponse import TwitchEventSubResponse
 from ..api.models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..api.models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -50,7 +52,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface,
-        isFullJsonLoggingEnabled: bool = False,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
@@ -71,7 +72,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         }),
         twitchWebsocketInstabilityThreshold: int = 3,
-        maxMessageAge: timedelta = timedelta(minutes = 1, seconds = 30)
+        maxMessageAge: timedelta = timedelta(minutes = 1, seconds = 30),
+        jsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.NONE
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -95,8 +97,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
         elif not isinstance(twitchWebsocketSessionIdHelper, TwitchWebsocketSessionIdHelperInterface):
             raise TypeError(f'twitchWebsocketSessionIdHelper argument is malformed: \"{twitchWebsocketSessionIdHelper}\"')
-        elif not utils.isValidBool(isFullJsonLoggingEnabled):
-            raise TypeError(f'isFullJsonLoggingEnabled argument is malformed: \"{isFullJsonLoggingEnabled}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
@@ -121,6 +121,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise ValueError(f'twitchWebsocketInstabilityThreshold argument is out of bounds: {twitchWebsocketInstabilityThreshold}')
         elif not isinstance(maxMessageAge, timedelta):
             raise TypeError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
+        elif not isinstance(jsonLoggingLevel, TwitchWebsocketJsonLoggingLevel):
+            raise TypeError(f'jsonLoggingLevel argument is malformed: \"{jsonLoggingLevel}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
@@ -133,7 +135,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = twitchWebsocketInstabilityHelper
         self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
         self.__twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface = twitchWebsocketSessionIdHelper
-        self.__isFullJsonLoggingEnabled: bool = isFullJsonLoggingEnabled
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
@@ -141,6 +142,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__twitchWebsocketInstabilityThreshold: int = twitchWebsocketInstabilityThreshold
         self.__maxMessageAge: timedelta = maxMessageAge
+        self.__jsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = jsonLoggingLevel
 
         self.__isStarted: bool = False
         self.__messageIdCache: LruCache = LruCache(128)
@@ -304,7 +306,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         except Exception as e:
             exception = e
 
-        if self.__isFullJsonLoggingEnabled:
+        if (self.__jsonLoggingLevel is TwitchWebsocketJsonLoggingLevel.ALL) or (self.__jsonLoggingLevel is TwitchWebsocketJsonLoggingLevel.LIMITED and dataBundle is not None and dataBundle.metadata.messageType is not TwitchWebsocketMessageType.KEEP_ALIVE):
             self.__timber.log('TwitchWebsocketClient', f'Full JSON output: ({user=}) ({message=}) ({dataBundle=})')
 
         if exception is not None:

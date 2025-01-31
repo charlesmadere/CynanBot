@@ -2,7 +2,6 @@ from .accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositor
 from ..misc import utils
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
-from ..twitch.ircTagsParser.twitchIrcTags import TwitchIrcTags
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.accessLevel.accessLevel import AccessLevel
 

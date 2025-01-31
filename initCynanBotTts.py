@@ -390,6 +390,7 @@ from src.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import 
     TwitchWebsocketAllowedUsersRepositoryInterface
 from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
+from src.twitch.websocket.twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.accessLevel.accessLevelParser import AccessLevelJsonParser
@@ -675,6 +676,15 @@ chatLogger: ChatLoggerInterface = ChatLogger(
     timeZoneRepository = timeZoneRepository
 )
 
+activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
+
 
 #####################################
 ## CynanBot initialization section ##
@@ -924,7 +934,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
         twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
-        isFullJsonLoggingEnabled = True
+        jsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.LIMITED
     )
 
 
@@ -1302,10 +1312,6 @@ compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
     timber = timber,
     ttsMonsterTtsManager = ttsMonsterTtsManager,
     ttsSettingsRepository = ttsSettingsRepository
-)
-
-activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
-    timeZoneRepository = timeZoneRepository
 )
 
 

@@ -51,7 +51,7 @@ python {
     pip 'pytest:8.3.4'
     pip 'pytest-asyncio:0.25.3'
     pip 'python-vlc:3.0.21203'
-    pip 'pytz:2024.2'
+    pip 'pytz:2025.1'
     pip 'pywin32:308'
     pip 'requests:2.32.3'
     pip 'rich:13.9.4'

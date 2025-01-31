@@ -30,7 +30,7 @@ pyjwt = "2.10.1"
 pytest = "8.3.4"
 pytest-asyncio = "0.25.3"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'win32'" }
-pytz = "2024.2"
+pytz = "2025.1"
 pywin32 = { version = "308", markers = "sys_platform == 'win32'" }
 requests = "2.32.3"
 rich = "13.9.4"

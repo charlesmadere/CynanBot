@@ -7,6 +7,7 @@ from queue import SimpleQueue
 from typing import Any
 
 import websockets
+from frozenlist import FrozenList
 from websockets.asyncio.server import ServerConnection
 
 from .mapper.websocketEventTypeMapperInterface import WebsocketEventTypeMapperInterface
@@ -62,11 +63,37 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         self.__isStarted: bool = False
         self.__eventQueue: SimpleQueue[WebsocketEvent] = SimpleQueue()
 
+    async def __handleWebsocketEvents(
+        self,
+        events: FrozenList[WebsocketEvent],
+        serverConnection: ServerConnection
+    ):
+        if len(events) == 0:
+            return
+
+        eventTimeToLive = timedelta(
+            seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds()
+        )
+
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+
+        for index, event in enumerate(events):
+            if event.eventTime + eventTimeToLive >= now:
+                eventJson = await self.__serializeEventToJson(event)
+
+                try:
+                    await serverConnection.send(eventJson)
+                    self.__timber.log('WebsocketConnectionServer', f'Successfully sent websocket event ({serverConnection=}) ({event=}) ({index=})')
+                except Exception as e:
+                    self.__timber.log('WebsocketConnectionServer', f'Failed to send websocket event ({serverConnection=}) ({event=}) ({index=}): {e}', e, traceback.format_exc())
+            else:
+                self.__timber.log('WebsocketConnectionServer', f'Discarded websocket event as it is too old ({serverConnection=}) ({event=}) ({index=})')
+
     async def __serializeEventToJson(self, event: WebsocketEvent) -> str:
         if not isinstance(event, WebsocketEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        # TODO will add more logic here in the future
+        # TODO will add more logic here in the future if there are more event types
         return json.dumps(event.eventData, sort_keys = True)
 
     def start(self):
@@ -89,8 +116,9 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                     host = host,
                     port = port
                 ) as websocket:
-                    self.__timber.log('WebsocketConnectionServer', f'Serving in progress... ({host=}) ({port=})')
+                    self.__timber.log('WebsocketConnectionServer', f'Serving... ({host=}) ({port=})')
                     await websocket.wait_closed()
+                    self.__timber.log('WebsocketConnectionServer', f'Finished serving ({host=}) ({port=})')
             except Exception as e:
                 self.__timber.log('WebsocketConnectionServer', f'Encountered exception within `__startWebsocketServer()` ({host=}) ({port=}): {e}', e, traceback.format_exc())
 
@@ -128,7 +156,8 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
         websocketEvent = WebsocketEvent(
             eventTime = datetime.now(self.__timeZoneRepository.getDefault()),
-            eventData = event
+            eventData = event,
+            eventType = eventType
         )
 
         try:
@@ -136,15 +165,17 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         except queue.Full as e:
             self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Full when submitting a new event ({websocketEvent=}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
-    async def __websocketConnectionReceived(self, serverConnection: ServerConnection):
+    async def __websocketConnectionReceived(
+        self,
+        serverConnection: ServerConnection
+    ):
+        if not isinstance(serverConnection, ServerConnection):
+            raise TypeError(f'serverConnection argument is malformed: \"{serverConnection}\"')
+
         self.__timber.log('WebsocketConnectionServer', f'Entered `__websocketConnectionReceived()` ({serverConnection=}) (qsize: {self.__eventQueue.qsize()})')
 
-        while await serverConnection.wait_closed():
-            eventTimeToLive = timedelta(
-                seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds()
-            )
-
-            events: list[WebsocketEvent] = list()
+        while True:
+            events: FrozenList[WebsocketEvent] = FrozenList()
 
             try:
                 while not self.__eventQueue.empty():
@@ -152,17 +183,11 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             except queue.Empty as e:
                 self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events ({serverConnection=}) (qsize: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
-            if len(events) >= 1:
-                now = datetime.now(self.__timeZoneRepository.getDefault())
+            events.freeze()
 
-                for event in events:
-                    if event.eventTime + eventTimeToLive >= now:
-                        eventJson = await self.__serializeEventToJson(event)
-                        await serverConnection.send(eventJson)
-                        self.__timber.log('WebsocketConnectionServer', f'Sent websocket event ({serverConnection=}) ({event=})')
-                    else:
-                        self.__timber.log('WebsocketConnectionServer', f'Discarded websocket event ({serverConnection=}) ({event=})')
+            await self.__handleWebsocketEvents(
+                events = events,
+                serverConnection = serverConnection
+            )
 
             await asyncio.sleep(self.__websocketSleepTimeSeconds)
-
-        self.__timber.log('WebsocketConnectionServer', f'Exiting `__websocketConnectionReceived()` ({serverConnection=})')

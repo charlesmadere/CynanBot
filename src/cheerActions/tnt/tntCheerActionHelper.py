@@ -1,3 +1,5 @@
+import asyncio
+import math
 import random
 from dataclasses import dataclass
 from typing import Any
@@ -9,6 +11,7 @@ from .tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ..timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...timber.timberInterface import TimberInterface
@@ -45,6 +48,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
@@ -54,10 +58,13 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         trollmojiHelper: TrollmojiHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
+        soundAlertSleepTimeSeconds: float = 0.25,
         messageDelaySeconds: int = 3
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -76,12 +83,17 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not utils.isValidNum(soundAlertSleepTimeSeconds):
+            raise TypeError(f'soundAlertSleepTimeSeconds argument is malformed: \"{soundAlertSleepTimeSeconds}\"')
+        elif soundAlertSleepTimeSeconds < 0.125 or soundAlertSleepTimeSeconds > 8:
+            raise ValueError(f'soundAlertSleepTimeSeconds argument is out of bounds: {soundAlertSleepTimeSeconds}')
         elif not utils.isValidInt(messageDelaySeconds):
             raise TypeError(f'messageDelaySeconds argument is malformed: \"{messageDelaySeconds}\"')
         elif messageDelaySeconds < 0 or messageDelaySeconds > 16:
             raise ValueError(f'messageDelaySeconds argument is out of bounds: {messageDelaySeconds}')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
@@ -90,6 +102,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__soundAlertSleepTimeSeconds: float = soundAlertSleepTimeSeconds
         self.__messageDelaySeconds: int = messageDelaySeconds
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -97,6 +110,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
     async def __alertViaTwitchChat(
         self,
         tntTargets: frozenset[TntTarget],
+        action: TntCheerAction,
         user: UserInterface
     ):
         if len(tntTargets) == 0:
@@ -117,13 +131,22 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        message = f'{bombEmote} {userNamesString} {bombEmote}'
+        message = f'{bombEmote} BOOM! {action.durationSecondsStr}s timeout! {bombEmote} {userNamesString} {bombEmote}'
 
         await self.__twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = self.__messageDelaySeconds,
             message = message
         )
+
+    async def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
+        soundAlerts: list[SoundAlert] = [
+            SoundAlert.GRENADE_1,
+            SoundAlert.GRENADE_2,
+            SoundAlert.GRENADE_3
+        ]
+
+        return random.choice(soundAlerts)
 
     async def __determineTntTargets(
         self,
@@ -266,17 +289,37 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
                 user = user
             ))
 
-        await self.__alertViaTwitchChat(
+        self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
+            tntTargets = tntTargets,
+            action = action,
+            user = user
+        ))
+
+        self.__backgroundTaskHelper.createTask(self.__playSoundAlerts(
             tntTargets = tntTargets,
             user = user
-        )
+        ))
 
-        await self.__playSoundAlert()
         return True
 
-    async def __playSoundAlert(self):
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
-        await soundPlayerManager.playSoundAlert(SoundAlert.TNT)
+    async def __playSoundAlerts(
+        self,
+        tntTargets: frozenset[TntTarget],
+        user: UserInterface
+    ):
+        if not user.areSoundAlertsEnabled:
+            return
+
+        index = 0
+        numberOfSounds = math.ceil(len(tntTargets) / 2)
+
+        while index < numberOfSounds:
+            soundAlert = await self.__chooseRandomGrenadeSoundAlert()
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(soundAlert))
+            index += 1
+
+            await asyncio.sleep(self.__soundAlertSleepTimeSeconds)
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
