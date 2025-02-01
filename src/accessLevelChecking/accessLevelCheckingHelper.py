@@ -37,15 +37,18 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
             case AccessLevel.MODERATOR:
                 if not twitchMessage.isAuthorMod:
                     return False
+
             case AccessLevel.VIP:
                 if not twitchMessage.isAuthorVip \
                     and not twitchMessage.isAuthorMod:
                     return False
+
             case AccessLevel.SUBSCRIBER:
                 if not await self.__isSubscribed(twitchMessage) \
                     and not twitchMessage.isAuthorMod \
                     and not twitchMessage.isAuthorVip:
                     return False
+
             case AccessLevel.FOLLOWER:
                 if not await self.__isFollowing(twitchMessage) \
                     and not await self.__isSubscribed(twitchMessage) \
