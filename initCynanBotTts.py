@@ -2,8 +2,8 @@ import asyncio
 import locale
 from asyncio import AbstractEventLoop
 
-from src.accessLevelChecking.accessLevelCheckingRepository import AccessLevelCheckingRepository
-from src.accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
+from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckingHelper
+from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
 from src.aniv.anivContentScanner import AnivContentScanner
 from src.aniv.anivContentScannerInterface import AnivContentScannerInterface
 from src.aniv.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
@@ -1580,8 +1580,9 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ## Chat Actions initialization section ##
 #########################################
 
-accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface = AccessLevelCheckingRepository(
+accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = AccessLevelCheckingHelper(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository
 )
 
@@ -1608,7 +1609,7 @@ saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None 
 )
 
 soundAlertChatAction: SoundAlertChatAction = SoundAlertChatAction(
-    accessLevelCheckingRepository = accessLevelCheckingRepository,
+    accessLevelCheckingHelper = accessLevelCheckingHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     timber = timber
@@ -1634,8 +1635,8 @@ supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
 )
 
 ttsChattersChatAction: TtsChattersChatAction | None = TtsChattersChatAction(
-    streamAlertsManager = streamAlertsManager,
-    accessLevelCheckingRepository = accessLevelCheckingRepository
+    accessLevelCheckingHelper = accessLevelCheckingHelper,
+    streamAlertsManager = streamAlertsManager
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -1904,6 +1905,7 @@ cynanBot = CynanBot(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,

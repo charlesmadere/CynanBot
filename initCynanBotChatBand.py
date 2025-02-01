@@ -986,6 +986,7 @@ cynanBot = CynanBot(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = None,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,

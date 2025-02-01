@@ -1,7 +1,7 @@
 from typing import Collection
 
 from .absChatAction import AbsChatAction
-from ..accessLevelChecking.accessLevelCheckingRepositoryInterface import AccessLevelCheckingRepositoryInterface
+from ..accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -22,13 +22,13 @@ class SoundAlertChatAction(AbsChatAction):
 
     def __init__(
         self,
-        accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface,
+        accessLevelCheckingHelper: AccessLevelCheckingHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         timber: TimberInterface
     ):
-        if not isinstance(accessLevelCheckingRepository, AccessLevelCheckingRepositoryInterface):
-            raise TypeError(f'accessLevelCheckingRepository argument is malformed: \"{accessLevelCheckingRepository}\"')
+        if not isinstance(accessLevelCheckingHelper, AccessLevelCheckingHelperInterface):
+            raise TypeError(f'accessLevelCheckingHelper argument is malformed: \"{accessLevelCheckingHelper}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
@@ -36,7 +36,7 @@ class SoundAlertChatAction(AbsChatAction):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__accessLevelCheckingRepository: AccessLevelCheckingRepositoryInterface = accessLevelCheckingRepository
+        self.__accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = accessLevelCheckingHelper
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__timber: TimberInterface = timber
@@ -80,7 +80,7 @@ class SoundAlertChatAction(AbsChatAction):
         if chatSoundAlert is None:
             return False
 
-        if not await self.__accessLevelCheckingRepository.checkStatus(AccessLevel.SUBSCRIBER, message):
+        if not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
             return False
 
         if await self.__playChatSoundAlert(chatSoundAlert):

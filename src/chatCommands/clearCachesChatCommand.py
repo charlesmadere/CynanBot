@@ -54,6 +54,7 @@ from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from ..twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
@@ -108,6 +109,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface | None,
         twitchEmotesHelper: TwitchEmotesHelperInterface | None,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
+        twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface | None,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -199,6 +201,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
+        elif twitchSubscriptionsRepository is not None and not isinstance(twitchSubscriptionsRepository, TwitchSubscriptionsRepositoryInterface):
+            raise TypeError(f'twitchSubscriptionsRepository argument is malformed: \"{twitchSubscriptionsRepository}\"')
         elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -259,6 +263,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(twitchChannelEditorsRepository)
         self.__clearables.append(twitchEmotesHelper)
         self.__clearables.append(twitchFollowingStatusRepository)
+        self.__clearables.append(twitchSubscriptionsRepository)
         self.__clearables.append(twitchTokensRepository)
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)

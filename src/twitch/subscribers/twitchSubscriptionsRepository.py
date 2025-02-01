@@ -30,7 +30,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
-        cacheSize: int = 32,
+        cacheSize: int = 64,
         cacheTimeToLive: timedelta = timedelta(hours = 3)
     ):
         if not isinstance(timber, TimberInterface):

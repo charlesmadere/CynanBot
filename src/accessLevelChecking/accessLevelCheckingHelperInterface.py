@@ -4,7 +4,7 @@ from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.accessLevel.accessLevel import AccessLevel
 
 
-class AccessLevelCheckingRepositoryInterface(ABC):
+class AccessLevelCheckingHelperInterface(ABC):
 
     @abstractmethod
     async def checkStatus(
