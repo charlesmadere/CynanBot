@@ -150,6 +150,8 @@ from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriends
 from .twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from .twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
+from .twitch.subscribers.twitchSubscriptionsRepository import TwitchSubscriptionsRepository
+from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from .twitch.tokens.twitchTokensRepository import TwitchTokensRepository
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
@@ -214,6 +216,12 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     userIdsRepository = userIdsRepository
 )
 
+twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = TwitchSubscriptionsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService
+)
+
 cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
@@ -242,12 +250,15 @@ triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
     timber = timber,
     triviaEmoteRepository = triviaEmoteRepository
 )
+
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
+
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
 )
+
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -256,10 +267,12 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+
 shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository
 )
+
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
@@ -267,23 +280,29 @@ shinyTriviaHelper = ShinyTriviaHelper(
     timeZoneRepository = timeZoneRepository,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository
 )
+
 toxicTriviaHelper = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
     timber = timber
 )
+
 triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
 bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber
 )
+
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -321,11 +340,13 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
     triviaQuestionTypeParser = triviaQuestionTypeParser,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 triviaAnswerChecker: TriviaAnswerCheckerInterface = TriviaAnswerChecker(
     timber = timber,
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = GlacialTriviaQuestionRepository(
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     timber = timber,
@@ -335,36 +356,43 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository
 )
+
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     funtoonHelper = funtoonHelper,
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 triviaScraper: TriviaScraperInterface = TriviaScraper(
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
+
 triviaDifficultyParser: TriviaDifficultyParserInterface = TriviaDifficultyParser()
 
 millionaireTriviaQuestionStorage: MillionaireTriviaQuestionStorageInterface = MillionaireTriviaQuestionStorage(
     timber = timber
 )
+
 openTriviaDatabaseJsonParser: OpenTriviaDatabaseJsonParserInterface = OpenTriviaDatabaseJsonParser(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
     triviaQuestionTypeParser = triviaQuestionTypeParser
 )
+
 openTriviaDatabaseApiService : OpenTriviaDatabaseApiServiceInterface = OpenTriviaDatabaseApiService(
     networkClientProvider = networkClientProvider,
     openTriviaDatabaseJsonParser = openTriviaDatabaseJsonParser,
     timber = timber
 )
+
 openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface = OpenTriviaDatabaseSessionTokenRepository(
     backingDatabase = backingDatabase,
     timber = timber
 )
+
 openTriviaDatabaseQuestionFetcher: OpenTriviaDatabaseQuestionFetcherInterface = OpenTriviaDatabaseQuestionFetcher(
     openTriviaDatabaseApiService = openTriviaDatabaseApiService,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
@@ -393,7 +421,9 @@ willFryTriviaApiService: WillFryTriviaApiServiceInterface = WillFryTriviaApiServ
     willFryTriviaJsonParser = willFryTriviaJsonParser,
     timber = timber
 )
+
 twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
+
 trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSettingsRepository(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
@@ -402,6 +432,7 @@ twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )

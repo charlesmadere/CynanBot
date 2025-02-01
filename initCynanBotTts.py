@@ -353,6 +353,8 @@ from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRe
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
+from src.twitch.subscribers.twitchSubscriptionsRepository import TwitchSubscriptionsRepository
+from src.twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
 from src.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from src.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
@@ -577,10 +579,17 @@ twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     twitchTokensRepository = twitchTokensRepository
 )
 
+twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = TwitchSubscriptionsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService
+)
+
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
