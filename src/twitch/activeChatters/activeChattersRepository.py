@@ -1,4 +1,5 @@
 import traceback
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Collection
 
@@ -19,6 +20,23 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class ActiveChattersRepository(ActiveChattersRepositoryInterface):
+
+    class Entry:
+
+        def __init__(self):
+            self.__chattersHaveBeenFetched: bool = False
+            self.__chatters: list[ActiveChatter] = list()
+
+        @property
+        def chatters(self) -> list[ActiveChatter]:
+            return self.__chatters
+
+        @property
+        def chattersHaveBeenFetched(self) -> bool:
+            return self.__chattersHaveBeenFetched
+
+        def setChattersHaveBeenFetched(self):
+            self.__chattersHaveBeenFetched = True
 
     def __init__(
         self,
@@ -59,7 +77,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         self.__maxActiveChattersSize: int = maxActiveChattersSize
         self.__maxActiveChattersTimeToLive: timedelta = maxActiveChattersTimeToLive
 
-        self.__twitchChannelIdToActiveChatters: dict[str, list[ActiveChatter] | None] = dict()
+        self.__twitchChannelIdToActiveChatters: dict[str, ActiveChattersRepository.Entry] = defaultdict(lambda: ActiveChattersRepository.Entry())
 
     async def add(
         self,
@@ -146,24 +164,22 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        currentActiveChatters = self.__twitchChannelIdToActiveChatters.get(twitchChannelId, None)
+        entry = self.__twitchChannelIdToActiveChatters[twitchChannelId]
 
-        if currentActiveChatters is not None:
-            return currentActiveChatters
+        if entry.chattersHaveBeenFetched:
+            return entry.chatters
 
-        currentActiveChatters = list()
-        self.__twitchChannelIdToActiveChatters[twitchChannelId] = currentActiveChatters
-
+        entry.setChattersHaveBeenFetched()
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
 
         if not utils.isValidStr(twitchId):
-            return currentActiveChatters
+            return entry.chatters
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
 
         if not utils.isValidStr(twitchAccessToken):
-            return currentActiveChatters
+            return entry.chatters
 
         first = round(self.__maxActiveChattersSize / 2)
         self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({first=})')
@@ -179,7 +195,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
             self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({first=}): {e}', e, traceback.format_exc())
-            return currentActiveChatters
+            return entry.chatters
 
         index = 0
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -187,7 +203,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
         while index < len(chatters.data) and index < self.__maxActiveChattersSize:
             chatter = chatters.data[index]
-            currentActiveChatters.append(ActiveChatter(
+
+            entry.chatters.append(ActiveChatter(
                 mostRecentChat = mostRecentChat,
                 chatterUserId = chatter.userId,
                 chatterUserName = chatter.userLogin
@@ -195,7 +212,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
             index += 1
 
-        return currentActiveChatters
+        return entry.chatters
 
     async def remove(
         self,
