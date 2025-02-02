@@ -12,6 +12,7 @@ from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
+from ..api.models.twitchRaid import TwitchRaid
 from ..api.models.twitchResub import TwitchResub
 from ..api.models.twitchReward import TwitchReward
 from ..api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
@@ -265,6 +266,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'client_id' in eventJson and utils.isValidStr(eventJson.get('client_id')):
             clientId = utils.getStrFromDict(eventJson, 'client_id')
 
+        color: str | None = None
+        if 'color' in eventJson and utils.isValidStr(eventJson.get('color')):
+            color = utils.getStrFromDict(eventJson, 'color')
+
         eventId: str | None = None
         if 'id' in eventJson and utils.isValidStr(eventJson.get('id')):
             eventId = utils.getStrFromDict(eventJson, 'id')
@@ -297,6 +302,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         rewardId: str | None = None
         if 'reward_id' in eventJson and utils.isValidStr(eventJson.get('reward_id')):
             rewardId = utils.getStrFromDict(eventJson, 'reward_id')
+
+        systemMessage: str | None = None
+        if 'system_message' in eventJson and utils.isValidStr(eventJson.get('system_message')):
+            systemMessage = utils.getStrFromDict(eventJson, 'system_message')
 
         text: str | None = None
         if 'text' in eventJson and utils.isValidStr(eventJson.get('text')):
@@ -350,6 +359,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.__twitchJsonMapper.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
+        communitySubGift: TwitchCommunitySubGift | None = None
+        if 'community_sub_gift' in eventJson:
+            communitySubGift = await self.parseWebsocketCommunitySubGift(eventJson.get('community_sub_gift'))
+
         pollStatus: TwitchPollStatus | None = None
         predictionStatus: TwitchPredictionStatus | None = None
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
@@ -358,9 +371,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(utils.getStrFromDict(eventJson, 'status'))
             rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
 
-        communitySubGift: TwitchCommunitySubGift | None = None
-        if 'community_sub_gift' in eventJson:
-            communitySubGift = await self.parseWebsocketCommunitySubGift(eventJson.get('community_sub_gift'))
+        raid: TwitchRaid | None = None
+        if 'raid' in eventJson:
+            raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
 
         noticeType: TwitchWebsocketNoticeType | None = None
         if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
@@ -410,6 +423,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             clientId = clientId,
+            color = color,
             eventId = eventId,
             fromBroadcasterUserId = fromBroadcasterUserId,
             fromBroadcasterUserLogin = fromBroadcasterUserLogin,
@@ -417,6 +431,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             message = message,
             messageId = messageId,
             rewardId = rewardId,
+            systemMessage = systemMessage,
             text = text,
             title = title,
             toBroadcasterUserId = toBroadcasterUserId,
@@ -430,11 +445,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             cheer = cheer,
             tier = tier,
             channelPointsVoting = channelPointsVoting,
+            communitySubGift = communitySubGift,
             pollStatus = pollStatus,
             predictionStatus = predictionStatus,
+            raid = raid,
             resub = resub,
             rewardRedemptionStatus = rewardRedemptionStatus,
-            communitySubGift = communitySubGift,
             noticeType = noticeType,
             reward = reward,
             subGift = subGift,

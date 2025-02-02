@@ -30,6 +30,7 @@ from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
+from ..models.twitchRaid import TwitchRaid
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -795,6 +796,31 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'locked': return TwitchPredictionStatus.LOCKED
             case 'resolved': return TwitchPredictionStatus.RESOLVED
             case _: return None
+
+    async def parseRaid(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchRaid | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        viewerCount = utils.getIntFromDict(jsonResponse, 'viewer_count', fallback = 0)
+
+        profileImageUrl: str | None = None
+        if 'profile_image_url' in jsonResponse and utils.isValidUrl(jsonResponse.get('profile_image_url')):
+            profileImageUrl = utils.getStrFromDict(jsonResponse, 'profile_image_url')
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchRaid(
+            viewerCount = viewerCount,
+            profileImageUrl = profileImageUrl,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName
+        )
 
     async def parseReward(
         self,

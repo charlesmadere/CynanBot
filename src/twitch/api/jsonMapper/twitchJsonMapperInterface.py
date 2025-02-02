@@ -25,6 +25,7 @@ from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
+from ..models.twitchRaid import TwitchRaid
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -218,6 +219,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         predictionStatus: str | Any | None
     ) -> TwitchPredictionStatus | None:
+        pass
+
+    @abstractmethod
+    async def parseRaid(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchRaid | None:
         pass
 
     @abstractmethod

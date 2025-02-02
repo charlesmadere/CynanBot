@@ -9,6 +9,7 @@ from .twitchOutcome import TwitchOutcome
 from .twitchPollChoice import TwitchPollChoice
 from .twitchPollStatus import TwitchPollStatus
 from .twitchPredictionStatus import TwitchPredictionStatus
+from .twitchRaid import TwitchRaid
 from .twitchResub import TwitchResub
 from .twitchReward import TwitchReward
 from .twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
@@ -48,6 +49,7 @@ class TwitchWebsocketEvent:
     chatterUserId: str | None = None
     chatterUserName: str | None = None
     clientId: str | None = None
+    color: str | None = None
     eventId: str | None = None
     fromBroadcasterUserId: str | None = None
     fromBroadcasterUserLogin: str | None = None
@@ -55,6 +57,7 @@ class TwitchWebsocketEvent:
     message: str | None = None
     messageId: str | None = None
     rewardId: str | None = None
+    systemMessage: str | None = None
     text: str | None = None
     title: str | None = None
     toBroadcasterUserId: str | None = None
@@ -68,11 +71,12 @@ class TwitchWebsocketEvent:
     cheer: TwitchCheerMetadata | None = None
     tier: TwitchSubscriberTier | None = None
     channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
+    communitySubGift: TwitchCommunitySubGift | None = None
     pollStatus: TwitchPollStatus | None = None
     predictionStatus: TwitchPredictionStatus | None = None
+    raid: TwitchRaid | None = None
     resub: TwitchResub | None = None
     rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
-    communitySubGift: TwitchCommunitySubGift | None = None
     noticeType: TwitchWebsocketNoticeType | None = None
     reward: TwitchReward | None = None
     subGift: TwitchSubGift | None = None

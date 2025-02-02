@@ -25,6 +25,7 @@ from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.models.twitchPollStatus import TwitchPollStatus
 from src.twitch.api.models.twitchPredictionStatus import TwitchPredictionStatus
+from src.twitch.api.models.twitchRaid import TwitchRaid
 from src.twitch.api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from src.twitch.api.models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from src.twitch.api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
@@ -794,6 +795,39 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parsePredictionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parsePredictionStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseRaid(self):
+        userId = 'abc123'
+        userLogin = 'smcharles'
+        userName = 'smCharles'
+        profileImageUrl = 'https://joinmastodon.org/'
+        viewerCount = 100
+
+        result = await self.jsonMapper.parseRaid({
+            'profile_image_url': profileImageUrl,
+            'user_id': userId,
+            'user_login': userLogin,
+            'user_name': userName,
+            'viewer_count': viewerCount
+        })
+
+        assert isinstance(result, TwitchRaid)
+        assert result.profileImageUrl == profileImageUrl
+        assert result.userId == userId
+        assert result.userLogin == userLogin
+        assert result.userName == userName
+        assert result.viewerCount == viewerCount
+
+    @pytest.mark.asyncio
+    async def test_parseRaid_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseRaid(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseRaid_withNone(self):
+        result = await self.jsonMapper.parseRaid(None)
         assert result is None
 
     @pytest.mark.asyncio
