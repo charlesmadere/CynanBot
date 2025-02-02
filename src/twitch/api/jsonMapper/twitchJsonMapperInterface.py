@@ -21,6 +21,7 @@ from ..models.twitchEmotesResponse import TwitchEmotesResponse
 from ..models.twitchEventSubRequest import TwitchEventSubRequest
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
+from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
@@ -44,7 +45,6 @@ from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketMetadata import TwitchWebsocketMetadata
-from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..models.twitchWebsocketSub import TwitchWebsocketSub
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
@@ -190,7 +190,7 @@ class TwitchJsonMapperInterface(ABC):
     async def parseNoticeType(
         self,
         noticeType: str | Any | None
-    ) -> TwitchWebsocketNoticeType | None:
+    ) -> TwitchNoticeType | None:
         pass
 
     @abstractmethod
@@ -365,7 +365,7 @@ class TwitchJsonMapperInterface(ABC):
     async def requireNoticeType(
         self,
         noticeType: str | Any | None
-    ) -> TwitchWebsocketNoticeType:
+    ) -> TwitchNoticeType:
         pass
 
     @abstractmethod

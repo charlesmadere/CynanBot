@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class TwitchWebsocketNoticeType(Enum):
+class TwitchNoticeType(Enum):
 
     ANNOUNCEMENT = auto()
     BITS_BADGE_TIER = auto()

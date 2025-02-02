@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
+from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
 from .twitchPollChoice import TwitchPollChoice
 from .twitchPollStatus import TwitchPollStatus
@@ -16,7 +17,6 @@ from .twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from .twitchSubGift import TwitchSubGift
 from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
-from .twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from .twitchWebsocketSub import TwitchWebsocketSub
 
 
@@ -77,7 +77,7 @@ class TwitchWebsocketEvent:
     raid: TwitchRaid | None = None
     resub: TwitchResub | None = None
     rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
-    noticeType: TwitchWebsocketNoticeType | None = None
+    noticeType: TwitchNoticeType | None = None
     reward: TwitchReward | None = None
     subGift: TwitchSubGift | None = None
     sub: TwitchWebsocketSub | None = None

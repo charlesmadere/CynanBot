@@ -21,6 +21,7 @@ from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.models.twitchEventSubRequest import TwitchEventSubRequest
+from src.twitch.api.models.twitchNoticeType import TwitchNoticeType
 from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.models.twitchPollStatus import TwitchPollStatus
@@ -36,7 +37,6 @@ from src.twitch.api.models.twitchWebsocketChannelPointsVoting import TwitchWebso
 from src.twitch.api.models.twitchWebsocketCondition import TwitchWebsocketCondition
 from src.twitch.api.models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from src.twitch.api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
-from src.twitch.api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from src.twitch.api.models.twitchWebsocketSub import TwitchWebsocketSub
 from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from src.twitch.api.models.twitchWebsocketTransport import TwitchWebsocketTransport
@@ -589,27 +589,27 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseNoticeType_withAnnouncementString(self):
         result = await self.jsonMapper.parseNoticeType('announcement')
-        assert result is TwitchWebsocketNoticeType.ANNOUNCEMENT
+        assert result is TwitchNoticeType.ANNOUNCEMENT
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withBitsBadgeTierString(self):
         result = await self.jsonMapper.parseNoticeType('bits_badge_tier')
-        assert result is TwitchWebsocketNoticeType.BITS_BADGE_TIER
+        assert result is TwitchNoticeType.BITS_BADGE_TIER
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withCharityDonationString(self):
         result = await self.jsonMapper.parseNoticeType('charity_donation')
-        assert result is TwitchWebsocketNoticeType.CHARITY_DONATION
+        assert result is TwitchNoticeType.CHARITY_DONATION
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withCommunitySubGiftString(self):
         result = await self.jsonMapper.parseNoticeType('community_sub_gift')
-        assert result is TwitchWebsocketNoticeType.COMMUNITY_SUB_GIFT
+        assert result is TwitchNoticeType.COMMUNITY_SUB_GIFT
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withGiftPaidUpgradeString(self):
         result = await self.jsonMapper.parseNoticeType('gift_paid_upgrade')
-        assert result is TwitchWebsocketNoticeType.GIFT_PAID_UPGRADE
+        assert result is TwitchNoticeType.GIFT_PAID_UPGRADE
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withEmptyString(self):
@@ -624,37 +624,37 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseNoticeType_withPayItForwardString(self):
         result = await self.jsonMapper.parseNoticeType('pay_it_forward')
-        assert result is TwitchWebsocketNoticeType.PAY_IT_FORWARD
+        assert result is TwitchNoticeType.PAY_IT_FORWARD
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withPrimePaidUpgradeString(self):
         result = await self.jsonMapper.parseNoticeType('prime_paid_upgrade')
-        assert result is TwitchWebsocketNoticeType.PRIME_PAID_UPGRADE
+        assert result is TwitchNoticeType.PRIME_PAID_UPGRADE
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withRaidString(self):
         result = await self.jsonMapper.parseNoticeType('raid')
-        assert result is TwitchWebsocketNoticeType.RAID
+        assert result is TwitchNoticeType.RAID
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withResubString(self):
         result = await self.jsonMapper.parseNoticeType('resub')
-        assert result is TwitchWebsocketNoticeType.RE_SUB
+        assert result is TwitchNoticeType.RE_SUB
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withSubString(self):
         result = await self.jsonMapper.parseNoticeType('sub')
-        assert result is TwitchWebsocketNoticeType.SUB
+        assert result is TwitchNoticeType.SUB
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withSubGiftString(self):
         result = await self.jsonMapper.parseNoticeType('sub_gift')
-        assert result is TwitchWebsocketNoticeType.SUB_GIFT
+        assert result is TwitchNoticeType.SUB_GIFT
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withUnraidString(self):
         result = await self.jsonMapper.parseNoticeType('unraid')
-        assert result is TwitchWebsocketNoticeType.UN_RAID
+        assert result is TwitchNoticeType.UN_RAID
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withWhitespaceString(self):
@@ -1236,31 +1236,31 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_requireNoticeType_withAnnouncementString(self):
         result = await self.jsonMapper.requireNoticeType('announcement')
-        assert result is TwitchWebsocketNoticeType.ANNOUNCEMENT
+        assert result is TwitchNoticeType.ANNOUNCEMENT
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withBitsBadgeTierString(self):
         result = await self.jsonMapper.requireNoticeType('bits_badge_tier')
-        assert result is TwitchWebsocketNoticeType.BITS_BADGE_TIER
+        assert result is TwitchNoticeType.BITS_BADGE_TIER
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withCharityDonationString(self):
         result = await self.jsonMapper.requireNoticeType('charity_donation')
-        assert result is TwitchWebsocketNoticeType.CHARITY_DONATION
+        assert result is TwitchNoticeType.CHARITY_DONATION
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withCommunitySubGiftString(self):
         result = await self.jsonMapper.requireNoticeType('community_sub_gift')
-        assert result is TwitchWebsocketNoticeType.COMMUNITY_SUB_GIFT
+        assert result is TwitchNoticeType.COMMUNITY_SUB_GIFT
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withGiftPaidUpgradeString(self):
         result = await self.jsonMapper.requireNoticeType('gift_paid_upgrade')
-        assert result is TwitchWebsocketNoticeType.GIFT_PAID_UPGRADE
+        assert result is TwitchNoticeType.GIFT_PAID_UPGRADE
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withEmptyString(self):
-        result: TwitchWebsocketNoticeType | None = None
+        result: TwitchNoticeType | None = None
 
         with pytest.raises(ValueError):
             result = await self.jsonMapper.requireNoticeType('')
@@ -1269,7 +1269,7 @@ class TestTwitchJsonMapper:
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withNone(self):
-        result: TwitchWebsocketNoticeType | None = None
+        result: TwitchNoticeType | None = None
 
         with pytest.raises(ValueError):
             result = await self.jsonMapper.requireNoticeType(None)
@@ -1279,41 +1279,41 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_requireNoticeType_withPayItForwardString(self):
         result = await self.jsonMapper.requireNoticeType('pay_it_forward')
-        assert result is TwitchWebsocketNoticeType.PAY_IT_FORWARD
+        assert result is TwitchNoticeType.PAY_IT_FORWARD
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withPrimePaidUpgradeString(self):
         result = await self.jsonMapper.requireNoticeType('prime_paid_upgrade')
-        assert result is TwitchWebsocketNoticeType.PRIME_PAID_UPGRADE
+        assert result is TwitchNoticeType.PRIME_PAID_UPGRADE
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withRaidString(self):
         result = await self.jsonMapper.requireNoticeType('raid')
-        assert result is TwitchWebsocketNoticeType.RAID
+        assert result is TwitchNoticeType.RAID
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withResubString(self):
         result = await self.jsonMapper.requireNoticeType('resub')
-        assert result is TwitchWebsocketNoticeType.RE_SUB
+        assert result is TwitchNoticeType.RE_SUB
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withSubString(self):
         result = await self.jsonMapper.requireNoticeType('sub')
-        assert result is TwitchWebsocketNoticeType.SUB
+        assert result is TwitchNoticeType.SUB
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withSubGiftString(self):
         result = await self.jsonMapper.requireNoticeType('sub_gift')
-        assert result is TwitchWebsocketNoticeType.SUB_GIFT
+        assert result is TwitchNoticeType.SUB_GIFT
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withUnraidString(self):
         result = await self.jsonMapper.requireNoticeType('unraid')
-        assert result is TwitchWebsocketNoticeType.UN_RAID
+        assert result is TwitchNoticeType.UN_RAID
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withWhitespaceString(self):
-        result: TwitchWebsocketNoticeType | None = None
+        result: TwitchNoticeType | None = None
 
         with pytest.raises(ValueError):
             result = await self.jsonMapper.requireNoticeType(' ')

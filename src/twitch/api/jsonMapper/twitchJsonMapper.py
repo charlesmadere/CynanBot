@@ -26,6 +26,7 @@ from ..models.twitchEmotesResponse import TwitchEmotesResponse
 from ..models.twitchEventSubRequest import TwitchEventSubRequest
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
+from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
@@ -49,7 +50,6 @@ from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketMetadata import TwitchWebsocketMetadata
-from ..models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..models.twitchWebsocketSub import TwitchWebsocketSub
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
@@ -713,25 +713,25 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
     async def parseNoticeType(
         self,
         noticeType: str | Any | None
-    ) -> TwitchWebsocketNoticeType | None:
+    ) -> TwitchNoticeType | None:
         if not utils.isValidStr(noticeType):
             return None
 
         noticeType = noticeType.lower()
 
         match noticeType:
-            case 'announcement': return TwitchWebsocketNoticeType.ANNOUNCEMENT
-            case 'bits_badge_tier': return TwitchWebsocketNoticeType.BITS_BADGE_TIER
-            case 'charity_donation': return TwitchWebsocketNoticeType.CHARITY_DONATION
-            case 'community_sub_gift': return TwitchWebsocketNoticeType.COMMUNITY_SUB_GIFT
-            case 'gift_paid_upgrade':  return TwitchWebsocketNoticeType.GIFT_PAID_UPGRADE
-            case 'pay_it_forward': return TwitchWebsocketNoticeType.PAY_IT_FORWARD
-            case 'prime_paid_upgrade': return TwitchWebsocketNoticeType.PRIME_PAID_UPGRADE
-            case 'raid': return TwitchWebsocketNoticeType.RAID
-            case 'resub': return TwitchWebsocketNoticeType.RE_SUB
-            case 'sub': return TwitchWebsocketNoticeType.SUB
-            case 'sub_gift': return TwitchWebsocketNoticeType.SUB_GIFT
-            case 'unraid': return TwitchWebsocketNoticeType.UN_RAID
+            case 'announcement': return TwitchNoticeType.ANNOUNCEMENT
+            case 'bits_badge_tier': return TwitchNoticeType.BITS_BADGE_TIER
+            case 'charity_donation': return TwitchNoticeType.CHARITY_DONATION
+            case 'community_sub_gift': return TwitchNoticeType.COMMUNITY_SUB_GIFT
+            case 'gift_paid_upgrade':  return TwitchNoticeType.GIFT_PAID_UPGRADE
+            case 'pay_it_forward': return TwitchNoticeType.PAY_IT_FORWARD
+            case 'prime_paid_upgrade': return TwitchNoticeType.PRIME_PAID_UPGRADE
+            case 'raid': return TwitchNoticeType.RAID
+            case 'resub': return TwitchNoticeType.RE_SUB
+            case 'sub': return TwitchNoticeType.SUB
+            case 'sub_gift': return TwitchNoticeType.SUB_GIFT
+            case 'unraid': return TwitchNoticeType.UN_RAID
             case _: return None
 
     async def parseOutcomeColor(
@@ -1271,7 +1271,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
     async def requireNoticeType(
         self,
         noticeType: str | Any | None
-    ) -> TwitchWebsocketNoticeType:
+    ) -> TwitchNoticeType:
         result = await self.parseNoticeType(noticeType)
 
         if result is None:

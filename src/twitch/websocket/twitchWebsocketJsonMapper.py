@@ -7,6 +7,7 @@ from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterfa
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
+from ..api.models.twitchNoticeType import TwitchNoticeType
 from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.models.twitchPollChoice import TwitchPollChoice
@@ -21,7 +22,6 @@ from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
 from ..api.models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
-from ..api.models.twitchWebsocketNoticeType import TwitchWebsocketNoticeType
 from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
 from ..api.models.twitchWebsocketSub import TwitchWebsocketSub
@@ -375,7 +375,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'raid' in eventJson:
             raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
 
-        noticeType: TwitchWebsocketNoticeType | None = None
+        noticeType: TwitchNoticeType | None = None
         if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
             noticeType = await self.__twitchJsonMapper.parseNoticeType(utils.getStrFromDict(eventJson, 'notice_type'))
 
