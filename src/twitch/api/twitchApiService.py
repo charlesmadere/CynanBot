@@ -826,7 +826,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = f'https://api.twitch.tv/helix/subscriptions/user?broadcaster_id={broadcasterId}&user_id={chatterUserId}',
+                url = f'https://api.twitch.tv/helix/subscriptions?broadcaster_id={broadcasterId}&user_id={chatterUserId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId
