@@ -8,6 +8,7 @@ from typing import Any, Coroutine
 
 import websockets
 
+from .conditionBuilder.twitchWebsocketConditionBuilderInterface import TwitchWebsocketConditionBuilderInterface
 from .connectionAction.twitchWebsocketConnectionAction import TwitchWebsocketConnectionAction
 from .connectionAction.twitchWebsocketConnectionActionHelperInterface import \
     TwitchWebsocketConnectionActionHelperInterface
@@ -22,7 +23,6 @@ from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterfa
 from .twitchWebsocketUser import TwitchWebsocketUser
 from ..api.models.twitchEventSubRequest import TwitchEventSubRequest
 from ..api.models.twitchEventSubResponse import TwitchEventSubResponse
-from ..api.models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
@@ -47,6 +47,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
+        twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface,
         twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInterface,
         twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface,
         twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface,
@@ -88,6 +89,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchWebsocketAllowedUsersRepository, TwitchWebsocketAllowedUsersRepositoryInterface):
             raise TypeError(f'twitchWebsocketAllowedUsersRepository argument is malformed: \"{twitchWebsocketAllowedUsersRepository}\"')
+        elif not isinstance(twitchWebsocketConditionBuilder, TwitchWebsocketConditionBuilderInterface):
+            raise TypeError(f'twitchWebsocketConditionBuilder argument is malformed: \"{twitchWebsocketConditionBuilder}\"')
         elif not isinstance(twitchWebsocketConnectionActionHelper, TwitchWebsocketConnectionActionHelperInterface):
             raise TypeError(f'twitchWebsocketConnectionActionHelper argument is malformed: \"{twitchWebsocketConnectionActionHelper}\"')
         elif not isinstance(twitchWebsocketEndpointHelper, TwitchWebsocketEndpointHelperInterface):
@@ -131,6 +134,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = twitchWebsocketAllowedUsersRepository
+        self.__twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = twitchWebsocketConditionBuilder
         self.__twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInterface = twitchWebsocketConnectionActionHelper
         self.__twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = twitchWebsocketEndpointHelper
         self.__twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = twitchWebsocketInstabilityHelper
@@ -173,9 +177,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         createEventSubScriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
 
         for subscriptionType in self.__subscriptionTypes:
-            condition = await self.__createWebsocketCondition(
-                user = user,
-                subscriptionType = subscriptionType
+            condition = await self.__twitchWebsocketConditionBuilder.build(
+                subscriptionType = subscriptionType,
+                user = user
             )
 
             eventSubRequest = TwitchEventSubRequest(
@@ -194,72 +198,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             self.__timber.log('TwitchWebsocketClient', f'Finished creating EventSub subscription(s) ({user=}) ({sessionId=})')
         except Exception as e:
             self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
-
-    async def __createWebsocketCondition(
-        self,
-        subscriptionType: TwitchWebsocketSubscriptionType,
-        user: TwitchWebsocketUser
-    ) -> TwitchWebsocketCondition:
-        if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-        elif not isinstance(user, TwitchWebsocketUser):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
-        if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN or \
-                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END or \
-                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN or \
-                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END or \
-                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK or \
-                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHEER:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId,
-                moderatorUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.RAID:
-            return TwitchWebsocketCondition(
-                toBroadcasterUserId = user.userId
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
-                subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT or \
-                subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId
-            )
-
-        else:
-            raise RuntimeError(f'can\'t create a WebsocketCondition for the given unsupported WebsocketSubscriptionType: \"{subscriptionType}\"')
 
     async def __isValidDataBundle(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):

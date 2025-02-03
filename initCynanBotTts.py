@@ -374,6 +374,9 @@ from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketU
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchUtils import TwitchUtils
 from src.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
+from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
+    TwitchWebsocketConditionBuilderInterface
 from src.twitch.websocket.connectionAction.twitchWebsocketConnectionActionHelper import \
     TwitchWebsocketConnectionActionHelper
 from src.twitch.websocket.connectionAction.twitchWebsocketConnectionActionHelperInterface import \
@@ -910,13 +913,18 @@ twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInte
     usersRepository = usersRepository
 )
 
-twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = TwitchWebsocketInstabilityHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
+twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder(
+    twitchHandleProvider = authRepository,
+    userIdsRepository = userIdsRepository
 )
 
 twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = TwitchWebsocketEndpointHelper(
     timber = timber
+)
+
+twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = TwitchWebsocketInstabilityHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface = TwitchWebsocketSessionIdHelper(
@@ -938,6 +946,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         twitchApiService = twitchApiService,
         twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
+        twitchWebsocketConditionBuilder = twitchWebsocketConditionBuilder,
         twitchWebsocketConnectionActionHelper = twitchWebsocketConnectionActionHelper,
         twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
         twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
