@@ -5,7 +5,7 @@ from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 
 @dataclass(frozen = True)
 class TwitchChatMessageFragmentEmote:
+    formats: frozenset[TwitchEmoteImageFormat] | None
+    emoteId: str
     emoteSetId: str
-    fragmentEmoteId: str
     ownerId: str
-    format: TwitchEmoteImageFormat

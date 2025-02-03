@@ -15,6 +15,12 @@ from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from ..models.twitchChatMessage import TwitchChatMessage
+from ..models.twitchChatMessageFragment import TwitchChatMessageFragment
+from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
+from ..models.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
+from ..models.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
+from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
@@ -32,6 +38,7 @@ from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchRaid import TwitchRaid
+from ..models.twitchResub import TwitchResub
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -254,7 +261,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseBroadcasterType(
         self,
-        broadcasterType: str | None
+        broadcasterType: str | Any | None
     ) -> TwitchBroadcasterType:
         if not utils.isValidStr(broadcasterType):
             return TwitchBroadcasterType.NORMAL
@@ -308,6 +315,159 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchChannelEditorsResponse(
             editors = frozenChannelEditors
         )
+
+    async def parseChatMessage(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessage | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        text: str | None = None
+        if 'text' in jsonResponse and utils.isValidStr(jsonResponse.get('text')):
+            text = utils.getStrFromDict(jsonResponse, 'text', clean = True)
+
+        if not utils.isValidStr(text):
+            return None
+
+        fragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
+        fragmentsList: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
+
+        if isinstance(fragmentsList, list) and len(fragmentsList) >= 1:
+            for index, fragmentJson in enumerate(fragmentsList):
+                fragment = await self.parseChatMessageFragment(fragmentJson)
+
+                if fragment is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"fragments\" data ({jsonResponse=})')
+                else:
+                    fragments.append(fragment)
+
+        fragments.freeze()
+
+        if len(fragments) == 0:
+            # I think this should probably be impossible, but let's log it just in case.
+            self.__timber.log('TwitchJsonMapper', f'Encountered TwitchChatMessage with no fragments data ({fragments=}) ({jsonResponse=})')
+
+        return TwitchChatMessage(
+            fragments = fragments,
+            text = text
+        )
+
+    async def parseChatMessageFragment(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragment | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        text = utils.getStrFromDict(jsonResponse, 'text', clean = True)
+
+        cheermote: TwitchChatMessageFragmentCheermote | None = None
+        if 'cheermote' in jsonResponse:
+            cheermote = await self.parseChatMessageFragmentCheermote(jsonResponse.get('cheermote'))
+
+        emote: TwitchChatMessageFragmentEmote | None = None
+        if 'emote' in jsonResponse:
+            emote = await self.parseChatMessageFragmentEmote(jsonResponse.get('emote'))
+
+        mention: TwitchChatMessageFragmentMention | None = None
+        if 'mention' in jsonResponse:
+            mention = await self.parseChatMessageFragmentMention(jsonResponse.get('mention'))
+
+        fragmentTypeString = utils.getStrFromDict(jsonResponse, 'type')
+        fragmentType = await self.requireChatMessageFragmentType(fragmentTypeString)
+
+        return TwitchChatMessageFragment(
+            text = text,
+            cheermote = cheermote,
+            emote = emote,
+            mention = mention,
+            fragmentType = fragmentType
+        )
+
+    async def parseChatMessageFragmentCheermote(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragmentCheermote | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        bits = utils.getIntFromDict(jsonResponse, 'bits')
+        tier = utils.getIntFromDict(jsonResponse, 'tier')
+        prefix = utils.getStrFromDict(jsonResponse, 'prefix')
+
+        return TwitchChatMessageFragmentCheermote(
+            bits = bits,
+            tier = tier,
+            prefix = prefix
+        )
+
+    async def parseChatMessageFragmentEmote(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragmentEmote | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        frozenFormats: frozenset[TwitchEmoteImageFormat] | None = None
+        formatsList: list[str] | Any | None = jsonResponse.get('format')
+
+        if isinstance(formatsList, list) and len(formatsList) >= 1:
+            formats: set[TwitchEmoteImageFormat] = set()
+
+            for index, formatString in enumerate(formatsList):
+                emoteImageFormat = await self.parseEmoteImageFormat(formatString)
+
+                if emoteImageFormat is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"format\" data ({jsonResponse=})')
+                else:
+                    formats.add(emoteImageFormat)
+
+            frozenFormats = frozenset(formats)
+
+        emoteId = utils.getStrFromDict(jsonResponse, 'id')
+        emoteSetId = utils.getStrFromDict(jsonResponse, 'emote_set_id')
+        ownerId = utils.getStrFromDict(jsonResponse, 'owner_id')
+
+        return TwitchChatMessageFragmentEmote(
+            formats = frozenFormats,
+            emoteId = emoteId,
+            emoteSetId = emoteSetId,
+            ownerId = ownerId
+        )
+
+    async def parseChatMessageFragmentMention(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragmentMention | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchChatMessageFragmentMention(
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName
+        )
+
+    async def parseChatMessageFragmentType(
+        self,
+        fragmentType: str | Any | None
+    ) -> TwitchChatMessageFragmentType | None:
+        if not utils.isValidStr(fragmentType):
+            return None
+
+        fragmentType = fragmentType.lower()
+
+        match fragmentType:
+            case 'cheermote': return TwitchChatMessageFragmentType.CHEERMOTE
+            case 'emote': return TwitchChatMessageFragmentType.EMOTE
+            case 'mention': return TwitchChatMessageFragmentType.MENTION
+            case 'text': return TwitchChatMessageFragmentType.TEXT
+            case _: return None
 
     async def parseChatter(
         self,
@@ -579,7 +739,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseEmoteImageFormat(
         self,
-        emoteImageFormat: str | None
+        emoteImageFormat: str | Any | None
     ) -> TwitchEmoteImageFormat | None:
         if not utils.isValidStr(emoteImageFormat):
             return None
@@ -589,13 +749,11 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match emoteImageFormat:
             case 'animated': return TwitchEmoteImageFormat.ANIMATED
             case 'static': return TwitchEmoteImageFormat.STATIC
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteImageFormat value: \"{emoteImageFormat}\"')
-                return None
+            case _: return None
 
     async def parseEmoteImageScale(
         self,
-        emoteImageScale: str | None
+        emoteImageScale: str | Any | None
     ) -> TwitchEmoteImageScale | None:
         if not utils.isValidStr(emoteImageScale):
             return None
@@ -609,9 +767,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case '1.0': return TwitchEmoteImageScale.SMALL
             case '2.0': return TwitchEmoteImageScale.MEDIUM
             case '3.0': return TwitchEmoteImageScale.LARGE
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchEmoteImageScale value: \"{emoteImageScale}\"')
-                return None
+            case _: return None
 
     async def parseEmotesResponse(
         self,
@@ -822,6 +978,51 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userName = userName
         )
 
+    async def parseResub(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchResub | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        gifterIsAnonymous: bool | None = None
+        if 'gifter_is_anonymous' in jsonResponse and utils.isValidBool(jsonResponse.get('gifter_is_anonymous')):
+            gifterIsAnonymous = utils.getBoolFromDict(jsonResponse, 'gifter_is_anonymous')
+
+        isGift = utils.getBoolFromDict(jsonResponse, 'is_gift', fallback = False)
+        isPrime = utils.getBoolFromDict(jsonResponse, 'is_prime', fallback = False)
+        cumulativeMonths = utils.getIntFromDict(jsonResponse, 'cumulative_months')
+        durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
+        streakMonths = utils.getIntFromDict(jsonResponse, 'streak_months')
+
+        gifterUserId: str | None = None
+        if 'gifter_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_id')):
+            gifterUserId = utils.getStrFromDict(jsonResponse, 'gifter_user_id')
+
+        gifterUserLogin: str | None = None
+        if 'gifter_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_login')):
+            gifterUserLogin = utils.getStrFromDict(jsonResponse, 'gifter_user_login')
+
+        gifterUserName: str | None = None
+        if 'gifter_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_name')):
+            gifterUserName = utils.getStrFromDict(jsonResponse, 'gifter_user_name')
+
+        subTierString = utils.getStrFromDict(jsonResponse, 'sub_tier')
+        subTier = await self.requireSubscriberTier(subTierString)
+
+        return TwitchResub(
+            gifterIsAnonymous = gifterIsAnonymous,
+            isGift = isGift,
+            isPrime = isPrime,
+            cumulativeMonths = cumulativeMonths,
+            durationMonths = durationMonths,
+            streakMonths = streakMonths,
+            gifterUserId = gifterUserId,
+            gifterUserLogin = gifterUserLogin,
+            gifterUserName = gifterUserName,
+            subTier = subTier
+        )
+
     async def parseReward(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -945,6 +1146,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         subscriptionType = subscriptionType.lower()
 
         match subscriptionType:
+            case 'channel.chat.message':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
             case 'channel.channel_points_custom_reward_redemption.add':
                 return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
             case 'channel.poll.begin':
@@ -963,8 +1166,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
             case 'channel.update':
                 return TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
-            case 'channel.chat.message':
-                return TwitchWebsocketSubscriptionType.CHAT_MESSAGE
             case 'channel.cheer':
                 return TwitchWebsocketSubscriptionType.CHEER
             case 'channel.follow':
@@ -1257,6 +1458,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             subTier = subTier
         )
 
+    async def requireChatMessageFragmentType(
+        self,
+        fragmentType: str | Any | None
+    ) -> TwitchChatMessageFragmentType:
+        result = await self.parseChatMessageFragmentType(fragmentType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{fragmentType}\" into TwitchChatMessageFragmentType value!')
+
+        return result
+
     async def requireConnectionStatus(
         self,
         connectionStatus: str | Any | None
@@ -1463,6 +1675,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         match subscriptionType:
+            case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
+                return 'channel.chat.message'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
                 return 'channel.channel_points_custom_reward_redemption.add'
             case TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
@@ -1481,8 +1695,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.prediction.progress'
             case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
                 return 'channel.update'
-            case TwitchWebsocketSubscriptionType.CHAT_MESSAGE:
-                return 'channel.chat.message'
             case TwitchWebsocketSubscriptionType.CHEER:
                 return 'channel.cheer'
             case TwitchWebsocketSubscriptionType.FOLLOW:

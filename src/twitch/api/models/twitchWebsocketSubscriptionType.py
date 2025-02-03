@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 class TwitchWebsocketSubscriptionType(Enum):
 
+    CHANNEL_CHAT_MESSAGE = auto()
     CHANNEL_POINTS_REDEMPTION = auto()
     CHANNEL_POLL_BEGIN = auto()
     CHANNEL_POLL_END = auto()
@@ -12,7 +13,6 @@ class TwitchWebsocketSubscriptionType(Enum):
     CHANNEL_PREDICTION_LOCK = auto()
     CHANNEL_PREDICTION_PROGRESS = auto()
     CHANNEL_UPDATE = auto()
-    CHAT_MESSAGE = auto()
     CHEER = auto()
     FOLLOW = auto()
     RAID = auto()
@@ -26,6 +26,7 @@ class TwitchWebsocketSubscriptionType(Enum):
     @property
     def version(self) -> str:
         match self:
+            case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_POLL_END: return '1'
@@ -35,7 +36,6 @@ class TwitchWebsocketSubscriptionType(Enum):
             case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE: return '2'
-            case TwitchWebsocketSubscriptionType.CHAT_MESSAGE: return '1'
             case TwitchWebsocketSubscriptionType.CHEER: return '1'
             case TwitchWebsocketSubscriptionType.FOLLOW: return '2'
             case TwitchWebsocketSubscriptionType.RAID: return '1'

@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..api.models.twitchChatMessage import TwitchChatMessage
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchNoticeType import TwitchNoticeType
@@ -309,7 +310,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         text: str | None = None
         if 'text' in eventJson and utils.isValidStr(eventJson.get('text')):
-            text = utils.getStrFromDict(eventJson, 'text')
+            text = utils.getStrFromDict(eventJson, 'text', clean = True)
 
         title: str | None = None
         if 'title' in eventJson and utils.isValidStr(eventJson.get('title')):
@@ -347,6 +348,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
             winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
 
+        chatMessage: TwitchChatMessage | None = None
+        if 'message' in eventJson:
+            chatMessage = await self.__twitchJsonMapper.parseChatMessage(eventJson.get('message'))
+
         cheer: TwitchCheerMetadata | None = None
         if 'cheer' in eventJson:
             cheer = await self.__twitchJsonMapper.parseCheerMetadata(eventJson.get('cheer'))
@@ -381,7 +386,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
-            resub = await self.parseWebsocketResub(eventJson.get('resub'))
+            resub = await self.__twitchJsonMapper.parseResub(eventJson.get('resub'))
 
         reward: TwitchReward | None = None
         if 'reward' in eventJson:
@@ -442,6 +447,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             winningOutcomeId = winningOutcomeId,
+            chatMessage = chatMessage,
             cheer = cheer,
             tier = tier,
             channelPointsVoting = channelPointsVoting,
@@ -520,50 +526,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName
-        )
-
-    async def parseWebsocketResub(
-        self,
-        resubJson: dict[str, Any] | None
-    ) -> TwitchResub | None:
-        if not isinstance(resubJson, dict) or len(resubJson) == 0:
-            return None
-
-        gifterIsAnonymous: bool | None = None
-        if 'gifter_is_anonymous' in resubJson and utils.isValidBool(resubJson.get('gifter_is_anonymous')):
-            gifterIsAnonymous = utils.getBoolFromDict(resubJson, 'gifter_is_anonymous')
-
-        isGift = utils.getBoolFromDict(resubJson, 'is_gift', fallback = False)
-        isPrime = utils.getBoolFromDict(resubJson, 'is_prime', fallback = False)
-        cumulativeMonths = utils.getIntFromDict(resubJson, 'cumulative_months')
-        durationMonths = utils.getIntFromDict(resubJson, 'duration_months')
-        streakMonths = utils.getIntFromDict(resubJson, 'streak_months')
-
-        gifterUserId: str | None = None
-        if 'gifter_user_id' in resubJson and utils.isValidStr(resubJson.get('gifter_user_id')):
-            gifterUserId = utils.getStrFromDict(resubJson, 'gifter_user_id')
-
-        gifterUserLogin: str | None = None
-        if 'gifter_user_login' in resubJson and utils.isValidStr(resubJson.get('gifter_user_login')):
-            gifterUserLogin = utils.getStrFromDict(resubJson, 'gifter_user_login')
-
-        gifterUserName: str | None = None
-        if 'gifter_user_name' in resubJson and utils.isValidStr(resubJson.get('gifter_user_name')):
-            gifterUserName = utils.getStrFromDict(resubJson, 'gifter_user_name')
-
-        subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(resubJson, 'sub_tier'))
-
-        return TwitchResub(
-            gifterIsAnonymous = gifterIsAnonymous,
-            isGift = isGift,
-            isPrime = isPrime,
-            cumulativeMonths = cumulativeMonths,
-            durationMonths = durationMonths,
-            streakMonths = streakMonths,
-            gifterUserId = gifterUserId,
-            gifterUserLogin = gifterUserLogin,
-            gifterUserName = gifterUserName,
-            subTier = subTier
         )
 
     async def parseTwitchWebsocketSession(

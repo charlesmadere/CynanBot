@@ -4,6 +4,10 @@ from src.twitch.api.models.twitchWebsocketSubscriptionType import \
 
 class TestTwitchWebsocketSubscriptionType:
 
+    def test_version_withChannelChatMessage(self):
+        version = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE.version
+        assert version == '1'
+
     def test_version_withChannelPointsRedemption(self):
         version = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION.version
         assert version == '1'
@@ -39,10 +43,6 @@ class TestTwitchWebsocketSubscriptionType:
     def test_version_withChannelUpdate(self):
         version = TwitchWebsocketSubscriptionType.CHANNEL_UPDATE.version
         assert version == '2'
-
-    def test_version_withChatMessage(self):
-        version = TwitchWebsocketSubscriptionType.CHAT_MESSAGE.version
-        assert version == '1'
 
     def test_version_withCheer(self):
         version = TwitchWebsocketSubscriptionType.CHEER.version

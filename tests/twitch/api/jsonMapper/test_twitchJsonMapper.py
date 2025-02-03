@@ -15,6 +15,7 @@ from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
 from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from src.twitch.api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from src.twitch.api.models.twitchChatter import TwitchChatter
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -349,6 +350,91 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseChannelEditorsResponse_withNone(self):
         result = await self.jsonMapper.parseChannelEditorsResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessage_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChatMessage(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessage_withNone(self):
+        result = await self.jsonMapper.parseChatMessage(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragment_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChatMessageFragment(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragment_withNone(self):
+        result = await self.jsonMapper.parseChatMessageFragment(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentCheermote_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChatMessageFragmentCheermote(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentCheermote_withNone(self):
+        result = await self.jsonMapper.parseChatMessageFragmentCheermote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentEmote_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChatMessageFragmentEmote(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentEmote_withNone(self):
+        result = await self.jsonMapper.parseChatMessageFragmentEmote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentMention_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChatMessageFragmentMention(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentMention_withNone(self):
+        result = await self.jsonMapper.parseChatMessageFragmentMention(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withCheermoteString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType('cheermote')
+        assert result is TwitchChatMessageFragmentType.CHEERMOTE
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withEmoteString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType('emote')
+        assert result is TwitchChatMessageFragmentType.EMOTE
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withEmptyString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withMentionString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType('mention')
+        assert result is TwitchChatMessageFragmentType.MENTION
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withNone(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withTextString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType('text')
+        assert result is TwitchChatMessageFragmentType.TEXT
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType(' ')
         assert result is None
 
     @pytest.mark.asyncio
@@ -831,6 +917,16 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseResub_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseResub(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseResub_withNone(self):
+        result = await self.jsonMapper.parseResub(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseReward_withEmptyDictionary(self):
         result = await self.jsonMapper.parseReward(dict())
         assert result is None
@@ -931,9 +1027,9 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseSubscriptionType_withChannelChatMessageString(self):
+    async def test_parseSubscriptionType_withChannelChatMessage(self):
         result = await self.jsonMapper.parseSubscriptionType('channel.chat.message')
-        assert result is TwitchWebsocketSubscriptionType.CHAT_MESSAGE
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
 
     @pytest.mark.asyncio
     async def test_parseSubscriptionType_withChannelCheerString(self):
@@ -1174,6 +1270,53 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseWebsocketSub_withNone(self):
         result = await self.jsonMapper.parseWebsocketSub(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withCheermoteString(self):
+        result = await self.jsonMapper.requireChatMessageFragmentType('cheermote')
+        assert result is TwitchChatMessageFragmentType.CHEERMOTE
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withEmoteString(self):
+        result = await self.jsonMapper.requireChatMessageFragmentType('emote')
+        assert result is TwitchChatMessageFragmentType.EMOTE
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withEmptyString(self):
+        result: TwitchChatMessageFragmentType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireChatMessageFragmentType('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withMentionString(self):
+        result = await self.jsonMapper.requireChatMessageFragmentType('mention')
+        assert result is TwitchChatMessageFragmentType.MENTION
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withNone(self):
+        result: TwitchChatMessageFragmentType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireChatMessageFragmentType(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withTextString(self):
+        result = await self.jsonMapper.requireChatMessageFragmentType('text')
+        assert result is TwitchChatMessageFragmentType.TEXT
+
+    @pytest.mark.asyncio
+    async def test_requireChatMessageFragmentType_withWhitespaceString(self):
+        result: TwitchChatMessageFragmentType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireChatMessageFragmentType(' ')
+
         assert result is None
 
     @pytest.mark.asyncio
@@ -1846,6 +1989,11 @@ class TestTwitchJsonMapper:
         assert result['sender_id'] == request.senderId
 
     @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelChatMessage(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE)
+        assert string == 'channel.chat.message'
+
+    @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withChannelPointsRedemption(self):
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION)
         assert string == 'channel.channel_points_custom_reward_redemption.add'
@@ -1884,11 +2032,6 @@ class TestTwitchJsonMapper:
     async def test_serializeSubscriptionType_withChannelPredictionProgress(self):
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS)
         assert string == 'channel.prediction.progress'
-
-    @pytest.mark.asyncio
-    async def test_serializeSubscriptionType_withChatMessage(self):
-        result = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHAT_MESSAGE)
-        assert result == 'channel.chat.message'
 
     @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withCheer(self):

@@ -5,7 +5,6 @@ from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.models.twitchPollChoice import TwitchPollChoice
-from ..api.models.twitchResub import TwitchResub
 from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
@@ -55,13 +54,6 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         predictorJson: dict[str, Any] | Any | None
     ) -> TwitchOutcomePredictor | None:
-        pass
-
-    @abstractmethod
-    async def parseWebsocketResub(
-        self,
-        resubJson: dict[str, Any] | None
-    ) -> TwitchResub | None:
         pass
 
     @abstractmethod

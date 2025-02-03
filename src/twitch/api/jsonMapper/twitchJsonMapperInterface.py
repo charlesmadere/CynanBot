@@ -10,6 +10,12 @@ from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from ..models.twitchChatMessage import TwitchChatMessage
+from ..models.twitchChatMessageFragment import TwitchChatMessageFragment
+from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
+from ..models.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
+from ..models.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
+from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
@@ -27,6 +33,7 @@ from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchRaid import TwitchRaid
+from ..models.twitchResub import TwitchResub
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -84,7 +91,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseBroadcasterType(
         self,
-        broadcasterType: str | None
+        broadcasterType: str | Any | None
     ) -> TwitchBroadcasterType:
         pass
 
@@ -100,6 +107,48 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchChannelEditorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessage(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessage | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageFragment(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragment | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageFragmentCheermote(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragmentCheermote | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageFragmentEmote(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragmentEmote | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageFragmentMention(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatMessageFragmentMention | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageFragmentType(
+        self,
+        fragmentType: str | Any | None
+    ) -> TwitchChatMessageFragmentType | None:
         pass
 
     @abstractmethod
@@ -147,14 +196,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseEmoteImageFormat(
         self,
-        emoteImageFormat: str | None
+        emoteImageFormat: str | Any | None
     ) -> TwitchEmoteImageFormat | None:
         pass
 
     @abstractmethod
     async def parseEmoteImageScale(
         self,
-        emoteImageScale: str | None
+        emoteImageScale: str | Any | None
     ) -> TwitchEmoteImageScale | None:
         pass
 
@@ -226,6 +275,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchRaid | None:
+        pass
+
+    @abstractmethod
+    async def parseResub(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchResub | None:
         pass
 
     @abstractmethod
@@ -352,6 +408,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchWebsocketSub | None:
+        pass
+
+    @abstractmethod
+    async def requireChatMessageFragmentType(
+        self,
+        fragmentType: str | Any | None
+    ) -> TwitchChatMessageFragmentType:
         pass
 
     @abstractmethod

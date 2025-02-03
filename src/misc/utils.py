@@ -345,7 +345,11 @@ def getStrFromDict(
         value = str(value)
 
     if clean:
-        value = cleanStr(value, htmlUnescape = htmlUnescape, removeCarrots = removeCarrots)
+        value = cleanStr(
+            s = value,
+            htmlUnescape = htmlUnescape,
+            removeCarrots = removeCarrots
+        )
 
     return value
 
