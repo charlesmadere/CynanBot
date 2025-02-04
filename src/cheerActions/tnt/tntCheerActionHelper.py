@@ -206,7 +206,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         return frozenTntTargets
 
-    async def handleTimeoutCheerAction(
+    async def handleTntCheerAction(
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,

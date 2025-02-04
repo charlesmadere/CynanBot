@@ -56,6 +56,8 @@ from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInter
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
+from src.cheerActions.tnt.tntCheerActionHelper import TntCheerActionHelper
+from src.cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -1664,13 +1666,27 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
     userIdsRepository = userIdsRepository
 )
 
+tntCheerActionHelper: TntCheerActionHelperInterface = TntCheerActionHelper(
+    activeChattersRepository = activeChattersRepository,
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    timber = timber,
+    timeoutActionHelper = timeoutActionHelper,
+    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutCheerActionMapper = timeoutCheerActionMapper,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    twitchUtils = twitchUtils
+)
+
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     soundAlertCheerActionHelper = None,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
-    tntCheerActionHelper = None,
+    tntCheerActionHelper = tntCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
