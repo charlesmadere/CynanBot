@@ -1897,6 +1897,7 @@ cynanBot = CynanBot(
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = None,
+    tntCheerActionHelper = tntCheerActionHelper,
     translationHelper = None,
     triviaBanHelper = None,
     triviaEmoteGenerator = None,

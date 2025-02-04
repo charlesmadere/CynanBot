@@ -88,6 +88,7 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from .cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, PbsCommand,
                        SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand,
                        SwQuoteCommand, TwitchInfoCommand)
@@ -314,6 +315,7 @@ class CynanBot(
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        tntCheerActionHelper: TntCheerActionHelperInterface | None,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelper | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
@@ -534,6 +536,8 @@ class CynanBot(
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
+        elif tntCheerActionHelper is not None and not isinstance(tntCheerActionHelper, TntCheerActionHelperInterface):
+            raise TypeError(f'tntCheerActionHelper argument is malformed: \"{tntCheerActionHelper}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
             raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif triviaBanHelper is not None and not isinstance(triviaBanHelper, TriviaBanHelperInterface):
@@ -652,6 +656,7 @@ class CynanBot(
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface | None = timeoutActionHelper
+        self.__tntCheerActionHelper: TntCheerActionHelperInterface | None = tntCheerActionHelper
         self.__triviaEventHandler: AbsTriviaEventHandler | None = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
@@ -996,6 +1001,9 @@ class CynanBot(
         if self.__timeoutActionHelper is not None:
             self.__timeoutActionHelper.setTwitchChannelProvider(self)
             self.__timeoutActionHelper.start()
+
+        if self.__tntCheerActionHelper is not None:
+            self.__tntCheerActionHelper.setTwitchChannelProvider(self)
 
         if self.__mostRecentAnivMessageTimeoutHelper is not None:
             self.__mostRecentAnivMessageTimeoutHelper.setTwitchChannelProvider(self)

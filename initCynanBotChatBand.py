@@ -961,6 +961,7 @@ cynanBot = CynanBot(
     timeoutActionHistoryRepository = None,
     timeoutActionSettingsRepository = None,
     timeZoneRepository = timeZoneRepository,
+    tntCheerActionHelper = None,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,
     triviaBanHelper = None,
