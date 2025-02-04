@@ -1388,10 +1388,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         tier = await self.requireSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
 
-        userId = utils.getStrFromDict(dataEntry, 'user_id')
-        userLogin = utils.getStrFromDict(dataEntry, 'user_login')
-        userName = utils.getStrFromDict(dataEntry, 'user_name')
-
         return TwitchUserSubscription(
             isGift = isGift,
             broadcasterId = broadcasterId,
@@ -1400,10 +1396,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             gifterId = gifterId,
             gifterLogin = gifterLogin,
             gifterName = gifterName,
-            tier = tier,
-            userId = userId,
-            userLogin = userLogin,
-            userName = userName
+            tier = tier
         )
 
     async def parseUserType(
