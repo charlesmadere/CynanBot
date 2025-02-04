@@ -12,6 +12,18 @@ class TtsProvider(Enum):
     TTS_MONSTER = auto()
 
     @property
+    def databaseName(self) -> str:
+        match self:
+            case TtsProvider.DEC_TALK: return 'dec_talk'
+            case TtsProvider.GOOGLE: return 'google'
+            case TtsProvider.HALF_LIFE: return 'half_life'
+            case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
+            case TtsProvider.SINGING_DEC_TALK: return 'dec_talk'
+            case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
+            case TtsProvider.TTS_MONSTER: return 'tts_monster'
+            case _: raise ValueError(f'Encountered unknown TtsProvider value: \"{self}\"')
+
+    @property
     def humanName(self) -> str:
         match self:
             case TtsProvider.DEC_TALK: return 'DECtalk'
