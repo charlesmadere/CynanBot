@@ -58,7 +58,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         trollmojiHelper: TrollmojiHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        soundAlertSleepTimeSeconds: float = 0.25,
+        soundAlertSleepTimeSeconds: float = 0.75,
         messageDelaySeconds: int = 3
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
