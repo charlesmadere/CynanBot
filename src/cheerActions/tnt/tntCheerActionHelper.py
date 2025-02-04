@@ -1,4 +1,5 @@
 import asyncio
+import locale
 import math
 import random
 from dataclasses import dataclass
@@ -58,7 +59,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         trollmojiHelper: TrollmojiHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        soundAlertSleepTimeSeconds: float = 0.75,
+        soundAlertSleepTimeSeconds: float = 0.60,
         messageDelaySeconds: int = 3
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
@@ -126,12 +127,20 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         for tntTarget in tntTargets:
             userNames.append(tntTarget.userName)
 
+        peopleCountString = locale.format_string("%d", len(tntTargets), grouping = True)
+
+        peoplePluralityString: str
+        if len(tntTargets) == 1:
+            peoplePluralityString = f'{peopleCountString} person was hit'
+        else:
+            peoplePluralityString = f'{peopleCountString} people were hit'
+
         userNames.sort(key = lambda userName: userName.casefold())
         userNamesString = ', '.join(userNames)
 
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        message = f'{bombEmote} BOOM! {action.durationSecondsStr}s timeout! {bombEmote} {userNamesString} {bombEmote}'
+        message = f'{bombEmote} BOOM! {peoplePluralityString} with a {action.durationSecondsStr}s timeout! {userNamesString} {bombEmote}'
 
         await self.__twitchUtils.waitThenSend(
             messageable = twitchChannel,
@@ -309,9 +318,14 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
     ):
         if not user.areSoundAlertsEnabled:
             return
+        elif len(tntTargets) == 0:
+            return
 
         index = 0
         numberOfSounds = math.ceil(len(tntTargets) * 0.65)
+
+        if numberOfSounds < 1:
+            return
 
         while index < numberOfSounds:
             soundAlert = await self.__chooseRandomGrenadeSoundAlert()
