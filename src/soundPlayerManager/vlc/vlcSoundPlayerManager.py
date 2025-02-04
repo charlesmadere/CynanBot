@@ -8,6 +8,7 @@ from frozenlist import FrozenList
 from .vlcMediaPlayer import VlcMediaPlayer
 from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundAlert import SoundAlert
+from ..soundPlaybackFile import SoundPlaybackFile
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerPlaylist import SoundPlayerPlaylist
 from ...chatBand.chatBandInstrument import ChatBandInstrument
@@ -79,21 +80,57 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for chat band instrument ({instrument=}) ({filePath=})')
             return False
 
-        filePaths: FrozenList[str] = FrozenList()
-        filePaths.append(filePath)
-        filePaths.freeze()
+        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
 
-        return await self.playSoundFiles(
-            filePaths = filePaths,
+        playlistFiles.append(SoundPlaybackFile(
+            volume = None,
+            filePath = filePath
+        ))
+
+        playlistFiles.freeze()
+
+        playlist = SoundPlayerPlaylist(
+            playlistFiles = playlistFiles,
             volume = volume
+        )
+
+        return await self.playPlaylist(
+            playlist = playlist
         )
 
     async def playPlaylist(
         self,
         playlist: SoundPlayerPlaylist
     ) -> bool:
-        # TODO
-        return False
+        if not isinstance(playlist, SoundPlayerPlaylist):
+            raise TypeError(f'playlist argument is malformed: \"{playlist}\"')
+
+        self.__isLoadingOrPlaying = True
+
+        if len(playlist.playlistFiles) == 0:
+            self.__timber.log('VlcSoundPlayerManager', f'playlist argument has no elements: \"{playlist}\"')
+            self.__isLoadingOrPlaying = False
+            return False
+
+        for index, playlistFile in enumerate(playlist.playlistFiles):
+            if not utils.isValidStr(playlistFile.filePath):
+                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a valid string: ({playlist=}) ({playlistFile=})')
+                self.__isLoadingOrPlaying = False
+                return False
+            elif not await aiofiles.ospath.exists(playlistFile.filePath):
+                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} does not exist: ({playlist=}) ({playlistFile=})')
+                self.__isLoadingOrPlaying = False
+                return False
+            elif not await aiofiles.ospath.isfile(playlistFile.filePath):
+                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a file: ({playlist=}) ({playlistFile=})')
+                self.__isLoadingOrPlaying = False
+                return False
+
+        await self.__progressThroughPlaylist(
+            playlist = playlist,
+        )
+
+        return True
 
     async def playSoundAlert(
         self,
@@ -117,9 +154,22 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
             return False
 
-        return await self.playSoundFile(
-            filePath = filePath,
+        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
+
+        playlistFiles.append(SoundPlaybackFile(
+            volume = None,
+            filePath = filePath
+        ))
+
+        playlistFiles.freeze()
+
+        playlist = SoundPlayerPlaylist(
+            playlistFiles = playlistFiles,
             volume = volume
+        )
+
+        return await self.playPlaylist(
+            playlist = playlist
         )
 
     async def playSoundFile(
@@ -141,13 +191,22 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
             return False
 
-        filePaths: FrozenList[str] = FrozenList()
-        filePaths.append(filePath)
-        filePaths.freeze()
+        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
 
-        return await self.playSoundFiles(
-            filePaths = filePaths,
+        playlistFiles.append(SoundPlaybackFile(
+            volume = None,
+            filePath = filePath
+        ))
+
+        playlistFiles.freeze()
+
+        playlist = SoundPlayerPlaylist(
+            playlistFiles = playlistFiles,
             volume = volume
+        )
+
+        return await self.playPlaylist(
+            playlist = playlist
         )
 
     async def playSoundFiles(
@@ -166,64 +225,48 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
             return False
 
-        self.__isLoadingOrPlaying = True
-        frozenFilePaths: FrozenList[str] = FrozenList(filePaths)
-        frozenFilePaths.freeze()
+        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
 
-        if len(frozenFilePaths) == 0:
+        for filePath in filePaths:
+            playlistFiles.append(SoundPlaybackFile(
+                volume = None,
+                filePath = filePath
+            ))
+
+        playlistFiles.freeze()
+
+        if len(playlistFiles) == 0:
             self.__timber.log('VlcSoundPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
-            self.__isLoadingOrPlaying = False
             return False
 
-        for index, filePath in enumerate(frozenFilePaths):
-            if not utils.isValidStr(filePath):
-                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a valid string: \"{filePath}\"')
-                self.__isLoadingOrPlaying = False
-                return False
-            elif not await aiofiles.ospath.exists(filePath):
-                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} does not exist: \"{filePath}\"')
-                self.__isLoadingOrPlaying = False
-                return False
-            elif not await aiofiles.ospath.isfile(filePath):
-                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a file: \"{filePath}\"')
-                self.__isLoadingOrPlaying = False
-                return False
-
-        if not utils.isValidInt(volume):
-            volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
-
-        await self.__progressThroughPlaylist(
-            playlistFilePaths = frozenFilePaths,
+        playlist = SoundPlayerPlaylist(
+            playlistFiles = playlistFiles,
             volume = volume
         )
 
-        return True
+        return await self.playPlaylist(
+            playlist = playlist
+        )
 
-    async def __progressThroughPlaylist(
-        self,
-        playlistFilePaths: FrozenList[str],
-        volume: int | None
-    ):
-        if not isinstance(playlistFilePaths, FrozenList) or len(playlistFilePaths) == 0:
-            raise TypeError(f'playlist argument is malformed: \"{playlistFilePaths}\"')
-        elif volume is not None and not utils.isValidInt(volume):
-            raise TypeError(f'volume argument is malformed: \"{volume}\"')
+    async def __progressThroughPlaylist(self, playlist: SoundPlayerPlaylist):
+        if not isinstance(playlist, SoundPlayerPlaylist):
+            raise TypeError(f'playlist argument is malformed: \"{playlist}\"')
 
         mediaPlayer = await self.__retrieveMediaPlayer()
+        baseVolume = playlist.volume
 
-        if not utils.isValidInt(volume):
-            volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
-
-        await mediaPlayer.setVolume(volume)
+        if not utils.isValidInt(baseVolume):
+            baseVolume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
 
         playErrorOccurred: bool = False
         currentPlaylistIndex: int = -1
-        currentFilePath: str | None = None
+        currentVolume: int | None = None
+        currentFile: SoundPlaybackFile | None = None
 
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({playlistFilePaths=}) ({volume=}) ({mediaPlayer=})')
+        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
 
         try:
-            while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlistFilePaths) or mediaPlayer.isPlaying):
+            while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlist.playlistFiles) or mediaPlayer.isPlaying):
                 match mediaPlayer.playbackState:
                     case VlcMediaPlayer.PlaybackState.ERROR:
                         playErrorOccurred = True
@@ -238,17 +281,23 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
                         else:
                             currentPlaylistIndex += 1
 
-                        if currentPlaylistIndex < len(playlistFilePaths):
-                            currentFilePath = playlistFilePaths[currentPlaylistIndex]
-                            await mediaPlayer.setMedia(currentFilePath)
+                        if currentPlaylistIndex < len(playlist.playlistFiles):
+                            currentFile = playlist.playlistFiles[currentPlaylistIndex]
+                            currentVolume = currentFile.volume
+
+                            if not utils.isValidInt(currentVolume):
+                                currentVolume = baseVolume
+
+                            await mediaPlayer.setMedia(currentFile.filePath)
+                            await mediaPlayer.setVolume(currentVolume)
 
                             if not await mediaPlayer.play():
-                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=})')
+                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
                                 playErrorOccurred = True
 
                 await asyncio.sleep(self.__playbackLoopSleepTimeSeconds)
         except Exception as e:
-            self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFilePath=}) ({playlistFilePaths=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
 
         self.__isLoadingOrPlaying = False
 

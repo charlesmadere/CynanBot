@@ -7,4 +7,5 @@ from .soundPlaybackFile import SoundPlaybackFile
 
 @dataclass(frozen = True)
 class SoundPlayerPlaylist:
-    playlist: FrozenList[SoundPlaybackFile]
+    playlistFiles: FrozenList[SoundPlaybackFile]
+    volume: int | None
