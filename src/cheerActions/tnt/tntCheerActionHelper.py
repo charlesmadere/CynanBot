@@ -311,7 +311,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             return
 
         index = 0
-        numberOfSounds = math.ceil(len(tntTargets) / 2)
+        numberOfSounds = math.ceil(len(tntTargets) * 0.65)
 
         while index < numberOfSounds:
             soundAlert = await self.__chooseRandomGrenadeSoundAlert()
