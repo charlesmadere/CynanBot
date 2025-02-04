@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Collection
 
 from .soundAlert import SoundAlert
+from .soundPlayerPlaylist import SoundPlayerPlaylist
 from ..chatBand.chatBandInstrument import ChatBandInstrument
 
 
@@ -23,8 +24,7 @@ class SoundPlayerManagerInterface(ABC):
     @abstractmethod
     async def playPlaylist(
         self,
-        filePaths: Collection[str],
-        volume: int | None = None
+        playlist: SoundPlayerPlaylist
     ) -> bool:
         pass
 
@@ -40,6 +40,14 @@ class SoundPlayerManagerInterface(ABC):
     async def playSoundFile(
         self,
         filePath: str | None,
+        volume: int | None = None
+    ) -> bool:
+        pass
+
+    @abstractmethod
+    async def playSoundFiles(
+        self,
+        filePaths: Collection[str],
         volume: int | None = None
     ) -> bool:
         pass

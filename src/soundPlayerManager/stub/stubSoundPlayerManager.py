@@ -2,6 +2,7 @@ from typing import Collection
 
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ..soundPlayerPlaylist import SoundPlayerPlaylist
 from ...chatBand.chatBandInstrument import ChatBandInstrument
 
 
@@ -22,8 +23,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
     async def playPlaylist(
         self,
-        filePaths: Collection[str],
-        volume: int | None = None
+        playlist: SoundPlayerPlaylist
     ) -> bool:
         # this method is intentionally empty
         return False
@@ -39,6 +39,14 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
     async def playSoundFile(
         self,
         filePath: str | None,
+        volume: int | None = None
+    ) -> bool:
+        # this method is intentionally empty
+        return False
+
+    async def playSoundFiles(
+        self,
+        filePaths: Collection[str],
         volume: int | None = None
     ) -> bool:
         # this method is intentionally empty

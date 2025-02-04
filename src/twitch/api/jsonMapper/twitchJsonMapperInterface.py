@@ -19,6 +19,7 @@ from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
+from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -29,7 +30,9 @@ from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
+from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
+from ..models.twitchPollChoice import TwitchPollChoice
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchRaid import TwitchRaid
@@ -173,6 +176,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseCommunitySubGift(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchCommunitySubGift | None:
+        pass
+
+    @abstractmethod
     async def parseCondition(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -250,10 +260,24 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseOutcomePredictor(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchOutcomePredictor | None:
+        pass
+
+    @abstractmethod
     async def parsePaginationResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchPaginationResponse | None:
+        pass
+
+    @abstractmethod
+    async def parsePollChoice(
+        self,
+        jsonResponse: dict[str, Any] | None
+    ) -> TwitchPollChoice | None:
         pass
 
     @abstractmethod

@@ -57,7 +57,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():
-            await self.__soundPlayerManager.playPlaylist(
+            await self.__soundPlayerManager.playSoundFiles(
                 filePaths = fileNames,
                 volume = volume
             )

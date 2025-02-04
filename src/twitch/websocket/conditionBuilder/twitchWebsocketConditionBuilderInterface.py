@@ -12,5 +12,5 @@ class TwitchWebsocketConditionBuilderInterface(ABC):
         self,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: TwitchWebsocketUser
-    ) -> TwitchWebsocketCondition:
+    ) -> TwitchWebsocketCondition | None:
         pass

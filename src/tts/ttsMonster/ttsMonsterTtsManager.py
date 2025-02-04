@@ -23,7 +23,7 @@ from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
     @dataclass(frozen = True)
-    class TtsMonsterTtsEvent:
+    class TtsEvents:
         fileNames: FrozenList[str]
         characterAllowance: int | None
         characterUsage: int | None
@@ -73,7 +73,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():
-            await self.__soundPlayerManager.playPlaylist(
+            await self.__soundPlayerManager.playSoundFiles(
                 filePaths = fileNames,
                 volume = volume
             )
@@ -117,7 +117,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__timber.log('TtsMonsterTtsManager', f'Playing {len(ttsMonsterTtsEvent.fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         await self.__executeTts(ttsMonsterTtsEvent.fileNames)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterTtsEvent | None:
+    async def __processTtsEvent(self, event: TtsEvent) -> TtsEvents | None:
         message = await self.__ttsMonsterMessageCleaner.clean(event.message)
 
         ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
@@ -129,7 +129,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
             self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS URLs ({event=}) ({ttsMonsterUrls=})')
             self.__isLoadingOrPlaying = False
-            return
+            return None
 
         fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(
             ttsUrls = ttsMonsterUrls.urls
@@ -138,9 +138,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         if fileNames is None or len(fileNames) == 0:
             self.__timber.log('TtsMonsterTtsManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
             self.__isLoadingOrPlaying = False
-            return
+            return None
 
-        return TtsMonsterTtsManager.TtsMonsterTtsEvent(
+        return TtsMonsterTtsManager.TtsEvents(
             fileNames = fileNames,
             characterAllowance = ttsMonsterUrls.characterAllowance,
             characterUsage = ttsMonsterUrls.characterUsage

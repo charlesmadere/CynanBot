@@ -109,6 +109,14 @@ class AudioPlayerMediaPlayer:
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but encountered bizarre durationSeconds value ({task=}) ({audioPlayer=}) ({durationSeconds=})')
             return
 
+        if task.isCanceled:
+            # It is technically possible that playback could have been canceled before we
+            # even begin playing this file. So let's do one final cancelation check super
+            # quick before we start the actual file playback.
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            return
+
         audioPlayer.play(
             loop = False,
             block = False

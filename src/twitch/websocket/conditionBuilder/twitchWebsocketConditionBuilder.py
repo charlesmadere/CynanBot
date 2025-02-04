@@ -25,7 +25,7 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
         self,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: TwitchWebsocketUser
-    ) -> TwitchWebsocketCondition:
+    ) -> TwitchWebsocketCondition | None:
         if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
         elif not isinstance(user, TwitchWebsocketUser):
@@ -89,4 +89,4 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
             )
 
         else:
-            raise RuntimeError(f'Unable to create a TwitchWebsocketCondition for the given TwitchWebsocketSubscriptionType ({subscriptionType=}) ({user=})')
+            return None

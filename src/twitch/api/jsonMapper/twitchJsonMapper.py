@@ -24,6 +24,7 @@ from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
+from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -34,7 +35,9 @@ from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
+from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
+from ..models.twitchPollChoice import TwitchPollChoice
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchRaid import TwitchRaid
@@ -532,6 +535,28 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             bits = bits
         )
 
+    async def parseCommunitySubGift(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchCommunitySubGift | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        cumulativeTotal: int | None = None
+        if 'cumulative_total' in jsonResponse and utils.isValidInt(jsonResponse.get('cumulative_total')):
+            cumulativeTotal = utils.getIntFromDict(jsonResponse, 'cumulative_total')
+
+        total = utils.getIntFromDict(jsonResponse, 'total')
+        communitySubGiftId = utils.getStrFromDict(jsonResponse, 'id')
+        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
+
+        return TwitchCommunitySubGift(
+            cumulativeTotal = cumulativeTotal,
+            total = total,
+            communitySubGiftId = communitySubGiftId,
+            subTier = subTier
+        )
+
     async def parseCondition(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -904,6 +929,31 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'pink': return TwitchOutcomeColor.PINK
             case _: return None
 
+    async def parseOutcomePredictor(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchOutcomePredictor | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        channelPointsUsed = utils.getIntFromDict(jsonResponse, 'channel_points_used')
+
+        channelPointsWon: int | None = None
+        if 'channel_points_won' in jsonResponse and utils.isValidInt(jsonResponse.get('channel_points_won')):
+            channelPointsWon = utils.getIntFromDict(jsonResponse, 'channel_points_won')
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchOutcomePredictor(
+            channelPointsUsed = channelPointsUsed,
+            channelPointsWon = channelPointsWon,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName
+        )
+
     async def parsePaginationResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -917,6 +967,25 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchPaginationResponse(
             cursor = cursor
+        )
+
+    async def parsePollChoice(
+        self,
+        jsonResponse: dict[str, Any] | None
+    ) -> TwitchPollChoice | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        channelPointsVotes = utils.getIntFromDict(jsonResponse, 'channel_points_votes', 0)
+        votes = utils.getIntFromDict(jsonResponse, 'votes', 0)
+        choiceId = utils.getStrFromDict(jsonResponse, 'id')
+        title = utils.getStrFromDict(jsonResponse, 'title')
+
+        return TwitchPollChoice(
+            channelPointsVotes = channelPointsVotes,
+            votes = votes,
+            choiceId = choiceId,
+            title = title
         )
 
     async def parsePollStatus(

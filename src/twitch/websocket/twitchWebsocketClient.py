@@ -182,6 +182,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 user = user
             )
 
+            if condition is None:
+                continue
+
             eventSubRequest = TwitchEventSubRequest(
                 condition = condition,
                 subscriptionType = subscriptionType,

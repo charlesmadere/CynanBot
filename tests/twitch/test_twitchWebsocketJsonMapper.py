@@ -27,26 +27,6 @@ class TestTwitchWebsocketJsonMapper:
     )
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketPollChoice_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseWebsocketPollChoice(dict())
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketPollChoice_withNone(self):
-        result = await self.websocketJsonMapper.parseWebsocketPollChoice(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketCommunitySubGift_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseWebsocketCommunitySubGift(dict())
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketCommunitySubGift_withNone(self):
-        result = await self.websocketJsonMapper.parseWebsocketCommunitySubGift(None)
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_parseWebsocketDataBundle_withEmptyDictionary(self):
         result = await self.websocketJsonMapper.parseWebsocketDataBundle(dict())
         assert result is None
@@ -74,16 +54,6 @@ class TestTwitchWebsocketJsonMapper:
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcome_withNone(self):
         result = await self.websocketJsonMapper.parseTwitchOutcome(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketOutcomePredictor_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseTwitchOutcomePredictor(dict())
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketOutcomePredictor_withNone(self):
-        result = await self.websocketJsonMapper.parseTwitchOutcomePredictor(None)
         assert result is None
 
     @pytest.mark.asyncio

@@ -46,47 +46,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         self.__timber: TimberInterface = timber
         self.__twitchJsonMapper: TwitchJsonMapperInterface = twitchJsonMapper
 
-    async def parseWebsocketPollChoice(
-        self,
-        choiceJson: dict[str, Any] | None
-    ) -> TwitchPollChoice | None:
-        if not isinstance(choiceJson, dict) or len(choiceJson) == 0:
-            return None
-
-        channelPointsVotes = utils.getIntFromDict(choiceJson, 'channel_points_votes', 0)
-        votes = utils.getIntFromDict(choiceJson, 'votes', 0)
-        choiceId = utils.getStrFromDict(choiceJson, 'id')
-        title = utils.getStrFromDict(choiceJson, 'title')
-
-        return TwitchPollChoice(
-            channelPointsVotes = channelPointsVotes,
-            votes = votes,
-            choiceId = choiceId,
-            title = title
-        )
-
-    async def parseWebsocketCommunitySubGift(
-        self,
-        giftJson: dict[str, Any] | Any | None
-    ) -> TwitchCommunitySubGift | None:
-        if not isinstance(giftJson, dict) or len(giftJson) == 0:
-            return None
-
-        cumulativeTotal: int | None = None
-        if 'cumulative_total' in giftJson and utils.isValidInt(giftJson.get('cumulative_total')):
-            cumulativeTotal = utils.getIntFromDict(giftJson, 'cumulative_total')
-
-        total = utils.getIntFromDict(giftJson, 'total')
-        communitySubGiftId = utils.getStrFromDict(giftJson, 'id')
-        subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(giftJson, 'sub_tier'))
-
-        return TwitchCommunitySubGift(
-            cumulativeTotal = cumulativeTotal,
-            total = total,
-            communitySubGiftId = communitySubGiftId,
-            subTier = subTier
-        )
-
     async def __parsePayload(
         self,
         payloadJson: dict[str, Any] | None
@@ -225,7 +184,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 choices: list[TwitchPollChoice] = list()
 
                 for choiceItem in choicesItem:
-                    choice = await self.parseWebsocketPollChoice(choiceItem)
+                    choice = await self.__twitchJsonMapper.parsePollChoice(choiceItem)
 
                     if choice is not None:
                         choices.append(choice)
@@ -366,7 +325,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         communitySubGift: TwitchCommunitySubGift | None = None
         if 'community_sub_gift' in eventJson:
-            communitySubGift = await self.parseWebsocketCommunitySubGift(eventJson.get('community_sub_gift'))
+            communitySubGift = await self.__twitchJsonMapper.parseCommunitySubGift(eventJson.get('community_sub_gift'))
 
         pollStatus: TwitchPollStatus | None = None
         predictionStatus: TwitchPredictionStatus | None = None
@@ -484,7 +443,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 topPredictors: list[TwitchOutcomePredictor] = list()
 
                 for topPredictorItem in topPredictorsItem:
-                    topPredictor = await self.parseTwitchOutcomePredictor(topPredictorItem)
+                    topPredictor = await self.__twitchJsonMapper.parseOutcomePredictor(topPredictorItem)
 
                     if topPredictor is not None:
                         topPredictors.append(topPredictor)
@@ -501,31 +460,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             outcomeId = outcomeId,
             title = title,
             color = color
-        )
-
-    async def parseTwitchOutcomePredictor(
-        self,
-        predictorJson: dict[str, Any] | Any | None
-    ) -> TwitchOutcomePredictor | None:
-        if not isinstance(predictorJson, dict) or len(predictorJson) == 0:
-            return None
-
-        channelPointsUsed = utils.getIntFromDict(predictorJson, 'channel_points_used')
-
-        channelPointsWon: int | None = None
-        if 'channel_points_won' in predictorJson and utils.isValidInt(predictorJson.get('channel_points_won')):
-            channelPointsWon = utils.getIntFromDict(predictorJson, 'channel_points_won')
-
-        userId = utils.getStrFromDict(predictorJson, 'user_id')
-        userLogin = utils.getStrFromDict(predictorJson, 'user_login')
-        userName = utils.getStrFromDict(predictorJson, 'user_name')
-
-        return TwitchOutcomePredictor(
-            channelPointsUsed = channelPointsUsed,
-            channelPointsWon = channelPointsWon,
-            userId = userId,
-            userLogin = userLogin,
-            userName = userName
         )
 
     async def parseTwitchWebsocketSession(

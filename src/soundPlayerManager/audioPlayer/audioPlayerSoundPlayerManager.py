@@ -9,6 +9,7 @@ from .audioPlayerMediaPlayer import AudioPlayerMediaPlayer
 from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ..soundPlayerPlaylist import SoundPlayerPlaylist
 from ...chatBand.chatBandInstrument import ChatBandInstrument
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -92,59 +93,17 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         filePaths.append(filePath)
         filePaths.freeze()
 
-        return await self.playPlaylist(
+        return await self.playSoundFiles(
             filePaths = filePaths,
             volume = volume
         )
 
     async def playPlaylist(
         self,
-        filePaths: Collection[str],
-        volume: int | None = None
+        playlist: SoundPlayerPlaylist
     ) -> bool:
-        if not isinstance(filePaths, Collection):
-            raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
-        elif volume is not None and not utils.isValidInt(volume):
-            raise TypeError(f'volume argument is malformed: \"{volume}\"')
-
-        if not await self.__soundPlayerSettingsRepository.isEnabled():
-            return False
-        elif self.isLoadingOrPlaying:
-            self.__timber.log('AudioPlayerSoundPlayerManager', f'There is already an ongoing sound!')
-            return False
-
-        self.__isLoadingOrPlaying = True
-        frozenFilePaths: FrozenList[str] = FrozenList(filePaths)
-        frozenFilePaths.freeze()
-
-        if len(frozenFilePaths) == 0:
-            self.__timber.log('AudioPlayerSoundPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
-            self.__isLoadingOrPlaying = False
-            return False
-
-        for index, filePath in enumerate(frozenFilePaths):
-            if not utils.isValidStr(filePath):
-                self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a valid string: \"{filePath}\"')
-                self.__isLoadingOrPlaying = False
-                return False
-            elif not await aiofiles.ospath.exists(filePath):
-                self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} does not exist: \"{filePath}\"')
-                self.__isLoadingOrPlaying = False
-                return False
-            elif not await aiofiles.ospath.isfile(filePath):
-                self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a file: \"{filePath}\"')
-                self.__isLoadingOrPlaying = False
-                return False
-
-        if not utils.isValidInt(volume):
-            volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
-
-        await self.__progressThroughPlaylist(
-            playlistFilePaths = frozenFilePaths,
-            volume = volume
-        )
-
-        return True
+        # TODO
+        return False
 
     async def playSoundAlert(
         self,
@@ -196,10 +155,59 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         filePaths.append(filePath)
         filePaths.freeze()
 
-        return await self.playPlaylist(
+        return await self.playSoundFiles(
             filePaths = filePaths,
             volume = volume
         )
+
+    async def playSoundFiles(
+        self,
+        filePaths: Collection[str],
+        volume: int | None = None
+    ) -> bool:
+        if not isinstance(filePaths, Collection):
+            raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
+        elif volume is not None and not utils.isValidInt(volume):
+            raise TypeError(f'volume argument is malformed: \"{volume}\"')
+
+        if not await self.__soundPlayerSettingsRepository.isEnabled():
+            return False
+        elif self.isLoadingOrPlaying:
+            self.__timber.log('AudioPlayerSoundPlayerManager', f'There is already an ongoing sound!')
+            return False
+
+        self.__isLoadingOrPlaying = True
+        frozenFilePaths: FrozenList[str] = FrozenList(filePaths)
+        frozenFilePaths.freeze()
+
+        if len(frozenFilePaths) == 0:
+            self.__timber.log('AudioPlayerSoundPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
+            self.__isLoadingOrPlaying = False
+            return False
+
+        for index, filePath in enumerate(frozenFilePaths):
+            if not utils.isValidStr(filePath):
+                self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a valid string: \"{filePath}\"')
+                self.__isLoadingOrPlaying = False
+                return False
+            elif not await aiofiles.ospath.exists(filePath):
+                self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} does not exist: \"{filePath}\"')
+                self.__isLoadingOrPlaying = False
+                return False
+            elif not await aiofiles.ospath.isfile(filePath):
+                self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a file: \"{filePath}\"')
+                self.__isLoadingOrPlaying = False
+                return False
+
+        if not utils.isValidInt(volume):
+            volume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
+
+        await self.__progressThroughPlaylist(
+            playlistFilePaths = frozenFilePaths,
+            volume = volume
+        )
+
+        return True
 
     async def __progressThroughPlaylist(
         self,
