@@ -308,8 +308,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'allen'
         if word in ('alberta', 'bert', 'berta', 'bertie'):
             yield 'albert'
+        if word in ('andy', 'andrew', 'drew'):
+            yield 'andrew'
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
             yield 'erin'
+        if word in ('ben', 'benny'):
+            yield 'benjamin'
         if word in ('billie', 'billy'):
             yield 'bill'
         if word == 'bob':
