@@ -267,26 +267,26 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         try:
             while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlist.playlistFiles) or mediaPlayer.isPlaying):
                 if mediaPlayer.isPlaying:
-                    pass
+                    continue
+
+                if currentPlaylistIndex < 0:
+                    currentPlaylistIndex = 0
                 else:
-                    if currentPlaylistIndex < 0:
-                        currentPlaylistIndex = 0
-                    else:
-                        currentPlaylistIndex += 1
+                    currentPlaylistIndex += 1
 
-                    if currentPlaylistIndex < len(playlist.playlistFiles):
-                        currentFile = playlist.playlistFiles[currentPlaylistIndex]
-                        currentVolume = currentFile.volume
+                if currentPlaylistIndex < len(playlist.playlistFiles):
+                    currentFile = playlist.playlistFiles[currentPlaylistIndex]
+                    currentVolume = currentFile.volume
 
-                        if not utils.isValidInt(currentVolume):
-                            currentVolume = baseVolume
+                    if not utils.isValidInt(currentVolume):
+                        currentVolume = baseVolume
 
-                        await mediaPlayer.setMedia(currentFile.filePath)
-                        await mediaPlayer.setVolume(currentVolume)
+                    await mediaPlayer.setMedia(currentFile.filePath)
+                    await mediaPlayer.setVolume(currentVolume)
 
-                        if not await mediaPlayer.play():
-                            self.__timber.log('AudioPlayerSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
-                            playErrorOccurred = True
+                    if not await mediaPlayer.play():
+                        self.__timber.log('AudioPlayerSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
+                        playErrorOccurred = True
 
                 await asyncio.sleep(self.__playbackLoopSleepTimeSeconds)
         except Exception as e:
