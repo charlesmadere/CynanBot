@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models.glacialTtsData import GlacialTtsData
+from ..models.glacialTtsFileReference import GlacialTtsFileReference
 from ...tts.ttsProvider import TtsProvider
 
 
@@ -9,8 +9,9 @@ class GlacialTtsFileRetrieverInterface(ABC):
     @abstractmethod
     async def findFile(
         self,
-        glacialData: GlacialTtsData
-    ) -> str | None:
+        message: str,
+        provider: TtsProvider
+    ) -> GlacialTtsFileReference | None:
         pass
 
     @abstractmethod
@@ -18,5 +19,5 @@ class GlacialTtsFileRetrieverInterface(ABC):
         self,
         message: str,
         provider: TtsProvider
-    ) -> GlacialTtsData:
+    ) -> GlacialTtsFileReference:
         pass

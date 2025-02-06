@@ -12,3 +12,7 @@ class GlacialTtsDataMapperInterface(ABC):
     @abstractmethod
     async def toDatabaseName(self, ttsProvider: TtsProvider) -> str:
         pass
+
+    @abstractmethod
+    async def toFolderName(self, ttsProvider: TtsProvider) -> str:
+        pass

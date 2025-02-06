@@ -22,6 +22,9 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case _: raise ValueError(f'Encountered unknown TtsProvider value: \"{ttsProvider}\"')
 
     async def toDatabaseName(self, ttsProvider: TtsProvider) -> str:
+        if not isinstance(ttsProvider, TtsProvider):
+            raise TypeError(f'ttsProvider argument is malformed: \"{ttsProvider}\"')
+
         match ttsProvider:
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
@@ -31,3 +34,17 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
             case _: raise ValueError(f'Encountered unknown TtsProvider value: \"{ttsProvider}\"')
+
+    async def toFolderName(self, ttsProvider: TtsProvider) -> str:
+        if not isinstance(ttsProvider, TtsProvider):
+            raise TypeError(f'ttsProvider argument is malformed: \"{ttsProvider}\"')
+
+        match ttsProvider:
+            case TtsProvider.DEC_TALK: return 'dec_talk'
+            case TtsProvider.GOOGLE: return 'google'
+            case TtsProvider.HALF_LIFE: return 'half_life'
+            case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
+            case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
+            case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
+            case TtsProvider.TTS_MONSTER: return 'tts_monster'
+            case _: raise ValueError(f'encountered unknown TtsProvider value: \"{ttsProvider}\"')

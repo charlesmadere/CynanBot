@@ -79,6 +79,41 @@ class TestGlacialTtsDataMapper:
         result = await self.mapper.toDatabaseName(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
 
+    @pytest.mark.asyncio
+    async def test_toFolderName_withDecTalk(self):
+        result = await self.mapper.toFolderName(TtsProvider.DEC_TALK)
+        assert result == 'dec_talk'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withGoogle(self):
+        result = await self.mapper.toFolderName(TtsProvider.GOOGLE)
+        assert result == 'google'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withHalfLife(self):
+        result = await self.mapper.toFolderName(TtsProvider.HALF_LIFE)
+        assert result == 'half_life'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withMicrosoftSam(self):
+        result = await self.mapper.toFolderName(TtsProvider.MICROSOFT_SAM)
+        assert result == 'microsoft_sam'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withSingingDecTalk(self):
+        result = await self.mapper.toFolderName(TtsProvider.SINGING_DEC_TALK)
+        assert result == 'singing_dec_talk'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withStreamElements(self):
+        result = await self.mapper.toFolderName(TtsProvider.STREAM_ELEMENTS)
+        assert result == 'stream_elements'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withTtsMonster(self):
+        result = await self.mapper.toFolderName(TtsProvider.TTS_MONSTER)
+        assert result == 'tts_monster'
+
     def test_sanity(self):
         assert self.mapper is not None
         assert isinstance(self.mapper, GlacialTtsDataMapper)
