@@ -359,6 +359,14 @@ from src.twitch.subscribers.twitchSubscriptionsRepository import TwitchSubscript
 from src.twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
 from src.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
+from src.glacialTtsStorage.helper.glacialTtsFileRetriever import GlacialTtsFileRetriever
+from src.glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
+from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
+from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
+from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
 from src.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
 from src.twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from src.twitch.timeout.twitchTimeoutRemodHelper import TwitchTimeoutRemodHelper
@@ -1006,6 +1014,24 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
+glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+
+glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
+
+glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
+    glacialTtsIdGenerator = glacialTtsIdGenerator,
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
+    eventLoop = eventLoop,
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    glacialTtsStorageRepository = glacialTtsStorageRepository,
+    timber = timber
+)
+
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
     tempFileHelper = tempFileHelper
 )
@@ -1294,6 +1320,7 @@ ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageC
 )
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
     timber = timber,
     ttsMonsterApiService = ttsMonsterApiService,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,

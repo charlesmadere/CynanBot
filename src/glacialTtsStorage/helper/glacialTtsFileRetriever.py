@@ -1,9 +1,9 @@
 import re
+from asyncio import AbstractEventLoop
 from typing import Pattern
 
 import aiofiles.os
 import aiofiles.ospath
-from asyncio import AbstractEventLoop
 
 from .glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ..exceptions import GlacialTtsAlreadyExists

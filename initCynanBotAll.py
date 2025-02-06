@@ -131,6 +131,14 @@ from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
 from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from src.funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
 from src.funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from src.glacialTtsStorage.helper.glacialTtsFileRetriever import GlacialTtsFileRetriever
+from src.glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
+from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
+from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
+from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
+from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
@@ -1805,6 +1813,25 @@ tempFileHelper: TempFileHelperInterface = TempFileHelper(
 )
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
+
+glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+
+glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
+
+glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
+    glacialTtsIdGenerator = glacialTtsIdGenerator,
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
+    eventLoop = eventLoop,
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    glacialTtsStorageRepository = glacialTtsStorageRepository,
+    timber = timber
+)
+
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
     tempFileHelper = tempFileHelper
 )
@@ -2094,6 +2121,7 @@ ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageC
 )
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
     timber = timber,
     ttsMonsterApiService = ttsMonsterApiService,
     ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,

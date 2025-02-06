@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ..models.ttsMonsterUrls import TtsMonsterUrls
-
 
 class TtsMonsterHelperInterface(ABC):
 
@@ -11,5 +9,5 @@ class TtsMonsterHelperInterface(ABC):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TtsMonsterUrls | None:
+    ) -> str | None:
         pass

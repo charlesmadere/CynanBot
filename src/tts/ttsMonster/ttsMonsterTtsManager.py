@@ -120,30 +120,24 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
     async def __processTtsEvent(self, event: TtsEvent) -> TtsEvents | None:
         message = await self.__ttsMonsterMessageCleaner.clean(event.message)
 
-        ttsMonsterUrls = await self.__ttsMonsterHelper.generateTts(
+        ttsMonsterFiles = await self.__ttsMonsterHelper.generateTts(
             message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )
 
-        if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
-            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS URLs ({event=}) ({ttsMonsterUrls=})')
+        if ttsMonsterFiles is None or len(ttsMonsterFiles.files) == 0:
+            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS files ({event=}) ({ttsMonsterFiles=})')
             self.__isLoadingOrPlaying = False
             return None
 
-        fileNames = await self.__ttsMonsterFileManager.saveTtsUrlsToNewFiles(
-            ttsUrls = ttsMonsterUrls.urls
-        )
-
-        if fileNames is None or len(fileNames) == 0:
-            self.__timber.log('TtsMonsterTtsManager', f'Failed to download/save TTS messages ({event=}) ({ttsMonsterUrls=}) ({fileNames=})')
-            self.__isLoadingOrPlaying = False
-            return None
+        fileNames: FrozenList[str] = FrozenList(ttsMonsterFiles.files)
+        fileNames.freeze()
 
         return TtsMonsterTtsManager.TtsEvents(
             fileNames = fileNames,
-            characterAllowance = ttsMonsterUrls.characterAllowance,
-            characterUsage = ttsMonsterUrls.characterUsage
+            characterAllowance = ttsMonsterFiles.characterAllowance,
+            characterUsage = ttsMonsterFiles.characterUsage
         )
 
     async def __reportCharacterUsage(

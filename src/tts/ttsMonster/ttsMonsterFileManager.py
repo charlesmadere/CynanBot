@@ -119,7 +119,7 @@ class TtsMonsterFileManager(TtsMonsterFileManagerInterface):
             ))
 
         try:
-            await asyncio.gather(*fetchAndSaveCoroutines, return_exceptions = True)
+            await asyncio.gather(*fetchAndSaveCoroutines, return_exceptions = False)
         except Exception as e:
             self.__timber.log('TtsMonsterHelper', f'Encountered unknown error when fetching and saving TTS files ({ttsUrls=}): {e}', e, traceback.format_exc())
             return None
