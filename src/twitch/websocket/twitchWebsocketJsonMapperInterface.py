@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from ..api.models.twitchOutcome import TwitchOutcome
-from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent

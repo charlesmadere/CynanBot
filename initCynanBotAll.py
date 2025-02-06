@@ -254,13 +254,13 @@ from src.soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface impo
 from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
 from src.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from src.storage.backingDatabase import BackingDatabase
-from src.storage.backingPsqlDatabase import BackingPsqlDatabase
-from src.storage.backingSqliteDatabase import BackingSqliteDatabase
 from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
-from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
-from src.storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
+from src.storage.psql.psqlBackingDatabase import PsqlBackingDatabase
+from src.storage.psql.psqlCredentialsProvider import PsqlCredentialsProvider
+from src.storage.psql.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
+from src.storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.storage.tempFileHelper import TempFileHelper
@@ -682,14 +682,14 @@ match generalSettingsSnapshot.requireDatabaseType():
             credentialsJsonReader = JsonFileReader('../config/psqlCredentials.json')
         )
 
-        backingDatabase = BackingPsqlDatabase(
+        backingDatabase = PsqlBackingDatabase(
             eventLoop = eventLoop,
             psqlCredentialsProvider = psqlCredentialsProvider,
             timber = timber
         )
 
     case DatabaseType.SQLITE:
-        backingDatabase = BackingSqliteDatabase(
+        backingDatabase = SqliteBackingDatabase(
             eventLoop = eventLoop
         )
 

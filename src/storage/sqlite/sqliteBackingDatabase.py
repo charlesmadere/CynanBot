@@ -2,14 +2,14 @@ from asyncio import AbstractEventLoop
 
 import aiosqlite
 
-from .backingDatabase import BackingDatabase
-from .databaseConnection import DatabaseConnection
-from .databaseType import DatabaseType
 from .sqliteDatabaseConnection import SqliteDatabaseConnection
-from ..misc import utils as utils
+from ..backingDatabase import BackingDatabase
+from ..databaseConnection import DatabaseConnection
+from ..databaseType import DatabaseType
+from ...misc import utils as utils
 
 
-class BackingSqliteDatabase(BackingDatabase):
+class SqliteBackingDatabase(BackingDatabase):
 
     def __init__(
         self,

@@ -6,7 +6,7 @@ import pytest
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.storage.backingDatabase import BackingDatabase
-from src.storage.backingSqliteDatabase import BackingSqliteDatabase
+from src.storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
@@ -23,7 +23,7 @@ class TestTriviaEmoteGenerator:
         eventLoop = eventLoop
     )
 
-    backingDatabase: BackingDatabase = BackingSqliteDatabase(
+    backingDatabase: BackingDatabase = SqliteBackingDatabase(
         eventLoop = eventLoop
     )
 

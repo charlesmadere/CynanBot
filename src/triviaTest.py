@@ -27,9 +27,9 @@ from .pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from .pkmn.pokepediaRepository import PokepediaRepository
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from .storage.backingDatabase import BackingDatabase
-from .storage.backingSqliteDatabase import BackingSqliteDatabase
 from .storage.jsonFileReader import JsonFileReader
 from .storage.linesFileReader import LinesFileReader
+from .storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
 from .timber.timber import Timber
 from .timber.timberInterface import TimberInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepository import AdditionalTriviaAnswersRepository
@@ -175,7 +175,7 @@ authRepository = AuthRepository(
     authJsonReader = JsonFileReader('../config/authRepository.json')
 )
 
-backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
+backingDatabase: BackingDatabase = SqliteBackingDatabase(eventLoop = eventLoop)
 
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(
     timber = timber

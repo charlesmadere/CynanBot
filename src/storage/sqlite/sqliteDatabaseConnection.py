@@ -3,10 +3,10 @@ from typing import Any
 
 import aiosqlite
 
-from .databaseConnection import DatabaseConnection
-from .databaseType import DatabaseType
-from .exceptions import DatabaseConnectionIsClosedException, DatabaseOperationalError
-from ..misc import utils as utils
+from ..databaseConnection import DatabaseConnection
+from ..databaseType import DatabaseType
+from ..exceptions import DatabaseConnectionIsClosedException, DatabaseOperationalError
+from ...misc import utils as utils
 
 
 class SqliteDatabaseConnection(DatabaseConnection):

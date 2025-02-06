@@ -24,7 +24,7 @@ from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsR
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
 from ..soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
-from ..storage.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
+from ..storage.psql.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from ..streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from ..streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface

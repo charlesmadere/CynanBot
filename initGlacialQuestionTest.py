@@ -21,11 +21,11 @@ from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
 from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from src.storage.backingDatabase import BackingDatabase
-from src.storage.backingPsqlDatabase import BackingPsqlDatabase
-from src.storage.backingSqliteDatabase import BackingSqliteDatabase
 from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
-from src.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from src.storage.psql.psqlBackingDatabase import PsqlBackingDatabase
+from src.storage.psql.psqlCredentialsProvider import PsqlCredentialsProvider
+from src.storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.timber.timber import Timber
@@ -100,7 +100,7 @@ generalSettingsSnapshot = generalSettingsRepository.getAll()
 backingDatabase: BackingDatabase
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
-        backingDatabase = BackingPsqlDatabase(
+        backingDatabase = PsqlBackingDatabase(
             eventLoop = eventLoop,
             psqlCredentialsProvider = PsqlCredentialsProvider(
                 credentialsJsonReader = JsonFileReader('../config/psqlCredentials.json')
@@ -109,7 +109,7 @@ match generalSettingsSnapshot.requireDatabaseType():
         )
 
     case DatabaseType.SQLITE:
-        backingDatabase = BackingSqliteDatabase(
+        backingDatabase = SqliteBackingDatabase(
             eventLoop = eventLoop
         )
 

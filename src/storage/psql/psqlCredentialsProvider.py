@@ -1,8 +1,8 @@
 from typing import Any
 
-from .jsonReaderInterface import JsonReaderInterface
 from .psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
-from ..misc import utils as utils
+from ..jsonReaderInterface import JsonReaderInterface
+from ...misc import utils as utils
 
 
 class PsqlCredentialsProvider(PsqlCredentialsProviderInterface):

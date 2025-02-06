@@ -1,17 +1,23 @@
 import traceback
 from asyncio import AbstractEventLoop
+from dataclasses import dataclass
 
 import asyncpg
 
-from .backingDatabase import BackingDatabase
-from .databaseConnection import DatabaseConnection
-from .databaseType import DatabaseType
 from .psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from .psqlDatabaseConnection import PsqlDatabaseConnection
-from ..timber.timberInterface import TimberInterface
+from ..backingDatabase import BackingDatabase
+from ..databaseConnection import DatabaseConnection
+from ..databaseType import DatabaseType
+from ...timber.timberInterface import TimberInterface
 
 
-class BackingPsqlDatabase(BackingDatabase):
+class PsqlBackingDatabase(BackingDatabase):
+
+    @dataclass(frozen = True)
+    class ConnectionPoolData:
+        connectionPool: asyncpg.Pool
+        wasConnectionPoolNewlyCreated: bool
 
     def __init__(
         self,
@@ -43,11 +49,25 @@ class BackingPsqlDatabase(BackingDatabase):
         return DatabaseType.POSTGRESQL
 
     async def getConnection(self) -> DatabaseConnection:
-        connectionPoolCreated = False
+        connectionPoolData = await self.__getConnectionPool()
+        connection = await connectionPoolData.connectionPool.acquire()
+
+        databaseConnection: DatabaseConnection = PsqlDatabaseConnection(
+            connection = connection,
+            pool = connectionPoolData.connectionPool
+        )
+
+        if connectionPoolData.wasConnectionPoolNewlyCreated:
+            await self.__createCollations(databaseConnection)
+
+        return databaseConnection
+
+    async def __getConnectionPool(self) -> ConnectionPoolData:
+        wasConnectionPoolNewlyCreated = False
         connectionPool = self.__connectionPool
 
         if connectionPool is None:
-            connectionPoolCreated = True
+            wasConnectionPoolNewlyCreated = True
             databaseName = await self.__psqlCredentialsProvider.requireDatabaseName()
             maxConnections = await self.__psqlCredentialsProvider.requireMaxConnections()
             password = await self.__psqlCredentialsProvider.getPassword()
@@ -61,23 +81,16 @@ class BackingPsqlDatabase(BackingDatabase):
                 user = user
             )
 
+            if not isinstance(connectionPool, asyncpg.Pool):
+                # this scenario should definitely be impossible, but the Python type checking was
+                # getting angry without this check
+                exception = RuntimeError(f'Failed to instantiate asyncpg.Pool ({connectionPool=}) ({databaseName=}) ({maxConnections=}) ({user=})')
+                self.__timber.log('BackingPsqlDatabase', f'Failed to instantiate asyncpg.Pool ({connectionPool=}) ({databaseName=}) ({maxConnections=}) ({user=})', exception, traceback.format_exc())
+                raise exception
+
             self.__connectionPool = connectionPool
 
-        if not isinstance(connectionPool, asyncpg.Pool):
-            # this scenario should definitely be impossible, but the Python type checking was
-            # getting angry without this check
-            exception = RuntimeError(f'Failed to instantiate asyncpg.Pool: \"{connectionPool}\"')
-            self.__timber.log('BackingPsqlDatabase', f'Failed to instantiate asyncpg.Pool: \"{connectionPool}\" ({exception=})', exception, traceback.format_exc())
-            raise exception
-
-        connection = await connectionPool.acquire()
-
-        databaseConnection: DatabaseConnection = PsqlDatabaseConnection(
-            connection = connection,
-            pool = connectionPool
+        return PsqlBackingDatabase.ConnectionPoolData(
+            connectionPool = connectionPool,
+            wasConnectionPoolNewlyCreated = wasConnectionPoolNewlyCreated
         )
-
-        if connectionPoolCreated:
-            await self.__createCollations(databaseConnection)
-
-        return databaseConnection
