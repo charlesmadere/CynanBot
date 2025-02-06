@@ -26,5 +26,5 @@ class GlacialTtsStorageRepositoryInterface(ABC):
     async def remove(
         self,
         glacialId: str
-    ):
+    ) -> GlacialTtsData | None:
         pass
