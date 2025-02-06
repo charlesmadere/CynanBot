@@ -155,11 +155,16 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         if ttsMonsterUser.characterUsage >= ttsMonsterUser.characterAllowance:
             self.__timber.log('TtsMonsterHelper', f'This TTS Monster user is beyond their character allowance ({ttsMonsterUser=}) ({twitchChannel=}) ({twitchChannelId=})')
 
-            return await self.__generateTtsUsingPrivateApi(
-                message = message,
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
+            if alreadyTriedPrivateApi:
+                # We already tried using the private TTS Monster API to generate a TTS for this user,
+                # so at this point, there's unfortunately nothing more we can do, and must return None.
+                return None
+            else:
+                return await self.__generateTtsUsingPrivateApi(
+                    message = message,
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
 
         messages = await self.__ttsMonsterMessageToVoicesHelper.build(
             voices = voices,
