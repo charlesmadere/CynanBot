@@ -9,6 +9,7 @@ from ..mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
 from ..models.glacialTtsData import GlacialTtsData
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 from ...tts.ttsProvider import TtsProvider
 
 
@@ -18,6 +19,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         self,
         glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface,
         glacialTtsDataMapper: GlacialTtsDataMapperInterface,
+        timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         databaseFile: str = '../db/glacialTtsStorageDatabase.sqlite'
     ):
@@ -25,6 +27,8 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             raise TypeError(f'glacialTtsIdGenerator argument is malformed: \"{glacialTtsIdGenerator}\"')
         elif not isinstance(glacialTtsDataMapper, GlacialTtsDataMapperInterface):
             raise TypeError(f'glacialTtsDataMapper argument is malformed: \"{glacialTtsDataMapper}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(databaseFile):
@@ -32,6 +36,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
         self.__glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = glacialTtsIdGenerator
         self.__glacialTtsDataMapper: GlacialTtsDataMapperInterface = glacialTtsDataMapper
+        self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__databaseFile: str = databaseFile
 
@@ -47,8 +52,44 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
-        # TODO
-        raise RuntimeError()
+        glacialTtsData = await self.get(
+            message = message,
+            provider = provider
+        )
+
+        if glacialTtsData is not None:
+            self.__timber.log('GlacialTtsStorageRepository', f'Went to add a new TTS, but it\'s already been added ({glacialTtsData=})')
+            return glacialTtsData
+
+        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+
+        glacialId = await self.__glacialTtsIdGenerator.generateId(
+            message = message,
+            provider = provider
+        )
+
+        providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
+        connection = await self.__getDatabaseConnection()
+
+        cursor = await connection.execute(
+            '''
+                INSERT INTO glacialTtsStorage
+                VALUES ($1, $2, $3, $4)
+            ''',
+            ( storeDateTime.isoformat(), glacialId, message, providerString  )
+        )
+
+        await cursor.close()
+        await connection.close()
+
+        glacialTtsData = GlacialTtsData(
+            storeDateTime = storeDateTime,
+            glacialId = glacialId,
+            message = message,
+            provider = provider
+        )
+
+        return glacialTtsData
 
     async def get(
         self,

@@ -19,4 +19,4 @@ class GlacialTtsIdGenerator(GlacialTtsIdGeneratorInterface):
 
         string = f'{provider.name}:{message}'
         encodedString = string.encode('utf-8')
-        return hashlib.md5(encodedString).hexdigest()
+        return hashlib.sha256(encodedString).hexdigest()
