@@ -11,15 +11,11 @@ class TtsMonsterSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def getFileExtension(self) -> str:
+        pass
+
+    @abstractmethod
     async def getMediaPlayerVolume(self) -> int | None:
-        pass
-
-    @abstractmethod
-    async def isReturnCharacterUsageEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    async def isUsePrivateApiEnabled(self) -> bool:
         pass
 
     @abstractmethod

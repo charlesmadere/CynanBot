@@ -75,7 +75,10 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
 
         self.__timber.log('TtsMonsterApiTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
 
-    async def get(self, twitchChannelId: str) -> str | None:
+    async def get(
+        self,
+        twitchChannelId: str
+    ) -> str | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -124,7 +127,10 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
         await connection.close()
         await self.__consumeSeedFile()
 
-    async def __readFromDatabase(self, twitchChannelId: str) -> str | None:
+    async def __readFromDatabase(
+        self,
+        twitchChannelId: str
+    ) -> str | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -145,7 +151,10 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
         await connection.close()
         return apiToken
 
-    async def __remove(self, twitchChannelId: str):
+    async def remove(
+        self,
+        twitchChannelId: str
+    ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -161,8 +170,13 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
         )
 
         await connection.close()
+        self.__timber.log('TtsMonsterApiTokensRepository', f'Removed TTS Monster API token for \"{twitchChannelId}\"')
 
-    async def set(self, apiToken: str | None, twitchChannelId: str):
+    async def set(
+        self,
+        apiToken: str | None,
+        twitchChannelId: str
+    ):
         if apiToken is not None and not isinstance(apiToken, str):
             raise TypeError(f'apiToken argument is malformed: \"{apiToken}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -173,13 +187,16 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
                 apiToken = apiToken,
                 twitchChannelId = twitchChannelId
             )
-
-            self.__timber.log('TtsMonsterApiTokensRepository', f'Updated TTS Monster API token for \"{twitchChannelId}\"')
         else:
-            await self.__remove(twitchChannelId = twitchChannelId)
-            self.__timber.log('TtsMonsterApiTokensRepository', f'Removed TTS Monster API token for \"{twitchChannelId}\"')
+            await self.remove(
+                twitchChannelId = twitchChannelId
+            )
 
-    async def __update(self, apiToken: str, twitchChannelId: str):
+    async def __update(
+        self,
+        apiToken: str,
+        twitchChannelId: str
+    ):
         if not utils.isValidStr(apiToken):
             raise TypeError(f'apiToken argument is malformed: \"{apiToken}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -198,3 +215,4 @@ class TtsMonsterApiTokensRepository(TtsMonsterApiTokensRepositoryInterface):
         )
 
         await connection.close()
+        self.__timber.log('TtsMonsterApiTokensRepository', f'Updated TTS Monster API token for \"{twitchChannelId}\"')

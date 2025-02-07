@@ -42,17 +42,13 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
         return await self.__ttsMonsterWebsiteVoiceMapper.fromWebsiteName(defaultVoice)
 
+    async def getFileExtension(self) -> str:
+        jsonContents = await self.__readJson()
+        return utils.getStrFromDict(jsonContents, 'file_extension', fallback = 'wav')
+
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 8)
-
-    async def isReturnCharacterUsageEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'is_return_character_usage_enabled', fallback = True)
-
-    async def isUsePrivateApiEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'is_use_private_api_enabled', fallback = True)
 
     async def isWebsiteVoiceEnabled(self, websiteVoice: TtsMonsterWebsiteVoice) -> bool:
         if not isinstance(websiteVoice, TtsMonsterWebsiteVoice):

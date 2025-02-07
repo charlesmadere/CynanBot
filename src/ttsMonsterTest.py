@@ -110,7 +110,7 @@ async def main():
     charlesUserId = await twitchFriendsUserIdRepository.getCharlesUserId()
 
     if charlesUserId is not None:
-        ttsMonsterUrls = await ttsMonsterPrivateApiHelper.generateTts(
+        ttsMonsterUrls = await ttsMonsterPrivateApiHelper.getSpeech(
             message = 'shadow: telegram',
             twitchChannel = 'smCharles',
             twitchChannelId = charlesUserId

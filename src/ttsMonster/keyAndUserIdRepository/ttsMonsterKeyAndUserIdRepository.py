@@ -17,10 +17,10 @@ class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
-        self.__settingsCache: dict[str, Any] | None = None
+        self.__cache: dict[str, Any] | None = None
 
     async def clearCaches(self):
-        self.__settingsCache = None
+        self.__cache = None
 
     async def get(
         self,
@@ -51,10 +51,10 @@ class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface
         )
 
     async def __readJson(self) -> dict[str, Any]:
-        if self.__settingsCache is not None:
-            return self.__settingsCache
+        if self.__cache is not None:
+            return self.__cache
 
-        jsonContents: dict[str, Any] | None = None
+        jsonContents: dict[str, Any] | None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()
@@ -64,5 +64,5 @@ class TtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface
         if jsonContents is None:
             raise IOError(f'Error reading from TTS Monster Key and User ID repository file: {self.__settingsJsonReader}')
 
-        self.__settingsCache = jsonContents
+        self.__cache = jsonContents
         return jsonContents

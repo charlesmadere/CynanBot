@@ -1,38 +1,24 @@
 import asyncio
-import locale
-import math
-from dataclasses import dataclass
 
-from frozenlist import FrozenList
-
-from .ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from ...ttsMonster.models.ttsMonsterFileReference import TtsMonsterFileReference
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
-    @dataclass(frozen = True)
-    class TtsEvents:
-        fileNames: FrozenList[str]
-        characterAllowance: int | None
-        characterUsage: int | None
-
     def __init__(
         self,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
-        ttsMonsterFileManager: TtsMonsterFileManagerInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
@@ -43,8 +29,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsMonsterFileManager, TtsMonsterFileManagerInterface):
-            raise TypeError(f'ttsMonsterFileManager argument is malformed: \"{ttsMonsterFileManager}\"')
         elif not isinstance(ttsMonsterHelper, TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
         elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
@@ -58,7 +42,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
-        self.__ttsMonsterFileManager: TtsMonsterFileManagerInterface = ttsMonsterFileManager
         self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = ttsMonsterMessageCleaner
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
@@ -66,15 +49,14 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__isLoadingOrPlaying: bool = False
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def __executeTts(self, fileNames: FrozenList[str]):
+    async def __executeTts(self, fileReference: TtsMonsterFileReference):
         volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():
-            await self.__soundPlayerManager.playSoundFiles(
-                filePaths = fileNames,
+            await self.__soundPlayerManager.playSoundFile(
+                filePath = fileReference.filePath,
                 volume = volume
             )
 
@@ -83,7 +65,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS Monster TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS Monster TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -101,81 +83,26 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
-        ttsMonsterTtsEvent = await self.__processTtsEvent(event)
+        fileReference = await self.__processTtsEvent(event)
 
-        if ttsMonsterTtsEvent is None or len(ttsMonsterTtsEvent.fileNames) == 0:
-            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS messages ({event=}) ({ttsMonsterTtsEvent=})')
+        if fileReference is None:
+            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
 
-        await self.__reportCharacterUsage(
-            characterAllowance = ttsMonsterTtsEvent.characterAllowance,
-            characterUsage = ttsMonsterTtsEvent.characterUsage,
-            twitchChannel = event.twitchChannel
+        self.__timber.log('TtsMonsterTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileReference)
+
+    async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterFileReference | None:
+        cleanedMessage = await self.__ttsMonsterMessageCleaner.clean(
+            message = event.message
         )
 
-        self.__timber.log('TtsMonsterTtsManager', f'Playing {len(ttsMonsterTtsEvent.fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        await self.__executeTts(ttsMonsterTtsEvent.fileNames)
-
-    async def __processTtsEvent(self, event: TtsEvent) -> TtsEvents | None:
-        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
-
-        ttsMonsterFiles = await self.__ttsMonsterHelper.generateTts(
-            message = message,
+        return await self.__ttsMonsterHelper.generateTts(
+            message = cleanedMessage,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )
-
-        if ttsMonsterFiles is None or len(ttsMonsterFiles.files) == 0:
-            self.__timber.log('TtsMonsterTtsManager', f'Failed to generate any TTS files ({event=}) ({ttsMonsterFiles=})')
-            self.__isLoadingOrPlaying = False
-            return None
-
-        fileNames: FrozenList[str] = FrozenList(ttsMonsterFiles.files)
-        fileNames.freeze()
-
-        return TtsMonsterTtsManager.TtsEvents(
-            fileNames = fileNames,
-            characterAllowance = ttsMonsterFiles.characterAllowance,
-            characterUsage = ttsMonsterFiles.characterUsage
-        )
-
-    async def __reportCharacterUsage(
-        self,
-        characterAllowance: int | None,
-        characterUsage: int | None,
-        twitchChannel: str
-    ):
-        twitchChannelProvider = self.__twitchChannelProvider
-
-        if twitchChannelProvider is None or not utils.isValidInt(characterUsage):
-            return
-
-        remainingCharactersString = ''
-        usagePercentString = ''
-        if utils.isValidInt(characterAllowance):
-            remainingCharacters = locale.format_string("%d", characterAllowance - characterUsage, grouping = True)
-            remainingCharactersString = f'(remaining characters: {remainingCharacters})'
-
-            usagePercent = str(int(math.ceil((float(characterUsage) / float(characterAllowance)) * float(100)))) + '%'
-            usagePercentString = f'({usagePercent} usage)'
-
-        self.__timber.log('TtsMonsterTtsManager', f'Current TTS Monster character usage stats in \"{twitchChannel}\": ({characterUsage=}) ({characterAllowance=}) ({usagePercentString=})')
-
-        characterUsageString = locale.format_string("%d", characterUsage, grouping = True)
-        messageable = await twitchChannelProvider.getTwitchChannel(twitchChannel)
-
-        await self.__twitchUtils.waitThenSend(
-            messageable = messageable,
-            delaySeconds = 3,
-            message = f'ⓘ TTS Monster character usage is currently {characterUsageString} {remainingCharactersString} {usagePercentString}'.strip()
-        )
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from ..models.ttsMonsterFileReference import TtsMonsterFileReference
+
 
 class TtsMonsterHelperInterface(ABC):
 
@@ -9,5 +11,5 @@ class TtsMonsterHelperInterface(ABC):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> str | None:
+    ) -> TtsMonsterFileReference | None:
         pass

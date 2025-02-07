@@ -17,6 +17,7 @@ class GlacialTtsFileRetrieverInterface(ABC):
     @abstractmethod
     async def saveFile(
         self,
+        fileExtension: str,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsFileReference:

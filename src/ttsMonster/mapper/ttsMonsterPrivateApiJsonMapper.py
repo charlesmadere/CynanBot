@@ -1,6 +1,7 @@
 from typing import Any
 
 from .ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from ..exceptions import TtsMonsterJsonException
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from ...misc import utils as utils
@@ -21,10 +22,15 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        link = utils.getStrFromDict(jsonContents, 'link')
+        link: str | None = None
+        if 'link' in jsonContents and utils.isValidStr(jsonContents.get('link')):
+            link = utils.getStrFromDict(jsonContents, 'link')
+
+        if not utils.isValidUrl(link):
+            raise TtsMonsterJsonException(f'\"link\" value in TTS Monster JSON response is missing/malformed! ({link=}) ({jsonContents=})')
 
         warning: str | None = None
-        if 'warning' in jsonContents and utils.isValidStr(jsonContents.get('warning', None)):
+        if 'warning' in jsonContents and utils.isValidStr(jsonContents.get('warning')):
             warning = utils.getStrFromDict(jsonContents, 'warning')
 
         return TtsMonsterPrivateApiTtsData(
@@ -40,10 +46,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             return None
 
         status = utils.getIntFromDict(jsonContents, 'status')
-
         data = await self.parseTtsData(jsonContents.get('data'))
+
         if data is None:
-            return None
+            raise TtsMonsterJsonException(f'\"data\" value in TTS Monster JSON response is missing/malformed! ({data=}) ({jsonContents=})')
 
         return TtsMonsterPrivateApiTtsResponse(
             status = status,

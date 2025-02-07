@@ -1,12 +1,10 @@
 import traceback
 
-from frozenlist import FrozenList
-
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from ..keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
     TtsMonsterKeyAndUserIdRepositoryInterface
-from ..models.ttsMonsterUrls import TtsMonsterUrls
+from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 
@@ -30,19 +28,26 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
         self.__ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = ttsMonsterKeyAndUserIdRepository
         self.__ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = ttsMonsterPrivateApiService
 
-    async def generateTts(
+    async def getSpeech(
         self,
         message: str,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TtsMonsterUrls | None:
+    ) -> bytes | None:
+        if not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
         keyAndUserId = await self.__ttsMonsterKeyAndUserIdRepository.get(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         if keyAndUserId is None:
-            self.__timber.log('TtsMonsterPrivateApiHelper', f'The given Twitch channel does not have a TTS Monster key and user ID value available ({twitchChannel=}) ({twitchChannelId=})')
+            self.__timber.log('TtsMonsterPrivateApiHelper', f'The given Twitch channel does not have a TTS Monster key and user ID value available ({message=}) ({twitchChannel=}) ({twitchChannelId=})')
             return None
 
         try:
@@ -55,12 +60,12 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
             self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
             return None
 
-        urls: FrozenList[str] = FrozenList()
-        urls.append(ttsResponse.data.link)
-        urls.freeze()
+        try:
+            speechBytes = await self.__ttsMonsterPrivateApiService.fetchGeneratedTts(
+                ttsUrl = ttsResponse.data.link
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when fetching generated TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({ttsResponse=}): {e}', e, traceback.format_exc())
+            return None
 
-        return TtsMonsterUrls(
-            urls = urls,
-            characterAllowance = None,
-            characterUsage = None
-        )
+        return speechBytes

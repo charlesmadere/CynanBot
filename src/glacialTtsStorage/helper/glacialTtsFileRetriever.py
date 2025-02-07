@@ -1,12 +1,13 @@
 import re
 from asyncio import AbstractEventLoop
+from dataclasses import dataclass
 from typing import Pattern
 
 import aiofiles.os
 import aiofiles.ospath
 
 from .glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
-from ..exceptions import GlacialTtsAlreadyExists
+from ..exceptions import GlacialTtsAlreadyExists, GlacialTtsFolderIsNotAFolder
 from ..mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
 from ..models.glacialTtsFileReference import GlacialTtsFileReference
 from ..repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
@@ -16,6 +17,11 @@ from ...tts.ttsProvider import TtsProvider
 
 
 class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
+
+    @dataclass(frozen = True)
+    class FileReference:
+        fileName: str
+        filePath: str
 
     def __init__(
         self,
@@ -60,26 +66,27 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         if glacialTtsData is None:
             return None
 
-        filePath = await self.__findFile(
+        fileReference = await self.__findFile(
             glacialId = glacialTtsData.glacialId,
             provider = provider
         )
 
-        if not utils.isValidStr(filePath):
+        if fileReference is None:
             return None
+        else:
+            self.__timber.log('GlacialTtsFileRetriever', f'Found a Glacial TTS file to reuse ({glacialTtsData=}) ({fileReference=})')
 
-        self.__timber.log('GlacialTtsFileRetriever', f'Found a Glacial TTS file to reuse ({glacialTtsData=}) ({filePath=})')
-
-        return GlacialTtsFileReference(
-            glacialTtsData = glacialTtsData,
-            filePath = filePath
-        )
+            return GlacialTtsFileReference(
+                glacialTtsData = glacialTtsData,
+                fileName = fileReference.fileName,
+                filePath = fileReference.filePath
+            )
 
     async def __findFile(
         self,
         glacialId: str,
         provider: TtsProvider
-    ) -> str | None:
+    ) -> FileReference | None:
         providerFolder = await self.__glacialTtsDataMapper.toFolderName(provider)
         currentTtsFolder = f'{self.__directory}/{providerFolder}'
 
@@ -88,7 +95,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             return None
         elif not await aiofiles.ospath.isdir(currentTtsFolder):
             self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({currentTtsFolder=})')
-            return None
+            raise GlacialTtsFolderIsNotAFolder(f'')
 
         directoryContents = await aiofiles.os.scandir(currentTtsFolder)
 
@@ -97,22 +104,34 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
                 continue
 
             fileNameWithoutExtensionMatch = self.__fileNameWithoutExtensionRegEx.fullmatch(entry.name)
-
             if fileNameWithoutExtensionMatch is None:
                 continue
 
             fileNameWithoutExtension = fileNameWithoutExtensionMatch.group(1)
+            if not utils.isValidStr(fileNameWithoutExtension):
+                continue
 
             if glacialId == fileNameWithoutExtension:
-                return f'{currentTtsFolder}/{entry.name}'
+                return GlacialTtsFileRetriever.FileReference(
+                    fileName = entry.name,
+                    filePath = f'{currentTtsFolder}/{entry.name}'
+                )
 
         return None
 
     async def saveFile(
         self,
+        fileExtension: str,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsFileReference:
+        if not utils.isValidStr(fileExtension):
+            raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
+        elif not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(provider, TtsProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
             message = message,
             provider = provider
@@ -126,18 +145,20 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             provider = provider
         )
 
-        filePath = await self.__findFile(
+        fileReference = await self.__findFile(
             glacialId = glacialTtsData.glacialId,
             provider = provider
         )
 
-        if utils.isValidStr(filePath):
-            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({provider=}) ({filePath=})')
+        if fileReference is not None:
+            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({provider=}) ({fileReference=})')
 
         providerFolder = await self.__glacialTtsDataMapper.toFolderName(provider)
-        filePath = f'{self.__directory}/{providerFolder}/{glacialTtsData.glacialId}'
+        fileName = f'{glacialTtsData.glacialId}.{fileExtension}'
+        filePath = f'{self.__directory}/{providerFolder}/{fileName}'
 
         return GlacialTtsFileReference(
             glacialTtsData = glacialTtsData,
+            fileName = fileName,
             filePath = filePath
         )

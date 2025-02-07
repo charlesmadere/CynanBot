@@ -43,6 +43,9 @@ class FakeStreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterfa
     async def get(self, twitchChannelId: str) -> str | None:
         return ''
 
+    async def remove(self, twitchChannelId: str):
+        raise RuntimeError('Not implemented')
+
     async def set(self, userKey: str | None, twitchChannelId: str):
         raise RuntimeError('Not implemented')
 

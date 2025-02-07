@@ -145,7 +145,10 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         await connection.close()
         return userKey
 
-    async def __remove(self, twitchChannelId: str):
+    async def remove(
+        self,
+        twitchChannelId: str
+    ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -161,8 +164,13 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         )
 
         await connection.close()
+        self.__timber.log('StreamElementsUserKeyRepository', f'Removed Stream Elements user key for \"{twitchChannelId}\"')
 
-    async def set(self, userKey: str | None, twitchChannelId: str):
+    async def set(
+        self,
+        userKey: str | None,
+        twitchChannelId: str
+    ):
         if userKey is not None and not isinstance(userKey, str):
             raise TypeError(f'userKey argument is malformed: \"{userKey}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -173,13 +181,14 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                 userKey = userKey,
                 twitchChannelId = twitchChannelId
             )
-
-            self.__timber.log('StreamElementsUserKeyRepository', f'Updated Stream Elements user key for \"{twitchChannelId}\"')
         else:
-            await self.__remove(twitchChannelId = twitchChannelId)
-            self.__timber.log('StreamElementsUserKeyRepository', f'Removed Stream Elements user key for \"{twitchChannelId}\"')
+            await self.remove(twitchChannelId = twitchChannelId)
 
-    async def __update(self, userKey: str, twitchChannelId: str):
+    async def __update(
+        self,
+        userKey: str,
+        twitchChannelId: str
+    ):
         if not utils.isValidStr(userKey):
             raise TypeError(f'userKey argument is malformed: \"{userKey}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -198,3 +207,4 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         )
 
         await connection.close()
+        self.__timber.log('StreamElementsUserKeyRepository', f'Updated Stream Elements user key for \"{twitchChannelId}\"')

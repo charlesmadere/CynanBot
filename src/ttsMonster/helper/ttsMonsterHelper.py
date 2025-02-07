@@ -1,52 +1,44 @@
-from dataclasses import dataclass
+import traceback
+from asyncio import AbstractEventLoop
+
+import aiofiles
+import aiofiles.os
+import aiofiles.ospath
 
 from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
-from ..apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
-from ..messageToVoicesHelper.ttsMonsterMessageToVoicePair import TtsMonsterMessageToVoicePair
+from ..models.ttsMonsterFileReference import TtsMonsterFileReference
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...misc import utils as utils
-from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsProvider import TtsProvider
 
 
 class TtsMonsterHelper(TtsMonsterHelperInterface):
 
-    @dataclass(frozen = True)
-    class TtsRequestEntry:
-        index: int
-        messageToVoicePair: TtsMonsterMessageToVoicePair
-
-    @dataclass(frozen = True)
-    class TtsResponseEntry:
-        characterUsage: int | None
-        index: int
-        url: str
-
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface,
         timber: TimberInterface,
-        ttsMonsterApiService: TtsMonsterApiServiceInterface,
         ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface
     ):
-        if not isinstance(glacialTtsFileRetriever, GlacialTtsFileRetrieverInterface):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(glacialTtsFileRetriever, GlacialTtsFileRetrieverInterface):
             raise TypeError(f'glacialTtsFileRetriever argument is malformed: \"{glacialTtsFileRetriever}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsMonsterApiService, TtsMonsterApiServiceInterface):
-            raise TypeError(f'ttsMonsterApiService argument is malformed: \"{ttsMonsterApiService}\"')
         elif not isinstance(ttsMonsterPrivateApiHelper, TtsMonsterPrivateApiHelperInterface):
             raise TypeError(f'ttsMonsterPrivateApiHelper argument is malformed: \"{ttsMonsterPrivateApiHelper}\"')
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
         self.__timber: TimberInterface = timber
-        self.__ttsMonsterApiService: TtsMonsterApiServiceInterface = ttsMonsterApiService
         self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = ttsMonsterPrivateApiHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
 
@@ -55,7 +47,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> str | None:
+    ) -> TtsMonsterFileReference | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -72,23 +64,49 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         )
 
         if glacialFile is not None:
-            return glacialFile.filePath
+            return TtsMonsterFileReference(
+                fileName = glacialFile.fileName,
+                filePath = glacialFile.filePath
+            )
 
-        ttsMonsterUrls = await self.__ttsMonsterPrivateApiHelper.generateTts(
+        speechBytes = await self.__ttsMonsterPrivateApiHelper.getSpeech(
             message = message,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
-        if ttsMonsterUrls is None or len(ttsMonsterUrls.urls) == 0:
+        if speechBytes is None:
             return None
+
+        glacialFile = await self.__glacialTtsFileRetriever.saveFile(
+            fileExtension = await self.__ttsMonsterSettingsRepository.getFileExtension(),
+            message = message,
+            provider = TtsProvider.TTS_MONSTER
+        )
+
+        return TtsMonsterFileReference(
+            fileName = glacialFile.fileName,
+            filePath = glacialFile.filePath
+        )
+
+    async def __saveSpeechBytes(
+        self,
+        speechBytes: bytes,
+        filePath: str
+    ):
+        if not isinstance(speechBytes, bytes):
+            raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
+        elif not utils.isValidStr(filePath):
+            raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
 
         try:
-            speechBytes = await self.__ttsMonsterApiService.fetchGeneratedTts(
-                ttsUrl = ttsMonsterUrls.urls[0]
-            )
-        except GenericNetworkException as e:
-            return None
-
-        # TODO
-        return None
+            async with aiofiles.open(
+                file = filePath,
+                mode = 'wb',
+                loop = self.__eventLoop
+            ) as file:
+                await file.write(speechBytes)
+                await file.flush()
+        except Exception as e:
+            self.__timber.log('TtsMonsterHelper', f'Encountered exception when trying to write TTS Monster speechBytes to file ({filePath=}): {e}', e, traceback.format_exc())
+            raise e

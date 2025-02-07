@@ -6,6 +6,13 @@ from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResp
 class TtsMonsterPrivateApiServiceInterface(ABC):
 
     @abstractmethod
+    async def fetchGeneratedTts(
+        self,
+        ttsUrl: str
+    ) -> bytes:
+        pass
+
+    @abstractmethod
     async def generateTts(
         self,
         key: str,

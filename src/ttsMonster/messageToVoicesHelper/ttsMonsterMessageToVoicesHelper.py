@@ -131,7 +131,6 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
     ) -> FrozenList[VoiceMessageHeader]:
         locations: FrozenList[TtsMonsterMessageToVoicesHelper.VoiceMessageHeader] = FrozenList()
         occurrencesIterator = self.__voicePatternRegEx.finditer(message)
-
         defaultVoice = await self.__getDefaultVoice(voiceNamesToVoice.values())
 
         if occurrencesIterator is None:
@@ -168,7 +167,7 @@ class TtsMonsterMessageToVoicesHelper(TtsMonsterMessageToVoicesHelperInterface):
                 voice = defaultVoice
             ))
 
-        for index, occurrence in enumerate(occurrences):
+        for occurrence in occurrences:
             voiceName = occurrence.group(2).casefold()
             voice = voiceNamesToVoice.get(voiceName, None)
 
