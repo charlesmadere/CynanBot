@@ -51,7 +51,7 @@ class ChatBackMessagesChatAction(AbsChatAction):
             if self.__lastMessageTimes.get(msg) is None:
                 self.__lastMessageTimes[msg] = TimedDict(self.__cooldown)
 
-            if msg in splits and self.__lastMessageTimes[msg].isReadyAndUpdate(user.handle):
+            if (message.getContent() == msg or msg in splits) and self.__lastMessageTimes[msg].isReadyAndUpdate(user.handle):
                 await self.__twitchUtils.safeSend(message.getChannel(), msg)
                 self.__timber.log('ChatBackMessagesChatAction', f'Handled {msg} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
                 return True
