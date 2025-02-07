@@ -9,6 +9,7 @@ from lru import LRU
 
 from .twitchSubscriptionStatus import TwitchSubscriptionStatus
 from .twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
+from ..api.models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..api.models.twitchUserSubscription import TwitchUserSubscription
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchJsonException, TwitchStatusCodeException
@@ -109,13 +110,23 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
-    ) -> TwitchUserSubscription | None:
+    ) -> TwitchUserSubscription | TwitchBroadcasterSubscription | None:
         try:
-            return await self.__twitchApiService.fetchUserSubscription(
-                broadcasterId = twitchChannelId,
-                chatterUserId = userId,
-                twitchAccessToken = twitchAccessToken
-            )
+            # prevents bot from encountering api issue where it states
+            # The ID in broadcaster_id must match the user ID found in the request\'s OAuth token
+            # although more testing is required to see if this is working properly
+            if twitchChannelId != userId:
+                return await self.__twitchApiService.fetchBroadcasterSubscription(
+                    broadcasterId = twitchChannelId,
+                    chatterUserId = userId,
+                    twitchAccessToken = twitchAccessToken
+                )
+            else:
+                return await self.__twitchApiService.fetchUserSubscription(
+                    broadcasterId = twitchChannelId,
+                    chatterUserId = userId,
+                    twitchAccessToken = twitchAccessToken
+                )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
             self.__timber.log('TwitchSubscriptionsRepository', f'Failed to fetch Twitch subscription status from Twitch API ({twitchAccessToken=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
             return None

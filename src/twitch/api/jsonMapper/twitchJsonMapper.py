@@ -10,7 +10,7 @@ from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
 from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
-from ..models.twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
+from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
@@ -197,33 +197,44 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        isGift = utils.getBoolFromDict(jsonResponse, 'is_gift')
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
 
-        broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
-        broadcasterLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_login')
-        broadcasterName = utils.getStrFromDict(jsonResponse, 'broadcaster_name')
+        if not isinstance(data, list):
+            return None
+        elif len(data) == 0:
+            return None
+
+        dataEntry: dict[str, Any] | Any | None = data[0]
+        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
+            return None
+
+        isGift = utils.getBoolFromDict(dataEntry, 'is_gift')
+
+        broadcasterId = utils.getStrFromDict(dataEntry, 'broadcaster_id')
+        broadcasterLogin = utils.getStrFromDict(dataEntry, 'broadcaster_login')
+        broadcasterName = utils.getStrFromDict(dataEntry, 'broadcaster_name')
 
         gifterId: str | None = None
-        if 'gifter_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_id')):
-            gifterId = utils.getStrFromDict(jsonResponse, 'gifter_id')
+        if 'gifter_id' in dataEntry and utils.isValidStr(dataEntry.get('gifter_id')):
+            gifterId = utils.getStrFromDict(dataEntry, 'gifter_id')
 
         gifterLogin: str | None = None
-        if 'gifter_login' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_login')):
-            gifterLogin = utils.getStrFromDict(jsonResponse, 'gifter_login')
+        if 'gifter_login' in dataEntry and utils.isValidStr(dataEntry.get('gifter_login')):
+            gifterLogin = utils.getStrFromDict(dataEntry, 'gifter_login')
 
         gifterName: str | None = None
-        if 'gifter_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_name')):
-            gifterName = utils.getStrFromDict(jsonResponse, 'gifter_name')
+        if 'gifter_name' in dataEntry and utils.isValidStr(dataEntry.get('gifter_name')):
+            gifterName = utils.getStrFromDict(dataEntry, 'gifter_name')
 
         planName: str | None = None
-        if 'plan_name' in jsonResponse and utils.isValidStr(jsonResponse.get('plan_name')):
-            planName = utils.getStrFromDict(jsonResponse, 'plan_name')
+        if 'plan_name' in dataEntry and utils.isValidStr(dataEntry.get('plan_name')):
+            planName = utils.getStrFromDict(dataEntry, 'plan_name')
 
-        userId = utils.getStrFromDict(jsonResponse, 'user_id')
-        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
-        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+        userId = utils.getStrFromDict(dataEntry, 'user_id')
+        userLogin = utils.getStrFromDict(dataEntry, 'user_login')
+        userName = utils.getStrFromDict(dataEntry, 'user_name')
 
-        tier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
+        tier = await self.requireSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
 
         return TwitchBroadcasterSubscription(
             isGift = isGift,
