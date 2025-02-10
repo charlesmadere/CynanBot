@@ -89,6 +89,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
         self.__ttsChattersChatAction: AbsChatAction | None = ttsChattersChatAction
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__soundAlertChatActionPlayed: bool = False
 
     async def __handleAnivChatActions(
         self,
@@ -190,7 +191,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
             )
 
         if self.__soundAlertChatAction is not None:
-            await self.__soundAlertChatAction.handleChat(
+            self.__soundAlertChatActionPlayed = await self.__soundAlertChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
                 user = user
@@ -204,8 +205,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
             )
 
         if self.__ttsChattersChatAction is not None:
-            await self.__ttsChattersChatAction.handleChat(
-                mostRecentChat = mostRecentChat,
-                message = message,
-                user = user
-            )
+            if not self.__soundAlertChatActionPlayed:
+                await self.__ttsChattersChatAction.handleChat(
+                    mostRecentChat = mostRecentChat,
+                    message = message,
+                    user = user
+                )

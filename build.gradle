@@ -15,7 +15,7 @@ python {
     minPipVersion = '24.1.1'
     pip 'pip:24.1.2'
     pip 'aiofiles:24.1.0'
-    pip 'aiohttp:3.11.11'
+    pip 'aiohttp:3.11.12'
     pip 'aiosignal:1.3.2'
     pip 'aiosqlite:0.21.0'
     pip 'asyncpg:0.30.0'

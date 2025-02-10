@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .twitchBroadcasterSusbcription import TwitchBroadcasterSubscription
+from .twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 
 
 @dataclass(frozen = True)
