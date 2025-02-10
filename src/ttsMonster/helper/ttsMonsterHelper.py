@@ -84,16 +84,23 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             provider = TtsProvider.TTS_MONSTER
         )
 
-        return TtsMonsterFileReference(
-            fileName = glacialFile.fileName,
+        if await self.__saveSpeechBytes(
+            speechBytes = speechBytes,
             filePath = glacialFile.filePath
-        )
+        ):
+            return TtsMonsterFileReference(
+                fileName = glacialFile.fileName,
+                filePath = glacialFile.filePath
+            )
+        else:
+            self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({message=}) ({glacialFile=})')
+            return None
 
     async def __saveSpeechBytes(
         self,
         speechBytes: bytes,
         filePath: str
-    ):
+    ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
         elif not utils.isValidStr(filePath):
@@ -109,4 +116,6 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
                 await file.flush()
         except Exception as e:
             self.__timber.log('TtsMonsterHelper', f'Encountered exception when trying to write TTS Monster speechBytes to file ({filePath=}): {e}', e, traceback.format_exc())
-            raise e
+            return False
+
+        return True

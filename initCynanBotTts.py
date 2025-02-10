@@ -107,6 +107,14 @@ from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
 from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from src.funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
 from src.funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from src.glacialTtsStorage.helper.glacialTtsFileRetriever import GlacialTtsFileRetriever
+from src.glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
+from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
+from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
+from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
+from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
@@ -282,18 +290,12 @@ from src.tts.streamElements.streamElementsFileManager import StreamElementsFileM
 from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from src.tts.streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
-from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
 from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
 from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
-from src.ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
-from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepository import TtsMonsterApiTokensRepository
-from src.ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
 from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
@@ -301,8 +303,6 @@ from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonster
 from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepository import TtsMonsterKeyAndUserIdRepository
 from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
     TtsMonsterKeyAndUserIdRepositoryInterface
-from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
-from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
@@ -312,9 +312,6 @@ from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterfa
     TtsMonsterMessageToVoicesHelperInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepository import TtsMonsterStreamerVoicesRepository
-from src.ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import \
-    TtsMonsterStreamerVoicesRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
@@ -359,14 +356,6 @@ from src.twitch.subscribers.twitchSubscriptionsRepository import TwitchSubscript
 from src.twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from src.twitch.timeout.timeoutImmuneUserIdsRepository import TimeoutImmuneUserIdsRepository
 from src.twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
-from src.glacialTtsStorage.helper.glacialTtsFileRetriever import GlacialTtsFileRetriever
-from src.glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
-from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
-from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
-from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
-from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
-from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
-from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
 from src.twitch.timeout.twitchTimeoutHelper import TwitchTimeoutHelper
 from src.twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from src.twitch.timeout.twitchTimeoutRemodHelper import TwitchTimeoutRemodHelper
@@ -1308,39 +1297,21 @@ ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPriv
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
 )
 
-ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface = TtsMonsterStreamerVoicesRepository(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    ttsMonsterApiService = ttsMonsterApiService,
-    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository
-)
-
 ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+    eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService,
-    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
-    ttsMonsterMessageToVoicesHelper = ttsMonsterMessageToVoicesHelper,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository
-)
-
-ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
-    timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
 
 ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
-    ttsMonsterFileManager = ttsMonsterFileManager,
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
@@ -1943,11 +1914,8 @@ cynanBot = CynanBot(
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsJsonMapper = ttsJsonMapper,
-    ttsMonsterApiTokensRepository = ttsMonsterApiTokensRepository,
     ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
-    ttsMonsterTtsManager = ttsMonsterTtsManager,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsMonsterStreamerVoicesRepository = ttsMonsterStreamerVoicesRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,

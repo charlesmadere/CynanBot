@@ -42,12 +42,9 @@ from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryI
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..ttsMonster.apiTokens.ttsMonsterApiTokensRepositoryInterface import TtsMonsterApiTokensRepositoryInterface
 from ..ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
     TtsMonsterKeyAndUserIdRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from ..ttsMonster.streamerVoices.ttsMonsterStreamerVoicesRepositoryInterface import \
-    TtsMonsterStreamerVoicesRepositoryInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import \
     TwitchChannelEditorsRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -101,10 +98,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
-        ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface | None,
         ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
-        ttsMonsterStreamerVoicesRepository: TtsMonsterStreamerVoicesRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface | None,
         twitchEmotesHelper: TwitchEmotesHelperInterface | None,
@@ -185,14 +180,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
-        elif ttsMonsterApiTokensRepository is not None and not isinstance(ttsMonsterApiTokensRepository, TtsMonsterApiTokensRepositoryInterface):
-            raise TypeError(f'ttsMonsterApiTokensRepository argument is malformed: \"{ttsMonsterApiTokensRepository}\"')
         elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
             raise TypeError(f'ttsMonsterKeyAndUserIdRepository argument is malformed: \"{ttsMonsterKeyAndUserIdRepository}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
-        elif ttsMonsterStreamerVoicesRepository is not None and not isinstance(ttsMonsterStreamerVoicesRepository, TtsMonsterStreamerVoicesRepositoryInterface):
-            raise TypeError(f'ttsMonsterStreamerVoicesRepository argument is malformed: \"{ttsMonsterStreamerVoicesRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif twitchChannelEditorsRepository is not None and not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
@@ -255,10 +246,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(trollmojiHelper)
         self.__clearables.append(trollmojiSettingsRepository)
-        self.__clearables.append(ttsMonsterApiTokensRepository)
         self.__clearables.append(ttsMonsterKeyAndUserIdRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
-        self.__clearables.append(ttsMonsterStreamerVoicesRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchChannelEditorsRepository)
         self.__clearables.append(twitchEmotesHelper)
