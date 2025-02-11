@@ -25,7 +25,7 @@ class TempFileHelper(TempFileHelperInterface):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__directory: str = utils.cleanPath(directory)
+        self.__directory: str = directory
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
@@ -67,8 +67,16 @@ class TempFileHelper(TempFileHelperInterface):
         elif not utils.isValidStr(extension):
             raise TypeError(f'extension argument is malformed: \"{extension}\"')
 
-        if not await aiofiles.ospath.exists(self.__directory):
-            await aiofiles.os.makedirs(self.__directory)
+        directory = utils.cleanPath(self.__directory)
+
+        if not await aiofiles.ospath.exists(
+            path = directory,
+            loop = self.__eventLoop
+        ):
+            await aiofiles.os.makedirs(
+                name = directory,
+                loop = self.__eventLoop
+            )
 
         fileNames: set[str] = set()
 

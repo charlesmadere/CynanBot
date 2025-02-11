@@ -1,8 +1,8 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from src.glacialTtsStorage.helper.glacialTtsFileRetriever import GlacialTtsFileRetriever
-from src.glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetriever import GlacialTtsFileRetriever
+from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
 from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
 from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper

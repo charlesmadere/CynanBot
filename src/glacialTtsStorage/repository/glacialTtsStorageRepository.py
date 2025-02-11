@@ -71,15 +71,15 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
         connection = await self.__getDatabaseConnection()
 
-        cursor = await connection.execute(
+        await connection.execute_insert(
             '''
                 INSERT INTO glacialTtsStorage
                 VALUES ($1, $2, $3, $4)
             ''',
-            ( storeDateTime.isoformat(), glacialId, message, providerString  )
+            ( storeDateTime.isoformat(), glacialId, message, providerString, )
         )
 
-        await cursor.close()
+        await connection.commit()
         await connection.close()
 
         glacialTtsData = GlacialTtsData(

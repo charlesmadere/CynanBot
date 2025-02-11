@@ -9,7 +9,7 @@ from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from ...glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsProvider import TtsProvider
@@ -64,10 +64,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         )
 
         if glacialFile is not None:
-            return TtsMonsterFileReference(
-                fileName = glacialFile.fileName,
-                filePath = glacialFile.filePath
-            )
+            return TtsMonsterFileReference(filePath = glacialFile.filePath)
 
         speechBytes = await self.__ttsMonsterPrivateApiHelper.getSpeech(
             message = message,
@@ -86,12 +83,10 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
+            fileName = glacialFile.fileName,
             filePath = glacialFile.filePath
         ):
-            return TtsMonsterFileReference(
-                fileName = glacialFile.fileName,
-                filePath = glacialFile.filePath
-            )
+            return TtsMonsterFileReference(filePath = glacialFile.filePath)
         else:
             self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({message=}) ({glacialFile=})')
             return None
@@ -99,12 +94,28 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
     async def __saveSpeechBytes(
         self,
         speechBytes: bytes,
+        fileName: str,
         filePath: str
     ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
+        elif not utils.isValidStr(fileName):
+            raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
         elif not utils.isValidStr(filePath):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
+
+        directory = utils.cleanPath(filePath[0:len(filePath) - len(fileName)])
+
+        if not await aiofiles.ospath.exists(
+            path = directory,
+            loop = self.__eventLoop
+        ):
+            await aiofiles.os.makedirs(
+                name = directory,
+                loop = self.__eventLoop
+            )
+
+            self.__timber.log('TtsMonsterHelper', f'Created new directories ({directory=})')
 
         try:
             async with aiofiles.open(

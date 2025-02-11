@@ -44,7 +44,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         self.__glacialTtsDataMapper: GlacialTtsDataMapperInterface = glacialTtsDataMapper
         self.__glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = glacialTtsStorageRepository
         self.__timber: TimberInterface = timber
-        self.__directory: str = utils.cleanPath(directory)
+        self.__directory: str = directory
 
         self.__fileNameWithoutExtensionRegEx: Pattern = re.compile(r'^(\w+)\.\w+$', re.IGNORECASE)
 
@@ -95,9 +95,12 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             return None
         elif not await aiofiles.ospath.isdir(currentTtsFolder):
             self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({currentTtsFolder=})')
-            raise GlacialTtsFolderIsNotAFolder(f'')
+            raise GlacialTtsFolderIsNotAFolder(f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({currentTtsFolder=})')
 
-        directoryContents = await aiofiles.os.scandir(currentTtsFolder)
+        directoryContents = await aiofiles.os.scandir(
+            path = currentTtsFolder,
+            loop = self.__eventLoop
+        )
 
         for entry in directoryContents:
             if not entry.is_file():
@@ -114,7 +117,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             if glacialId == fileNameWithoutExtension:
                 return GlacialTtsFileRetriever.FileReference(
                     fileName = entry.name,
-                    filePath = f'{currentTtsFolder}/{entry.name}'
+                    filePath = utils.cleanPath(f'{currentTtsFolder}/{entry.name}')
                 )
 
         return None
@@ -159,6 +162,6 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
         return GlacialTtsFileReference(
             glacialTtsData = glacialTtsData,
-            fileName = fileName,
-            filePath = filePath
+            fileName = utils.cleanPath(fileName),
+            filePath = utils.cleanPath(filePath)
         )

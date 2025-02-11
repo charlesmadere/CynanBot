@@ -146,7 +146,10 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                 shinySoundFiles = list()
             )
 
-        directoryContents = await aiofiles.os.scandir(directoryPath)
+        directoryContents = await aiofiles.os.scandir(
+            path = directoryPath,
+            loop = self.__eventLoop
+        )
 
         if directoryContents is None:
             self.__timber.log('SoundPlayerRandomizerHelper', f'Scanning the given directory path yielded a None directory pointer: \"{directoryPath}\"')
