@@ -189,12 +189,9 @@ triviaFetchOptions = TriviaFetchOptions(twitchChannel="", twitchChannelId="")
 
 table = Table(title="Glacial Questions")
 
-questions = None
-
 tries = 0
 
 questionRetrievalTask = eventLoop.create_task(glacialTriviaQuestionRepository.fetchAllQuestionAnswerTriviaQuestions(fetchOptions=triviaFetchOptions))
-
 questions = eventLoop.run_until_complete(questionRetrievalTask)
 
 columns = ["Question", "Correct Answers", "Possible Optional Answer Words", "Trivia Type"]

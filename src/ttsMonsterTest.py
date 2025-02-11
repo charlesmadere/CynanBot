@@ -1,32 +1,37 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
+from src.glacialTtsStorage.helper.glacialTtsFileRetriever import GlacialTtsFileRetriever
+from src.glacialTtsStorage.helper.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
+from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
+from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
+from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
+from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
+from src.storage.jsonStaticReader import JsonStaticReader
 from src.storage.tempFileHelper import TempFileHelper
 from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from src.tts.ttsMonster.ttsMonsterFileManager import TtsMonsterFileManager
-from src.tts.ttsMonster.ttsMonsterFileManagerInterface import TtsMonsterFileManagerInterface
-from src.ttsMonster.apiService.ttsMonsterApiService import TtsMonsterApiService
-from src.ttsMonster.apiService.ttsMonsterApiServiceInterface import TtsMonsterApiServiceInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
+from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
+from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
 from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserId import TtsMonsterKeyAndUserId
 from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
     TtsMonsterKeyAndUserIdRepositoryInterface
-from src.ttsMonster.mapper.ttsMonsterJsonMapper import TtsMonsterJsonMapper
-from src.ttsMonster.mapper.ttsMonsterJsonMapperInterface import TtsMonsterJsonMapperInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
-from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
-from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
+from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
+from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
@@ -36,8 +41,13 @@ class FakeTtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInter
     async def clearCaches(self):
         pass
 
-    async def get(self, twitchChannel: str) -> TtsMonsterKeyAndUserId | None:
+    async def get(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> TtsMonsterKeyAndUserId | None:
         raise RuntimeError('Not implemented')
+
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
@@ -60,28 +70,6 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     timber = timber
 )
 
-twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
-
-ttsMonsterWebsiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
-
-ttsMonsterJsonMapper: TtsMonsterJsonMapperInterface = TtsMonsterJsonMapper(
-    timber = timber,
-    websiteVoiceMapper = ttsMonsterWebsiteVoiceMapper
-)
-
-ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
-    networkClientProvider = networkClientProvider,
-    timber = timber,
-    ttsMonsterJsonMapper = ttsMonsterJsonMapper
-)
-
-ttsMonsterFileManager: TtsMonsterFileManagerInterface = TtsMonsterFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
-    timber = timber,
-    ttsMonsterApiService = ttsMonsterApiService
-)
-
 ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = FakeTtsMonsterKeyAndUserIdRepository()
 
 ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper()
@@ -98,43 +86,57 @@ ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPriv
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
 )
 
+ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+    settingsJsonReader = JsonStaticReader(dict())
+)
+
+glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
+
+glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+
+glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    glacialTtsIdGenerator = glacialTtsIdGenerator,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
+    eventLoop = eventLoop,
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    glacialTtsStorageRepository = glacialTtsStorageRepository,
+    timber = timber
+)
+
+ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+    eventLoop = eventLoop,
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
+    timber = timber,
+    ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
+)
+
+twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
+
+
 async def main():
     pass
 
-    fileUrls: list[str] = [
-        'https://script-samples.tts.monster/Alpha.wav',
-        'https://script-samples.tts.monster/Stella.wav',
-        'https://script-samples.tts.monster/Leader.wav'
-    ]
+    twitchChannelId = await twitchFriendsUserIdRepository.getCharlesUserId()
 
-    charlesUserId = await twitchFriendsUserIdRepository.getCharlesUserId()
+    if not isinstance(twitchChannelId, str):
+        raise RuntimeError(f'twitchChannelId value is not set: \"{twitchChannelId}\"')
 
-    if charlesUserId is not None:
-        ttsMonsterUrls = await ttsMonsterPrivateApiHelper.getSpeech(
-            message = 'shadow: telegram',
-            twitchChannel = 'smCharles',
-            twitchChannelId = charlesUserId
-        )
+    message = 'shadow: telegram'
+    twitchChannel = 'smCharles'
 
-        if ttsMonsterUrls is not None:
-            fileUrls.extend(ttsMonsterUrls.urls)
+    fileReference = await ttsMonsterHelper.generateTts(
+        message = message,
+        twitchChannel = twitchChannel,
+        twitchChannelId = twitchChannelId
+    )
 
-    fileUris = await ttsMonsterFileManager.saveTtsUrlsToNewFiles(fileUrls)
-
-    print(f'{fileUrls=} {fileUris=}')
-
-    # response = await ttsMonsterApiService.fetchGeneratedTts(
-    #     ttsUrl = 'https://script-samples.tts.monster/Alpha.wav'
-    # )
-    #
-    #
-    #
-    # async with aiofiles.open(
-    #     file = 'ttsMonsterTest.wav',
-    #     mode = 'wb'
-    # ) as file:
-    #     await file.write(response)
-    #     await file.flush()
+    print(f'({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
 
     pass
 

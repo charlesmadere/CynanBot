@@ -17,16 +17,16 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
     def __init__(
         self,
-        glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface,
         glacialTtsDataMapper: GlacialTtsDataMapperInterface,
+        glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         databaseFile: str = '../db/glacialTtsStorageDatabase.sqlite'
     ):
-        if not isinstance(glacialTtsIdGenerator, GlacialTtsIdGeneratorInterface):
-            raise TypeError(f'glacialTtsIdGenerator argument is malformed: \"{glacialTtsIdGenerator}\"')
-        elif not isinstance(glacialTtsDataMapper, GlacialTtsDataMapperInterface):
+        if not isinstance(glacialTtsDataMapper, GlacialTtsDataMapperInterface):
             raise TypeError(f'glacialTtsDataMapper argument is malformed: \"{glacialTtsDataMapper}\"')
+        elif not isinstance(glacialTtsIdGenerator, GlacialTtsIdGeneratorInterface):
+            raise TypeError(f'glacialTtsIdGenerator argument is malformed: \"{glacialTtsIdGenerator}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
@@ -34,8 +34,8 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         elif not utils.isValidStr(databaseFile):
             raise TypeError(f'databaseFile argument is malformed: \"{databaseFile}\"')
 
-        self.__glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = glacialTtsIdGenerator
         self.__glacialTtsDataMapper: GlacialTtsDataMapperInterface = glacialTtsDataMapper
+        self.__glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = glacialTtsIdGenerator
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__databaseFile: str = databaseFile
@@ -110,7 +110,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 WHERE message = $1 AND provider = $2
                 LIMIT 1
             ''',
-            ( message.casefold(), providerString )
+            ( message, providerString )
         )
 
         row = await cursor.fetchone()
@@ -144,7 +144,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 CREATE TABLE IF NOT EXISTS glacialTtsStorage (
                     storeDateTime TEXT NOT NULL,
                     glacialId TEXT NOT NULL,
-                    message TEXT NOT NULL COLLATE NOCASE,
+                    message TEXT NOT NULL,
                     provider TEXT NOT NULL,
                     PRIMARY KEY (glacialId)
                 )

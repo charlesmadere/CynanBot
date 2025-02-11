@@ -4,6 +4,7 @@ import aiofiles
 import aiofiles.ospath
 import aiosqlite
 from aiosqlite import Connection
+from frozenlist import FrozenList
 
 from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
 from .glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
@@ -159,7 +160,7 @@ class GlacialTriviaQuestionRepository(
     async def __fetchAllQuestionAnswerTriviaQuestions(
         self,
         fetchOptions: TriviaFetchOptions
-    ) -> list[QuestionAnswerTriviaQuestion] | None:
+    ) -> FrozenList[QuestionAnswerTriviaQuestion] | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
@@ -180,7 +181,7 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.QUESTION_ANSWER} questions in the database! ({fetchOptions=})')
             return None
 
-        questions = []
+        questions: FrozenList[QuestionAnswerTriviaQuestion] = FrozenList()
 
         for row in rows:
             category = await self.__triviaQuestionCompiler.compileCategory(row[0])
@@ -215,6 +216,7 @@ class GlacialTriviaQuestionRepository(
             ))
 
         await connection.close()
+        questions.freeze()
 
         return questions
 
@@ -460,7 +462,10 @@ class GlacialTriviaQuestionRepository(
             triviaSource = self.triviaSource
         )
 
-    async def fetchAllQuestionAnswerTriviaQuestions(self, fetchOptions: TriviaFetchOptions) -> list[QuestionAnswerTriviaQuestion]:
+    async def fetchAllQuestionAnswerTriviaQuestions(
+        self,
+        fetchOptions: TriviaFetchOptions
+    ) -> FrozenList[QuestionAnswerTriviaQuestion]:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
@@ -469,7 +474,7 @@ class GlacialTriviaQuestionRepository(
 
         questions = await self.__fetchAllQuestionAnswerTriviaQuestions(fetchOptions)
 
-        if not isinstance(questions, list):
+        if questions is None or len(questions) == 0:
             raise NoTriviaQuestionException(f'Unable to fetch trivia questions from {self.triviaSource} ({fetchOptions=}) ({questions=})')
 
         return questions

@@ -499,8 +499,6 @@ from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInter
     TtsMonsterKeyAndUserIdRepositoryInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
-from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
-from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
@@ -1800,13 +1798,13 @@ tempFileHelper: TempFileHelperInterface = TempFileHelper(
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
-glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
-
 glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
 
+glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+
 glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
-    glacialTtsIdGenerator = glacialTtsIdGenerator,
     glacialTtsDataMapper = glacialTtsDataMapper,
+    glacialTtsIdGenerator = glacialTtsIdGenerator,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -2048,10 +2046,7 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
-ttsMonsterWebsiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
-
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
-    ttsMonsterWebsiteVoiceMapper = ttsMonsterWebsiteVoiceMapper,
     settingsJsonReader = JsonFileReader('../config/ttsMonsterSettingsRepository.json')
 )
 
