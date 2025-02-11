@@ -72,7 +72,9 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
 
 ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = FakeTtsMonsterKeyAndUserIdRepository()
 
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper()
+ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+    timber = timber
+)
 
 ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
     networkClientProvider = networkClientProvider,
