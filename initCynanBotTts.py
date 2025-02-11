@@ -307,9 +307,6 @@ from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPriva
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapper import TtsMonsterWebsiteVoiceMapper
 from src.ttsMonster.mapper.ttsMonsterWebsiteVoiceMapperInterface import TtsMonsterWebsiteVoiceMapperInterface
-from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelper import TtsMonsterMessageToVoicesHelper
-from src.ttsMonster.messageToVoicesHelper.ttsMonsterMessageToVoicesHelperInterface import \
-    TtsMonsterMessageToVoicesHelperInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
@@ -1250,33 +1247,11 @@ streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamEleme
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-ttsMonsterApiTokensRepository: TtsMonsterApiTokensRepositoryInterface = TtsMonsterApiTokensRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/ttsMonsterApiTokensRepositorySeedFile.json')
-)
-
 ttsMonsterWebsiteVoiceMapper: TtsMonsterWebsiteVoiceMapperInterface = TtsMonsterWebsiteVoiceMapper()
 
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
     ttsMonsterWebsiteVoiceMapper = ttsMonsterWebsiteVoiceMapper,
     settingsJsonReader = JsonFileReader('../config/ttsMonsterSettingsRepository.json')
-)
-
-ttsMonsterJsonMapper: TtsMonsterJsonMapperInterface = TtsMonsterJsonMapper(
-    timber = timber,
-    websiteVoiceMapper = ttsMonsterWebsiteVoiceMapper
-)
-
-ttsMonsterApiService: TtsMonsterApiServiceInterface = TtsMonsterApiService(
-    networkClientProvider = networkClientProvider,
-    timber = timber,
-    ttsMonsterJsonMapper = ttsMonsterJsonMapper
-)
-
-ttsMonsterMessageToVoicesHelper: TtsMonsterMessageToVoicesHelperInterface = TtsMonsterMessageToVoicesHelper(
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
 
 ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = TtsMonsterKeyAndUserIdRepository(
