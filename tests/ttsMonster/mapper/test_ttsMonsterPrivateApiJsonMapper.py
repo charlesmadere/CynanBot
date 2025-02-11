@@ -2,6 +2,8 @@ from typing import Any
 
 import pytest
 
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
@@ -9,7 +11,21 @@ from src.ttsMonster.models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPriv
 
 class TestTtsMonsterPrivateApiJsonMapper:
 
-    mapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper()
+    timber: TimberInterface = TimberStub()
+
+    mapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+        timber = timber
+    )
+
+    @pytest.mark.asyncio
+    async def test_parseTtsData_withEmptyDictionary(self):
+        result = await self.mapper.parseTtsData(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTtsData_withNone(self):
+        result = await self.mapper.parseTtsData(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTtsResponse(self):
@@ -50,6 +66,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
 
         result = await self.mapper.parseTtsResponse(dictionary)
         assert result is None
+
+    def test_sanity(self):
+        assert self.mapper is not None
+        assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapper)
+        assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapperInterface)
 
     @pytest.mark.asyncio
     async def test_serializeGenerateTtsJsonBody(self):

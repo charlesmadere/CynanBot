@@ -1,18 +1,25 @@
 from typing import Any
 
 from .ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
-from ..exceptions import TtsMonsterJsonException
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
 
 
 class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
-    def __init__(self, provider: str = 'provider'):
+    def __init__(
+        self,
+        timber: TimberInterface,
+        provider: str = 'provider'
+    ):
+        if not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         if not utils.isValidStr(provider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
+        self.__timber: TimberInterface = timber
         self.__provider: str = provider
 
     async def parseTtsData(
@@ -27,7 +34,8 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             link = utils.getStrFromDict(jsonContents, 'link')
 
         if not utils.isValidUrl(link):
-            raise TtsMonsterJsonException(f'\"link\" value in TTS Monster JSON response is missing/malformed! ({link=}) ({jsonContents=})')
+            self.__timber.log('TtsMonsterPrivateApiJsonMapper', f'\"link\" value in JSON response is missing/malformed ({link=}) ({jsonContents=})')
+            return None
 
         warning: str | None = None
         if 'warning' in jsonContents and utils.isValidStr(jsonContents.get('warning')):
@@ -49,7 +57,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         data = await self.parseTtsData(jsonContents.get('data'))
 
         if data is None:
-            raise TtsMonsterJsonException(f'\"data\" value in TTS Monster JSON response is missing/malformed! ({data=}) ({jsonContents=})')
+            return None
 
         return TtsMonsterPrivateApiTtsResponse(
             status = status,

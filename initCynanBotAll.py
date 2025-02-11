@@ -2054,7 +2054,9 @@ ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = Tt
     settingsJsonReader = JsonFileReader('../config/ttsMonsterKeyAndUserIdRepository.json')
 )
 
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper()
+ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+    timber = timber
+)
 
 ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
     networkClientProvider = networkClientProvider,
