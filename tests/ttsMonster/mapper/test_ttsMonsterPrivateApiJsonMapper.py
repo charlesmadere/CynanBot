@@ -6,6 +6,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from src.ttsMonster.models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from src.ttsMonster.models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 
 
@@ -18,6 +19,20 @@ class TestTtsMonsterPrivateApiJsonMapper:
     )
 
     @pytest.mark.asyncio
+    async def test_parseTtsData(self):
+        link = 'https://www.google.com/'
+        warning = 'This is a warning message!'
+
+        result = await self.mapper.parseTtsData({
+            'link': link,
+            'warning': warning
+        })
+
+        assert isinstance(result, TtsMonsterPrivateApiTtsData)
+        assert result.link == link
+        assert result.warning == warning
+
+    @pytest.mark.asyncio
     async def test_parseTtsData_withEmptyDictionary(self):
         result = await self.mapper.parseTtsData(dict())
         assert result is None
@@ -25,6 +40,18 @@ class TestTtsMonsterPrivateApiJsonMapper:
     @pytest.mark.asyncio
     async def test_parseTtsData_withNone(self):
         result = await self.mapper.parseTtsData(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTtsData_withoutLink(self):
+        link: str | None = None
+        warning = 'This is a warning message!'
+
+        result = await self.mapper.parseTtsData({
+            'link': link,
+            'warning': warning
+        })
+
         assert result is None
 
     @pytest.mark.asyncio
@@ -60,11 +87,12 @@ class TestTtsMonsterPrivateApiJsonMapper:
 
     @pytest.mark.asyncio
     async def test_parseTtsResponse_withStatusButNoData(self):
-        dictionary: dict[str, Any] = {
-            'status': 200
-        }
+        status = 200
 
-        result = await self.mapper.parseTtsResponse(dictionary)
+        result = await self.mapper.parseTtsResponse({
+            'status': status
+        })
+
         assert result is None
 
     def test_sanity(self):
