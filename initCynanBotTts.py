@@ -310,6 +310,7 @@ from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMon
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
+from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
@@ -326,6 +327,7 @@ from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChann
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
+from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
 from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
@@ -1691,23 +1693,6 @@ else:
         userIdsRepository = userIdsRepository
     )
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
-    casualGamePollPointRedemption = casualGamePollPointRedemption,
-    cutenessPointRedemption = None,
-    decTalkSongPointRedemption = decTalkSongPointRedemption,
-    pkmnBattlePointRedemption = None,
-    pkmnCatchPointRedemption = None,
-    pkmnEvolvePointRedemption = None,
-    pkmnShinyPointRedemption = None,
-    shizaPointRedemption = None,
-    soundAlertPointRedemption = soundAlertPointRedemption,
-    superTriviaGamePointRedemption = None,
-    timeoutPointRedemption = timeoutPointRedemption,
-    triviaGamePointRedemption = None,
-    timber = timber,
-    userIdsRepository = userIdsRepository
-)
-
 
 ########################################################
 ## Websocket Connection Server initialization section ##
@@ -1731,6 +1716,28 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
+
+twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
+    casualGamePollPointRedemption = casualGamePollPointRedemption,
+    cutenessPointRedemption = None,
+    decTalkSongPointRedemption = decTalkSongPointRedemption,
+    pkmnBattlePointRedemption = None,
+    pkmnCatchPointRedemption = None,
+    pkmnEvolvePointRedemption = None,
+    pkmnShinyPointRedemption = None,
+    shizaPointRedemption = None,
+    soundAlertPointRedemption = soundAlertPointRedemption,
+    superTriviaGamePointRedemption = None,
+    timeoutPointRedemption = timeoutPointRedemption,
+    triviaGamePointRedemption = None,
+    timber = timber,
+    userIdsRepository = userIdsRepository
+)
+
+twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
+    chatLogger = chatLogger,
+    timber = timber
+)
 
 twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
     cheerActionHelper = cheerActionHelper,
@@ -1788,6 +1795,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscript
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
+    twitchChatHandler = twitchChatHandler,
     twitchCheerHandler = twitchCheerHandler,
     twitchFollowHandler = twitchFollowHandler,
     twitchPollHandler = twitchPollHandler,

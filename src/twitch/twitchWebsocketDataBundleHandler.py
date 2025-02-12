@@ -1,4 +1,5 @@
 from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
+from .absTwitchChatHandler import AbsTwitchChatHandler
 from .absTwitchCheerHandler import AbsTwitchCheerHandler
 from .absTwitchFollowHandler import AbsTwitchFollowHandler
 from .absTwitchPollHandler import AbsTwitchPollHandler
@@ -20,6 +21,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
     def __init__(
         self,
         channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
+        chatHandler: AbsTwitchChatHandler | None,
         cheerHandler: AbsTwitchCheerHandler | None,
         followHandler: AbsTwitchFollowHandler | None,
         pollHandler: AbsTwitchPollHandler | None,
@@ -32,6 +34,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
     ):
         if channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
             raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
+        elif chatHandler is not None and not isinstance(chatHandler, AbsTwitchChatHandler):
+            raise TypeError(f'chatHandler argument is malformed: \"{chatHandler}\"')
         elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
             raise TypeError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
         elif followHandler is not None and not isinstance(followHandler, AbsTwitchFollowHandler):
@@ -52,6 +56,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = channelPointRedemptionHandler
+        self.__chatHandler: AbsTwitchChatHandler | None = chatHandler
         self.__cheerHandler: AbsTwitchCheerHandler | None = cheerHandler
         self.__followHandler: AbsTwitchFollowHandler | None = followHandler
         self.__pollHandler: AbsTwitchPollHandler | None = pollHandler
@@ -67,6 +72,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+
+    async def __isChatType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType | None
+    ) -> bool:
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
 
     async def __isCheerType(
         self,
@@ -153,6 +164,17 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
+        elif await self.__isChatType(subscriptionType):
+            chatHandler = self.__chatHandler
+
+            if chatHandler is not None:
+                await chatHandler.onNewChat(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
+
         elif await self.__isCheerType(subscriptionType):
             cheerHandler = self.__cheerHandler
 
@@ -162,6 +184,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
         elif await self.__isFollowType(subscriptionType):
             followHandler = self.__followHandler
 
@@ -171,6 +194,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
         elif await self.__isPollType(subscriptionType):
             pollHandler = self.__pollHandler
 
@@ -180,6 +204,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
         elif await self.__isPredictionType(subscriptionType):
             predictionHandler = self.__predictionHandler
 
@@ -189,6 +214,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
         elif await self.__isRaidType(subscriptionType):
             raidHandler = self.__raidHandler
 
@@ -198,6 +224,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
         elif await self.__isSubscriptionType(subscriptionType):
             subscriptionHandler = self.__subscriptionHandler
 
@@ -207,6 +234,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle: \"{dataBundle}\"')
 

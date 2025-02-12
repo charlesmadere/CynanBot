@@ -135,6 +135,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(seryBotUserId):
             newUserIds.add(seryBotUserId)
 
+        soundAlertsUserId = await self.__officialTwitchAccountUserIdProvider.getSoundAlertsUserId()
+        if utils.isValidStr(soundAlertsUserId):
+            newUserIds.add(soundAlertsUserId)
+
         streamElementsUserId = await self.__streamElementsUserIdProvider.getStreamElementsUserId()
         if utils.isValidStr(streamElementsUserId):
             newUserIds.add(streamElementsUserId)
@@ -158,6 +162,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         twitchAnonymousGifterUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
         if utils.isValidStr(twitchAnonymousGifterUserId):
             newUserIds.add(twitchAnonymousGifterUserId)
+
+        valorantUserId = await self.__officialTwitchAccountUserIdProvider.getValorantUserId()
+        if utils.isValidStr(valorantUserId):
+            newUserIds.add(valorantUserId)
 
         frozenUserIds: frozenset[str] = frozenset(newUserIds)
         self.__userIds = frozenUserIds

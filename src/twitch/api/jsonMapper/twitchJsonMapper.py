@@ -9,8 +9,8 @@ from ..models.twitchApiScope import TwitchApiScope
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
-from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
+from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse

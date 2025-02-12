@@ -177,6 +177,7 @@ from .ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterfac
     TtsMonsterKeyAndUserIdRepositoryInterface
 from .ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from .twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
+from .twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from .twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from .twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from .twitch.absTwitchPollHandler import AbsTwitchPollHandler
@@ -233,6 +234,7 @@ class CynanBot(
         self,
         eventLoop: AbstractEventLoop,
         twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
+        twitchChatHandler: AbsTwitchChatHandler | None,
         twitchCheerHandler: AbsTwitchCheerHandler | None,
         twitchFollowHandler: AbsTwitchFollowHandler | None,
         twitchPollHandler: AbsTwitchPollHandler | None,
@@ -373,6 +375,8 @@ class CynanBot(
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif twitchChannelPointRedemptionHandler is not None and not isinstance(twitchChannelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
             raise TypeError(f'twitchChannelPointRedemptionHandler argument is malformed: \"{twitchChannelPointRedemptionHandler}\"')
+        elif twitchChatHandler is not None and not isinstance(twitchChatHandler, AbsTwitchChatHandler):
+            raise TypeError(f'twitchChatHandler argument is malformed: \"{twitchChatHandler}\"')
         elif twitchCheerHandler is not None and not isinstance(twitchCheerHandler, AbsTwitchCheerHandler):
             raise TypeError(f'twitchCheerHandler argument is malformed: \"{twitchCheerHandler}\"')
         elif twitchFollowHandler is not None and not isinstance(twitchFollowHandler, AbsTwitchFollowHandler):
@@ -621,6 +625,7 @@ class CynanBot(
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
         self.__twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = twitchChannelPointRedemptionHandler
+        self.__twitchChatHandler: AbsTwitchChatHandler | None = twitchChatHandler
         self.__twitchCheerHandler: AbsTwitchCheerHandler | None = twitchCheerHandler
         self.__twitchFollowHandler: AbsTwitchFollowHandler | None = twitchFollowHandler
         self.__twitchPollHandler: AbsTwitchPollHandler | None = twitchPollHandler
@@ -970,6 +975,27 @@ class CynanBot(
         self.__streamAlertsManager.start()
         self.__twitchUtils.start()
 
+        if self.__twitchChannelPointRedemptionHandler is not None:
+            self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
+
+        if self.__twitchChatHandler is not None:
+            self.__twitchChatHandler.setTwitchChannelProvider(self)
+
+        if self.__twitchFollowHandler is not None:
+            self.__twitchFollowHandler.setTwitchChannelProvider(self)
+
+        if self.__twitchPollHandler is not None:
+            self.__twitchPollHandler.setTwitchChannelProvider(self)
+
+        if self.__twitchPredictionHandler is not None:
+            self.__twitchPredictionHandler.setTwitchChannelProvider(self)
+
+        if self.__twitchRaidHandler is not None:
+            self.__twitchRaidHandler.setTwitchChannelProvider(self)
+
+        if self.__twitchSubscriptionHandler is not None:
+            self.__twitchSubscriptionHandler.setTwitchChannelProvider(self)
+
         if self.__beanChanceCheerActionHelper is not None:
             self.__beanChanceCheerActionHelper.setTwitchChannelProvider(self)
 
@@ -1022,26 +1048,9 @@ class CynanBot(
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
-            if self.__twitchChannelPointRedemptionHandler is not None:
-                self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
-
-            if self.__twitchFollowHandler is not None:
-                self.__twitchFollowHandler.setTwitchChannelProvider(self)
-
-            if self.__twitchPollHandler is not None:
-                self.__twitchPollHandler.setTwitchChannelProvider(self)
-
-            if self.__twitchPredictionHandler is not None:
-                self.__twitchPredictionHandler.setTwitchChannelProvider(self)
-
-            if self.__twitchRaidHandler is not None:
-                self.__twitchRaidHandler.setTwitchChannelProvider(self)
-
-            if self.__twitchSubscriptionHandler is not None:
-                self.__twitchSubscriptionHandler.setTwitchChannelProvider(self)
-
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
+                chatHandler = self.__twitchChatHandler,
                 cheerHandler = self.__twitchCheerHandler,
                 followHandler = self.__twitchFollowHandler,
                 pollHandler = self.__twitchPollHandler,

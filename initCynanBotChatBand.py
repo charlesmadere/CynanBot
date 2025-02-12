@@ -124,6 +124,7 @@ from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
+from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
 from src.twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
@@ -134,6 +135,7 @@ from src.twitch.channelEditors.stub.stubTwitchChannelEditorsRepository import St
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
+from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
 from src.twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
@@ -851,6 +853,18 @@ else:
         streamAlertsManager = streamAlertsManager
     )
 
+
+########################################################
+## Websocket Connection Server initialization section ##
+########################################################
+
+websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketConnectionServer()
+
+
+##########################################
+## Twitch events initialization section ##
+##########################################
+
 twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = None,
     cutenessPointRedemption = None,
@@ -868,12 +882,10 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     userIdsRepository = userIdsRepository
 )
 
-
-########################################################
-## Websocket Connection Server initialization section ##
-########################################################
-
-websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketConnectionServer()
+twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
+    chatLogger = chatLogger,
+    timber = timber
+)
 
 
 #####################################
@@ -883,6 +895,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketCon
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
+    twitchChatHandler = twitchChatHandler,
     twitchCheerHandler = None,
     twitchFollowHandler = None,
     twitchPollHandler = None,
