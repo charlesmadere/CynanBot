@@ -1,6 +1,6 @@
 import traceback
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Collection
 
 from frozenlist import FrozenList
 
@@ -272,18 +272,23 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeScopes(
         self,
-        scopes: list[GoogleScope]
+        scopes: Collection[GoogleScope]
     ) -> str:
-        if not isinstance(scopes, list):
+        if not isinstance(scopes, Collection):
             raise TypeError(f'scopes argument is malformed: \"{scopes}\"')
-        elif len(scopes) == 0:
+
+        frozenScopes: FrozenList[GoogleScope] = FrozenList(scopes)
+        frozenScopes.freeze()
+
+        if len(frozenScopes) == 0:
             raise ValueError(f'scopes argument is empty: \"{scopes}\"')
 
         scopeStrings: list[str] = list()
 
-        for scope in scopes:
+        for scope in frozenScopes:
             scopeStrings.append(await self.serializeScope(scope))
 
+        scopeStrings.sort(key = lambda scopeString: scopeString.casefold())
         return ' '.join(scopeStrings)
 
     async def serializeSynthesizeRequest(
@@ -318,14 +323,13 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'translationRequest argument is malformed: \"{translationRequest}\"')
 
         dictionary: dict[str, Any] = {
-            'contents': translationRequest.contents,
+            'contents': list(translationRequest.contents),
             'mimeType': translationRequest.mimeType,
             'targetLanguageCode': translationRequest.targetLanguageCode
         }
 
-        glossaryConfig = translationRequest.glossaryConfig
-        if glossaryConfig is not None:
-            dictionary['glossaryConfig'] = await self.serializeGlossaryConfig(glossaryConfig)
+        if translationRequest.glossaryConfig is not None:
+            dictionary['glossaryConfig'] = await self.serializeGlossaryConfig(translationRequest.glossaryConfig)
 
         if utils.isValidStr(translationRequest.model):
             dictionary['model'] = translationRequest.model
@@ -333,9 +337,10 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if utils.isValidStr(translationRequest.sourceLanguageCode):
             dictionary['sourceLanguageCode'] = translationRequest.sourceLanguageCode
 
-        transliterationConfig = translationRequest.transliterationConfig
-        if transliterationConfig is not None:
-            dictionary['transliterationConfig'] = await self.serializeTransliterationConfig(transliterationConfig)
+        if translationRequest.transliterationConfig is not None:
+            dictionary['transliterationConfig'] = await self.serializeTransliterationConfig(
+                transliterationConfig = translationRequest.transliterationConfig
+            )
 
         return dictionary
 

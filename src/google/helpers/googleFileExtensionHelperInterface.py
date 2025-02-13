@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ...google.models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 
 
 class GoogleFileExtensionHelperInterface(ABC):

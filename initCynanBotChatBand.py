@@ -255,7 +255,10 @@ soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = SoundPlayerJsonMapper()
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/generalSettingsRepository.json'),
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/generalSettingsRepository.json'
+    ),
     networkJsonMapper = networkJsonMapper,
     soundPlayerJsonMapper = soundPlayerJsonMapper,
     storageJsonMapper = storageJsonMapper
@@ -269,7 +272,10 @@ psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
         psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader('../config/psqlCredentials.json')
+            credentialsJsonReader = JsonFileReader(
+                eventLoop = eventLoop,
+                fileName = '../config/psqlCredentials.json'
+            )
         )
 
         backingDatabase = PsqlBackingDatabase(
@@ -308,7 +314,10 @@ match generalSettingsSnapshot.requireNetworkClientType():
         raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
 
 authRepository = AuthRepository(
-    authJsonReader = JsonFileReader('../config/authRepository.json')
+    authJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/authRepository.json'
+    )
 )
 
 twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
@@ -344,7 +353,10 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/twitchTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/twitchTokensRepositorySeedFile.json'
+    )
 )
 
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
@@ -354,7 +366,10 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
 )
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader(
+        eventLoop = eventLoop,
+        fileName = 'bannedWords.txt'
+    ),
     timber = timber
 )
 
@@ -495,7 +510,10 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/funtoonTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/funtoonTokensRepositorySeedFile.json'
+    )
 )
 
 funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
@@ -514,7 +532,10 @@ funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
 )
 
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('emojiRepository.json'),
+    emojiJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'emojiRepository.json'
+    ),
     timber = timber
 )
 
@@ -534,7 +555,10 @@ twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = StubTw
 languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
 
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
-    locationsJsonReader = JsonFileReader('locationsRepository.json'),
+    locationsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'locationsRepository.json'
+    ),
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -727,7 +751,10 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 #########################################
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/soundPlayerSettingsRepository.json'
+    )
 )
 
 soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerRandomizerHelper(
@@ -769,7 +796,10 @@ cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
 )
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/cheerActionSettings.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/cheerActionSettings.json'
+    )
 )
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(

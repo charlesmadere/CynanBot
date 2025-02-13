@@ -2,8 +2,8 @@ import re
 from typing import Any, Pattern
 
 from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
-from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ...misc import utils as utils
+from ..misc import utils as utils
+from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 
 
 class GoogleTtsMessageCleaner(GoogleTtsMessageCleanerInterface):
@@ -23,7 +23,8 @@ class GoogleTtsMessageCleaner(GoogleTtsMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = utils.removeCheerStrings(message.strip()).strip()
+        message = utils.cleanStr(message)
+        message = utils.removeCheerStrings(message).strip()
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()

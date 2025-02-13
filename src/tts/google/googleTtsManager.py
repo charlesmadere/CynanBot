@@ -4,11 +4,11 @@ import aiofiles.ospath
 
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
-from .googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface

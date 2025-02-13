@@ -42,7 +42,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         self.__googleCloudCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudCredentialsProvider
         self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__googleScopes: frozenset[GoogleScope] = frozenset(googleScopes)
+        self.__googleScopes: frozenset[GoogleScope] = googleScopes
 
         self.__scopesString: str | None = None
 

@@ -1,5 +1,6 @@
 import json
 import os
+from asyncio import AbstractEventLoop
 from typing import Any
 
 import aiofiles
@@ -11,10 +12,17 @@ from ..misc import utils as utils
 
 class JsonFileReader(JsonReaderInterface):
 
-    def __init__(self, fileName: str):
-        if not utils.isValidStr(fileName):
+    def __init__(
+        self,
+        eventLoop: AbstractEventLoop,
+        fileName: str
+    ):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not utils.isValidStr(fileName):
             raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__fileName: str = fileName
 
     def deleteFile(self):
@@ -51,7 +59,8 @@ class JsonFileReader(JsonReaderInterface):
         async with aiofiles.open(
             file = self.__fileName,
             mode = 'r',
-            encoding = 'utf-8'
+            encoding = 'utf-8',
+            loop = self.__eventLoop
         ) as file:
             data = await file.read()
             jsonContents = json.loads(data)

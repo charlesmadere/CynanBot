@@ -8,8 +8,8 @@ from ..accessLevel.accessLevel import AccessLevel
 from ..accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
-from ...microsoftSam.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface

@@ -3,6 +3,8 @@ import pytest
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.models.googleScope import GoogleScope
+from src.google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
+from src.google.models.googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
 from src.google.models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from src.google.models.googleVoiceGender import GoogleVoiceGender
 from src.location.timeZoneRepository import TimeZoneRepository
@@ -149,6 +151,11 @@ class TestGoogleJsonMapper:
 
         assert result is None
 
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, GoogleJsonMapper)
+        assert isinstance(self.jsonMapper, GoogleJsonMapperInterface)
+
     @pytest.mark.asyncio
     async def test_serializeScope_withCloudTextToSpeech(self):
         result = await self.jsonMapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
@@ -190,3 +197,48 @@ class TestGoogleJsonMapper:
         scope = GoogleScope.CLOUD_TRANSLATION
         result = await self.jsonMapper.serializeScopes([ scope ])
         assert result == await self.jsonMapper.serializeScope(scope)
+
+    @pytest.mark.asyncio
+    async def test_serializeTextSynthesisInput(self):
+        input = GoogleTextSynthesisInput(
+            text = 'Hello, World!'
+        )
+
+        result = await self.jsonMapper.serializeTextSynthesisInput(input)
+        assert result['text'] == input.text
+
+    @pytest.mark.asyncio
+    async def test_serializeTransliterationConfig_withFalse(self):
+        config = GoogleTranslateTextTransliterationConfig(
+            enableTransliteration = False
+        )
+
+        result = await self.jsonMapper.serializeTransliterationConfig(config)
+        assert result['enableTransliteration'] == config.enableTransliteration
+
+    @pytest.mark.asyncio
+    async def test_serializeTransliterationConfig_withTrue(self):
+        config = GoogleTranslateTextTransliterationConfig(
+            enableTransliteration = True
+        )
+
+        result = await self.jsonMapper.serializeTransliterationConfig(config)
+        assert result['enableTransliteration'] == config.enableTransliteration
+
+    @pytest.mark.asyncio
+    async def test_serializeVoiceGender_withFemale(self):
+        voiceGender = GoogleVoiceGender.FEMALE
+        result = await self.jsonMapper.serializeVoiceGender(voiceGender)
+        assert result == 'FEMALE'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoiceGender_withMale(self):
+        voiceGender = GoogleVoiceGender.MALE
+        result = await self.jsonMapper.serializeVoiceGender(voiceGender)
+        assert result == 'MALE'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoiceGender_withUnspecified(self):
+        voiceGender = GoogleVoiceGender.UNSPECIFIED
+        result = await self.jsonMapper.serializeVoiceGender(voiceGender)
+        assert result == 'SSML_VOICE_GENDER_UNSPECIFIED'

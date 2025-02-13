@@ -3,6 +3,6 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class TtsMonsterFileReference:
+class GoogleTtsFileReference:
     storeDateTime: datetime
     filePath: str

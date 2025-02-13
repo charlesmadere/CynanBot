@@ -1,8 +1,8 @@
 from typing import Any
 
 from .microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
-from ..microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ..models.microsoftSamVoice import MicrosoftSamVoice
+from ..parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Collection
 
 from ..accessToken.googleAccessToken import GoogleAccessToken
 from ..models.googleScope import GoogleScope
@@ -106,7 +106,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeScopes(
         self,
-        scopes: list[GoogleScope]
+        scopes: Collection[GoogleScope]
     ) -> str:
         pass
 

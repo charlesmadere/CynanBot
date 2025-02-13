@@ -143,6 +143,10 @@ from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTo
 from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
 from src.google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
+from src.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
+from src.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
+from src.google.helpers.googleFileExtensionHelper import GoogleFileExtensionHelper
+from src.google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
@@ -189,12 +193,12 @@ from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiSe
 from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
 from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
 from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
-from src.microsoftSam.microsoftSamJsonParser import MicrosoftSamJsonParser
-from src.microsoftSam.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
 from src.microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from src.microsoftSam.microsoftSamVoiceMapper import MicrosoftSamVoiceMapper
 from src.microsoftSam.microsoftSamVoiceMapperInterface import MicrosoftSamVoiceMapperInterface
+from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
+from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.microsoftSam.parser.microsoftSamMessageVoiceParser import MicrosoftSamMessageVoiceParser
 from src.microsoftSam.parser.microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
 from src.microsoftSam.settings.microsoftSamSettingsRepository import MicrosoftSamSettingsRepository
@@ -460,16 +464,12 @@ from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterf
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
 from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
-from src.tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
-from src.tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from src.tts.google.googleTtsHelper import GoogleTtsHelper
 from src.tts.google.googleTtsHelperInterface import GoogleTtsHelperInterface
 from src.tts.google.googleTtsManager import GoogleTtsManager
 from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
-from src.tts.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
-from src.tts.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
@@ -659,7 +659,10 @@ soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = SoundPlayerJsonMapper()
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/generalSettingsRepository.json'),
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/generalSettingsRepository.json'
+    ),
     networkJsonMapper = networkJsonMapper,
     soundPlayerJsonMapper = soundPlayerJsonMapper,
     storageJsonMapper = storageJsonMapper
@@ -673,7 +676,10 @@ psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
         psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader('../config/psqlCredentials.json')
+            credentialsJsonReader = JsonFileReader(
+                eventLoop = eventLoop,
+                fileName = '../config/psqlCredentials.json'
+            )
         )
 
         backingDatabase = PsqlBackingDatabase(
@@ -712,7 +718,10 @@ match generalSettingsSnapshot.requireNetworkClientType():
         raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
 
 authRepository = AuthRepository(
-    authJsonReader = JsonFileReader('../config/authRepository.json')
+    authJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/authRepository.json'
+    )
 )
 
 twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
@@ -748,7 +757,10 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/twitchTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/twitchTokensRepositorySeedFile.json'
+    )
 )
 
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
@@ -758,7 +770,10 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
 )
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader(
+        eventLoop = eventLoop,
+        fileName = 'bannedWords.txt'
+    ),
     timber = timber
 )
 
@@ -951,7 +966,10 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/funtoonTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/funtoonTokensRepositorySeedFile.json'
+    )
 )
 
 funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
@@ -970,7 +988,10 @@ funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
 )
 
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('emojiRepository.json'),
+    emojiJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'emojiRepository.json'
+    ),
     timber = timber
 )
 
@@ -995,7 +1016,10 @@ twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = Twitch
 languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
 
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
-    locationsJsonReader = JsonFileReader('locationsRepository.json'),
+    locationsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'locationsRepository.json'
+    ),
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -1251,16 +1275,23 @@ shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = Shin
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository
 )
+
 toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository
 )
+
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'triviaSettingsRepository.json'
+    )
 )
+
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
 )
+
 triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
     timber = timber
 )
@@ -1641,7 +1672,10 @@ anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInte
 )
 
 anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/anivSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/anivSettingsRepository.json'
+    )
 )
 
 anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
@@ -1767,7 +1801,10 @@ chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface 
 #########################################
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/soundPlayerSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/soundPlayerSettingsRepository.json'
+    )
 )
 
 soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerRandomizerHelper(
@@ -1791,7 +1828,10 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 ################################
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/ttsSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/ttsSettingsRepository.json'
+    )
 )
 
 tempFileHelper: TempFileHelperInterface = TempFileHelper(
@@ -1839,7 +1879,10 @@ decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
 decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
     decTalkVoiceMapper = decTalkVoiceMapper,
-    settingsJsonReader = JsonFileReader('../config/decTalkSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/decTalkSettingsRepository.json'
+    )
 )
 
 decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
@@ -1879,7 +1922,10 @@ singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsM
 
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
     googleJsonMapper = googleJsonMapper,
-    settingsJsonReader = JsonFileReader('../config/googleSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/googleSettingsRepository.json'
+    )
 )
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
@@ -1917,7 +1963,10 @@ googleTtsManager: GoogleTtsManagerInterface | None = GoogleTtsManager(
 )
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/halfLifeTtsSettingsRepository.json'),
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/halfLifeTtsSettingsRepository.json'
+    ),
     halfLifeJsonParser = halfLifeJsonParser
 )
 
@@ -1962,7 +2011,10 @@ microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService
 
 microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
     microsoftSamJsonParser = microsoftSamJsonParser,
-    settingsJsonReader = JsonFileReader('../config/microsoftSamSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/microsoftSamSettingsRepository.json'
+    )
 )
 
 microsoftSamVoiceMapper: MicrosoftSamVoiceMapperInterface = MicrosoftSamVoiceMapper()
@@ -2004,7 +2056,10 @@ streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElem
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/streamElementsSettingsRepository.json'),
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/streamElementsSettingsRepository.json'
+    ),
     streamElementsJsonParser = streamElementsJsonParser
 )
 
@@ -2012,7 +2067,10 @@ streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = Stre
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    seedFileReader = JsonFileReader('../config/streamElementsUserKeyRepositorySeedFile.json')
+    seedFileReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/streamElementsUserKeyRepositorySeedFile.json'
+    )
 )
 
 streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
@@ -2049,11 +2107,17 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
 )
 
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/ttsMonsterSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/ttsMonsterSettingsRepository.json'
+    )
 )
 
 ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = TtsMonsterKeyAndUserIdRepository(
-    settingsJsonReader = JsonFileReader('../config/ttsMonsterKeyAndUserIdRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/ttsMonsterKeyAndUserIdRepository.json'
+    )
 )
 
 ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
@@ -2114,7 +2178,10 @@ compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
 ##################################################
 
 streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/streamAlertsSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/streamAlertsSettingsRepository.json'
+    )
 )
 
 streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
@@ -2135,7 +2202,10 @@ timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMap
 )
 
 timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/timeoutActionSettings.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/timeoutActionSettings.json'
+    )
 )
 
 timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
@@ -2182,7 +2252,10 @@ crowdControlMessageHandler = CrowdControlMessageHandler(
 )
 
 crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/crowdControlSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/crowdControlSettingsRepository.json'
+    )
 )
 
 crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
@@ -2222,7 +2295,10 @@ bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
 
 bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsRepository(
     bizhawkKeyMapper = bizhawkKeyMapper,
-    settingsJsonReader = JsonFileReader('../config/bizhawkSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/bizhawkSettingsRepository.json'
+    )
 )
 
 crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
@@ -2242,7 +2318,10 @@ cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
 )
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
-    settingsJsonReader = JsonFileReader('../config/cheerActionSettings.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/cheerActionSettings.json'
+    )
 )
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
@@ -2312,7 +2391,10 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 #############################################
 
 starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
-    quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
+    quotesJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'starWarsQuotesRepository.json'
+    )
 )
 
 
@@ -2539,7 +2621,10 @@ triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRed
 ########################################################
 
 websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = WebsocketConnectionServerSettings(
-    settingsJsonReader = JsonFileReader('../config/websocketConnectionServerSettings.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/websocketConnectionServerSettings.json'
+    )
 )
 
 websocketEventTypeMapper: WebsocketEventTypeMapperInterface = WebsocketEventTypeMapper()

@@ -64,7 +64,10 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         )
 
         if glacialFile is not None:
-            return TtsMonsterFileReference(filePath = glacialFile.filePath)
+            return TtsMonsterFileReference(
+                storeDateTime = glacialFile.storeDateTime,
+                filePath = glacialFile.filePath
+            )
 
         speechBytes = await self.__ttsMonsterPrivateApiHelper.getSpeech(
             message = message,
@@ -86,7 +89,10 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             fileName = glacialFile.fileName,
             filePath = glacialFile.filePath
         ):
-            return TtsMonsterFileReference(filePath = glacialFile.filePath)
+            return TtsMonsterFileReference(
+                storeDateTime = glacialFile.storeDateTime,
+                filePath = glacialFile.filePath
+            )
         else:
             self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({message=}) ({glacialFile=})')
             return None
@@ -104,6 +110,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         elif not utils.isValidStr(filePath):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
 
+        # this statement removes the file name from the file path, leaving us with just a directory tree
         directory = utils.cleanPath(filePath[0:len(filePath) - len(fileName)])
 
         if not await aiofiles.ospath.exists(

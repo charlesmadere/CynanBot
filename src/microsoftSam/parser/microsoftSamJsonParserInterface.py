@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .models.microsoftSamVoice import MicrosoftSamVoice
+from ..models.microsoftSamVoice import MicrosoftSamVoice
 
 
 class MicrosoftSamJsonParserInterface(ABC):

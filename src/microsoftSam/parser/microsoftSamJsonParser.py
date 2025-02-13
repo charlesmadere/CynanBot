@@ -1,8 +1,8 @@
 from typing import Any
 
 from .microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
-from .models.microsoftSamVoice import MicrosoftSamVoice
-from ..misc import utils as utils
+from ..models.microsoftSamVoice import MicrosoftSamVoice
+from ...misc import utils as utils
 
 
 class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):

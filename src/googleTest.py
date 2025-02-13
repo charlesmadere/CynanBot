@@ -6,6 +6,8 @@ from .google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAc
 from .google.apiService.googleApiService import GoogleApiService
 from .google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
 from .google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
+from .google.helpers.googleFileExtensionHelper import GoogleFileExtensionHelper
+from .google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from .google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from .google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
@@ -27,8 +29,6 @@ from .storage.tempFileHelper import TempFileHelper
 from .storage.tempFileHelperInterface import TempFileHelperInterface
 from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
-from .tts.google.googleFileExtensionHelper import GoogleFileExtensionHelper
-from .tts.google.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .tts.google.googleTtsFileManager import GoogleTtsFileManager
 from .tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
 from .tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser

@@ -1,14 +1,16 @@
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
 from .googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
 
 
 @dataclass(frozen = True)
 class GoogleTranslationRequest:
+    contents: FrozenList[str]
     glossaryConfig: GoogleTranslateTextGlossaryConfig | None
     transliterationConfig: GoogleTranslateTextTransliterationConfig | None
-    contents: list[str]
     mimeType: str
     model: str | None
     sourceLanguageCode: str | None

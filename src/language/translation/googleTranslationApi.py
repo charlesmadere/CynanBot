@@ -1,5 +1,7 @@
 import traceback
 
+from frozenlist import FrozenList
+
 from .translationApi import TranslationApi
 from ..exceptions import TranslationException, TranslationLanguageHasNoIso6391Code
 from ..languageEntry import LanguageEntry
@@ -67,9 +69,13 @@ class GoogleTranslationApi(TranslationApi):
                 message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'
             )
 
+        contents: FrozenList[str] = FrozenList()
+        contents.append(text)
+        contents.freeze()
+
         request = GoogleTranslationRequest(
             glossaryConfig = None,
-            contents = [ text ],
+            contents = contents,
             mimeType = self.__mimeType,
             model = None,
             sourceLanguageCode = None,
