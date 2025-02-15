@@ -137,6 +137,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
+        message = utils.cleanStr(message)
         message = utils.removeCheerStrings(message)
         if not utils.isValidStr(message):
             return None

@@ -23,7 +23,8 @@ class MicrosoftSamMessageCleaner(MicrosoftSamMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = utils.removeCheerStrings(message.strip()).strip()
+        message = utils.cleanStr(message)
+        message = utils.removeCheerStrings(message).strip()
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
