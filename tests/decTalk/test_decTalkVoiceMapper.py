@@ -1,4 +1,5 @@
 import pytest
+
 from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.decTalk.models.decTalkVoice import DecTalkVoice
