@@ -53,7 +53,10 @@ pokepediaRepository = PokepediaRepository(
 )
 
 triviaSettingsRepository = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'triviaSettingsRepository.json'
+    )
 )
 
 pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(

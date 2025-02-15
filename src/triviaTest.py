@@ -172,7 +172,10 @@ timber: TimberInterface = Timber(
 )
 
 authRepository = AuthRepository(
-    authJsonReader = JsonFileReader('../config/authRepository.json')
+    authJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/authRepository.json'
+    )
 )
 
 backingDatabase: BackingDatabase = SqliteBackingDatabase(eventLoop = eventLoop)
@@ -228,7 +231,10 @@ cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
 )
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader(
+        eventLoop = eventLoop,
+        fileName = 'bannedWords.txt'
+    ),
     timber = timber
 )
 
@@ -238,7 +244,10 @@ contentScanner: ContentScannerInterface = ContentScanner(
 )
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader(
+        eventLoop = eventLoop,
+        fileName = 'bannedWords.txt'
+    ),
     timber = timber
 )
 
@@ -252,7 +261,10 @@ triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
 )
 
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = 'triviaSettingsRepository.json'
+    )
 )
 
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
