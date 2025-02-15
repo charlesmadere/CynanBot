@@ -28,5 +28,6 @@ class SoundAlert(Enum):
     POINT_REDEMPTION_16 = auto()
     RAID = auto()
     RANDOM_FROM_DIRECTORY = auto()
+    SPLAT = auto()
     SUBSCRIBE = auto()
     TNT = auto()

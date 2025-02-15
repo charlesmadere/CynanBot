@@ -117,6 +117,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('random_from_directory')
         assert result is SoundAlert.RANDOM_FROM_DIRECTORY
 
+    def test_parseSoundAlert_withSplatString(self):
+        result = self.jsonMapper.parseSoundAlert('splat')
+        assert result is SoundAlert.SPLAT
+
     def test_parseSoundAlert_withSubscribeString(self):
         result = self.jsonMapper.parseSoundAlert('subscribe')
         assert result is SoundAlert.SUBSCRIBE
@@ -152,6 +156,11 @@ class TestSoundAlertJsonMapper:
             result = self.jsonMapper.requireSoundAlert(' ')
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, SoundAlertJsonMapper)
+        assert isinstance(self.jsonMapper, SoundAlertJsonMapperInterface)
 
     def test_serializeSoundAlert_withAllSoundAlertValues(self):
         strings: set[str] = set()
@@ -265,6 +274,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.RANDOM_FROM_DIRECTORY)
         assert result == 'random_from_directory'
 
+    def test_serializeSoundAlert_withSplat(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.SPLAT)
+        assert result == 'splat'
+
     def test_serializeSoundAlert_withSubscribe(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.SUBSCRIBE)
         assert result == 'subscribe'
@@ -272,8 +285,3 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withTnt(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT)
         assert result == 'tnt'
-
-    def test_sanity(self):
-        assert self.jsonMapper is not None
-        assert isinstance(self.jsonMapper, SoundAlertJsonMapper)
-        assert isinstance(self.jsonMapper, SoundAlertJsonMapperInterface)

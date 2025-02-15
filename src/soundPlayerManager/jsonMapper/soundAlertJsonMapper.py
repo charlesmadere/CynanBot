@@ -42,6 +42,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'point_redemption_16': return SoundAlert.POINT_REDEMPTION_16
             case 'raid': return SoundAlert.RAID
             case 'random_from_directory': return SoundAlert.RANDOM_FROM_DIRECTORY
+            case 'splat': return SoundAlert.SPLAT
             case 'subscribe': return SoundAlert.SUBSCRIBE
             case 'tnt': return SoundAlert.TNT
             case _: return None
@@ -90,6 +91,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.POINT_REDEMPTION_16: return 'point_redemption_16'
             case SoundAlert.RAID: return 'raid'
             case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
+            case SoundAlert.SPLAT: return 'splat'
             case SoundAlert.SUBSCRIBE: return 'subscribe'
             case SoundAlert.TNT: return 'tnt'
             case _: raise ValueError(f'Unknown SoundAlert value: \"{soundAlert}\"')

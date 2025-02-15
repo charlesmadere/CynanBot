@@ -74,10 +74,6 @@ class GoogleApiService(GoogleApiServiceInterface):
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching access token: {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'Encountered network error when fetching access token: {e}')
 
-        if response is None:
-            self.__timber.log('GoogleApiService', f'Encountered unknown network error when fetching access token ({response=})')
-            raise GenericNetworkException(f'GoogleApiService encountered unknown network error when fetching access token ({response=})')
-
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
@@ -128,10 +124,6 @@ class GoogleApiService(GoogleApiServiceInterface):
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching text-to-speech ({request=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'GoogleApiService encountered network error when fetching text-to-speech ({request=}): {e}')
 
-        if response is None:
-            self.__timber.log('GoogleApiService', f'Encountered unknown network error when fetching text-to-speech ({request=}) ({response=})')
-            raise GenericNetworkException(f'GoogleApiService encountered unknown network error when fetching text-to-speech ({request=}) ({response=})')
-
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
@@ -171,11 +163,7 @@ class GoogleApiService(GoogleApiServiceInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching translation ({request=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'GoogleApiService encountered network error when fetching traslation ({request=}): {e}')
-
-        if response is None:
-            self.__timber.log('GoogleApiService', f'Encountered unknown network error when fetching translation ({request=}) ({response=})')
-            raise GenericNetworkException(f'GoogleApiService encountered unknown network error when fetching translation ({request=}) ({response=})')
+            raise GenericNetworkException(f'GoogleApiService encountered network error when fetching translation ({request=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()

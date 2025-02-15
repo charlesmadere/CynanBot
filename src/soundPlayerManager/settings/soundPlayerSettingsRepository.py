@@ -199,6 +199,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Raid Alert.mp3'
                 )
 
+            case SoundAlert.SPLAT:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'splatFilePath',
+                    fallback = 'Splat.mp3'
+                )
+
             case SoundAlert.SUBSCRIBE:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,

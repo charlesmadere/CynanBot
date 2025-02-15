@@ -1,5 +1,7 @@
+import re
 import traceback
 from asyncio import AbstractEventLoop
+from typing import Pattern
 
 import aiofiles
 import aiofiles.os
@@ -41,6 +43,26 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self.__timber: TimberInterface = timber
         self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = ttsMonsterPrivateApiHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
+
+        self.__directoryTreeRegEx: Pattern = re.compile(r'^([\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+
+    async def __createDirectories(self, filePath: str):
+        # this logic removes the file name from the file path, leaving us with just a directory tree
+        directoryMatch = self.__directoryTreeRegEx.fullmatch(filePath)
+        directory = directoryMatch.group(1)
+
+        if await aiofiles.ospath.exists(
+            path = directory,
+            loop = self.__eventLoop
+        ):
+            return
+
+        await aiofiles.os.makedirs(
+            name = directory,
+            loop = self.__eventLoop
+        )
+
+        self.__timber.log('TtsMonsterHelper', f'Created new directories ({directory=})')
 
     async def generateTts(
         self,
@@ -110,19 +132,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         elif not utils.isValidStr(filePath):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
 
-        # this statement removes the file name from the file path, leaving us with just a directory tree
-        directory = utils.cleanPath(filePath[0:len(filePath) - len(fileName)])
-
-        if not await aiofiles.ospath.exists(
-            path = directory,
-            loop = self.__eventLoop
-        ):
-            await aiofiles.os.makedirs(
-                name = directory,
-                loop = self.__eventLoop
-            )
-
-            self.__timber.log('TtsMonsterHelper', f'Created new directories ({directory=})')
+        await self.__createDirectories(filePath)
 
         try:
             async with aiofiles.open(
