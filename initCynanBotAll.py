@@ -2549,6 +2549,7 @@ cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemptio
 )
 
 decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
+    eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
     timber = timber
 )

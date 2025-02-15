@@ -1,7 +1,9 @@
+from asyncio import AbstractEventLoop
 from frozenlist import FrozenList
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..storage.jsonFileReader import JsonFileReader
+from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
@@ -15,16 +17,24 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface
     ):
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
+
+        self.__decTalkSongsRepository: JsonReaderInterface = JsonFileReader(
+            eventLoop = eventLoop,
+            fileName = 'decTalkSongsRepository.json'
+        )
 
     async def handlePointRedemption(
         self,
@@ -43,12 +53,13 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         if decTalkSongBoosterPack is None:
             return False
 
-        songKey = decTalkSongBoosterPack.song
-        decTalkSongsRepository = JsonFileReader('decTalkSongsRepository.json').readJson()
-        if decTalkSongsRepository is None:
+        decTalkSongs = await self.__decTalkSongsRepository.readJsonAsync()
+        if decTalkSongs is None or len(decTalkSongs) == 0:
             return False
 
-        songData = FrozenList(decTalkSongsRepository.get(songKey, None))
+        songData = FrozenList(decTalkSongs.get(decTalkSongBoosterPack.song, None))
+        songData.freeze()
+
         if len(songData) == 0:
             return False
 
@@ -70,5 +81,5 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
             )
         ))
 
-        self.__timber.log('DecTalkSongPointRedemption', f'Redeemed decTalkSong of {songKey} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('DecTalkSongPointRedemption', f'Redeemed DecTalk song {decTalkSongBoosterPack} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return True

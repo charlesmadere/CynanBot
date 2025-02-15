@@ -1744,6 +1744,7 @@ casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGame
 )
 
 decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
+    eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
     timber = timber
 )
