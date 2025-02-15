@@ -32,6 +32,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         self.__emojiHelper: EmojiHelperInterface = emojiHelper
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__sing: bool = sing
 
         self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandRegExes()
         self.__inputFlagRegExes: Collection[Pattern] = self.__buildInputFlagRegExes()
@@ -40,7 +41,6 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
         # https://dectalk.github.io/dectalk/idh_ref_3_tone_table_2.htm
         self.__durationPitchRegEx: Pattern = re.compile(r'\[.*\<(\d+),?(\d+)?\>.*?]', re.IGNORECASE)
-        self.__sing = sing
 
     def __buildInlineCommandRegExes(self) -> FrozenList[Pattern]:
         inlineCommandRegExes: FrozenList[Pattern] = FrozenList()
