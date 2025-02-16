@@ -111,24 +111,21 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         await self.__executeTts(fileName)
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
-        message = await self.__decTalkMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__decTalkMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
 
-        if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {message}'
-        elif utils.isValidStr(message):
-            fullMessage = message
+        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
+            fullMessage = f'{donationPrefix} {cleanedMessage}'
+        elif utils.isValidStr(cleanedMessage):
+            fullMessage = cleanedMessage
         elif utils.isValidStr(donationPrefix):
             fullMessage = donationPrefix
         else:
             return None
 
-        message = await self.__applyRandomVoice(fullMessage)
-
-        fileName = await self.__decTalkHelper.getSpeech(
-            message = message
-        )
+        fullMessage = await self.__applyRandomVoice(fullMessage)
+        fileName = await self.__decTalkHelper.getSpeech(fullMessage)
 
         if fileName is None:
             self.__timber.log('DecTalkTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({fileName=})')

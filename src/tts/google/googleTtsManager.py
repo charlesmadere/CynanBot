@@ -2,6 +2,7 @@ import asyncio
 import random
 
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
+from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
@@ -24,6 +25,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
+        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface
     ):
@@ -37,6 +39,8 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
+            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
@@ -47,6 +51,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
+        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
 
@@ -143,9 +148,18 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> GoogleTtsFileReference | None:
-        cleanedMessage = await self.__googleTtsMessageCleaner.clean(
-            message = event.message
-        )
+        cleanedMessage = await self.__googleTtsMessageCleaner.clean(event.message)
+        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
+        fullMessage: str
+
+        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
+            fullMessage = f'{donationPrefix} {cleanedMessage}'
+        elif utils.isValidStr(cleanedMessage):
+            fullMessage = cleanedMessage
+        elif utils.isValidStr(donationPrefix):
+            fullMessage = donationPrefix
+        else:
+            return None
 
         voicePreset = await self.__determineVoicePreset(event)
 

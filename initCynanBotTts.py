@@ -1151,6 +1151,7 @@ googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
     googleTtsMessageCleaner = googleTtsMessageCleaner,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
