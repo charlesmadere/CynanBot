@@ -11,10 +11,8 @@ class GoogleTtsVoiceChooser(GoogleTtsVoiceChooserInterface):
     def __init__(
         self,
         languageCodeToNames: frozendict[str, frozenset[str]] = frozendict({
-            'en-AU': frozenset({ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' }),
-            'en-GB': frozenset({ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' }),
-            'en-US': frozenset({ 'en-US-Casual-K', 'en-US-Journey-F', 'en-US-Studio-O', 'en-US-Studio-Q' }),
-            'fr-CA': frozenset({ 'fr-CA-Neural2-A', 'fr-CA-Neural2-B', 'fr-CA-Neural2-C', 'fr-CA-Neural2-D' })
+            'en-AU': frozenset({ 'en-AU-Chirp-HD-D', 'en-AU-Chirp-HD-F', 'en-AU-Chirp-HD-O' }),
+            'en-GB': frozenset({ 'en-GB-Chirp-HD-D', 'en-GB-Chirp-HD-F', 'en-GB-Chirp-HD-O' })
         })
     ):
         if not isinstance(languageCodeToNames, frozendict):
