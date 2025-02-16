@@ -1662,7 +1662,7 @@ triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
 
 
 #################################
-## Aniv initialization section ##
+## aniv initialization section ##
 #################################
 
 anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()

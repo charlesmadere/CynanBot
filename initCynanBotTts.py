@@ -1371,7 +1371,7 @@ compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
 
 
 #################################
-## Aniv initialization section ##
+## aniv initialization section ##
 #################################
 
 anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
