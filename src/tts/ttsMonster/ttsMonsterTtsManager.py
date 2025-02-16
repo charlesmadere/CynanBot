@@ -10,7 +10,6 @@ from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInter
 from ...ttsMonster.models.ttsMonsterFileReference import TtsMonsterFileReference
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
@@ -22,8 +21,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
@@ -37,8 +35,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
@@ -46,7 +42,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -65,7 +60,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS Monster TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -79,7 +74,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('TtsMonsterTtsManager', f'There is already an ongoing TTS Monster event!')
+            self.__timber.log('TtsMonsterTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True

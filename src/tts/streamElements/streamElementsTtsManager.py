@@ -88,7 +88,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('StreamElementsTtsManager', f'There is already an ongoing Stream Elements TTS event!')
+            self.__timber.log('StreamElementsTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True

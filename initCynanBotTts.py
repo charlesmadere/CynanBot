@@ -1347,17 +1347,16 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
 
-ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None = TtsMonsterTtsManager(
+ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsSettingsRepository = ttsSettingsRepository,
-    twitchUtils = twitchUtils
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
-compositeTtsManager: CompositeTtsManagerInterface | None = CompositeTtsManager(
+compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,

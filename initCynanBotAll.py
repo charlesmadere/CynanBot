@@ -2161,8 +2161,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsSettingsRepository = ttsSettingsRepository,
-    twitchUtils = twitchUtils
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
@@ -2177,7 +2176,6 @@ compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     ttsMonsterTtsManager = ttsMonsterTtsManager,
     ttsSettingsRepository = ttsSettingsRepository
 )
-
 
 
 ##################################################

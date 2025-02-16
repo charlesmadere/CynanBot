@@ -9,6 +9,7 @@ import aiofiles.ospath
 
 from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
+from ..exceptions import TtsMonsterFailedToCreateDirectoriesException
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -49,6 +50,10 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
         directoryMatch = self.__directoryTreeRegEx.fullmatch(filePath)
+
+        if directoryMatch is None or not utils.isValidStr(directoryMatch.group(1)):
+            raise TtsMonsterFailedToCreateDirectoriesException(f'Failed to create TTS Monster file directories ({filePath=}) ({directoryMatch=})')
+
         directory = directoryMatch.group(1)
 
         if await aiofiles.ospath.exists(

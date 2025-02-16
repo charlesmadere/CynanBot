@@ -1,16 +1,13 @@
 import asyncio
 
-import aiofiles.ospath
-
-from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
-from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
+from ...google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
+from ...google.models.googleTtsFileReference import GoogleTtsFileReference
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -24,7 +21,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
-        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
@@ -37,8 +33,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
-            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
@@ -47,18 +41,17 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __executeTts(self, fileName: str):
+    async def __executeTts(self, fileReference: GoogleTtsFileReference):
         volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
-                filePath = fileName,
+                filePath = fileReference.filePath,
                 volume = volume
             )
 
@@ -67,7 +60,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('GoogleTtsManager', f'Stopping Google TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('GoogleTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -81,36 +74,29 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('GoogleTtsManager', f'There is already an ongoing Google TTS event!')
+            self.__timber.log('GoogleTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True
-        fileName = await self.__processTtsEvent(event)
+        fileReference = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('GoogleTtsManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
+        if fileReference is None:
+            self.__timber.log('GoogleTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('GoogleTtsManager', f'Playing \"{fileName}\" TTS message in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileName)
+        self.__timber.log('GoogleTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileReference)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
-        message = await self.__googleTtsMessageCleaner.clean(event.message)
-        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
+    async def __processTtsEvent(self, event: TtsEvent) -> GoogleTtsFileReference | None:
+        cleanedMessage = await self.__googleTtsMessageCleaner.clean(
+            message = event.message
+        )
 
-        if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {message}'
-        elif utils.isValidStr(message):
-            fullMessage = message
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
-        return await self.__googleTtsHelper.getSpeechFile(
-            message = fullMessage
+        return await self.__googleTtsHelper.generateTts(
+            message = cleanedMessage,
+            twitchChannel = event.twitchChannel,
+            twitchChannelId = event.twitchChannelId
         )
 
     async def stopTtsEvent(self):
