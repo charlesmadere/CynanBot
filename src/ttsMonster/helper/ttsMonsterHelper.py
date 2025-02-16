@@ -45,7 +45,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = ttsMonsterPrivateApiHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
 
-        self.__directoryTreeRegEx: Pattern = re.compile(r'^(\.{1,2}[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
