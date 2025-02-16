@@ -113,8 +113,8 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
             if glacialId == fileNameWithoutExtension:
                 return GlacialTtsFileRetriever.FileReference(
-                    fileName = utils.cleanPath(entry.name),
-                    filePath = utils.cleanPath(f'{providerFolder}/{entry.name}')
+                    fileName = entry.name,
+                    filePath = f'{providerFolder}/{entry.name}'
                 )
 
         return None
@@ -159,6 +159,6 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
         return GlacialTtsFileReference(
             glacialTtsData = glacialTtsData,
-            fileName = utils.cleanPath(fileName),
-            filePath = utils.cleanPath(filePath)
+            fileName = fileName,
+            filePath = filePath
         )
