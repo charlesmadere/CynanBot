@@ -16,15 +16,23 @@ from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
 from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from src.google.models.googleVoicePreset import GoogleVoicePreset
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from src.google.voiceChooser.googleTtsVoiceChooser import GoogleTtsVoiceChooser
 from src.google.voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.misc.backgroundTaskHelper import BackgroundTaskHelper
+from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
+from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
+from src.soundPlayerManager.settings.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
+from src.soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
+from src.soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
@@ -51,6 +59,10 @@ class FakeGoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsPro
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
+
+backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
+    eventLoop = eventLoop
+)
 
 timber: TimberInterface = TimberStub()
 
@@ -121,6 +133,18 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
 
 twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
 
+soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
+    settingsJsonReader = JsonStaticReader(dict())
+)
+
+soundPlayerManager: SoundPlayerManagerInterface = AudioPlayerSoundPlayerManager(
+    backgroundTaskHelper = backgroundTaskHelper,
+    chatBandInstrumentSoundsRepository = None,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 
 async def main():
     pass
@@ -144,16 +168,21 @@ async def main():
 
     # print(f'translation result: {translationResult}')
 
-    message = 'sheeples23 timed out aniv for 60 seconds! rip bozo!'
+    message = 'lucentw sup'
 
     fileReference = await googleTtsHelper.generateTts(
-        voicePreset = None,
+        voicePreset = GoogleVoicePreset.ITALIAN_ITALY_CHIRP_O,
         message = message,
         twitchChannel = twitchChannel,
         twitchChannelId = twitchChannelId
     )
 
     print(f'text to speech results: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
+
+    await soundPlayerManager.playSoundFile(
+        filePath = fileReference.filePath,
+        volume = await googleSettingsRepository.getMediaPlayerVolume()
+    )
 
     pass
 
