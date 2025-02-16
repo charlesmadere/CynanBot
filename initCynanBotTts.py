@@ -1092,7 +1092,7 @@ singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCle
 
 decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
 
-singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
+singingDecTalkTtsManager: DecTalkTtsManagerInterface = SingingDecTalkTtsManager(
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = singingDecTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
@@ -1103,7 +1103,7 @@ singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsM
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
+decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
@@ -1182,7 +1182,7 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
+halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
