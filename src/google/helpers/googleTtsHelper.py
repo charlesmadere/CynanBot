@@ -124,7 +124,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             return None
 
         fileName = await self.__generateFileName()
-        filePath = await self.__ttsDirectoryProvider.getTtsDirectoryFor(TtsProvider.GOOGLE)
+        filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.GOOGLE)
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
