@@ -1,6 +1,5 @@
 import traceback
 from asyncio import AbstractEventLoop
-from datetime import datetime
 
 import aiofiles
 import aiofiles.os
@@ -12,9 +11,8 @@ from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -24,27 +22,27 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        googleTtsApiHelper: GoogleTtsApiHelperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
-        timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        googleTtsApiHelper: GoogleTtsApiHelperInterface,
+        googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
+        timber: TimberInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(googleTtsApiHelper, GoogleTtsApiHelperInterface):
-            raise TypeError(f'googleTtsApiHelper argument is malformed: \"{googleTtsApiHelper}\"')
         elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
+        elif not isinstance(googleTtsApiHelper, GoogleTtsApiHelperInterface):
+            raise TypeError(f'googleTtsApiHelper argument is malformed: \"{googleTtsApiHelper}\"')
+        elif not isinstance(googleTtsVoiceChooser, GoogleTtsVoiceChooserInterface):
+            raise TypeError(f'googleTtsVoiceChooser argument is malformed: \"{googleTtsVoiceChooser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
+        self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
+        self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
     async def __createDirectories(self, filePath: str):
         if await aiofiles.ospath.exists(
@@ -80,16 +78,12 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             text = message
         )
 
-        voice = GoogleVoiceSelectionParams(
-            gender = None,
-            languageCode = 'en-US',
-            name = None
-        )
+        voice = await self.__googleTtsVoiceChooser.choose()
 
         audioConfig = GoogleVoiceAudioConfig(
             pitch = None,
             speakingRate = None,
-            volumeGainDb = None,
+            volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb(),
             sampleRateHertz = None,
             audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
         )
@@ -107,8 +101,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if speechBytes is None:
             return None
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
-
         # TODO get actual directory names
         fileName = 'fileName.mp3'
         filePath = 'google'
@@ -118,10 +110,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             fileName = fileName,
             filePath = filePath
         ):
-            return GoogleTtsFileReference(
-                storeDateTime = now,
-                filePath = filePath
-            )
+            return GoogleTtsFileReference(filePath = filePath)
         else:
             self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({filePath=})')
             return None

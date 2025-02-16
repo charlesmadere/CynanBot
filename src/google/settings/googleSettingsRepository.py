@@ -52,6 +52,15 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
             jsonString = audioEncodingString
         )
 
+    async def getVolumeGainDb(self) -> float | None:
+        jsonContents = await self.__readJson()
+
+        volumeGainDb: float | None = None
+        if 'volume_gain_db' in jsonContents and utils.isValidNum(jsonContents.get('volume_gain_db')):
+            volumeGainDb = utils.getFloatFromDict(jsonContents, 'volume_gain_db')
+
+        return volumeGainDb
+
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache

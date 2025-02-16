@@ -123,12 +123,20 @@ from src.google.googleTtsMessageCleaner import GoogleTtsMessageCleaner
 from src.google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from src.google.helpers.googleFileExtensionHelper import GoogleFileExtensionHelper
 from src.google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
+from src.google.helpers.googleTtsApiHelper import GoogleTtsApiHelper
+from src.google.helpers.googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
+from src.google.helpers.googleTtsFileHelper import GoogleTtsFileHelper
+from src.google.helpers.googleTtsFileHelperInterface import GoogleTtsFileHelperInterface
+from src.google.helpers.googleTtsHelper import GoogleTtsHelper
+from src.google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
 from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from src.google.voiceChooser.googleTtsVoiceChooser import GoogleTtsVoiceChooser
+from src.google.voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
 from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
@@ -270,14 +278,8 @@ from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterf
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
 from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
-from src.tts.google.googleTtsFileManager import GoogleTtsFileManager
-from src.tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
-from src.tts.google.googleTtsHelper import GoogleTtsHelper
-from src.tts.google.googleTtsHelperInterface import GoogleTtsHelperInterface
 from src.tts.google.googleTtsManager import GoogleTtsManager
 from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
-from src.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from src.tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
 from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
@@ -1120,7 +1122,7 @@ googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepo
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
-googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
+googleTtsFileHelper: GoogleTtsFileHelperInterface = GoogleTtsFileHelper(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
@@ -1132,17 +1134,22 @@ googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageClea
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
+    googleApiService = googleApiService,
+    timber = timber
+)
+
 googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
-    googleApiService = googleApiService,
+    eventLoop = eventLoop,
     googleSettingsRepository = googleSettingsRepository,
-    googleTtsFileManager = googleTtsFileManager,
+    googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoiceChooser = googleTtsVoiceChooser,
     timber = timber
 )
 
-googleTtsManager: GoogleTtsManagerInterface | None = GoogleTtsManager(
+googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,

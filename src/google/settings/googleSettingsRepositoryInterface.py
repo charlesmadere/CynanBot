@@ -13,3 +13,7 @@ class GoogleSettingsRepositoryInterface(Clearable):
     @abstractmethod
     async def getVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
         pass
+
+    @abstractmethod
+    async def getVolumeGainDb(self) -> float | None:
+        pass

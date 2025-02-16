@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ...google.models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
+from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
 class GoogleTtsVoiceChooserInterface(ABC):

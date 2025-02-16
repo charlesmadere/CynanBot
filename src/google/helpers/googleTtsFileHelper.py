@@ -6,15 +6,17 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
-from .googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
-from ...google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
-from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from .googleFileExtensionHelperInterface import \
+    GoogleFileExtensionHelperInterface
+from .googleTtsFileHelperInterface import GoogleTtsFileHelperInterface
+from ..settings.googleSettingsRepositoryInterface import \
+    GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...storage.tempFileHelperInterface import TempFileHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
-class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
+class GoogleTtsFileHelper(GoogleTtsFileHelperInterface):
 
     def __init__(
         self,
