@@ -41,6 +41,7 @@ class FakeGoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsPro
     async def getGoogleCloudServiceAccountEmail(self) -> str | None:
         raise RuntimeError('Not implemented')
 
+
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
