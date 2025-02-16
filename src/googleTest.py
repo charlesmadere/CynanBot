@@ -147,6 +147,7 @@ async def main():
     message = 'sheeples23 timed out aniv for 60 seconds! rip bozo!'
 
     fileReference = await googleTtsHelper.generateTts(
+        voicePreset = None,
         message = message,
         twitchChannel = twitchChannel,
         twitchChannelId = twitchChannelId

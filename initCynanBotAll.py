@@ -1961,7 +1961,8 @@ googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
     googleTtsMessageCleaner = googleTtsMessageCleaner,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
@@ -2476,12 +2477,10 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
     twitchUtils = twitchUtils
 )
 
-saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
-if mostRecentAnivMessageRepository is not None:
-    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-        anivUserIdProvider = anivUserIdProvider,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
-    )
+saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+    anivUserIdProvider = anivUserIdProvider,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+)
 
 soundAlertChatAction: SoundAlertChatAction = SoundAlertChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
@@ -2505,6 +2504,7 @@ supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchTokensRepository = twitchTokensRepository
 )
 

@@ -1151,7 +1151,8 @@ googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
     googleTtsMessageCleaner = googleTtsMessageCleaner,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
@@ -1679,7 +1680,7 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
     userIdsRepository = userIdsRepository
 )
 
-saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = SaveMostRecentAnivMessageChatAction(
+saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdProvider = anivUserIdProvider,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
 )
@@ -1691,7 +1692,6 @@ soundAlertChatAction: SoundAlertChatAction = SoundAlertChatAction(
     timber = timber
 )
 
-
 supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -1700,17 +1700,18 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
 
 supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
 
-supStreamerChatAction: SupStreamerChatAction | None = SupStreamerChatAction(
+supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
     streamAlertsManager = streamAlertsManager,
     supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchTokensRepository = twitchTokensRepository
 )
 
-ttsChattersChatAction: TtsChattersChatAction | None = TtsChattersChatAction(
+ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
     streamAlertsManager = streamAlertsManager
 )

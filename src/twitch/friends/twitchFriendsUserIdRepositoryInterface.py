@@ -8,6 +8,10 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getBastionBlueUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getCharlesUserId(self) -> str | None:
         pass
 
@@ -24,7 +28,19 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getJrpUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getLucentUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getMandooBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getMerttUserId(self) -> str | None:
         pass
 
     @abstractmethod

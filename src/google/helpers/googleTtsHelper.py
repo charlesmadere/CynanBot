@@ -15,6 +15,8 @@ from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from ..models.googleVoicePreset import GoogleVoicePreset
+from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ..voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ...misc import utils as utils
@@ -82,11 +84,14 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
     async def generateTts(
         self,
+        voicePreset: GoogleVoicePreset | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> GoogleTtsFileReference | None:
-        if message is not None and not isinstance(message, str):
+        if voicePreset is not None and not isinstance(voicePreset, GoogleVoicePreset):
+            raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -100,7 +105,16 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             text = message
         )
 
-        voice = await self.__googleTtsVoiceChooser.choose()
+        voice: GoogleVoiceSelectionParams
+
+        if voicePreset is None:
+            voice = await self.__googleTtsVoiceChooser.choose()
+        else:
+            voice = GoogleVoiceSelectionParams(
+                gender = None,
+                languageCode = voicePreset.languageCode,
+                name = voicePreset.fullName
+            )
 
         audioConfig = GoogleVoiceAudioConfig(
             pitch = None,

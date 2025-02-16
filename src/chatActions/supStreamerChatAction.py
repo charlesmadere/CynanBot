@@ -10,8 +10,10 @@ from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsEvent import TtsEvent
+from ..tts.ttsProvider import TtsProvider
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userInterface import UserInterface
 
@@ -26,6 +28,7 @@ class SupStreamerChatAction(AbsChatAction):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
+        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 6)
     ):
@@ -41,6 +44,8 @@ class SupStreamerChatAction(AbsChatAction):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
+        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
+            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(cooldown, timedelta):
@@ -52,8 +57,27 @@ class SupStreamerChatAction(AbsChatAction):
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
+        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__cooldown: timedelta = cooldown
+
+    async def __determineTtsProvider(
+        self,
+        message: TwitchMessage,
+        user: UserInterface
+    ) -> TtsProvider:
+        googleTtsOverrideUserIds: frozenset[str | None] = frozenset({
+            await self.__twitchFriendsUserIdRepository.getHokkaidoubareUserId(),
+            await self.__twitchFriendsUserIdRepository.getLucentUserId(),
+            await self.__twitchFriendsUserIdRepository.getMerttUserId(),
+            await self.__twitchFriendsUserIdRepository.getVolwrathUserId(),
+            await self.__twitchFriendsUserIdRepository.getZanianUserId()
+        })
+
+        if message.getAuthorId() in googleTtsOverrideUserIds:
+            return TtsProvider.GOOGLE
+        else:
+            return user.defaultTtsProvider
 
     async def handleChat(
         self,
@@ -97,7 +121,12 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannelId = await message.getTwitchChannelId()
         )
 
-        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
+        ttsProvider = await self.__determineTtsProvider(
+            message = message,
+            user = user
+        )
+
+        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle} ({ttsProvider=})')
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
@@ -110,7 +139,7 @@ class SupStreamerChatAction(AbsChatAction):
                 userId = message.getAuthorId(),
                 userName = message.getAuthorName(),
                 donation = None,
-                provider = user.defaultTtsProvider,
+                provider = ttsProvider,
                 raidInfo = None
             )
         ))
