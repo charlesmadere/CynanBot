@@ -15,10 +15,10 @@ from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
 from src.storage.jsonStaticReader import JsonStaticReader
-from src.storage.tempFileHelper import TempFileHelper
-from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
+from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
+from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
@@ -56,10 +56,6 @@ timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
-tempFileHelper: TempFileHelperInterface = TempFileHelper(
-    eventLoop = eventLoop
-)
-
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
 )
@@ -69,6 +65,8 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber
 )
+
+ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
 ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = FakeTtsMonsterKeyAndUserIdRepository()
 
@@ -105,9 +103,9 @@ glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsSt
 
 glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
     eventLoop = eventLoop,
-    glacialTtsDataMapper = glacialTtsDataMapper,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
-    timber = timber
+    timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
 )
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(

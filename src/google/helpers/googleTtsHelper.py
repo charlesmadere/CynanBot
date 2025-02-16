@@ -15,6 +15,7 @@ from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositor
 from ..voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 
 
 class GoogleTtsHelper(GoogleTtsHelperInterface):
@@ -25,7 +26,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsApiHelper: GoogleTtsApiHelperInterface,
         googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        ttsDirectoryProvider: TtsDirectoryProviderInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -37,12 +39,15 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             raise TypeError(f'googleTtsVoiceChooser argument is malformed: \"{googleTtsVoiceChooser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
+            raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
         self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__timber: TimberInterface = timber
+        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
 
     async def __createDirectories(self, filePath: str):
         if await aiofiles.ospath.exists(
@@ -101,7 +106,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if speechBytes is None:
             return None
 
-        # TODO get actual directory names
+        # TODO get actual directory and file names
         fileName = 'fileName.mp3'
         filePath = 'google'
 

@@ -1,38 +1,30 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from .google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
-from .google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
-from .google.apiService.googleApiService import GoogleApiService
-from .google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
-from .google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
-from .google.helpers.googleFileExtensionHelper import GoogleFileExtensionHelper
-from .google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
-from .google.jsonMapper.googleJsonMapper import GoogleJsonMapper
-from .google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
-from .google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
-from .google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from .google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
-from .google.models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
-from .google.models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from .google.settings.googleSettingsRepository import GoogleSettingsRepository
-from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from .location.timeZoneRepository import TimeZoneRepository
-from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from .misc.backgroundTaskHelper import BackgroundTaskHelper
-from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
-from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
-from .network.networkClientProvider import NetworkClientProvider
-from .storage.jsonStaticReader import JsonStaticReader
-from .storage.tempFileHelper import TempFileHelper
-from .storage.tempFileHelperInterface import TempFileHelperInterface
-from .timber.timberInterface import TimberInterface
-from .timber.timberStub import TimberStub
-from .tts.google.googleTtsFileManager import GoogleTtsFileManager
-from .tts.google.googleTtsFileManagerInterface import GoogleTtsFileManagerInterface
-from .tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from .tts.google.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
+from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
+from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
+from src.google.apiService.googleApiService import GoogleApiService
+from src.google.apiService.googleApiServiceInterface import GoogleApiServiceInterface
+from src.google.googleCloudProjectCredentialsProviderInterface import GoogleCloudProjectCredentialsProviderInterface
+from src.google.helpers.googleFileExtensionHelper import GoogleFileExtensionHelper
+from src.google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
+from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
+from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
+from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
+from src.google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
+from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
+from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from src.location.timeZoneRepository import TimeZoneRepository
+from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from src.network.networkClientProvider import NetworkClientProvider
+from src.storage.jsonStaticReader import JsonStaticReader
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
+from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
+from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 
 
 class FakeGoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
@@ -52,17 +44,21 @@ class FakeGoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsPro
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
-    eventLoop = eventLoop
-)
-
 timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
-tempFileHelper: TempFileHelperInterface = TempFileHelper(
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
 )
+
+networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+    eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
+    timber = timber
+)
+
+ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
     timber = timber,
@@ -74,14 +70,6 @@ googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInte
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber,
     timeZoneRepository = timeZoneRepository
-)
-aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-    eventLoop = eventLoop
-)
-networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
-    eventLoop = eventLoop,
-    cookieJarProvider = aioHttpCookieJarProvider,
-    timber = timber
 )
 
 googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
@@ -106,16 +94,6 @@ googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepo
     settingsJsonReader = JsonStaticReader(dict())
 )
 
-googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
-    eventLoop = eventLoop,
-    googleFileExtensionHelper = googleFileExtensionHelper,
-    googleSettingsRepository = googleSettingsRepository,
-    tempFileHelper = tempFileHelper,
-    timber = timber
-)
-
-googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
-
 async def main():
     pass
 
@@ -135,27 +113,24 @@ async def main():
         text = 'sheeples23 timed out aniv for 60 seconds! rip bozo!'
     )
 
-    selectionParams = await googleTtsVoiceChooser.choose()
-
-    audioConfig = GoogleVoiceAudioConfig(
-        pitch = None,
-        speakingRate = None,
-        volumeGainDb = None,
-        sampleRateHertz = None,
-        audioEncoding = await googleSettingsRepository.getVoiceAudioEncoding()
-    )
-
-    request = GoogleTextSynthesizeRequest(
-        synthesisInput = synthesisInput,
-        voice = selectionParams,
-        audioConfig = audioConfig
-    )
-
-    textToSpeechResult = await googleApiService.textToSpeech(request)
-    print(f'text to speech result: {textToSpeechResult=}')
-
-    fileName = await googleTtsFileManager.writeBase64CommandToNewFile(textToSpeechResult.audioContent)
-    print(f'{fileName=}')
+    # selectionParams = await googleTtsVoiceChooser.choose()
+    #
+    # audioConfig = GoogleVoiceAudioConfig(
+    #     pitch = None,
+    #     speakingRate = None,
+    #     volumeGainDb = None,
+    #     sampleRateHertz = None,
+    #     audioEncoding = await googleSettingsRepository.getVoiceAudioEncoding()
+    # )
+    #
+    # request = GoogleTextSynthesizeRequest(
+    #     synthesisInput = synthesisInput,
+    #     voice = selectionParams,
+    #     audioConfig = audioConfig
+    # )
+    #
+    # textToSpeechResult = await googleApiService.textToSpeech(request)
+    # print(f'text to speech result: {textToSpeechResult=}')
 
     pass
 

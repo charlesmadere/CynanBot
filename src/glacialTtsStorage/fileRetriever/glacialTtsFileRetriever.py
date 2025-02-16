@@ -8,11 +8,11 @@ import aiofiles.ospath
 
 from .glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ..exceptions import GlacialTtsAlreadyExists, GlacialTtsFolderIsNotAFolder
-from ..mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
 from ..models.glacialTtsFileReference import GlacialTtsFileReference
 from ..repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from ...tts.ttsProvider import TtsProvider
 
 
@@ -26,25 +26,23 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        glacialTtsDataMapper: GlacialTtsDataMapperInterface,
         glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface,
         timber: TimberInterface,
-        directory: str = '../tts'
+        ttsDirectoryProvider: TtsDirectoryProviderInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(glacialTtsDataMapper, GlacialTtsDataMapperInterface):
-            raise TypeError(f'glacialTtsDataMapper argument is malformed: \"{glacialTtsDataMapper}\"')
         elif not isinstance(glacialTtsStorageRepository, GlacialTtsStorageRepositoryInterface):
             raise TypeError(f'glacialTtsStorageRepository argument is malformed: \"{glacialTtsStorageRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
+            raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsDataMapper: GlacialTtsDataMapperInterface = glacialTtsDataMapper
         self.__glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = glacialTtsStorageRepository
         self.__timber: TimberInterface = timber
-        self.__directory: str = directory
+        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
 
         self.__fileNameWithoutExtensionRegEx: Pattern = re.compile(r'^(\w+)\.\w+$', re.IGNORECASE)
 
@@ -87,18 +85,17 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         glacialId: str,
         provider: TtsProvider
     ) -> FileReference | None:
-        providerFolder = await self.__glacialTtsDataMapper.toFolderName(provider)
-        currentTtsFolder = f'{self.__directory}/{providerFolder}'
+        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
 
-        if not await aiofiles.ospath.exists(currentTtsFolder):
-            self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder does not exist ({glacialId=}) ({currentTtsFolder=})')
+        if not await aiofiles.ospath.exists(providerFolder):
+            self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder does not exist ({glacialId=}) ({providerFolder=})')
             return None
-        elif not await aiofiles.ospath.isdir(currentTtsFolder):
-            self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({currentTtsFolder=})')
-            raise GlacialTtsFolderIsNotAFolder(f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({currentTtsFolder=})')
+        elif not await aiofiles.ospath.isdir(providerFolder):
+            self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({providerFolder=})')
+            raise GlacialTtsFolderIsNotAFolder(f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({providerFolder=})')
 
         directoryContents = await aiofiles.os.scandir(
-            path = currentTtsFolder,
+            path = providerFolder,
             loop = self.__eventLoop
         )
 
@@ -117,7 +114,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             if glacialId == fileNameWithoutExtension:
                 return GlacialTtsFileRetriever.FileReference(
                     fileName = utils.cleanPath(entry.name),
-                    filePath = utils.cleanPath(f'{currentTtsFolder}/{entry.name}')
+                    filePath = utils.cleanPath(f'{providerFolder}/{entry.name}')
                 )
 
         return None
@@ -156,9 +153,9 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         if fileReference is not None:
             raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({provider=}) ({fileReference=})')
 
-        providerFolder = await self.__glacialTtsDataMapper.toFolderName(provider)
+        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
         fileName = f'{glacialTtsData.glacialId}.{fileExtension}'
-        filePath = f'{self.__directory}/{providerFolder}/{fileName}'
+        filePath = f'{providerFolder}/{fileName}'
 
         return GlacialTtsFileReference(
             glacialTtsData = glacialTtsData,

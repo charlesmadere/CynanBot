@@ -125,8 +125,6 @@ from src.google.helpers.googleFileExtensionHelper import GoogleFileExtensionHelp
 from src.google.helpers.googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from src.google.helpers.googleTtsApiHelper import GoogleTtsApiHelper
 from src.google.helpers.googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
-from src.google.helpers.googleTtsFileHelper import GoogleTtsFileHelper
-from src.google.helpers.googleTtsFileHelperInterface import GoogleTtsFileHelperInterface
 from src.google.helpers.googleTtsHelper import GoogleTtsHelper
 from src.google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
@@ -278,6 +276,8 @@ from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterf
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
 from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
+from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
+from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from src.tts.google.googleTtsManager import GoogleTtsManager
 from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
 from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
@@ -1032,6 +1032,8 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
+ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
+
 glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
 
 glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
@@ -1045,9 +1047,9 @@ glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsSt
 
 glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
     eventLoop = eventLoop,
-    glacialTtsDataMapper = glacialTtsDataMapper,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
-    timber = timber
+    timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
 )
 
 decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
@@ -1122,14 +1124,6 @@ googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepo
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
-googleTtsFileHelper: GoogleTtsFileHelperInterface = GoogleTtsFileHelper(
-    eventLoop = eventLoop,
-    googleFileExtensionHelper = googleFileExtensionHelper,
-    googleSettingsRepository = googleSettingsRepository,
-    tempFileHelper = tempFileHelper,
-    timber = timber
-)
-
 googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository
 )
@@ -1146,7 +1140,8 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoiceChooser = googleTtsVoiceChooser,
-    timber = timber
+    timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
 )
 
 googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
