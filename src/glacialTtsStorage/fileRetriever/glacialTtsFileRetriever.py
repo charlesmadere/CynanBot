@@ -116,7 +116,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
             if glacialId == fileNameWithoutExtension:
                 return GlacialTtsFileRetriever.FileReference(
-                    fileName = entry.name,
+                    fileName = utils.cleanPath(entry.name),
                     filePath = utils.cleanPath(f'{currentTtsFolder}/{entry.name}')
                 )
 
