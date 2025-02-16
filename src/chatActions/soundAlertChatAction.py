@@ -1,8 +1,10 @@
+from datetime import timedelta
 from typing import Collection
 
 from .absChatAction import AbsChatAction
 from ..accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
 from ..misc import utils as utils
+from ..misc.timedDict import TimedDict
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
@@ -25,7 +27,8 @@ class SoundAlertChatAction(AbsChatAction):
         accessLevelCheckingHelper: AccessLevelCheckingHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(accessLevelCheckingHelper, AccessLevelCheckingHelperInterface):
             raise TypeError(f'accessLevelCheckingHelper argument is malformed: \"{accessLevelCheckingHelper}\"')
@@ -35,11 +38,15 @@ class SoundAlertChatAction(AbsChatAction):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(cooldown, timedelta):
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = accessLevelCheckingHelper
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
         self.__timber: TimberInterface = timber
+        self.__lastMessageTimes: dict[str, TimedDict] = dict()
+        self.__cooldown: timedelta = cooldown
 
     async def __determineSoundAlertFromMessage(
         self,
@@ -81,6 +88,12 @@ class SoundAlertChatAction(AbsChatAction):
             return False
 
         if not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
+            return False
+
+        if self.__lastMessageTimes.get(chatMessage) is None:
+            self.__lastMessageTimes[chatMessage] = TimedDict(self.__cooldown)
+
+        if not  self.__lastMessageTimes[chatMessage].isReadyAndUpdate(user.handle):
             return False
 
         if await self.__playChatSoundAlert(chatSoundAlert):
