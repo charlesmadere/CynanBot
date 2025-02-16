@@ -16,6 +16,10 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getHokkaidoubareUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getImytUserId(self) -> str | None:
         pass
 
@@ -29,4 +33,12 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getStashiocatUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getVolwrathUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getZanianUserId(self) -> str | None:
         pass
