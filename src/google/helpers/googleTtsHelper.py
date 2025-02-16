@@ -131,9 +131,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             fileName = fileName,
             filePath = filePath
         ):
-            return GoogleTtsFileReference(
-                filePath = utils.cleanPath(f'{filePath}/{fileName}')
-            )
+            cleanedFilePath = utils.cleanPath(f'{filePath}/{fileName}')
+            return GoogleTtsFileReference(filePath = cleanedFilePath)
         else:
             self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({filePath=})')
             return None
