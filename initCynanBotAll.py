@@ -1947,6 +1947,7 @@ googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
+    googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoiceChooser = googleTtsVoiceChooser,

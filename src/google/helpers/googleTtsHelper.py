@@ -1,10 +1,14 @@
+import re
 import traceback
+import uuid
 from asyncio import AbstractEventLoop
+from typing import Pattern
 
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 
+from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
@@ -16,6 +20,7 @@ from ..voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserI
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
+from ...tts.ttsProvider import TtsProvider
 
 
 class GoogleTtsHelper(GoogleTtsHelperInterface):
@@ -23,6 +28,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsApiHelper: GoogleTtsApiHelperInterface,
         googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
@@ -31,6 +37,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(googleFileExtensionHelper, GoogleFileExtensionHelperInterface):
+            raise TypeError(f'googleFileExtensionHelper argument is malformed: \"{googleFileExtensionHelper}\"')
         elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsApiHelper, GoogleTtsApiHelperInterface):
@@ -43,11 +51,14 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
         self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__timber: TimberInterface = timber
         self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
+
+        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         if await aiofiles.ospath.exists(
@@ -62,6 +73,12 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         )
 
         self.__timber.log('GoogleTtsHelper', f'Created new directories ({filePath=})')
+
+    async def __generateFileName(self) -> str:
+        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
+        audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
+        fileExtension = await self.__googleFileExtensionHelper.getFileExtension(audioEncoding)
+        return f'{fileName}.{fileExtension}'
 
     async def generateTts(
         self,
@@ -106,16 +123,17 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if speechBytes is None:
             return None
 
-        # TODO get actual directory and file names
-        fileName = 'fileName.mp3'
-        filePath = 'google'
+        fileName = await self.__generateFileName()
+        filePath = await self.__ttsDirectoryProvider.getTtsDirectoryFor(TtsProvider.GOOGLE)
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
             fileName = fileName,
             filePath = filePath
         ):
-            return GoogleTtsFileReference(filePath = filePath)
+            return GoogleTtsFileReference(
+                filePath = utils.cleanPath(f'{filePath}/{fileName}')
+            )
         else:
             self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({filePath=})')
             return None
@@ -137,14 +155,14 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         try:
             async with aiofiles.open(
-                file = filePath,
+                file = f'{filePath}/{fileName}',
                 mode = 'wb',
                 loop = self.__eventLoop
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('GoogleTtsHelper', f'Encountered exception when trying to write Google TTS speechBytes to file ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleTtsHelper', f'Encountered exception when trying to write Google TTS speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
             return False
 
         return True

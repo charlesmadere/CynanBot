@@ -136,7 +136,7 @@ async def main():
         twitchChannelId = twitchChannelId
     )
 
-    print(f'({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
+    print(f'text to speech results: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
 
     pass
 
