@@ -9,6 +9,7 @@ from ..emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
@@ -18,6 +19,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         emojiHelper: EmojiHelperInterface,
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
+        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         sing: bool = False
     ):
         if not isinstance(emojiHelper, EmojiHelperInterface):
@@ -26,12 +28,15 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
+            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif not isinstance(sing, bool):
             raise TypeError(f'sing argument is malformed: \"{sing}\"')
 
         self.__emojiHelper: EmojiHelperInterface = emojiHelper
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
         self.__sing: bool = sing
 
         self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandRegExes()
@@ -138,7 +143,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             return None
 
         message = utils.cleanStr(message)
-        message = utils.removeCheerStrings(message)
+        message = await self.__twitchMessageStringUtils.removeCheerStrings(message)
         if not utils.isValidStr(message):
             return None
 

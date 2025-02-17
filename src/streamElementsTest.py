@@ -33,6 +33,8 @@ from .tts.streamElements.streamElementsFileManager import StreamElementsFileMana
 from .tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from .tts.ttsSettingsRepository import TtsSettingsRepository
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from .twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from .twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class FakeStreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
@@ -79,8 +81,11 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
 )
 
+twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
 streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(

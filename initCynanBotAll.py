@@ -1869,13 +1869,15 @@ decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
 decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     emojiHelper = emojiHelper,
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     emojiHelper = emojiHelper,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
     sing = True
 )
 
@@ -1935,7 +1937,8 @@ googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepo
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
 googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
@@ -1989,7 +1992,8 @@ halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
 )
 
 halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
@@ -2034,7 +2038,8 @@ microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
 )
 
 microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 microsoftSamTtsManager: MicrosoftSamTtsManagerInterface = MicrosoftSamTtsManager(
@@ -2054,7 +2059,8 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
 )
 
 streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
@@ -2141,7 +2147,8 @@ ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPriv
 )
 
 ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(

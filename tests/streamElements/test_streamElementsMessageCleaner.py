@@ -7,6 +7,8 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestStreamElementsMessageCleaner:
@@ -17,8 +19,11 @@ class TestStreamElementsMessageCleaner:
         settingsJsonReader = JsonStaticReader(dict())
     )
 
+    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
     cleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
-        ttsSettingsRepository = ttsSettingsRepository
+        ttsSettingsRepository = ttsSettingsRepository,
+        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio

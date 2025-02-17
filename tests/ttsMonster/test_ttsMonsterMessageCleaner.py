@@ -7,6 +7,8 @@ from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestTtsMonsterMessageCleaner:
@@ -17,8 +19,11 @@ class TestTtsMonsterMessageCleaner:
         settingsJsonReader = JsonStaticReader(dict())
     )
 
+    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
     cleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
-        ttsSettingsRepository = ttsSettingsRepository
+        ttsSettingsRepository = ttsSettingsRepository,
+        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio

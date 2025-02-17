@@ -7,6 +7,8 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestHalfLifeMessageCleaner:
@@ -17,8 +19,11 @@ class TestHalfLifeMessageCleaner:
         settingsJsonReader = JsonStaticReader(dict())
     )
 
+    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
     cleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
-        ttsSettingsRepository = ttsSettingsRepository
+        ttsSettingsRepository = ttsSettingsRepository,
+        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio
@@ -60,3 +65,8 @@ class TestHalfLifeMessageCleaner:
     async def test_clean_withWhitespaceString(self):
         result = await self.cleaner.clean(' ')
         assert result is None
+
+    def test_sanity(self):
+        assert self.cleaner is not None
+        assert isinstance(self.cleaner, HalfLifeMessageCleaner)
+        assert isinstance(self.cleaner, HalfLifeMessageCleanerInterface)

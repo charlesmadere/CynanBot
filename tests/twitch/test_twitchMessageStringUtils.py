@@ -73,6 +73,54 @@ class TestTwitchMessageStringUtils:
         result = await self.utils.getUserNameFromCheerMessage(' ')
         assert result is None
 
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withBigMixedMessage(self):
+        result = await self.utils.removeCheerStrings(' cheer50  Hey good  cheer75 luck!!   cheer100  cheer100 \n')
+        assert result == 'Hey good luck!!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withBitbossAndHelloWorldString(self):
+        result = await self.utils.removeCheerStrings('bitboss100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withCheerAndHelloWorldString(self):
+        result = await self.utils.removeCheerStrings('cheer100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withCheerOnly(self):
+        result = await self.utils.removeCheerStrings('cheer100')
+        assert result == ''
+
+        result = await self.utils.removeCheerStrings('cheer100\n')
+        assert result == ''
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withDoodleCheerAndHelloWorldString(self):
+        result = await self.utils.removeCheerStrings('doodlecheer100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withHelloWorldString(self):
+        result = await self.utils.removeCheerStrings('Hello, World!')
+        assert result == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withMuxyWorldString(self):
+        result = await self.utils.removeCheerStrings('muxy100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withStreamLabsWorldString(self):
+        result = await self.utils.removeCheerStrings('streamlabs100 Hello, World!')
+        assert result == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_removeCheerStrings_withUniAndHelloWorldString(self):
+        result = await self.utils.removeCheerStrings('uni50 Hello, World!')
+        assert result == 'Hello, World!'
+
     def test_sanity(self):
         assert self.utils is not None
         assert isinstance(self.utils, TwitchMessageStringUtils)

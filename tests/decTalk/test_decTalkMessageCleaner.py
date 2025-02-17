@@ -11,6 +11,8 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestDecTalkMessageCleaner:
@@ -63,10 +65,13 @@ class TestDecTalkMessageCleaner:
         settingsJsonReader = JsonStaticReader(dict())
     )
 
+    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
     cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
         emojiHelper = emojiHelper,
         timber = timber,
-        ttsSettingsRepository = ttsSettingsRepository
+        ttsSettingsRepository = ttsSettingsRepository,
+        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio
@@ -201,7 +206,8 @@ class TestDecTalkMessageCleaner:
         cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
             emojiHelper = self.emojiHelper,
             timber = self.timber,
-            ttsSettingsRepository = ttsSettingsRepository
+            ttsSettingsRepository = ttsSettingsRepository,
+            twitchMessageStringUtils = self.twitchMessageStringUtils
         )
 
         result = await cleaner.clean('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac velit neque. Suspendisse sed scelerisque metus, eget ultrices mi. Quisque accumsan laoreet sapien, eget euismod ex hendrerit a. Ut mattis ipsum enim, eget ultrices nisl pulvinar at. Sed eu ornare neque. Quisque nec commodo enim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas efficitur odio arcu, vel vestibulum metus porttitor ac. Mauris sollicitudin, velit in malesuada scelerisque, magna nisi posuere nisi, ac sodales dolor massa vitae ex. Sed fermentum purus vel purus efficitur varius id ut lacus. Duis eu neque dapibus, ornare mauris porta, placerat enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut et nisi mi. Donec efficitur sapien a bibendum tincidunt.')
@@ -274,3 +280,8 @@ class TestDecTalkMessageCleaner:
     async def test_clean_withWhitespaceString(self):
         result = await self.cleaner.clean(' ')
         assert result is None
+
+    def test_sanity(self):
+        assert self.cleaner is not None
+        assert isinstance(self.cleaner, DecTalkMessageCleaner)
+        assert isinstance(self.cleaner, DecTalkMessageCleanerInterface)
