@@ -166,7 +166,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
         return await self.__googleTtsHelper.generateTts(
             voicePreset = voicePreset,
-            message = cleanedMessage,
+            message = fullMessage,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )
