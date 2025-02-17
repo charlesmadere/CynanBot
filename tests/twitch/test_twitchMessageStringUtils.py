@@ -107,6 +107,11 @@ class TestTwitchMessageStringUtils:
         assert result == 'Hello, World!'
 
     @pytest.mark.asyncio
+    async def test_removeCheerStrings_withLotsOfCheers(self):
+        result = await self.utils.removeCheerStrings('cheer100 cheer500')
+        assert result == ''
+
+    @pytest.mark.asyncio
     async def test_removeCheerStrings_withMuxyWorldString(self):
         result = await self.utils.removeCheerStrings('muxy100 Hello, World!')
         assert result == 'Hello, World!'
