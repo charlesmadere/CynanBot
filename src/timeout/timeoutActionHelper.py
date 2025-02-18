@@ -186,9 +186,9 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             message: str
 
             if isReverse:
-                message = f'Oh noo! {timeoutData.instigatorUserName} got hit with a reverse! Rip bozo!'
+                message = f'Oh noo! @{timeoutData.instigatorUserName} got hit with a reverse! Rip bozo!'
             else:
-                message = f'{timeoutData.instigatorUserName} timed out {timeoutData.timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
+                message = f'@{timeoutData.instigatorUserName} timed out @{timeoutData.timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
 
             ttsEvent = TtsEvent(
                 message = message,
@@ -225,11 +225,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         message: str
 
         if isGuaranteed or timeoutData.actionType is TimeoutActionType.GRENADE:
-            message = f'{ripBozoEmote} {timeoutData.timeoutTargetUserName} {ripBozoEmote}'
+            message = f'{ripBozoEmote} @{timeoutData.timeoutTargetUserName} {ripBozoEmote}'
         elif isReverse:
-            message = f'{ripBozoEmote} Oh noo! {timeoutData.instigatorUserName} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Oh noo! @{timeoutData.instigatorUserName} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
         else:
-            message = f'{ripBozoEmote} Timed out {timeoutData.timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Timed out @{timeoutData.timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -318,7 +318,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'{ripBozoEmote} Sorry {timeoutData.instigatorUserName}, but your timeout of {timeoutTargetUserName} failed {ripBozoEmote} (rolled a d{diceRoll.dieSize} and got a {diceRoll.roll}, but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
+            message = f'{ripBozoEmote} Sorry @{timeoutData.instigatorUserName}, but your timeout of @{timeoutTargetUserName} failed {ripBozoEmote} (rolled a d{diceRoll.dieSize} and got a {diceRoll.roll}, but needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}',
             replyMessageId = timeoutData.twitchChatMessageId
         )
 
@@ -347,7 +347,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠ Sorry {timeoutData.instigatorUserName}, but {timeoutTargetUserName} is an immune user',
+            message = f'⚠ Sorry @{timeoutData.instigatorUserName}, but @{timeoutTargetUserName} is an immune user',
             replyMessageId = timeoutData.twitchChatMessageId
         )
 
@@ -404,7 +404,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'⚠ Wow {timeoutData.instigatorUserName} are you trying to bully? {timeoutTargetUserName} has the new follower shield! {ripBozoEmote}',
+            message = f'⚠ Wow @{timeoutData.instigatorUserName} are you trying to bully? @{timeoutTargetUserName} has the new follower shield! {ripBozoEmote}',
             replyMessageId = timeoutData.twitchChatMessageId
         )
 

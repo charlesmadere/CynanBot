@@ -26,11 +26,21 @@ class GoogleVoicePreset(Enum):
     KOREAN_KOREA_STANDARD_B = auto()
     KOREAN_KOREA_STANDARD_C = auto()
     KOREAN_KOREA_STANDARD_D = auto()
+    NORWEGIAN_NORWAY_STANDARD_A = auto()
+    NORWEGIAN_NORWAY_STANDARD_B = auto()
+    NORWEGIAN_NORWAY_STANDARD_C = auto()
+    NORWEGIAN_NORWAY_STANDARD_D = auto()
+    NORWEGIAN_NORWAY_STANDARD_E = auto()
+    NORWEGIAN_NORWAY_STANDARD_F = auto()
+    NORWEGIAN_NORWAY_STANDARD_G = auto()
     PORTUGUESE_BRAZIL_STANDARD_A = auto()
     PORTUGUESE_BRAZIL_STANDARD_B = auto()
     PORTUGUESE_BRAZIL_STANDARD_C = auto()
     PORTUGUESE_BRAZIL_STANDARD_D = auto()
     PORTUGUESE_BRAZIL_STANDARD_E = auto()
+    SPANISH_US_CHIRP_D = auto()
+    SPANISH_US_CHIRP_F = auto()
+    SPANISH_US_CHIRP_O = auto()
     SWEDISH_SWEDEN_STANDARD_A = auto()
     SWEDISH_SWEDEN_STANDARD_B = auto()
     SWEDISH_SWEDEN_STANDARD_C = auto()
@@ -62,11 +72,21 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_B: return 'ko-KR-Standard-B'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_C: return 'ko-KR-Standard-C'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_D: return 'ko-KR-Standard-D'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_A: return 'nb-NO-Standard-A'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_B: return 'nb-NO-Standard-B'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_C: return 'nb-NO-Standard-C'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_D: return 'nb-NO-Standard-D'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_E: return 'nb-NO-Standard-E'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_F: return 'nb-NO-Standard-F'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_G: return 'nb-NO-Standard-G'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_A: return 'pt-BR-Standard-A'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_B: return 'pt-BR-Standard-B'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_C: return 'pt-BR-Standard-C'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_D: return 'pt-BR-Standard-D'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_E: return 'pt-BR-Standard-E'
+            case GoogleVoicePreset.SPANISH_US_CHIRP_D: return 'es-US-Chirp-HD-D'
+            case GoogleVoicePreset.SPANISH_US_CHIRP_F: return 'es-US-Chirp-HD-F'
+            case GoogleVoicePreset.SPANISH_US_CHIRP_O: return 'es-US-Chirp-HD-O'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_A: return 'sv-SE-Standard-A'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_B: return 'sv-SE-Standard-B'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_C: return 'sv-SE-Standard-C'
@@ -99,11 +119,21 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_B: return 'ko-KR'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_C: return 'ko-KR'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_D: return 'ko-KR'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_A: return 'nb-NO'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_B: return 'nb-NO'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_C: return 'nb-NO'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_D: return 'nb-NO'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_E: return 'nb-NO'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_F: return 'nb-NO'
+            case GoogleVoicePreset.NORWEGIAN_NORWAY_STANDARD_G: return 'nb-NO'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_A: return 'pt-BR'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_B: return 'pt-BR'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_C: return 'pt-BR'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_D: return 'pt-BR'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_E: return 'pt-BR'
+            case GoogleVoicePreset.SPANISH_US_CHIRP_D: return 'es-US'
+            case GoogleVoicePreset.SPANISH_US_CHIRP_F: return 'es-US'
+            case GoogleVoicePreset.SPANISH_US_CHIRP_O: return 'es-US'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_A: return 'sv-SE'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_B: return 'sv-SE'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_C: return 'sv-SE'

@@ -117,7 +117,7 @@ class GiveCutenessCommand(AbsChatCommand):
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ Cuteness for {userName} is now {result.cutenessStr} ✨',
+                message = f'ⓘ Cuteness for @{userName} is now {result.cutenessStr} ✨',
                 replyMessageId = await ctx.getMessageId()
             )
         except (OverflowError, ValueError) as e:

@@ -89,4 +89,4 @@ class CutenessUtils(CutenessUtilsInterface):
             case 3: rankStr = '🥉'
             case _: rankStr = f'#{entry.rankStr}'
 
-        return f'{rankStr} {entry.userName} ({entry.cutenessStr})'
+        return f'{rankStr} @{entry.userName} ({entry.cutenessStr})'

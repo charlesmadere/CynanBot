@@ -11,6 +11,7 @@ import aiofiles.ospath
 from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
+from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
@@ -18,7 +19,6 @@ from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ..voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
@@ -33,7 +33,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsApiHelper: GoogleTtsApiHelperInterface,
-        googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
+        googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
         timber: TimberInterface,
         ttsDirectoryProvider: TtsDirectoryProviderInterface
     ):
@@ -45,8 +45,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsApiHelper, GoogleTtsApiHelperInterface):
             raise TypeError(f'googleTtsApiHelper argument is malformed: \"{googleTtsApiHelper}\"')
-        elif not isinstance(googleTtsVoiceChooser, GoogleTtsVoiceChooserInterface):
-            raise TypeError(f'googleTtsVoiceChooser argument is malformed: \"{googleTtsVoiceChooser}\"')
+        elif not isinstance(googleTtsVoicesHelper, GoogleTtsVoicesHelperInterface):
+            raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
@@ -56,7 +56,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
-        self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
+        self.__googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = googleTtsVoicesHelper
         self.__timber: TimberInterface = timber
         self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
 
@@ -108,13 +108,13 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         voice: GoogleVoiceSelectionParams
 
         if voicePreset is None:
-            voice = await self.__googleTtsVoiceChooser.choose()
-        else:
-            voice = GoogleVoiceSelectionParams(
-                gender = None,
-                languageCode = voicePreset.languageCode,
-                name = voicePreset.fullName
-            )
+            voicePreset = await self.__googleTtsVoicesHelper.chooseEnglishVoice()
+
+        voice = GoogleVoiceSelectionParams(
+            gender = None,
+            languageCode = voicePreset.languageCode,
+            name = voicePreset.fullName
+        )
 
         audioConfig = GoogleVoiceAudioConfig(
             pitch = None,
@@ -145,8 +145,9 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             fileName = fileName,
             filePath = filePath
         ):
-            cleanedFilePath = utils.cleanPath(f'{filePath}/{fileName}')
-            return GoogleTtsFileReference(filePath = cleanedFilePath)
+            return GoogleTtsFileReference(
+                filePath = f'{filePath}/{fileName}'
+            )
         else:
             self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({filePath=})')
             return None

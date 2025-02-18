@@ -127,14 +127,14 @@ from src.google.helpers.googleTtsApiHelper import GoogleTtsApiHelper
 from src.google.helpers.googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from src.google.helpers.googleTtsHelper import GoogleTtsHelper
 from src.google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
+from src.google.helpers.googleTtsVoicesHelper import GoogleTtsVoicesHelper
+from src.google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
 from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from src.google.voiceChooser.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from src.google.voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
 from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
@@ -1136,14 +1136,14 @@ googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
     timber = timber
 )
 
-googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
+googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
-    googleTtsVoiceChooser = googleTtsVoiceChooser,
+    googleTtsVoicesHelper = googleTtsVoicesHelper,
     timber = timber,
     ttsDirectoryProvider = ttsDirectoryProvider
 )
