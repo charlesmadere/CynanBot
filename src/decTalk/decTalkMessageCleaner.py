@@ -44,9 +44,6 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         self.__inputToneRegExes: Collection[Pattern] = self.__buildInputToneRegExes()
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-        # https://dectalk.github.io/dectalk/idh_ref_3_tone_table_2.htm
-        self.__durationPitchRegEx: Pattern = re.compile(r'\[.*\<(\d+),?(\d+)?\>.*?]', re.IGNORECASE)
-
     def __buildInlineCommandRegExes(self) -> FrozenList[Pattern]:
         inlineCommandRegExes: FrozenList[Pattern] = FrozenList()
 

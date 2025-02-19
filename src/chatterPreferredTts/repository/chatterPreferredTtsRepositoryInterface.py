@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from .chatterPrefferedTts import ChatterPreferredTts
+from ..models.chatterPrefferedTts import ChatterPreferredTts
 from ...misc.clearable import Clearable
 
 
-class ChattersPreferredTtsRepositoryInterface(ABC, Clearable):
+class ChatterPreferredTtsRepositoryInterface(ABC, Clearable):
 
     @abstractmethod
     async def get(

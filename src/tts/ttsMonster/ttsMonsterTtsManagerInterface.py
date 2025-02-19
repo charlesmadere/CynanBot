@@ -1,6 +1,8 @@
+from abc import ABC
+
 from ..ttsManagerInterface import TtsManagerInterface
 
 
-class TtsMonsterTtsManagerInterface(TtsManagerInterface):
+class TtsMonsterTtsManagerInterface(ABC, TtsManagerInterface):
 
     pass

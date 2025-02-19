@@ -1,6 +1,8 @@
+from abc import ABC
+
 from ..ttsManagerInterface import TtsManagerInterface
 
 
-class HalfLifeTtsManagerInterface(TtsManagerInterface):
+class HalfLifeTtsManagerInterface(ABC, TtsManagerInterface):
 
     pass
