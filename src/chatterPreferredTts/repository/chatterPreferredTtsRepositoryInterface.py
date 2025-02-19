@@ -4,7 +4,7 @@ from ..models.chatterPrefferedTts import ChatterPreferredTts
 from ...misc.clearable import Clearable
 
 
-class ChatterPreferredTtsRepositoryInterface(ABC, Clearable):
+class ChatterPreferredTtsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def get(

@@ -3,6 +3,6 @@ from abc import ABC
 from ..ttsManagerInterface import TtsManagerInterface
 
 
-class StreamElementsTtsManagerInterface(ABC, TtsManagerInterface):
+class StreamElementsTtsManagerInterface(TtsManagerInterface, ABC):
 
     pass

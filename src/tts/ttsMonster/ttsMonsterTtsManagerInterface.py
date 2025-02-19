@@ -3,6 +3,6 @@ from abc import ABC
 from ..ttsManagerInterface import TtsManagerInterface
 
 
-class TtsMonsterTtsManagerInterface(ABC, TtsManagerInterface):
+class TtsMonsterTtsManagerInterface(TtsManagerInterface, ABC):
 
     pass

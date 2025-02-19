@@ -3,6 +3,6 @@ from abc import ABC
 from ..ttsManagerInterface import TtsManagerInterface
 
 
-class MicrosoftSamTtsManagerInterface(ABC, TtsManagerInterface):
+class MicrosoftSamTtsManagerInterface(TtsManagerInterface, ABC):
 
     pass
