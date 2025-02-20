@@ -89,7 +89,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         if languageEntry is None:
             return None
 
-        return self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
+        return await self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
 
     async def __executeTts(self, fileReference: GoogleTtsFileReference):
         volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
