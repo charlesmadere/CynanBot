@@ -2562,7 +2562,6 @@ supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     twitchTokensRepository = twitchTokensRepository
 )
 
