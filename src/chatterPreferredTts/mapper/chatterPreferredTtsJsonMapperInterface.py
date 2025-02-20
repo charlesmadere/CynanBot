@@ -10,7 +10,7 @@ class ChatterPreferredTtsJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePreferredTts(
         self,
-        jsonData: dict[str, Any] | Any | None
+        configurationJson: dict[str, Any] | Any | None
     ) -> AbsPreferredTts:
         pass
 

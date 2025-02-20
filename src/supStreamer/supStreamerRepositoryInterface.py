@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .supStreamerChatter import SupStreamerChatter
 from ..misc.clearable import Clearable
 
 
-class SupStreamerRepositoryInterface(Clearable):
+class SupStreamerRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def get(
