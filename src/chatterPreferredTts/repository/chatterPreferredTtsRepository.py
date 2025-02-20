@@ -193,7 +193,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         await connection.execute(
             '''
                 INSERT INTO chatterpreferredtts (chatteruserid, configurationjson, provider, twitchchannelid)
-                VALUES ($1, $2, $3)
+                VALUES ($1, $2, $3, $4)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET configurationjson = EXCLUDED.configurationjson, provider = EXCLUDED.provider
             ''',
             preferredTts.chatterUserId, configurationJsonString, preferredTtsProvider, preferredTts.twitchChannelId
