@@ -23,6 +23,7 @@ from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterfac
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
@@ -50,6 +51,20 @@ from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSo
 from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
+from src.chatterPreferredTts.helper.chatterPreferredTtsHelper import ChatterPreferredTtsHelper
+from src.chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from src.chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelper import ChatterPreferredTtsUserMessageHelper
+from src.chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelperInterface import \
+    ChatterPreferredTtsUserMessageHelperInterface
+from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapper import ChatterPreferredTtsJsonMapper
+from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMapperInterface
+from src.chatterPreferredTts.repository.chatterPreferredTtsRepository import ChatterPreferredTtsRepository
+from src.chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
+    ChatterPreferredTtsRepositoryInterface
+from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepository import ChatterPreferredTtsSettingsRepository
+from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
+    ChatterPreferredTtsSettingsRepositoryInterface
 from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
 from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
@@ -1825,6 +1840,39 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 )
 
 
+##################################################
+## Chatter Preferred TTS initialization section ##
+##################################################
+
+chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface = ChatterPreferredTtsSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/chatterPreferredTtsSettingsRepository.json'
+    )
+)
+
+chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+    languagesRepository = languagesRepository
+)
+
+chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterPreferredTtsRepository(
+    backingDatabase = backingDatabase,
+    chatterPreferredTtsJsonMapper = chatterPreferredTtsJsonMapper,
+    timber = timber
+)
+
+chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferredTtsHelper(
+    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository
+)
+
+chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+    languagesRepository = languagesRepository
+)
+
+chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter = ChatterPreferredTtsPresenter()
+
+
 ################################
 ## TTS initialization section ##
 ################################
@@ -1959,9 +2007,11 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
 )
 
 googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,
+    googleTtsVoicesHelper = googleTtsVoicesHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -2170,6 +2220,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
 
 compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     backgroundTaskHelper = backgroundTaskHelper,
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
@@ -2180,7 +2231,6 @@ compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     ttsMonsterTtsManager = ttsMonsterTtsManager,
     ttsSettingsRepository = ttsSettingsRepository
 )
-
 
 ##################################################
 ## Stream Alerts Manager initialization section ##
@@ -2556,6 +2606,14 @@ cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemptio
     twitchUtils = twitchUtils
 )
 
+chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
+    chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
+    timber = timber,
+    twitchUtils = twitchUtils
+)
+
 decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
@@ -2653,6 +2711,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 
 twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = casualGamePollPointRedemption,
+    chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
@@ -2753,6 +2812,8 @@ cynanBot = CynanBot(
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+    chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     cheerActionHelper = cheerActionHelper,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,

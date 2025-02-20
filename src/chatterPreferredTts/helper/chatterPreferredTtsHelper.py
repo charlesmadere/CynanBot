@@ -10,15 +10,15 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
     def __init__(
         self,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface,
-        chatterPreferredTtsSettings: ChatterPreferredTtsSettingsRepositoryInterface
+        chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface
     ):
         if not isinstance(chatterPreferredTtsRepository, ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
-        elif not isinstance(chatterPreferredTtsSettings, ChatterPreferredTtsSettingsRepositoryInterface):
-            raise TypeError(f'chatterPreferredTtsSettings argument is malformed: \"{chatterPreferredTtsSettings}\"')
+        elif not isinstance(chatterPreferredTtsSettingsRepository, ChatterPreferredTtsSettingsRepositoryInterface):
+            raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
 
         self.__chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = chatterPreferredTtsRepository
-        self.__chatterPreferredTtsSettings: ChatterPreferredTtsSettingsRepositoryInterface = chatterPreferredTtsSettings
+        self.__chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface = chatterPreferredTtsSettingsRepository
 
     async def get(
         self,
@@ -30,7 +30,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not await self.__chatterPreferredTtsSettings.isEnabled():
+        if not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
             return None
 
         return await self.__chatterPreferredTtsRepository.get(

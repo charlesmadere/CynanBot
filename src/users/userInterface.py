@@ -496,6 +496,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def setChatterPreferredTtsRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def shizaMessageRewardId(self) -> str | None:
         pass
 

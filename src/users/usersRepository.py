@@ -202,6 +202,7 @@ class UsersRepository(UsersRepositoryInterface):
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
         randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
+        setChatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'setChatterPreferredTtsRewardId', '')
         shizaMessageRewardId = utils.getStrFromDict(userJson, 'shizaMessageRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
@@ -446,6 +447,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             randomSoundAlertRewardId = randomSoundAlertRewardId,
+            setChatterPreferredTtsRewardId = setChatterPreferredTtsRewardId,
             shizaMessageRewardId = shizaMessageRewardId,
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,

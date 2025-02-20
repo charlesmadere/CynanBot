@@ -105,6 +105,7 @@ class User(UserInterface):
         pkmnEvolveRewardId: str | None,
         pkmnShinyRewardId: str | None,
         randomSoundAlertRewardId: str | None,
+        setChatterPreferredTtsRewardId: str | None,
         shizaMessageRewardId: str | None,
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
@@ -285,6 +286,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif randomSoundAlertRewardId is not None and not isinstance(randomSoundAlertRewardId, str):
             raise TypeError(f'randomSoundAlertRewardId argument is malformed: \"{randomSoundAlertRewardId}\"')
+        elif setChatterPreferredTtsRewardId is not None and not isinstance(setChatterPreferredTtsRewardId, str):
+            raise TypeError(f'setChatterPreferredTtsRewardId argument is malformed: \"{setChatterPreferredTtsRewardId}\"')
         elif shizaMessageRewardId is not None and not isinstance(shizaMessageRewardId, str):
             raise TypeError(f'shizaMessageRewardId argument is malformed: \"{shizaMessageRewardId}\"')
         elif soundAlertRewardId is not None and not isinstance(soundAlertRewardId, str):
@@ -403,6 +406,7 @@ class User(UserInterface):
         self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
         self.__randomSoundAlertRewardId: str | None = randomSoundAlertRewardId
+        self.__setChatterPreferredTtsRewardId: str | None = setChatterPreferredTtsRewardId
         self.__shizaMessageRewardId: str | None = shizaMessageRewardId
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
@@ -819,6 +823,10 @@ class User(UserInterface):
 
     def __repr__(self) -> str:
         return self.__handle
+
+    @property
+    def setChatterPreferredTtsRewardId(self) -> str | None:
+        return self.__setChatterPreferredTtsRewardId
 
     @property
     def shizaMessageRewardId(self) -> str | None:
