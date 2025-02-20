@@ -52,7 +52,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
         )
 
         if absPreferredTts is None:
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠️ @{twitchChannelPointsMessage.userName} failed to set your preferred TTS voice! Please try again')
+            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ @{twitchChannelPointsMessage.userName} failed to set your preferred TTS voice! Please check your input and try again.')
             self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS voice ({twitchChannelPointsMessage=}) ({absPreferredTts=})')
             return False
 
