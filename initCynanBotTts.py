@@ -1197,9 +1197,11 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
 )
 
 googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,
+    googleTtsVoicesHelper = googleTtsVoicesHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
