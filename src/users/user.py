@@ -35,6 +35,7 @@ class User(UserInterface):
         isChatBackMessagesEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
+        isChatterPreferredTtsEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
         isDecTalkSongsEnabled: bool,
@@ -148,6 +149,8 @@ class User(UserInterface):
             raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
             raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
+        elif not utils.isValidBool(isChatterPreferredTtsEnabled):
+            raise TypeError(f'isChatterPreferredTtsEnabled argument is malformed: \"{isChatterPreferredTtsEnabled}\"')
         elif not utils.isValidBool(isCrowdControlEnabled):
             raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
@@ -330,6 +333,7 @@ class User(UserInterface):
         self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
+        self.__isChatterPreferredTtsEnabled: bool = isChatterPreferredTtsEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
@@ -668,6 +672,10 @@ class User(UserInterface):
     @property
     def isChatLoggingEnabled(self) -> bool:
         return self.__isChatLoggingEnabled
+
+    @property
+    def isChatterPreferredTtsEnabled(self) -> bool:
+        return self.__isChatterPreferredTtsEnabled
 
     @property
     def isCrowdControlEnabled(self) -> bool:

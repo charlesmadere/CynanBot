@@ -316,6 +316,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isChatterPreferredTtsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isCrowdControlEnabled(self) -> bool:
         pass
 

@@ -177,10 +177,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
 
         return preferredTts
 
-    async def set(
-        self,
-        preferredTts: ChatterPreferredTts
-    ):
+    async def set(self, preferredTts: ChatterPreferredTts):
         if not isinstance(preferredTts, ChatterPreferredTts):
             raise TypeError(f'preferredTts argument is malformed: \"{preferredTts}\"')
 

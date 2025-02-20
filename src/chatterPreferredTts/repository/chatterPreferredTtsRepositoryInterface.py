@@ -23,8 +23,5 @@ class ChatterPreferredTtsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def set(
-        self,
-        preferredTts: ChatterPreferredTts
-    ):
+    async def set(self, preferredTts: ChatterPreferredTts):
         pass
