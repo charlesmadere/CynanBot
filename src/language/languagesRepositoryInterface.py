@@ -30,6 +30,13 @@ class LanguagesRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getLanguageForIso6391Code(
+        self,
+        iso6391Code: str
+    ) -> LanguageEntry | None:
+        pass
+
+    @abstractmethod
     async def getLanguageForWotdApiCode(
         self,
         wotdApiCode: str

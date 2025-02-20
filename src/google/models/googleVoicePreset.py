@@ -3,6 +3,10 @@ from enum import Enum, auto
 
 class GoogleVoicePreset(Enum):
 
+    DUTCH_BELGIUM_STANDARD_A = auto()
+    DUTCH_BELGIUM_STANDARD_B = auto()
+    DUTCH_BELGIUM_STANDARD_C = auto()
+    DUTCH_BELGIUM_STANDARD_D = auto()
     ENGLISH_AUSTRALIAN_CHIRP_D = auto()
     ENGLISH_AUSTRALIAN_CHIRP_F = auto()
     ENGLISH_AUSTRALIAN_CHIRP_O = auto()
@@ -49,6 +53,10 @@ class GoogleVoicePreset(Enum):
     @property
     def fullName(self) -> str:
         match self:
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_A: return 'nl-BE-Standard-A'
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_B: return 'nl-BE-Standard-B'
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_C: return 'nl-BE-Standard-C'
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_D: return 'nl-BE-Standard-D'
             case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_D: return 'en-AU-Chirp-HD-D'
             case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_F: return 'en-AU-Chirp-HD-F'
             case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_O: return 'en-AU-Chirp-HD-O'
@@ -96,6 +104,10 @@ class GoogleVoicePreset(Enum):
     @property
     def languageCode(self) -> str:
         match self:
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_A: return 'nl-BE'
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_B: return 'nl-BE'
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_C: return 'nl-BE'
+            case GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_D: return 'nl-BE'
             case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_D: return 'en-AU'
             case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_F: return 'en-AU'
             case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_O: return 'en-AU'
