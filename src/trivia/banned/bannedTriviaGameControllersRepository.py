@@ -178,7 +178,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         count: int | None = None
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             count = record[0]
 
         if not utils.isValidInt(count) or count < 1:
