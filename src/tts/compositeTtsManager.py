@@ -106,7 +106,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         self.__timber.log('CompositeTtsManager', f'Chatter has a preferred TTS ({preferredTts=}) ({event=})')
 
-        match preferredTts:
+        match preferredTts.preferredTts.preferredTtsProvider:
             case PreferredTtsProvider.DEC_TALK: return TtsProvider.DEC_TALK
             case PreferredTtsProvider.GOOGLE: return TtsProvider.GOOGLE
             case PreferredTtsProvider.MICROSOFT_SAM: return TtsProvider.MICROSOFT_SAM
