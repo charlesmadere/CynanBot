@@ -53,10 +53,8 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        preferredTts = self.__cache[f'{twitchChannelId}:{chatterUserId}']
-
-        if preferredTts is not None:
-            return preferredTts
+        if f'{twitchChannelId}:{chatterUserId}' in self.__cache:
+            return self.__cache[f'{twitchChannelId}:{chatterUserId}']
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
