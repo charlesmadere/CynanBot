@@ -35,7 +35,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         languageEntry: LanguageEntry | None = None
 
         if isinstance(configurationJson, dict):
-            languageEntryString = configurationJson.get('language_entry', None)
+            languageEntryString = configurationJson.get('iso6391', None)
 
             if utils.isValidStr(languageEntryString):
                 languageEntry = await self.__languagesRepository.getLanguageForIso6391Code(
@@ -107,7 +107,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         configurationJson: dict[str, Any] = dict()
 
         if preferredTts.languageEntry is not None:
-            configurationJson['language_entry'] = preferredTts.languageEntry.iso6391Code
+            configurationJson['iso6391'] = preferredTts.languageEntry.iso6391Code
 
         return configurationJson
 

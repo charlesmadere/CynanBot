@@ -44,7 +44,7 @@ class TestChatterPreferredTtsJsonMapper:
 
         result = await self.mapper.parsePreferredTts(
             configurationJson = {
-                'language_entry': iso6391Code
+                'iso6391': iso6391Code
             },
             provider = PreferredTtsProvider.GOOGLE
         )
@@ -75,6 +75,53 @@ class TestChatterPreferredTtsJsonMapper:
     async def test_parsePreferredTtsProvider_withMicrosoftSamString(self):
         result = await self.mapper.parsePreferredTtsProvider('microsoft_sam')
         assert result == PreferredTtsProvider.MICROSOFT_SAM
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withDecTalk(self):
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = DecTalkPreferredTts()
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withGoogle(self):
+        preferredTts = GooglePreferredTts(
+            languageEntry = None
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withGoogleAndSwedishLanguageEntry(self):
+        preferredTts = GooglePreferredTts(
+            languageEntry = LanguageEntry.SWEDISH
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        iso6391Code = result['iso6391']
+        assert iso6391Code == LanguageEntry.SWEDISH.iso6391Code
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withMicrosoftSam(self):
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = MicrosoftSamPreferredTts()
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_serializePreferredTtsProvider_withDecTalk(self):
