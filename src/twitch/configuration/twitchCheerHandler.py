@@ -11,7 +11,6 @@ from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsCheerDonation import TtsCheerDonation
-from ...tts.ttsDonation import TtsDonation
 from ...tts.ttsEvent import TtsEvent
 from ...users.userInterface import UserInterface
 
@@ -195,22 +194,21 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                     provider = ttsBoosterPack.ttsProvider
                     break
 
-        donation: TtsDonation = TtsCheerDonation(bits = bits)
-
-        ttsEvent = TtsEvent(
-            message = message,
-            twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
-            userId = cheerUserId,
-            userName = cheerUserLogin,
-            donation = donation,
-            provider = provider,
-            raidInfo = None
-        )
-
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
-            ttsEvent = ttsEvent
+            ttsEvent = TtsEvent(
+                allowChatterPreferredTts = False,
+                message = message,
+                twitchChannel = user.handle,
+                twitchChannelId = broadcasterUserId,
+                userId = cheerUserId,
+                userName = cheerUserLogin,
+                donation = TtsCheerDonation(
+                    bits = bits
+                ),
+                provider = provider,
+                raidInfo = None
+            )
         ))

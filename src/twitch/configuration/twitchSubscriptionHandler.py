@@ -318,22 +318,21 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             tier = tier
         )
 
-        ttsEvent = TtsEvent(
-            message = actualMessage,
-            twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
-            userId = actualUserId,
-            userName = actualUserName,
-            donation = donation,
-            provider = user.defaultTtsProvider,
-            raidInfo = None
-        )
-
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
-            ttsEvent = ttsEvent
+            ttsEvent = TtsEvent(
+                allowChatterPreferredTts = True,
+                message = actualMessage,
+                twitchChannel = user.handle,
+                twitchChannelId = broadcasterUserId,
+                userId = actualUserId,
+                userName = actualUserName,
+                donation = donation,
+                provider = user.defaultTtsProvider,
+                raidInfo = None
+            )
         ))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

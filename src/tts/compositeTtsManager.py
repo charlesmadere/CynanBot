@@ -11,6 +11,8 @@ from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .ttsProvider import TtsProvider
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ..chatterPreferredTts.models.preferredTtsProvider import PreferredTtsProvider
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
 
@@ -20,6 +22,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
         decTalkTtsManager: DecTalkTtsManagerInterface | None,
         googleTtsManager: GoogleTtsManagerInterface | None,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
@@ -32,7 +35,9 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        if decTalkTtsManager is not None and not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface):
+        elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif decTalkTtsManager is not None and not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface):
             raise TypeError(f'decTalkTtsManager argument is malformed: \"{decTalkTtsManager}\"')
         elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManagerInterface):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
@@ -52,6 +57,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None = chatterPreferredTtsHelper
         self.__decTalkTtsManager: TtsManagerInterface | None = decTalkTtsManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__halfLifeTtsManager: TtsManagerInterface | None = halfLifeTtsManager
@@ -81,6 +87,29 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         return frozendict(ttsProviderToManagerMap)
 
+    async def __determineTtsProvider(self, event: TtsEvent) -> TtsProvider:
+        if not event.allowChatterPreferredTts:
+            return event.provider
+
+        chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper
+
+        if chatterPreferredTtsHelper is None:
+            return event.provider
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return event.provider
+
+        match preferredTts:
+            case PreferredTtsProvider.DEC_TALK: return TtsProvider.DEC_TALK
+            case PreferredTtsProvider.GOOGLE: return TtsProvider.GOOGLE
+            case PreferredTtsProvider.MICROSOFT_SAM: return TtsProvider.MICROSOFT_SAM
+            case _: return event.provider
+
     @property
     def isLoadingOrPlaying(self) -> bool:
         currentTtsManager = self.__currentTtsManager
@@ -103,7 +132,8 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             self.__timber.log('CompositeTtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
 
-        ttsManager = self.__ttsProviderToManagerMap.get(event.provider, None)
+        ttsProvider = await self.__determineTtsProvider(event)
+        ttsManager = self.__ttsProviderToManagerMap.get(ttsProvider, None)
 
         if ttsManager is None:
             self.__currentTtsManager = None

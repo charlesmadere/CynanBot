@@ -7,6 +7,7 @@ from .ttsRaidInfo import TtsRaidInfo
 
 @dataclass(frozen = True)
 class TtsEvent:
+    allowChatterPreferredTts: bool
     message: str | None
     twitchChannel: str
     twitchChannelId: str

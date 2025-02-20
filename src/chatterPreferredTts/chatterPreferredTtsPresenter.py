@@ -40,3 +40,6 @@ class ChatterPreferredTtsPresenter:
 
         elif isinstance(absPreferredTts, MicrosoftSamPreferredTts):
             return await self.__microsoftSam(absPreferredTts)
+
+        else:
+            raise ValueError(f'Encountered unknown AbsPreferredTts: \"{preferredTts}\"')

@@ -133,6 +133,7 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = True,
                 message = f'{message.getAuthorName()} sup',
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),

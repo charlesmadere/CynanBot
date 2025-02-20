@@ -191,6 +191,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                 message = f'@{timeoutData.instigatorUserName} timed out @{timeoutData.timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
 
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = True,
                 message = message,
                 twitchChannel = timeoutData.twitchChannel,
                 twitchChannelId = timeoutData.twitchChannelId,
