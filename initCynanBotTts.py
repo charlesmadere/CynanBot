@@ -1412,6 +1412,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
 
 compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     backgroundTaskHelper = backgroundTaskHelper,
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
