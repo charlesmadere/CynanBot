@@ -23,7 +23,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
 
         self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(\s+|_|-)?talk\s*$', re.IGNORECASE)
-        self.__googleRegEx: Pattern = re.compile(r'^\s*goog(le?)?\s*(\w+)\s*$', re.IGNORECASE)
+        self.__googleRegEx: Pattern = re.compile(r'^\s*goog(le?)?\s*(\w+)?\s*$', re.IGNORECASE)
         self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(microsoft|ms)(\s|_|-)*sam\s*$', re.IGNORECASE)
 
     async def __createDecTalkTtsProperties(

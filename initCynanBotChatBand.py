@@ -897,6 +897,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketCon
 
 twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = None,
+    chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = None,
     decTalkSongPointRedemption = None,
     pkmnBattlePointRedemption = None,
@@ -949,6 +950,8 @@ cynanBot = CynanBot(
     bizhawkSettingsRepository = None,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
+    chatterPreferredTtsHelper = None,
+    chatterPreferredTtsPresenter = None,
     cheerActionHelper = None,
     cheerActionJsonMapper = None,
     cheerActionSettingsRepository = None,

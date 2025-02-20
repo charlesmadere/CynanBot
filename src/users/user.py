@@ -35,6 +35,7 @@ class User(UserInterface):
         isChatBackMessagesEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
+        isChatterPreferredTtsEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
         isDecTalkSongsEnabled: bool,
@@ -104,6 +105,7 @@ class User(UserInterface):
         pkmnEvolveRewardId: str | None,
         pkmnShinyRewardId: str | None,
         randomSoundAlertRewardId: str | None,
+        setChatterPreferredTtsRewardId: str | None,
         shizaMessageRewardId: str | None,
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
@@ -148,6 +150,8 @@ class User(UserInterface):
             raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
             raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
+        elif not utils.isValidBool(isChatterPreferredTtsEnabled):
+            raise TypeError(f'isChatterPreferredTtsEnabled argument is malformed: \"{isChatterPreferredTtsEnabled}\"')
         elif not utils.isValidBool(isCrowdControlEnabled):
             raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
@@ -282,6 +286,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif randomSoundAlertRewardId is not None and not isinstance(randomSoundAlertRewardId, str):
             raise TypeError(f'randomSoundAlertRewardId argument is malformed: \"{randomSoundAlertRewardId}\"')
+        elif setChatterPreferredTtsRewardId is not None and not isinstance(setChatterPreferredTtsRewardId, str):
+            raise TypeError(f'setChatterPreferredTtsRewardId argument is malformed: \"{setChatterPreferredTtsRewardId}\"')
         elif shizaMessageRewardId is not None and not isinstance(shizaMessageRewardId, str):
             raise TypeError(f'shizaMessageRewardId argument is malformed: \"{shizaMessageRewardId}\"')
         elif soundAlertRewardId is not None and not isinstance(soundAlertRewardId, str):
@@ -330,6 +336,7 @@ class User(UserInterface):
         self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
+        self.__isChatterPreferredTtsEnabled: bool = isChatterPreferredTtsEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
@@ -399,6 +406,7 @@ class User(UserInterface):
         self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
         self.__randomSoundAlertRewardId: str | None = randomSoundAlertRewardId
+        self.__setChatterPreferredTtsRewardId: str | None = setChatterPreferredTtsRewardId
         self.__shizaMessageRewardId: str | None = shizaMessageRewardId
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
@@ -670,6 +678,10 @@ class User(UserInterface):
         return self.__isChatLoggingEnabled
 
     @property
+    def isChatterPreferredTtsEnabled(self) -> bool:
+        return self.__isChatterPreferredTtsEnabled
+
+    @property
     def isCrowdControlEnabled(self) -> bool:
         return self.__isCrowdControlEnabled
 
@@ -811,6 +823,10 @@ class User(UserInterface):
 
     def __repr__(self) -> str:
         return self.__handle
+
+    @property
+    def setChatterPreferredTtsRewardId(self) -> str | None:
+        return self.__setChatterPreferredTtsRewardId
 
     @property
     def shizaMessageRewardId(self) -> str | None:

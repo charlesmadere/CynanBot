@@ -15,9 +15,13 @@ class ChatterPreferredTtsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def set(
+    async def remove(
         self,
         chatterUserId: str,
         twitchChannelId: str
-    ) -> ChatterPreferredTts:
+    ) -> ChatterPreferredTts | None:
+        pass
+
+    @abstractmethod
+    async def set(self, preferredTts: ChatterPreferredTts):
         pass

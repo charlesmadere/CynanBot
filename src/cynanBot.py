@@ -49,6 +49,7 @@ from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCo
 from .chatCommands.discordChatCommand import DiscordChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
+from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from .chatCommands.getRecurringActionsCommand import GetRecurringActionsCommand
@@ -82,6 +83,8 @@ from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChat
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
+from .chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
+from .chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from .cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
@@ -257,6 +260,8 @@ class CynanBot(
         beanStatsRepository: BeanStatsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         chatActionsManager: ChatActionsManagerInterface | None,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
+        chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter | None,
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
         cheerActionJsonMapper: CheerActionJsonMapperInterface | None,
@@ -423,6 +428,10 @@ class CynanBot(
             raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif chatterPreferredTtsPresenter is not None and not isinstance(chatterPreferredTtsPresenter, ChatterPreferredTtsPresenter):
+            raise TypeError(f'chatterPreferredTtsPresenter argument is malformed: \"{chatterPreferredTtsPresenter}\"')
         elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif cheerActionJsonMapper is not None and not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
@@ -747,6 +756,11 @@ class CynanBot(
             self.__addBannedTriviaControllerCommand: AbsChatCommand = AddBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
             self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchUtils, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
+
+        if chatterPreferredTtsHelper is None or chatterPreferredTtsPresenter is None:
+            self.__getChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__getChatterPreferredTtsCommand: AbsChatCommand = GetChatterPreferredTtsChatCommand(chatterPreferredTtsHelper, chatterPreferredTtsPresenter, timber, twitchUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaScoreRepository is None or triviaSettingsRepository is None or triviaUtils is None:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = StubChatCommand()
@@ -1250,6 +1264,11 @@ class CynanBot(
     async def command_getbannedtriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
+
+    @commands.command(name = 'getpreferredtts', aliases = [ 'getchatterpreferredtts', 'mytts', 'preferredtts' ])
+    async def command_getpreferredtts(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__getChatterPreferredTtsCommand.handleChatCommand(context)
 
     @commands.command(name = 'getcheeractions', aliases = [ 'cheeractions' ])
     async def command_getcheeractions(self, ctx: Context):

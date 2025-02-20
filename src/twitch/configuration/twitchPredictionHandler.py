@@ -233,6 +233,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = False,
                 message = f'A new prediction has begun! \"{title}\"',
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,

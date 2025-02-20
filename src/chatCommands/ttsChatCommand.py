@@ -148,6 +148,7 @@ class TtsChatCommand(AbsChatCommand):
             twitchChannel = user.handle,
             twitchChannelId = userId,
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = False,
                 message = message,
                 twitchChannel = user.handle,
                 twitchChannelId = userId,

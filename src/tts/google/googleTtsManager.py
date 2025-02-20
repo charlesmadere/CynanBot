@@ -1,13 +1,15 @@
 import asyncio
-import random
 
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from ...google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from ...google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
+from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ...google.models.googleTtsFileReference import GoogleTtsFileReference
 from ...google.models.googleVoicePreset import GoogleVoicePreset
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
@@ -21,21 +23,27 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
     def __init__(
         self,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsHelper: GoogleTtsHelperInterface,
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
+        googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface
     ):
-        if not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+        if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsHelper, GoogleTtsHelperInterface):
             raise TypeError(f'googleTtsHelper argument is malformed: \"{googleTtsHelper}\"')
         elif not isinstance(googleTtsMessageCleaner, GoogleTtsMessageCleanerInterface):
             raise TypeError(f'googleTtsMessageCleaner argument is malformed: \"{googleTtsMessageCleaner}\"')
+        elif not isinstance(googleTtsVoicesHelper, GoogleTtsVoicesHelperInterface):
+            raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -47,9 +55,11 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
 
+        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsHelper: GoogleTtsHelperInterface = googleTtsHelper
         self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
+        self.__googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = googleTtsVoicesHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
@@ -59,51 +69,27 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__isLoadingOrPlaying: bool = False
 
     async def __determineVoicePreset(self, event: TtsEvent) -> GoogleVoicePreset | None:
-        voicePresets: frozenset[GoogleVoicePreset] | None = None
-
-        if event.userId == await self.__twitchFriendsUserIdRepository.getHokkaidoubareUserId():
-            voicePresets = frozenset({
-                GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_A,
-                GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_B,
-                GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_C,
-                GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_D
-            })
-        elif event.userId == await self.__twitchFriendsUserIdRepository.getLucentUserId():
-            voicePresets = frozenset({
-                GoogleVoicePreset.ITALIAN_ITALY_CHIRP_D,
-                GoogleVoicePreset.ITALIAN_ITALY_CHIRP_F,
-                GoogleVoicePreset.ITALIAN_ITALY_CHIRP_O
-            })
-        elif event.userId == await self.__twitchFriendsUserIdRepository.getMerttUserId():
-            voicePresets = frozenset({
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_D,
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_F,
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_O
-            })
-        elif event.userId == await self.__twitchFriendsUserIdRepository.getVolwrathUserId():
-            voicePresets = frozenset({
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_D,
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_F,
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_O
-            })
-        elif event.userId == await self.__twitchFriendsUserIdRepository.getZanianUserId():
-            voicePresets = frozenset({
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_D,
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_F,
-                GoogleVoicePreset.FRENCH_CANADA_CHIRP_O,
-                GoogleVoicePreset.GERMAN_GERMANY_CHIRP_D,
-                GoogleVoicePreset.GERMAN_GERMANY_CHIRP_F,
-                GoogleVoicePreset.GERMAN_GERMANY_CHIRP_O,
-                GoogleVoicePreset.KOREAN_KOREA_STANDARD_A,
-                GoogleVoicePreset.KOREAN_KOREA_STANDARD_B,
-                GoogleVoicePreset.KOREAN_KOREA_STANDARD_C,
-                GoogleVoicePreset.KOREAN_KOREA_STANDARD_D
-            })
-
-        if voicePresets is None or len(voicePresets) == 0:
+        if not event.allowChatterPreferredTts:
             return None
-        else:
-            return random.choice(list(voicePresets))
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return None
+
+        googlePreferredTts = preferredTts.preferredTts
+        if not isinstance(googlePreferredTts, GooglePreferredTts):
+            self.__timber.log('GoogleTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
+            return None
+
+        languageEntry = googlePreferredTts.languageEntry
+        if languageEntry is None:
+            return None
+
+        return self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
 
     async def __executeTts(self, fileReference: GoogleTtsFileReference):
         volume = await self.__googleSettingsRepository.getMediaPlayerVolume()

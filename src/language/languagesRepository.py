@@ -115,6 +115,19 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
         return None
 
+    async def getLanguageForIso6391Code(
+        self,
+        iso6391Code: str
+    ) -> LanguageEntry | None:
+        if not utils.isValidStr(iso6391Code):
+            raise TypeError(f'iso6391Code argument is malformed: \"{iso6391Code}\"')
+
+        for languageEntry in LanguageEntry:
+            if languageEntry.iso6391Code == iso6391Code:
+                return languageEntry
+
+        return None
+
     async def getLanguageForWotdApiCode(
         self,
         wotdApiCode: str

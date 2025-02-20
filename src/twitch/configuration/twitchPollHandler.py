@@ -198,6 +198,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = False,
                 message = f'A new poll has begun! \"{title}\"',
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,

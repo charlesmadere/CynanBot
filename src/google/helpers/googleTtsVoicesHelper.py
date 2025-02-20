@@ -44,6 +44,14 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
         voicePresets: set[GoogleVoicePreset]
 
         match languageEntry:
+            case LanguageEntry.DUTCH:
+                voicePresets = {
+                    GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_A,
+                    GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_B,
+                    GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_C,
+                    GoogleVoicePreset.DUTCH_BELGIUM_STANDARD_D
+                }
+
             case LanguageEntry.ENGLISH:
                 voicePresets = {
                     GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_D,

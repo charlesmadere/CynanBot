@@ -71,6 +71,7 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
             twitchChannel = twitchUser.handle,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = False,
                 message = songData,
                 twitchChannel = twitchUser.handle,
                 twitchChannelId = await twitchChannel.getTwitchChannelId(),

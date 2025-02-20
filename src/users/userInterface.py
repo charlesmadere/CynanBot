@@ -316,6 +316,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isChatterPreferredTtsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isCrowdControlEnabled(self) -> bool:
         pass
 
@@ -487,6 +492,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def setChatterPreferredTtsRewardId(self) -> str | None:
         pass
 
     @property

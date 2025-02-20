@@ -115,6 +115,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
+                allowChatterPreferredTts = True,
                 message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid!',
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
