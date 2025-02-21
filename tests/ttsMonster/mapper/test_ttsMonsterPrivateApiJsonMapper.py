@@ -8,6 +8,7 @@ from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPriva
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from src.ttsMonster.models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
+from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 
 class TestTtsMonsterPrivateApiJsonMapper:
@@ -101,6 +102,31 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapperInterface)
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withJazz(self):
+        result = await self.mapper.parseVoice('jazz')
+        assert result is TtsMonsterVoice.JAZZ
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withKkona(self):
+        result = await self.mapper.parseVoice('kkona')
+        assert result is TtsMonsterVoice.KKONA
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withPirate(self):
+        result = await self.mapper.parseVoice('pirate')
+        assert result is TtsMonsterVoice.PIRATE
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withShadow(self):
+        result = await self.mapper.parseVoice('shadow')
+        assert result is TtsMonsterVoice.SHADOW
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withZeroTwo(self):
+        result = await self.mapper.parseVoice('zero_two')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+    @pytest.mark.asyncio
     async def test_serializeGenerateTtsJsonBody(self):
         key = 'key'
         message = 'Hello, World!'
@@ -129,3 +155,28 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert len(detailsJson) == 1
 
         assert detailsJson['provider'] == 'provider'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withJazz(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.JAZZ)
+        assert result == 'jazz'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withKkona(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.KKONA)
+        assert result == 'kkona'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withPirate(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.PIRATE)
+        assert result == 'pirate'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withShadow(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.SHADOW)
+        assert result == 'shadow'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withZeroTwo(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.ZERO_TWO)
+        assert result == 'zero_two'

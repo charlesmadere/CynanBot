@@ -178,10 +178,10 @@ from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
 from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
 from src.halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
-from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
-from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
 from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
+from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
+from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.halfLife.service.halfLifeService import HalfLifeService
 from src.halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from src.halfLife.settings.halfLifeSettingsRepository import HalfLifeSettingsRepository
@@ -2081,6 +2081,7 @@ microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = Micros
 microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser()
 
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
+    eventLoop = eventLoop,
     apiService = microsoftSamApiService,
     microsoftSamMessageVoiceParser = microsoftSamMessageVoiceParser,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,

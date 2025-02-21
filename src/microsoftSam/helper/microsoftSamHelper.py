@@ -1,7 +1,9 @@
 import traceback
+from asyncio import AbstractEventLoop
 
 from .microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from ..apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
+from ..models.microsoftSamFileReference import MicrosoftSamFileReference
 from ..models.microsoftSamVoice import MicrosoftSamVoice
 from ..parser.microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
 from ..settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
@@ -14,11 +16,14 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         apiService: MicrosoftSamApiServiceInterface,
         microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
         timber: TimberInterface
     ):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         if not isinstance(apiService, MicrosoftSamApiServiceInterface):
             raise TypeError(f'apiService argument is malformed: \"{apiService}\"')
         elif not isinstance(microsoftSamMessageVoiceParser, MicrosoftSamMessageVoiceParserInterface):
@@ -28,10 +33,30 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__apiService: MicrosoftSamApiServiceInterface = apiService
         self.__microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = microsoftSamMessageVoiceParser
         self.__microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = microsoftSamSettingsRepository
         self.__timber: TimberInterface = timber
+
+    async def generateTts(
+        self,
+        message: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> MicrosoftSamFileReference | None:
+        if message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if not utils.isValidStr(message):
+            return None
+
+        # TODO
+        return None
 
     async def getSpeech(
         self,

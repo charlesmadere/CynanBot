@@ -3,6 +3,7 @@ from typing import Any
 
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
+from ..models.ttsMonsterVoice import TtsMonsterVoice
 
 
 class TtsMonsterPrivateApiJsonMapperInterface(ABC):
@@ -22,10 +23,24 @@ class TtsMonsterPrivateApiJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseVoice(
+        self,
+        string: str | Any | None
+    ) -> TtsMonsterVoice:
+        pass
+
+    @abstractmethod
     async def serializeGenerateTtsJsonBody(
         self,
         key: str,
         message: str,
         userId: str
     ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeVoice(
+        self,
+        voice: TtsMonsterVoice
+    ) -> str:
         pass

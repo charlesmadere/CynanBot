@@ -3,6 +3,7 @@ from typing import Any
 from .ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
+from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -64,6 +65,23 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             data = data
         )
 
+    async def parseVoice(
+        self,
+        string: str | Any | None
+    ) -> TtsMonsterVoice:
+        if not utils.isValidStr(string):
+            raise TypeError(f'string argument is malformed: \"{string}\"')
+
+        string = string.lower()
+
+        match string:
+            case 'jazz': return TtsMonsterVoice.JAZZ
+            case 'kkona': return TtsMonsterVoice.KKONA
+            case 'pirate': return TtsMonsterVoice.PIRATE
+            case 'shadow': return TtsMonsterVoice.SHADOW
+            case 'zero_two': return TtsMonsterVoice.ZERO_TWO
+            case _: raise ValueError(f'Encountered unknown TtsMonsterVoice string value: \"{string}\"')
+
     async def serializeGenerateTtsJsonBody(
         self,
         key: str,
@@ -88,3 +106,18 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
                 'userId': userId
             }
         }
+
+    async def serializeVoice(
+        self,
+        voice: TtsMonsterVoice
+    ) -> str:
+        if not isinstance(voice, TtsMonsterVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+
+        match voice:
+            case TtsMonsterVoice.JAZZ: return 'jazz'
+            case TtsMonsterVoice.KKONA: return 'kkona'
+            case TtsMonsterVoice.PIRATE: return 'pirate'
+            case TtsMonsterVoice.SHADOW: return 'shadow'
+            case TtsMonsterVoice.ZERO_TWO: return 'zero_two'
+            case _: raise ValueError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')
