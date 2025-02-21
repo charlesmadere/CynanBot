@@ -10,6 +10,7 @@ from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
+from ...tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 
 
 class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
@@ -19,6 +20,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         backingDatabase: BackingDatabase,
         chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface,
         timber: TimberInterface,
+        ttsJsonMapper: TtsJsonMapperInterface,
         cacheSize: int = 64
     ):
         if not isinstance(backingDatabase, BackingDatabase):
@@ -27,6 +29,8 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsJsonMapper argument is malformed: \"{chatterPreferredTtsJsonMapper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
+            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
         elif cacheSize < 1 or cacheSize > 256:
@@ -35,6 +39,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = chatterPreferredTtsJsonMapper
         self.__timber: TimberInterface = timber
+        self.__ttsJsonMapper : TtsJsonMapperInterface = ttsJsonMapper
 
         self.__isDatabaseReady: bool = False
         self.__cache: LRU[str, ChatterPreferredTts | None] = LRU(cacheSize)
@@ -78,8 +83,8 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             self.__cache[f'{twitchChannelId}:{chatterUserId}'] = None
             return None
 
-        provider = await self.__chatterPreferredTtsJsonMapper.parsePreferredTtsProvider(
-            string = preferredTtsProviderString
+        provider = await self.__ttsJsonMapper.asyncRequireProvider(
+            ttsProvider = preferredTtsProviderString
         )
 
         configurationJson = json.loads(configurationJsonString)
@@ -185,8 +190,8 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
 
         configurationJsonString = json.dumps(configurationJson, sort_keys = True)
 
-        preferredTtsProvider = await self.__chatterPreferredTtsJsonMapper.serializePreferredTtsProvider(
-            provider = preferredTts.preferredTts.preferredTtsProvider
+        preferredTtsProvider = await self.__ttsJsonMapper.asyncSerializeProvider(
+            ttsProvider = preferredTts.preferredTts.preferredTtsProvider
         )
 
         connection = await self.__getDatabaseConnection()

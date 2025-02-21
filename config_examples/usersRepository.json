@@ -1,6 +1,5 @@
 {
     "userHandle": {
-        "analogueEnabled": true,
         "chatSoundAlertsEnabled": true,
         "chatSoundAlerts": [
             {
@@ -35,11 +34,8 @@
             }
         ],
         "discord": "https://discord.gg/linkToInviteURL",
-        "esWordOfTheDayEnabled": true,
-        "jaWordOfTheDayEnabled": true,
-        "picOfTheDayEnabled": true,
-        "picOfTheDayFile": "/home/userHandle/potd.txt",
-        "picOfTheDayRewardId": "DB66F35F-19DC-99EA-50E6-97AEF5F439CA",
+        "picOfTheDayRewardId": "",
+        "setChatterPreferredTtsRewardId": "",
         "speedrunProfile": "https://www.speedrun.com/user/someHandle",
         "timeZone": "America/Los_Angeles",
         "twitter": "https://twitter.com/userHandle"

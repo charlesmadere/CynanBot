@@ -12,6 +12,8 @@ from src.google.helpers.googleTtsApiHelper import GoogleTtsApiHelper
 from src.google.helpers.googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from src.google.helpers.googleTtsHelper import GoogleTtsHelper
 from src.google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
+from src.google.helpers.googleTtsVoicesHelper import GoogleTtsVoicesHelper
+from src.google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
@@ -19,8 +21,6 @@ from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInte
 from src.google.models.googleVoicePreset import GoogleVoicePreset
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from src.google.voiceChooser.googleTtsVoiceChooser import GoogleTtsVoiceChooser
-from src.google.voiceChooser.googleTtsVoiceChooserInterface import GoogleTtsVoiceChooserInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
@@ -119,14 +119,14 @@ googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
-googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
+googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
-    googleTtsVoiceChooser = googleTtsVoiceChooser,
+    googleTtsVoicesHelper = googleTtsVoicesHelper,
     timber = timber,
     ttsDirectoryProvider = ttsDirectoryProvider
 )
@@ -176,6 +176,9 @@ async def main():
         twitchChannel = twitchChannel,
         twitchChannelId = twitchChannelId
     )
+
+    if fileReference is None:
+        raise RuntimeError(f'expected a non None fileReference: \"{fileReference}\"')
 
     print(f'text to speech results: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
 

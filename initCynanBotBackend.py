@@ -1938,6 +1938,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketCon
 
 twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = casualGamePollPointRedemption,
+    chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = cutenessPointRedemption,
     decTalkSongPointRedemption = None,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,

@@ -178,8 +178,8 @@ from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
 from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
 from src.halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
-from src.halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
-from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
+from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
 from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
 from src.halfLife.service.halfLifeService import HalfLifeService
@@ -860,14 +860,14 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
 
 accessLevelJsonParser: AccessLevelJsonParserInterface = AccessLevelJsonParser()
 
-halfLifeJsonParser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
+halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
 
 microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
 
 streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
 ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
-    halfLifeJsonParser = halfLifeJsonParser,
+    halfLifeJsonParser = halfLifeVoiceParser,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     accessLevelJsonParser = accessLevelJsonParser,
@@ -1848,17 +1848,20 @@ chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInte
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/chatterPreferredTtsSettingsRepository.json'
-    )
+    ),
+    ttsJsonMapper = ttsJsonMapper
 )
 
 chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+    halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository
 )
 
 chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterPreferredTtsRepository(
     backingDatabase = backingDatabase,
     chatterPreferredTtsJsonMapper = chatterPreferredTtsJsonMapper,
-    timber = timber
+    timber = timber,
+    ttsJsonMapper = ttsJsonMapper
 )
 
 chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferredTtsHelper(
@@ -1867,6 +1870,7 @@ chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferred
 )
 
 chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+    halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository
 )
 
@@ -2024,7 +2028,7 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
         eventLoop = eventLoop,
         fileName = '../config/halfLifeTtsSettingsRepository.json'
     ),
-    halfLifeJsonParser = halfLifeJsonParser
+    halfLifeJsonParser = halfLifeVoiceParser
 )
 
 halfLifeService: HalfLifeServiceInterface = HalfLifeService(
@@ -2032,7 +2036,7 @@ halfLifeService: HalfLifeServiceInterface = HalfLifeService(
 )
 
 halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
-    halfLifeJsonParser = halfLifeJsonParser
+    halfLifeJsonParser = halfLifeVoiceParser
 )
 
 halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(

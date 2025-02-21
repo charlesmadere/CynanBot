@@ -5,7 +5,11 @@ from src.chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelperInterfac
     ChatterPreferredTtsUserMessageHelperInterface
 from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
+from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
+from src.halfLife.models.halfLifeVoice import HalfLifeVoice
+from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
+from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
@@ -14,8 +18,10 @@ from src.language.languagesRepositoryInterface import LanguagesRepositoryInterfa
 class TestChatterPreferredTtsUserMessageHelper:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+    halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
 
     helper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+        halfLifeVoiceParser = halfLifeVoiceParser,
         languagesRepository = languagesRepository
     )
 
@@ -75,6 +81,44 @@ class TestChatterPreferredTtsUserMessageHelper:
         result = await self.helper.parseUserMessage('google sweden')
         assert isinstance(result, GooglePreferredTts)
         assert result.languageEntry is LanguageEntry.SWEDISH
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withHalfLifeStrings(self):
+        result = await self.helper.parseUserMessage('halflife')
+        assert isinstance(result, HalfLifePreferredTts)
+
+        result = await self.helper.parseUserMessage('half life')
+        assert isinstance(result, HalfLifePreferredTts)
+
+        result = await self.helper.parseUserMessage('half_life')
+        assert isinstance(result, HalfLifePreferredTts)
+
+        result = await self.helper.parseUserMessage('half-life')
+        assert isinstance(result, HalfLifePreferredTts)
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withHalfLifeAndGarbledText(self):
+        result = await self.helper.parseUserMessage('half life fdsiklahfkldsajlfdklsflad')
+        assert isinstance(result, HalfLifePreferredTts)
+        assert result.halfLifeVoiceEntry is HalfLifeVoice.ALL
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withHalfLifeAndScientist(self):
+        result = await self.helper.parseUserMessage('half life scientist')
+        assert isinstance(result, HalfLifePreferredTts)
+        assert result.halfLifeVoiceEntry is HalfLifeVoice.SCIENTIST
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withHalfLifeAndBarney(self):
+        result = await self.helper.parseUserMessage('half life barney')
+        assert isinstance(result, HalfLifePreferredTts)
+        assert result.halfLifeVoiceEntry is HalfLifeVoice.BARNEY
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withHalfLifeAndPolice(self):
+        result = await self.helper.parseUserMessage('half life police')
+        assert isinstance(result, HalfLifePreferredTts)
+        assert result.halfLifeVoiceEntry is HalfLifeVoice.POLICE
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withMicrosoftSamStrings(self):

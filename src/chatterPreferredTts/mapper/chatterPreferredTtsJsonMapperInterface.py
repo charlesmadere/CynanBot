@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from ..models.absPreferredTts import AbsPreferredTts
-from ..models.preferredTtsProvider import PreferredTtsProvider
+from ...tts.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsJsonMapperInterface(ABC):
@@ -11,15 +11,8 @@ class ChatterPreferredTtsJsonMapperInterface(ABC):
     async def parsePreferredTts(
         self,
         configurationJson: dict[str, Any],
-        provider: PreferredTtsProvider
+        provider: TtsProvider
     ) -> AbsPreferredTts:
-        pass
-
-    @abstractmethod
-    async def parsePreferredTtsProvider(
-        self,
-        string: str | Any | None
-    ) -> PreferredTtsProvider:
         pass
 
     @abstractmethod
@@ -27,11 +20,4 @@ class ChatterPreferredTtsJsonMapperInterface(ABC):
         self,
         preferredTts: AbsPreferredTts
     ) -> dict[str, Any]:
-        pass
-
-    @abstractmethod
-    async def serializePreferredTtsProvider(
-        self,
-        provider: PreferredTtsProvider
-    ) -> str:
         pass

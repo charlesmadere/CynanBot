@@ -7,7 +7,7 @@ from .ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInt
 from ..accessLevel.accessLevel import AccessLevel
 from ..accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
-from ...halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from ...halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
@@ -21,13 +21,13 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
 
     def __init__(
         self,
-        halfLifeJsonParser: HalfLifeJsonParserInterface,
+        halfLifeJsonParser: HalfLifeVoiceParserInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         accessLevelJsonParser: AccessLevelJsonParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface
     ):
-        if not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
+        if not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
         elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
@@ -36,7 +36,7 @@ class TtsChatterBoosterPackParser(TtsChatterBoosterPackParserInterface):
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
 
-        self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
+        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeJsonParser
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsChatterAccessLevelParser: AccessLevelJsonParserInterface = accessLevelJsonParser

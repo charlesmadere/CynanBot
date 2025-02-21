@@ -1,6 +1,6 @@
 from ..absPreferredTts import AbsPreferredTts
-from ..preferredTtsProvider import PreferredTtsProvider
 from ....language.languageEntry import LanguageEntry
+from ....tts.ttsProvider import TtsProvider
 
 
 class GooglePreferredTts(AbsPreferredTts):
@@ -19,5 +19,5 @@ class GooglePreferredTts(AbsPreferredTts):
         return self.__languageEntry
 
     @property
-    def preferredTtsProvider(self) -> PreferredTtsProvider:
-        return PreferredTtsProvider.GOOGLE
+    def preferredTtsProvider(self) -> TtsProvider:
+        return TtsProvider.GOOGLE

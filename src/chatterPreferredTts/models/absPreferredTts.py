@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
-from .preferredTtsProvider import PreferredTtsProvider
+from ...tts.ttsProvider import TtsProvider
 
 
 class AbsPreferredTts(ABC):
 
     @property
     @abstractmethod
-    def preferredTtsProvider(self) -> PreferredTtsProvider:
+    def preferredTtsProvider(self) -> TtsProvider:
         pass

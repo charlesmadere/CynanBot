@@ -4,22 +4,32 @@ from .chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMappe
 from ..models.absPreferredTts import AbsPreferredTts
 from ..models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from ..models.google.googlePreferredTts import GooglePreferredTts
+from ..models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
-from ..models.preferredTtsProvider import PreferredTtsProvider
+from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPreferredTts
+from ..models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
+from ..models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
+from ...halfLife.models.halfLifeVoice import HalfLifeVoice
+from ...halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...language.languageEntry import LanguageEntry
 from ...language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from ...misc import utils as utils
+from ...tts.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     def __init__(
         self,
+        halfLifeVoiceParser: HalfLifeVoiceParserInterface,
         languagesRepository: LanguagesRepositoryInterface
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
+            raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeVoiceParser}\"')
 
+        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
 
     async def __parseDecTalkPreferredTts(
@@ -46,53 +56,92 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             languageEntry = languageEntry
         )
 
+    async def __parseHalfLifePreferredTts(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> HalfLifePreferredTts:
+        halfLifeVoice: HalfLifeVoice = HalfLifeVoice.ALL
+
+        if isinstance(configurationJson, dict):
+            halfLifeVoiceString = configurationJson.get('halfLifeVoice', None)
+
+            if utils.isValidStr(halfLifeVoiceString):
+                halfLifeVoice = self.__halfLifeJsonParser.requireVoice(halfLifeVoiceString)
+
+        return HalfLifePreferredTts(
+            halfLifeVoice = halfLifeVoice
+        )
+
     async def __parseMicrosoftSamPreferredTts(
         self,
         configurationJson: dict[str, Any]
     ) -> MicrosoftSamPreferredTts:
         return MicrosoftSamPreferredTts()
 
+    async def __parseSingingDecTalkPreferredTts(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> SingingDecTalkPreferredTts:
+        return SingingDecTalkPreferredTts()
+
+    async def __parseStreamElementsPreferredTts(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> StreamElementsPreferredTts:
+        return StreamElementsPreferredTts()
+
+    async def __parseTtsMonsterPreferredTts(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> TtsMonsterPreferredTts:
+        return TtsMonsterPreferredTts()
+
     async def parsePreferredTts(
         self,
         configurationJson: dict[str, Any],
-        provider: PreferredTtsProvider
+        provider: TtsProvider
     ) -> AbsPreferredTts:
-        if not isinstance(provider, PreferredTtsProvider):
+        if not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         match provider:
-            case PreferredTtsProvider.DEC_TALK:
+            case TtsProvider.DEC_TALK:
                 return await self.__parseDecTalkPreferredTts(
                     configurationJson = configurationJson
                 )
 
-            case PreferredTtsProvider.GOOGLE:
+            case TtsProvider.GOOGLE:
                 return await self.__parseGooglePreferredTts(
                     configurationJson = configurationJson
                 )
 
-            case PreferredTtsProvider.MICROSOFT_SAM:
+            case TtsProvider.HALF_LIFE:
+                return await self.__parseHalfLifePreferredTts(
+                    configurationJson = configurationJson
+                )
+
+            case TtsProvider.MICROSOFT_SAM:
                 return await self.__parseMicrosoftSamPreferredTts(
+                    configurationJson = configurationJson
+                )
+
+            case TtsProvider.SINGING_DEC_TALK:
+                return await self.__parseSingingDecTalkPreferredTts(
+                    configurationJson = configurationJson
+                )
+
+            case TtsProvider.STREAM_ELEMENTS:
+                return await self.__parseStreamElementsPreferredTts(
+                    configurationJson = configurationJson
+                )
+
+            case TtsProvider.TTS_MONSTER:
+                return await self.__parseTtsMonsterPreferredTts(
                     configurationJson = configurationJson
                 )
 
             case _:
                 raise ValueError(f'Encountered unknown PreferredTtsProvider: \"{provider}\"')
-
-    async def parsePreferredTtsProvider(
-        self,
-        string: str | Any | None
-    ) -> PreferredTtsProvider:
-        if not utils.isValidStr(string):
-            raise TypeError(f'string argument is malformed: \"{string}\"')
-
-        string = string.lower()
-
-        match string:
-            case 'dec_talk': return PreferredTtsProvider.DEC_TALK
-            case 'google': return PreferredTtsProvider.GOOGLE
-            case 'microsoft_sam': return PreferredTtsProvider.MICROSOFT_SAM
-            case _: raise ValueError(f'Encountered unknown string value: \"{string}\"')
 
     async def __serializeDecTalkPreferredTts(
         self,
@@ -111,9 +160,37 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
         return configurationJson
 
+    async def __serializeHalfLifePreferredTts(
+        self,
+        preferredTts: HalfLifePreferredTts
+    ) -> dict[str, Any]:
+        configurationJson: dict[str, Any] = dict()
+
+        configurationJson['halfLifeVoice'] = preferredTts.halfLifeVoiceEntry.value
+
+        return configurationJson
+
     async def __serializeMicrosoftSamPreferredTts(
         self,
         preferredTts: MicrosoftSamPreferredTts
+    ) -> dict[str, Any]:
+        return dict()
+
+    async def __serializeSingingDecTalkPreferredTts(
+        self,
+        preferredTts: SingingDecTalkPreferredTts
+    ) -> dict[str, Any]:
+        return dict()
+
+    async def __serializeStreamElementsPreferredTts(
+        self,
+        preferredTts: StreamElementsPreferredTts
+    ) -> dict[str, Any]:
+        return dict()
+
+    async def __serializeTtsMonsterPreferredTts(
+        self,
+        preferredTts: TtsMonsterPreferredTts
     ) -> dict[str, Any]:
         return dict()
 
@@ -134,20 +211,30 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
                 preferredTts = preferredTts
             )
 
+        elif isinstance(preferredTts, HalfLifePreferredTts):
+            return await self.__serializeHalfLifePreferredTts(
+                preferredTts = preferredTts
+            )
+
         elif isinstance(preferredTts, MicrosoftSamPreferredTts):
             return await self.__serializeMicrosoftSamPreferredTts(
                 preferredTts = preferredTts
             )
 
+        elif isinstance(preferredTts, SingingDecTalkPreferredTts):
+            return await self.__serializeSingingDecTalkPreferredTts(
+                preferredTts = preferredTts
+            )
+
+        elif isinstance(preferredTts, StreamElementsPreferredTts):
+            return await self.__serializeStreamElementsPreferredTts(
+                preferredTts = preferredTts
+            )
+
+        elif isinstance(preferredTts, TtsMonsterPreferredTts):
+            return await self.__serializeTtsMonsterPreferredTts(
+                preferredTts = preferredTts
+            )
+
         else:
             raise ValueError(f'preferredTts is an unknown type: \"{preferredTts}\"')
-
-    async def serializePreferredTtsProvider(
-        self,
-        provider: PreferredTtsProvider
-    ) -> str:
-        match provider:
-            case PreferredTtsProvider.DEC_TALK: return 'dec_talk'
-            case PreferredTtsProvider.GOOGLE: return 'google'
-            case PreferredTtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
-            case _: raise ValueError(f'Encountered unknown PreferredTtsProvider value: \"{provider}\"')

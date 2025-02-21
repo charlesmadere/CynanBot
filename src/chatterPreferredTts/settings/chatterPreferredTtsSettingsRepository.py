@@ -3,15 +3,23 @@ from typing import Any
 from .chatterPreferredTtsSettingsRepositoryInterface import ChatterPreferredTtsSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
+from ...tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ...tts.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsSettingsRepository(ChatterPreferredTtsSettingsRepositoryInterface):
 
-    def __init__(self, settingsJsonReader: JsonReaderInterface):
+    def __init__(
+        self,
+        settingsJsonReader: JsonReaderInterface,
+        ttsJsonMapper: TtsJsonMapperInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
+            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
 
         self.__settingsCache: dict[str, Any] | None = None
 
@@ -21,6 +29,22 @@ class ChatterPreferredTtsSettingsRepository(ChatterPreferredTtsSettingsRepositor
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = True)
+
+    async def isTtsProviderEnabled(
+        self,
+        provider: TtsProvider) -> bool:
+
+        jsonContents = await self.__readJson()
+        enabledProviders = jsonContents.get('enabledProviders')
+
+        if enabledProviders is None:
+            return False
+
+        for enabledProvider in enabledProviders:
+            if provider == self.__ttsJsonMapper.parseProvider(enabledProvider):
+                return True
+
+        return False
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:

@@ -1,9 +1,9 @@
 from ..absPreferredTts import AbsPreferredTts
-from ..preferredTtsProvider import PreferredTtsProvider
+from ....tts.ttsProvider import TtsProvider
 
 
 class MicrosoftSamPreferredTts(AbsPreferredTts):
 
     @property
-    def preferredTtsProvider(self) -> PreferredTtsProvider:
-        return PreferredTtsProvider.MICROSOFT_SAM
+    def preferredTtsProvider(self) -> TtsProvider:
+        return TtsProvider.MICROSOFT_SAM

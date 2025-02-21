@@ -2,7 +2,7 @@ from typing import Any
 
 from .halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ..models.halfLifeVoice import HalfLifeVoice
-from ..parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from ..parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -12,18 +12,18 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
-        halfLifeJsonParser: HalfLifeJsonParserInterface,
-        defaultVoice: HalfLifeVoice = HalfLifeVoice.MALE
+        halfLifeJsonParser: HalfLifeVoiceParserInterface,
+        defaultVoice: HalfLifeVoice = HalfLifeVoice.INTERCOM
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
+        elif not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
         elif not isinstance(defaultVoice, HalfLifeVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
+        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeJsonParser
         self.__defaultVoice: HalfLifeVoice = defaultVoice
 
         self.__cache: dict[str, Any] | None = None

@@ -1,8 +1,8 @@
 import re
 from typing import Pattern
 
-from .halfLifeJsonParserInterface import HalfLifeJsonParserInterface
 from .halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
+from .halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ..models.halfLifeVoice import HalfLifeVoice
 from ...misc import utils as utils
 
@@ -11,12 +11,12 @@ class HalfLifeMessageVoiceParser(HalfLifeMessageVoiceParserInterface):
 
     def __init__(
         self,
-        halfLifeJsonParser: HalfLifeJsonParserInterface
+        halfLifeJsonParser: HalfLifeVoiceParserInterface
     ):
-        if not isinstance(halfLifeJsonParser, HalfLifeJsonParserInterface):
-            raise TypeError(f'halfLifeJsonParser argument is malformed: \"{HalfLifeJsonParserInterface}\"')
+        if not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
+            raise TypeError(f'halfLifeJsonParser argument is malformed: \"{HalfLifeVoiceParserInterface}\"')
 
-        self.__halfLifeJsonParser: HalfLifeJsonParserInterface = halfLifeJsonParser
+        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeJsonParser
 
         self.__voiceRegEx: Pattern = re.compile(r'(^\s*(\w+):\s+)', re.IGNORECASE)
 

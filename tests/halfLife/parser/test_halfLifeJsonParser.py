@@ -1,13 +1,13 @@
 import pytest
 
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
-from src.halfLife.parser.halfLifeJsonParser import HalfLifeJsonParser
-from src.halfLife.parser.halfLifeJsonParserInterface import HalfLifeJsonParserInterface
+from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
+from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 
 
 class TesthalfLifeJsonParser:
 
-    parser: HalfLifeJsonParserInterface = HalfLifeJsonParser()
+    parser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
 
     @pytest.mark.asyncio
     async def test_parseVoice_withAll(self):
@@ -20,14 +20,14 @@ class TesthalfLifeJsonParser:
         assert result is HalfLifeVoice.BARNEY
 
     @pytest.mark.asyncio
-    async def test_parseVoice_withFemale(self):
-        result = self.parser.parseVoice('female')
-        assert result is HalfLifeVoice.FEMALE
+    async def test_parseVoice_withHev(self):
+        result = self.parser.parseVoice('hev')
+        assert result is HalfLifeVoice.HEV
 
     @pytest.mark.asyncio
-    async def test_parseVoice_withMale(self):
-        result = self.parser.parseVoice('male')
-        assert result is HalfLifeVoice.MALE
+    async def test_parseVoice_withIntercom(self):
+        result = self.parser.parseVoice('intercom')
+        assert result is HalfLifeVoice.INTERCOM
 
     @pytest.mark.asyncio
     async def test_parseVoice_withPolice(self):
@@ -61,8 +61,8 @@ class TesthalfLifeJsonParser:
 
     @pytest.mark.asyncio
     async def test_requireVoice_withMale(self):
-        result = self.parser.requireVoice('male')
-        assert result is HalfLifeVoice.MALE
+        result = self.parser.requireVoice('intercom')
+        assert result is HalfLifeVoice.INTERCOM
 
     @pytest.mark.asyncio
     async def test_requireVoice_withPolice(self):
@@ -107,14 +107,14 @@ class TesthalfLifeJsonParser:
         assert result == 'barney'
 
     @pytest.mark.asyncio
-    async def test_serializeVoice_withFemale(self):
-        result = self.parser.serializeVoice(HalfLifeVoice.FEMALE)
-        assert result == 'female'
+    async def test_serializeVoice_withHev(self):
+        result = self.parser.serializeVoice(HalfLifeVoice.HEV)
+        assert result == 'hev'
 
     @pytest.mark.asyncio
-    async def test_serializeVoice_withMale(self):
-        result = self.parser.serializeVoice(HalfLifeVoice.MALE)
-        assert result == 'male'
+    async def test_serializeVoice_withIntercom(self):
+        result = self.parser.serializeVoice(HalfLifeVoice.INTERCOM)
+        assert result == 'intercom'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withPolice(self):

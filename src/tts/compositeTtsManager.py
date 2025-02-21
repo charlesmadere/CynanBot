@@ -12,7 +12,6 @@ from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterf
 from .ttsProvider import TtsProvider
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ..chatterPreferredTts.models.preferredTtsProvider import PreferredTtsProvider
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
 
@@ -96,7 +95,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         if chatterPreferredTtsHelper is None:
             return event.provider
 
-        preferredTts = await self.__chatterPreferredTtsHelper.get(
+        preferredTts = await chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
             twitchChannelId = event.twitchChannelId
         )
@@ -106,11 +105,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         self.__timber.log('CompositeTtsManager', f'Chatter has a preferred TTS ({preferredTts=}) ({event=})')
 
-        match preferredTts.preferredTts.preferredTtsProvider:
-            case PreferredTtsProvider.DEC_TALK: return TtsProvider.DEC_TALK
-            case PreferredTtsProvider.GOOGLE: return TtsProvider.GOOGLE
-            case PreferredTtsProvider.MICROSOFT_SAM: return TtsProvider.MICROSOFT_SAM
-            case _: return event.provider
+        return preferredTts.preferredTts.preferredTtsProvider
 
     @property
     def isLoadingOrPlaying(self) -> bool:

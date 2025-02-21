@@ -1,0 +1,12 @@
+{
+    "isEnabled": true,
+    "enabledProviders": [
+        "dec_talk",
+        "google",
+        "half_life",
+        "microsoft_sam",
+        "singing_dec_talk",
+        "stream_elements",
+        "tts_monster"
+    ]
+}

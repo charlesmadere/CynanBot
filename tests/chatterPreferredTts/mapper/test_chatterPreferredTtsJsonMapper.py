@@ -4,18 +4,24 @@ from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapper import Chatter
 from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMapperInterface
 from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
+from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
-from src.chatterPreferredTts.models.preferredTtsProvider import PreferredTtsProvider
+from src.halfLife.models.halfLifeVoice import HalfLifeVoice
+from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
+from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.tts.ttsProvider import TtsProvider
 
 
 class TestChatterPreferredTtsJsonMapper:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+    halfLifeJsonParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
 
     mapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+        halfLifeVoiceParser = halfLifeJsonParser,
         languagesRepository = languagesRepository
     )
 
@@ -23,7 +29,7 @@ class TestChatterPreferredTtsJsonMapper:
     async def test_parsePreferredTts_withDecTalk(self):
         result = await self.mapper.parsePreferredTts(
             configurationJson = dict(),
-            provider = PreferredTtsProvider.DEC_TALK
+            provider = TtsProvider.DEC_TALK
         )
 
         assert isinstance(result, DecTalkPreferredTts)
@@ -32,7 +38,7 @@ class TestChatterPreferredTtsJsonMapper:
     async def test_parsePreferredTts_withGoogle(self):
         result = await self.mapper.parsePreferredTts(
             configurationJson = dict(),
-            provider = PreferredTtsProvider.GOOGLE
+            provider = TtsProvider.GOOGLE
         )
 
         assert isinstance(result, GooglePreferredTts)
@@ -46,35 +52,34 @@ class TestChatterPreferredTtsJsonMapper:
             configurationJson = {
                 'iso6391': iso6391Code
             },
-            provider = PreferredTtsProvider.GOOGLE
+            provider = TtsProvider.GOOGLE
         )
 
         assert isinstance(result, GooglePreferredTts)
         assert result.languageEntry is LanguageEntry.JAPANESE
 
     @pytest.mark.asyncio
+    async def test_parsePreferredTts_withHalfLife(self):
+        halfLifeVoiceString = HalfLifeVoice.SCIENTIST.keyName
+
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = {
+                'halfLifeVoice': halfLifeVoiceString
+            },
+            provider = TtsProvider.HALF_LIFE
+        )
+
+        assert isinstance(result, HalfLifePreferredTts)
+        assert result.halfLifeVoiceEntry is HalfLifeVoice.SCIENTIST
+
+    @pytest.mark.asyncio
     async def test_parsePreferredTts_withMicrosoftSam(self):
         result = await self.mapper.parsePreferredTts(
             configurationJson = dict(),
-            provider = PreferredTtsProvider.MICROSOFT_SAM
+            provider = TtsProvider.MICROSOFT_SAM
         )
 
         assert isinstance(result, MicrosoftSamPreferredTts)
-
-    @pytest.mark.asyncio
-    async def test_parsePreferredTtsProvider_withDecTalkString(self):
-        result = await self.mapper.parsePreferredTtsProvider('dec_talk')
-        assert result == PreferredTtsProvider.DEC_TALK
-
-    @pytest.mark.asyncio
-    async def test_parsePreferredTtsProvider_withGoogleString(self):
-        result = await self.mapper.parsePreferredTtsProvider('google')
-        assert result == PreferredTtsProvider.GOOGLE
-
-    @pytest.mark.asyncio
-    async def test_parsePreferredTtsProvider_withMicrosoftSamString(self):
-        result = await self.mapper.parsePreferredTtsProvider('microsoft_sam')
-        assert result == PreferredTtsProvider.MICROSOFT_SAM
 
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withDecTalk(self):
@@ -122,21 +127,6 @@ class TestChatterPreferredTtsJsonMapper:
 
         assert isinstance(result, dict)
         assert len(result) == 0
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTtsProvider_withDecTalk(self):
-        result = await self.mapper.serializePreferredTtsProvider(PreferredTtsProvider.DEC_TALK)
-        assert result == 'dec_talk'
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTtsProvider_withGoogle(self):
-        result = await self.mapper.serializePreferredTtsProvider(PreferredTtsProvider.GOOGLE)
-        assert result == 'google'
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTtsProvider_withMicrosoftSam(self):
-        result = await self.mapper.serializePreferredTtsProvider(PreferredTtsProvider.MICROSOFT_SAM)
-        assert result == 'microsoft_sam'
 
     def test_sanity(self):
         assert self.mapper is not None
