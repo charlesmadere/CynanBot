@@ -51,22 +51,6 @@ class TtsChattersChatAction(AbsChatAction):
         if boosterPack is None:
             return False
 
-        voice: str = ''
-
-        match boosterPack.ttsProvider:
-            case TtsProvider.HALF_LIFE:
-                if isinstance(boosterPack.voice, HalfLifeVoice):
-                    voice = f'{boosterPack.voice.value}: '
-            case TtsProvider.MICROSOFT_SAM:
-                if isinstance(boosterPack.voice, MicrosoftSamVoice):
-                    voice = f'{boosterPack.voice.value}: '
-            case TtsProvider.STREAM_ELEMENTS:
-                if isinstance(boosterPack.voice, StreamElementsVoice):
-                    voice = f'{boosterPack.voice.humanName}: '
-            case TtsProvider.TTS_MONSTER:
-                if utils.isValidStr(boosterPack.voice):
-                    voice = f'{boosterPack.voice}: '
-
         if not await self.__accessLevelCheckingHelper.checkStatus(boosterPack.accessLevel, message):
             return False
 

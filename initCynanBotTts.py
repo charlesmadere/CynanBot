@@ -1239,6 +1239,7 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
 )
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,

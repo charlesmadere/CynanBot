@@ -1,6 +1,7 @@
 from frozenlist import FrozenList
 
 from .halfLifeHelperInterface import HalfLifeHelperInterface
+from ..models.halfLifeVoice import HalfLifeVoice
 from ..parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
 from ..service.halfLifeServiceInterface import HalfLifeServiceInterface
 from ..settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
@@ -28,7 +29,8 @@ class HalfLifeHelper(HalfLifeHelperInterface):
 
     async def getSpeech(
         self,
-        message: str | None
+        message: str | None,
+        voice: HalfLifeVoice
     ) -> FrozenList[str] | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -37,7 +39,6 @@ class HalfLifeHelper(HalfLifeHelperInterface):
             return None
 
         result = await self.__halfLifeMessageVoiceParser.determineVoiceFromMessage(message)
-        voice = await self.__halfLifeSettingsRepository.getDefaultVoice()
         directory = await self.__halfLifeSettingsRepository.getSoundsDirectory()
 
         if result is not None:

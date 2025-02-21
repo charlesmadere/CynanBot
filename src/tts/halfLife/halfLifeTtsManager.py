@@ -6,9 +6,13 @@ from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
+from ..ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
+from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -19,6 +23,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
     def __init__(
         self,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         halfLifeHelper: HalfLifeHelperInterface,
         halfLifeMessageCleaner: HalfLifeMessageCleanerInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
@@ -27,7 +32,9 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(halfLifeHelper, HalfLifeHelperInterface):
+        if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(halfLifeHelper, HalfLifeHelperInterface):
             raise TypeError(f'halfLifeHelper argument is malformed: \"{halfLifeHelper}\"')
         elif not isinstance(halfLifeMessageCleaner, HalfLifeMessageCleanerInterface):
             raise TypeError(f'halfLifeMessageCleaner argument is malformed: \"{halfLifeMessageCleaner}\"')
@@ -42,6 +49,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__halfLifeHelper: HalfLifeHelperInterface = halfLifeHelper
         self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
@@ -95,6 +103,32 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         await self.__executeTts(fileNames)
 
+    async def __determineVoicePreset(self, event: TtsEvent) -> HalfLifeVoice:
+
+        defaultVoice: HalfLifeVoice = await self.__halfLifeSettingsRepository.getDefaultVoice()
+
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return defaultVoice
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return defaultVoice
+
+        halfLifePreferredTts = preferredTts.preferredTts
+        if not isinstance(halfLifePreferredTts, HalfLifePreferredTts):
+            self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
+            return defaultVoice
+
+        halfLifeVoiceEntry = halfLifePreferredTts.halfLifeVoiceEntry
+        if halfLifeVoiceEntry is None:
+            return defaultVoice
+
+        return halfLifeVoiceEntry
+
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
         message = await self.__halfLifeMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
@@ -109,7 +143,10 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         else:
             return None
 
-        speechFiles = await self.__halfLifeHelper.getSpeech(fullMessage)
+        speechFiles = await self.__halfLifeHelper.getSpeech(
+            message = fullMessage,
+            voice = await self.__determineVoicePreset(event)
+        )
 
         if speechFiles is None or len(speechFiles) == 0:
             self.__timber.log('HalfLifeTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({speechFiles=})')

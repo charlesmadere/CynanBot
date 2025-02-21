@@ -2049,6 +2049,7 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
 )
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
