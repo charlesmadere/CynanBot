@@ -26,6 +26,7 @@ class LanguageEntry(Enum):
     RUSSIAN = auto()
     SPANISH = auto()
     SWEDISH = auto()
+    FINNISH = auto()
     THAI = auto()
     URDU = auto()
 
@@ -91,6 +92,9 @@ class LanguageEntry(Enum):
             case LanguageEntry.SWEDISH:
                 commandNames = [ 'se', 'sv', 'svenska', 'sw', 'sweden', 'swedish' ]
 
+            case LanguageEntry.FINNISH:
+                commandNames = [ 'fi', 'finnish', 'suomi', 'suomeksi']
+
             case LanguageEntry.THAI:
                 commandNames = [ 'th', 'thai' ]
 
@@ -127,6 +131,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.RUSSIAN: return '🇷🇺'
             case LanguageEntry.SPANISH: return None
             case LanguageEntry.SWEDISH: return '🇸🇪'
+            case LanguageEntry.FINNISH: return '🇫🇮'
             case LanguageEntry.THAI: return '🇹🇭'
             case LanguageEntry.URDU: return '🇵🇰'
             case _: raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')
@@ -153,6 +158,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.RUSSIAN: return 'ru'
             case LanguageEntry.SPANISH: return 'es'
             case LanguageEntry.SWEDISH: return 'sv'
+            case LanguageEntry.FINNISH: return 'fi'
             case LanguageEntry.THAI: return 'th'
             case LanguageEntry.URDU: return 'ur'
             case _: raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')
@@ -179,6 +185,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.RUSSIAN: return 'Russian'
             case LanguageEntry.SPANISH: return 'Spanish'
             case LanguageEntry.SWEDISH: return 'Swedish'
+            case LanguageEntry.FINNISH: return 'Finnish'
             case LanguageEntry.THAI: return 'Thai'
             case LanguageEntry.URDU: return 'Urdu'
             case _: raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')
@@ -225,6 +232,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.RUSSIAN: return 'ru'
             case LanguageEntry.SPANISH: return 'es'
             case LanguageEntry.SWEDISH: return 'swedish'
+            case LanguageEntry.FINNISH: return 'finnish'
             case LanguageEntry.THAI: return None
             case LanguageEntry.URDU: return 'urdu'
             case _: raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')

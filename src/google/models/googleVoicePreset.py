@@ -55,6 +55,8 @@ class GoogleVoicePreset(Enum):
     SWEDISH_SWEDEN_STANDARD_B = auto()
     SWEDISH_SWEDEN_STANDARD_C = auto()
     SWEDISH_SWEDEN_STANDARD_D = auto()
+    FINNISH_FINLAND_STANDARD_A = auto()
+    FINNISH_FINLAND_STANDARD_B = auto()
 
     @property
     def fullName(self) -> str:
@@ -111,6 +113,8 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_B: return 'sv-SE-Standard-B'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_C: return 'sv-SE-Standard-C'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_D: return 'sv-SE-Standard-D'
+            case GoogleVoicePreset.FINNISH_FINLAND_STANDARD_A: return 'fi-FI-Standard-A'
+            case GoogleVoicePreset.FINNISH_FINLAND_STANDARD_B: return 'fi-FI-Standard-B'
             case _: raise ValueError(f'Unknown GoogleVoicePreset value: \"{self}\"')
 
     @property
@@ -168,4 +172,6 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_B: return 'sv-SE'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_C: return 'sv-SE'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_D: return 'sv-SE'
+            case GoogleVoicePreset.FINNISH_FINLAND_STANDARD_A: return 'fi-FI'
+            case GoogleVoicePreset.FINNISH_FINLAND_STANDARD_B: return 'fi-FI'
             case _: raise ValueError(f'Unknown GoogleVoicePreset value: \"{self}\"')

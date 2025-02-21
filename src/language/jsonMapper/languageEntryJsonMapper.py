@@ -43,6 +43,7 @@ class LanguageEntryJsonMapper(LanguageEntryJsonMapperInterface):
             case 'russian': return LanguageEntry.RUSSIAN
             case 'spanish': return LanguageEntry.SPANISH
             case 'swedish': return LanguageEntry.SWEDISH
+            case 'finnish': return LanguageEntry.FINNISH
             case 'thai': return LanguageEntry.THAI
             case 'urdu': return LanguageEntry.URDU
             case _: return None
@@ -82,6 +83,7 @@ class LanguageEntryJsonMapper(LanguageEntryJsonMapperInterface):
             case LanguageEntry.RUSSIAN: return 'russian'
             case LanguageEntry.SPANISH: return 'spanish'
             case LanguageEntry.SWEDISH: return 'swedish'
+            case LanguageEntry.FINNISH: return 'finnish'
             case LanguageEntry.THAI: return 'thai'
             case LanguageEntry.URDU: return 'urdu'
             case _: raise ValueError(f'Unknown languageEntry value: \"{languageEntry}\"')
