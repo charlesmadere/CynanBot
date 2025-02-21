@@ -139,6 +139,12 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_D
                 }
 
+            case LanguageEntry.FINNISH:
+                voicePresets = {
+                    GoogleVoicePreset.FINNISH_FINLAND_STANDARD_A,
+                    GoogleVoicePreset.FINNISH_FINLAND_STANDARD_B,
+                }
+
             case _:
                 voicePresets = set()
 
