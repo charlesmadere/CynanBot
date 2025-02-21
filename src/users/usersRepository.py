@@ -164,7 +164,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChatBackMessagesEnabled = utils.getBoolFromDict(userJson, 'chatBackMessagesEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
-        isChatterPreferredTtsEnabled = utils.getBoolFromDict(userJson, 'chatterPreferredTtsEnabled', False)
+        isChatterPreferredTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED.jsonKey, False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)

@@ -7,6 +7,7 @@ class UserJsonConstant(Enum):
     ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED = auto()
     ANIV_MESSAGE_COPY_TIMEOUT_ENABLED = auto()
     BLUE_SKY_URL = auto()
+    CHATTER_PREFERRED_TTS_ENABLED = auto()
     CHAT_SOUND_ALERTS_ENABLED = auto()
     CHEER_ACTIONS_ENABLED = auto()
     CROWD_CONTROL_ENABLED = auto()
@@ -31,6 +32,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED: return 'anivMessageCopyTimeoutChatReportingEnabled'
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED: return 'anivMessageCopyTimeoutEnabled'
             case UserJsonConstant.BLUE_SKY_URL: return 'blueSkyUrl'
+            case UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED: return 'chatterPreferredTtsEnabled'
             case UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED: return 'chatSoundAlertsEnabled'
             case UserJsonConstant.CHEER_ACTIONS_ENABLED: return 'cheerActionsEnabled'
             case UserJsonConstant.CROWD_CONTROL_ENABLED: return 'crowdControlEnabled'
