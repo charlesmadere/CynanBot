@@ -74,8 +74,8 @@ class TtsChattersChatAction(AbsChatAction):
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = False,
-                message = f'{voice}{chatMessage}',
+                allowChatterPreferredTts = True,
+                message = f'{chatMessage}',
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),
