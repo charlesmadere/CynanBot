@@ -28,7 +28,7 @@ class TestMicrosoftSamVoice:
         assert len(jsonValues) == len(list(MicrosoftSamVoice))
 
     def test_pitch_withAll(self):
-        pitchValues: list[str] = list()
+        pitchValues: list[int] = list()
 
         for voice in MicrosoftSamVoice:
             pitchValues.append(voice.pitch)
@@ -36,7 +36,7 @@ class TestMicrosoftSamVoice:
         assert len(pitchValues) == len(list(MicrosoftSamVoice))
 
     def test_speed_withAll(self):
-        speedValues: list[str] = list()
+        speedValues: list[int] = list()
 
         for voice in MicrosoftSamVoice:
             speedValues.append(voice.speed)

@@ -51,7 +51,7 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
-    async def handleCommand(self, ctx: TwitchContext):
+    async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProvider.getAdministratorUserId()
 

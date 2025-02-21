@@ -11,8 +11,6 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonString = jsonString.lower()
-
         for currentVoice in MicrosoftSamVoice:
             if currentVoice.jsonValue == jsonString:
                 return currentVoice
@@ -28,4 +26,4 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         return result
 
     def serializeVoice(self, voice: MicrosoftSamVoice):
-        return voice.value.casefold()
+        return voice.jsonValue
