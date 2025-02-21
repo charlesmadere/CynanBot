@@ -8,9 +8,12 @@ class MicrosoftSamMessageVoiceParserInterface(ABC):
 
     @dataclass(frozen = True)
     class Result:
-        message: str
         voice: MicrosoftSamVoice
+        message: str
 
     @abstractmethod
-    async def determineVoiceFromMessage(self, message: str | None) -> Result | None:
+    async def determineVoiceFromMessage(
+        self,
+        message: str | None
+    ) -> Result | None:
         pass

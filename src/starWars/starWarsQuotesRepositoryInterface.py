@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..misc.clearable import Clearable
 
 
-class StarWarsQuotesRepositoryInterface(Clearable):
+class StarWarsQuotesRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def fetchRandomQuote(self, trilogy: str | None = None) -> str:

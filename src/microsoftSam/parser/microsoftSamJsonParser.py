@@ -14,7 +14,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         jsonString = jsonString.lower()
 
         for currentVoice in MicrosoftSamVoice:
-            if currentVoice.value == jsonString.casefold():
+            if currentVoice.jsonValue == jsonString:
                 return currentVoice
 
         return None

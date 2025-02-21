@@ -10,6 +10,7 @@ from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManag
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsEvent import TtsEvent
 from ..tts.ttsProvider import TtsProvider
+from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 
@@ -71,7 +72,6 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
             twitchChannel = twitchUser.handle,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = False,
                 message = songData,
                 twitchChannel = twitchUser.handle,
                 twitchChannelId = await twitchChannel.getTwitchChannelId(),
@@ -79,6 +79,7 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
                 userName = twitchChannelPointsMessage.userName,
                 donation = None,
                 provider = TtsProvider.SINGING_DEC_TALK,
+                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )
         ))

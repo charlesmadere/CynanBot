@@ -8,6 +8,7 @@ from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
+from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...tts.ttsRaidInfo import TtsRaidInfo
 from ...users.userInterface import UserInterface
 
@@ -74,56 +75,51 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
                 twitchChannelId = toUserId
             )
 
-        await self.__processTtsEvent(
-            viewers = viewers,
-            broadcasterUserId = toUserId,
-            userId = fromUserId,
-            fromUserName = fromUserName,
-            user = user
-        )
+        if user.isTtsEnabled:
+            await self.__processTtsEvent(
+                viewers = viewers,
+                broadcasterUserId = toUserId,
+                fromUserId = fromUserId,
+                fromUserName = fromUserName,
+                user = user
+            )
 
     async def __processTtsEvent(
         self,
         viewers: int,
         broadcasterUserId: str,
-        userId: str,
+        fromUserId: str,
         fromUserName: str,
         user: UserInterface
     ):
-        if not utils.isValidInt(viewers):
-            raise TypeError(f'viewers argument is malformed: \"{viewers}\"')
-        elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
-            raise ValueError(f'viewers argument is out of bounds: {viewers}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(fromUserName):
-            raise TypeError(f'fromUserName argument is malformed: \"{fromUserName}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         if not user.isTtsEnabled:
             return
         elif viewers < 1:
             return
 
-        raidInfo = TtsRaidInfo(viewers = viewers)
+        providerOverridableStatus: TtsProviderOverridableStatus
+
+        if user.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.RAID,
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = True,
                 message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid!',
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
-                userId = userId,
+                userId = fromUserId,
                 userName = fromUserName,
                 donation = None,
                 provider = user.defaultTtsProvider,
-                raidInfo = raidInfo
+                providerOverridableStatus = providerOverridableStatus,
+                raidInfo = TtsRaidInfo(
+                    viewers = viewers
+                )
             )
         ))
 

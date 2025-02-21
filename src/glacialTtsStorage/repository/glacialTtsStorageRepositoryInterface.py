@@ -9,6 +9,7 @@ class GlacialTtsStorageRepositoryInterface(ABC):
     @abstractmethod
     async def add(
         self,
+        extraConfigurationData: str | None,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsData:
@@ -17,6 +18,7 @@ class GlacialTtsStorageRepositoryInterface(ABC):
     @abstractmethod
     async def get(
         self,
+        extraConfigurationData: str | None,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsData | None:

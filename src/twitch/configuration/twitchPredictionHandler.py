@@ -15,6 +15,7 @@ from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
+from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 from ...websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 from ...websocketConnection.websocketEventType import WebsocketEventType
@@ -167,13 +168,14 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             subscriptionType = subscriptionType
         )
 
-        await self.__processTtsEvent(
-            broadcasterUserId = broadcasterUserId,
-            title = title,
-            userId = userId,
-            user = user,
-            subscriptionType = subscriptionType
-        )
+        if user.isTtsEnabled:
+            await self.__processTtsEvent(
+                broadcasterUserId = broadcasterUserId,
+                title = title,
+                userId = userId,
+                user = user,
+                subscriptionType = subscriptionType
+            )
 
         await self.__notifyWebsocketOfPredictionEvent(
             broadcasterUserId = broadcasterUserId,
@@ -225,6 +227,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
     ):
         if not user.isTtsEnabled:
             return
+        elif not user.isNotifyOfPredictionStartEnabled:
+            return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
 
@@ -233,7 +237,6 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = False,
                 message = f'A new prediction has begun! \"{title}\"',
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
@@ -241,6 +244,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 userName = user.handle,
                 donation = None,
                 provider = user.defaultTtsProvider,
+                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )
         ))

@@ -44,15 +44,19 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
     async def add(
         self,
+        extraConfigurationData: str | None,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsData:
-        if not utils.isValidStr(message):
+        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
+            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
+        elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         glacialTtsData = await self.get(
+            extraConfigurationData = extraConfigurationData,
             message = message,
             provider = provider
         )
@@ -93,10 +97,13 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
     async def get(
         self,
+        extraConfigurationData: str | None,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsData | None:
-        if not utils.isValidStr(message):
+        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
+            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
+        elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')

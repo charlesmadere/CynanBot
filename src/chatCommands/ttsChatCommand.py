@@ -11,6 +11,7 @@ from ..timber.timberInterface import TimberInterface
 from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.ttsEvent import TtsEvent
 from ..tts.ttsProvider import TtsProvider
+from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.tts.ttsBoosterPack import TtsBoosterPack
@@ -148,7 +149,6 @@ class TtsChatCommand(AbsChatCommand):
             twitchChannel = user.handle,
             twitchChannelId = userId,
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = False,
                 message = message,
                 twitchChannel = user.handle,
                 twitchChannelId = userId,
@@ -156,6 +156,7 @@ class TtsChatCommand(AbsChatCommand):
                 userName = ctx.getAuthorName(),
                 donation = None,
                 provider = ttsProvider,
+                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )
         ))

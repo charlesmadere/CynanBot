@@ -12,6 +12,7 @@ from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterf
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsCheerDonation import TtsCheerDonation
 from ...tts.ttsEvent import TtsEvent
+from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 
 
@@ -199,7 +200,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = False,
                 message = message,
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
@@ -209,6 +209,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                     bits = bits
                 ),
                 provider = provider,
+                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )
         ))

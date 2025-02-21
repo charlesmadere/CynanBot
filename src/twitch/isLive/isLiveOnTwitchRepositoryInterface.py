@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from frozendict import frozendict
 
 from ...misc.clearable import Clearable
 
 
-class IsLiveOnTwitchRepositoryInterface(Clearable):
+class IsLiveOnTwitchRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def areLive(self, twitchChannelIds: set[str]) -> frozendict[str, bool]:

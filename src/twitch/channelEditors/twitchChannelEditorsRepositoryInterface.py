@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ...misc.clearable import Clearable
 
 
-class TwitchChannelEditorsRepositoryInterface(Clearable):
+class TwitchChannelEditorsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def fetchEditorIds(

@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..models.halfLifeVoice import HalfLifeVoice
 from ...misc.clearable import Clearable
 
 
-class HalfLifeSettingsRepositoryInterface(Clearable):
+class HalfLifeSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getDefaultVoice(self) -> HalfLifeVoice:

@@ -123,7 +123,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.LATIN: return None
             case LanguageEntry.NORWEGIAN: return '🇳🇴'
             case LanguageEntry.POLISH: return '🇵🇱'
-            case LanguageEntry.PORTUGUESE: return '🇵🇹'
+            case LanguageEntry.PORTUGUESE: return None
             case LanguageEntry.RUSSIAN: return '🇷🇺'
             case LanguageEntry.SPANISH: return None
             case LanguageEntry.SWEDISH: return '🇸🇪'

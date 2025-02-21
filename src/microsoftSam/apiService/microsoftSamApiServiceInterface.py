@@ -1,8 +1,14 @@
 from abc import ABC, abstractmethod
 
+from ..models.microsoftSamVoice import MicrosoftSamVoice
+
 
 class MicrosoftSamApiServiceInterface(ABC):
 
     @abstractmethod
-    async def getSpeech(self, text: str, voice: str, pitch: str, speed: str) -> bytes:
+    async def getSpeech(
+        self,
+        voice: MicrosoftSamVoice,
+        text: str
+    ) -> bytes:
         pass

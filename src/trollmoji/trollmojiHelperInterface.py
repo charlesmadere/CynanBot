@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..misc.clearable import Clearable
 
 
-class TrollmojiHelperInterface(Clearable):
+class TrollmojiHelperInterface(Clearable, ABC):
 
     @abstractmethod
     async def getBombEmote(self) -> str | None:

@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..misc.clearable import Clearable
 
 
-class UserIdsRepositoryInterface(Clearable):
+class UserIdsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def fetchUserId(

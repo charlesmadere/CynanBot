@@ -72,9 +72,16 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         numberOfGiftedSubs = donation.numberOfGiftedSubs
 
         if numberOfGiftedSubs is not None and numberOfGiftedSubs >= 1:
-            if donation.isAnonymous:
-                return f'anonymous gifted {numberOfGiftedSubs} subs!'
+            subsPlurality: str
+
+            if numberOfGiftedSubs == 1:
+                subsPlurality = 'sub'
             else:
-                return f'{event.userName} gifted {numberOfGiftedSubs} subs!'
+                subsPlurality = 'subs'
+
+            if donation.isAnonymous:
+                return f'anonymous gifted {numberOfGiftedSubs} {subsPlurality}!'
+            else:
+                return f'{event.userName} gifted {numberOfGiftedSubs} {subsPlurality}!'
         else:
             return f'{event.userName} subscribed!'

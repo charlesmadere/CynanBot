@@ -48,15 +48,19 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
     async def findFile(
         self,
+        extraConfigurationData: str | None,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsFileReference | None:
-        if not utils.isValidStr(message):
+        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
+            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
+        elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
+            extraConfigurationData = extraConfigurationData,
             message = message,
             provider = provider
         )
@@ -121,11 +125,14 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
     async def saveFile(
         self,
+        extraConfigurationData: str | None,
         fileExtension: str,
         message: str,
         provider: TtsProvider
     ) -> GlacialTtsFileReference:
-        if not utils.isValidStr(fileExtension):
+        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
+            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
+        elif not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -133,6 +140,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
+            extraConfigurationData = extraConfigurationData,
             message = message,
             provider = provider
         )
@@ -141,6 +149,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({provider=}) ({glacialTtsData=})')
 
         glacialTtsData = await self.__glacialTtsStorageRepository.add(
+            extraConfigurationData = extraConfigurationData,
             message = message,
             provider = provider
         )

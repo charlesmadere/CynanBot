@@ -13,6 +13,7 @@ from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...tts.ttsEvent import TtsEvent
+from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 
 
@@ -190,6 +191,8 @@ class TwitchPollHandler(AbsTwitchPollHandler):
     ):
         if not user.isTtsEnabled:
             return
+        elif not user.isNotifyOfPollStartEnabled:
+            return
         elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
 
@@ -198,7 +201,6 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = False,
                 message = f'A new poll has begun! \"{title}\"',
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
@@ -206,6 +208,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 userName = user.handle,
                 donation = None,
                 provider = user.defaultTtsProvider,
+                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )
         ))

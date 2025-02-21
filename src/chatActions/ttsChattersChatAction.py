@@ -10,6 +10,7 @@ from ..streamAlertsManager.streamAlertsManagerInterface import \
 from ..streamElements.models.streamElementsVoice import StreamElementsVoice
 from ..tts.ttsEvent import TtsEvent
 from ..tts.ttsProvider import TtsProvider
+from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.userInterface import UserInterface
 
@@ -69,12 +70,18 @@ class TtsChattersChatAction(AbsChatAction):
         if not await self.__accessLevelCheckingHelper.checkStatus(boosterPack.accessLevel, message):
             return False
 
+        providerOverridableStatus: TtsProviderOverridableStatus
+
+        if user.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = True,
                 message = f'{chatMessage}',
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
@@ -82,6 +89,7 @@ class TtsChattersChatAction(AbsChatAction):
                 userName = message.getAuthorName(),
                 donation = None,
                 provider = boosterPack.ttsProvider,
+                providerOverridableStatus = providerOverridableStatus,
                 raidInfo = None
             )
         ))

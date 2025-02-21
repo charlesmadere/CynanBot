@@ -86,6 +86,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             return None
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
+            extraConfigurationData = None,
             message = message,
             provider = TtsProvider.TTS_MONSTER
         )
@@ -106,6 +107,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             return None
 
         glacialFile = await self.__glacialTtsFileRetriever.saveFile(
+            extraConfigurationData = None,
             fileExtension = await self.__ttsMonsterSettingsRepository.getFileExtension(),
             message = message,
             provider = TtsProvider.TTS_MONSTER

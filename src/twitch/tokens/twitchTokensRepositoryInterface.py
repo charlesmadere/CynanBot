@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ...misc.clearable import Clearable
 
 
-class TwitchTokensRepositoryInterface(Clearable):
+class TwitchTokensRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def addUser(self, code: str, twitchChannel: str, twitchChannelId: str):

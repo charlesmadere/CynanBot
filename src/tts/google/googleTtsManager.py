@@ -4,6 +4,7 @@ from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
+from ..ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
@@ -69,7 +70,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__isLoadingOrPlaying: bool = False
 
     async def __determineVoicePreset(self, event: TtsEvent) -> GoogleVoicePreset | None:
-        if not event.allowChatterPreferredTts:
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(

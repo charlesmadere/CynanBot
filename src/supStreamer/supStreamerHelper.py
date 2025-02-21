@@ -20,6 +20,8 @@ class SupStreamerHelper(SupStreamerHelperInterface):
         elif not utils.isValidStr(supStreamerMessage):
             raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
 
+        chatMessage = utils.cleanStr(chatMessage)
+
         if not utils.isValidStr(chatMessage):
             return False
 

@@ -26,10 +26,11 @@ class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
         if not utils.isValidStr(voiceString):
             return None
 
+        voiceString = voiceString.casefold()
         microsoftSamVoice: MicrosoftSamVoice | None = None
 
         for currentVoice in MicrosoftSamVoice:
-            if currentVoice.value.casefold() == voiceString.casefold():
+            if currentVoice.jsonValue.casefold() == voiceString:
                 microsoftSamVoice = currentVoice
                 break
 
@@ -40,6 +41,6 @@ class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
         messageWithoutVoice = message[len(fullVoiceString):].strip()
 
         return MicrosoftSamMessageVoiceParserInterface.Result(
-            message = messageWithoutVoice,
-            voice = microsoftSamVoice
+            voice = microsoftSamVoice,
+            message = messageWithoutVoice
         )

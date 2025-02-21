@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .timeoutActionHistory import TimeoutActionHistory
 from ..misc.clearable import Clearable
 
 
-class TimeoutActionHistoryRepositoryInterface(Clearable):
+class TimeoutActionHistoryRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def add(

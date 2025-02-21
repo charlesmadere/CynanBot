@@ -10,6 +10,7 @@ from .ttsEvent import TtsEvent
 from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .ttsProvider import TtsProvider
+from .ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -87,7 +88,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         return frozendict(ttsProviderToManagerMap)
 
     async def __determineTtsProvider(self, event: TtsEvent) -> TtsProvider:
-        if not event.allowChatterPreferredTts:
+        if not event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return event.provider
 
         chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper

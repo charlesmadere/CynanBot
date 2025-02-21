@@ -23,6 +23,7 @@ from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManag
 from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..tts.ttsEvent import TtsEvent
+from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
@@ -190,8 +191,14 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             else:
                 message = f'@{timeoutData.instigatorUserName} timed out @{timeoutData.timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
 
+            providerOverridableStatus: TtsProviderOverridableStatus
+
+            if timeoutData.user.isChatterPreferredTtsEnabled:
+                providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+            else:
+                providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = True,
                 message = message,
                 twitchChannel = timeoutData.twitchChannel,
                 twitchChannelId = timeoutData.twitchChannelId,
@@ -199,6 +206,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                 userName = timeoutData.instigatorUserName,
                 donation = None,
                 provider = timeoutData.user.defaultTtsProvider,
+                providerOverridableStatus = providerOverridableStatus,
                 raidInfo = None
             )
 

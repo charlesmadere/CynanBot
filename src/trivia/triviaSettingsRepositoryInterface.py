@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .questions.triviaSource import TriviaSource
 from ..misc.clearable import Clearable
 
 
-class TriviaSettingsRepositoryInterface(Clearable):
+class TriviaSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def areAdditionalTriviaAnswersEnabled(self) -> bool:

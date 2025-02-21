@@ -115,7 +115,13 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_B,
                     GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_C,
                     GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_D,
-                    GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_E
+                    GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_E,
+                    GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_A,
+                    GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_B,
+                    GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_C,
+                    GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_D,
+                    GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_E,
+                    GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_F
                 }
 
             case LanguageEntry.SPANISH:

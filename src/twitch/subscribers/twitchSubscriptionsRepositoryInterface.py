@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .twitchSubscriptionStatus import TwitchSubscriptionStatus
 from ...misc.clearable import Clearable
 
 
-class TwitchSubscriptionsRepositoryInterface(Clearable):
+class TwitchSubscriptionsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def fetchBroadcasterSubscription(

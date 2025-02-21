@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ...misc.clearable import Clearable
 
 
-class GoogleSettingsRepositoryInterface(Clearable):
+class GoogleSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getMediaPlayerVolume(self) -> int | None:

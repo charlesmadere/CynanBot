@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any, Collection
 
 from .userInterface import UserInterface
@@ -6,7 +6,7 @@ from .userJsonConstant import UserJsonConstant
 from ..misc.clearable import Clearable
 
 
-class UsersRepositoryInterface(Clearable):
+class UsersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def addUser(self, handle: str):

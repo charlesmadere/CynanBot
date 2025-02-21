@@ -3,6 +3,10 @@ from frozenlist import FrozenList
 from .absChatCommand import AbsChatCommand
 from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
+    ChatterPreferredTtsRepositoryInterface
+from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
+    ChatterPreferredTtsSettingsRepositoryInterface
 from ..cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
@@ -70,6 +74,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         authRepository: AuthRepository,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
+        chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
+        chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface | None,
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
@@ -124,6 +130,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif bizhawkSettingsRepository is not None and not isinstance(bizhawkSettingsRepository, BizhawkSettingsRepositoryInterface):
             raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
+        elif chatterPreferredTtsRepository is not None and not isinstance(chatterPreferredTtsRepository, ChatterPreferredTtsSettingsRepositoryInterface):
+            raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
+        elif chatterPreferredTtsSettingsRepository is not None and not isinstance(chatterPreferredTtsSettingsRepository, ChatterPreferredTtsSettingsRepositoryInterface):
+            raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
         elif cheerActionSettingsRepository is not None and not isinstance(cheerActionSettingsRepository, CheerActionSettingsRepositoryInterface):
             raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
@@ -219,6 +229,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)
         self.__clearables.append(bizhawkSettingsRepository)
+        self.__clearables.append(chatterPreferredTtsRepository)
+        self.__clearables.append(chatterPreferredTtsSettingsRepository)
         self.__clearables.append(cheerActionSettingsRepository)
         self.__clearables.append(cheerActionsRepository)
         self.__clearables.append(crowdControlSettingsRepository)

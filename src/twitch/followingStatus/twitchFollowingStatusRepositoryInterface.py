@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
 
 from .twitchFollowingStatus import TwitchFollowingStatus
 from ...misc.clearable import Clearable
 
 
-class TwitchFollowingStatusRepositoryInterface(Clearable):
+class TwitchFollowingStatusRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def fetchFollowingStatus(

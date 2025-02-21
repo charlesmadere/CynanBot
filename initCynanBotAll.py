@@ -216,8 +216,6 @@ from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
 from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
 from src.microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
-from src.microsoftSam.microsoftSamVoiceMapper import MicrosoftSamVoiceMapper
-from src.microsoftSam.microsoftSamVoiceMapperInterface import MicrosoftSamVoiceMapperInterface
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.microsoftSam.parser.microsoftSamMessageVoiceParser import MicrosoftSamMessageVoiceParser
@@ -2079,15 +2077,12 @@ microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = Micros
     )
 )
 
-microsoftSamVoiceMapper: MicrosoftSamVoiceMapperInterface = MicrosoftSamVoiceMapper()
-
 microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser()
 
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
     apiService = microsoftSamApiService,
     microsoftSamMessageVoiceParser = microsoftSamMessageVoiceParser,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
-    microsoftSamVoiceMapper = microsoftSamVoiceMapper,
     timber = timber
 )
 
@@ -2817,6 +2812,8 @@ cynanBot = CynanBot(
     chatLogger = chatLogger,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     cheerActionHelper = cheerActionHelper,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,

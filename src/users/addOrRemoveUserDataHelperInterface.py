@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .addOrRemoveUserActionType import AddOrRemoveUserActionType
 from .addOrRemoveUserData import AddOrRemoveUserData
@@ -6,7 +6,7 @@ from .addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from ..misc.clearable import Clearable
 
 
-class AddOrRemoveUserDataHelperInterface(Clearable):
+class AddOrRemoveUserDataHelperInterface(Clearable, ABC):
 
     @abstractmethod
     async def clearCaches(self):

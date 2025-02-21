@@ -22,6 +22,7 @@ from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsEvent import TtsEvent
+from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
@@ -323,7 +324,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = True,
                 message = actualMessage,
                 twitchChannel = user.handle,
                 twitchChannelId = broadcasterUserId,
@@ -331,6 +331,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 userName = actualUserName,
                 donation = donation,
                 provider = user.defaultTtsProvider,
+                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )
         ))

@@ -8,7 +8,7 @@ from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class GetChatterPreferredTtsChatCommand(AbsChatCommand):
+class RemoveChatterPreferredTtsChatCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -40,7 +40,7 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
         if not user.isChatterPreferredTtsEnabled:
             return
 
-        preferredTts = await self.__chatterPreferredTtsRepository.get(
+        preferredTts = await self.__chatterPreferredTtsRepository.remove(
             chatterUserId = ctx.getAuthorId(),
             twitchChannelId = await ctx.getTwitchChannelId()
         )
@@ -48,7 +48,7 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
         if preferredTts is None:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ You currently don\'t have a preferred TTS',
+                message = f'ⓘ You don\'t currently have a preferred TTS to delete',
                 replyMessageId = await ctx.getMessageId()
             )
         else:
@@ -56,8 +56,8 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ Your preferred TTS: {printOut}',
+                message = f'ⓘ Your preferred TTS was deleted, it previously was: {printOut}',
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('GetChatterPreferredTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('RemoveChatterPreferredTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

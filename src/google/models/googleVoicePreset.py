@@ -42,6 +42,12 @@ class GoogleVoicePreset(Enum):
     PORTUGUESE_BRAZIL_STANDARD_C = auto()
     PORTUGUESE_BRAZIL_STANDARD_D = auto()
     PORTUGUESE_BRAZIL_STANDARD_E = auto()
+    PORTUGUESE_PORTUGAL_STANDARD_A = auto()
+    PORTUGUESE_PORTUGAL_STANDARD_B = auto()
+    PORTUGUESE_PORTUGAL_STANDARD_C = auto()
+    PORTUGUESE_PORTUGAL_STANDARD_D = auto()
+    PORTUGUESE_PORTUGAL_STANDARD_E = auto()
+    PORTUGUESE_PORTUGAL_STANDARD_F = auto()
     SPANISH_US_CHIRP_D = auto()
     SPANISH_US_CHIRP_F = auto()
     SPANISH_US_CHIRP_O = auto()
@@ -92,6 +98,12 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_C: return 'pt-BR-Standard-C'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_D: return 'pt-BR-Standard-D'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_E: return 'pt-BR-Standard-E'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_A: return 'pt-PT-Standard-A'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_B: return 'pt-PT-Standard-B'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_C: return 'pt-PT-Standard-C'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_D: return 'pt-PT-Standard-D'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_E: return 'pt-PT-Standard-E'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_F: return 'pt-PT-Standard-F'
             case GoogleVoicePreset.SPANISH_US_CHIRP_D: return 'es-US-Chirp-HD-D'
             case GoogleVoicePreset.SPANISH_US_CHIRP_F: return 'es-US-Chirp-HD-F'
             case GoogleVoicePreset.SPANISH_US_CHIRP_O: return 'es-US-Chirp-HD-O'
@@ -143,6 +155,12 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_C: return 'pt-BR'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_D: return 'pt-BR'
             case GoogleVoicePreset.PORTUGUESE_BRAZIL_STANDARD_E: return 'pt-BR'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_A: return 'pt-PT'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_B: return 'pt-PT'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_C: return 'pt-PT'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_D: return 'pt-PT'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_E: return 'pt-PT'
+            case GoogleVoicePreset.PORTUGUESE_PORTUGAL_STANDARD_F: return 'pt-PT'
             case GoogleVoicePreset.SPANISH_US_CHIRP_D: return 'es-US'
             case GoogleVoicePreset.SPANISH_US_CHIRP_F: return 'es-US'
             case GoogleVoicePreset.SPANISH_US_CHIRP_O: return 'es-US'

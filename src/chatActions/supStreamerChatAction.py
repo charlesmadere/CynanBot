@@ -10,6 +10,7 @@ from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.ttsEvent import TtsEvent
+from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -97,6 +98,13 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannelId = await message.getTwitchChannelId()
         )
 
+        providerOverridableStatus: TtsProviderOverridableStatus
+
+        if user.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
@@ -104,7 +112,6 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                allowChatterPreferredTts = True,
                 message = f'{message.getAuthorName()} sup',
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
@@ -112,6 +119,7 @@ class SupStreamerChatAction(AbsChatAction):
                 userName = message.getAuthorName(),
                 donation = None,
                 provider = user.defaultTtsProvider,
+                providerOverridableStatus = providerOverridableStatus,
                 raidInfo = None
             )
         ))

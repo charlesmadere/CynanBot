@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..models.decTalkVoice import DecTalkVoice
 from ...misc.clearable import Clearable
 
 
-class DecTalkSettingsRepositoryInterface(Clearable):
+class DecTalkSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getDecTalkExecutablePath(self) -> str | None:
