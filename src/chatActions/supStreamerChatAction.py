@@ -98,14 +98,14 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannelId = await message.getTwitchChannelId()
         )
 
+        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
+
         providerOverridableStatus: TtsProviderOverridableStatus
 
         if user.isChatterPreferredTtsEnabled:
             providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
         else:
             providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
-
-        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
