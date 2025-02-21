@@ -123,7 +123,13 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
 
-        return TtsMonsterPreferredTts()
+        ttsMonsterVoiceEntry: str | None = None
+        ttsMonsterVoiceEntryCommand = match.group(1)
+
+        if utils.isValidStr(ttsMonsterVoiceEntryCommand):
+            ttsMonsterVoiceEntry = ttsMonsterVoiceEntryCommand
+            
+        return TtsMonsterPreferredTts(ttsMonsterVoiceEntry)
 
     async def parseUserMessage(
         self,

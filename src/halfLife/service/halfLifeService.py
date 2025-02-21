@@ -59,7 +59,7 @@ class HalfLifeService(HalfLifeServiceInterface):
         if utils.isValidStr(cachedWav):
             return cachedWav
 
-        if voice.value == HalfLifeVoice.ALL.keyName:
+        if voice.keyName == HalfLifeVoice.ALL.keyName:
             for possibleVoice in HalfLifeVoice:
                 path = await self.getPath(directory, text, possibleVoice)
                 if path is not None:

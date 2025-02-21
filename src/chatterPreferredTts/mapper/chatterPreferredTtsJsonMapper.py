@@ -94,7 +94,10 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> TtsMonsterPreferredTts:
-        return TtsMonsterPreferredTts()
+        if isinstance(configurationJson, dict):
+            ttsMonsterVoiceString = configurationJson.get('ttsMonsterVoice', None)
+
+        return TtsMonsterPreferredTts(ttsMonsterVoiceString)
 
     async def parsePreferredTts(
         self,
@@ -166,7 +169,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
-        configurationJson['halfLifeVoice'] = preferredTts.halfLifeVoiceEntry.value
+        configurationJson['halfLifeVoice'] = preferredTts.halfLifeVoiceEntry.keyName
 
         return configurationJson
 
@@ -192,7 +195,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         preferredTts: TtsMonsterPreferredTts
     ) -> dict[str, Any]:
-        return dict()
+        configurationJson: dict[str, Any] = dict()
+
+        if preferredTts.ttsMonsterVoiceEntry is not None:
+            configurationJson['ttsMonsterVoice'] = preferredTts.ttsMonsterVoiceEntry
+
+        return configurationJson
 
     async def serializePreferredTts(
         self,
