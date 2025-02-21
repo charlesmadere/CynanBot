@@ -88,7 +88,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         return frozendict(ttsProviderToManagerMap)
 
     async def __determineTtsProvider(self, event: TtsEvent) -> TtsProvider:
-        if not event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return event.provider
 
         chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper
