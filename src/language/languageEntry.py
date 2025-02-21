@@ -232,7 +232,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.RUSSIAN: return 'ru'
             case LanguageEntry.SPANISH: return 'es'
             case LanguageEntry.SWEDISH: return 'swedish'
-            case LanguageEntry.FINNISH: return 'finnish'
+            case LanguageEntry.FINNISH: return None
             case LanguageEntry.THAI: return None
             case LanguageEntry.URDU: return 'urdu'
             case _: raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')
