@@ -1280,7 +1280,7 @@ class CynanBot(
         await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
 
     @commands.command(name = 'getpreferredtts', aliases = [ 'getchatterpreferredtts', 'mytts', 'preferredtts' ])
-    async def command_getpreferredtts(self, ctx: Context):
+    async def command_getchatterpreferredtts(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getChatterPreferredTtsCommand.handleChatCommand(context)
 
@@ -1354,6 +1354,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeBannedTriviaControllerCommand.handleChatCommand(context)
 
+    @commands.command(name = 'removepreferredtts', aliases = [ 'deletechatterpreferredtts', 'deletemytts', 'removechatterpreferredtts', 'removemytts' ])
+    async def command_removechatterpreferredtts(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeChatterPreferredTtsCommand.handleChatCommand(context)
+
     @commands.command(name = 'removegameshuffleautomator')
     async def command_removegameshuffleautomator(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1363,11 +1368,6 @@ class CynanBot(
     async def command_removeglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerChatCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removepreferredtts', aliases = [ 'deletechatterpreferredtts', 'deletemytts', 'removechatterpreferredtts', 'removemytts' ])
-    async def command_removepreferredtts(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeChatterPreferredTtsCommand.handleChatCommand(context)
 
     @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'deleterecurringcutenessaction' ])
     async def command_removerecurringcutenessaction(self, ctx: Context):
