@@ -319,6 +319,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             tier = tier
         )
 
+        providerOverridableStatus: TtsProviderOverridableStatus
+
+        if user.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.handle,
@@ -331,7 +338,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 userName = actualUserName,
                 donation = donation,
                 provider = user.defaultTtsProvider,
-                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
+                providerOverridableStatus = providerOverridableStatus,
                 raidInfo = None
             )
         ))
