@@ -86,7 +86,10 @@ class TempFileHelper(TempFileHelperInterface):
                 extension = extension
             )
 
-            if not await aiofiles.ospath.exists(newFileName):
+            if not await aiofiles.ospath.exists(
+                path = newFileName,
+                loop = self.__eventLoop
+            ):
                 fileNames.add(newFileName)
 
         frozenFileNames: FrozenList[str] = FrozenList(fileNames)

@@ -1,8 +1,10 @@
 import asyncio
-from asyncio import CancelledError as AsyncioCancelledError
+import re
+import uuid
+from asyncio import CancelledError as AsyncioCancelledError, AbstractEventLoop
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import ByteString
+from typing import ByteString, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -14,27 +16,56 @@ from ..exceptions import DecTalkFailedToGenerateSpeechFileException
 from ..settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
+from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
+from ...tts.ttsProvider import TtsProvider
 
 
 class DecTalkApiService(DecTalkApiServiceInterface):
 
     def __init__(
         self,
-        decTalkFileManager: DecTalkFileManagerInterface,
+        eventLoop: AbstractEventLoop,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
+        ttsDirectoryProvider: TtsDirectoryProviderInterface,
+        fileExtension: str = 'wav'
     ):
-        if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
-            raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
+            raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
+        elif not utils.isValidStr(fileExtension):
+            raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
-        self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
+        self.__fileExtension: str = fileExtension
+
+        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+
+    async def __createDirectories(self, filePath: str):
+        if await aiofiles.ospath.exists(
+            path = filePath,
+            loop = self.__eventLoop
+        ):
+            return
+
+        await aiofiles.os.makedirs(
+            name = filePath,
+            loop = self.__eventLoop
+        )
+
+        self.__timber.log('DecTalkApiService', f'Created new directories ({filePath=})')
+
+    async def __generateFileName(self) -> str:
+        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
+        return f'{fileName}.{self.__fileExtension}'
 
     async def generateSpeechFile(self, text: str) -> str:
         if not utils.isValidStr(text):
@@ -42,14 +73,19 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__timber.log('DecTalkApiService', f'Generating speech... ({text=})')
 
+        filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.DEC_TALK)
+        await self.__createDirectories(filePath)
+
+        fileName = await self.__generateFileName()
+        fullFilePath = f'{filePath}/{fileName}'
+
         pathToDecTalk = await self.__decTalkSettingsRepository.requireDecTalkExecutablePath()
 
-        fileName = await self.__decTalkFileManager.generateNewSpeechFile()
         decTalkProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
-        command = f'{pathToDecTalk} -w \"{fileName}\" -pre \"[:phone on]\" \"{text}\"'
+        command = f'{pathToDecTalk} -w \"{fullFilePath}\" -pre \"[:phone on]\" \"{text}\"'
 
         try:
             decTalkProcess = await asyncio.create_subprocess_shell(
@@ -67,7 +103,6 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
             await self.__killDecTalkProcess(decTalkProcess)
-            fileName = None
 
         outputString: str | None = None
 
@@ -76,10 +111,10 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__timber.log('DecTalkApiService', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
-        if utils.isValidStr(fileName) and await aiofiles.ospath.exists(fileName) and await aiofiles.ospath.isfile(fileName):
-            return fileName
+        if await aiofiles.ospath.exists(fullFilePath) and await aiofiles.ospath.isfile(fullFilePath):
+            return fullFilePath
         else:
-            raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file for message: \"{text}\"')
+            raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
 
     async def __killDecTalkProcess(self, decTalkProcess: Process | None):
         if decTalkProcess is None:

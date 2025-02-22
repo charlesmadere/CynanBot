@@ -480,8 +480,6 @@ from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.compositeTtsManager import CompositeTtsManager
 from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
-from src.tts.decTalk.decTalkFileManager import DecTalkFileManager
-from src.tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
 from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
@@ -1912,10 +1910,6 @@ glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetrie
     ttsDirectoryProvider = ttsDirectoryProvider
 )
 
-decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
-    tempFileHelper = tempFileHelper
-)
-
 decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     emojiHelper = emojiHelper,
     timber = timber,
@@ -1942,9 +1936,10 @@ decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsR
 )
 
 decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
-    decTalkFileManager = decTalkFileManager,
+    eventLoop = eventLoop,
     decTalkSettingsRepository = decTalkSettingsRepository,
-    timber = timber
+    timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
 )
 
 decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
