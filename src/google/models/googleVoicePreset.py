@@ -254,7 +254,6 @@ class GoogleVoicePreset(Enum):
     VIETNAMESE_VIETNAM_STANDARD_C = auto()
     VIETNAMESE_VIETNAM_STANDARD_D = auto()
 
-
     @property
     def fullName(self) -> str:
         match self:
