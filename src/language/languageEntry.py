@@ -422,6 +422,15 @@ class LanguageEntry(Enum):
 
     @property
     def wotdApiCode(self) -> str | None:
+        ########################################################################################
+        ## The below strings directly correspond to the different available "Word of the Day" ##
+        ## from this website: https://www.transparent.com/word-of-the-day                     ##
+        ##                                                                                    ##
+        ## Not all languages are available, and there is not really a predictable consistency ##
+        ## either. So I built up this list manually, by using my browser's network inspection ##
+        ## feature, and checking all the featured languages.                                  ##
+        ########################################################################################
+
         match self:
             case LanguageEntry.AFRIKAANS: return None
             case LanguageEntry.ARABIC: return 'ar'
