@@ -5,6 +5,7 @@ from ..chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelperInterface 
 from ..chatterPreferredTts.models.chatterPrefferedTts import ChatterPreferredTts
 from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
     ChatterPreferredTtsRepositoryInterface
+from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import ChatterPreferredTtsSettingsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
@@ -17,6 +18,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
         self,
         chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface,
+        chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface,
         chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
@@ -25,6 +27,8 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'chatterPreferredTtsPresenter argument is malformed: \"{chatterPreferredTtsPresenter}\"')
         elif not isinstance(chatterPreferredTtsRepository, ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
+        elif not isinstance(chatterPreferredTtsSettingsRepository, ChatterPreferredTtsSettingsRepositoryInterface):
+            raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
         elif not isinstance(chatterPreferredTtsUserMessageHelper, ChatterPreferredTtsUserMessageHelperInterface):
             raise TypeError(f'chatterPreferredTtsUserMessageHelper argument is malformed: \"{chatterPreferredTtsUserMessageHelper}\"')
         elif not isinstance(timber, TimberInterface):
@@ -34,6 +38,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
 
         self.__chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter = chatterPreferredTtsPresenter
         self.__chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = chatterPreferredTtsRepository
+        self.__chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface = chatterPreferredTtsSettingsRepository
         self.__chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = chatterPreferredTtsUserMessageHelper
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -51,7 +56,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
             userMessage = twitchChannelPointsMessage.redemptionMessage
         )
 
-        if absPreferredTts is None:
+        if absPreferredTts is None or not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(absPreferredTts.preferredTtsProvider):
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ @{twitchChannelPointsMessage.userName} failed to set your preferred TTS voice! Please check your input and try again.')
             self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS voice ({twitchChannelPointsMessage=}) ({absPreferredTts=})')
             return False

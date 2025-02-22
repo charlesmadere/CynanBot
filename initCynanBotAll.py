@@ -2605,6 +2605,7 @@ cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemptio
 chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
     timber = timber,
     twitchUtils = twitchUtils
