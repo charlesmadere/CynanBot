@@ -10,6 +10,7 @@ class SoundAlert(Enum):
     GRENADE_2 = auto()
     GRENADE_3 = auto()
     JACKPOT = auto()
+    LAUNCH_TNT = auto()
     POINT_REDEMPTION_01 = auto()
     POINT_REDEMPTION_02 = auto()
     POINT_REDEMPTION_03 = auto()

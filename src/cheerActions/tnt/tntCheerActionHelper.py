@@ -318,17 +318,12 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         elif len(tntTargets) == 0:
             return
 
-        numberOfSounds = int(round(len(tntTargets) * 0.5))
-
-        if numberOfSounds < 1:
-            # this should be impossible
-            return
-
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.TNT))
         await asyncio.sleep(self.__tntAlertSleepTimeSeconds)
 
         index = 0
+        numberOfSounds = int(round(len(tntTargets) * 0.5))
 
         while index < numberOfSounds:
             soundAlert = await self.__chooseRandomGrenadeSoundAlert()

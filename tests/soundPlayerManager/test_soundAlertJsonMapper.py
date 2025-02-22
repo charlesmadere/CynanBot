@@ -41,6 +41,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('jackpot')
         assert result is SoundAlert.JACKPOT
 
+    def test_parseSoundAlert_withLaunchTntString(self):
+        result = self.jsonMapper.parseSoundAlert('launch_tnt')
+        assert result is SoundAlert.LAUNCH_TNT
+
     def test_parseSoundAlert_withNone(self):
         result = self.jsonMapper.parseSoundAlert(None)
         assert result is None
@@ -201,6 +205,10 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withJackpot(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.JACKPOT)
         assert result == 'jackpot'
+
+    def test_serializeSoundAlert_withLaunchTnt(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.LAUNCH_TNT)
+        assert result == 'launch_tnt'
 
     def test_serializeSoundAlert_withPointRedemption01(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_01)

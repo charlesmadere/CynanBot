@@ -80,6 +80,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Jackpot.mp3'
                 )
 
+            case SoundAlert.LAUNCH_TNT:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'launchTntFilePath',
+                    fallback = 'Launch TNT.mp3'
+                )
+
             case SoundAlert.POINT_REDEMPTION_01:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,
