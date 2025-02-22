@@ -68,7 +68,7 @@ class TransparentApiService(TransparentApiServiceInterface):
             self.__timber.log('TransparentApiService', f'Encountered missing/invalid XML data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
             raise GenericNetworkException(f'TransparentApiService encountered missing/invalid XML data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
 
-        xmlRoot: dict[str, Any] | None = xmlResponse.get('xml')
+        xmlRoot: dict[str, Any] | Any | None = xmlResponse.get('xml')
         if not isinstance(xmlRoot, dict) or len(xmlRoot) == 0:
             self.__timber.log('TransparentApiService', f'Encountered missing/invalid \"xml\" data in XML when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({xmlRoot=})')
             raise GenericNetworkException(f'TransparentApiService encountered missing/invalid \"xml\" data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=}) ({xmlRoot=})')
