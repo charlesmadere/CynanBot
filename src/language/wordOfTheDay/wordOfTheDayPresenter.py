@@ -17,9 +17,9 @@ class WordOfTheDayPresenter(WordOfTheDayPresenterInterface):
 
         languageNameAndFlag: str
         if utils.isValidStr(wordOfTheDay.languageEntry.flag):
-            languageNameAndFlag = f'{wordOfTheDay.languageEntry.flag} {wordOfTheDay.languageEntry.name}'
+            languageNameAndFlag = f'{wordOfTheDay.languageEntry.flag} {wordOfTheDay.languageEntry.humanName}'
         else:
-            languageNameAndFlag = wordOfTheDay.languageEntry.name
+            languageNameAndFlag = wordOfTheDay.languageEntry.humanName
 
         transliteration: str = ''
         hasTransliteratedWord = utils.isValidStr(wordOfTheDay.transparentResponse.transliteratedWord)

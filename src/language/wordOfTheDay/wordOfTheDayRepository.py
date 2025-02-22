@@ -41,12 +41,12 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         elif not utils.isValidStr(languageEntry.wotdApiCode):
             raise ValueError(f'languageEntry argument is not supported for Word Of The Day: ({languageEntry=})')
 
-        cacheValue = self.__cache[languageEntry.name.casefold()]
+        cacheValue = self.__cache[languageEntry.humanName.casefold()]
         if cacheValue is not None:
             return cacheValue
 
         wotd = await self.__fetchWotd(languageEntry)
-        self.__cache[languageEntry.name.casefold()] = wotd
+        self.__cache[languageEntry.humanName.casefold()] = wotd
 
         return wotd
 

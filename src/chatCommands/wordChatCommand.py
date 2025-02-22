@@ -78,7 +78,7 @@ class WordChatCommand(AbsChatCommand):
                 hasWotdApiCode = True
             )
         except (RuntimeError, TypeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}', e, traceback.format_exc())
+            self.__timber.log('WordCommand', f'Error retrieving LanguageEntry ({language=}): {e}', e, traceback.format_exc())
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -101,10 +101,10 @@ class WordChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
         except (GenericNetworkException, RuntimeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\": {e}', e, traceback.format_exc())
+            self.__timber.log('WordCommand', f'Error fetching Word Of The Day ({languageEntry=}): {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'⚠ Error fetching Word Of The Day for \"{languageEntry.wotdApiCode}\"',
+                message = f'⚠ Error fetching Word Of The Day for \"{languageEntry.humanName}\"',
                 replyMessageId = await ctx.getMessageId()
             )
 

@@ -25,9 +25,9 @@ class ChatterPreferredTtsPresenter:
         flag = languageEntry.flag
 
         if utils.isValidStr(flag):
-            return f'{googleHumanName} ({languageEntry.name} {flag})'
+            return f'{googleHumanName} ({languageEntry.humanName} {flag})'
         else:
-            return f'{googleHumanName} ({languageEntry.name})'
+            return f'{googleHumanName} ({languageEntry.humanName})'
 
     async def __halfLife(self, preferredTts: HalfLifePreferredTts) -> str:
         return f'{TtsProvider.HALF_LIFE.humanName} ({preferredTts.halfLifeVoiceEntry.humanName})'
