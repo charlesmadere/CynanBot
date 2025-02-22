@@ -13,7 +13,8 @@ class TntCheerAction(AbsCheerAction):
         isEnabled: bool,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
-        durationSeconds: int,
+        maxDurationSeconds: int,
+        minDurationSeconds: int,
         maxTimeoutChatters: int,
         minTimeoutChatters: int,
         twitchChannelId: str
@@ -25,10 +26,14 @@ class TntCheerAction(AbsCheerAction):
             twitchChannelId = twitchChannelId
         )
 
-        if not utils.isValidInt(durationSeconds):
-            raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
-            raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
+        if not utils.isValidInt(maxDurationSeconds):
+            raise TypeError(f'maxDurationSeconds argument is malformed: \"{maxDurationSeconds}\"')
+        elif maxDurationSeconds < 1 or maxDurationSeconds > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxDurationSeconds argument is out of bounds: {maxDurationSeconds}')
+        elif not utils.isValidInt(minDurationSeconds):
+            raise TypeError(f'minDurationSeconds argument is malformed: \"{minDurationSeconds}\"')
+        elif minDurationSeconds < 1 or minDurationSeconds > utils.getIntMaxSafeSize():
+            raise ValueError(f'minDurationSeconds argument is out of bounds: {minDurationSeconds}')
         elif not utils.isValidInt(maxTimeoutChatters):
             raise TypeError(f'maxTimeoutChatters argument is malformed: \"{maxTimeoutChatters}\"')
         elif maxTimeoutChatters < 1 or maxTimeoutChatters > utils.getIntMaxSafeSize():
@@ -38,7 +43,8 @@ class TntCheerAction(AbsCheerAction):
         elif minTimeoutChatters < 1 or minTimeoutChatters > utils.getIntMaxSafeSize():
             raise ValueError(f'minTimeoutChatters argument is out of bounds: {minTimeoutChatters}')
 
-        self.__durationSeconds: int = durationSeconds
+        self.__maxDurationSeconds: int = maxDurationSeconds
+        self.__minDurationSeconds: int = minDurationSeconds
         self.__maxTimeoutChatters: int = maxTimeoutChatters
         self.__minTimeoutChatters: int = minTimeoutChatters
 
@@ -47,20 +53,28 @@ class TntCheerAction(AbsCheerAction):
         return CheerActionType.TNT
 
     @property
-    def durationSeconds(self) -> int:
-        return self.__durationSeconds
+    def maxDurationSeconds(self) -> int:
+        return self.__maxDurationSeconds
 
     @property
-    def durationSecondsStr(self) -> str:
-        return locale.format_string("%d", self.__durationSeconds, grouping = True)
+    def maxDurationSecondsStr(self) -> str:
+        return locale.format_string("%d", self.__maxDurationSeconds, grouping = True)
 
     @property
     def maxTimeoutChatters(self) -> int:
         return self.__maxTimeoutChatters
 
     @property
+    def minDurationSeconds(self) -> int:
+        return self.__minDurationSeconds
+
+    @property
+    def minDurationSecondsStr(self) -> str:
+        return locale.format_string("%d", self.__minDurationSeconds, grouping = True)
+
+    @property
     def minTimeoutChatters(self) -> int:
         return self.__minTimeoutChatters
 
     def printOut(self) -> str:
-        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, durationSeconds={self.__durationSeconds}, maxTimeoutChatters={self.__maxTimeoutChatters}, minTimeoutChatters={self.__minTimeoutChatters}'
+        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, maxDurationSeconds={self.__maxDurationSeconds}, minDurationSeconds={self.__minDurationSeconds}, maxTimeoutChatters={self.__maxTimeoutChatters}, minTimeoutChatters={self.__minTimeoutChatters}'

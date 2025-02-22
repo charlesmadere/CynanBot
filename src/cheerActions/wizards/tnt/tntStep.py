@@ -6,6 +6,7 @@ from ..absStep import AbsStep
 class TntStep(AbsStep):
 
     BITS = auto()
-    DURATION_SECONDS = auto()
     MAXIMUM_CHATTERS = auto()
+    MAXIMUM_DURATION_SECONDS = auto()
     MINIMUM_CHATTERS = auto()
+    MINIMUM_DURATION_SECONDS = auto()

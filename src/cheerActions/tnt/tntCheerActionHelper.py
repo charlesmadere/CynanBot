@@ -59,8 +59,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         grenadeAlertSleepTimeSeconds: float = 0.60,
-        tntAlertSleepTimeSeconds: float = 0.50,
-        messageDelaySeconds: int = 3
+        tntAlertSleepTimeSeconds: float = 0.50
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -92,10 +91,6 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             raise TypeError(f'tntAlertSleepTimeSeconds argument is malformed: \"{tntAlertSleepTimeSeconds}\"')
         elif tntAlertSleepTimeSeconds < 0.125 or tntAlertSleepTimeSeconds > 8:
             raise ValueError(f'tntAlertSleepTimeSeconds argument is out of bounds: {tntAlertSleepTimeSeconds}')
-        elif not utils.isValidInt(messageDelaySeconds):
-            raise TypeError(f'messageDelaySeconds argument is malformed: \"{messageDelaySeconds}\"')
-        elif messageDelaySeconds < 0 or messageDelaySeconds > 16:
-            raise ValueError(f'messageDelaySeconds argument is out of bounds: {messageDelaySeconds}')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
@@ -109,14 +104,13 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__grenadeAlertSleepTimeSeconds: float = grenadeAlertSleepTimeSeconds
         self.__tntAlertSleepTimeSeconds: float = tntAlertSleepTimeSeconds
-        self.__messageDelaySeconds: int = messageDelaySeconds
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __alertViaTwitchChat(
         self,
         tntTargets: frozenset[TntTarget],
-        action: TntCheerAction,
+        durationSeconds: int,
         user: UserInterface
     ):
         if len(tntTargets) == 0:
@@ -132,6 +126,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         for tntTarget in tntTargets:
             userNames.append(tntTarget.userName)
 
+        durationSecondsString = locale.format_string("%d", durationSeconds, grouping = True)
         peopleCountString = locale.format_string("%d", len(tntTargets), grouping = True)
 
         peoplePluralityString: str
@@ -145,13 +140,8 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        message = f'{bombEmote} BOOM! {peoplePluralityString} with a {action.durationSecondsStr}s timeout! {userNamesString} {bombEmote}'
-
-        await self.__twitchUtils.waitThenSend(
-            messageable = twitchChannel,
-            delaySeconds = self.__messageDelaySeconds,
-            message = message
-        )
+        message = f'{bombEmote} BOOM! {peoplePluralityString} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
+        await self.__twitchUtils.safeSend(twitchChannel, message)
 
     async def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
         soundAlerts: list[SoundAlert] = [
@@ -280,11 +270,13 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             streamStatusRequirement = action.streamStatusRequirement
         )
 
+        durationSeconds = random.randint(action.minDurationSeconds, action.maxDurationSeconds)
+
         for tntTarget in tntTargets:
             self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
                 isRandomChanceEnabled = False,
                 bits = bits,
-                durationSeconds = action.durationSeconds,
+                durationSeconds = durationSeconds,
                 chatMessage = message,
                 instigatorUserId = cheerUserId,
                 instigatorUserName = cheerUserName,
@@ -305,7 +297,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
             tntTargets = tntTargets,
-            action = action,
+            durationSeconds = durationSeconds,
             user = user
         ))
 

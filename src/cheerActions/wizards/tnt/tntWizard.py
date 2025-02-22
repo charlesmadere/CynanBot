@@ -20,7 +20,8 @@ class TntWizard(AbsWizard):
 
         self.__steps: TntSteps = TntSteps()
         self.__bits: int | None = None
-        self.__durationSeconds: int | None = None
+        self.__maxDurationSeconds: int | None = None
+        self.__minDurationSeconds: int | None = None
         self.__maxTimeoutChatters: int | None = None
         self.__minTimeoutChatters: int | None = None
 
@@ -32,7 +33,7 @@ class TntWizard(AbsWizard):
         return self.__steps
 
     def printOut(self) -> str:
-        return f'{self.__bits=}, {self.__durationSeconds=}, {self.__maxTimeoutChatters=}, {self.__minTimeoutChatters=}'
+        return f'{self.__bits=}, {self.__maxDurationSeconds=}, {self.__minDurationSeconds=}, {self.__maxTimeoutChatters=}, {self.__minTimeoutChatters=}'
 
     def requireBits(self) -> int:
         bits = self.__bits
@@ -42,13 +43,13 @@ class TntWizard(AbsWizard):
 
         return bits
 
-    def requireDurationSeconds(self) -> int:
-        durationSeconds = self.__durationSeconds
+    def requireMaxDurationSeconds(self) -> int:
+        maxDurationSeconds = self.__maxDurationSeconds
 
-        if durationSeconds is None:
-            raise ValueError(f'durationSeconds value has not been set: ({self=})')
+        if maxDurationSeconds is None:
+            raise ValueError(f'maxDurationSeconds value has not been set: ({self=})')
 
-        return durationSeconds
+        return maxDurationSeconds
 
     def requireMaxTimeoutChatters(self) -> int:
         maxTimeoutChatters = self.__maxTimeoutChatters
@@ -57,6 +58,14 @@ class TntWizard(AbsWizard):
             raise ValueError(f'maxTimeoutChatters value has not been set: ({self=})')
 
         return maxTimeoutChatters
+
+    def requireMinDurationSeconds(self) -> int:
+        minDurationSeconds = self.__minDurationSeconds
+
+        if minDurationSeconds is None:
+            raise ValueError(f'minDurationSeconds value has not been set: ({self=})')
+
+        return minDurationSeconds
 
     def requireMinTimeoutChatters(self) -> int:
         minTimeoutChatters = self.__minTimeoutChatters
@@ -74,13 +83,13 @@ class TntWizard(AbsWizard):
 
         self.__bits = bits
 
-    def setDurationSeconds(self, durationSeconds: int):
-        if not utils.isValidInt(durationSeconds):
-            raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
-            raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
+    def setMaxDurationSeconds(self, maxDurationSeconds: int):
+        if not utils.isValidInt(maxDurationSeconds):
+            raise TypeError(f'maxDurationSeconds argument is malformed: \"{maxDurationSeconds}\"')
+        elif maxDurationSeconds < 1 or maxDurationSeconds > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxDurationSeconds argument is out of bounds: {maxDurationSeconds}')
 
-        self.__durationSeconds = durationSeconds
+        self.__maxDurationSeconds = maxDurationSeconds
 
     def setMaxTimeoutChatters(self, maxTimeoutChatters: int):
         if not utils.isValidInt(maxTimeoutChatters):
@@ -89,6 +98,14 @@ class TntWizard(AbsWizard):
             raise ValueError(f'maxTimeoutChatters argument can\'t be less than minTimeoutChatters ({maxTimeoutChatters=}) ({self.__minTimeoutChatters=})')
 
         self.__maxTimeoutChatters = maxTimeoutChatters
+
+    def setMinDurationSeconds(self, minDurationSeconds: int):
+        if not utils.isValidInt(minDurationSeconds):
+            raise TypeError(f'minDurationSeconds argument is malformed: \"{minDurationSeconds}\"')
+        elif minDurationSeconds < 1 or minDurationSeconds > utils.getIntMaxSafeSize():
+            raise ValueError(f'minDurationSeconds argument is out of bounds: {minDurationSeconds}')
+
+        self.__minDurationSeconds = minDurationSeconds
 
     def setMinTimeoutChatters(self, minTimeoutChatters: int):
         if not utils.isValidInt(minTimeoutChatters):
@@ -102,7 +119,8 @@ class TntWizard(AbsWizard):
         return {
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
-            'durationSeconds': self.__durationSeconds,
+            'maxDurationSeconds': self.__maxDurationSeconds,
+            'minDurationSeconds': self.__minDurationSeconds,
             'maxTimeoutChatters': self.__maxTimeoutChatters,
             'minTimeoutChatters': self.__minTimeoutChatters,
             'steps': self.__steps,

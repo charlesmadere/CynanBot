@@ -207,9 +207,15 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] = json.loads(jsonString)
 
-        durationSeconds = utils.getIntFromDict(
+        maxDurationSeconds = utils.getIntFromDict(
             d = jsonContents,
-            key = 'durationSeconds',
+            key = 'maxDurationSeconds',
+            fallback = 60
+        )
+
+        minDurationSeconds = utils.getIntFromDict(
+            d = jsonContents,
+            key = 'minDurationSeconds',
             fallback = 60
         )
 
@@ -229,7 +235,8 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            durationSeconds = durationSeconds,
+            maxDurationSeconds = maxDurationSeconds,
+            minDurationSeconds = minDurationSeconds,
             maxTimeoutChatters = maxTimeoutChatters,
             minTimeoutChatters = minTimeoutChatters,
             twitchChannelId = twitchChannelId
@@ -506,7 +513,8 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
-            'durationSeconds': cheerAction.durationSeconds,
+            'maxDurationSeconds': cheerAction.maxDurationSeconds,
+            'minDurationSeconds': cheerAction.minDurationSeconds,
             'maxTimeoutChatters': cheerAction.maxTimeoutChatters,
             'minTimeoutChatters': cheerAction.minTimeoutChatters
         }

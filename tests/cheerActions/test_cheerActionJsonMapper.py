@@ -273,7 +273,8 @@ class TestCheerActionJsonMapper:
             isEnabled = True,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 100,
-            durationSeconds = 300,
+            maxDurationSeconds = 90,
+            minDurationSeconds = 55,
             maxTimeoutChatters = 10,
             minTimeoutChatters = 3,
             twitchChannelId = 'abc123',
@@ -284,9 +285,10 @@ class TestCheerActionJsonMapper:
 
         dictionary = json.loads(result)
         assert isinstance(dictionary, dict)
-        assert len(dictionary) == 3
+        assert len(dictionary) == 4
 
-        assert dictionary['durationSeconds'] == cheerAction.durationSeconds
+        assert dictionary['maxDurationSeconds'] == cheerAction.maxDurationSeconds
+        assert dictionary['minDurationSeconds'] == cheerAction.minDurationSeconds
         assert dictionary['maxTimeoutChatters'] == cheerAction.maxTimeoutChatters
         assert dictionary['minTimeoutChatters'] == cheerAction.minTimeoutChatters
 

@@ -16,18 +16,22 @@ class TntSteps(AbsSteps):
 
         match currentStep:
             case TntStep.BITS:
-                self.__step = TntStep.DURATION_SECONDS
-                return StepResult.NEXT
-
-            case TntStep.DURATION_SECONDS:
-                self.__step = TntStep.MINIMUM_CHATTERS
+                self.__step = TntStep.MINIMUM_DURATION_SECONDS
                 return StepResult.NEXT
 
             case TntStep.MAXIMUM_CHATTERS:
                 return StepResult.DONE
 
+            case TntStep.MAXIMUM_DURATION_SECONDS:
+                self.__step = TntStep.MINIMUM_CHATTERS
+                return StepResult.NEXT
+
             case TntStep.MINIMUM_CHATTERS:
                 self.__step = TntStep.MAXIMUM_CHATTERS
+                return StepResult.NEXT
+
+            case TntStep.MINIMUM_DURATION_SECONDS:
+                self.__step = TntStep.MAXIMUM_DURATION_SECONDS
                 return StepResult.NEXT
 
             case _:

@@ -503,12 +503,12 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
-            case TntStep.DURATION_SECONDS:
+            case TntStep.MAXIMUM_DURATION_SECONDS:
                 try:
-                    durationSeconds = int(content)
-                    wizard.setDurationSeconds(durationSeconds)
+                    maxDurationSeconds = int(content)
+                    wizard.setMaxDurationSeconds(maxDurationSeconds)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set durationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maxDurationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -519,6 +519,16 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     wizard.setMaxTimeoutChatters(maximumChatters)
                 except Exception as e:
                     self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case TntStep.MINIMUM_DURATION_SECONDS:
+                try:
+                    minDurationSeconds = int(content)
+                    wizard.setMinDurationSeconds(minDurationSeconds)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minDurationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -549,7 +559,8 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
-                    durationSeconds = wizard.requireDurationSeconds(),
+                    maxDurationSeconds = wizard.requireMaxDurationSeconds(),
+                    minDurationSeconds = wizard.requireMinDurationSeconds(),
                     maxTimeoutChatters = wizard.requireMaxTimeoutChatters(),
                     minTimeoutChatters = wizard.requireMinTimeoutChatters(),
                     twitchChannelId = wizard.twitchChannelId
@@ -576,12 +587,16 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-            case TntStep.DURATION_SECONDS:
-                await self.__send(message, f'ⓘ Next, please specify the TNT\'s timeout duration (in seconds)')
+            case TntStep.MAXIMUM_DURATION_SECONDS:
+                await self.__send(message, f'ⓘ Next, please specify the TNT\'s maximum timeout duration (in seconds)')
                 return True
 
             case TntStep.MAXIMUM_CHATTERS:
                 await self.__send(message, f'ⓘ Next, please specify the TNT\'s maximum number of chatters that should be timed out')
+                return True
+
+            case TntStep.MINIMUM_DURATION_SECONDS:
+                await self.__send(message, f'ⓘ Next, please specify the TNT\'s minimum timeout duration (in seconds)')
                 return True
 
             case TntStep.MINIMUM_CHATTERS:
