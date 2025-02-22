@@ -69,6 +69,8 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             await self.__killDecTalkProcess(decTalkProcess)
             fileName = None
 
+        outputString: str | None = None
+
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
