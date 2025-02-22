@@ -128,6 +128,7 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     ttsDirectoryProvider = ttsDirectoryProvider
 )
 

@@ -13,10 +13,3 @@ class MicrosoftSamHelperInterface(ABC):
         twitchChannelId: str
     ) -> MicrosoftSamFileReference | None:
         pass
-
-    @abstractmethod
-    async def getSpeech(
-        self,
-        message: str | None
-    ) -> bytes | None:
-        pass

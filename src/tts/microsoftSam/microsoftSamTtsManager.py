@@ -1,8 +1,5 @@
 import asyncio
 
-import aiofiles.ospath
-
-from .microsoftSamFileManagerInterface import MicrosoftSamFileManagerInterface
 from .microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
@@ -10,6 +7,7 @@ from ..ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
+from ...microsoftSam.models.microsoftSamFileReference import MicrosoftSamFileReference
 from ...microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -20,7 +18,6 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
 
     def __init__(
         self,
-        microsoftSamFileManager: MicrosoftSamFileManagerInterface,
         microsoftSamHelper: MicrosoftSamHelperInterface,
         microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
@@ -29,9 +26,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(microsoftSamFileManager, MicrosoftSamFileManagerInterface):
-            raise TypeError(f'microsoftSamFileManager argument is malformed: \"{microsoftSamFileManager}\"')
-        elif not isinstance(microsoftSamHelper, MicrosoftSamHelperInterface):
+        if not isinstance(microsoftSamHelper, MicrosoftSamHelperInterface):
             raise TypeError(f'microsoftSamHelper argument is malformed: \"{microsoftSamHelper}\"')
         elif not isinstance(microsoftSamMessageCleaner, MicrosoftSamMessageCleanerInterface):
             raise TypeError(f'microsoftSamMessageCleaner argument is malformed: \"{microsoftSamMessageCleaner}\"')
@@ -46,7 +41,6 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__microsoftSamFileManager: MicrosoftSamFileManagerInterface = microsoftSamFileManager
         self.__microsoftSamHelper: MicrosoftSamHelperInterface = microsoftSamHelper
         self.__microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = microsoftSamMessageCleaner
         self.__microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = microsoftSamSettingsRepository
@@ -57,13 +51,13 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __executeTts(self, fileName: str):
+    async def __executeTts(self, fileReference: MicrosoftSamFileReference):
         volume = await self.__microsoftSamSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
-                filePath = fileName,
+                filePath = fileReference.filePath,
                 volume = volume
             )
 
@@ -72,7 +66,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except Exception as e:
-            self.__timber.log('MicrosoftSamTtsManager', f'Stopping Microsoft Sam TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('MicrosoftSamTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -90,39 +84,38 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
-        fileName = await self.__processTtsEvent(event)
+        fileReference = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('MicrosoftSamTtsManager', f'Failed to write TTS speech in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
+        if fileReference is None:
+            self.__timber.log('MicrosoftSamTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('MicrosoftSamTtsManager', f'Playing \"{fileName}\" TTS message in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileName)
+        self.__timber.log('MicrosoftSamTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileReference)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
-        message = await self.__microsoftSamMessageCleaner.clean(event.message)
+    async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftSamFileReference | None:
+        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(
+            message = event.message
+        )
+
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
 
-        if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {message}'
-        elif utils.isValidStr(message):
-            fullMessage = message
+        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
+            fullMessage = f'{donationPrefix} {cleanedMessage}'
+        elif utils.isValidStr(cleanedMessage):
+            fullMessage = cleanedMessage
         elif utils.isValidStr(donationPrefix):
             fullMessage = donationPrefix
         else:
             return None
 
-        speechBytes = await self.__microsoftSamHelper.getSpeech(
-            message = fullMessage
+        return await self.__microsoftSamHelper.generateTts(
+            message = fullMessage,
+            twitchChannel = event.twitchChannel,
+            twitchChannelId = event.twitchChannelId
         )
-
-        if speechBytes is None:
-            self.__timber.log('MicrosoftSamTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({speechBytes=})')
-            return None
-
-        return await self.__microsoftSamFileManager.saveSpeechToNewFile(speechBytes)
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

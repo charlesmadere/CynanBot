@@ -172,6 +172,8 @@ from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
 from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
+from src.microsoftSam.helper.microsoftSamApiHelper import MicrosoftSamApiHelper
+from src.microsoftSam.helper.microsoftSamApiHelperInterface import MicrosoftSamApiHelperInterface
 from src.microsoftSam.helper.microsoftSamHelper import MicrosoftSamHelper
 from src.microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from src.microsoftSam.microsoftSamMessageCleaner import MicrosoftSamMessageCleaner
@@ -297,8 +299,6 @@ from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
 from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.microsoftSam.microsoftSamFileManager import MicrosoftSamFileManager
-from src.tts.microsoftSam.microsoftSamFileManagerInterface import MicrosoftSamFileManagerInterface
 from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
 from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
@@ -1195,6 +1195,7 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     ttsDirectoryProvider = ttsDirectoryProvider
 )
 
@@ -1249,10 +1250,12 @@ halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
     ttsCommandBuilder = ttsCommandBuilder
 )
 
-microsoftSamFileManager: MicrosoftSamFileManagerInterface = MicrosoftSamFileManager(
-    eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
-    timber = timber
+microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
+    microsoftSamJsonParser = microsoftSamJsonParser,
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/microsoftSamSettingsRepository.json'
+    )
 )
 
 microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService(
@@ -1260,22 +1263,21 @@ microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService
     timber = timber
 )
 
-microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
-    microsoftSamJsonParser = microsoftSamJsonParser,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/microsoftSamSettingsRepository.json'
-    )
+microsoftSamApiHelper: MicrosoftSamApiHelperInterface = MicrosoftSamApiHelper(
+    microsoftSamApiService = microsoftSamApiService,
+    timber = timber
 )
 
 microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser()
 
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
     eventLoop = eventLoop,
-    apiService = microsoftSamApiService,
+    microsoftSamApiHelper = microsoftSamApiHelper,
     microsoftSamMessageVoiceParser = microsoftSamMessageVoiceParser,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    ttsDirectoryProvider = ttsDirectoryProvider
 )
 
 microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMessageCleaner(
@@ -1283,16 +1285,7 @@ microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMe
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
-    microsoftSamJsonParser = microsoftSamJsonParser,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/microsoftSamSettingsRepository.json'
-    )
-)
-
 microsoftSamTtsManager: MicrosoftSamTtsManagerInterface = MicrosoftSamTtsManager(
-    microsoftSamFileManager = microsoftSamFileManager,
     microsoftSamHelper = microsoftSamHelper,
     microsoftSamMessageCleaner = microsoftSamMessageCleaner,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
@@ -1313,8 +1306,6 @@ streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElem
 )
 
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
-
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
     settingsJsonReader = JsonFileReader(
@@ -1348,7 +1339,7 @@ streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFi
     timber = timber
 )
 
-streamElementsTtsManager: StreamElementsTtsManagerInterface | None = StreamElementsTtsManager(
+streamElementsTtsManager: StreamElementsTtsManagerInterface = StreamElementsTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,

@@ -2,6 +2,7 @@ import re
 import traceback
 import uuid
 from asyncio import AbstractEventLoop
+from datetime import datetime
 from typing import Pattern
 
 import aiofiles
@@ -19,6 +20,7 @@ from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
@@ -35,6 +37,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         googleTtsApiHelper: GoogleTtsApiHelperInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         ttsDirectoryProvider: TtsDirectoryProviderInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
@@ -49,6 +52,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
             raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
 
@@ -58,6 +63,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
         self.__googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = googleTtsVoicesHelper
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
@@ -139,6 +145,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         fileName = await self.__generateFileName()
         filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.GOOGLE)
+        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
@@ -146,10 +153,11 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             filePath = filePath
         ):
             return GoogleTtsFileReference(
+                storeDateTime = storeDateTime,
                 filePath = f'{filePath}/{fileName}'
             )
         else:
-            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({filePath=})')
+            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({fileName=}) ({filePath=})')
             return None
 
     async def __saveSpeechBytes(
