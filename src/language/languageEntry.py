@@ -423,56 +423,56 @@ class LanguageEntry(Enum):
     @property
     def wotdApiCode(self) -> str | None:
         match self:
-            case LanguageEntry.AFRIKAANS: return None # todo?
-            case LanguageEntry.ARABIC: return None # todo?
-            case LanguageEntry.BASQUE: return None # todo?
-            case LanguageEntry.BENGALI: return None # todo?
-            case LanguageEntry.BULGARIAN: return None # todo?
-            case LanguageEntry.CATALAN: return None # todo?
+            case LanguageEntry.AFRIKAANS: return None
+            case LanguageEntry.ARABIC: return 'ar'
+            case LanguageEntry.BASQUE: return None
+            case LanguageEntry.BENGALI: return None
+            case LanguageEntry.BULGARIAN: return None
+            case LanguageEntry.CATALAN: return None
             case LanguageEntry.CHINESE: return 'zh'
-            case LanguageEntry.CZECH: return None # todo?
-            case LanguageEntry.DANISH: return None # todo?
+            case LanguageEntry.CZECH: return None
+            case LanguageEntry.DANISH: return None
             case LanguageEntry.DUTCH: return 'nl'
             case LanguageEntry.ENGLISH_FOR_PORTUGUESE_SPEAKERS: return 'en-pt'
             case LanguageEntry.ENGLISH_FOR_SPANISH_SPEAKERS: return 'en-es'
             case LanguageEntry.ENGLISH: return None
-            case LanguageEntry.FILIPINO: return None # todo?
+            case LanguageEntry.FILIPINO: return None
             case LanguageEntry.FINNISH: return None
             case LanguageEntry.FRENCH: return 'fr'
-            case LanguageEntry.GALICIAN: return None # todo?
+            case LanguageEntry.GALICIAN: return None
             case LanguageEntry.GERMAN: return 'de'
             case LanguageEntry.GREEK: return None
-            case LanguageEntry.GUJARATI: return None # todo?
-            case LanguageEntry.HEBREW: return None # todo?
+            case LanguageEntry.GUJARATI: return None
+            case LanguageEntry.HEBREW: return 'hebrew'
             case LanguageEntry.HINDI: return 'hindi'
-            case LanguageEntry.HUNGARIAN: return None # todo?
-            case LanguageEntry.ICELANDIC: return None # todo?
-            case LanguageEntry.INDONESIAN: return None # todo?
+            case LanguageEntry.HUNGARIAN: return None
+            case LanguageEntry.ICELANDIC: return None
+            case LanguageEntry.INDONESIAN: return 'indonesian'
             case LanguageEntry.ITALIAN: return 'it'
             case LanguageEntry.JAPANESE: return 'ja'
-            case LanguageEntry.KANNADA: return None # todo?
+            case LanguageEntry.KANNADA: return None
             case LanguageEntry.KOREAN: return 'korean'
-            case LanguageEntry.LATIN: return None
-            case LanguageEntry.LATVIAN: return None # todo?
-            case LanguageEntry.LITHUANIAN: return None # todo?
-            case LanguageEntry.MALAY: return None # todo?
-            case LanguageEntry.MALAYALAM: return None # todo?
-            case LanguageEntry.MARATHI: return None # todo?
+            case LanguageEntry.LATIN: return 'la'
+            case LanguageEntry.LATVIAN: return None
+            case LanguageEntry.LITHUANIAN: return None
+            case LanguageEntry.MALAY: return None
+            case LanguageEntry.MALAYALAM: return None
+            case LanguageEntry.MARATHI: return None
             case LanguageEntry.NORWEGIAN: return 'norwegian'
             case LanguageEntry.POLISH: return 'polish'
             case LanguageEntry.PORTUGUESE: return 'pt'
-            case LanguageEntry.PUNJABI: return None # todo?
-            case LanguageEntry.ROMANIAN: return None # todo?
+            case LanguageEntry.PUNJABI: return None
+            case LanguageEntry.ROMANIAN: return None
             case LanguageEntry.RUSSIAN: return 'ru'
-            case LanguageEntry.SERBIAN: return None # todo?
-            case LanguageEntry.SLOVAK: return None # todo?
+            case LanguageEntry.SERBIAN: return None
+            case LanguageEntry.SLOVAK: return None
             case LanguageEntry.SPANISH: return 'es'
             case LanguageEntry.SWEDISH: return 'swedish'
-            case LanguageEntry.TAMIL: return None # todo?
-            case LanguageEntry.TELUGU: return None # todo?
+            case LanguageEntry.TAMIL: return None
+            case LanguageEntry.TELUGU: return None
             case LanguageEntry.THAI: return None
-            case LanguageEntry.TURKISH: return None # todo?
-            case LanguageEntry.UKRANIAN: return None # todo?
+            case LanguageEntry.TURKISH: return 'turkish'
+            case LanguageEntry.UKRANIAN: return None
             case LanguageEntry.URDU: return 'urdu'
-            case LanguageEntry.VIETNAMESE: return None # todo?
+            case LanguageEntry.VIETNAMESE: return None
             case _: raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')
