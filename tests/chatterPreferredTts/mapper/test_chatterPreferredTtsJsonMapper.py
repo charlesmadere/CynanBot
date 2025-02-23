@@ -12,6 +12,11 @@ from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParser
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
+from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
+from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
+from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.tts.ttsProvider import TtsProvider
 
 
@@ -19,10 +24,14 @@ class TestChatterPreferredTtsJsonMapper:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     halfLifeJsonParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+    microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+    ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
     mapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
         halfLifeVoiceParser = halfLifeJsonParser,
-        languagesRepository = languagesRepository
+        languagesRepository = languagesRepository,
+        microsoftSamJsonParser = microsoftSamJsonParser,
+        ttsMonsterVoiceParser = ttsMonsterVoiceParser
     )
 
     @pytest.mark.asyncio
@@ -82,6 +91,22 @@ class TestChatterPreferredTtsJsonMapper:
         assert isinstance(result, MicrosoftSamPreferredTts)
 
     @pytest.mark.asyncio
+    async def test_serializePreferredTts_withMicrosoftSamAndMaryInSpaceVoiceEntry(self):
+        preferredTts = MicrosoftSamPreferredTts(
+            microsoftSamVoice = MicrosoftSamVoice.MARY_SPACE
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        microsoftSamVoice = result['microsoftSamVoice']
+        assert microsoftSamVoice == MicrosoftSamVoice.MARY_SPACE.jsonValue
+
+    @pytest.mark.asyncio
     async def test_serializePreferredTts_withDecTalk(self):
         result = await self.mapper.serializePreferredTts(
             preferredTts = DecTalkPreferredTts()
@@ -122,7 +147,9 @@ class TestChatterPreferredTtsJsonMapper:
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withMicrosoftSam(self):
         result = await self.mapper.serializePreferredTts(
-            preferredTts = MicrosoftSamPreferredTts()
+            preferredTts = MicrosoftSamPreferredTts(
+                microsoftSamVoice = None
+            )
         )
 
         assert isinstance(result, dict)

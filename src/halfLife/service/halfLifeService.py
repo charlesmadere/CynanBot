@@ -54,7 +54,7 @@ class HalfLifeService(HalfLifeServiceInterface):
         text: str,
         voice: HalfLifeVoice
     ) -> str | None:
-        cachedWav: str | None = self.__cache.get(text, None)
+        cachedWav: str | None = self.__cache.get(text + voice.keyName, None)
 
         if utils.isValidStr(cachedWav):
             return cachedWav
@@ -83,7 +83,7 @@ class HalfLifeService(HalfLifeServiceInterface):
         path = utils.cleanPath(f'{directory}/{voice.keyName}/{file}.wav')
 
         if await aiofiles.ospath.exists(path) and await aiofiles.ospath.isfile(path):
-            self.__cache[file] = path
+            self.__cache[file + voice.keyName] = path
             return path
         else:
             return None

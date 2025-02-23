@@ -32,8 +32,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -53,8 +52,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
-            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
 
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
@@ -65,7 +62,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
 
         self.__isLoadingOrPlaying: bool = False
 

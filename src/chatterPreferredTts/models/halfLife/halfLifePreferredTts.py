@@ -7,15 +7,15 @@ class HalfLifePreferredTts(AbsPreferredTts):
 
     def __init__(
         self,
-        halfLifeVoice: HalfLifeVoice
+        halfLifeVoice: HalfLifeVoice | None
     ):
-        if not isinstance(halfLifeVoice, HalfLifeVoice):
+        if halfLifeVoice is not None and not isinstance(halfLifeVoice, HalfLifeVoice):
             raise TypeError(f'halfLifeVoice argument is malformed: \"{halfLifeVoice}\"')
 
-        self.__halfLifeVoiceEntry: HalfLifeVoice = halfLifeVoice
+        self.__halfLifeVoiceEntry: HalfLifeVoice | None = halfLifeVoice
 
     @property
-    def halfLifeVoiceEntry(self) -> HalfLifeVoice:
+    def halfLifeVoiceEntry(self) -> HalfLifeVoice | None:
         return self.__halfLifeVoiceEntry
 
     @property

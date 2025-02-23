@@ -14,7 +14,11 @@ from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...language.languageEntry import LanguageEntry
 from ...language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
+from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
+from ...ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
 
 class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperInterface):
@@ -22,20 +26,28 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
     def __init__(
         self,
         halfLifeVoiceParser: HalfLifeVoiceParserInterface,
-        languagesRepository: LanguagesRepositoryInterface
+        languagesRepository: LanguagesRepositoryInterface,
+        microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
+        ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
     ):
         if not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeVoiceParser}\"')
         elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
+            raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
+        elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
+            raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
 
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
+        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
+        self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
 
         self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__googleRegEx: Pattern = re.compile(r'^\s*goog(?:le?)?\s*(\w+)?\s*$', re.IGNORECASE)
         self.__halfLifeRegEx: Pattern = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*$', re.IGNORECASE)
+        self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*(\w+)?\s*$', re.IGNORECASE)
         self.__singingDecTalkRegEx: Pattern = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__streamElementsRegEx: Pattern = re.compile(r'^\s*stream(?:\s+|_|-)?elements\s*(\w+)?\s*$', re.IGNORECASE)
         self.__ttsMonsterRegEx: Pattern = re.compile(r'^\s*tts(?:\s+|_|-)?monster\s*(\w+)?\s*$', re.IGNORECASE)
@@ -96,7 +108,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
 
-        return MicrosoftSamPreferredTts()
+        microsoftSamVoice: MicrosoftSamVoice | None = None
+        microsoftSamVoiceCommand = match.group(1)
+
+        if utils.isValidStr(microsoftSamVoiceCommand):
+            microsoftSamVoice = self.__microsoftSamJsonParser.parseVoice(microsoftSamVoiceCommand)
+
+        return MicrosoftSamPreferredTts(
+            microsoftSamVoice = microsoftSamVoice
+        )
 
     async def __createSingingDecTalkTtsProperties(
         self,
@@ -123,13 +143,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
 
-        ttsMonsterVoiceEntry: str | None = None
-        ttsMonsterVoiceEntryCommand = match.group(1)
+        ttsMonsterVoice: TtsMonsterVoice | None = None
+        ttsMonsterVoiceCommand = match.group(1)
 
-        if utils.isValidStr(ttsMonsterVoiceEntryCommand):
-            ttsMonsterVoiceEntry = ttsMonsterVoiceEntryCommand
-            
-        return TtsMonsterPreferredTts(ttsMonsterVoiceEntry)
+        if utils.isValidStr(ttsMonsterVoiceCommand):
+            ttsMonsterVoice = self.__ttsMonsterVoiceParser.parseVoice(ttsMonsterVoiceCommand)
+
+        return TtsMonsterPreferredTts(
+            ttsMonsterVoice = ttsMonsterVoice
+        )
 
     async def parseUserMessage(
         self,

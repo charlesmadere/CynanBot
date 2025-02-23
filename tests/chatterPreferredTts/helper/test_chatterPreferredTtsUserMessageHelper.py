@@ -7,22 +7,33 @@ from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPr
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
+from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from src.chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
 from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
+from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
+from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
+from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
+from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
 
 class TestChatterPreferredTtsUserMessageHelper:
 
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+    microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+    ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
     helper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
         halfLifeVoiceParser = halfLifeVoiceParser,
-        languagesRepository = languagesRepository
+        languagesRepository = languagesRepository,
+        microsoftSamJsonParser = microsoftSamJsonParser,
+        ttsMonsterVoiceParser = ttsMonsterVoiceParser
     )
 
     @pytest.mark.asyncio
@@ -133,6 +144,44 @@ class TestChatterPreferredTtsUserMessageHelper:
 
         result = await self.helper.parseUserMessage('microsoft-sam')
         assert isinstance(result, MicrosoftSamPreferredTts)
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftSamAndMaryForSpace(self):
+        result = await self.helper.parseUserMessage('microsoft sam mary_space')
+        assert isinstance(result, MicrosoftSamPreferredTts)
+        assert result.microsoftSamVoiceEntry is MicrosoftSamVoice.MARY_SPACE
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftSamAndBonziBuddy(self):
+        result = await self.helper.parseUserMessage('microsoft sam bonzi_buddy')
+        assert isinstance(result, MicrosoftSamPreferredTts)
+        assert result.microsoftSamVoiceEntry is MicrosoftSamVoice.BONZI_BUDDY
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withTtsMonsterStrings(self):
+        result = await self.helper.parseUserMessage('ttsMonster')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+        result = await self.helper.parseUserMessage('tts monster')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+        result = await self.helper.parseUserMessage('tts-monster')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+        result = await self.helper.parseUserMessage('tts_monster')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withTtsMonsterAndShadow(self):
+        result = await self.helper.parseUserMessage('tts monster shadow')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.ttsMonsterVoiceEntry is TtsMonsterVoice.SHADOW
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withTtsMonsterAndZeroTwo(self):
+        result = await self.helper.parseUserMessage('tts monster zerotwo')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.ttsMonsterVoiceEntry is TtsMonsterVoice.ZERO_TWO
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withNone(self):

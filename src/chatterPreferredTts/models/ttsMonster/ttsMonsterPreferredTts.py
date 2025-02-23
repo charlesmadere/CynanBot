@@ -1,21 +1,20 @@
 from ..absPreferredTts import AbsPreferredTts
 from ....tts.ttsProvider import TtsProvider
-
-from src.misc import utils
+from ....ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 class TtsMonsterPreferredTts(AbsPreferredTts):
 
     def __init__(
         self,
-        ttsMonsterVoice: str | None
+        ttsMonsterVoice: TtsMonsterVoice | None
     ):
-        self.__ttsMonsterVoiceEntry: str | None = None
+        if ttsMonsterVoice is not None and not isinstance(ttsMonsterVoice, TtsMonsterVoice):
+            raise TypeError(f'ttsMonsterVoiceEntry argument is malformed: \"{ttsMonsterVoice}\"')
 
-        if utils.isValidStr(ttsMonsterVoice):
-            self.__ttsMonsterVoiceEntry = f'{ttsMonsterVoice}: '
+        self.__ttsMonsterVoiceEntry: TtsMonsterVoice | None = ttsMonsterVoice
 
     @property
-    def ttsMonsterVoiceEntry(self) -> str | None:
+    def ttsMonsterVoiceEntry(self) -> TtsMonsterVoice | None:
         return self.__ttsMonsterVoiceEntry
 
     @property

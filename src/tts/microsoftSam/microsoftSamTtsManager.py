@@ -4,10 +4,14 @@ from .microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
+from ..ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
 from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from ...microsoftSam.models.microsoftSamFileReference import MicrosoftSamFileReference
+from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -18,6 +22,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
 
     def __init__(
         self,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         microsoftSamHelper: MicrosoftSamHelperInterface,
         microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
@@ -26,7 +31,9 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(microsoftSamHelper, MicrosoftSamHelperInterface):
+        if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(microsoftSamHelper, MicrosoftSamHelperInterface):
             raise TypeError(f'microsoftSamHelper argument is malformed: \"{microsoftSamHelper}\"')
         elif not isinstance(microsoftSamMessageCleaner, MicrosoftSamMessageCleanerInterface):
             raise TypeError(f'microsoftSamMessageCleaner argument is malformed: \"{microsoftSamMessageCleaner}\"')
@@ -41,6 +48,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__microsoftSamHelper: MicrosoftSamHelperInterface = microsoftSamHelper
         self.__microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = microsoftSamMessageCleaner
         self.__microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = microsoftSamSettingsRepository
@@ -50,6 +58,29 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+
+    async def __determineVoicePreset(self, event: TtsEvent) -> MicrosoftSamVoice | None:
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return None
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return None
+
+        microsoftSamPreferredTts = preferredTts.preferredTts
+        if not isinstance(microsoftSamPreferredTts, MicrosoftSamPreferredTts):
+            self.__timber.log('MicrosoftSamTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
+            return None
+
+        microsoftSamVoiceEntry = microsoftSamPreferredTts.microsoftSamVoiceEntry
+        if microsoftSamVoiceEntry is None:
+            return None
+
+        return microsoftSamVoiceEntry
 
     async def __executeTts(self, fileReference: MicrosoftSamFileReference):
         volume = await self.__microsoftSamSettingsRepository.getMediaPlayerVolume()
@@ -110,6 +141,11 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
             fullMessage = donationPrefix
         else:
             return None
+
+        voicePreset: MicrosoftSamVoice | None = await self.__determineVoicePreset(event)
+
+        if voicePreset is not None:
+            fullMessage = f'{voicePreset.jsonValue}: {fullMessage}'
 
         return await self.__microsoftSamHelper.generateTts(
             message = fullMessage,

@@ -512,6 +512,8 @@ from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInter
     TtsMonsterKeyAndUserIdRepositoryInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
+from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
     TtsMonsterMessageChunkParserInterface
@@ -864,6 +866,8 @@ halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
 microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
 
 streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
+ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
 ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
     halfLifeJsonParser = halfLifeVoiceParser,
@@ -1853,7 +1857,9 @@ chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInte
 
 chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
     halfLifeVoiceParser = halfLifeVoiceParser,
-    languagesRepository = languagesRepository
+    languagesRepository = languagesRepository,
+    microsoftSamJsonParser = microsoftSamJsonParser,
+    ttsMonsterVoiceParser = ttsMonsterVoiceParser
 )
 
 chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterPreferredTtsRepository(
@@ -1870,7 +1876,9 @@ chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferred
 
 chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
     halfLifeVoiceParser = halfLifeVoiceParser,
-    languagesRepository = languagesRepository
+    languagesRepository = languagesRepository,
+    microsoftSamJsonParser = microsoftSamJsonParser,
+    ttsMonsterVoiceParser = ttsMonsterVoiceParser
 )
 
 chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter = ChatterPreferredTtsPresenter()
@@ -2016,8 +2024,7 @@ googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
@@ -2094,6 +2101,7 @@ microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMe
 )
 
 microsoftSamTtsManager: MicrosoftSamTtsManagerInterface = MicrosoftSamTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     microsoftSamHelper = microsoftSamHelper,
     microsoftSamMessageCleaner = microsoftSamMessageCleaner,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
@@ -2215,6 +2223,7 @@ ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageC
 
 ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     timber = timber,
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
