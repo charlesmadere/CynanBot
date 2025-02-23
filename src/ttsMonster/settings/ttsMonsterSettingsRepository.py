@@ -1,6 +1,8 @@
 from typing import Any
 
 from .ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ..mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -9,17 +11,36 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
     def __init__(
         self,
-        settingsJsonReader: JsonReaderInterface
+        settingsJsonReader: JsonReaderInterface,
+        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
+        defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
+            raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
+        elif not isinstance(defaultVoice, TtsMonsterVoice):
+            raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
+        self.__defaultVoice: TtsMonsterVoice = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
 
     async def clearCaches(self):
         self.__cache = None
+
+    async def getDefaultVoice(self) -> TtsMonsterVoice:
+        jsonContents = await self.__readJson()
+
+        defaultVoiceString = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'default_voice',
+            fallback = await self.__ttsMonsterPrivateApiJsonMapper.serializeVoice(self.__defaultVoice)
+        )
+
+        return await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(defaultVoiceString)
 
     async def getFileExtension(self) -> str:
         jsonContents = await self.__readJson()

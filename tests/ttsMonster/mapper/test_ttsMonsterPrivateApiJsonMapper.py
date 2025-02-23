@@ -96,10 +96,10 @@ class TestTtsMonsterPrivateApiJsonMapper:
 
         assert result is None
 
-    def test_sanity(self):
-        assert self.mapper is not None
-        assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapper)
-        assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapperInterface)
+    @pytest.mark.asyncio
+    async def test_parseVoice_withBrian(self):
+        result = await self.mapper.parseVoice('brian')
+        assert result is TtsMonsterVoice.BRIAN
 
     @pytest.mark.asyncio
     async def test_parseVoice_withJazz(self):
@@ -122,9 +122,19 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.SHADOW
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withWitch(self):
+        result = await self.mapper.parseVoice('witch')
+        assert result is TtsMonsterVoice.WITCH
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withZeroTwo(self):
         result = await self.mapper.parseVoice('zero_two')
         assert result is TtsMonsterVoice.ZERO_TWO
+
+    def test_sanity(self):
+        assert self.mapper is not None
+        assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapper)
+        assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapperInterface)
 
     @pytest.mark.asyncio
     async def test_serializeGenerateTtsJsonBody(self):
@@ -157,6 +167,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert detailsJson['provider'] == 'provider'
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withBrian(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.BRIAN)
+        assert result == 'brian'
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withJazz(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.JAZZ)
         assert result == 'jazz'
@@ -175,6 +190,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_serializeVoice_withShadow(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.SHADOW)
         assert result == 'shadow'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withWitch(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.WITCH)
+        assert result == 'witch'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withZeroTwo(self):

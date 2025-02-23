@@ -2166,11 +2166,16 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
+ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+    timber = timber
+)
+
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/ttsMonsterSettingsRepository.json'
-    )
+    ),
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
 ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = TtsMonsterKeyAndUserIdRepository(
@@ -2178,10 +2183,6 @@ ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = Tt
         eventLoop = eventLoop,
         fileName = '../config/ttsMonsterKeyAndUserIdRepository.json'
     )
-)
-
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
-    timber = timber
 )
 
 ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(

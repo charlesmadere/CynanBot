@@ -1,9 +1,14 @@
 from abc import abstractmethod
 
+from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ...misc.clearable import Clearable
 
 
 class TtsMonsterSettingsRepositoryInterface(Clearable):
+
+    @abstractmethod
+    async def getDefaultVoice(self) -> TtsMonsterVoice:
+        pass
 
     @abstractmethod
     async def getFileExtension(self) -> str:

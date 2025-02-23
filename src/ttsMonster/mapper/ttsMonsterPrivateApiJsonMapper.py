@@ -75,10 +75,12 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         string = string.lower()
 
         match string:
+            case 'brian': return TtsMonsterVoice.BRIAN
             case 'jazz': return TtsMonsterVoice.JAZZ
             case 'kkona': return TtsMonsterVoice.KKONA
             case 'pirate': return TtsMonsterVoice.PIRATE
             case 'shadow': return TtsMonsterVoice.SHADOW
+            case 'witch': return TtsMonsterVoice.WITCH
             case 'zero_two': return TtsMonsterVoice.ZERO_TWO
             case _: raise ValueError(f'Encountered unknown TtsMonsterVoice string value: \"{string}\"')
 
@@ -115,9 +117,11 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         match voice:
+            case TtsMonsterVoice.BRIAN: return 'brian'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.KKONA: return 'kkona'
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
+            case TtsMonsterVoice.WITCH: return 'witch'
             case TtsMonsterVoice.ZERO_TWO: return 'zero_two'
             case _: raise ValueError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')

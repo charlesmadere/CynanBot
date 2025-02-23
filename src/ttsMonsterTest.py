@@ -30,6 +30,9 @@ from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInter
     TtsMonsterKeyAndUserIdRepositoryInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
+from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
+    TtsMonsterMessageChunkParserInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
@@ -87,7 +90,8 @@ ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPriv
 )
 
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
-    settingsJsonReader = JsonStaticReader(dict())
+    settingsJsonReader = JsonStaticReader(dict()),
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
 glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
@@ -108,10 +112,13 @@ glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetrie
     ttsDirectoryProvider = ttsDirectoryProvider
 )
 
+ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = TtsMonsterMessageChunkParser()
+
 ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     timber = timber,
+    ttsMonsterMessageChunkParser = ttsMonsterMessageChunkParser,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
