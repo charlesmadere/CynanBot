@@ -10,7 +10,9 @@ import aiofiles.ospath
 from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..exceptions import TtsMonsterFailedToCreateDirectoriesException
+from ..messageChunkParser.ttsMonsterMessageChunkParserInterface import TtsMonsterMessageChunkParserInterface
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
+from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...misc import utils as utils
@@ -25,6 +27,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         eventLoop: AbstractEventLoop,
         glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface,
         timber: TimberInterface,
+        ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface,
         ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface
     ):
@@ -34,6 +37,8 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'glacialTtsFileRetriever argument is malformed: \"{glacialTtsFileRetriever}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsMonsterMessageChunkParser, TtsMonsterMessageChunkParserInterface):
+            raise TypeError(f'ttsMonsterMessageChunkParser argument is malformed: \"{ttsMonsterMessageChunkParser}\"')
         elif not isinstance(ttsMonsterPrivateApiHelper, TtsMonsterPrivateApiHelperInterface):
             raise TypeError(f'ttsMonsterPrivateApiHelper argument is malformed: \"{ttsMonsterPrivateApiHelper}\"')
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
@@ -42,6 +47,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
         self.__timber: TimberInterface = timber
+        self.__ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = ttsMonsterMessageChunkParser
         self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = ttsMonsterPrivateApiHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
 
@@ -91,9 +97,14 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             provider = TtsProvider.TTS_MONSTER
         )
 
+        messageVoices = await self.__parseMessageVoices(
+            message = message
+        )
+
         if glacialFile is not None:
             return TtsMonsterFileReference(
                 storeDateTime = glacialFile.storeDateTime,
+                messageVoices = messageVoices,
                 filePath = glacialFile.filePath
             )
 
@@ -120,11 +131,29 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         ):
             return TtsMonsterFileReference(
                 storeDateTime = glacialFile.storeDateTime,
+                messageVoices = messageVoices,
                 filePath = glacialFile.filePath
             )
         else:
             self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({message=}) ({glacialFile=})')
             return None
+
+    async def __parseMessageVoices(
+        self,
+        message: str
+    ) -> frozenset[TtsMonsterVoice]:
+        messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
+            message = message,
+            defaultVoice = TtsMonsterVoice.BRIAN
+        )
+
+        messageVoices: set[TtsMonsterVoice] = set()
+
+        if messageChunks is not None and len(messageChunks) >= 1:
+            for messageChunk in messageChunks:
+                messageVoices.add(messageChunk.voice)
+
+        return frozenset(messageVoices)
 
     async def __saveSpeechBytes(
         self,

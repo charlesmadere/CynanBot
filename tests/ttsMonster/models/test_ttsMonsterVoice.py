@@ -10,3 +10,11 @@ class TestTtsMonsterVoice:
             humanNames.append(voice.humanName)
 
         assert len(humanNames) == len(list(TtsMonsterVoice))
+
+    def test_inMessageName_withAll(self):
+        inMessageNames: list[str] = list()
+
+        for voice in TtsMonsterVoice:
+            inMessageNames.append(voice.inMessageName)
+
+        assert len(inMessageNames) == len(list(TtsMonsterVoice))
