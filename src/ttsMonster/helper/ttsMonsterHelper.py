@@ -144,7 +144,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
     ) -> frozenset[TtsMonsterVoice]:
         messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
             message = message,
-            defaultVoice = TtsMonsterVoice.BRIAN
+            defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
         )
 
         messageVoices: set[TtsMonsterVoice] = set()
