@@ -155,7 +155,7 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert isinstance(dataJson, dict)
         assert len(dataJson) == 5
 
-        assert dataJson['ai'] == True
+        assert dataJson['ai'] is True
         assert dataJson['key'] == key
         assert dataJson['message'] == message
         assert dataJson['userId'] == userId
