@@ -59,6 +59,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         grenadeAlertSleepTimeSeconds: float = 0.60,
+        launchTntAlertSleepTimeSeconds: float = 2.00,
         tntAlertSleepTimeSeconds: float = 0.50
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
@@ -87,6 +88,10 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             raise TypeError(f'grenadeAlertSleepTimeSeconds argument is malformed: \"{grenadeAlertSleepTimeSeconds}\"')
         elif grenadeAlertSleepTimeSeconds < 0.125 or grenadeAlertSleepTimeSeconds > 8:
             raise ValueError(f'soundAlertSleepTimeSeconds argument is out of bounds: {grenadeAlertSleepTimeSeconds}')
+        elif not utils.isValidNum(launchTntAlertSleepTimeSeconds):
+            raise TypeError(f'launchTntAlertSleepTimeSeconds argument is malformed: \"{launchTntAlertSleepTimeSeconds}\"')
+        elif launchTntAlertSleepTimeSeconds < 0.125 or launchTntAlertSleepTimeSeconds > 8:
+            raise ValueError(f'launchTntAlertSleepTimeSeconds argument is out of bounds: {launchTntAlertSleepTimeSeconds}')
         elif not utils.isValidNum(tntAlertSleepTimeSeconds):
             raise TypeError(f'tntAlertSleepTimeSeconds argument is malformed: \"{tntAlertSleepTimeSeconds}\"')
         elif tntAlertSleepTimeSeconds < 0.125 or tntAlertSleepTimeSeconds > 8:
@@ -103,6 +108,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__grenadeAlertSleepTimeSeconds: float = grenadeAlertSleepTimeSeconds
+        self.__launchTntAlertSleepTimeSeconds: float = launchTntAlertSleepTimeSeconds
         self.__tntAlertSleepTimeSeconds: float = tntAlertSleepTimeSeconds
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -270,7 +276,18 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             streamStatusRequirement = action.streamStatusRequirement
         )
 
+        self.__backgroundTaskHelper.createTask(self.__playSoundAlerts(
+            tntTargets = tntTargets,
+            user = user
+        ))
+
         durationSeconds = random.randint(action.minDurationSeconds, action.maxDurationSeconds)
+
+        self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
+            tntTargets = tntTargets,
+            durationSeconds = durationSeconds,
+            user = user
+        ))
 
         for tntTarget in tntTargets:
             self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
@@ -295,17 +312,6 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
                 user = user
             ))
 
-        self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
-            tntTargets = tntTargets,
-            durationSeconds = durationSeconds,
-            user = user
-        ))
-
-        self.__backgroundTaskHelper.createTask(self.__playSoundAlerts(
-            tntTargets = tntTargets,
-            user = user
-        ))
-
         return True
 
     async def __playSoundAlerts(
@@ -317,6 +323,10 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             return
         elif len(tntTargets) == 0:
             return
+
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_TNT))
+        await asyncio.sleep(self.__launchTntAlertSleepTimeSeconds)
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.TNT))
@@ -334,7 +344,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             await asyncio.sleep(self.__grenadeAlertSleepTimeSeconds)
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
-        await soundPlayerManager.playSoundAlert(SoundAlert.SPLAT)
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.SPLAT))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
