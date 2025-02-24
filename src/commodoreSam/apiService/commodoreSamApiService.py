@@ -12,7 +12,7 @@ import aiofiles.ospath
 import psutil
 
 from .commodoreSamApiServiceInterface import CommodoreSamApiServiceInterface
-from ..exceptions import CommodoreSamFailedToGenerateSpeechFileException
+from ..exceptions import CommodoreSamExecutableIsMissingException, CommodoreSamFailedToGenerateSpeechFileException
 from ..settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -73,13 +73,16 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         self.__timber.log('CommodoreSamApiService', f'Generating speech... ({text=})')
 
+        pathToCommodoreSam = await self.__commodoreSamSettingsRepository.requireCommodoreSamExecutablePath()
+
+        if not await aiofiles.ospath.exists(pathToCommodoreSam) or not await aiofiles.ospath.isfile(pathToCommodoreSam):
+            raise CommodoreSamExecutableIsMissingException(f'Couldn\'t find Commodore SAM executable ({pathToCommodoreSam=})')
+
         filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.COMMODORE_SAM)
         await self.__createDirectories(filePath)
 
         fileName = await self.__generateFileName()
         fullFilePath = f'{filePath}/{fileName}'
-
-        pathToCommodoreSam = await self.__commodoreSamSettingsRepository.requireCommodoreSamExecutablePath()
 
         commodoreSamProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
@@ -112,7 +115,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         self.__timber.log('CommodoreSamApiService', f'Ran Commodore SAM system command ({command=}) ({outputString=}) ({exception=})')
 
         if not await aiofiles.ospath.exists(fullFilePath) or not await aiofiles.ospath.isfile(fullFilePath):
-            raise CommodoreSamFailedToGenerateSpeechFileException(f'Failed to generate speech file ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
+            raise CommodoreSamFailedToGenerateSpeechFileException(f'Failed to generate speech file ({pathToCommodoreSam=}) ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
 
         return fullFilePath
 
