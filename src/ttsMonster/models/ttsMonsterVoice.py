@@ -5,8 +5,10 @@ class TtsMonsterVoice(Enum):
 
     ASMR = auto()
     BRIAN = auto()
+    HIKARI = auto()
     JAZZ = auto()
     KKONA = auto()
+    NARRATOR = auto()
     PIRATE = auto()
     SHADOW = auto()
     WITCH = auto()
@@ -17,8 +19,10 @@ class TtsMonsterVoice(Enum):
         match self:
             case TtsMonsterVoice.ASMR: return 'ASMR'
             case TtsMonsterVoice.BRIAN: return 'Brian'
+            case TtsMonsterVoice.HIKARI: return 'Hikari'
             case TtsMonsterVoice.JAZZ: return 'Jazz'
             case TtsMonsterVoice.KKONA: return 'Kkona'
+            case TtsMonsterVoice.NARRATOR: return 'Narrator'
             case TtsMonsterVoice.PIRATE: return 'Pirate'
             case TtsMonsterVoice.SHADOW: return 'Shadow'
             case TtsMonsterVoice.WITCH: return 'Witch'
@@ -30,8 +34,10 @@ class TtsMonsterVoice(Enum):
         match self:
             case TtsMonsterVoice.ASMR: return 'asmr'
             case TtsMonsterVoice.BRIAN: return 'brian'
+            case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.KKONA: return 'kkona'
+            case TtsMonsterVoice.NARRATOR: return 'narrator'
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
             case TtsMonsterVoice.WITCH: return 'witch'

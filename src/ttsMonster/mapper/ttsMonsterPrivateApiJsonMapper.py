@@ -76,8 +76,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         match string:
             case 'brian': return TtsMonsterVoice.BRIAN
+            case 'hikari': return TtsMonsterVoice.HIKARI
             case 'jazz': return TtsMonsterVoice.JAZZ
             case 'kkona': return TtsMonsterVoice.KKONA
+            case 'narrator': return TtsMonsterVoice.NARRATOR
             case 'pirate': return TtsMonsterVoice.PIRATE
             case 'shadow': return TtsMonsterVoice.SHADOW
             case 'witch': return TtsMonsterVoice.WITCH
@@ -118,8 +120,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         match voice:
             case TtsMonsterVoice.BRIAN: return 'brian'
+            case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.KKONA: return 'kkona'
+            case TtsMonsterVoice.NARRATOR: return 'narrator'
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
             case TtsMonsterVoice.WITCH: return 'witch'
