@@ -12,6 +12,7 @@ from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterf
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.ttsCheerDonation import TtsCheerDonation
 from ...tts.ttsEvent import TtsEvent
+from ...tts.ttsProvider import TtsProvider
 from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 
@@ -176,17 +177,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         if not user.isTtsEnabled:
             return
 
-        maximumTtsCheerAmount = user.maximumTtsCheerAmount
-        minimumTtsCheerAmount = user.minimumTtsCheerAmount
-
-        if utils.isValidInt(maximumTtsCheerAmount) and utils.isValidInt(minimumTtsCheerAmount) and (bits < minimumTtsCheerAmount or bits > maximumTtsCheerAmount):
-            return
-        elif utils.isValidInt(maximumTtsCheerAmount) and bits > maximumTtsCheerAmount:
-            return
-        elif utils.isValidInt(minimumTtsCheerAmount) and bits < minimumTtsCheerAmount:
-            return
-
-        provider = user.defaultTtsProvider
+        provider: TtsProvider | None = None
         ttsBoosterPacks = user.ttsBoosterPacks
 
         if ttsBoosterPacks is not None and len(ttsBoosterPacks) >= 1:
@@ -194,6 +185,9 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 if bits >= ttsBoosterPack.cheerAmount:
                     provider = ttsBoosterPack.ttsProvider
                     break
+
+        if provider is None:
+            return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,
