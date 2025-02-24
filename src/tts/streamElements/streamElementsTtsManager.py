@@ -7,10 +7,14 @@ from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..ttsEvent import TtsEvent
 from ..ttsProvider import TtsProvider
+from ..ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
+from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
 from ...streamElements.streamElementsMessageCleanerInterface import \
@@ -22,6 +26,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
     def __init__(
         self,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         streamElementsFileManager: StreamElementsFileManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
@@ -31,7 +36,9 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+        if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(streamElementsFileManager, StreamElementsFileManagerInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
@@ -48,6 +55,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__streamElementsFileManager: StreamElementsFileManagerInterface = streamElementsFileManager
         self.__streamElementsHelper: StreamElementsHelperInterface = streamElementsHelper
@@ -58,6 +66,29 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+
+    async def __determineVoicePreset(self, event: TtsEvent) -> StreamElementsVoice | None:
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return None
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return None
+
+        streamElementsPreferredTts = preferredTts.preferredTts
+        if not isinstance(streamElementsPreferredTts, StreamElementsPreferredTts):
+            self.__timber.log('StreamElementsTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
+            return None
+
+        streamElementsVoiceEntry = streamElementsPreferredTts.streamElementsVoiceEntry
+        if streamElementsVoiceEntry is None:
+            return None
+
+        return streamElementsVoiceEntry
 
     async def __executeTts(self, fileName: str):
         volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
@@ -115,6 +146,10 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             fullMessage = donationPrefix
         else:
             return None
+
+        voicePreset: StreamElementsVoice | None = await self.__determineVoicePreset(event)
+        if voicePreset is not None:
+            fullMessage = f'{voicePreset.urlValue}: {fullMessage}'
 
         speechBytes = await self.__streamElementsHelper.getSpeech(
             message = fullMessage,

@@ -6,6 +6,7 @@ from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPr
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
+from src.chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
 from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
@@ -13,6 +14,9 @@ from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from src.streamElements.models.streamElementsVoice import StreamElementsVoice
+from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
+from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
@@ -25,12 +29,14 @@ class TestChatterPreferredTtsJsonMapper:
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     halfLifeJsonParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+    streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
     ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
     mapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
         halfLifeVoiceParser = halfLifeJsonParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
+        streamElementsJsonParser = streamElementsJsonParser,
         ttsMonsterVoiceParser = ttsMonsterVoiceParser
     )
 
@@ -127,6 +133,36 @@ class TestChatterPreferredTtsJsonMapper:
 
         assert isinstance(result, dict)
         assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withStreamElements(self):
+        preferredTts = StreamElementsPreferredTts(
+            streamElementsVoice = None
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withStreamElementsAndJoey(self):
+        preferredTts = StreamElementsPreferredTts(
+            streamElementsVoice = StreamElementsVoice.JOEY
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        streamElementsVoice = result['streamElementsVoice']
+        assert streamElementsVoice == StreamElementsVoice.JOEY.urlValue
+
 
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withGoogleAndSwedishLanguageEntry(self):

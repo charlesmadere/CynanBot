@@ -16,6 +16,8 @@ from ...language.languagesRepositoryInterface import LanguagesRepositoryInterfac
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
+from ...streamElements.models.streamElementsVoice import StreamElementsVoice
+from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from ...tts.ttsProvider import TtsProvider
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from ...ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
@@ -28,6 +30,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         halfLifeVoiceParser: HalfLifeVoiceParserInterface,
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
+        streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
@@ -36,12 +39,15 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeVoiceParser}\"')
         elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
+        elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
+            raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
         elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
             raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
 
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
+        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
 
     async def __parseDecTalkPreferredTts(
@@ -110,7 +116,17 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> StreamElementsPreferredTts:
-        return StreamElementsPreferredTts()
+        streamElementsVoice: StreamElementsVoice | None = None
+
+        if isinstance(configurationJson, dict):
+            streamElementsVoiceString = configurationJson.get('streamElementsVoice', None)
+
+            if utils.isValidStr(streamElementsVoiceString):
+                streamElementsVoice = self.__streamElementsJsonParser.parseVoice(streamElementsVoiceString)
+
+        return StreamElementsPreferredTts(
+            streamElementsVoice = streamElementsVoice
+        )
 
     async def __parseTtsMonsterPreferredTts(
         self,
@@ -224,7 +240,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         preferredTts: StreamElementsPreferredTts
     ) -> dict[str, Any]:
-        return dict()
+        configurationJson: dict[str, Any] = dict()
+
+        if preferredTts.streamElementsVoiceEntry is not None:
+            configurationJson['streamElementsVoice'] = preferredTts.streamElementsVoiceEntry.urlValue
+
+        return configurationJson
 
     async def __serializeTtsMonsterPreferredTts(
         self,

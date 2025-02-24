@@ -17,6 +17,8 @@ from ...language.languagesRepositoryInterface import LanguagesRepositoryInterfac
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
+from ...streamElements.models.streamElementsVoice import StreamElementsVoice
+from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from ...ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
@@ -28,6 +30,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         halfLifeVoiceParser: HalfLifeVoiceParserInterface,
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
+        streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
     ):
         if not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
@@ -36,12 +39,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
+        elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
+            raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
         elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
             raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
 
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
+        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
 
         self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
@@ -134,7 +140,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
 
-        return StreamElementsPreferredTts()
+        streamElementsVoice: StreamElementsVoice | None = None
+        streamElementsVoiceCommand = match.group(1)
+
+        if utils.isValidStr(streamElementsVoiceCommand):
+            streamElementsVoice = self.__streamElementsJsonParser.parseVoice(streamElementsVoiceCommand)
+
+        return StreamElementsPreferredTts(
+            streamElementsVoice = streamElementsVoice
+        )
 
     async def __createTtsMonsterTtsProperties(
         self,

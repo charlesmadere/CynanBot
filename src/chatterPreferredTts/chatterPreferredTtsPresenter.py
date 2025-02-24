@@ -51,7 +51,13 @@ class ChatterPreferredTtsPresenter:
         return TtsProvider.SINGING_DEC_TALK.humanName
 
     async def __streamElements(self, preferredTts: StreamElementsPreferredTts) -> str:
-        return TtsProvider.STREAM_ELEMENTS.humanName
+        streamElementsVoiceEntry = preferredTts.streamElementsVoiceEntry
+        streamElementsHumanName = TtsProvider.STREAM_ELEMENTS.humanName
+
+        if streamElementsVoiceEntry is None:
+            return streamElementsHumanName
+
+        return f'{streamElementsHumanName} ({streamElementsVoiceEntry.humanName})'
 
     async def __ttsMonster(self, preferredTts: TtsMonsterPreferredTts) -> str:
         ttsMonsterVoiceEntry = preferredTts.ttsMonsterVoiceEntry

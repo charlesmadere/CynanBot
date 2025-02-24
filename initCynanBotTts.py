@@ -1053,6 +1053,7 @@ chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterP
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
+    streamElementsJsonParser = streamElementsJsonParser,
     ttsMonsterVoiceParser = ttsMonsterVoiceParser
 )
 
@@ -1072,6 +1073,7 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
+    streamElementsJsonParser = streamElementsJsonParser,
     ttsMonsterVoiceParser = ttsMonsterVoiceParser
 )
 
@@ -1347,6 +1349,7 @@ streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFi
 
 streamElementsTtsManager: StreamElementsTtsManagerInterface = StreamElementsTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
     streamElementsMessageCleaner = streamElementsMessageCleaner,

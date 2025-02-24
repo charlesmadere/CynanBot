@@ -17,6 +17,8 @@ from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
+from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
+from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
 from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
@@ -27,12 +29,14 @@ class TestChatterPreferredTtsUserMessageHelper:
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+    streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
     ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
     helper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
         halfLifeVoiceParser = halfLifeVoiceParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
+        streamElementsJsonParser = streamElementsJsonParser,
         ttsMonsterVoiceParser = ttsMonsterVoiceParser
     )
 
@@ -182,6 +186,21 @@ class TestChatterPreferredTtsUserMessageHelper:
         result = await self.helper.parseUserMessage('tts monster zerotwo')
         assert isinstance(result, TtsMonsterPreferredTts)
         assert result.ttsMonsterVoiceEntry is TtsMonsterVoice.ZERO_TWO
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withStreamElementsStrings(self):
+        result = await self.helper.parseUserMessage('streamElements')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+        result = await self.helper.parseUserMessage('stream elements')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+        result = await self.helper.parseUserMessage('stream-elements')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
+        result = await self.helper.parseUserMessage('stream_elements')
+        assert isinstance(result, TtsMonsterPreferredTts)
+
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withNone(self):
