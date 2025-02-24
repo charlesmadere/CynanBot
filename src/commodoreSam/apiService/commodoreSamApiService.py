@@ -99,7 +99,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
             outputTuple = await asyncio.wait_for(
                 fut = commodoreSamProcess.communicate(),
-                timeout = 12
+                timeout = 16
             )
         except BaseException as e:
             exception = e
