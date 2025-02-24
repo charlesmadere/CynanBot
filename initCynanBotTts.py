@@ -1120,7 +1120,7 @@ commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = Commod
     )
 )
 
-commodoreSamApiservice: CommodoreSamApiServiceInterface = CommodoreSamApiService(
+commodoreSamApiService: CommodoreSamApiServiceInterface = CommodoreSamApiService(
     eventLoop = eventLoop,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
