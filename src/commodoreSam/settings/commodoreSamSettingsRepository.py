@@ -27,7 +27,7 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
         commodoreSamPath = utils.getStrFromDict(
             d = jsonContents,
             key = 'commodoreSamPath',
-            fallback = '../commodoreSam/say.exe'
+            fallback = '../commodoreSam/sam.exe'
         )
 
         return utils.cleanPath(commodoreSamPath)
