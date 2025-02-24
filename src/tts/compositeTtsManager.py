@@ -66,7 +66,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         self.__decTalkTtsManager: TtsManagerInterface | None = decTalkTtsManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__halfLifeTtsManager: TtsManagerInterface | None = halfLifeTtsManager
-        self.__microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None = microsoftSamTtsManager
+        self.__microsoftSamTtsManager: TtsManagerInterface | None = microsoftSamTtsManager
         self.__singingDecTalkTtsManager: TtsManagerInterface | None = singingDecTalkTtsManager
         self.__streamElementsTtsManager: TtsManagerInterface | None = streamElementsTtsManager
         self.__timber: TimberInterface = timber
