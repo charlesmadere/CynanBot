@@ -96,7 +96,7 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
             outputTuple = await asyncio.wait_for(
                 fut = decTalkProcess.communicate(),
-                timeout = 3
+                timeout = 12
             )
         except BaseException as e:
             exception = e
