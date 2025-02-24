@@ -39,101 +39,109 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
         self.__sing: bool = sing
 
-        self.__inlineCommandRegExes: Collection[Pattern] = self.__buildInlineCommandRegExes()
-        self.__inputFlagRegExes: Collection[Pattern] = self.__buildInputFlagRegExes()
-        self.__inputToneRegExes: Collection[Pattern] = self.__buildInputToneRegExes()
+        self.__decTalkInlineCommandRegExes: Collection[Pattern] = self.__buildDecTalkInlineCommandRegExes()
+        self.__decTalkInputFlagRegExes: Collection[Pattern] = self.__buildDecTalkInputFlagRegExes()
+        self.__terminalExploitRegExes: Collection[Pattern] = self.__buildTerminalExploitRegExes()
+        self.__decTalkIllegalCharactersRegEx: Pattern = re.compile(r'[\[\]]', re.IGNORECASE)
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-    def __buildInlineCommandRegExes(self) -> FrozenList[Pattern]:
-        inlineCommandRegExes: FrozenList[Pattern] = FrozenList()
+    def __buildDecTalkInlineCommandRegExes(self) -> FrozenList[Pattern]:
+        regExes: FrozenList[Pattern] = FrozenList()
 
         # purge comma pause inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*(comm|cp).*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*(comm|cp).*?]', re.IGNORECASE))
 
         # purge dial inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*dial.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*dial.*?]', re.IGNORECASE))
 
         # purge design voice inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*dv.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*dv.*?]', re.IGNORECASE))
 
         # purge error inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*err.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*err.*?]', re.IGNORECASE))
 
         # purge log inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*log.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*log.*?]', re.IGNORECASE))
 
         # purge sync mode inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*mode.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*mode.*?]', re.IGNORECASE))
 
         # purge period pause inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*(peri|pp).*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*(peri|pp).*?]', re.IGNORECASE))
 
         # purge phoneme inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*phoneme.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*phoneme.*?]', re.IGNORECASE))
 
         # purge pitch inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*pitch.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*pitch.*?]', re.IGNORECASE))
 
         # purge play inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*play.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*play.*?]', re.IGNORECASE))
 
         # purge rate inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*rate.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*rate.*?]', re.IGNORECASE))
 
         # purge sync inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*sync.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*sync.*?]', re.IGNORECASE))
 
         # purge tone inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*t.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*\w*\<\d+,\d+\>.*?]', re.IGNORECASE))
+
+        # purge tone inline command
+        regExes.append(re.compile(r'\[\s*:\s*t.*?]', re.IGNORECASE))
+
+        # purge voice inline command
+        regExes.append(re.compile(r'\[\s*:n\w+.*?]', re.IGNORECASE))
 
         # purge volume inline command
-        inlineCommandRegExes.append(re.compile(r'\[\s*:\s*vol.*?]', re.IGNORECASE))
+        regExes.append(re.compile(r'\[\s*:\s*vol.*?]', re.IGNORECASE))
 
-        inlineCommandRegExes.freeze()
-        return inlineCommandRegExes
+        regExes.freeze()
+        return regExes
 
-    def __buildInputFlagRegExes(self) -> Collection[Pattern]:
-        inputFlagRegExes: FrozenList[Pattern] = FrozenList()
-
-        # purge potentially dangerous/tricky characters
-        inputFlagRegExes.append(re.compile(r'[&%;=\"|^~]', re.IGNORECASE))
-
-        # purge what might be directory traversal sequences
-        inputFlagRegExes.append(re.compile(r'\.{2}', re.IGNORECASE))
+    def __buildDecTalkInputFlagRegExes(self) -> Collection[Pattern]:
+        regExes: FrozenList[Pattern] = FrozenList()
 
         # purge various help flags
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-h', re.IGNORECASE))
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-\?', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-h', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-\?', re.IGNORECASE))
 
-        # purge various input flags
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-pre', re.IGNORECASE))
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-post', re.IGNORECASE))
-        inputFlagRegExes.append(re.compile(r'^\s*text', re.IGNORECASE))
+        # purge pre input flag
+        regExes.append(re.compile(r'(^|\s+)-pre', re.IGNORECASE))
+
+        # purge post input flag
+        regExes.append(re.compile(r'(^|\s+)-post', re.IGNORECASE))
+
+        # purge text flag
+        regExes.append(re.compile(r'^\s*text', re.IGNORECASE))
 
         # purge user dictionary flag
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-d', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-d', re.IGNORECASE))
 
         # purge version information flag
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-v', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-v', re.IGNORECASE))
 
         # purge language flag
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-lang(\s+\w+)?', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-lang(\s+\w+)?', re.IGNORECASE))
 
         # purge various output flags
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-w', re.IGNORECASE))
-        inputFlagRegExes.append(re.compile(r'(^|\s+)-l((\[\w+])|\w+)?', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-w', re.IGNORECASE))
+        regExes.append(re.compile(r'(^|\s+)-l((\[\w+])|\w+)?', re.IGNORECASE))
 
-        inputFlagRegExes.freeze()
-        return inputFlagRegExes
+        regExes.freeze()
+        return regExes
 
-    def __buildInputToneRegExes(self) -> Collection[Pattern]:
-        inputToneRegExes: FrozenList[Pattern] = FrozenList()
+    def __buildTerminalExploitRegExes(self) -> Collection[Pattern]:
+        regExes: FrozenList[Pattern] = FrozenList()
 
-        # purge tone constructs
-        inputToneRegExes.append(re.compile(r'\[\s*\w*\<\d+,\d+\>.*?]', re.IGNORECASE))
+        # purge potentially dangerous/tricky characters
+        regExes.append(re.compile(r'[<>&%;=\"|^~`\\]', re.IGNORECASE))
 
-        inputToneRegExes.freeze()
-        return inputToneRegExes
+        # purge what might be directory traversal sequences
+        regExes.append(re.compile(r'\.{2}', re.IGNORECASE))
+
+        regExes.freeze()
+        return regExes
 
     async def clean(self, message: str | Any | None) -> str | None:
         if not utils.isValidStr(message):
@@ -144,24 +152,21 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = await self.__purgeInputFlags(message)
+        message = await self.__purge(self.__decTalkInputFlagRegExes, message)
         if not utils.isValidStr(message):
             return None
 
         if not self.__sing:
-            message = await self.__purgeInlineCommands(message)
+            message = await self.__purge(self.__decTalkInlineCommandRegExes, message)
             if not utils.isValidStr(message):
                 return None
 
-            message = await self.__purgeInputTones(message)
-            if not utils.isValidStr(message):
-                return None
-
-            message = await self.__purgeIllegalCharacters(message)
-            if not utils.isValidStr(message):
-                return None
+        message = await self.__purge(self.__terminalExploitRegExes, message)
+        if not utils.isValidStr(message):
+            return None
 
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
+        message = self.__decTalkIllegalCharactersRegEx.sub(' ', message).strip()
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
@@ -180,19 +185,11 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
 
         return message
 
-    async def __purgeIllegalCharacters(self, message: str | None) -> str | None:
-        if not utils.isValidStr(message):
-            return None
-
-        for illegalCharacter in { '[' , ']', '<', '>' }:
-            message = message.replace(illegalCharacter, ' ').strip()
-
-        if not utils.isValidStr(message):
-            return None
-
-        return message.strip()
-
-    async def __purgeInlineCommands(self, message: str | None) -> str | None:
+    async def __purge(
+        self,
+        regExes: Collection[Pattern],
+        message: str | None
+    ) -> str | None:
         if not utils.isValidStr(message):
             return None
 
@@ -201,60 +198,12 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         while repeat:
             repeat = False
 
-            for inlineCommandRegEx in self.__inlineCommandRegExes:
-                if inlineCommandRegEx.search(message) is None:
+            for regEx in regExes:
+                if regEx.search(message) is None:
                     continue
 
                 repeat = True
-                message = inlineCommandRegEx.sub(' ', message).strip()
-
-                if not utils.isValidStr(message):
-                    return None
-
-        if not utils.isValidStr(message):
-            return None
-
-        return message.strip()
-
-    async def __purgeInputFlags(self, message: str | None) -> str | None:
-        if not utils.isValidStr(message):
-            return None
-
-        repeat = True
-
-        while repeat:
-            repeat = False
-
-            for inputFlagRegEx in self.__inputFlagRegExes:
-                if inputFlagRegEx.search(message) is None:
-                    continue
-
-                repeat = True
-                message = inputFlagRegEx.sub(' ', message).strip()
-
-                if not utils.isValidStr(message):
-                    return None
-
-        if not utils.isValidStr(message):
-            return None
-
-        return message.strip()
-
-    async def __purgeInputTones(self, message: str | None) -> str | None:
-        if not utils.isValidStr(message):
-            return None
-
-        repeat = True
-
-        while repeat:
-            repeat = False
-
-            for inputToneRegEx in self.__inputToneRegExes:
-                if inputToneRegEx.search(message) is None:
-                    continue
-
-                repeat = True
-                message = inputToneRegEx.sub(' ', message).strip()
+                message = regEx.sub(' ', message).strip()
 
                 if not utils.isValidStr(message):
                     return None

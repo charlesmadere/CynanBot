@@ -2,6 +2,7 @@ from typing import Any
 
 from .chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMapperInterface
 from ..models.absPreferredTts import AbsPreferredTts
+from ..models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredTts
 from ..models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from ..models.google.googlePreferredTts import GooglePreferredTts
 from ..models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
@@ -49,6 +50,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
+
+    async def __parseCommodoreSamPreferredTts(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> CommodoreSamPreferredTts:
+        return CommodoreSamPreferredTts()
 
     async def __parseDecTalkPreferredTts(
         self,
@@ -153,6 +160,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         match provider:
+            case TtsProvider.COMMODORE_SAM:
+                return await self.__parseCommodoreSamPreferredTts(
+                    configurationJson = configurationJson
+                )
+
             case TtsProvider.DEC_TALK:
                 return await self.__parseDecTalkPreferredTts(
                     configurationJson = configurationJson
@@ -190,6 +202,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
             case _:
                 raise ValueError(f'Encountered unknown PreferredTtsProvider: \"{provider}\"')
+
+    async def __serializeCommodoreSamPreferredTts(
+        self,
+        preferredTts: CommodoreSamPreferredTts
+    ) -> dict[str, Any]:
+        return dict()
 
     async def __serializeDecTalkPreferredTts(
         self,
@@ -265,7 +283,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         if not isinstance(preferredTts, AbsPreferredTts):
             raise TypeError(f'preferredTts argument is malformed: \"{preferredTts}\"')
 
-        if isinstance(preferredTts, DecTalkPreferredTts):
+        if isinstance(preferredTts, CommodoreSamPreferredTts):
+            return await self.__serializeCommodoreSamPreferredTts(
+                preferredTts = preferredTts
+            )
+
+        elif isinstance(preferredTts, DecTalkPreferredTts):
             return await self.__serializeDecTalkPreferredTts(
                 preferredTts = preferredTts
             )

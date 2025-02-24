@@ -3,6 +3,7 @@ import pytest
 from src.chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelper import ChatterPreferredTtsUserMessageHelper
 from src.chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelperInterface import \
     ChatterPreferredTtsUserMessageHelperInterface
+from src.chatterPreferredTts.models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredTts
 from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
@@ -40,6 +41,20 @@ class TestChatterPreferredTtsUserMessageHelper:
         streamElementsJsonParser = streamElementsJsonParser,
         ttsMonsterVoiceParser = ttsMonsterVoiceParser
     )
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withCommodoreSamStrings(self):
+        result = await self.helper.parseUserMessage('commodoresam')
+        assert isinstance(result, CommodoreSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('commodore sam')
+        assert isinstance(result, CommodoreSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('commodore_sam')
+        assert isinstance(result, CommodoreSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('commodore-sam')
+        assert isinstance(result, CommodoreSamPreferredTts)
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withDecTalkStrings(self):

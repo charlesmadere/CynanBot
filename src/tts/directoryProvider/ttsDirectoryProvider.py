@@ -27,6 +27,7 @@ class TtsDirectoryProvider(TtsDirectoryProviderInterface):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         match provider:
+            case TtsProvider.COMMODORE_SAM: return 'commodore_sam'
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.HALF_LIFE: return 'half_life'

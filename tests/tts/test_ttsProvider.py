@@ -11,6 +11,10 @@ class TestTtsProvider:
 
         assert len(results) == len(TtsProvider)
 
+    def test_humanName_withCommodoreSam(self):
+        result = TtsProvider.COMMODORE_SAM.humanName
+        assert result == 'Commodore SAM'
+
     def test_humanName_withDecTalk(self):
         result = TtsProvider.DEC_TALK.humanName
         assert result == 'DECtalk'

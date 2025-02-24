@@ -2,6 +2,7 @@ import pytest
 
 from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapper import ChatterPreferredTtsJsonMapper
 from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMapperInterface
+from src.chatterPreferredTts.models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredTts
 from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
@@ -14,14 +15,14 @@ from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
-from src.streamElements.models.streamElementsVoice import StreamElementsVoice
-from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
-from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
-from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
-from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
+from src.streamElements.models.streamElementsVoice import StreamElementsVoice
+from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
+from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from src.tts.ttsProvider import TtsProvider
+from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
+from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
 
 class TestChatterPreferredTtsJsonMapper:
@@ -39,6 +40,15 @@ class TestChatterPreferredTtsJsonMapper:
         streamElementsJsonParser = streamElementsJsonParser,
         ttsMonsterVoiceParser = ttsMonsterVoiceParser
     )
+
+    @pytest.mark.asyncio
+    async def test_parsePreferredTts_withCommodoreSam(self):
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = dict(),
+            provider = TtsProvider.COMMODORE_SAM
+        )
+
+        assert isinstance(result, CommodoreSamPreferredTts)
 
     @pytest.mark.asyncio
     async def test_parsePreferredTts_withDecTalk(self):

@@ -38,9 +38,28 @@ class TestCommodoreSamMessageCleaner:
         assert result == 'Hello, World!'
 
     @pytest.mark.asyncio
+    async def test_clean_withDirectoryTraversalString(self):
+        result = await self.cleaner.clean('& cd .. & dir')
+        assert result == 'cd dir'
+
+    @pytest.mark.asyncio
     async def test_clean_withEmptyString(self):
         result = await self.cleaner.clean('')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_clean_withMouthInputArguments(self):
+        result = await self.cleaner.clean('-mouth')
+        assert result is None
+
+        result = await self.cleaner.clean('-mouth 0')
+        assert result is None
+
+        result = await self.cleaner.clean('this message uses no -mouth argument')
+        assert result == 'this message uses no argument'
+
+        result = await self.cleaner.clean('-mouth test123')
+        assert result == 'test123'
 
     @pytest.mark.asyncio
     async def test_clean_withNone(self):
@@ -73,6 +92,20 @@ class TestCommodoreSamMessageCleaner:
         assert result == 'this message uses no argument'
 
         result = await self.cleaner.clean('-speed test123')
+        assert result == 'test123'
+
+    @pytest.mark.asyncio
+    async def test_clean_withThroatInputArguments(self):
+        result = await self.cleaner.clean('-throat')
+        assert result is None
+
+        result = await self.cleaner.clean('-throat 0')
+        assert result is None
+
+        result = await self.cleaner.clean('this message uses no -throat argument')
+        assert result == 'this message uses no argument'
+
+        result = await self.cleaner.clean('-throat test123')
         assert result == 'test123'
 
     @pytest.mark.asyncio

@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 class TtsProvider(Enum):
 
+    COMMODORE_SAM = auto()
     DEC_TALK = auto()
     GOOGLE = auto()
     HALF_LIFE = auto()
@@ -14,6 +15,7 @@ class TtsProvider(Enum):
     @property
     def humanName(self) -> str:
         match self:
+            case TtsProvider.COMMODORE_SAM: return 'Commodore SAM'
             case TtsProvider.DEC_TALK: return 'DECtalk'
             case TtsProvider.GOOGLE: return 'Google'
             case TtsProvider.HALF_LIFE: return 'Half-Life'

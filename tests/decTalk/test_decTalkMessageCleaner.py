@@ -83,21 +83,19 @@ class TestDecTalkMessageCleaner:
         assert result == 'hello world blah'
 
     @pytest.mark.asyncio
-    async def test_clean_withCrazyLoudBoopSound(self):
+    async def test_clean_withCrazyLoudSirenSound1(self):
         result = await self.cleaner.clean('[:phoneme arpabet on] [:nh][:dv gv 100][:dv ap 10000][:dv hs 200][llao<90047,999>][burr<90047,40>][aa<90047,999>][hxae<900047,40>] [burr<90047,40>]')
-        # IDK, this test is clearly incomplete but at the same time, I guess this is OK to not completely clean this
-        # particular TTS string. In the future this might need to change but ehhh maybe this is OK for now.
-        assert result == ':nh'
+        assert result == None
 
     @pytest.mark.asyncio
-    async def test_clean_withCrazyLoudBoopSound2(self):
+    async def test_clean_withCrazyLoudSirenSound2(self):
         result = await self.cleaner.clean('[:nh][:dv gv 100 ap 10000 hs 200] last one before the fix lands [?llao<90047,999> burr<90047,40> aa<90047,999> hxae<900047,40> burr<90047,40>]')
-        assert result == ':nh last one before the fix lands ?llao 90047,999 burr 90047,40 aa 90047,999 hxae 900047,40 burr 90047,40'
+        assert result == 'last one before the fix lands ?llao 90047,999 burr 90047,40 aa 90047,999 hxae 900047,40 burr 90047,40'
 
     @pytest.mark.asyncio
     async def test_clean_withDangerousCharactersString(self):
         result = await self.cleaner.clean('& cd C:\\ & dir')
-        assert result == 'cd C:\\ dir'
+        assert result == 'cd C: dir'
 
     @pytest.mark.asyncio
     async def test_clean_withDecTalkFlagsString1(self):
@@ -264,6 +262,11 @@ class TestDecTalkMessageCleaner:
         assert result == 'hello world'
 
     @pytest.mark.asyncio
+    async def test_clean_withWhitespaceString(self):
+        result = await self.cleaner.clean(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_clean_withWildNestedInlineCommands(self):
         result = await self.cleaner.clean('hello [[[:play \"C:\\song.wav\"]:volume set 10]: dv qwerty] [:pitch 10] world uni5')
         assert result == 'hello world'
@@ -275,11 +278,6 @@ class TestDecTalkMessageCleaner:
 
         result = await self.cleaner.clean('[:volume something]1')
         assert result == '1'
-
-    @pytest.mark.asyncio
-    async def test_clean_withWhitespaceString(self):
-        result = await self.cleaner.clean(' ')
-        assert result is None
 
     def test_sanity(self):
         assert self.cleaner is not None

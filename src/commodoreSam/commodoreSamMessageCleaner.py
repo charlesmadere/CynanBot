@@ -24,20 +24,39 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
 
-        self.__inputArgumentRegExes: Collection[Pattern] = self.__buildInputArgumentRegExes()
+        self.__commodoreSamInputArgumentRegExes: Collection[Pattern] = self.__buildCommodoreSamInputArgumentRegExes()
+        self.__terminalExploitRegExes: Collection[Pattern] = self.__buildTerminalExploitRegExes()
         self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-    def __buildInputArgumentRegExes(self) -> FrozenList[Pattern]:
-        inputArgumentRegExes: FrozenList[Pattern] = FrozenList()
+    def __buildCommodoreSamInputArgumentRegExes(self) -> FrozenList[Pattern]:
+        regExes: FrozenList[Pattern] = FrozenList()
 
-        # purge pitch input arguments
-        inputArgumentRegExes.append(re.compile(r'(?:^|\s+)-pitch(?:\s+(?:\d+)?)?', re.IGNORECASE))
+        # purge mouth input argument(s)
+        regExes.append(re.compile(r'(?:^|\s+)-mouth(?:\s+(?:\d+)?)?', re.IGNORECASE))
 
-        # purge speed input arguments
-        inputArgumentRegExes.append(re.compile(r'(?:^|\s+)-speed(?:\s+(?:\d+)?)?', re.IGNORECASE))
+        # purge pitch input argument(s)
+        regExes.append(re.compile(r'(?:^|\s+)-pitch(?:\s+(?:\d+)?)?', re.IGNORECASE))
 
-        inputArgumentRegExes.freeze()
-        return inputArgumentRegExes
+        # purge speed input argument(s)
+        regExes.append(re.compile(r'(?:^|\s+)-speed(?:\s+(?:\d+)?)?', re.IGNORECASE))
+
+        # purge throat input argument(s)
+        regExes.append(re.compile(r'(?:^|\s+)-throat(?:\s+(?:\d+)?)?', re.IGNORECASE))
+
+        regExes.freeze()
+        return regExes
+
+    def __buildTerminalExploitRegExes(self) -> FrozenList[Pattern]:
+        regExes: FrozenList[Pattern] = FrozenList()
+
+        # purge potentially dangerous/tricky characters
+        regExes.append(re.compile(r'[\[\]<>&%;=\"|^~`\\]', re.IGNORECASE))
+
+        # purge what might be directory traversal sequences
+        regExes.append(re.compile(r'\.{2}', re.IGNORECASE))
+
+        regExes.freeze()
+        return regExes
 
     async def clean(self, message: str | Any | None) -> str | None:
         if not utils.isValidStr(message):
@@ -48,11 +67,13 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = await self.__purgeInputArguments(message)
+        message = await self.__purge(self.__commodoreSamInputArgumentRegExes, message)
         if not utils.isValidStr(message):
             return None
 
-        # TODO more shenanigans need to be purged tbh
+        message = await self.__purge(self.__terminalExploitRegExes, message)
+        if not utils.isValidStr(message):
+            return None
 
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
@@ -65,7 +86,11 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
 
         return message
 
-    async def __purgeInputArguments(self, message: str | None) -> str | None:
+    async def __purge(
+        self,
+        regExes: Collection[Pattern],
+        message: str | None
+    ) -> str | None:
         if not utils.isValidStr(message):
             return None
 
@@ -74,12 +99,12 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
         while repeat:
             repeat = False
 
-            for inputArgumentRegEx in self.__inputArgumentRegExes:
-                if inputArgumentRegEx.search(message) is None:
+            for regEx in regExes:
+                if regEx.search(message) is None:
                     continue
 
                 repeat = True
-                message = inputArgumentRegEx.sub(' ', message).strip()
+                message = regEx.sub(' ', message).strip()
 
                 if not utils.isValidStr(message):
                     return None

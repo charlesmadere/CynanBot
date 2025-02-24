@@ -73,6 +73,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
     def __createTtsProviderToManagerMap(self) -> frozendict[TtsProvider, TtsManagerInterface | None]:
         ttsProviderToManagerMap: dict[TtsProvider, TtsManagerInterface | None] = {
+            TtsProvider.COMMODORE_SAM: None,
             TtsProvider.DEC_TALK: self.__decTalkTtsManager,
             TtsProvider.GOOGLE: self.__googleTtsManager,
             TtsProvider.HALF_LIFE: self.__halfLifeTtsManager,

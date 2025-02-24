@@ -3,6 +3,7 @@ from typing import Any, Match, Pattern
 
 from .chatterPreferredTtsUserMessageHelperInterface import ChatterPreferredTtsUserMessageHelperInterface
 from ..models.absPreferredTts import AbsPreferredTts
+from ..models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredTts
 from ..models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from ..models.google.googlePreferredTts import GooglePreferredTts
 from ..models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
@@ -50,6 +51,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
 
+        self.__commodoreSamRegEx: Pattern = re.compile(r'^\s*commodore(?:\s+|_|-)?sam\s*$', re.IGNORECASE)
         self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__googleRegEx: Pattern = re.compile(r'^\s*goog(?:le?)?\s*(\w+)?\s*$', re.IGNORECASE)
         self.__halfLifeRegEx: Pattern = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
@@ -57,6 +59,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__singingDecTalkRegEx: Pattern = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__streamElementsRegEx: Pattern = re.compile(r'^\s*stream(?:\s+|_|-)?elements\s*(\w+)?\s*$', re.IGNORECASE)
         self.__ttsMonsterRegEx: Pattern = re.compile(r'^\s*tts(?:\s+|_|-)?monster\s*(\w+)?\s*$', re.IGNORECASE)
+
+    async def __createCommodoreSamTtsProperties(
+        self,
+        match: Match[str]
+    ) -> AbsPreferredTts | None:
+        if not isinstance(match, Match):
+            raise TypeError(f'match argument is malformed: \"{match}\"')
+
+        return CommodoreSamPreferredTts()
 
     async def __createDecTalkTtsProperties(
         self,
@@ -176,6 +187,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         userMessage = utils.cleanStr(userMessage)
 
+        commodoreSamMatch = self.__commodoreSamRegEx.fullmatch(userMessage)
         decTalkMatch = self.__decTalkRegEx.fullmatch(userMessage)
         googleMatch = self.__googleRegEx.fullmatch(userMessage)
         halfLifeMatch = self.__halfLifeRegEx.fullmatch(userMessage)
@@ -184,7 +196,10 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         streamElementsMatch = self.__streamElementsRegEx.fullmatch(userMessage)
         ttsMonsterMatch = self.__ttsMonsterRegEx.fullmatch(userMessage)
 
-        if decTalkMatch is not None:
+        if commodoreSamMatch is not None:
+            return await self.__createCommodoreSamTtsProperties(commodoreSamMatch)
+
+        elif decTalkMatch is not None:
             return await self.__createDecTalkTtsProperties(decTalkMatch)
 
         elif googleMatch is not None:

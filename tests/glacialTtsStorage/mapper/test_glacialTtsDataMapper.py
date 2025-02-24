@@ -10,6 +10,11 @@ class TestGlacialTtsDataMapper:
     mapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
 
     @pytest.mark.asyncio
+    async def test_fromDatabaseName_withCommodoreSam(self):
+        result = await self.mapper.fromDatabaseName('commodore_sam')
+        assert result is TtsProvider.COMMODORE_SAM
+
+    @pytest.mark.asyncio
     async def test_fromDatabaseName_withDecTalk(self):
         result = await self.mapper.fromDatabaseName('dec_talk')
         assert result is TtsProvider.DEC_TALK
@@ -45,6 +50,11 @@ class TestGlacialTtsDataMapper:
         assert result is TtsProvider.TTS_MONSTER
 
     @pytest.mark.asyncio
+    async def test_toDatabaseName_withCommodoreSam(self):
+        result = await self.mapper.toDatabaseName(TtsProvider.COMMODORE_SAM)
+        assert result == 'commodore_sam'
+
+    @pytest.mark.asyncio
     async def test_toDatabaseName_withDecTalk(self):
         result = await self.mapper.toDatabaseName(TtsProvider.DEC_TALK)
         assert result == 'dec_talk'
@@ -78,6 +88,11 @@ class TestGlacialTtsDataMapper:
     async def test_toDatabaseName_withTtsMonster(self):
         result = await self.mapper.toDatabaseName(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withCommodoreSam(self):
+        result = await self.mapper.toFolderName(TtsProvider.COMMODORE_SAM)
+        assert result == 'commodore_sam'
 
     @pytest.mark.asyncio
     async def test_toFolderName_withDecTalk(self):

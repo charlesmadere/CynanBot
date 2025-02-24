@@ -10,8 +10,8 @@ from ...chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsM
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
-from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from ...ttsMonster.models.ttsMonsterFileReference import TtsMonsterFileReference
+from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 

@@ -17,7 +17,6 @@ from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsR
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
 
 class GoogleTtsManager(GoogleTtsManagerInterface):

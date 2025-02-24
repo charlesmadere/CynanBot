@@ -42,6 +42,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         ttsProvider = ttsProvider.lower()
 
         match ttsProvider:
+            case 'commodore_sam': return TtsProvider.COMMODORE_SAM
             case 'dec_talk': return TtsProvider.DEC_TALK
             case 'google': return TtsProvider.GOOGLE
             case 'half_life': return TtsProvider.HALF_LIFE
@@ -72,6 +73,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             raise TypeError(f'ttsProvider argument is malformed: \"{ttsProvider}\"')
 
         match ttsProvider:
+            case TtsProvider.COMMODORE_SAM: return 'commodore_sam'
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.HALF_LIFE: return 'half_life'

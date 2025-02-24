@@ -34,6 +34,11 @@ class TestTtsJsonMapper:
 
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withDecTalkString(self):
+        result = await self.jsonMapper.asyncParseProvider('commodore_sam')
+        assert result is TtsProvider.COMMODORE_SAM
+
+    @pytest.mark.asyncio
+    async def test_asyncParseProvider_withDecTalkString(self):
         result = await self.jsonMapper.asyncParseProvider('dec_talk')
         assert result is TtsProvider.DEC_TALK
 
@@ -76,6 +81,11 @@ class TestTtsJsonMapper:
     async def test_asyncParseProvider_withWhitespaceString(self):
         result = await self.jsonMapper.asyncParseProvider(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withCommodoreSam(self):
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.COMMODORE_SAM)
+        assert result == 'commodore_sam'
 
     @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withDecTalk(self):
@@ -121,6 +131,10 @@ class TestTtsJsonMapper:
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
 
+    def test_parseProvider_withCommodoreSamString(self):
+        result = self.jsonMapper.parseProvider('commodore_sam')
+        assert result is TtsProvider.COMMODORE_SAM
+
     def test_parseProvider_withDecTalkString(self):
         result = self.jsonMapper.parseProvider('dec_talk')
         assert result is TtsProvider.DEC_TALK
@@ -160,6 +174,10 @@ class TestTtsJsonMapper:
     def test_parseProvider_withWhitespaceString(self):
         result = self.jsonMapper.parseProvider(' ')
         assert result is None
+
+    def test_requireProvider_withCommodoreSamString(self):
+        result = self.jsonMapper.requireProvider('commodore_sam')
+        assert result is TtsProvider.COMMODORE_SAM
 
     def test_requireProvider_withDecTalkString(self):
         result = self.jsonMapper.requireProvider('dec_talk')
@@ -212,6 +230,10 @@ class TestTtsJsonMapper:
             result = self.jsonMapper.requireProvider(' ')
 
         assert result is None
+
+    def test_serializeProvider_withCommodoreSam(self):
+        result = self.jsonMapper.serializeProvider(TtsProvider.COMMODORE_SAM)
+        assert result == 'commodore_sam'
 
     def test_serializeProvider_withDecTalk(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.DEC_TALK)
