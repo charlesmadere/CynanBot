@@ -111,6 +111,7 @@ class User(UserInterface):
         speedrunProfile: str | None,
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
+        ttsChatterRewardId: str | None,
         defaultTtsProvider: TtsProvider,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
@@ -298,6 +299,8 @@ class User(UserInterface):
             raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
+        elif ttsChatterRewardId is not None and not isinstance(ttsChatterRewardId, str):
+            raise TypeError(f'ttsChattersRewardId argument is malformed: \"{ttsChatterRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
@@ -412,6 +415,7 @@ class User(UserInterface):
         self.__speedrunProfile: str | None = speedrunProfile
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
+        self.__ttsChattersRewardId: str | None = ttsChatterRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
@@ -612,6 +616,10 @@ class User(UserInterface):
     @property
     def triviaGameShinyMultiplier(self) -> int | None:
         return self.__triviaGameShinyMultiplier
+
+    @property
+    def ttsChattersRewardId(self) -> str | None:
+        return self.__ttsChattersRewardId
 
     @property
     def twitchUrl(self) -> str:

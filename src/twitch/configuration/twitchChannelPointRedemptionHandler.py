@@ -17,6 +17,7 @@ from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubPoint
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from ...channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
+from ...channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -40,6 +41,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None,
         timeoutPointRedemption: TimeoutPointRedemption | None,
         triviaGamePointRedemption: TriviaGamePointRedemption | None,
+        ttsChatterPointRedemption: TtsChatterPointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
@@ -69,6 +71,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'timeoutPointRedemption argument is malformed: \"{timeoutPointRedemption}\"')
         elif triviaGamePointRedemption is not None and not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption):
             raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
+        elif ttsChatterPointRedemption is not None and not isinstance(ttsChatterPointRedemption, TtsChatterPointRedemption):
+            raise TypeError(f'ttsChatterPointRedemption argument is malformed: \"{ttsChatterPointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -138,6 +142,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
+
+        if ttsChatterPointRedemption is None:
+            self.__ttsChatterPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+        else:
+            self.__ttsChatterPointRedemption: AbsChannelPointRedemption = ttsChatterPointRedemption
 
         self.__timber: TimberInterface = timber
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -285,6 +294,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isTriviaGameEnabled and channelPointsMessage.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.isTtsChattersEnabled and channelPointsMessage.rewardId == user.ttsChattersRewardId:
+            if await self.__ttsChatterPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):

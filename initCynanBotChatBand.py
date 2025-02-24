@@ -909,6 +909,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     superTriviaGamePointRedemption = None,
     timeoutPointRedemption = None,
     triviaGamePointRedemption = None,
+    ttsChatterPointRedemption = None,
     timber = timber,
     userIdsRepository = userIdsRepository
 )
@@ -1028,6 +1029,7 @@ cynanBot = CynanBot(
     triviaUtils = None,
     trollmojiHelper = None,
     trollmojiSettingsRepository = None,
+    ttsChatterRepository = None,
     ttsJsonMapper = None,
     ttsMonsterKeyAndUserIdRepository = None,
     ttsMonsterSettingsRepository = None,

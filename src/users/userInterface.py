@@ -251,6 +251,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def ttsChattersRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def waitForSuperTriviaAnswerDelay(self) -> int | None:
         pass
 

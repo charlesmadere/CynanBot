@@ -207,6 +207,7 @@ class UsersRepository(UsersRepositoryInterface):
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
+        ttsChatterRewardId: str | None = userJson.get('ttsChatterRewardId')
 
         defaultLanguageString = utils.getStrFromDict(
             d = userJson,
@@ -274,6 +275,7 @@ class UsersRepository(UsersRepositoryInterface):
         triviaGamePoints: int | None = None
         triviaGameShinyMultiplier: int | None = None
         triviaGameRewardId: str | None = None
+
         waitForSuperTriviaAnswerDelay: int | None = None
         waitForTriviaAnswerDelay: int | None = None
         if isTriviaGameEnabled or isSuperTriviaGameEnabled:
@@ -430,6 +432,7 @@ class UsersRepository(UsersRepositoryInterface):
             timeoutActionFollowShieldDays = timeoutActionFollowShieldDays,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
+            ttsChatterRewardId = ttsChatterRewardId,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             defaultLanguage = defaultLanguage,

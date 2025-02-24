@@ -35,6 +35,7 @@ from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPoin
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
+from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
@@ -501,6 +502,8 @@ from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
 from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from src.tts.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.ttsChatter.repository.ttsChatterRepository import TtsChatterRepository
+from src.ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
@@ -2581,9 +2584,15 @@ supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
     twitchTokensRepository = twitchTokensRepository
 )
 
+ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
 ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
-    streamAlertsManager = streamAlertsManager
+    streamAlertsManager = streamAlertsManager,
+    ttsChatterRepository = ttsChatterRepository
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -2698,6 +2707,11 @@ triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRed
     triviaGameMachine = triviaGameMachine
 )
 
+ttsChatterPointRedemption: TtsChatterPointRedemption | None = TtsChatterPointRedemption(
+    timber = timber,
+    ttsChatterRepository = ttsChatterRepository,
+    twitchUtils = twitchUtils
+)
 
 ########################################################
 ## Websocket Connection Server initialization section ##
@@ -2739,6 +2753,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
     timeoutPointRedemption = timeoutPointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
+    ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository
 )
@@ -2906,6 +2921,7 @@ cynanBot = CynanBot(
     triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
+    ttsChatterRepository = ttsChatterRepository,
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
