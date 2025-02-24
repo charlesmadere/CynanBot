@@ -1,5 +1,6 @@
 from frozendict import frozendict
 
+from .commodoreSam.commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from .compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from .google.googleTtsManagerInterface import GoogleTtsManagerInterface
@@ -23,6 +24,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
+        commodoreSamTtsManager: CommodoreSamTtsManagerInterface | None,
         decTalkTtsManager: DecTalkTtsManagerInterface | None,
         googleTtsManager: GoogleTtsManagerInterface | None,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
@@ -37,6 +39,8 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif commodoreSamTtsManager is not None and not isinstance(commodoreSamTtsManager, CommodoreSamTtsManagerInterface):
+            raise TypeError(f'commodoreSamTtsManager argument is malformed: \"{commodoreSamTtsManager}\"')
         elif decTalkTtsManager is not None and not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface):
             raise TypeError(f'decTalkTtsManager argument is malformed: \"{decTalkTtsManager}\"')
         elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManagerInterface):
@@ -58,6 +62,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None = chatterPreferredTtsHelper
+        self.__commodoreSamTtsManager: TtsManagerInterface | None = commodoreSamTtsManager
         self.__decTalkTtsManager: TtsManagerInterface | None = decTalkTtsManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__halfLifeTtsManager: TtsManagerInterface | None = halfLifeTtsManager
@@ -73,7 +78,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
     def __createTtsProviderToManagerMap(self) -> frozendict[TtsProvider, TtsManagerInterface | None]:
         ttsProviderToManagerMap: dict[TtsProvider, TtsManagerInterface | None] = {
-            TtsProvider.COMMODORE_SAM: None,
+            TtsProvider.COMMODORE_SAM: self.__commodoreSamTtsManager,
             TtsProvider.DEC_TALK: self.__decTalkTtsManager,
             TtsProvider.GOOGLE: self.__googleTtsManager,
             TtsProvider.HALF_LIFE: self.__halfLifeTtsManager,

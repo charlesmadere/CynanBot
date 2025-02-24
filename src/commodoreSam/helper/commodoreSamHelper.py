@@ -11,10 +11,15 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
 
     def __init__(
         self,
-        apiService: CommodoreSamApiServiceInterface,
+        commodoreSamApiService: CommodoreSamApiServiceInterface,
         timber: TimberInterface
     ):
-        self.__apiService: CommodoreSamApiServiceInterface = apiService
+        if not isinstance(commodoreSamApiService, CommodoreSamApiServiceInterface):
+            raise TypeError(f'commodoreSamApiService argument is malformed: \"{commodoreSamApiService}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+
+        self.__commodoreSamApiService: CommodoreSamApiServiceInterface = commodoreSamApiService
         self.__timber: TimberInterface = timber
 
     async def getSpeech(
@@ -28,7 +33,7 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
             return None
 
         try:
-            return await self.__apiService.generateSpeechFile(
+            return await self.__commodoreSamApiService.generateSpeechFile(
                 text = message
             )
         except CommodoreSamFailedToGenerateSpeechFileException as e:

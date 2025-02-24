@@ -87,6 +87,14 @@ from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCh
 from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from src.cheerActions.tnt.tntCheerActionHelper import TntCheerActionHelper
 from src.cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
+from src.commodoreSam.apiService.commodoreSamApiService import CommodoreSamApiService
+from src.commodoreSam.apiService.commodoreSamApiServiceInterface import CommodoreSamApiServiceInterface
+from src.commodoreSam.commodoreSamMessageCleaner import CommodoreSamMessageCleaner
+from src.commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
+from src.commodoreSam.helper.commodoreSamHelper import CommodoreSamHelper
+from src.commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
+from src.commodoreSam.settings.commodoreSamSettingsRepository import CommodoreSamSettingsRepository
+from src.commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -479,6 +487,8 @@ from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepositor
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from src.tts.commodoreSam.commodoreSamTtsManager import CommodoreSamTtsManager
+from src.tts.commodoreSam.commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from src.tts.compositeTtsManager import CompositeTtsManager
 from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
@@ -515,11 +525,11 @@ from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInter
     TtsMonsterKeyAndUserIdRepositoryInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
-from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
-from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
     TtsMonsterMessageChunkParserInterface
+from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
+from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
@@ -1912,19 +1922,38 @@ glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetrie
     ttsDirectoryProvider = ttsDirectoryProvider
 )
 
-decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
-    emojiHelper = emojiHelper,
+commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = CommodoreSamSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/commodoreSamSettingsRepository.json'
+    )
+)
+
+commodoreSamApiService: CommodoreSamApiServiceInterface = CommodoreSamApiService(
+    eventLoop = eventLoop,
+    commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
+)
+
+commodoreSamHelper: CommodoreSamHelperInterface = CommodoreSamHelper(
+    commodoreSamApiService = commodoreSamApiService,
+    timber = timber
+)
+
+commodoreSamMessageCleaner: CommodoreSamMessageCleanerInterface = CommodoreSamMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
-    emojiHelper = emojiHelper,
+commodoreSamTtsManager: CommodoreSamTtsManagerInterface = CommodoreSamTtsManager(
+    commodoreSamHelper = commodoreSamHelper,
+    commodoreSamMessageCleaner = commodoreSamMessageCleaner,
+    commodoreSamSettingsRepository = commodoreSamSettingsRepository,
+    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    sing = True
+    ttsCommandBuilder = ttsCommandBuilder,
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
@@ -1949,9 +1978,16 @@ decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
     timber = timber
 )
 
+decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+    emojiHelper = emojiHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils
+)
+
 decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
 
-decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
+decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
@@ -1962,9 +1998,9 @@ decTalkTtsManager: DecTalkTtsManagerInterface | None = DecTalkTtsManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-singingDecTalkTtsManager: DecTalkTtsManagerInterface | None = SingingDecTalkTtsManager(
+singingDecTalkTtsManager: DecTalkTtsManagerInterface = SingingDecTalkTtsManager(
     decTalkHelper = decTalkHelper,
-    decTalkMessageCleaner = singingDecTalkMessageCleaner,
+    decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
     decTalkVoiceChooser = decTalkVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
@@ -2226,6 +2262,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
 compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+    commodoreSamTtsManager = commodoreSamTtsManager,
     decTalkTtsManager = decTalkTtsManager,
     googleTtsManager = googleTtsManager,
     halfLifeTtsManager = halfLifeTtsManager,
