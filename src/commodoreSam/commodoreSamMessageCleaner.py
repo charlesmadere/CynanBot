@@ -31,10 +31,10 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
         inputArgumentRegExes: FrozenList[Pattern] = FrozenList()
 
         # purge pitch input arguments
-        inputArgumentRegExes.append(re.compile(r'(^|\s+)-pitch(\s+(\d+)?)?', re.IGNORECASE))
+        inputArgumentRegExes.append(re.compile(r'(?:^|\s+)-pitch(?:\s+(?:\d+)?)?', re.IGNORECASE))
 
         # purge speed input arguments
-        inputArgumentRegExes.append(re.compile(r'(^|\s+)-speed(\s+(\d+)?)?', re.IGNORECASE))
+        inputArgumentRegExes.append(re.compile(r'(?:^|\s+)-speed(?:\s+(?:\d+)?)?', re.IGNORECASE))
 
         inputArgumentRegExes.freeze()
         return inputArgumentRegExes
