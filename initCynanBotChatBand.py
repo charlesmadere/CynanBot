@@ -955,6 +955,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = None,
     cheerActionsRepository = None,
     cheerActionsWizard = None,
+    commodoreSamSettingsRepository = None,
     compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = None,
     crowdControlAutomator = None,

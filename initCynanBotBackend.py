@@ -2044,6 +2044,7 @@ cynanBot = CynanBot(
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
+    commodoreSamSettingsRepository = None,
     compositeTtsManager = compositeTtsManager,
     crowdControlActionHandler = None,
     crowdControlAutomator = None,

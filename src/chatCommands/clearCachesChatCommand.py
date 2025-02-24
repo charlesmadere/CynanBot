@@ -9,6 +9,7 @@ from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterfa
     ChatterPreferredTtsSettingsRepositoryInterface
 from ..cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from ..commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from ..crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
@@ -78,6 +79,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface | None,
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
+        commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
@@ -138,6 +140,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif commodoreSamSettingsRepository is not None and not isinstance(commodoreSamSettingsRepository, CommodoreSamSettingsRepositoryInterface):
+            raise TypeError(f'commodoreSamSettingsRepository argument is malformed: \"{commodoreSamSettingsRepository}\"')
         elif crowdControlSettingsRepository is not None and not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif decTalkSettingsRepository is not None and not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
@@ -233,6 +237,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(chatterPreferredTtsSettingsRepository)
         self.__clearables.append(cheerActionSettingsRepository)
         self.__clearables.append(cheerActionsRepository)
+        self.__clearables.append(commodoreSamSettingsRepository)
         self.__clearables.append(crowdControlSettingsRepository)
         self.__clearables.append(decTalkSettingsRepository)
         self.__clearables.append(funtoonTokensRepository)
