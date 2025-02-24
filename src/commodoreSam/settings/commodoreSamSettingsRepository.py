@@ -34,7 +34,7 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 8)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 6)
 
     async def requireCommodoreSamExecutablePath(self) -> str:
         commodoreSamPath = await self.getCommodoreSamExecutablePath()
