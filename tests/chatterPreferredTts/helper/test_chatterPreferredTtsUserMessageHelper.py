@@ -7,14 +7,15 @@ from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPr
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
-from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
+from src.chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from src.chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
-from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
+from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
@@ -189,18 +190,20 @@ class TestChatterPreferredTtsUserMessageHelper:
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withStreamElementsStrings(self):
+        result = await self.helper.parseUserMessage('streamelements')
+        assert isinstance(result, StreamElementsPreferredTts)
+
         result = await self.helper.parseUserMessage('streamElements')
-        assert isinstance(result, TtsMonsterPreferredTts)
+        assert isinstance(result, StreamElementsPreferredTts)
 
         result = await self.helper.parseUserMessage('stream elements')
-        assert isinstance(result, TtsMonsterPreferredTts)
+        assert isinstance(result, StreamElementsPreferredTts)
 
         result = await self.helper.parseUserMessage('stream-elements')
-        assert isinstance(result, TtsMonsterPreferredTts)
+        assert isinstance(result, StreamElementsPreferredTts)
 
         result = await self.helper.parseUserMessage('stream_elements')
-        assert isinstance(result, TtsMonsterPreferredTts)
-
+        assert isinstance(result, StreamElementsPreferredTts)
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withNone(self):
