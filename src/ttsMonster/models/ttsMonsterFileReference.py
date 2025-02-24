@@ -7,5 +7,6 @@ from .ttsMonsterVoice import TtsMonsterVoice
 @dataclass(frozen = True)
 class TtsMonsterFileReference:
     storeDateTime: datetime
-    messageVoices: frozenset[TtsMonsterVoice]
+    allVoices: frozenset[TtsMonsterVoice]
     filePath: str
+    primaryVoice: TtsMonsterVoice

@@ -1,17 +1,20 @@
 import re
 import traceback
 from asyncio import AbstractEventLoop
+from dataclasses import dataclass
 from typing import Pattern
 
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
+from frozenlist import FrozenList
 
 from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..exceptions import TtsMonsterFailedToCreateDirectoriesException
 from ..messageChunkParser.ttsMonsterMessageChunkParserInterface import TtsMonsterMessageChunkParserInterface
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
+from ..models.ttsMonsterMessageChunk import TtsMonsterMessageChunk
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -21,6 +24,12 @@ from ...tts.ttsProvider import TtsProvider
 
 
 class TtsMonsterHelper(TtsMonsterHelperInterface):
+
+    @dataclass(frozen = True)
+    class MessageVoices:
+        messageChunks: FrozenList[TtsMonsterMessageChunk] | None
+        allVoices: frozenset[TtsMonsterVoice]
+        primaryVoice: TtsMonsterVoice
 
     def __init__(
         self,
@@ -75,6 +84,29 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         self.__timber.log('TtsMonsterHelper', f'Created new directories ({directory=})')
 
+    async def __determineMessageVoices(self, message: str) -> MessageVoices:
+        messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
+            message = message,
+            defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+        )
+
+        allVoices: set[TtsMonsterVoice] = set()
+        primaryVoice: TtsMonsterVoice
+
+        if messageChunks is not None and len(messageChunks) >= 1:
+            for messageChunk in messageChunks:
+                allVoices.add(messageChunk.voice)
+
+            primaryVoice = messageChunks[0].voice
+        else:
+            primaryVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+
+        return TtsMonsterHelper.MessageVoices(
+            messageChunks = messageChunks,
+            allVoices = frozenset(allVoices),
+            primaryVoice = primaryVoice
+        )
+
     async def generateTts(
         self,
         message: str | None,
@@ -97,15 +129,14 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             provider = TtsProvider.TTS_MONSTER
         )
 
-        messageVoices = await self.__parseMessageVoices(
-            message = message
-        )
+        messageVoices = await self.__determineMessageVoices(message)
 
         if glacialFile is not None:
             return TtsMonsterFileReference(
                 storeDateTime = glacialFile.storeDateTime,
-                messageVoices = messageVoices,
-                filePath = glacialFile.filePath
+                allVoices = messageVoices.allVoices,
+                filePath = glacialFile.filePath,
+                primaryVoice = messageVoices.primaryVoice
             )
 
         speechBytes = await self.__ttsMonsterPrivateApiHelper.getSpeech(
@@ -131,29 +162,13 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         ):
             return TtsMonsterFileReference(
                 storeDateTime = glacialFile.storeDateTime,
-                messageVoices = messageVoices,
-                filePath = glacialFile.filePath
+                allVoices = messageVoices.allVoices,
+                filePath = glacialFile.filePath,
+                primaryVoice = messageVoices.primaryVoice
             )
         else:
             self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({message=}) ({glacialFile=})')
             return None
-
-    async def __parseMessageVoices(
-        self,
-        message: str
-    ) -> frozenset[TtsMonsterVoice]:
-        messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
-            message = message,
-            defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
-        )
-
-        messageVoices: set[TtsMonsterVoice] = set()
-
-        if messageChunks is not None and len(messageChunks) >= 1:
-            for messageChunk in messageChunks:
-                messageVoices.add(messageChunk.voice)
-
-        return frozenset(messageVoices)
 
     async def __saveSpeechBytes(
         self,
