@@ -107,7 +107,6 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             return
 
         self.__timber.log('DecTalkTtsManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
-
         await self.__executeTts(fileName)
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
