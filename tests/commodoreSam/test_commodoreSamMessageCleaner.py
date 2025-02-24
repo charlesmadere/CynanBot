@@ -48,6 +48,34 @@ class TestCommodoreSamMessageCleaner:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_clean_withPitchInputArguments(self):
+        result = await self.cleaner.clean('-pitch')
+        assert result is None
+
+        result = await self.cleaner.clean('-pitch test123')
+        assert result == 'test123'
+
+        result = await self.cleaner.clean('this message uses no -pitch argument')
+        assert result == 'this message uses no argument'
+
+        result = await self.cleaner.clean('-pitch 100 test123')
+        assert result == 'test123'
+
+    @pytest.mark.asyncio
+    async def test_clean_withSpeedInputArguments(self):
+        result = await self.cleaner.clean('-speed')
+        assert result is None
+
+        result = await self.cleaner.clean('-speed 0')
+        assert result is None
+
+        result = await self.cleaner.clean('this message uses no -speed argument')
+        assert result == 'this message uses no argument'
+
+        result = await self.cleaner.clean('-speed test123')
+        assert result == 'test123'
+
+    @pytest.mark.asyncio
     async def test_clean_withWhitespaceString(self):
         result = await self.cleaner.clean(' ')
         assert result is None
