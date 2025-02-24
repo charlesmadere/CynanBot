@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 class TtsMonsterVoice(Enum):
 
+    ASMR = auto()
     BRIAN = auto()
     JAZZ = auto()
     KKONA = auto()
@@ -14,6 +15,7 @@ class TtsMonsterVoice(Enum):
     @property
     def humanName(self) -> str:
         match self:
+            case TtsMonsterVoice.ASMR: return 'ASMR'
             case TtsMonsterVoice.BRIAN: return 'Brian'
             case TtsMonsterVoice.JAZZ: return 'Jazz'
             case TtsMonsterVoice.KKONA: return 'Kkona'
@@ -26,6 +28,7 @@ class TtsMonsterVoice(Enum):
     @property
     def inMessageName(self) -> str:
         match self:
+            case TtsMonsterVoice.ASMR: return 'asmr'
             case TtsMonsterVoice.BRIAN: return 'brian'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.KKONA: return 'kkona'
