@@ -2,7 +2,7 @@ import traceback
 
 from .decTalkHelperInterface import DecTalkHelperInterface
 from ..apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
-from ...decTalk.exceptions import DecTalkFailedToGenerateSpeechFileException
+from ..exceptions import DecTalkFailedToGenerateSpeechFileException
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -37,5 +37,5 @@ class DecTalkHelper(DecTalkHelperInterface):
                 text = message
             )
         except DecTalkFailedToGenerateSpeechFileException as e:
-            self.__timber.log('DecTalkHelper', f'Encountered error when fetching speech ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkHelper', f'Encountered error when generating speech ({message=}): {e}', e, traceback.format_exc())
             return None
