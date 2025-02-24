@@ -9,7 +9,7 @@ from ..recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from ..saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from ..soundAlertChatAction import SoundAlertChatAction
 from ..supStreamerChatAction import SupStreamerChatAction
-from ..ttsChattersChatAction import TtsChattersChatAction
+from ..ttsChatterChatAction import TtsChatterChatAction
 from ...aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...mostRecentChat.mostRecentChat import MostRecentChat
@@ -38,7 +38,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None,
         soundAlertChatAction: SoundAlertChatAction | None,
         supStreamerChatAction: SupStreamerChatAction | None,
-        ttsChattersChatAction: TtsChattersChatAction | None,
+        ttsChatterChatAction: TtsChatterChatAction | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -68,8 +68,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'soundAlertChatAction argument is malformed: \"{soundAlertChatAction}\"')
         elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
             raise TypeError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
-        elif ttsChattersChatAction is not None and not isinstance(ttsChattersChatAction, TtsChattersChatAction):
-            raise TypeError(f'ttsChattersChatAction argument is malformed: \"{ttsChattersChatAction}\"')
+        elif ttsChatterChatAction is not None and not isinstance(ttsChatterChatAction, TtsChatterChatAction):
+            raise TypeError(f'ttsChatterChatAction argument is malformed: \"{ttsChatterChatAction}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -87,7 +87,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__saveMostRecentAnivMessageChatAction: AbsChatAction | None = saveMostRecentAnivMessageChatAction
         self.__soundAlertChatAction: AbsChatAction | None = soundAlertChatAction
         self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
-        self.__ttsChattersChatAction: AbsChatAction | None = ttsChattersChatAction
+        self.__ttsChatterChatAction: AbsChatAction | None = ttsChatterChatAction
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__soundAlertChatActionPlayed: bool = False
 
@@ -204,9 +204,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
                 user = user
             )
 
-        if self.__ttsChattersChatAction is not None:
+        if self.__ttsChatterChatAction is not None:
             if not self.__soundAlertChatActionPlayed:
-                await self.__ttsChattersChatAction.handleChat(
+                await self.__ttsChatterChatAction.handleChat(
                     mostRecentChat = mostRecentChat,
                     message = message,
                     user = user

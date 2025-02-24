@@ -24,8 +24,6 @@ from .soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemp
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
-from .ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
@@ -53,7 +51,6 @@ class UsersRepository(UsersRepositoryInterface):
         timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
-        ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
         usersFile: str = '../config/usersRepository.json'
     ):
@@ -79,8 +76,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsBoosterPackParser, TtsBoosterPackParserInterface):
             raise TypeError(f'ttsBoosterPackParser argument is malformed: \"{ttsBoosterPackParser}\"')
-        elif not isinstance(ttsChatterBoosterPackParser, TtsChatterBoosterPackParserInterface):
-            raise TypeError(f'ttsChatterBoosterPackParser argument is malformed: \"{ttsChatterBoosterPackParser}\"')
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif not utils.isValidStr(usersFile):
@@ -97,7 +92,6 @@ class UsersRepository(UsersRepositoryInterface):
         self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsBoosterPackParser: TtsBoosterPackParserInterface = ttsBoosterPackParser
-        self.__ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = ttsChatterBoosterPackParser
         self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
         self.__usersFile: str = usersFile
 
@@ -156,6 +150,7 @@ class UsersRepository(UsersRepositoryInterface):
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
+        areTtsChattersEnabled = utils.getBoolFromDict(userJson, 'ttsChattersEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey, False)
         isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED.jsonKey, True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
@@ -189,7 +184,6 @@ class UsersRepository(UsersRepositoryInterface):
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
-        isTtsChattersEnabled = utils.getBoolFromDict(userJson, 'ttsChattersEnabled', False)
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
         isTtsMonsterApiUsageReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED.jsonKey, True)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
@@ -345,11 +339,6 @@ class UsersRepository(UsersRepositoryInterface):
             ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
             ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
 
-        ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = None
-        if isTtsChattersEnabled:
-            ttsChatterBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsChatterBoosterPacks')
-            ttsChatterBoosterPacks = self.__ttsChatterBoosterPackParser.parseBoosterPacks(defaultTtsProvider, ttsChatterBoosterPacksJson)
-
         chatBackMessages: FrozenList[str] | None = None
         if isChatBackMessagesEnabled:
             chatBackMessagesJson: list[str] | Any | None = userJson.get('chatBackMessages', None)
@@ -408,7 +397,7 @@ class UsersRepository(UsersRepositoryInterface):
             isTranslateEnabled = isTranslateEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isTriviaScoreEnabled = isTriviaScoreEnabled,
-            isTtsChattersEnabled = isTtsChattersEnabled,
+            areTtsChattersEnabled = areTtsChattersEnabled,
             isTtsEnabled = isTtsEnabled,
             isTtsMonsterApiUsageReportingEnabled = isTtsMonsterApiUsageReportingEnabled,
             isWeatherEnabled = isWeatherEnabled,
@@ -466,7 +455,6 @@ class UsersRepository(UsersRepositoryInterface):
             chatSoundAlerts = chatSoundAlerts,
             chatBackMessages = chatBackMessages,
             ttsBoosterPacks = ttsBoosterPacks,
-            ttsChatterBoosterPacks = ttsChatterBoosterPacks,
             timeZones = timeZones,
         )
 

@@ -11,7 +11,6 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
-from .ttsChatters.ttsChatterBoosterPack import TtsChatterBoosterPack
 from .userInterface import UserInterface
 from ..language.languageEntry import LanguageEntry
 from ..misc import utils as utils
@@ -27,6 +26,7 @@ class User(UserInterface):
         areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
         areSoundAlertsEnabled: bool,
+        areTtsChattersEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
@@ -64,7 +64,6 @@ class User(UserInterface):
         isTranslateEnabled: bool,
         isTriviaGameEnabled: bool,
         isTriviaScoreEnabled: bool,
-        isTtsChattersEnabled: bool,
         isTtsEnabled: bool,
         isTtsMonsterApiUsageReportingEnabled: bool,
         isWeatherEnabled: bool,
@@ -122,7 +121,6 @@ class User(UserInterface):
         chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None,
         chatBackMessages: FrozenList[str] | None,
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
-        ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None,
         timeZones: FrozenList[tzinfo] | None,
     ):
         if not utils.isValidBool(areBeanStatsEnabled):
@@ -135,6 +133,8 @@ class User(UserInterface):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
+        elif not utils.isValidBool(areTtsChattersEnabled):
+            raise TypeError(f'areTtsChattersEnabled argument is malformed: \"{areTtsChattersEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isAnivMessageCopyTimeoutChatReportingEnabled):
@@ -209,8 +209,6 @@ class User(UserInterface):
             raise TypeError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
         elif not utils.isValidBool(isTriviaScoreEnabled):
             raise TypeError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
-        elif not utils.isValidBool(isTtsChattersEnabled):
-            raise TypeError(f'isTtsChattersEnabled argument is malformed: \"{isTtsChattersEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isTtsMonsterApiUsageReportingEnabled):
@@ -300,7 +298,7 @@ class User(UserInterface):
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif ttsChatterRewardId is not None and not isinstance(ttsChatterRewardId, str):
-            raise TypeError(f'ttsChattersRewardId argument is malformed: \"{ttsChatterRewardId}\"')
+            raise TypeError(f'ttsChatterRewardId argument is malformed: \"{ttsChatterRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
@@ -321,8 +319,6 @@ class User(UserInterface):
             raise TypeError(f'chatBackMessages argument is malformed: \"{chatBackMessages}\"')
         elif ttsBoosterPacks is not None and not isinstance(ttsBoosterPacks, FrozenList):
             raise TypeError(f'ttsBoosterPacks argument is malformed: \"{ttsBoosterPacks}\"')
-        elif ttsChatterBoosterPacks is not None and not isinstance(ttsChatterBoosterPacks, frozendict):
-            raise TypeError(f'ttsChatterBoosterPacks argument is malformed: \"{ttsChatterBoosterPacks}\"')
         elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
@@ -368,7 +364,7 @@ class User(UserInterface):
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
-        self.__isTtsChattersEnabled: bool = isTtsChattersEnabled
+        self.__areTtsChattersEnabled: bool = areTtsChattersEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
@@ -415,7 +411,7 @@ class User(UserInterface):
         self.__speedrunProfile: str | None = speedrunProfile
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
-        self.__ttsChattersRewardId: str | None = ttsChatterRewardId
+        self.__ttsChatterRewardId: str | None = ttsChatterRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
@@ -426,7 +422,6 @@ class User(UserInterface):
         self.__chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None = chatSoundAlerts
         self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
         self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
-        self.__ttsChatterBoosterPacks: frozendict[str, TtsChatterBoosterPack] | None = ttsChatterBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
 
     @property
@@ -618,8 +613,8 @@ class User(UserInterface):
         return self.__triviaGameShinyMultiplier
 
     @property
-    def ttsChattersRewardId(self) -> str | None:
-        return self.__ttsChattersRewardId
+    def ttsChatterRewardId(self) -> str | None:
+        return self.__ttsChatterRewardId
 
     @property
     def twitchUrl(self) -> str:
@@ -806,8 +801,8 @@ class User(UserInterface):
         return self.__isTtsEnabled
 
     @property
-    def isTtsChattersEnabled(self) -> bool:
-        return self.__isTtsChattersEnabled
+    def areTtsChattersEnabled(self) -> bool:
+        return self.__areTtsChattersEnabled
 
     @property
     def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
@@ -859,7 +854,3 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
-
-    @property
-    def ttsChatterBoosterPacks(self) -> frozendict[str, TtsChatterBoosterPack] | None:
-        return self.__ttsChatterBoosterPacks

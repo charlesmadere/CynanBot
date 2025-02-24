@@ -13,7 +13,7 @@ from ..users.accessLevel.accessLevel import AccessLevel
 from ..users.userInterface import UserInterface
 
 
-class TtsChattersChatAction(AbsChatAction):
+class TtsChatterChatAction(AbsChatAction):
 
     def __init__(
         self,
@@ -38,7 +38,7 @@ class TtsChattersChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isTtsChattersEnabled or not user.isTtsEnabled:
+        if not user.areTtsChattersEnabled or not user.isTtsEnabled:
             return False
 
         if await self.__ttsChatterRepository.get(message.getAuthorId(), await message.getTwitchChannelId()) is None:

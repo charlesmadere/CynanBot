@@ -299,7 +299,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.isTtsChattersEnabled and channelPointsMessage.rewardId == user.ttsChattersRewardId:
+        if user.areTtsChattersEnabled and channelPointsMessage.rewardId == user.ttsChatterRewardId:
             if await self.__ttsChatterPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage

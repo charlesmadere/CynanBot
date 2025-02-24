@@ -31,7 +31,7 @@ class RemoveTtsChatterChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not user.isTtsChattersEnabled:
+        if not user.areTtsChattersEnabled:
             return
 
         ttsChatter = await self.__ttsChatterRepository.remove(

@@ -32,7 +32,7 @@ class TtsChatterPointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
-        if not twitchUser.isTtsChattersEnabled:
+        if not twitchUser.areTtsChattersEnabled:
             return False
 
         ttsChatter = TtsChatter(

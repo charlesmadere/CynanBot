@@ -35,7 +35,7 @@ from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.soundAlertChatAction import SoundAlertChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
-from src.chatActions.ttsChattersChatAction import TtsChattersChatAction
+from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
@@ -435,8 +435,6 @@ from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJso
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from src.users.ttsChatters.ttsChatterBoosterPackParser import TtsChatterBoosterPackParser
-from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -671,20 +669,10 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
 )
 
 ttsChatterAccessLevelParser: AccessLevelJsonParserInterface = AccessLevelJsonParser()
-
 halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
-
 microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
-
 ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
-ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = TtsChatterBoosterPackParser(
-    halfLifeJsonParser = halfLifeVoiceParser,
-    microsoftSamJsonParser = microsoftSamJsonParser,
-    streamElementsJsonParser = streamElementsJsonParser,
-    accessLevelJsonParser = ttsChatterAccessLevelParser,
-    ttsJsonMapper = ttsJsonMapper
-)
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
@@ -698,7 +686,6 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
-    ttsChatterBoosterPackParser = ttsChatterBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper
 )
 
@@ -1783,7 +1770,7 @@ ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
     timber = timber
 )
 
-ttsChattersChatAction: TtsChattersChatAction = TtsChattersChatAction(
+ttsChatterChatAction: TtsChatterChatAction = TtsChatterChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
     streamAlertsManager = streamAlertsManager,
     ttsChatterRepository = ttsChatterRepository
@@ -1809,7 +1796,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     soundAlertChatAction = soundAlertChatAction,
     supStreamerChatAction = supStreamerChatAction,
-    ttsChattersChatAction = ttsChattersChatAction,
+    ttsChatterChatAction = ttsChatterChatAction,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )

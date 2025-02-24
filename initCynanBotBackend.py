@@ -447,9 +447,7 @@ from src.users.soundAlert.stub.stubSoundAlertRedemptionJsonParser import StubSou
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
-from src.users.tts.stub.stubTtsChatterBoosterPackParser import StubTtsChatterBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from src.users.ttsChatters.ttsChatterBoosterPackParserInterface import TtsChatterBoosterPackParserInterface
 from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
@@ -668,8 +666,6 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
-ttsChatterBoosterPackParser: TtsChatterBoosterPackParserInterface = StubTtsChatterBoosterPackParser()
-
 usersRepository: UsersRepositoryInterface = UsersRepository(
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
     crowdControlJsonParser = crowdControlJsonParser,
@@ -682,7 +678,6 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
-    ttsChatterBoosterPackParser = ttsChatterBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper
 )
 
@@ -1840,7 +1835,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     soundAlertChatAction = None,
     supStreamerChatAction = None,
-    ttsChattersChatAction = None,
+    ttsChatterChatAction = None,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
