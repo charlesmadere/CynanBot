@@ -1,4 +1,5 @@
 from .models.chatterPrefferedTts import ChatterPreferredTts
+from .models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredTts
 from .models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from .models.google.googlePreferredTts import GooglePreferredTts
 from .models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
@@ -11,6 +12,9 @@ from ..tts.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsPresenter:
+
+    async def __commodoreSam(self, preferredTts: CommodoreSamPreferredTts) -> str:
+        return TtsProvider.COMMODORE_SAM.humanName
 
     async def __decTalk(self, preferredTts: DecTalkPreferredTts) -> str:
         return TtsProvider.DEC_TALK.humanName
@@ -73,6 +77,9 @@ class ChatterPreferredTtsPresenter:
             raise TypeError(f'preferredTts argument is malformed: \"{preferredTts}\"')
 
         absPreferredTts = preferredTts.preferredTts
+
+        if isinstance(absPreferredTts, CommodoreSamPreferredTts):
+            return await self.__commodoreSam(absPreferredTts)
 
         if isinstance(absPreferredTts, DecTalkPreferredTts):
             return await self.__decTalk(absPreferredTts)
