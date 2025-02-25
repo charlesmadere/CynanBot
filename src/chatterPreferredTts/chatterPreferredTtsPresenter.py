@@ -81,7 +81,7 @@ class ChatterPreferredTtsPresenter:
         if isinstance(absPreferredTts, CommodoreSamPreferredTts):
             return await self.__commodoreSam(absPreferredTts)
 
-        if isinstance(absPreferredTts, DecTalkPreferredTts):
+        elif isinstance(absPreferredTts, DecTalkPreferredTts):
             return await self.__decTalk(absPreferredTts)
 
         elif isinstance(absPreferredTts, GooglePreferredTts):
