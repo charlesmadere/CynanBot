@@ -1,4 +1,5 @@
 import asyncio
+import os
 import re
 import uuid
 from asyncio import AbstractEventLoop, CancelledError as AsyncioCancelledError
@@ -85,13 +86,13 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         await self.__createDirectories(filePath)
 
         fileName = await self.__generateFileName()
-        fullFilePath = f'{filePath}/{fileName}'
+        fullFilePath = os.path.normpath(f'{filePath}/{fileName}')
 
         commodoreSamProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
-        command = f'{pathToCommodoreSam} -wav \"{fullFilePath}\" {text}'
+        command = f'{os.path.normpath(pathToCommodoreSam)} -wav \"{fullFilePath}\" {text}'
 
         try:
             commodoreSamProcess = await asyncio.create_subprocess_shell(
