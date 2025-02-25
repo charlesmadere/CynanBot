@@ -101,5 +101,6 @@ class ChatterPreferredTtsPresenter:
 
         elif isinstance(absPreferredTts, TtsMonsterPreferredTts):
             return await self.__ttsMonster(absPreferredTts)
+
         else:
             raise ValueError(f'Encountered unknown AbsPreferredTts: \"{preferredTts}\"')
