@@ -233,7 +233,7 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
         if not utils.isValidStr(filePath):
             return None
 
-        return utils.cleanPath(filePath)
+        return filePath
 
     async def getMediaPlayerVolume(self) -> int:
         jsonContents = await self.__readJson()

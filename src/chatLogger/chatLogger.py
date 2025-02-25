@@ -162,8 +162,14 @@ class ChatLogger(ChatLoggerInterface):
             structure[messageDirectory][messageFile].append(message)
 
         for messageDirectory, messageFileToMessagesDict in structure.items():
-            if not await aiofiles.ospath.exists(messageDirectory):
-                await aiofiles.os.makedirs(messageDirectory)
+            if not await aiofiles.ospath.exists(
+                path = messageDirectory,
+                loop = self.__backgroundTaskHelper.eventLoop
+            ):
+                await aiofiles.os.makedirs(
+                    name = messageDirectory,
+                    loop = self.__backgroundTaskHelper.eventLoop
+                )
 
             for messageFile, messagesList in messageFileToMessagesDict.items():
                 async with aiofiles.open(

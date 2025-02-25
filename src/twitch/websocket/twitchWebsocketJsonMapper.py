@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..api.models.twitchChatMessage import TwitchChatMessage
+from ..api.models.twitchChatMessageType import TwitchChatMessageType
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchNoticeType import TwitchNoticeType
@@ -311,6 +312,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'message' in eventJson:
             chatMessage = await self.__twitchJsonMapper.parseChatMessage(eventJson.get('message'))
 
+        chatMessageType: TwitchChatMessageType | None = None
+        if 'message_type' in eventJson:
+            chatMessageType = await self.__twitchJsonMapper.parseChatMessageType(eventJson.get('message_type'))
+
         cheer: TwitchCheerMetadata | None = None
         if 'cheer' in eventJson:
             cheer = await self.__twitchJsonMapper.parseCheerMetadata(eventJson.get('cheer'))
@@ -407,6 +412,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userName = userName,
             winningOutcomeId = winningOutcomeId,
             chatMessage = chatMessage,
+            chatMessageType = chatMessageType,
             cheer = cheer,
             tier = tier,
             channelPointsVoting = channelPointsVoting,

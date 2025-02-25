@@ -70,7 +70,6 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         if not utils.isValidStr(directoryPath):
             return None
 
-        directoryPath = utils.cleanPath(directoryPath)
         scanResult = self.__scanResultCache.get(directoryPath, None)
 
         if scanResult is None:
@@ -131,14 +130,20 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self,
         directoryPath: str
     ) -> SoundPlayerRandomizerDirectoryScanResult:
-        if not await aiofiles.ospath.exists(directoryPath):
+        if not await aiofiles.ospath.exists(
+            path = directoryPath,
+            loop = self.__eventLoop
+        ):
             self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path does not exist: \"{directoryPath}\"')
 
             return SoundPlayerRandomizerDirectoryScanResult(
                 soundFiles = list(),
                 shinySoundFiles = list()
             )
-        elif not await aiofiles.ospath.isdir(directoryPath):
+        elif not await aiofiles.ospath.isdir(
+            s = directoryPath,
+            loop = self.__eventLoop
+        ):
             self.__timber.log('SoundPlayerRandomizerHelper', f'The given directory path is not a directory: \"{directoryPath}\"')
 
             return SoundPlayerRandomizerDirectoryScanResult(
@@ -172,12 +177,11 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                 continue
 
             shinyGroup: str | None = soundFileMatch.group(1)
-            cleanPath = utils.cleanPath(entry.path)
 
             if utils.isValidStr(shinyGroup):
-                shinySoundFilesSet.add(cleanPath)
+                shinySoundFilesSet.add(entry.path)
             else:
-                soundFilesSet.add(cleanPath)
+                soundFilesSet.add(entry.path)
 
         directoryContents.close()
         self.__timber.log('SoundPlayerRandomizerHelper', f'Scanned \"{directoryPath}\" and found {len(soundFilesSet)} sound file(s) and {len(shinySoundFilesSet)} shiny sound file(s)')

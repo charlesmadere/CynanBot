@@ -1952,11 +1952,11 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
 
 twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
     chatLogger = chatLogger,
+    cheerActionHelper = cheerActionHelper,
     timber = timber
 )
 
 twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
-    cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,

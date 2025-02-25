@@ -4,6 +4,7 @@ from datetime import datetime
 from frozenlist import FrozenList
 
 from .twitchChatMessage import TwitchChatMessage
+from .twitchChatMessageType import TwitchChatMessageType
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchNoticeType import TwitchNoticeType
@@ -70,6 +71,7 @@ class TwitchWebsocketEvent:
     userName: str | None = None
     winningOutcomeId: str | None = None
     chatMessage: TwitchChatMessage | None = None
+    chatMessageType: TwitchChatMessageType | None = None
     cheer: TwitchCheerMetadata | None = None
     tier: TwitchSubscriberTier | None = None
     channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None

@@ -24,13 +24,11 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
     async def getCommodoreSamExecutablePath(self) -> str | None:
         jsonContents = await self.__readJson()
 
-        commodoreSamPath = utils.getStrFromDict(
+        return utils.getStrFromDict(
             d = jsonContents,
             key = 'commodoreSamPath',
             fallback = '../commodoreSam/sam.exe'
         )
-
-        return utils.cleanPath(commodoreSamPath)
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
@@ -40,7 +38,7 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
         commodoreSamPath = await self.getCommodoreSamExecutablePath()
 
         if not utils.isValidStr(commodoreSamPath):
-            raise ValueError(f'\"commodoreSamPath\" value is malformed: \"{commodoreSamPath}\"')
+            raise ValueError(f'\"commodoreSamPath\" value is missing/malformed: \"{commodoreSamPath}\"')
 
         return commodoreSamPath
 

@@ -12,7 +12,7 @@ import aiofiles.ospath
 import psutil
 
 from .decTalkApiServiceInterface import DecTalkApiServiceInterface
-from ..exceptions import DecTalkFailedToGenerateSpeechFileException
+from ..exceptions import DecTalkExecutableIsMissingException, DecTalkFailedToGenerateSpeechFileException
 from ..settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -73,13 +73,19 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__timber.log('DecTalkApiService', f'Generating speech... ({text=})')
 
+        pathToDecTalk = await self.__decTalkSettingsRepository.requireDecTalkExecutablePath()
+
+        if not await aiofiles.ospath.exists(
+            path = pathToDecTalk,
+            loop = self.__eventLoop
+        ):
+            raise DecTalkExecutableIsMissingException(f'Couldn\'t find DecTalk executable ({pathToDecTalk=})')
+
         filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.DEC_TALK)
         await self.__createDirectories(filePath)
 
         fileName = await self.__generateFileName()
         fullFilePath = f'{filePath}/{fileName}'
-
-        pathToDecTalk = await self.__decTalkSettingsRepository.requireDecTalkExecutablePath()
 
         decTalkProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
@@ -96,7 +102,7 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
             outputTuple = await asyncio.wait_for(
                 fut = decTalkProcess.communicate(),
-                timeout = 12
+                timeout = 3
             )
         except BaseException as e:
             exception = e
@@ -111,7 +117,10 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__timber.log('DecTalkApiService', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
-        if not await aiofiles.ospath.exists(fullFilePath) or not await aiofiles.ospath.isfile(fullFilePath):
+        if not await aiofiles.ospath.exists(
+            path = fullFilePath,
+            loop = self.__eventLoop
+        ):
             raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
 
         return fullFilePath

@@ -34,13 +34,11 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
     async def getDecTalkExecutablePath(self) -> str | None:
         jsonContents = await self.__readJson()
 
-        decTalkPath = utils.getStrFromDict(
+        return utils.getStrFromDict(
             d = jsonContents,
             key = 'decTalkPath',
             fallback = '../dectalk/say.exe'
         )
-
-        return utils.cleanPath(decTalkPath)
 
     async def getDefaultVoice(self) -> DecTalkVoice:
         jsonContents = await self.__readJson()
@@ -61,7 +59,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
         decTalkPath = await self.getDecTalkExecutablePath()
 
         if not utils.isValidStr(decTalkPath):
-            raise ValueError(f'\"decTalkPath\" value is malformed: \"{decTalkPath}\"')
+            raise ValueError(f'\"decTalkPath\" value is missing/malformed: \"{decTalkPath}\"')
 
         return decTalkPath
 

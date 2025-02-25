@@ -17,6 +17,7 @@ class HalfLifeService(HalfLifeServiceInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
+
         self.__cache: dict[str, str | None] = dict()
 
     async def clearCaches(self):
@@ -80,7 +81,7 @@ class HalfLifeService(HalfLifeServiceInterface):
         if not utils.isValidStr(file):
             return None
 
-        path = utils.cleanPath(f'{directory}/{voice.keyName}/{file}.wav')
+        path = f'{directory}/{voice.keyName}/{file}.wav'
 
         if await aiofiles.ospath.exists(path) and await aiofiles.ospath.isfile(path):
             self.__cache[file + voice.keyName] = path

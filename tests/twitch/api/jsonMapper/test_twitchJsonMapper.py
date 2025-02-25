@@ -16,6 +16,7 @@ from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from src.twitch.api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
+from src.twitch.api.models.twitchChatMessageType import TwitchChatMessageType
 from src.twitch.api.models.twitchChatter import TwitchChatter
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -435,6 +436,46 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseChatMessageFragmentType_withWhitespaceString(self):
         result = await self.jsonMapper.parseChatMessageFragmentType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withChannelPointsHighlighted(self):
+        result = await self.jsonMapper.parseChatMessageType('channel_points_highlighted')
+        assert result is TwitchChatMessageType.CHANNEL_POINTS_HIGHLIGHTED
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withChannelPointsSubOnly(self):
+        result = await self.jsonMapper.parseChatMessageType('channel_points_sub_only')
+        assert result is TwitchChatMessageType.CHANNEL_POINTS_SUB_ONLY
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withEmptyString(self):
+        result = await self.jsonMapper.parseChatMessageType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withNone(self):
+        result = await self.jsonMapper.parseChatMessageType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withPowerUpsGigantifiedEmote(self):
+        result = await self.jsonMapper.parseChatMessageType('power_ups_gigantified_emote')
+        assert result is TwitchChatMessageType.POWER_UPS_GIGANTIFIED_EMOTE
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withPowerUpsMessageEffect(self):
+        result = await self.jsonMapper.parseChatMessageType('power_ups_message_effect')
+        assert result is TwitchChatMessageType.POWER_UPS_MESSAGE_EFFECT
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withUserIntro(self):
+        result = await self.jsonMapper.parseChatMessageType('user_intro')
+        assert result is TwitchChatMessageType.USER_INTRO
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseChatMessageType(' ')
         assert result is None
 
     @pytest.mark.asyncio

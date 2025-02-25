@@ -16,6 +16,7 @@ from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmen
 from ..models.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
 from ..models.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
+from ..models.twitchChatMessageType import TwitchChatMessageType
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
@@ -152,6 +153,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         fragmentType: str | Any | None
     ) -> TwitchChatMessageFragmentType | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchChatMessageType | None:
         pass
 
     @abstractmethod

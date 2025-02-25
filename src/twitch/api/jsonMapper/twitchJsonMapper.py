@@ -21,6 +21,7 @@ from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmen
 from ..models.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
 from ..models.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
+from ..models.twitchChatMessageType import TwitchChatMessageType
 from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
@@ -481,6 +482,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'emote': return TwitchChatMessageFragmentType.EMOTE
             case 'mention': return TwitchChatMessageFragmentType.MENTION
             case 'text': return TwitchChatMessageFragmentType.TEXT
+            case _: return None
+
+    async def parseChatMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchChatMessageType | None:
+        if not utils.isValidStr(messageType):
+            return None
+
+        messageType = messageType.lower()
+
+        match messageType:
+            case 'channel_points_highlighted': return TwitchChatMessageType.CHANNEL_POINTS_HIGHLIGHTED
+            case 'channel_points_sub_only': return TwitchChatMessageType.CHANNEL_POINTS_SUB_ONLY
+            case 'power_ups_gigantified_emote': return TwitchChatMessageType.POWER_UPS_GIGANTIFIED_EMOTE
+            case 'power_ups_message_effect': return TwitchChatMessageType.POWER_UPS_MESSAGE_EFFECT
+            case 'user_intro': return TwitchChatMessageType.USER_INTRO
             case _: return None
 
     async def parseChatter(

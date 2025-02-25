@@ -75,7 +75,10 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         pathToCommodoreSam = await self.__commodoreSamSettingsRepository.requireCommodoreSamExecutablePath()
 
-        if not await aiofiles.ospath.exists(pathToCommodoreSam) or not await aiofiles.ospath.isfile(pathToCommodoreSam):
+        if not await aiofiles.ospath.exists(
+            path = pathToCommodoreSam,
+            loop = self.__eventLoop
+        ):
             raise CommodoreSamExecutableIsMissingException(f'Couldn\'t find Commodore SAM executable ({pathToCommodoreSam=})')
 
         filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.COMMODORE_SAM)
@@ -99,7 +102,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
             outputTuple = await asyncio.wait_for(
                 fut = commodoreSamProcess.communicate(),
-                timeout = 16
+                timeout = 3
             )
         except BaseException as e:
             exception = e
@@ -114,7 +117,10 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         self.__timber.log('CommodoreSamApiService', f'Ran Commodore SAM system command ({command=}) ({outputString=}) ({exception=})')
 
-        if not await aiofiles.ospath.exists(fullFilePath) or not await aiofiles.ospath.isfile(fullFilePath):
+        if not await aiofiles.ospath.exists(
+            path = fullFilePath,
+            loop = self.__eventLoop
+        ):
             raise CommodoreSamFailedToGenerateSpeechFileException(f'Failed to generate speech file ({pathToCommodoreSam=}) ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
 
         return fullFilePath

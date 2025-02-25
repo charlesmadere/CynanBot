@@ -1,6 +1,5 @@
 import html
 import math
-import os
 import random
 import re
 from datetime import datetime
@@ -36,12 +35,6 @@ def boolToInt(b: bool) -> int:
         return 1
     else:
         return 0
-
-def cleanPath(path: str) -> str:
-    if not isValidStr(path):
-        raise TypeError(f'path argument is malformed: \"{path}\"')
-
-    return os.path.normcase(os.path.normpath(path))
 
 carrotRemovalRegEx: Pattern = re.compile(r'<\/?\w+>', re.IGNORECASE)
 extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)

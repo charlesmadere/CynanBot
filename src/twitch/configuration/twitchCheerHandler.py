@@ -2,7 +2,6 @@ import math
 
 from ..absTwitchCheerHandler import AbsTwitchCheerHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -21,15 +20,12 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
     def __init__(
         self,
-        cheerActionHelper: CheerActionHelperInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None
     ):
-        if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
-            raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -38,7 +34,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
-        self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
@@ -83,18 +78,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-        if user.areCheerActionsEnabled:
-            if await self.__processCheerAction(
-                bits = bits,
-                broadcasterUserId = broadcasterUserId,
-                cheerUserId = cheerUserId,
-                cheerUserLogin = cheerUserLogin,
-                message = message,
-                messageId = event.messageId,
-                user = user
-            ):
-                return
-
         if user.isTtsEnabled:
             await self.__processTtsEvent(
                 bits = bits,
@@ -104,33 +87,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 cheerUserLogin = cheerUserLogin,
                 user = user
             )
-
-    async def __processCheerAction(
-        self,
-        bits: int,
-        broadcasterUserId: str,
-        cheerUserId: str,
-        cheerUserLogin: str,
-        message: str | None,
-        messageId: str | None,
-        user: UserInterface
-    ) -> bool:
-        if not user.areCheerActionsEnabled:
-            return False
-        elif self.__cheerActionHelper is None:
-            return False
-        elif not utils.isValidStr(message):
-            return False
-
-        return await self.__cheerActionHelper.handleCheerAction(
-            bits = bits,
-            broadcasterUserId = broadcasterUserId,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserLogin,
-            message = message,
-            twitchChatMessageId = messageId,
-            user = user
-        )
 
     async def __processSuperTriviaEvent(
         self,

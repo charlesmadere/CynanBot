@@ -98,16 +98,10 @@ class ChatBandInstrumentSoundsRepository(ChatBandInstrumentSoundsRepositoryInter
         for entry in directoryContents:
             if not entry.is_file():
                 continue
-
-            soundFileMatch = self.__soundFileRegEx.fullmatch(entry.name)
-
-            if soundFileMatch is None:
+            elif not self.__soundFileRegEx.fullmatch(entry.name):
                 continue
 
-            cleanPath = utils.cleanPath(entry.path)
-
-            if utils.isValidStr(cleanPath):
-                soundFilesSet.add(cleanPath)
+            soundFilesSet.add(entry.path)
 
         directoryContents.close()
 

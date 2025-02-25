@@ -31,8 +31,7 @@ class TempFileHelper(TempFileHelperInterface):
 
     async def __generateFileName(self, prefix: str, extension: str) -> str:
         randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-        fileName = f'{self.__directory}/{prefix}-{randomUuid}.{extension}'.casefold()
-        return utils.cleanPath(fileName)
+        return f'{self.__directory}/{prefix}-{randomUuid}.{extension}'.casefold()
 
     async def getTempFileName(
         self,
@@ -67,14 +66,12 @@ class TempFileHelper(TempFileHelperInterface):
         elif not utils.isValidStr(extension):
             raise TypeError(f'extension argument is malformed: \"{extension}\"')
 
-        directory = utils.cleanPath(self.__directory)
-
         if not await aiofiles.ospath.exists(
-            path = directory,
+            path = self.__directory,
             loop = self.__eventLoop
         ):
             await aiofiles.os.makedirs(
-                name = directory,
+                name = self.__directory,
                 loop = self.__eventLoop
             )
 

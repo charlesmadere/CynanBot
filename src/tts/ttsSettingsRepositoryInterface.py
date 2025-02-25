@@ -16,7 +16,3 @@ class TtsSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def isEnabled(self) -> bool:
         pass
-
-    @abstractmethod
-    async def requireDecTalkPath(self) -> str:
-        pass

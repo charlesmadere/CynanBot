@@ -37,7 +37,10 @@ class JsonFileReader(JsonReaderInterface):
         return os.path.exists(self.__fileName)
 
     async def fileExistsAsync(self) -> bool:
-        return await aiofiles.ospath.exists(self.__fileName)
+        return await aiofiles.ospath.exists(
+            path = self.__fileName,
+            loop = self.__eventLoop
+        )
 
     def readJson(self) -> dict[Any, Any] | None:
         if not self.fileExists():

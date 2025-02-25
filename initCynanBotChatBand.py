@@ -911,6 +911,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
 
 twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
     chatLogger = chatLogger,
+    cheerActionHelper = cheerActionHelper,
     timber = timber
 )
 

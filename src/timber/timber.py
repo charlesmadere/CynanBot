@@ -161,8 +161,14 @@ class Timber(TimberInterface):
                 errorStructure[timberErrorDirectory][timberErrorFile].append(entry)
 
         for timberDirectory, timberFileToEntriesDict in structure.items():
-            if not await aiofiles.ospath.exists(timberDirectory):
-                await aiofiles.os.makedirs(timberDirectory)
+            if not await aiofiles.ospath.exists(
+                path = timberDirectory,
+                loop = self.__backgroundTaskHelper.eventLoop
+            ):
+                await aiofiles.os.makedirs(
+                    name = timberDirectory,
+                    loop = self.__backgroundTaskHelper.eventLoop
+                )
 
             for timberFile, entriesList in timberFileToEntriesDict.items():
                 async with aiofiles.open(
@@ -182,8 +188,14 @@ class Timber(TimberInterface):
                     await file.flush()
 
         for timberErrorDirectory, timberErrorFileToEntriesDict in errorStructure.items():
-            if not await aiofiles.ospath.exists(timberErrorDirectory):
-                await aiofiles.os.makedirs(timberErrorDirectory)
+            if not await aiofiles.ospath.exists(
+                path = timberErrorDirectory,
+                loop = self.__backgroundTaskHelper.eventLoop
+            ):
+                await aiofiles.os.makedirs(
+                    name = timberErrorDirectory,
+                    loop = self.__backgroundTaskHelper.eventLoop
+                )
 
             for timberErrorFile, entriesList in timberErrorFileToEntriesDict.items():
                 async with aiofiles.open(

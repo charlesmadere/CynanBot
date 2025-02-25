@@ -56,17 +56,3 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
         self.__settingsCache = jsonContents
         return jsonContents
-
-    async def requireDecTalkPath(self) -> str:
-        jsonContents = await self.__readJson()
-
-        decTalkPath = utils.getStrFromDict(
-            d = jsonContents,
-            key = 'decTalkPath',
-            fallback = '../dectalk/say.exe'
-        )
-
-        if not utils.isValidStr(decTalkPath):
-            raise ValueError(f'\"decTalkPath\" value is malformed: \"{decTalkPath}\"')
-
-        return utils.cleanPath(decTalkPath)
