@@ -48,6 +48,9 @@ class TtsChatterChatAction(AbsChatAction):
         if not utils.isValidStr(chatMessage):
             return False
 
+        if chatMessage.startswith('!'):
+            return False
+
         if not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
             return False
 
