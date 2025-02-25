@@ -33,7 +33,7 @@ class TestTtsJsonMapper:
         assert len(serializedTtsProviders) == len(list(TtsProvider))
 
     @pytest.mark.asyncio
-    async def test_asyncParseProvider_withDecTalkString(self):
+    async def test_asyncParseProvider_withCommodoreSamString(self):
         result = await self.jsonMapper.asyncParseProvider('commodore_sam')
         assert result is TtsProvider.COMMODORE_SAM
 
