@@ -4,8 +4,8 @@ import aiofiles.ospath
 
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..ttsEvent import TtsEvent
-from ..ttsProvider import TtsProvider
+from ..models.ttsEvent import TtsEvent
+from ..models.ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface

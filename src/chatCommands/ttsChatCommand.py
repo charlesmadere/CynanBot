@@ -9,9 +9,9 @@ from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from ..tts.ttsEvent import TtsEvent
-from ..tts.ttsProvider import TtsProvider
-from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProvider import TtsProvider
+from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.tts.ttsBoosterPack import TtsBoosterPack

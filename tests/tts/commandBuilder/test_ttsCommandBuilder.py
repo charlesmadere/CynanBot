@@ -2,11 +2,11 @@ import pytest
 
 from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from src.tts.ttsCheerDonation import TtsCheerDonation
-from src.tts.ttsEvent import TtsEvent
-from src.tts.ttsProvider import TtsProvider
-from src.tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from src.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+from src.tts.models.ttsCheerDonation import TtsCheerDonation
+from src.tts.models.ttsEvent import TtsEvent
+from src.tts.models.ttsProvider import TtsProvider
+from src.tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from src.tts.models.ttsSubscriptionDonation import TtsSubscriptionDonation
 from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 

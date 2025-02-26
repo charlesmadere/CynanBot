@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..ttsProvider import TtsProvider
+from ..models.ttsProvider import TtsProvider
 
 
 class TtsJsonMapperInterface(ABC):

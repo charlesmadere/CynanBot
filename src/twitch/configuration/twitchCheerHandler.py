@@ -9,10 +9,10 @@ from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsMana
 from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ...tts.ttsCheerDonation import TtsCheerDonation
-from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProvider import TtsProvider
-from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ...tts.models.ttsCheerDonation import TtsCheerDonation
+from ...tts.models.ttsEvent import TtsEvent
+from ...tts.models.ttsProvider import TtsProvider
+from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 
 

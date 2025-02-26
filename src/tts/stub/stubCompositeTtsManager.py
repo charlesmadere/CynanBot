@@ -1,5 +1,5 @@
 from ..compositeTtsManagerInterface import CompositeTtsManagerInterface
-from ..ttsEvent import TtsEvent
+from ..models.ttsEvent import TtsEvent
 
 
 class StubCompositeTtsManager(CompositeTtsManagerInterface):

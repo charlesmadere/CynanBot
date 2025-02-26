@@ -20,7 +20,17 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
     async def getMaximumMessageSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maxMessageSize', fallback = 500)
+
+        maxMessageSize = utils.getIntFromDict(
+            d = jsonContents,
+            key = 'maxMessageSize',
+            fallback = 500
+        )
+
+        if maxMessageSize < 1 or maxMessageSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxMessageSize is out of bounds: \"{maxMessageSize}\"')
+
+        return maxMessageSize
 
     async def getTtsTimeoutSeconds(self) -> float:
         jsonContents = await self.__readJson()
@@ -28,10 +38,10 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         timeoutSeconds = utils.getFloatFromDict(
             d = jsonContents,
             key = 'timeoutSeconds',
-            fallback = 40
+            fallback = 42
         )
 
-        if timeoutSeconds < 3 or timeoutSeconds > 300:
+        if timeoutSeconds < 3 or timeoutSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'timeoutSeconds is out of bounds: \"{timeoutSeconds}\"')
 
         return timeoutSeconds

@@ -5,9 +5,9 @@ import aiofiles.ospath
 from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..ttsEvent import TtsEvent
-from ..ttsProvider import TtsProvider
-from ..ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..models.ttsEvent import TtsEvent
+from ..models.ttsProvider import TtsProvider
+from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts

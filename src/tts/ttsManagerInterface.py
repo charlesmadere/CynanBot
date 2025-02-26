@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from .ttsEvent import TtsEvent
-from .ttsProvider import TtsProvider
+from .models.ttsEvent import TtsEvent
+from .models.ttsProvider import TtsProvider
 
 
 class TtsManagerInterface(ABC):

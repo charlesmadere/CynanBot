@@ -1,6 +1,6 @@
 from .glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
 from ...misc import utils as utils
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):

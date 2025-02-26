@@ -6,12 +6,12 @@ from .decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from .google.googleTtsManagerInterface import GoogleTtsManagerInterface
 from .halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from .microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
+from .models.ttsEvent import TtsEvent
+from .models.ttsProvider import TtsProvider
+from .models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from .streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from .ttsEvent import TtsEvent
 from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
-from .ttsProvider import TtsProvider
-from .ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface

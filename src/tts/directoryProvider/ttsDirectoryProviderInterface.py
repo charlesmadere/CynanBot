@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..ttsProvider import TtsProvider
+from ..models.ttsProvider import TtsProvider
 
 
 class TtsDirectoryProviderInterface(ABC):

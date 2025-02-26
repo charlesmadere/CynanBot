@@ -4,7 +4,7 @@ from .chatterPreferredTtsSettingsRepositoryInterface import ChatterPreferredTtsS
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsSettingsRepository(ChatterPreferredTtsSettingsRepositoryInterface):
@@ -30,18 +30,15 @@ class ChatterPreferredTtsSettingsRepository(ChatterPreferredTtsSettingsRepositor
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = True)
 
-    async def isTtsProviderEnabled(
-        self,
-        provider: TtsProvider) -> bool:
-
+    async def isTtsProviderEnabled(self, provider: TtsProvider) -> bool:
         jsonContents = await self.__readJson()
-        enabledProviders = jsonContents.get('enabledProviders')
+        enabledProviders: list[str] | None = jsonContents.get('enabledProviders')
 
         if enabledProviders is None:
             return False
 
         for enabledProvider in enabledProviders:
-            if provider == self.__ttsJsonMapper.parseProvider(enabledProvider):
+            if provider is self.__ttsJsonMapper.parseProvider(enabledProvider):
                 return True
 
         return False

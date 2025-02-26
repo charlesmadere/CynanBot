@@ -7,7 +7,7 @@ from ...language.languageEntry import LanguageEntry
 class GoogleTtsVoicesHelperInterface(ABC):
 
     @abstractmethod
-    async def chooseEnglishVoice(self) -> GoogleVoicePreset:
+    async def getEnglishVoice(self) -> GoogleVoicePreset:
         pass
 
     @abstractmethod

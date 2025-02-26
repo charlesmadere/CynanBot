@@ -20,7 +20,7 @@ from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSam
 from src.streamElements.models.streamElementsVoice import StreamElementsVoice
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
-from src.tts.ttsProvider import TtsProvider
+from src.tts.models.ttsProvider import TtsProvider
 from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
 from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 

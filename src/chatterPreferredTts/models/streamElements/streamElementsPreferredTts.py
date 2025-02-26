@@ -1,6 +1,6 @@
 from ..absPreferredTts import AbsPreferredTts
 from ....streamElements.models.streamElementsVoice import StreamElementsVoice
-from ....tts.ttsProvider import TtsProvider
+from ....tts.models.ttsProvider import TtsProvider
 
 
 class StreamElementsPreferredTts(AbsPreferredTts):

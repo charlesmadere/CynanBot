@@ -1,5 +1,5 @@
 from .decTalkTtsManager import DecTalkTtsManager
-from ..ttsProvider import TtsProvider
+from ..models.ttsProvider import TtsProvider
 
 
 class SingingDecTalkTtsManager(DecTalkTtsManager):

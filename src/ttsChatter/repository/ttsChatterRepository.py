@@ -2,12 +2,12 @@ from lru import LRU
 
 from .ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..models.ttsChatter import TtsChatter
-from ...storage.databaseType import DatabaseType
-from ...storage.databaseConnection import DatabaseConnection
+from ...misc import utils
 from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
 
-from src.misc import utils
 
 class TtsChatterRepository(TtsChatterRepositoryInterface):
 

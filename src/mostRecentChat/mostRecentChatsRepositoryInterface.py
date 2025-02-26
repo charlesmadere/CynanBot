@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from .mostRecentChat import MostRecentChat
 from ..misc.clearable import Clearable
 
 
-class MostRecentChatsRepositoryInterface(Clearable):
+class MostRecentChatsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def get(

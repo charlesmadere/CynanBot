@@ -24,7 +24,7 @@ from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class GoogleTtsHelper(GoogleTtsHelperInterface):
@@ -114,7 +114,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         voice: GoogleVoiceSelectionParams
 
         if voicePreset is None:
-            voicePreset = await self.__googleTtsVoicesHelper.chooseEnglishVoice()
+            voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
 
         voice = GoogleVoiceSelectionParams(
             gender = None,

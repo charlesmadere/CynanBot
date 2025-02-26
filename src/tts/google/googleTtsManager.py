@@ -2,9 +2,9 @@ import asyncio
 
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..ttsEvent import TtsEvent
-from ..ttsProvider import TtsProvider
-from ..ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..models.ttsEvent import TtsEvent
+from ..models.ttsProvider import TtsProvider
+from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts

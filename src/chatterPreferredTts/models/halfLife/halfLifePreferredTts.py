@@ -1,6 +1,6 @@
 from ..absPreferredTts import AbsPreferredTts
 from ....halfLife.models.halfLifeVoice import HalfLifeVoice
-from ....tts.ttsProvider import TtsProvider
+from ....tts.models.ttsProvider import TtsProvider
 
 
 class HalfLifePreferredTts(AbsPreferredTts):

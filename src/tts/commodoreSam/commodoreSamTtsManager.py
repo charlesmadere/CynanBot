@@ -4,8 +4,8 @@ import aiofiles.ospath
 
 from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..ttsEvent import TtsEvent
-from ..ttsProvider import TtsProvider
+from ..models.ttsEvent import TtsEvent
+from ..models.ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface

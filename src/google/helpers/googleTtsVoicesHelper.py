@@ -9,7 +9,7 @@ from ...language.languageEntry import LanguageEntry
 
 class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
-    async def chooseEnglishVoice(self) -> GoogleVoicePreset:
+    async def getEnglishVoice(self) -> GoogleVoicePreset:
         voice = await self.getVoiceForLanguage(LanguageEntry.ENGLISH)
 
         if voice is None:
@@ -140,30 +140,7 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_O,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_D,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F,
-                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O,
-                    GoogleVoicePreset.ENGLISH_INDIA_STANDARD_A,
-                    GoogleVoicePreset.ENGLISH_INDIA_STANDARD_B,
-                    GoogleVoicePreset.ENGLISH_INDIA_STANDARD_C,
-                    GoogleVoicePreset.ENGLISH_INDIA_STANDARD_D,
-                    GoogleVoicePreset.ENGLISH_INDIA_STANDARD_E,
-                    GoogleVoicePreset.ENGLISH_INDIA_STANDARD_F,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_A,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_B,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_C,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_D,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_F,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_N,
-                    GoogleVoicePreset.ENGLISH_UK_STANDARD_O,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_A,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_B,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_C,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_D,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_E,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_F,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_G,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_H,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_I,
-                    GoogleVoicePreset.ENGLISH_US_STANDARD_J
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O
                 }
 
             case LanguageEntry.FILIPINO:

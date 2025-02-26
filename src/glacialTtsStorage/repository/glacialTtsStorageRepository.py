@@ -10,7 +10,7 @@ from ..models.glacialTtsData import GlacialTtsData
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):

@@ -1,4 +1,4 @@
-from src.tts.ttsProvider import TtsProvider
+from src.tts.models.ttsProvider import TtsProvider
 
 
 class TestTtsProvider:

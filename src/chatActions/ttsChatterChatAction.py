@@ -5,8 +5,8 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
-from ..tts.ttsEvent import TtsEvent
-from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.accessLevel.accessLevel import AccessLevel

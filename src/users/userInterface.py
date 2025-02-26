@@ -13,7 +13,7 @@ from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from ..language.languageEntry import LanguageEntry
-from ..tts.ttsProvider import TtsProvider
+from ..tts.models.ttsProvider import TtsProvider
 
 
 class UserInterface(ABC):

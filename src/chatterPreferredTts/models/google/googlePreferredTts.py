@@ -1,6 +1,6 @@
 from ..absPreferredTts import AbsPreferredTts
 from ....language.languageEntry import LanguageEntry
-from ....tts.ttsProvider import TtsProvider
+from ....tts.models.ttsProvider import TtsProvider
 
 
 class GooglePreferredTts(AbsPreferredTts):

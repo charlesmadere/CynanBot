@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.glacialTtsFileReference import GlacialTtsFileReference
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class GlacialTtsFileRetrieverInterface(ABC):

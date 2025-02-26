@@ -1,6 +1,6 @@
 from ..absPreferredTts import AbsPreferredTts
 from ....microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
-from ....tts.ttsProvider import TtsProvider
+from ....tts.models.ttsProvider import TtsProvider
 
 
 class MicrosoftSamPreferredTts(AbsPreferredTts):

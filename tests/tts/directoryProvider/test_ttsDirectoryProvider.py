@@ -2,7 +2,7 @@ import pytest
 
 from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
 from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from src.tts.ttsProvider import TtsProvider
+from src.tts.models.ttsProvider import TtsProvider
 
 
 class TestTtsDirectoryProvider:

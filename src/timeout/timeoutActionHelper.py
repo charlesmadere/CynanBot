@@ -22,8 +22,8 @@ from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
-from ..tts.ttsEvent import TtsEvent
-from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel

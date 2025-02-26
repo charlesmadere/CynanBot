@@ -14,8 +14,8 @@ from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ...tts.models.ttsEvent import TtsEvent
+from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 from ...websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 from ...websocketConnection.websocketEventType import WebsocketEventType

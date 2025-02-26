@@ -7,9 +7,9 @@ from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ...tts.ttsRaidInfo import TtsRaidInfo
+from ...tts.models.ttsEvent import TtsEvent
+from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ...tts.models.ttsRaidInfo import TtsRaidInfo
 from ...users.userInterface import UserInterface
 
 

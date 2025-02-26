@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from ..models.absPreferredTts import AbsPreferredTts
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsJsonMapperInterface(ABC):

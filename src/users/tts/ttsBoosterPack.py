@@ -1,7 +1,7 @@
 import locale
 from dataclasses import dataclass
 
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 @dataclass(frozen = True)

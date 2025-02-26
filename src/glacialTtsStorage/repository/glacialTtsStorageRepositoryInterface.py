@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.glacialTtsData import GlacialTtsData
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class GlacialTtsStorageRepositoryInterface(ABC):

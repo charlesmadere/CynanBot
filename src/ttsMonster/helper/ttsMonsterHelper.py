@@ -20,7 +20,7 @@ from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsR
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class TtsMonsterHelper(TtsMonsterHelperInterface):

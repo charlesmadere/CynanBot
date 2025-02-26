@@ -2,7 +2,7 @@ import hashlib
 
 from .glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
 from ...misc import utils as utils
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class GlacialTtsIdGenerator(GlacialTtsIdGeneratorInterface):

@@ -19,7 +19,7 @@ from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJ
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from ...ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 

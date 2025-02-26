@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from .ttsDonation import TtsDonation
 from .ttsDonationType import TtsDonationType
-from ..twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
+from ...twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 
 @dataclass(frozen = True)

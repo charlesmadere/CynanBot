@@ -5,6 +5,7 @@ import uuid
 from asyncio import AbstractEventLoop, CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
+from dataclasses import dataclass
 from typing import ByteString, Pattern
 
 import aiofiles
@@ -18,10 +19,17 @@ from ..settings.decTalkSettingsRepositoryInterface import DecTalkSettingsReposit
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class DecTalkApiService(DecTalkApiServiceInterface):
+
+    @dataclass(frozen = True)
+    class FilePaths:
+        decTalkPath: str
+        fileName: str
+        fullFilePath: str
+        ttsDirectory: str
 
     def __init__(
         self,
@@ -50,23 +58,37 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
-    async def __createDirectories(self, filePath: str):
+    async def __createTtsDirectory(self, ttsDirectory: str):
         if await aiofiles.ospath.exists(
-            path = filePath,
+            path = ttsDirectory,
             loop = self.__eventLoop
         ):
             return
 
         await aiofiles.os.makedirs(
-            name = filePath,
+            name = ttsDirectory,
             loop = self.__eventLoop
         )
 
-        self.__timber.log('DecTalkApiService', f'Created new directories ({filePath=})')
+        self.__timber.log('DecTalkApiService', f'Created new TTS directory ({ttsDirectory=})')
 
-    async def __generateFileName(self) -> str:
-        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
-        return f'{fileName}.{self.__fileExtension}'
+    async def __generateFilePaths(self) -> FilePaths:
+        decTalkPath = await self.__decTalkSettingsRepository.requireDecTalkExecutablePath()
+
+        ttsDirectory = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.DEC_TALK)
+        await self.__createTtsDirectory(ttsDirectory)
+
+        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
+        fileName = f'{fileName}.{self.__fileExtension}'.casefold()
+
+        fullFilePath = f'{ttsDirectory}/{fileName}'
+
+        return DecTalkApiService.FilePaths(
+            decTalkPath = os.path.normpath(decTalkPath),
+            fileName = os.path.normpath(fileName),
+            fullFilePath = os.path.normpath(fullFilePath),
+            ttsDirectory = os.path.normpath(ttsDirectory)
+        )
 
     async def generateSpeechFile(self, text: str) -> str:
         if not utils.isValidStr(text):
@@ -74,25 +96,19 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__timber.log('DecTalkApiService', f'Generating speech... ({text=})')
 
-        pathToDecTalk = await self.__decTalkSettingsRepository.requireDecTalkExecutablePath()
+        filePaths = await self.__generateFilePaths()
 
         if not await aiofiles.ospath.exists(
-            path = pathToDecTalk,
+            path = filePaths.decTalkPath,
             loop = self.__eventLoop
         ):
-            raise DecTalkExecutableIsMissingException(f'Couldn\'t find DecTalk executable ({pathToDecTalk=})')
-
-        filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.DEC_TALK)
-        await self.__createDirectories(filePath)
-
-        fileName = await self.__generateFileName()
-        fullFilePath = os.path.normpath(f'{filePath}/{fileName}')
+            raise DecTalkExecutableIsMissingException(f'Couldn\'t find DecTalk executable ({filePaths=})')
 
         decTalkProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
-        command = f'{os.path.normpath(pathToDecTalk)} -w \"{fullFilePath}\" -pre \"[:phone on]\" \"{text}\"'
+        command = f'{filePaths.decTalkPath} -w \"{filePaths.fullFilePath}\" -pre \"[:phone on]\" \"{text}\"'
 
         try:
             decTalkProcess = await asyncio.create_subprocess_shell(
@@ -108,9 +124,6 @@ class DecTalkApiService(DecTalkApiServiceInterface):
         except BaseException as e:
             exception = e
 
-        if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
-            await self.__killDecTalkProcess(decTalkProcess)
-
         outputString: str | None = None
 
         if outputTuple is not None and len(outputTuple) >= 2:
@@ -118,13 +131,16 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         self.__timber.log('DecTalkApiService', f'Ran DecTalk system command ({command=}) ({outputString=}) ({exception=})')
 
+        if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
+            await self.__killDecTalkProcess(decTalkProcess)
+
         if not await aiofiles.ospath.exists(
-            path = fullFilePath,
+            path = filePaths.fullFilePath,
             loop = self.__eventLoop
         ):
-            raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
+            raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file ({filePaths=}) ({command=}) ({outputString=}) ({exception=})')
 
-        return fullFilePath
+        return filePaths.fullFilePath
 
     async def __killDecTalkProcess(self, decTalkProcess: Process | None):
         if decTalkProcess is None:
@@ -136,7 +152,7 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             self.__timber.log('DecTalkApiService', f'Went to kill a DecTalk process, but the process has a return code ({decTalkProcess=}) ({decTalkProcess.returncode=})')
             return
 
-        self.__timber.log('DecTalkApiService', f'Killing DecTalk process ({decTalkProcess=})...')
+        self.__timber.log('DecTalkApiService', f'Killing DecTalk process ({decTalkProcess=}) ({decTalkProcess.returncode=})...')
         parent = psutil.Process(decTalkProcess.pid)
         childCount = 0
 
@@ -145,4 +161,4 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             childCount += 1
 
         parent.terminate()
-        self.__timber.log('DecTalkApiService', f'Finished killing DecTalk process ({decTalkProcess=}) ({childCount=})')
+        self.__timber.log('DecTalkApiService', f'Finished killing DecTalk process ({decTalkProcess=}) ({decTalkProcess.returncode=}) ({childCount=})')

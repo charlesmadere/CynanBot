@@ -1,8 +1,8 @@
 from .ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..ttsCheerDonation import TtsCheerDonation
-from ..ttsDonationType import TtsDonationType
-from ..ttsEvent import TtsEvent
-from ..ttsSubscriptionDonation import TtsSubscriptionDonation
+from ..models.ttsCheerDonation import TtsCheerDonation
+from ..models.ttsDonationType import TtsDonationType
+from ..models.ttsEvent import TtsEvent
+from ..models.ttsSubscriptionDonation import TtsSubscriptionDonation
 from ...misc import utils as utils
 
 

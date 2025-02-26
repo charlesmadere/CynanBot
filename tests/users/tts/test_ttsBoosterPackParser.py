@@ -6,7 +6,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.ttsProvider import TtsProvider
+from src.tts.models.ttsProvider import TtsProvider
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 

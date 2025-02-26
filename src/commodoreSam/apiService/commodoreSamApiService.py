@@ -5,6 +5,7 @@ import uuid
 from asyncio import AbstractEventLoop, CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
+from dataclasses import dataclass
 from typing import ByteString, Pattern
 
 import aiofiles
@@ -18,10 +19,17 @@ from ..settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSetti
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class CommodoreSamApiService(CommodoreSamApiServiceInterface):
+
+    @dataclass(frozen = True)
+    class FilePaths:
+        commodoreSamPath: str
+        fileName: str
+        fullFilePath: str
+        ttsDirectory: str
 
     def __init__(
         self,
@@ -50,23 +58,37 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
-    async def __createDirectories(self, filePath: str):
+    async def __createTtsDirectory(self, ttsDirectory: str):
         if await aiofiles.ospath.exists(
-            path = filePath,
+            path = ttsDirectory,
             loop = self.__eventLoop
         ):
             return
 
         await aiofiles.os.makedirs(
-            name = filePath,
+            name = ttsDirectory,
             loop = self.__eventLoop
         )
 
-        self.__timber.log('CommodoreSamApiService', f'Created new directories ({filePath=})')
+        self.__timber.log('CommodoreSamApiService', f'Created new TTS directory ({ttsDirectory=})')
 
-    async def __generateFileName(self) -> str:
-        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
-        return f'{fileName}.{self.__fileExtension}'
+    async def __generateFilePaths(self) -> FilePaths:
+        commodoreSamPath = await self.__commodoreSamSettingsRepository.requireCommodoreSamExecutablePath()
+
+        ttsDirectory = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.COMMODORE_SAM)
+        await self.__createTtsDirectory(ttsDirectory)
+
+        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
+        fileName = f'{fileName}.{self.__fileExtension}'.casefold()
+
+        fullFilePath = f'{ttsDirectory}/{fileName}'
+
+        return CommodoreSamApiService.FilePaths(
+            commodoreSamPath = os.path.normpath(commodoreSamPath),
+            fileName = os.path.normpath(fileName),
+            fullFilePath = os.path.normpath(fullFilePath),
+            ttsDirectory = os.path.normpath(ttsDirectory)
+        )
 
     async def generateSpeechFile(self, text: str) -> str:
         if not utils.isValidStr(text):
@@ -74,25 +96,19 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         self.__timber.log('CommodoreSamApiService', f'Generating speech... ({text=})')
 
-        pathToCommodoreSam = await self.__commodoreSamSettingsRepository.requireCommodoreSamExecutablePath()
+        filePaths = await self.__generateFilePaths()
 
         if not await aiofiles.ospath.exists(
-            path = pathToCommodoreSam,
+            path = filePaths.commodoreSamPath,
             loop = self.__eventLoop
         ):
-            raise CommodoreSamExecutableIsMissingException(f'Couldn\'t find Commodore SAM executable ({pathToCommodoreSam=})')
-
-        filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.COMMODORE_SAM)
-        await self.__createDirectories(filePath)
-
-        fileName = await self.__generateFileName()
-        fullFilePath = os.path.normpath(f'{filePath}/{fileName}')
+            raise CommodoreSamExecutableIsMissingException(f'Couldn\'t find Commodore SAM executable ({filePaths=})')
 
         commodoreSamProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
-        command = f'{os.path.normpath(pathToCommodoreSam)} -wav \"{fullFilePath}\" {text}'
+        command = f'{filePaths.commodoreSamPath} -wav \"{filePaths.fullFilePath}\" {text}'
 
         try:
             commodoreSamProcess = await asyncio.create_subprocess_shell(
@@ -108,9 +124,6 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         except BaseException as e:
             exception = e
 
-        if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
-            await self.__killCommodoreSamProcess(commodoreSamProcess)
-
         outputString: str | None = None
 
         if outputTuple is not None and len(outputTuple) >= 2:
@@ -118,13 +131,16 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         self.__timber.log('CommodoreSamApiService', f'Ran Commodore SAM system command ({command=}) ({outputString=}) ({exception=})')
 
+        if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
+            await self.__killCommodoreSamProcess(commodoreSamProcess)
+
         if not await aiofiles.ospath.exists(
-            path = fullFilePath,
+            path = filePaths.fullFilePath,
             loop = self.__eventLoop
         ):
-            raise CommodoreSamFailedToGenerateSpeechFileException(f'Failed to generate speech file ({pathToCommodoreSam=}) ({fileName=}) ({filePath=}) ({command=}) ({outputString=}) ({exception=})')
+            raise CommodoreSamFailedToGenerateSpeechFileException(f'Failed to generate speech file ({filePaths=}) ({command=}) ({outputString=}) ({exception=})')
 
-        return fullFilePath
+        return filePaths.fullFilePath
 
     async def __killCommodoreSamProcess(self, commodoreSamProcess: Process | None):
         if commodoreSamProcess is None:
@@ -136,7 +152,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
             self.__timber.log('CommodoreSamApiService', f'Went to kill a Commodore SAM process, but the process has a return code ({commodoreSamProcess=}) ({commodoreSamProcess.returncode=})')
             return
 
-        self.__timber.log('CommodoreSamApiService', f'Killing Commodore SAM process ({commodoreSamProcess=})...')
+        self.__timber.log('CommodoreSamApiService', f'Killing Commodore SAM process ({commodoreSamProcess=}) ({commodoreSamProcess.returncode=})...')
         parent = psutil.Process(commodoreSamProcess.pid)
         childCount = 0
 
@@ -145,4 +161,4 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
             childCount += 1
 
         parent.terminate()
-        self.__timber.log('CommodoreSamApiService', f'Finished killing Commodore SAM process ({commodoreSamProcess=}) ({childCount=})')
+        self.__timber.log('CommodoreSamApiService', f'Finished killing Commodore SAM process ({commodoreSamProcess=}) ({commodoreSamProcess.returncode=}) ({childCount=})')

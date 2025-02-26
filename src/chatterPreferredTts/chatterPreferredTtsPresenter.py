@@ -8,7 +8,7 @@ from .models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPref
 from .models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from .models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
 from ..misc import utils as utils
-from ..tts.ttsProvider import TtsProvider
+from ..tts.models.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsPresenter:

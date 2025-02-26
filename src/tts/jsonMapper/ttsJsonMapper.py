@@ -1,7 +1,7 @@
 from typing import Any
 
 from .ttsJsonMapperInterface import TtsJsonMapperInterface
-from ..ttsProvider import TtsProvider
+from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

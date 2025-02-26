@@ -1,5 +1,5 @@
 from .ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from ..ttsProvider import TtsProvider
+from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
 
 

@@ -9,8 +9,8 @@ from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManag
 from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
-from ..tts.ttsEvent import TtsEvent
-from ..tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface

@@ -1,5 +1,5 @@
 from ..absPreferredTts import AbsPreferredTts
-from ....tts.ttsProvider import TtsProvider
+from ....tts.models.ttsProvider import TtsProvider
 
 
 class CommodoreSamPreferredTts(AbsPreferredTts):

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ..soundPlayerManager.soundAlert import SoundAlert
-from ..tts.ttsEvent import TtsEvent
+from ..tts.models.ttsEvent import TtsEvent
 
 
 @dataclass(frozen = True)

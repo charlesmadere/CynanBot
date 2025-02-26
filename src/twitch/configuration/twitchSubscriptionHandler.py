@@ -21,9 +21,9 @@ from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsMana
 from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ...tts.ttsEvent import TtsEvent
-from ...tts.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ...tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+from ...tts.models.ttsEvent import TtsEvent
+from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ...tts.models.ttsSubscriptionDonation import TtsSubscriptionDonation
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 

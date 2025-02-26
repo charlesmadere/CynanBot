@@ -3,7 +3,7 @@ from typing import Any
 from .streamAlert import StreamAlert
 from .streamAlertState import StreamAlertState
 from ..soundPlayerManager.soundAlert import SoundAlert
-from ..tts.ttsEvent import TtsEvent
+from ..tts.models.ttsEvent import TtsEvent
 
 
 class CurrentStreamAlert:

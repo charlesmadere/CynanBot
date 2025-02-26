@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .ttsEvent import TtsEvent
+from .models.ttsEvent import TtsEvent
 
 
 class CompositeTtsManagerInterface(ABC):

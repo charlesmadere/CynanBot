@@ -2,7 +2,7 @@ import pytest
 
 from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
 from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
-from src.tts.ttsProvider import TtsProvider
+from src.tts.models.ttsProvider import TtsProvider
 
 
 class TestGlacialTtsDataMapper:

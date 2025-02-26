@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ...misc.clearable import Clearable
-from ...tts.ttsProvider import TtsProvider
+from ...tts.models.ttsProvider import TtsProvider
 
 
 class ChatterPreferredTtsSettingsRepositoryInterface(Clearable, ABC):
