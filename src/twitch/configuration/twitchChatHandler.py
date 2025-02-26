@@ -78,6 +78,17 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 user = user
             )
 
+        if await self.__cheerActionHelper.handleCheerAction(
+            bits = cheer.bits,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = chatterUserId,
+            cheerUserName = chatterUserLogin,
+            message = chatMessage.text,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user
+        ):
+            return
+
         if user.isTtsEnabled:
             await self.__processTtsEvent(
                 broadcasterUserId = broadcasterUserId,
@@ -87,16 +98,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 cheer = cheer,
                 user = user
             )
-
-        await self.__cheerActionHelper.handleCheerAction(
-            bits = cheer.bits,
-            broadcasterUserId = broadcasterUserId,
-            cheerUserId = chatterUserId,
-            cheerUserName = chatterUserLogin,
-            message = chatMessage.text,
-            twitchChatMessageId = twitchChatMessageId,
-            user = user
-        )
 
     async def onNewChat(
         self,
