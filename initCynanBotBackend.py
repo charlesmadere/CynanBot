@@ -1950,20 +1950,20 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     userIdsRepository = userIdsRepository
 )
 
-twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
+twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
-    timber = timber
-)
-
-twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine
 )
 
-twitchFollowHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
+twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
+    timber = timber
+)
+
+twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     timber = timber,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository
 )

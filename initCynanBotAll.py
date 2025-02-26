@@ -2784,14 +2784,14 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
-    timber = timber
-)
-
-twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine
+)
+
+twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
+    timber = timber
 )
 
 twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(

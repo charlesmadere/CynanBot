@@ -912,7 +912,10 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
 twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
-    timber = timber
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    triviaGameBuilder = None,
+    triviaGameMachine = None,
 )
 
 
