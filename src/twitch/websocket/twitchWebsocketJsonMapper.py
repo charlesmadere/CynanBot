@@ -219,6 +219,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'chatter_user_id' in eventJson and utils.isValidStr(eventJson.get('chatter_user_id')):
             chatterUserId = utils.getStrFromDict(eventJson, 'chatter_user_id')
 
+        chatterUserLogin: str | None = None
+        if 'chatter_user_login' in eventJson and utils.isValidStr(eventJson.get('chatter_user_login')):
+            chatterUserLogin = utils.getStrFromDict(eventJson, 'chatter_user_login')
+
         chatterUserName: str | None = None
         if 'chatter_user_name' in eventJson and utils.isValidStr(eventJson.get('chatter_user_name')):
             chatterUserName = utils.getStrFromDict(eventJson, 'chatter_user_name')
@@ -390,6 +394,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             categoryId = categoryId,
             categoryName = categoryName,
             chatterUserId = chatterUserId,
+            chatterUserLogin = chatterUserLogin,
             chatterUserName = chatterUserName,
             clientId = clientId,
             color = color,

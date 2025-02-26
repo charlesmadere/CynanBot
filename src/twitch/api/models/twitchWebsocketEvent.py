@@ -49,6 +49,7 @@ class TwitchWebsocketEvent:
     categoryId: str | None = None
     categoryName: str | None = None
     chatterUserId: str | None = None
+    chatterUserLogin: str | None = None
     chatterUserName: str | None = None
     clientId: str | None = None
     color: str | None = None
