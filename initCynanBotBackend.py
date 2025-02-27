@@ -1653,7 +1653,6 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchConstants = twitchUtils,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchUtils = twitchUtils

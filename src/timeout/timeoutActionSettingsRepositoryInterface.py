@@ -26,6 +26,10 @@ class TimeoutActionSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getMassiveTimeoutHoursTransitionPoint(self) -> int | None:
+        pass
+
+    @abstractmethod
     async def getMaxBullyFailureOccurrences(self) -> int:
         pass
 
