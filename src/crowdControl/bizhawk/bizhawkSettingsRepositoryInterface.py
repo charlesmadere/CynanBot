@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..actions.crowdControlButton import CrowdControlButton
 from ..bizhawk.bizhawkKey import BizhawkKey
 from ...misc.clearable import Clearable
 
 
-class BizhawkSettingsRepositoryInterface(Clearable):
+class BizhawkSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getButtonKeyBind(

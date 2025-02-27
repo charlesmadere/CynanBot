@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc.clearable import Clearable
 
 
-class MicrosoftSamSettingsRepositoryInterface(Clearable):
+class MicrosoftSamSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getDefaultVoice(self) -> MicrosoftSamVoice:

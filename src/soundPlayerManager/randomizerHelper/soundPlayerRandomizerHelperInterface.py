@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..soundAlert import SoundAlert
 from ...misc.clearable import Clearable
 
 
-class SoundPlayerRandomizerHelperInterface(Clearable):
+class SoundPlayerRandomizerHelperInterface(Clearable, ABC):
 
     @abstractmethod
     async def chooseRandomFromDirectorySoundAlert(

@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..misc.clearable import Clearable
 
 
-class CrowdControlSettingsRepositoryInterface(Clearable):
+class CrowdControlSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def areSoundsEnabled(self) -> bool:

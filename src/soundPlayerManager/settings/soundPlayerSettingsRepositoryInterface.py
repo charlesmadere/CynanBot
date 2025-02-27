@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..soundAlert import SoundAlert
 from ...misc.clearable import Clearable
 
 
-class SoundPlayerSettingsRepositoryInterface(Clearable):
+class SoundPlayerSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def areShiniesEnabled(self) -> bool:

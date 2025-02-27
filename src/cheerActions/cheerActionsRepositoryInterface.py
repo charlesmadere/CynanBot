@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from frozendict import frozendict
 
@@ -7,7 +7,7 @@ from .editCheerActionResult.editCheerActionResult import EditCheerActionResult
 from ..misc.clearable import Clearable
 
 
-class CheerActionsRepositoryInterface(Clearable):
+class CheerActionsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def deleteAction(self, bits: int, twitchChannelId: str) -> AbsCheerAction | None:

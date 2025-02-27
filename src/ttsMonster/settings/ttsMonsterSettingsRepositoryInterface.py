@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ...misc.clearable import Clearable
 
 
-class TtsMonsterSettingsRepositoryInterface(Clearable):
+class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getDefaultVoice(self) -> TtsMonsterVoice:
