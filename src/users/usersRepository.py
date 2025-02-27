@@ -163,7 +163,7 @@ class UsersRepository(UsersRepositoryInterface):
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
-        isEnabled = utils.getBoolFromDict(userJson, 'enabled', True)
+        isEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ENABLED.jsonKey, True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
@@ -719,7 +719,7 @@ class UsersRepository(UsersRepositoryInterface):
             self.__timber.log('UsersRepository', f'Unable to change enabled status for user \"{handle}\" as no user with that handle currently exists')
             return
 
-        jsonContents[preExistingHandle]['enabled'] = enabled
+        jsonContents[preExistingHandle][UserJsonConstant.ENABLED.jsonKey] = enabled
         await self.__writeAndFlushUsersFileAsync(jsonContents)
         self.__timber.log('UsersRepository', f'Finished changing enabled status for user ({handle=}) ({enabled=})')
 
