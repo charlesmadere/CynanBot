@@ -145,9 +145,6 @@ class AudioPlayerMediaPlayer:
         endTime = datetime.now(timeZone) + timedelta(seconds = durationSeconds)
 
         while isStillPlaying and not task.isCanceled:
-            if task.isCanceled:
-                break
-
             now = datetime.now(timeZone)
 
             if now >= endTime:
