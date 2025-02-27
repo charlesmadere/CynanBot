@@ -269,6 +269,39 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         soundAlerts.freeze()
         return random.choice(soundAlerts)
 
+    async def __discoverBullyOccurrenceCount(
+        self,
+        now: datetime,
+        timeoutTargetUserId: str,
+        timeoutData: TimeoutActionData
+    ) -> int:
+        if not timeoutData.isTimeoutCheerActionIncreasedBullyFailureEnabled:
+            return 0
+
+        history = await self.__timeoutActionHistoryRepository.get(
+            chatterUserId = timeoutTargetUserId,
+            twitchChannel = timeoutData.twitchChannel,
+            twitchChannelId = timeoutData.twitchChannelId
+        )
+
+        if history.entries is None or len(history.entries) == 0:
+            return 0
+
+        bullyTimeToLiveDays = await self.__timeoutActionSettingsRepository.getBullyTimeToLiveDays()
+        bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
+
+        bullyOccurrences = 0
+
+        for historyEntry in history.entries:
+            if historyEntry.timedOutByUserId != timeoutData.instigatorUserId:
+                continue
+            elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
+                continue
+
+            bullyOccurrences += 1
+
+        return bullyOccurrences
+
     async def __generateRollFailureData(
         self,
         now: datetime,
@@ -281,26 +314,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         maxBullyFailureOccurrences = await self.__timeoutActionSettingsRepository.getMaxBullyFailureOccurrences()
         perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
 
-        bullyOccurrences = 0
-
-        if timeoutData.isTimeoutCheerActionIncreasedBullyFailureEnabled:
-            history = await self.__timeoutActionHistoryRepository.get(
-                chatterUserId = timeoutTargetUserId,
-                twitchChannel = timeoutData.twitchChannel,
-                twitchChannelId = timeoutData.twitchChannelId
-            )
-
-            bullyTimeToLiveDays = await self.__timeoutActionSettingsRepository.getBullyTimeToLiveDays()
-            bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
-
-            if history.entries is not None and len(history.entries) >= 1:
-                for historyEntry in history.entries:
-                    if historyEntry.timedOutByUserId != timeoutData.instigatorUserId:
-                        continue
-                    elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
-                        continue
-
-                    bullyOccurrences += 1
+        bullyOccurrences = await self.__discoverBullyOccurrenceCount(
+            now = now,
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutData = timeoutData
+        )
 
         failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
         failureProbability = float(min(failureProbability, maxBullyFailureProbability))
