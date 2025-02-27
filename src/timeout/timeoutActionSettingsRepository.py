@@ -15,28 +15,32 @@ class TimeoutActionSettingsRepository(TimeoutActionSettingsRepositoryInterface):
 
         self.__cache: dict[str, Any] | None = None
 
+    async def areMassiveTimeoutSoundAlertsEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'massiveTimeoutSoundAlertsEnabled', fallback = True)
+
     async def clearCaches(self):
         self.__cache = None
 
     async def getActionLoopCooldownSeconds(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'actionLoopCooldownSeconds', 0.25)
+        return utils.getFloatFromDict(jsonContents, 'actionLoopCooldownSeconds', fallback = 0.25)
 
     async def getBullyTimeToLiveDays(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'bullyTimeToLiveDays', 14)
+        return utils.getIntFromDict(jsonContents, 'bullyTimeToLiveDays', fallback = 14)
 
     async def getDieSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'dieSize', 20)
+        return utils.getIntFromDict(jsonContents, 'dieSize', fallback = 20)
 
     async def getFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'failureProbability', 0.20)
+        return utils.getFloatFromDict(jsonContents, 'failureProbability', fallback = 0.20)
 
     async def getGrenadeAdditionalReverseProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'grenadeAdditionalReverseProbability', 0.09)
+        return utils.getFloatFromDict(jsonContents, 'grenadeAdditionalReverseProbability', fallback = 0.09)
 
     async def getMassiveTimeoutHoursTransitionPoint(self) -> int | None:
         jsonContents = await self.__readJson()
@@ -49,15 +53,15 @@ class TimeoutActionSettingsRepository(TimeoutActionSettingsRepositoryInterface):
 
     async def getMaxBullyFailureOccurrences(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maxBullyFailureOccurrences', 3)
+        return utils.getIntFromDict(jsonContents, 'maxBullyFailureOccurrences', fallback = 3)
 
     async def getMaxBullyFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', 0.70)
+        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', fallback = 0.70)
 
     async def getReverseProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'reverseProbability', 0.05)
+        return utils.getFloatFromDict(jsonContents, 'reverseProbability', fallback = 0.05)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

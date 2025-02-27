@@ -6,6 +6,10 @@ from ..misc.clearable import Clearable
 class TimeoutActionSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
+    async def areMassiveTimeoutSoundAlertsEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def getActionLoopCooldownSeconds(self) -> float:
         pass
 

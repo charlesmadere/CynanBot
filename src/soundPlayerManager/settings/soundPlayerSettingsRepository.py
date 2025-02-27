@@ -87,6 +87,20 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Launch TNT.mp3'
                 )
 
+            case SoundAlert.MEGA_GRENADE_1:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'megaGrenade1FilePath',
+                    fallback = 'Mega Grenade 1.mp3'
+                )
+
+            case SoundAlert.MEGA_GRENADE_2:
+                filePath = utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'megaGrenade2FilePath',
+                    fallback = 'Mega Grenade 2.mp3'
+                )
+
             case SoundAlert.POINT_REDEMPTION_01:
                 filePath = utils.getStrFromDict(
                     d = jsonContents,

@@ -25,6 +25,8 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'grenade_3': return SoundAlert.GRENADE_3
             case 'jackpot': return SoundAlert.JACKPOT
             case 'launch_tnt': return SoundAlert.LAUNCH_TNT
+            case 'mega_grenade_1': return SoundAlert.MEGA_GRENADE_1
+            case 'mega_grenade_2': return SoundAlert.MEGA_GRENADE_2
             case 'point_redemption_01': return SoundAlert.POINT_REDEMPTION_01
             case 'point_redemption_02': return SoundAlert.POINT_REDEMPTION_02
             case 'point_redemption_03': return SoundAlert.POINT_REDEMPTION_03
@@ -75,6 +77,8 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.GRENADE_3: return 'grenade_3'
             case SoundAlert.JACKPOT: return 'jackpot'
             case SoundAlert.LAUNCH_TNT: return 'launch_tnt'
+            case SoundAlert.MEGA_GRENADE_1: return 'mega_grenade_1'
+            case SoundAlert.MEGA_GRENADE_2: return 'mega_grenade_2'
             case SoundAlert.POINT_REDEMPTION_01: return 'point_redemption_01'
             case SoundAlert.POINT_REDEMPTION_02: return 'point_redemption_02'
             case SoundAlert.POINT_REDEMPTION_03: return 'point_redemption_03'

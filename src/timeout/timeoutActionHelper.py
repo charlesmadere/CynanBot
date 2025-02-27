@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from queue import SimpleQueue
 
+from frozenlist import FrozenList
+
 from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeoutActionData import TimeoutActionData
 from .timeoutActionHelperInterface import TimeoutActionHelperInterface
@@ -160,23 +162,12 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self,
         timeoutData: TimeoutActionData
     ):
-        if not timeoutData.user.areSoundAlertsEnabled:
+        soundAlert = await self.__chooseGrenadeSoundAlert(timeoutData)
+
+        if soundAlert is None:
             return
 
-        massiveTimeoutHoursTransitionPoint = await self.__timeoutActionSettingsRepository.getMassiveTimeoutHoursTransitionPoint()
-        useMassiveTimeoutSoundAlerts = False
-
-        if massiveTimeoutHoursTransitionPoint is not None:
-            timeoutDurationHours = float(timeoutData.durationSeconds) / float(60) / float(60)
-            useMassiveTimeoutSoundAlerts = timeoutDurationHours >= massiveTimeoutHoursTransitionPoint
-
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
-
-        if useMassiveTimeoutSoundAlerts:
-            # TODO use "massive" timeout alert sound(s), as this is a bigger/longer timeout
-            pass
-
-        soundAlert = await self.__chooseRandomGrenadeSoundAlert()
         await soundPlayerManager.playSoundAlert(soundAlert)
 
     async def __alertViaSoundAndTextToSpeechForTargeted(
@@ -184,11 +175,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         isReverse: bool,
         timeoutData: TimeoutActionData
     ):
-        soundAlert: SoundAlert | None = None
+        soundAlert = await self.__chooseGrenadeSoundAlert(timeoutData)
         ttsEvent: TtsEvent | None = None
-
-        if timeoutData.user.areSoundAlertsEnabled:
-            soundAlert = await self.__chooseRandomGrenadeSoundAlert()
 
         if timeoutData.user.isTtsEnabled:
             message: str
@@ -253,13 +241,32 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             replyMessageId = timeoutData.twitchChatMessageId
         )
 
-    async def __chooseRandomGrenadeSoundAlert(self):
-        soundAlerts: list[SoundAlert] = [
-            SoundAlert.GRENADE_1,
-            SoundAlert.GRENADE_2,
-            SoundAlert.GRENADE_3
-        ]
+    async def __chooseGrenadeSoundAlert(
+        self,
+        timeoutData: TimeoutActionData
+    ) -> SoundAlert | None:
+        if not timeoutData.user.areSoundAlertsEnabled:
+            return None
 
+        massiveTimeoutSoundAlertsEnabled = await self.__timeoutActionSettingsRepository.areMassiveTimeoutSoundAlertsEnabled()
+        massiveTimeoutHoursTransitionPoint = await self.__timeoutActionSettingsRepository.getMassiveTimeoutHoursTransitionPoint()
+        useMassiveTimeoutSoundAlerts = False
+
+        if massiveTimeoutSoundAlertsEnabled and utils.isValidInt(massiveTimeoutHoursTransitionPoint):
+            timeoutDurationHours = float(timeoutData.durationSeconds) / float(60) / float(60)
+            useMassiveTimeoutSoundAlerts = timeoutDurationHours >= massiveTimeoutHoursTransitionPoint
+
+        soundAlerts: FrozenList[SoundAlert] = FrozenList()
+
+        if useMassiveTimeoutSoundAlerts:
+            soundAlerts.append(SoundAlert.MEGA_GRENADE_1)
+            soundAlerts.append(SoundAlert.MEGA_GRENADE_2)
+        else:
+            soundAlerts.append(SoundAlert.GRENADE_1)
+            soundAlerts.append(SoundAlert.GRENADE_2)
+            soundAlerts.append(SoundAlert.GRENADE_3)
+
+        soundAlerts.freeze()
         return random.choice(soundAlerts)
 
     async def __generateRollFailureData(
@@ -296,8 +303,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                     bullyOccurrences += 1
 
         failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
-        failureProbability = min(failureProbability, maxBullyFailureProbability)
-        failureRoll = int(round(failureProbability * diceRoll.dieSize))
+        failureProbability = float(min(failureProbability, maxBullyFailureProbability))
+        failureRoll = int(round(failureProbability * float(diceRoll.dieSize)))
         failureRoll = int(min(failureRoll, diceRoll.dieSize))
 
         reverseProbability = await self.__timeoutActionSettingsRepository.getReverseProbability()
