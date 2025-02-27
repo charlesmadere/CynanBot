@@ -108,7 +108,28 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
 
-        command = f'{filePaths.commodoreSamPath} -wav \"{filePaths.fullFilePath}\" {text}'
+        mouthParameter: int | None = await self.__commodoreSamSettingsRepository.getMouthParameter()
+        throatParameter: int | None = await self.__commodoreSamSettingsRepository.getThroatParameter()
+        pitchParameter: int | None = await self.__commodoreSamSettingsRepository.getPitchParameter()
+        speedParameter: int | None = await self.__commodoreSamSettingsRepository.getSpeedParameter()
+
+        arguments: str = ''
+
+        if mouthParameter is not None:
+            arguments = arguments + f'-mouth {mouthParameter} '
+
+        if throatParameter is not None:
+            arguments = arguments + f'-throat {throatParameter} '
+
+        if pitchParameter is not None:
+            arguments = arguments + f'-pitch {pitchParameter} '
+
+        if speedParameter is not None:
+            arguments = arguments + f'-speed {speedParameter} '
+
+        arguments = arguments + f'-wav \"{filePaths.fullFilePath}\"'
+
+        command = f'{filePaths.commodoreSamPath} {arguments} {text}'
 
         try:
             commodoreSamProcess = await asyncio.create_subprocess_shell(

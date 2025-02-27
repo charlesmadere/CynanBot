@@ -1,4 +1,8 @@
 {
     "commodoreSamPath": "path_to_sam",
-    "mediaPlayerVolume": "50"
+    "mediaPlayerVolume": "50",
+    "mouth": 128,
+    "throat": 145,
+    "pitch": 64,
+    "speed": 120
 }

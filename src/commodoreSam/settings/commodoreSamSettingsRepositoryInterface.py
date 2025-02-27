@@ -14,5 +14,21 @@ class CommodoreSamSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getMouthParameter(self) -> int | None:
+        pass
+
+    @abstractmethod
+    async def getPitchParameter(self) -> int | None:
+        pass
+
+    @abstractmethod
+    async def getSpeedParameter(self) -> int | None:
+        pass
+
+    @abstractmethod
+    async def getThroatParameter(self) -> int | None:
+        pass
+
+    @abstractmethod
     async def requireCommodoreSamExecutablePath(self) -> str:
         pass
