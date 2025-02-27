@@ -91,10 +91,16 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
     ) -> FileReference | None:
         providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
 
-        if not await aiofiles.ospath.exists(providerFolder):
+        if not await aiofiles.ospath.exists(
+            path = providerFolder,
+            loop = self.__eventLoop
+        ):
             self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder does not exist ({glacialId=}) ({providerFolder=})')
             return None
-        elif not await aiofiles.ospath.isdir(providerFolder):
+        elif not await aiofiles.ospath.isdir(
+            s = providerFolder,
+            loop = self.__eventLoop
+        ):
             self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({providerFolder=})')
             raise GlacialTtsFolderIsNotAFolder(f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({providerFolder=})')
 

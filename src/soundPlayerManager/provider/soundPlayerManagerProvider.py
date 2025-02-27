@@ -52,7 +52,7 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         match soundPlayerType:
             case SoundPlayerType.AUDIO_PLAYER:
                 return AudioPlayerSoundPlayerManager(
-                    backgroundTaskHelper = self.__backgroundTaskHelper,
+                    eventLoop = self.__backgroundTaskHelper.eventLoop,
                     chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
                     soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
                     timber = self.__timber,

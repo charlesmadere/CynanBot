@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from asyncio import AbstractEventLoop
 from typing import Collection
 
 import aiofiles.ospath
@@ -15,7 +16,6 @@ from ...chatBand.chatBandInstrument import ChatBandInstrument
 from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -23,15 +23,15 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
+        eventLoop: AbstractEventLoop,
         chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         playbackLoopSleepTimeSeconds: float = 0.25
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         if chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
             raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -45,7 +45,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
@@ -127,11 +127,17 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
                 self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a valid string: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
-            elif not await aiofiles.ospath.exists(playlistFile.filePath):
+            elif not await aiofiles.ospath.exists(
+                path = playlistFile.filePath,
+                loop = self.__eventLoop
+            ):
                 self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} does not exist: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
-            elif not await aiofiles.ospath.isfile(playlistFile.filePath):
+            elif not await aiofiles.ospath.isfile(
+                path = playlistFile.filePath,
+                loop = self.__eventLoop
+            ):
                 self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a file: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
@@ -299,6 +305,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
         if mediaPlayer is None:
             mediaPlayer = AudioPlayerMediaPlayer(
+                eventLoop = self.__eventLoop,
                 timber = self.__timber,
                 timeZoneRepository = self.__timeZoneRepository,
                 playbackLoopSleepTimeSeconds = self.__playbackLoopSleepTimeSeconds

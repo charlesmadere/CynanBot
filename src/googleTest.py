@@ -139,7 +139,7 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 )
 
 soundPlayerManager: SoundPlayerManagerInterface = AudioPlayerSoundPlayerManager(
-    backgroundTaskHelper = backgroundTaskHelper,
+    eventLoop = eventLoop,
     chatBandInstrumentSoundsRepository = None,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,

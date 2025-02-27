@@ -116,9 +116,15 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
                 if not utils.isValidStr(filePath):
                     continue
-                elif not await aiofiles.ospath.exists(filePath):
+                elif not await aiofiles.ospath.exists(
+                    path = filePath,
+                    loop = self.__eventLoop
+                ):
                     continue
-                elif await aiofiles.ospath.isdir(filePath):
+                elif await aiofiles.ospath.isdir(
+                    s = filePath,
+                    loop = self.__eventLoop
+                ):
                     continue
 
                 cache[soundAlert] = filePath

@@ -1,5 +1,6 @@
 import time
 import traceback
+from asyncio import AbstractEventLoop
 from datetime import datetime, timedelta
 from threading import Thread
 from typing import Any
@@ -18,11 +19,14 @@ class AudioPlayerMediaPlayer:
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         playbackLoopSleepTimeSeconds: float = 0.125
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
@@ -31,6 +35,7 @@ class AudioPlayerMediaPlayer:
         elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
@@ -52,13 +57,26 @@ class AudioPlayerMediaPlayer:
             self.__isPlayingOrLoading = False
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath has not yet been set ({filePath=})')
             return False
-        elif not await aiofiles.ospath.exists(filePath):
+        elif not await aiofiles.ospath.exists(
+            path = filePath,
+            loop = self.__eventLoop
+        ):
             self.__isPlayingOrLoading = False
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath does not point to a file that exists ({filePath=})')
             return False
-        elif await aiofiles.ospath.isdir(filePath):
+        elif await aiofiles.ospath.isdir(
+            s = filePath,
+            loop = self.__eventLoop
+        ):
             self.__isPlayingOrLoading = False
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath points to a directory instead of a file ({filePath=})')
+            return False
+        elif not await aiofiles.ospath.isfile(
+            path = filePath,
+            loop = self.__eventLoop
+        ):
+            self.__isPlayingOrLoading = False
+            self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath points to something that is not a file ({filePath=})')
             return False
 
         playbackTask = AudioPlayerPlaybackTask(
