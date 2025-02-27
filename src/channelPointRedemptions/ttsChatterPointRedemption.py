@@ -40,10 +40,16 @@ class TtsChatterPointRedemption(AbsChannelPointRedemption):
             twitchChannelId = await twitchChannel.getTwitchChannelId()
         )
 
-        await self.__ttsChatterRepository.set(
-            ttsChatter = ttsChatter
-        )
+        ttsChatterEntry = await self.__ttsChatterRepository.get(ttsChatter.chatterUserId, ttsChatter.twitchChannelId)
 
-        await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ @{twitchChannelPointsMessage.userName} you are now a TTS Chatter')
-        self.__timber.log('TtsChatterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
-        return True
+        if ttsChatterEntry is None:
+            await self.__ttsChatterRepository.set(
+                ttsChatter = ttsChatter
+            )
+
+            await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ @{twitchChannelPointsMessage.userName} you are now a TTS Chatter')
+            self.__timber.log('TtsChatterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+            return True
+        else:
+            await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ @{twitchChannelPointsMessage.userName} you are already a TTS Chatter')
+            return False
