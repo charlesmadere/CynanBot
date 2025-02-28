@@ -992,7 +992,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
         twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
-        jsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.LIMITED
+        jsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.NONE
     )
 
 
