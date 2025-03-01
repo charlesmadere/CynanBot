@@ -1,3 +1,4 @@
+import os
 import random
 import re
 from asyncio import AbstractEventLoop
@@ -5,6 +6,7 @@ from typing import Pattern
 
 import aiofiles.os
 import aiofiles.ospath
+from frozendict import frozendict
 
 from .soundPlayerRandomizerDirectoryScanResult import SoundPlayerRandomizerDirectoryScanResult
 from .soundPlayerRandomizerHelperInterface import SoundPlayerRandomizerHelperInterface
@@ -55,7 +57,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         self.__pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = pointRedemptionSoundAlerts
 
         self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
-        self.__soundAlertCache: dict[SoundAlert, str | None] | None = None
+        self.__soundAlertCache: frozendict[SoundAlert, str | None] | None = None
         self.__soundFileRegEx: Pattern = re.compile(r'^\w[\w\s-]*\s?(\(shiny\))?\.(flac|mp3|ogg|wav)$', re.IGNORECASE)
 
     async def clearCaches(self):
@@ -107,7 +109,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
         return random.choice(availableSoundAlerts)
 
-    async def __loadSoundAlertsCache(self) -> dict[SoundAlert, str | None]:
+    async def __loadSoundAlertsCache(self) -> frozendict[SoundAlert, str | None]:
         cache: dict[SoundAlert, str | None] = dict()
 
         if self.__pointRedemptionSoundAlerts is not None and len(self.__pointRedemptionSoundAlerts) >= 1:
@@ -116,7 +118,10 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
                 if not utils.isValidStr(filePath):
                     continue
-                elif not await aiofiles.ospath.exists(
+
+                filePath = os.path.normpath(filePath)
+
+                if not await aiofiles.ospath.exists(
                     path = filePath,
                     loop = self.__eventLoop
                 ):
@@ -126,11 +131,16 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
                     loop = self.__eventLoop
                 ):
                     continue
+                elif not await aiofiles.ospath.isfile(
+                    path = filePath,
+                    loop = self.__eventLoop
+                ):
+                    continue
 
                 cache[soundAlert] = filePath
 
         self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in {len(cache)} sound alert(s)')
-        return cache
+        return frozendict(cache)
 
     async def __scanDirectoryForSoundFiles(
         self,

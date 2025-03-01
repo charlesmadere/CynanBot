@@ -1,4 +1,5 @@
 import asyncio
+import os
 import traceback
 from asyncio import AbstractEventLoop
 from typing import Collection
@@ -169,6 +170,8 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         if not utils.isValidStr(filePath):
             self.__timber.log('AudioPlayerSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
             return False
+
+        filePath = os.path.normpath(filePath)
 
         return await self.playSoundFile(
             filePath = filePath,

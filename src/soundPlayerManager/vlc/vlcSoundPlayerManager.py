@@ -1,4 +1,5 @@
 import asyncio
+import os
 import traceback
 from typing import Collection
 
@@ -154,6 +155,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
             return False
 
+        filePath = os.path.normpath(filePath)
         playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
 
         playlistFiles.append(SoundPlaybackFile(
