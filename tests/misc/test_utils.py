@@ -627,7 +627,7 @@ class TestUtils:
             message = ''
         )
 
-        assert result is not None
+        assert isinstance(result, list)
         assert len(result) == 0
 
     def test_splitLongStringIntoMessages_withNoneMessage(self):
@@ -637,7 +637,7 @@ class TestUtils:
             message = None
         )
 
-        assert result is not None
+        assert isinstance(result, list)
         assert len(result) == 0
 
     def test_splitLongStringIntoMessages_withOneSentences(self):
@@ -647,7 +647,7 @@ class TestUtils:
             message = 'Hello, World!'
         )
 
-        assert result is not None
+        assert isinstance(result, list)
         assert len(result) == 1
         assert result[0] == 'Hello, World!'
 
@@ -675,6 +675,16 @@ class TestUtils:
         assert len(result) == 2
         assert result[0] == 'Hello, World! This is an example sentence. This'
         assert result[1] == 'should be broken up into smaller strings.'
+
+    def test_splitLongStringIntoMessages_withWhitespaceMessage(self):
+        result = utils.splitLongStringIntoMessages(
+            maxMessages = 50,
+            perMessageMaxSize = 50,
+            message = ' '
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 0
 
     def test_strContainsAlphanumericCharacters_withAtJrp2234(self):
         result = utils.strContainsAlphanumericCharacters('@JRP2234')
