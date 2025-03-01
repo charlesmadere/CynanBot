@@ -44,12 +44,7 @@ class TimeoutActionSettingsRepository(TimeoutActionSettingsRepositoryInterface):
 
     async def getMassiveTimeoutHoursTransitionPoint(self) -> int | None:
         jsonContents = await self.__readJson()
-
-        massiveTimeoutHoursTransitionPoint: int | None = None
-        if 'massiveTimeoutHoursTransitionPoint' in jsonContents and utils.isValidInt(jsonContents.get('massiveTimeoutHoursTransitionPoint')):
-            massiveTimeoutHoursTransitionPoint = utils.getIntFromDict(jsonContents, 'massiveTimeoutHoursTransitionPoint')
-
-        return massiveTimeoutHoursTransitionPoint
+        return utils.getIntFromDict(jsonContents, 'massiveTimeoutHoursTransitionPoint', fallback = 6)
 
     async def getMaxBullyFailureOccurrences(self) -> int:
         jsonContents = await self.__readJson()
