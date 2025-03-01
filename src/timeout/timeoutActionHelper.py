@@ -341,7 +341,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             reverseRoll = reverseRoll
         )
 
-    async def __isFailedTimeout(
+    async def __isFailedDiceRoll(
         self,
         isGuaranteed: bool,
         diceRoll: DiceRoll,
@@ -489,6 +489,15 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but the current stream status is invalid ({timeoutData=})')
             return
 
+        elif await self.__isImmuneUser(
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutTargetUserName = timeoutTargetUserName,
+            timeoutData = timeoutData,
+            twitchChannel = twitchChannel
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is immune ({timeoutData=})')
+            return
+
         elif await self.__isGuaranteedTimeoutUser(
             timeoutTargetUserId = timeoutTargetUserId
         ):
@@ -500,18 +509,10 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             timeoutData = timeoutData
         ):
             self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is the streamer, so they will be hit with a reverse ({timeoutData=})')
+            isGuaranteed = True
             isReverse = True
             timeoutTargetUserId = timeoutData.instigatorUserId
             timeoutTargetUserName = timeoutData.instigatorUserName
-
-        elif await self.__isImmuneUser(
-            timeoutTargetUserId = timeoutTargetUserId,
-            timeoutTargetUserName = timeoutTargetUserName,
-            timeoutData = timeoutData,
-            twitchChannel = twitchChannel
-        ):
-            self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but user ID \"{timeoutTargetUserId}\" is immune ({timeoutData=})')
-            return
 
         elif await self.__hasNewFollowerShield(
             now = now,
@@ -535,7 +536,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             timeoutTargetUserId = timeoutData.instigatorUserId
             timeoutTargetUserName = timeoutData.instigatorUserName
 
-        elif await self.__isFailedTimeout(
+        elif await self.__isFailedDiceRoll(
             isGuaranteed = isGuaranteed,
             diceRoll = diceRoll,
             rollFailureData = rollFailureData,
