@@ -1,4 +1,5 @@
 {
+    "debugpy.debugJustMyCode": false,
     "editor.codeLens": false,
     "editor.wordWrapColumn": 120,
     "files.autoSave": "afterDelay",
