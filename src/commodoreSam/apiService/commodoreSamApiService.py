@@ -25,6 +25,14 @@ from ...tts.models.ttsProvider import TtsProvider
 class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
     @dataclass(frozen = True)
+    class CommodoreSamArguments:
+        mouth: int | None
+        pitch: int | None
+        speed: int | None
+        throat: int | None
+        fullArgumentString: str
+
+    @dataclass(frozen = True)
     class FilePaths:
         commodoreSamPath: str
         fileName: str
@@ -72,6 +80,34 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         self.__timber.log('CommodoreSamApiService', f'Created new TTS directory ({ttsDirectory=})')
 
+    async def __fetchCommodoreSamArguments(self) -> CommodoreSamArguments:
+        mouth = await self.__commodoreSamSettingsRepository.getMouthParameter()
+        pitch = await self.__commodoreSamSettingsRepository.getPitchParameter()
+        speed = await self.__commodoreSamSettingsRepository.getSpeedParameter()
+        throat = await self.__commodoreSamSettingsRepository.getThroatParameter()
+
+        fullArgumentString = ''
+
+        if mouth is not None:
+            fullArgumentString = fullArgumentString + f'-mouth {mouth} '
+
+        if pitch is not None:
+            fullArgumentString = fullArgumentString + f'-pitch {pitch} '
+
+        if speed is not None:
+            fullArgumentString = fullArgumentString + f'-speed {speed} '
+
+        if throat is not None:
+            fullArgumentString = fullArgumentString + f'-throat {throat} '
+
+        return CommodoreSamApiService.CommodoreSamArguments(
+            mouth = mouth,
+            pitch = pitch,
+            speed = speed,
+            throat = throat,
+            fullArgumentString = fullArgumentString.strip()
+        )
+
     async def __generateFilePaths(self) -> FilePaths:
         commodoreSamPath = await self.__commodoreSamSettingsRepository.requireCommodoreSamExecutablePath()
 
@@ -104,32 +140,12 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         ):
             raise CommodoreSamExecutableIsMissingException(f'Couldn\'t find Commodore SAM executable ({filePaths=})')
 
+        commodoreSamArguments = await self.__fetchCommodoreSamArguments()
+        command = f'{filePaths.commodoreSamPath} -wav \"{filePaths.fullFilePath}\" {commodoreSamArguments.fullArgumentString} {text}'
+
         commodoreSamProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
-
-        mouthParameter: int | None = await self.__commodoreSamSettingsRepository.getMouthParameter()
-        throatParameter: int | None = await self.__commodoreSamSettingsRepository.getThroatParameter()
-        pitchParameter: int | None = await self.__commodoreSamSettingsRepository.getPitchParameter()
-        speedParameter: int | None = await self.__commodoreSamSettingsRepository.getSpeedParameter()
-
-        arguments: str = ''
-
-        if mouthParameter is not None:
-            arguments = arguments + f'-mouth {mouthParameter} '
-
-        if throatParameter is not None:
-            arguments = arguments + f'-throat {throatParameter} '
-
-        if pitchParameter is not None:
-            arguments = arguments + f'-pitch {pitchParameter} '
-
-        if speedParameter is not None:
-            arguments = arguments + f'-speed {speedParameter} '
-
-        arguments = arguments + f'-wav \"{filePaths.fullFilePath}\"'
-
-        command = f'{filePaths.commodoreSamPath} {arguments} {text}'
 
         try:
             commodoreSamProcess = await asyncio.create_subprocess_shell(

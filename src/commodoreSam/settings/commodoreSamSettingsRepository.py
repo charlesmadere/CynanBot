@@ -30,6 +30,15 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
             fallback = '../commodoreSam/sam.exe'
         )
 
+    async def __getIntOrNone(self, key: str) -> int | None:
+        jsonContents = await self.__readJson()
+
+        value: int | None = None
+        if key in jsonContents and utils.isValidInt(jsonContents.get(key)):
+            value = utils.getIntFromDict(jsonContents, key)
+
+        return value
+
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 4)
@@ -53,14 +62,6 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
             raise ValueError(f'\"commodoreSamPath\" value is missing/malformed: \"{commodoreSamPath}\"')
 
         return commodoreSamPath
-
-    async def __getIntOrNone(self, key: str) -> int | None:
-        jsonContents = await self.__readJson()
-        value: int = utils.getIntFromDict(jsonContents, key, -1)
-        if value == -1:
-            return None
-
-        return value
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
