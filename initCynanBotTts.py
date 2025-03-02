@@ -111,10 +111,10 @@ from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
 from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
 from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
-from src.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
-from src.decTalk.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.decTalk.helper.decTalkHelper import DecTalkHelper
 from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
+from src.decTalk.mapper.decTalkVoiceMapper import DecTalkVoiceMapper
+from src.decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
 from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from src.emojiHelper.emojiHelper import EmojiHelper

@@ -1,6 +1,6 @@
 from .decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
-from .models.decTalkVoice import DecTalkVoice
-from ..misc import utils as utils
+from ..models.decTalkVoice import DecTalkVoice
+from ...misc import utils as utils
 
 
 class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):

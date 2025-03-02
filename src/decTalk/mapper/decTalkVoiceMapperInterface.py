@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .models.decTalkVoice import DecTalkVoice
+from ..models.decTalkVoice import DecTalkVoice
 
 
 class DecTalkVoiceMapperInterface(ABC):

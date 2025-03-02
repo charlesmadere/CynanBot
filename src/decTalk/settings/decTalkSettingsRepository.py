@@ -1,7 +1,7 @@
 from typing import Any
 
 from .decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
-from ..decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from ..mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from ..models.decTalkVoice import DecTalkVoice
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
