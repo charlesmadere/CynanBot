@@ -397,3 +397,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+###
+### CynanBot specific ignores
+###
+logs/
+config/
+pg-data/

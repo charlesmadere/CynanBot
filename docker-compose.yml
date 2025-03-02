@@ -1,0 +1,25 @@
+services:
+  cynanbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cynanbot
+    restart: unless-stopped
+    volumes:
+      - ./logs:/cynanbot/logs
+      - ./config:/cynanbot/config
+    depends_on:
+      - cynanbot-db
+
+  cynanbot-db:
+    image: postgres:17
+    container_name: cynanbot-db
+    restart: unless-stopped
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: cynanbot
+      POSTGRES_USER: cynanbot
+      POSTGRES_PASSWORD: cynanbot
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
