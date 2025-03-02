@@ -21,6 +21,22 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
             case 'wendy': return DecTalkVoice.WENDY
             case _: raise RuntimeError(f'voice is an unknown value: \"{voice}\"')
 
+    async def serializeVoice(self, voice: DecTalkVoice) -> str:
+        if not isinstance(voice, DecTalkVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+
+        match voice:
+            case DecTalkVoice.BETTY: return 'betty'
+            case DecTalkVoice.DENNIS: return 'dennis'
+            case DecTalkVoice.FRANK: return 'frank'
+            case DecTalkVoice.HARRY: return 'harry'
+            case DecTalkVoice.KIT: return 'kit'
+            case DecTalkVoice.PAUL: return 'paul'
+            case DecTalkVoice.RITA: return 'rita'
+            case DecTalkVoice.URSULA: return 'ursula'
+            case DecTalkVoice.WENDY: return 'wendy'
+            case _: raise RuntimeError(f'voice is an unknown DecTalkVoice value: \"{voice}\"')
+
     async def toString(self, voice: DecTalkVoice) -> str:
         if not isinstance(voice, DecTalkVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')

@@ -65,6 +65,11 @@ class TestDecTalkVoiceChooser:
         await self.__assertChooseWithVoice(DecTalkVoice.URSULA)
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withPaul(self):
+        result = await self.voiceMapper.serializeVoice(DecTalkVoice.PAUL)
+        assert result == 'paul'
+
+    @pytest.mark.asyncio
     async def __assertChooseWithVoice(self, voice: DecTalkVoice):
         for _ in range(100):
             voiceString = await self.voiceMapper.toString(voice)

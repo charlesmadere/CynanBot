@@ -10,5 +10,9 @@ class DecTalkVoiceMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def serializeVoice(self, voice: DecTalkVoice) -> str:
+        pass
+
+    @abstractmethod
     async def toString(self, voice: DecTalkVoice) -> str:
         pass
