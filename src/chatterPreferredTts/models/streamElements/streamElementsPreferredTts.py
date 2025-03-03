@@ -7,18 +7,17 @@ class StreamElementsPreferredTts(AbsPreferredTts):
 
     def __init__(
         self,
-        streamElementsVoice: StreamElementsVoice | None
+        voice: StreamElementsVoice | None
     ):
-        if streamElementsVoice is not None and not isinstance(streamElementsVoice, StreamElementsVoice):
-            raise TypeError(f'streamElementsVoice argument is malformed: \"{streamElementsVoice}\"')
+        if voice is not None and not isinstance(voice, StreamElementsVoice):
+            raise TypeError(f'voice is malformed: \"{voice}\"')
 
-        self.__streamElementsVoiceEntry: StreamElementsVoice | None = streamElementsVoice
-
-    @property
-    def streamElementsVoiceEntry(self) -> StreamElementsVoice | None:
-        return self.__streamElementsVoiceEntry
-
+        self.__voice: StreamElementsVoice | None = voice
 
     @property
     def preferredTtsProvider(self) -> TtsProvider:
         return TtsProvider.STREAM_ELEMENTS
+
+    @property
+    def voice(self) -> StreamElementsVoice | None:
+        return self.__voice

@@ -1,9 +1,10 @@
 import pytest
 
+from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.models.chatterPrefferedTts import ChatterPreferredTts
 from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
-from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
+from src.decTalk.models.decTalkVoice import DecTalkVoice
 from src.language.languageEntry import LanguageEntry
 
 
@@ -13,7 +14,9 @@ class TestChatterPreferredTtsPresenter:
 
     @pytest.mark.asyncio
     async def test_printOut_withDecTalkPreferredTts(self):
-        decTalkPreferredTts = DecTalkPreferredTts()
+        decTalkPreferredTts = DecTalkPreferredTts(
+            voice = None
+        )
 
         chatterPreferredTts = ChatterPreferredTts(
             preferredTts = decTalkPreferredTts,
@@ -23,6 +26,21 @@ class TestChatterPreferredTtsPresenter:
 
         result = await self.presenter.printOut(chatterPreferredTts)
         assert result == 'DECtalk'
+
+    @pytest.mark.asyncio
+    async def test_printOut_withDecTalkPreferredTtsAndWendyVoice(self):
+        decTalkPreferredTts = DecTalkPreferredTts(
+            voice = DecTalkVoice.WENDY
+        )
+
+        chatterPreferredTts = ChatterPreferredTts(
+            preferredTts = decTalkPreferredTts,
+            chatterUserId = 'abc123',
+            twitchChannelId = 'def456'
+        )
+
+        result = await self.presenter.printOut(chatterPreferredTts)
+        assert result == 'DECtalk (Wendy)'
 
     @pytest.mark.asyncio
     async def test_printOut_withGooglePreferredTts(self):

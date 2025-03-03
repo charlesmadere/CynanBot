@@ -14,10 +14,7 @@ class TestStreamElementsMessageVoiceParser:
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withBrianMessage(self):
         result = await self.parser.determineVoiceFromMessage('brian: Hello, World!')
-
-        if result is None:
-            assert False
-
+        assert isinstance(result, StreamElementsMessageVoiceParserInterface.Result)
         assert result.message == 'Hello, World!'
         assert result.voice is StreamElementsVoice.BRIAN
 
@@ -29,10 +26,7 @@ class TestStreamElementsMessageVoiceParser:
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withJoeyMessage(self):
         result = await self.parser.determineVoiceFromMessage('joey: Hello, World!')
-        
-        if result is None:
-            assert False
-
+        assert isinstance(result, StreamElementsMessageVoiceParserInterface.Result)
         assert result.message == 'Hello, World!'
         assert result.voice is StreamElementsVoice.JOEY
 
@@ -50,3 +44,8 @@ class TestStreamElementsMessageVoiceParser:
     async def test_determineVoiceFromMessage_withWhitespaceString(self):
         result = await self.parser.determineVoiceFromMessage(' ')
         assert result is None
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, StreamElementsMessageVoiceParser)
+        assert isinstance(self.parser, StreamElementsMessageVoiceParserInterface)

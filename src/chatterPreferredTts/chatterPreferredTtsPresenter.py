@@ -17,7 +17,12 @@ class ChatterPreferredTtsPresenter:
         return TtsProvider.COMMODORE_SAM.humanName
 
     async def __decTalk(self, preferredTts: DecTalkPreferredTts) -> str:
-        return TtsProvider.DEC_TALK.humanName
+        decTalkVoice = preferredTts.voice
+
+        if decTalkVoice is None:
+            return TtsProvider.DEC_TALK.humanName
+
+        return f'{TtsProvider.DEC_TALK.humanName} ({decTalkVoice.humanName})'
 
     async def __google(self, preferredTts: GooglePreferredTts) -> str:
         languageEntry = preferredTts.languageEntry
@@ -34,43 +39,41 @@ class ChatterPreferredTtsPresenter:
             return f'{googleHumanName} ({languageEntry.humanName})'
 
     async def __halfLife(self, preferredTts: HalfLifePreferredTts) -> str:
-        halfLifeVoiceEntry = preferredTts.halfLifeVoiceEntry
+        voice = preferredTts.halfLifeVoiceEntry
         halfLifeHumanName = TtsProvider.HALF_LIFE.humanName
 
-        if halfLifeVoiceEntry is None:
+        if voice is None:
             return halfLifeHumanName
 
-        return f'{halfLifeHumanName} ({halfLifeVoiceEntry.humanName})'
+        return f'{halfLifeHumanName} ({voice.humanName})'
 
     async def __microsoftSam(self, preferredTts: MicrosoftSamPreferredTts) -> str:
-        microsoftSamVoiceEntry = preferredTts.microsoftSamVoiceEntry
-        microsoftSamHumanName = TtsProvider.MICROSOFT_SAM.humanName
+        voice = preferredTts.voice
 
-        if microsoftSamVoiceEntry is None:
-            return microsoftSamHumanName
+        if voice is None:
+            return TtsProvider.MICROSOFT_SAM.humanName
 
-        return f'{microsoftSamHumanName} ({microsoftSamVoiceEntry.humanName})'
+        return f'{TtsProvider.MICROSOFT_SAM.humanName} ({voice.humanName})'
 
     async def __singingDecTalk(self, preferredTts: SingingDecTalkPreferredTts) -> str:
         return TtsProvider.SINGING_DEC_TALK.humanName
 
     async def __streamElements(self, preferredTts: StreamElementsPreferredTts) -> str:
-        streamElementsVoiceEntry = preferredTts.streamElementsVoiceEntry
-        streamElementsHumanName = TtsProvider.STREAM_ELEMENTS.humanName
+        voice = preferredTts.voice
 
-        if streamElementsVoiceEntry is None:
-            return streamElementsHumanName
+        if voice is None:
+            return TtsProvider.STREAM_ELEMENTS.humanName
 
-        return f'{streamElementsHumanName} ({streamElementsVoiceEntry.humanName})'
+        return f'{TtsProvider.STREAM_ELEMENTS.humanName} ({voice.humanName})'
 
     async def __ttsMonster(self, preferredTts: TtsMonsterPreferredTts) -> str:
-        ttsMonsterVoiceEntry = preferredTts.ttsMonsterVoiceEntry
+        voice = preferredTts.ttsMonsterVoiceEntry
         ttsMonsterHumanName = TtsProvider.TTS_MONSTER.humanName
 
-        if ttsMonsterVoiceEntry is None:
+        if voice is None:
             return ttsMonsterHumanName
 
-        return f'{ttsMonsterHumanName} ({ttsMonsterVoiceEntry.humanName})'
+        return f'{ttsMonsterHumanName} ({voice.humanName})'
 
     async def printOut(self, preferredTts: ChatterPreferredTts) -> str:
         if not isinstance(preferredTts, ChatterPreferredTts):

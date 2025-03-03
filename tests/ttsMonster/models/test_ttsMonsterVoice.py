@@ -11,6 +11,14 @@ class TestTtsMonsterVoice:
 
         assert len(humanNames) == len(list(TtsMonsterVoice))
 
+    def test_humanName_withKkona(self):
+        result = TtsMonsterVoice.KKONA.humanName
+        assert result == 'Kkona'
+
+    def test_humanName_withShadow(self):
+        result = TtsMonsterVoice.SHADOW.humanName
+        assert result == 'Shadow'
+
     def test_inMessageName_withAll(self):
         inMessageNames: list[str] = list()
 
@@ -18,3 +26,11 @@ class TestTtsMonsterVoice:
             inMessageNames.append(voice.inMessageName)
 
         assert len(inMessageNames) == len(list(TtsMonsterVoice))
+
+    def test_inMessageName_withKkona(self):
+        result = TtsMonsterVoice.KKONA.inMessageName
+        assert result == 'kkona'
+
+    def test_inMessageName_withShadow(self):
+        result = TtsMonsterVoice.SHADOW.inMessageName
+        assert result == 'shadow'

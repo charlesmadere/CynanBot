@@ -122,6 +122,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.NARRATOR
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withNone(self):
+        result = await self.mapper.parseVoice(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withPirate(self):
         result = await self.mapper.parseVoice('pirate')
         assert result is TtsMonsterVoice.PIRATE
@@ -132,13 +137,64 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.SHADOW
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withWhitespaceString(self):
+        result = await self.mapper.parseVoice(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withWitch(self):
         result = await self.mapper.parseVoice('witch')
         assert result is TtsMonsterVoice.WITCH
 
     @pytest.mark.asyncio
     async def test_parseVoice_withZeroTwo(self):
+        result = await self.mapper.parseVoice('zerotwo')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+        result = await self.mapper.parseVoice('zero two')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
         result = await self.mapper.parseVoice('zero_two')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+        result = await self.mapper.parseVoice('zero-two')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withNone(self):
+        result: TtsMonsterVoice | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireVoice(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withShadow(self):
+        result = await self.mapper.requireVoice('shadow')
+        assert result is TtsMonsterVoice.SHADOW
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withWhitespaceString(self):
+        result: TtsMonsterVoice | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireVoice(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withZeroTwo(self):
+        result = await self.mapper.requireVoice('zerotwo')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+        result = await self.mapper.requireVoice('zero two')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+        result = await self.mapper.requireVoice('zero_two')
+        assert result is TtsMonsterVoice.ZERO_TWO
+
+        result = await self.mapper.requireVoice('zero-two')
         assert result is TtsMonsterVoice.ZERO_TWO
 
     def test_sanity(self):

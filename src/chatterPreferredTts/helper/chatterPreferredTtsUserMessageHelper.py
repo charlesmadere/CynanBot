@@ -11,6 +11,8 @@ from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferred
 from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPreferredTts
 from ..models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from ..models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
+from ...decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...language.languageEntry import LanguageEntry
@@ -28,13 +30,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
     def __init__(
         self,
+        decTalkVoiceMapper: DecTalkVoiceMapperInterface,
         halfLifeVoiceParser: HalfLifeVoiceParserInterface,
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
     ):
-        if not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
+        if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
+            raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
+        elif not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeVoiceParser}\"')
         elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
@@ -45,6 +50,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
             raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
 
+        self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
@@ -52,7 +58,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
 
         self.__commodoreSamRegEx: Pattern = re.compile(r'^\s*commodore(?:\s+|_|-)?sam\s*$', re.IGNORECASE)
-        self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
+        self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*(\w+)?\s*$', re.IGNORECASE)
         self.__googleRegEx: Pattern = re.compile(r'^\s*goog(?:le?)?\s*(\w+)?\s*$', re.IGNORECASE)
         self.__halfLifeRegEx: Pattern = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
         self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*(\w+)?\s*$', re.IGNORECASE)
@@ -76,7 +82,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
 
-        return DecTalkPreferredTts()
+        decTalkVoice: DecTalkVoice | None = None
+        decTalkVoiceCommand = match.group(1)
+
+        if utils.isValidStr(decTalkVoiceCommand):
+            decTalkVoice = await self.__decTalkVoiceMapper.parseVoice(decTalkVoiceCommand)
+
+        return DecTalkPreferredTts(
+            voice = decTalkVoice
+        )
 
     async def __createGoogleTtsProperties(
         self,
@@ -132,7 +146,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             microsoftSamVoice = self.__microsoftSamJsonParser.parseVoice(microsoftSamVoiceCommand)
 
         return MicrosoftSamPreferredTts(
-            microsoftSamVoice = microsoftSamVoice
+            voice= microsoftSamVoice
         )
 
     async def __createSingingDecTalkTtsProperties(
@@ -158,7 +172,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             streamElementsVoice = self.__streamElementsJsonParser.parseVoice(streamElementsVoiceCommand)
 
         return StreamElementsPreferredTts(
-            streamElementsVoice = streamElementsVoice
+            voice = streamElementsVoice
         )
 
     async def __createTtsMonsterTtsProperties(

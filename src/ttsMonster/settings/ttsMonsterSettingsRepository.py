@@ -40,7 +40,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             fallback = await self.__ttsMonsterPrivateApiJsonMapper.serializeVoice(self.__defaultVoice)
         )
 
-        return await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(defaultVoiceString)
+        return await self.__ttsMonsterPrivateApiJsonMapper.requireVoice(defaultVoiceString)
 
     async def getFileExtension(self) -> str:
         jsonContents = await self.__readJson()

@@ -10,6 +10,8 @@ from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferred
 from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPreferredTts
 from ..models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from ..models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
+from ...decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...language.languageEntry import LanguageEntry
@@ -28,13 +30,16 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     def __init__(
         self,
+        decTalkVoiceMapper: DecTalkVoiceMapperInterface,
         halfLifeVoiceParser: HalfLifeVoiceParserInterface,
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
     ):
-        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
+        if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
+            raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeVoiceParser}\"')
@@ -45,6 +50,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
             raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
 
+        self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
@@ -61,7 +67,17 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> DecTalkPreferredTts:
-        return DecTalkPreferredTts()
+        voice: DecTalkVoice | None = None
+
+        if len(configurationJson) >= 1:
+            voiceString: str | Any | None = configurationJson.get('voice', None)
+
+            if utils.isValidStr(voiceString):
+                voice = await self.__decTalkVoiceMapper.parseVoice(voiceString)
+
+        return DecTalkPreferredTts(
+            voice = voice
+        )
 
     async def __parseGooglePreferredTts(
         self,
@@ -69,8 +85,8 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> GooglePreferredTts:
         languageEntry: LanguageEntry | None = None
 
-        if isinstance(configurationJson, dict):
-            languageEntryString = configurationJson.get('iso6391', None)
+        if len(configurationJson) >= 1:
+            languageEntryString: str | Any | None = configurationJson.get('iso6391', None)
 
             if utils.isValidStr(languageEntryString):
                 languageEntry = await self.__languagesRepository.getLanguageForIso6391Code(
@@ -87,11 +103,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> HalfLifePreferredTts:
         halfLifeVoice: HalfLifeVoice | None = None
 
-        if isinstance(configurationJson, dict):
-            halfLifeVoiceString = configurationJson.get('halfLifeVoice', None)
+        if len(configurationJson) >= 1:
+            voiceString: str | Any | None = configurationJson.get('halfLifeVoice', None)
 
-            if utils.isValidStr(halfLifeVoiceString):
-                halfLifeVoice = self.__halfLifeJsonParser.parseVoice(halfLifeVoiceString)
+            if utils.isValidStr(voiceString):
+                halfLifeVoice = self.__halfLifeJsonParser.parseVoice(voiceString)
 
         return HalfLifePreferredTts(
             halfLifeVoice = halfLifeVoice
@@ -101,16 +117,16 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> MicrosoftSamPreferredTts:
-        microsoftSamVoice: MicrosoftSamVoice | None = None
+        voice: MicrosoftSamVoice | None = None
 
-        if isinstance(configurationJson, dict):
-            microsoftSamVoiceString = configurationJson.get('microsoftSamVoice', None)
+        if len(configurationJson) >= 1:
+            voiceString: str | Any | None = configurationJson.get('microsoftSamVoice', None)
 
-            if utils.isValidStr(microsoftSamVoiceString):
-                microsoftSamVoice = self.__microsoftSamJsonParser.parseVoice(microsoftSamVoiceString)
+            if utils.isValidStr(voiceString):
+                voice = self.__microsoftSamJsonParser.parseVoice(voiceString)
 
         return MicrosoftSamPreferredTts(
-            microsoftSamVoice = microsoftSamVoice
+            voice = voice
         )
 
     async def __parseSingingDecTalkPreferredTts(
@@ -123,16 +139,16 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> StreamElementsPreferredTts:
-        streamElementsVoice: StreamElementsVoice | None = None
+        voice: StreamElementsVoice | None = None
 
-        if isinstance(configurationJson, dict):
-            streamElementsVoiceString = configurationJson.get('streamElementsVoice', None)
+        if len(configurationJson) >= 1:
+            voiceString: str | Any | None = configurationJson.get('streamElementsVoice', None)
 
-            if utils.isValidStr(streamElementsVoiceString):
-                streamElementsVoice = self.__streamElementsJsonParser.parseVoice(streamElementsVoiceString)
+            if utils.isValidStr(voiceString):
+                voice = self.__streamElementsJsonParser.parseVoice(voiceString)
 
         return StreamElementsPreferredTts(
-            streamElementsVoice = streamElementsVoice
+            voice = voice
         )
 
     async def __parseTtsMonsterPreferredTts(
@@ -141,11 +157,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> TtsMonsterPreferredTts:
         ttsMonsterVoice: TtsMonsterVoice | None = None
 
-        if isinstance(configurationJson, dict):
-            ttsMonsterVoiceString = configurationJson.get('ttsMonsterVoice', None)
+        if len(configurationJson) >= 1:
+            voiceString: str | Any | None = configurationJson.get('ttsMonsterVoice', None)
 
-            if utils.isValidStr(ttsMonsterVoiceString):
-                ttsMonsterVoice = self.__ttsMonsterVoiceParser.parseVoice(ttsMonsterVoiceString)
+            if utils.isValidStr(voiceString):
+                ttsMonsterVoice = self.__ttsMonsterVoiceParser.parseVoice(voiceString)
 
         return TtsMonsterPreferredTts(
             ttsMonsterVoice = ttsMonsterVoice
@@ -156,7 +172,9 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         configurationJson: dict[str, Any],
         provider: TtsProvider
     ) -> AbsPreferredTts:
-        if not isinstance(provider, TtsProvider):
+        if not isinstance(configurationJson, dict):
+            raise TypeError(f'configurationJson argument is malformed: \"{configurationJson}\"')
+        elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         match provider:
@@ -213,7 +231,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         preferredTts: DecTalkPreferredTts
     ) -> dict[str, Any]:
-        return dict()
+        configurationJson: dict[str, Any] = dict()
+
+        if preferredTts.voice is not None:
+            configurationJson['decTalkVoice'] = await self.__decTalkVoiceMapper.serializeVoice(preferredTts.voice)
+
+        return configurationJson
 
     async def __serializeGooglePreferredTts(
         self,
@@ -243,8 +266,8 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
-        if preferredTts.microsoftSamVoiceEntry is not None:
-            configurationJson['microsoftSamVoice'] = preferredTts.microsoftSamVoiceEntry.jsonValue
+        if preferredTts.voice is not None:
+            configurationJson['microsoftSamVoice'] = preferredTts.voice.jsonValue
 
         return configurationJson
 
@@ -260,8 +283,10 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
-        if preferredTts.streamElementsVoiceEntry is not None:
-            configurationJson['streamElementsVoice'] = preferredTts.streamElementsVoiceEntry.urlValue
+        if preferredTts.voice is not None:
+            configurationJson['streamElementsVoice'] = self.__streamElementsJsonParser.serializeVoice(
+                voice = preferredTts.voice
+            )
 
         return configurationJson
 

@@ -1,4 +1,8 @@
-from typing import Any
+import re
+from typing import Any, Collection, Pattern
+
+from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
@@ -22,6 +26,62 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
         self.__provider: str = provider
+
+        self.__voiceRegExes: frozendict[TtsMonsterVoice, Collection[Pattern]] = self.__buildVoiceRegExes()
+
+    def __buildVoiceRegExes(self) -> frozendict[TtsMonsterVoice, Collection[Pattern]]:
+        asmr: FrozenList[Pattern] = FrozenList()
+        asmr.append(re.compile(r'^\s*asmr\s*$', re.IGNORECASE))
+        asmr.freeze()
+
+        brian: FrozenList[Pattern] = FrozenList()
+        brian.append(re.compile(r'^\s*brian\s*$', re.IGNORECASE))
+        brian.freeze()
+
+        hikari: FrozenList[Pattern] = FrozenList()
+        hikari.append(re.compile(r'^\s*hikari\s*$', re.IGNORECASE))
+        hikari.freeze()
+
+        jazz: FrozenList[Pattern] = FrozenList()
+        jazz.append(re.compile(r'^\s*jazz\s*$', re.IGNORECASE))
+        jazz.freeze()
+
+        kkona: FrozenList[Pattern] = FrozenList()
+        kkona.append(re.compile(r'^\s*kk?ona\s*$', re.IGNORECASE))
+        kkona.freeze()
+
+        narrator: FrozenList[Pattern] = FrozenList()
+        narrator.append(re.compile(r'^\s*narrator\s*$', re.IGNORECASE))
+        narrator.freeze()
+
+        pirate: FrozenList[Pattern] = FrozenList()
+        pirate.append(re.compile(r'^\s*pirate\s*$', re.IGNORECASE))
+        pirate.freeze()
+
+        shadow: FrozenList[Pattern] = FrozenList()
+        shadow.append(re.compile(r'^\s*shadow\s*$', re.IGNORECASE))
+        shadow.freeze()
+
+        witch: FrozenList[Pattern] = FrozenList()
+        witch.append(re.compile(r'^\s*witch\s*$', re.IGNORECASE))
+        witch.freeze()
+
+        zeroTwo: FrozenList[Pattern] = FrozenList()
+        zeroTwo.append(re.compile(r'^\s*zero(?:\s+|_|-)?two\s*$', re.IGNORECASE))
+        zeroTwo.freeze()
+
+        return frozendict({
+            TtsMonsterVoice.ASMR: asmr,
+            TtsMonsterVoice.BRIAN: brian,
+            TtsMonsterVoice.HIKARI: hikari,
+            TtsMonsterVoice.JAZZ: jazz,
+            TtsMonsterVoice.KKONA: kkona,
+            TtsMonsterVoice.NARRATOR: narrator,
+            TtsMonsterVoice.PIRATE: pirate,
+            TtsMonsterVoice.SHADOW: shadow,
+            TtsMonsterVoice.WITCH: witch,
+            TtsMonsterVoice.ZERO_TWO: zeroTwo
+        })
 
     async def parseTtsData(
         self,
@@ -68,23 +128,27 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
     async def parseVoice(
         self,
         string: str | Any | None
-    ) -> TtsMonsterVoice:
+    ) -> TtsMonsterVoice | None:
         if not utils.isValidStr(string):
-            raise TypeError(f'string argument is malformed: \"{string}\"')
+            return None
 
-        string = string.lower()
+        for ttsMonsterVoice, voiceRegExes in self.__voiceRegExes.items():
+            for voiceRegEx in voiceRegExes:
+                if voiceRegEx.fullmatch(string) is not None:
+                    return ttsMonsterVoice
 
-        match string:
-            case 'brian': return TtsMonsterVoice.BRIAN
-            case 'hikari': return TtsMonsterVoice.HIKARI
-            case 'jazz': return TtsMonsterVoice.JAZZ
-            case 'kkona': return TtsMonsterVoice.KKONA
-            case 'narrator': return TtsMonsterVoice.NARRATOR
-            case 'pirate': return TtsMonsterVoice.PIRATE
-            case 'shadow': return TtsMonsterVoice.SHADOW
-            case 'witch': return TtsMonsterVoice.WITCH
-            case 'zero_two': return TtsMonsterVoice.ZERO_TWO
-            case _: raise ValueError(f'Encountered unknown TtsMonsterVoice string value: \"{string}\"')
+        return None
+
+    async def requireVoice(
+        self,
+        string: str | Any | None
+    ) -> TtsMonsterVoice:
+        result = await self.parseVoice(string)
+
+        if result is None:
+            raise ValueError(f'Unable to parse TtsMonsterVoice from string: \"{string}\"')
+
+        return result
 
     async def serializeGenerateTtsJsonBody(
         self,

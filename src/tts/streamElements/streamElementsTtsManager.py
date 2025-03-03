@@ -84,7 +84,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             self.__timber.log('StreamElementsTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        streamElementsVoiceEntry = streamElementsPreferredTts.streamElementsVoiceEntry
+        streamElementsVoiceEntry = streamElementsPreferredTts.voice
         if streamElementsVoiceEntry is None:
             return None
 

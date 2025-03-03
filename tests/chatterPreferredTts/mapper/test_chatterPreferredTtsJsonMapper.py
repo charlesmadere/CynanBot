@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from src.chatterPreferredTts.mapper.chatterPreferredTtsJsonMapper import ChatterPreferredTtsJsonMapper
@@ -8,6 +10,9 @@ from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePrefe
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
 from src.chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
+from src.decTalk.mapper.decTalkVoiceMapper import DecTalkVoiceMapper
+from src.decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
+from src.decTalk.models.decTalkVoice import DecTalkVoice
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
 from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
@@ -27,13 +32,20 @@ from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoice
 
 class TestChatterPreferredTtsJsonMapper:
 
+    decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+
     halfLifeJsonParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+
     streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
     ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
     mapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+        decTalkVoiceMapper = decTalkVoiceMapper,
         halfLifeVoiceParser = halfLifeJsonParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
@@ -58,6 +70,19 @@ class TestChatterPreferredTtsJsonMapper:
         )
 
         assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is None
+
+    @pytest.mark.asyncio
+    async def test_parsePreferredTts_withDecTalkAndFrankVoice(self):
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = {
+                'voice': await self.decTalkVoiceMapper.serializeVoice(DecTalkVoice.FRANK)
+            },
+            provider = TtsProvider.DEC_TALK
+        )
+
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.FRANK
 
     @pytest.mark.asyncio
     async def test_parsePreferredTts_withGoogle(self):
@@ -82,6 +107,32 @@ class TestChatterPreferredTtsJsonMapper:
 
         assert isinstance(result, GooglePreferredTts)
         assert result.languageEntry is LanguageEntry.JAPANESE
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withDecTalk(self):
+        preferredTts = DecTalkPreferredTts(
+            voice = None
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withGoogle(self):
+        preferredTts = GooglePreferredTts(
+            languageEntry = None
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_parsePreferredTts_withHalfLife(self):
@@ -109,7 +160,7 @@ class TestChatterPreferredTtsJsonMapper:
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withMicrosoftSamAndMaryInSpaceVoiceEntry(self):
         preferredTts = MicrosoftSamPreferredTts(
-            microsoftSamVoice = MicrosoftSamVoice.MARY_SPACE
+            voice= MicrosoftSamVoice.MARY_SPACE
         )
 
         result = await self.mapper.serializePreferredTts(
@@ -123,31 +174,9 @@ class TestChatterPreferredTtsJsonMapper:
         assert microsoftSamVoice == MicrosoftSamVoice.MARY_SPACE.jsonValue
 
     @pytest.mark.asyncio
-    async def test_serializePreferredTts_withDecTalk(self):
-        result = await self.mapper.serializePreferredTts(
-            preferredTts = DecTalkPreferredTts()
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 0
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTts_withGoogle(self):
-        preferredTts = GooglePreferredTts(
-            languageEntry = None
-        )
-
-        result = await self.mapper.serializePreferredTts(
-            preferredTts = preferredTts
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 0
-
-    @pytest.mark.asyncio
     async def test_serializePreferredTts_withStreamElements(self):
         preferredTts = StreamElementsPreferredTts(
-            streamElementsVoice = None
+            voice = None
         )
 
         result = await self.mapper.serializePreferredTts(
@@ -160,7 +189,7 @@ class TestChatterPreferredTtsJsonMapper:
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withStreamElementsAndJoey(self):
         preferredTts = StreamElementsPreferredTts(
-            streamElementsVoice = StreamElementsVoice.JOEY
+            voice = StreamElementsVoice.JOEY
         )
 
         result = await self.mapper.serializePreferredTts(
@@ -170,9 +199,11 @@ class TestChatterPreferredTtsJsonMapper:
         assert isinstance(result, dict)
         assert len(result) == 1
 
-        streamElementsVoice = result['streamElementsVoice']
-        assert streamElementsVoice == StreamElementsVoice.JOEY.urlValue
+        streamElementsVoiceString: str | Any | None = result.get('streamElementsVoice', None)
+        assert isinstance(streamElementsVoiceString, str)
 
+        streamElementsVoice = self.streamElementsJsonParser.parseVoice(streamElementsVoiceString)
+        assert streamElementsVoice is StreamElementsVoice.JOEY
 
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withGoogleAndSwedishLanguageEntry(self):
@@ -194,7 +225,7 @@ class TestChatterPreferredTtsJsonMapper:
     async def test_serializePreferredTts_withMicrosoftSam(self):
         result = await self.mapper.serializePreferredTts(
             preferredTts = MicrosoftSamPreferredTts(
-                microsoftSamVoice = None
+                voice = None
             )
         )
 

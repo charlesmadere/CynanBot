@@ -26,6 +26,13 @@ class TtsMonsterPrivateApiJsonMapperInterface(ABC):
     async def parseVoice(
         self,
         string: str | Any | None
+    ) -> TtsMonsterVoice | None:
+        pass
+
+    @abstractmethod
+    async def requireVoice(
+        self,
+        string: str | Any | None
     ) -> TtsMonsterVoice:
         pass
 

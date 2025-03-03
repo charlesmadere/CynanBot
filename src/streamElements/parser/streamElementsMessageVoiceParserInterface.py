@@ -12,5 +12,8 @@ class StreamElementsMessageVoiceParserInterface(ABC):
         voice: StreamElementsVoice
 
     @abstractmethod
-    async def determineVoiceFromMessage(self, message: str | None) -> Result | None:
+    async def determineVoiceFromMessage(
+        self,
+        message: str | None
+    ) -> Result | None:
         pass

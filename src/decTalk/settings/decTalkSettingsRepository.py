@@ -46,10 +46,10 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
         decTalkVoiceStr = utils.getStrFromDict(
             d = jsonContents,
             key = 'defaultVoice',
-            fallback = self.__defaultDecTalkVoice.name
+            fallback = await self.__decTalkVoiceMapper.serializeVoice(self.__defaultDecTalkVoice)
         )
 
-        return await self.__decTalkVoiceMapper.fromString(decTalkVoiceStr)
+        return await self.__decTalkVoiceMapper.requireVoice(decTalkVoiceStr)
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()

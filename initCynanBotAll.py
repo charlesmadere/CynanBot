@@ -619,8 +619,6 @@ from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
-from src.users.accessLevel.accessLevelParser import AccessLevelJsonParser
-from src.users.accessLevel.accessLevelParserInterface import AccessLevelJsonParserInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParser import ChatSoundAlertJsonParser
@@ -870,12 +868,15 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
-accessLevelJsonParser: AccessLevelJsonParserInterface = AccessLevelJsonParser()
-halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
-microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
-ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
+decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
+halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+
+microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+
+streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
+ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
@@ -1855,6 +1856,7 @@ chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInte
 )
 
 chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+    decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
@@ -1875,6 +1877,7 @@ chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferred
 )
 
 chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+    decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
@@ -1955,8 +1958,6 @@ commodoreSamTtsManager: CommodoreSamTtsManagerInterface = CommodoreSamTtsManager
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
-
-decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
 
 decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
     decTalkVoiceMapper = decTalkVoiceMapper,

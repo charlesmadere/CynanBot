@@ -22,35 +22,6 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
     def __init__(self):
         self.__voicePatternRegEx: Pattern = re.compile(r'(?:^|\s+)(\w+):', re.IGNORECASE)
 
-    async def parse(
-        self,
-        message: str | None,
-        defaultVoice: TtsMonsterVoice
-    ) -> FrozenList[TtsMonsterMessageChunk] | None:
-        if message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(defaultVoice, TtsMonsterVoice):
-            raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
-
-        if not utils.isValidStr(message):
-            return None
-
-        voiceNamesToVoice = await self.__buildVoiceNamesToVoiceDictionary()
-
-        messageChunks = await self.__buildVoiceMessageHeaders(
-            voiceNamesToVoice = voiceNamesToVoice,
-            message = message,
-            defaultVoice = defaultVoice
-        )
-
-        if len(messageChunks) == 0:
-            return None
-
-        return await self.__buildMessagePairs(
-            voiceMessageHeaders = messageChunks,
-            message = message
-        )
-
     async def __buildMessagePairs(
         self,
         voiceMessageHeaders: FrozenList[MessageChunkData],
@@ -169,3 +140,32 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
             voiceNamesToVoiceDictionary[voice.inMessageName] = voice
 
         return frozendict(voiceNamesToVoiceDictionary)
+
+    async def parse(
+        self,
+        message: str | None,
+        defaultVoice: TtsMonsterVoice
+    ) -> FrozenList[TtsMonsterMessageChunk] | None:
+        if message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(defaultVoice, TtsMonsterVoice):
+            raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
+
+        if not utils.isValidStr(message):
+            return None
+
+        voiceNamesToVoice = await self.__buildVoiceNamesToVoiceDictionary()
+
+        messageChunks = await self.__buildVoiceMessageHeaders(
+            voiceNamesToVoice = voiceNamesToVoice,
+            message = message,
+            defaultVoice = defaultVoice
+        )
+
+        if len(messageChunks) == 0:
+            return None
+
+        return await self.__buildMessagePairs(
+            voiceMessageHeaders = messageChunks,
+            message = message
+        )

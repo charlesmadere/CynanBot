@@ -76,7 +76,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
             self.__timber.log('MicrosoftSamTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        microsoftSamVoiceEntry = microsoftSamPreferredTts.microsoftSamVoiceEntry
+        microsoftSamVoiceEntry = microsoftSamPreferredTts.voice
         if microsoftSamVoiceEntry is None:
             return None
 
