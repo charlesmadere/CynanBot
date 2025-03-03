@@ -1,11 +1,13 @@
 services:
   cynanbot:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/charlesmadere/CynanBot:latest
+    # build:
+    #  context: .
+    #  dockerfile: Dockerfile
     container_name: cynanbot
     restart: unless-stopped
     volumes:
+      - ./db:/cynanbot/db
       - ./logs:/cynanbot/logs
       - ./config:/cynanbot/config
     depends_on:
