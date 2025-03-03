@@ -554,6 +554,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('us', 'usa'):
             yield 'united states'
             yield 'united states of america'
+        if word in ('russia', 'ussr'):
+            yield 'soviet union'
 
         # government organizations
         if word == 'cia':
