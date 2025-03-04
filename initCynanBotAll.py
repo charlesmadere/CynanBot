@@ -1989,6 +1989,7 @@ decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
 decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
 
 decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
@@ -2000,6 +2001,7 @@ decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
 )
 
 singingDecTalkTtsManager: DecTalkTtsManagerInterface = SingingDecTalkTtsManager(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,

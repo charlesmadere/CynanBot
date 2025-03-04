@@ -6,10 +6,14 @@ from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsProvider import TtsProvider
+from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
+from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -20,6 +24,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
     def __init__(
         self,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         decTalkHelper: DecTalkHelperInterface,
         decTalkMessageCleaner: DecTalkMessageCleanerInterface,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
@@ -29,7 +34,9 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(decTalkHelper, DecTalkHelperInterface):
+        if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(decTalkHelper, DecTalkHelperInterface):
             raise TypeError(f'decTalkHelper argument is malformed: \"{decTalkHelper}\"')
         elif not isinstance(decTalkMessageCleaner, DecTalkMessageCleanerInterface):
             raise TypeError(f'decTalkMessageCleaner argument is malformed: \"{decTalkMessageCleaner}\"')
@@ -46,6 +53,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
+        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__decTalkHelper: DecTalkHelperInterface = decTalkHelper
         self.__decTalkMessageCleaner: DecTalkMessageCleanerInterface = decTalkMessageCleaner
         self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
@@ -65,6 +73,25 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             return updatedCommand
         else:
             return command
+
+    async def __determineVoice(self, event: TtsEvent) -> DecTalkVoice | None:
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return None
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return None
+
+        decTalkPreferredTts = preferredTts.preferredTts
+        if not isinstance(decTalkPreferredTts, DecTalkPreferredTts):
+            self.__timber.log('DecTalkTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
+            return None
+
+        return decTalkPreferredTts.voice
 
     async def __executeTts(self, fileName: str):
         volume = await self.__decTalkSettingsRepository.getMediaPlayerVolume()
@@ -122,6 +149,9 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             fullMessage = donationPrefix
         else:
             return None
+
+        # TODO actually use this
+        voice = await self.__determineVoice(event)
 
         fullMessage = await self.__applyRandomVoice(fullMessage)
         fileName = await self.__decTalkHelper.getSpeech(fullMessage)

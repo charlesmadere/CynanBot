@@ -272,6 +272,21 @@ class TestDecTalkMessageCleaner:
         assert result == 'hello world'
 
     @pytest.mark.asyncio
+    async def test_clean_withVoicesInlineCommand1(self):
+        result = await self.cleaner.clean('[:nw]')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_clean_withVoicesInlineCommand2(self):
+        result = await self.cleaner.clean('[:np] [:nd] test123')
+        assert result == 'test123'
+
+    @pytest.mark.asyncio
+    async def test_clean_withVoicesInlineCommand3(self):
+        result = await self.cleaner.clean('[:nu] hello there are a bunch of voices in here [:np] also here too [:nw] and finally here as well [:nd]')
+        assert result == 'hello there are a bunch of voices in here also here too and finally here as well'
+
+    @pytest.mark.asyncio
     async def test_clean_withVolumeInlineCommand(self):
         result = await self.cleaner.clean('this is a volume inline command [:vol set 99]')
         assert result == 'this is a volume inline command'
