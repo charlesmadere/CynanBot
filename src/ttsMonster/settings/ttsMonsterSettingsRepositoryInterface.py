@@ -21,3 +21,7 @@ class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getReducedMediaPlayerVolume(self) -> int | None:
         pass
+
+    @abstractmethod
+    async def useReducedVolumeForLoudVoices(self) -> bool:
+        pass

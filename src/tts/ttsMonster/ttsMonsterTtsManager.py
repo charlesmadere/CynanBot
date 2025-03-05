@@ -93,9 +93,12 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         return ttsMonsterVoiceEntry
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
+        useReducedVolumeForLoudVoices = await self.__ttsMonsterSettingsRepository.useReducedVolumeForLoudVoices()
+        containsLoudVoices = await self.__containsLoudVoices(fileReference)
+
         volume: int | None = None
 
-        if await self.__containsLoudVoices(fileReference):
+        if useReducedVolumeForLoudVoices and containsLoudVoices:
             volume = await self.__ttsMonsterSettingsRepository.getReducedMediaPlayerVolume()
 
         if volume is None:

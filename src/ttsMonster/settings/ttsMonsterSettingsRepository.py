@@ -70,3 +70,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def useReducedVolumeForLoudVoices(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'use_reduced_volume_for_loud_voices', fallback = True)
