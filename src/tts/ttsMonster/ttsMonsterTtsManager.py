@@ -53,7 +53,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __determineVoicePreset(self, event: TtsEvent) -> TtsMonsterVoice | None:
+    async def __determineVoice(self, event: TtsEvent) -> TtsMonsterVoice | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -120,18 +120,14 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterFileReference | None:
-        cleanedMessage = await self.__ttsMonsterMessageCleaner.clean(
-            message = event.message
-        )
+        cleanedMessage = await self.__ttsMonsterMessageCleaner.clean(event.message)
+        voice = await self.__determineVoice(event)
 
-        voicePreset = await self.__determineVoicePreset(event)
-
-        message = cleanedMessage
-        if voicePreset is not None:
-            message = f'{voicePreset.inMessageName}: {cleanedMessage}'
+        if voice is not None:
+            cleanedMessage = f'{voice.inMessageName}: {cleanedMessage}'
 
         return await self.__ttsMonsterHelper.generateTts(
-            message = message,
+            message = cleanedMessage,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )

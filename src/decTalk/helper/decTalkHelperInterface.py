@@ -15,10 +15,3 @@ class DecTalkHelperInterface(ABC):
         twitchChannelId: str
     ) -> DecTalkFileReference | None:
         pass
-
-    @abstractmethod
-    async def getSpeech(
-        self,
-        message: str | None
-    ) -> str | None:
-        pass

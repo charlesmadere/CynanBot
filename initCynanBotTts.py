@@ -109,8 +109,6 @@ from src.decTalk.apiService.decTalkApiService import DecTalkApiService
 from src.decTalk.apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
 from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
 from src.decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
-from src.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
-from src.decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from src.decTalk.helper.decTalkHelper import DecTalkHelper
 from src.decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from src.decTalk.mapper.decTalkVoiceMapper import DecTalkVoiceMapper
@@ -1131,7 +1129,8 @@ commodoreSamApiService: CommodoreSamApiServiceInterface = CommodoreSamApiService
 
 commodoreSamHelper: CommodoreSamHelperInterface = CommodoreSamHelper(
     commodoreSamApiService = commodoreSamApiService,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 commodoreSamMessageCleaner: CommodoreSamMessageCleanerInterface = CommodoreSamMessageCleaner(
@@ -1165,8 +1164,10 @@ decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
 )
 
 decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
-    apiService = decTalkApiService,
-    timber = timber
+    decTalkApiService = decTalkApiService,
+    decTalkSettingsRepository = decTalkSettingsRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
@@ -1176,14 +1177,11 @@ decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser()
-
 decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
-    decTalkVoiceChooser = decTalkVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -1193,9 +1191,14 @@ decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
 singingDecTalkTtsManager: DecTalkTtsManagerInterface = SingingDecTalkTtsManager(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
-    decTalkMessageCleaner = decTalkMessageCleaner,
+    decTalkMessageCleaner = DecTalkMessageCleaner(
+        emojiHelper = emojiHelper,
+        timber = timber,
+        ttsSettingsRepository = ttsSettingsRepository,
+        twitchMessageStringUtils = twitchMessageStringUtils,
+        sing = True
+    ),
     decTalkSettingsRepository = decTalkSettingsRepository,
-    decTalkVoiceChooser = decTalkVoiceChooser,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,

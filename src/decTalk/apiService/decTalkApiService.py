@@ -15,6 +15,7 @@ import psutil
 
 from .decTalkApiServiceInterface import DecTalkApiServiceInterface
 from ..exceptions import DecTalkExecutableIsMissingException, DecTalkFailedToGenerateSpeechFileException
+from ..models.decTalkVoice import DecTalkVoice
 from ..settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -90,25 +91,32 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             ttsDirectory = os.path.normpath(ttsDirectory)
         )
 
-    async def generateSpeechFile(self, text: str) -> str:
-        if not utils.isValidStr(text):
+    async def generateSpeechFile(
+        self,
+        voice: DecTalkVoice | None,
+        text: str
+    ) -> str:
+        if voice is not None and not isinstance(voice, DecTalkVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+        elif not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
 
-        self.__timber.log('DecTalkApiService', f'Generating speech... ({text=})')
+        self.__timber.log('DecTalkApiService', f'Generating speech... ({voice=}) ({text=})')
 
         filePaths = await self.__generateFilePaths()
 
-        if not await aiofiles.ospath.exists(
+        if not await aiofiles.ospath.isfile(
             path = filePaths.decTalkPath,
             loop = self.__eventLoop
         ):
             raise DecTalkExecutableIsMissingException(f'Couldn\'t find DecTalk executable ({filePaths=})')
 
+        voiceArgument = await self.__generateVoiceArgument(voice)
+        command = f'{filePaths.decTalkPath} -w \"{filePaths.fullFilePath}\" -pre \"[:phone on]\" {voiceArgument} \"{text}\"'
+
         decTalkProcess: Process | None = None
         outputTuple: tuple[ByteString, ByteString] | None = None
         exception: BaseException | None = None
-
-        command = f'{filePaths.decTalkPath} -w \"{filePaths.fullFilePath}\" -pre \"[:phone on]\" \"{text}\"'
 
         try:
             decTalkProcess = await asyncio.create_subprocess_shell(
@@ -134,13 +142,19 @@ class DecTalkApiService(DecTalkApiServiceInterface):
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
             await self.__killDecTalkProcess(decTalkProcess)
 
-        if not await aiofiles.ospath.exists(
+        if not await aiofiles.ospath.isfile(
             path = filePaths.fullFilePath,
             loop = self.__eventLoop
         ):
             raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file ({filePaths=}) ({command=}) ({outputString=}) ({exception=})')
 
         return filePaths.fullFilePath
+
+    async def __generateVoiceArgument(self, voice: DecTalkVoice | None) -> str:
+        if voice is None:
+            return ''
+        else:
+            return voice.commandString
 
     async def __killDecTalkProcess(self, decTalkProcess: Process | None):
         if decTalkProcess is None:

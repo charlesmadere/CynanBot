@@ -1,11 +1,15 @@
 from abc import ABC, abstractmethod
 
+from ..models.commodoreSamFileReference import CommodoreSamFileReference
+
 
 class CommodoreSamHelperInterface(ABC):
 
     @abstractmethod
-    async def getSpeech(
+    async def generateTts(
         self,
-        message: str | None
-    ) -> str | None:
+        message: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CommodoreSamFileReference | None:
         pass

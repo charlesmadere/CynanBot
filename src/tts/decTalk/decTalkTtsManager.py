@@ -1,7 +1,5 @@
 import asyncio
 
-import aiofiles.ospath
-
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
@@ -11,8 +9,8 @@ from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
-from ...decTalk.decTalkVoiceChooserInterface import DecTalkVoiceChooserInterface
 from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
+from ...decTalk.models.decTalkFileReference import DecTalkFileReference
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -28,7 +26,6 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         decTalkHelper: DecTalkHelperInterface,
         decTalkMessageCleaner: DecTalkMessageCleanerInterface,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
-        decTalkVoiceChooser: DecTalkVoiceChooserInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -42,8 +39,6 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             raise TypeError(f'decTalkMessageCleaner argument is malformed: \"{decTalkMessageCleaner}\"')
         elif not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
-        elif not isinstance(decTalkVoiceChooser, DecTalkVoiceChooserInterface):
-            raise TypeError(f'decTalkVoiceChooser argument is malformed: \"{decTalkVoiceChooser}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -57,22 +52,12 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         self.__decTalkHelper: DecTalkHelperInterface = decTalkHelper
         self.__decTalkMessageCleaner: DecTalkMessageCleanerInterface = decTalkMessageCleaner
         self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
-        self.__decTalkVoiceChooser: DecTalkVoiceChooserInterface = decTalkVoiceChooser
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
-
-    async def __applyRandomVoice(self, command: str) -> str:
-        updatedCommand = await self.__decTalkVoiceChooser.choose(command)
-
-        if utils.isValidStr(updatedCommand):
-            self.__timber.log('DecTalkTtsManager', f'Applied random DecTalk voice')
-            return updatedCommand
-        else:
-            return command
 
     async def __determineVoice(self, event: TtsEvent) -> DecTalkVoice | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
@@ -93,13 +78,13 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
         return decTalkPreferredTts.voice
 
-    async def __executeTts(self, fileName: str):
+    async def __executeTts(self, fileReference: DecTalkFileReference):
         volume = await self.__decTalkSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
-                filePath = fileName,
+                filePath = fileReference.filePath,
                 volume = volume
             )
 
@@ -108,7 +93,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except Exception as e:
-            self.__timber.log('DecTalkTtsManager', f'Stopping DecTalk TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('DecTalkTtsManager', f'Stopping DecTalk TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -126,17 +111,17 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
-        fileName = await self.__processTtsEvent(event)
+        fileReference = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('DecTalkTtsManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to temporary file ({event=}) ({fileName=})')
+        if fileReference is None:
+            self.__timber.log('DecTalkTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('DecTalkTtsManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileName)
+        self.__timber.log('DecTalkTtsManager', f'Executing TTS in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileReference)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
+    async def __processTtsEvent(self, event: TtsEvent) -> DecTalkFileReference | None:
         cleanedMessage = await self.__decTalkMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
@@ -150,17 +135,14 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         else:
             return None
 
-        # TODO actually use this
         voice = await self.__determineVoice(event)
 
-        fullMessage = await self.__applyRandomVoice(fullMessage)
-        fileName = await self.__decTalkHelper.getSpeech(fullMessage)
-
-        if fileName is None:
-            self.__timber.log('DecTalkTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({fileName=})')
-            return None
-
-        return fileName
+        return await self.__decTalkHelper.generateTts(
+            voice = voice,
+            message = fullMessage,
+            twitchChannel = event.twitchChannel,
+            twitchChannelId = event.twitchChannelId
+        )
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

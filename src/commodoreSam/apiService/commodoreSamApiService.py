@@ -134,7 +134,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         filePaths = await self.__generateFilePaths()
 
-        if not await aiofiles.ospath.exists(
+        if not await aiofiles.ospath.isfile(
             path = filePaths.commodoreSamPath,
             loop = self.__eventLoop
         ):
@@ -171,7 +171,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
             await self.__killCommodoreSamProcess(commodoreSamProcess)
 
-        if not await aiofiles.ospath.exists(
+        if not await aiofiles.ospath.isfile(
             path = filePaths.fullFilePath,
             loop = self.__eventLoop
         ):

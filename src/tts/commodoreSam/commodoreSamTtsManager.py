@@ -1,7 +1,5 @@
 import asyncio
 
-import aiofiles.ospath
-
 from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
@@ -9,6 +7,7 @@ from ..models.ttsProvider import TtsProvider
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
+from ...commodoreSam.models.commodoreSamFileReference import CommodoreSamFileReference
 from ...commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -52,13 +51,13 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __executeTts(self, fileName: str):
+    async def __executeTts(self, fileReference: CommodoreSamFileReference):
         volume = await self.__commodoreSamSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
-                filePath = fileName,
+                filePath = fileReference.filePath,
                 volume = volume
             )
 
@@ -67,7 +66,7 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except Exception as e:
-            self.__timber.log('CommodoreSamTtsManager', f'Stopping Commodore SAM TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('CommodoreSamTtsManager', f'Stopping Commodore SAM TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -85,17 +84,17 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
-        fileName = await self.__processTtsEvent(event)
+        fileReference = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('CommodoreSamTtsManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to temporary file ({event=}) ({fileName=})')
+        if fileReference is None:
+            self.__timber.log('CommodoreSamTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('CommodoreSamTtsManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileName)
+        self.__timber.log('CommodoreSamTtsManager', f'Executing TTS in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileReference)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
+    async def __processTtsEvent(self, event: TtsEvent) -> CommodoreSamFileReference | None:
         cleanedMessage = await self.__commodoreSamMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
@@ -109,13 +108,11 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         else:
             return None
 
-        fileName = await self.__commodoreSamHelper.getSpeech(fullMessage)
-
-        if fileName is None:
-            self.__timber.log('CommodoreSamTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({fileName=})')
-            return None
-
-        return fileName
+        return await self.__commodoreSamHelper.generateTts(
+            message = fullMessage,
+            twitchChannel = event.twitchChannel,
+            twitchChannelId = event.twitchChannelId
+        )
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:
