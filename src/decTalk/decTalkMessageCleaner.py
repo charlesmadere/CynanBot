@@ -161,12 +161,15 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             if not utils.isValidStr(message):
                 return None
 
-        message = await self.__purge(self.__terminalExploitRegExes, message)
-        if not utils.isValidStr(message):
-            return None
+            message = await self.__purge(self.__terminalExploitRegExes, message)
+            if not utils.isValidStr(message):
+                return None
+
+            message = self.__decTalkIllegalCharactersRegEx.sub(' ', message).strip()
+            if not utils.isValidStr(message):
+                return None
 
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
-        message = self.__decTalkIllegalCharactersRegEx.sub(' ', message).strip()
         message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
