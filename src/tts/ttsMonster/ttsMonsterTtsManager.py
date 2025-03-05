@@ -26,7 +26,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
+        loudVoices: frozenset[TtsMonsterVoice] | None = frozenset({ TtsMonsterVoice.SHADOW})
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -42,6 +43,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif not loudVoices is not None and not isinstance(loudVoices, frozenset):
+            raise TypeError(f'loudVoices argument is malformed: \"{loudVoices}\"')
 
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
@@ -50,8 +53,21 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__loudVoices: frozenset[TtsMonsterVoice] | None = loudVoices
 
         self.__isLoadingOrPlaying: bool = False
+
+    async def __containsLoudVoices(self, fileReference: TtsMonsterFileReference) -> bool:
+        loudVoices = self.__loudVoices
+
+        if loudVoices is None or len(loudVoices) == 0:
+            return False
+
+        for louderVoice in loudVoices:
+            if louderVoice in fileReference.allVoices:
+                return True
+
+        return False
 
     async def __determineVoice(self, event: TtsEvent) -> TtsMonsterVoice | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
@@ -76,8 +92,19 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         return ttsMonsterVoiceEntry
 
+    async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
+        volume: int | None = None
+
+        if await self.__containsLoudVoices(fileReference):
+            volume = await self.__ttsMonsterSettingsRepository.getReducedMediaPlayerVolume()
+
+        if volume is None:
+            volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
+
+        return volume
+
     async def __executeTts(self, fileReference: TtsMonsterFileReference):
-        volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
+        volume = await self.__determineVolume(fileReference)
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():

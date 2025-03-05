@@ -48,7 +48,11 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 8)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 9)
+
+    async def getReducedMediaPlayerVolume(self) -> int | None:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'reduced_media_player_volume', fallback = 7)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
