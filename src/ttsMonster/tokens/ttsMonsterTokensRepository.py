@@ -63,7 +63,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
 
         self.__timber.log('TtsMonsterTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
 
-        for twitchChannel, tokens in jsonContents.items():
+        for twitchChannel, tokensJson in jsonContents.items():
             try:
                 twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
             except Exception as e:
@@ -71,12 +71,12 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                 continue
 
             ttsMonsterKey: str | None = None
-            if 'key' in jsonContents and utils.isValidStr(jsonContents.get('key')):
-                ttsMonsterKey = utils.getStrFromDict(jsonContents, 'key')
+            if 'key' in tokensJson and utils.isValidStr(tokensJson.get('key')):
+                ttsMonsterKey = utils.getStrFromDict(tokensJson, 'key')
 
             ttsMonsterUserId: str | None = None
-            if 'userId' in jsonContents and utils.isValidStr(jsonContents.get('userId')):
-                ttsMonsterUserId = utils.getStrFromDict(jsonContents, 'userId')
+            if 'userId' in tokensJson and utils.isValidStr(tokensJson.get('userId')):
+                ttsMonsterUserId = utils.getStrFromDict(tokensJson, 'userId')
 
             await self.set(
                 ttsMonsterKey = ttsMonsterKey,
