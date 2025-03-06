@@ -44,20 +44,20 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
     async def add(
         self,
-        extraConfigurationData: str | None,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> GlacialTtsData:
-        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
-            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif voice is not None and not isinstance(voice, str):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         glacialTtsData = await self.get(
-            extraConfigurationData = extraConfigurationData,
             message = message,
+            voice = voice,
             provider = provider
         )
 
@@ -78,9 +78,9 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         await connection.execute_insert(
             '''
                 INSERT INTO glacialTtsStorage
-                VALUES ($1, $2, $3, $4)
+                VALUES ($1, $2, $3, $4, $5)
             ''',
-            ( storeDateTime.isoformat(), glacialId, message, providerString, )
+            ( storeDateTime.isoformat(), glacialId, message, providerString, voice, )
         )
 
         await connection.commit()
@@ -90,6 +90,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             storeDateTime = storeDateTime,
             glacialId = glacialId,
             message = message,
+            voice = voice,
             provider = provider
         )
 
@@ -97,14 +98,14 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
     async def get(
         self,
-        extraConfigurationData: str | None,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> GlacialTtsData | None:
-        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
-            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif voice is not None and not isinstance(voice, str):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
@@ -114,10 +115,10 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         cursor = await connection.execute(
             '''
                 SELECT storeDateTime, glacialId FROM glacialTtsStorage
-                WHERE message = $1 AND provider = $2
+                WHERE message = $1 AND provider = $2 AND voice = $3
                 LIMIT 1
             ''',
-            ( message, providerString )
+            ( message, providerString, voice )
         )
 
         row = await cursor.fetchone()
@@ -132,6 +133,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 storeDateTime = storeDateTime,
                 glacialId = row[1],
                 message = message,
+                voice = voice,
                 provider = provider
             )
 
@@ -153,6 +155,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     glacialId TEXT NOT NULL,
                     message TEXT NOT NULL,
                     provider TEXT NOT NULL,
+                    VOICE TEXT DEFAULT NULL COLLATE NOCASE,
                     PRIMARY KEY (glacialId)
                 )
             '''
@@ -172,7 +175,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
         cursor = await connection.execute(
             '''
-                SELECT storeDateTime, message, provider FROM glacialTtsStorage
+                SELECT storeDateTime, message, provider, voice FROM glacialTtsStorage
                 WHERE glacialId = $2
                 LIMIT 1
             ''',
@@ -192,6 +195,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 storeDateTime = storeDateTime,
                 glacialId = glacialId,
                 message = row[1],
+                voice = row[3],
                 provider = provider
             )
 

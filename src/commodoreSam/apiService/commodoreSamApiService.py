@@ -166,7 +166,10 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
-        self.__timber.log('CommodoreSamApiService', f'Ran Commodore SAM system command ({command=}) ({outputString=}) ({exception=})')
+        textLength = len(text)
+        commandLength = len(command)
+
+        self.__timber.log('CommodoreSamApiService', f'Ran Commodore SAM system command ({textLength=}) ({commandLength=}) ({command=}) ({outputString=}) ({exception=})')
 
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
             await self.__killCommodoreSamProcess(commodoreSamProcess)

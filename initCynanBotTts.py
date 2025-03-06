@@ -320,13 +320,10 @@ from src.ttsChatter.repository.ttsChatterRepository import TtsChatterRepository
 from src.ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
-from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
-from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
-from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
-from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
-from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepository import TtsMonsterKeyAndUserIdRepository
-from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
-    TtsMonsterKeyAndUserIdRepositoryInterface
+from src.ttsMonster.helpers.ttsMonsterHelper import TtsMonsterHelper
+from src.ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from src.ttsMonster.helpers.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
+from src.ttsMonster.helpers.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
@@ -336,6 +333,9 @@ from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
 from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.tokens.ttsMonsterTokensRepository import TtsMonsterTokensRepository
+from src.ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
+    TtsMonsterTokensRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
@@ -1402,10 +1402,13 @@ ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonster
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
-ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = TtsMonsterKeyAndUserIdRepository(
-    settingsJsonReader = JsonFileReader(
+ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = TtsMonsterTokensRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsMonsterKeyAndUserIdRepository.json'
+        fileName = '../config/ttsMonsterTokensRepositorySeedFile.json'
     )
 )
 
@@ -1417,8 +1420,8 @@ ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPr
 
 ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
     timber = timber,
-    ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
-    ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
+    ttsMonsterPrivateApiService = ttsMonsterPrivateApiService,
+    ttsMonsterTokensRepository = ttsMonsterTokensRepository
 )
 
 ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = TtsMonsterMessageChunkParser()
@@ -2102,8 +2105,8 @@ cynanBot = CynanBot(
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsChatterRepository = ttsChatterRepository,
     ttsJsonMapper = ttsJsonMapper,
-    ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
+    ttsMonsterTokensRepository = ttsMonsterTokensRepository,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,

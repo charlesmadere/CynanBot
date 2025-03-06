@@ -34,7 +34,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
     async def getAvailableTriviaSourcesAndWeights(self) -> dict[TriviaSource, int]:
         jsonContents = await self.__readJson()
 
-        triviaSourcesJson: dict[str, Any] = jsonContents['trivia_sources']
+        triviaSourcesJson: dict[str, Any] | Any | None = jsonContents.get('trivia_sources', None)
         if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
             raise RuntimeError(f'\"trivia_sources\" field is malformed: \"{triviaSourcesJson}\"')
 
@@ -188,3 +188,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def useNewAnswerCheckingMethod(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'use_new_answer_checking_method', False)

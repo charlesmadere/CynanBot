@@ -21,35 +21,42 @@ from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
 from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
-from src.ttsMonster.helper.ttsMonsterHelper import TtsMonsterHelper
-from src.ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
-from src.ttsMonster.helper.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
-from src.ttsMonster.helper.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
-from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserId import TtsMonsterKeyAndUserId
-from src.ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
-    TtsMonsterKeyAndUserIdRepositoryInterface
+from src.ttsMonster.helpers.ttsMonsterHelper import TtsMonsterHelper
+from src.ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from src.ttsMonster.helpers.ttsMonsterPrivateApiHelper import TtsMonsterPrivateApiHelper
+from src.ttsMonster.helpers.ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
     TtsMonsterMessageChunkParserInterface
+from src.ttsMonster.models.ttsMonsterTokens import TtsMonsterTokens
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
+    TtsMonsterTokensRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
 
-class FakeTtsMonsterKeyAndUserIdRepository(TtsMonsterKeyAndUserIdRepositoryInterface):
+class FakeTtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
 
     async def clearCaches(self):
         pass
 
     async def get(
         self,
-        twitchChannel: str,
         twitchChannelId: str
-    ) -> TtsMonsterKeyAndUserId | None:
+    ) -> TtsMonsterTokens | None:
         raise RuntimeError('Not implemented')
+
+    async def set(
+        self,
+        ttsMonsterKey: str | None,
+        ttsMonsterUserId: str | None,
+        twitchChannelId: str
+    ):
+        raise RuntimeError(f'Not implemented')
 
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
@@ -71,7 +78,7 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
 
 ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
-ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = FakeTtsMonsterKeyAndUserIdRepository()
+ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = FakeTtsMonsterTokensRepository()
 
 ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
     timber = timber
@@ -85,7 +92,7 @@ ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPr
 
 ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
     timber = timber,
-    ttsMonsterKeyAndUserIdRepository = ttsMonsterKeyAndUserIdRepository,
+    ttsMonsterTokensRepository = ttsMonsterTokensRepository,
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
 )
 

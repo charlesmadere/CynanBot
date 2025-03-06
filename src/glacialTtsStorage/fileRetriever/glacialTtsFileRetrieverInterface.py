@@ -9,8 +9,8 @@ class GlacialTtsFileRetrieverInterface(ABC):
     @abstractmethod
     async def findFile(
         self,
-        extraConfigurationData: str | None,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> GlacialTtsFileReference | None:
         pass
@@ -18,9 +18,9 @@ class GlacialTtsFileRetrieverInterface(ABC):
     @abstractmethod
     async def saveFile(
         self,
-        extraConfigurationData: str | None,
         fileExtension: str,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> GlacialTtsFileReference:
         pass

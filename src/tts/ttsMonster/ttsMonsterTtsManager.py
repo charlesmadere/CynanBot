@@ -9,7 +9,7 @@ from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import Cha
 from ...chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...ttsMonster.helper.ttsMonsterHelperInterface import TtsMonsterHelperInterface
+from ...ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from ...ttsMonster.models.ttsMonsterFileReference import TtsMonsterFileReference
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface

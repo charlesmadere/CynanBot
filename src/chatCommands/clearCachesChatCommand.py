@@ -47,9 +47,9 @@ from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryI
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..ttsMonster.keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
-    TtsMonsterKeyAndUserIdRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ..ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
+    TtsMonsterTokensRepositoryInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import \
     TwitchChannelEditorsRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -106,8 +106,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
-        ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
+        ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface | None,
         twitchEmotesHelper: TwitchEmotesHelperInterface | None,
@@ -194,10 +194,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
-        elif ttsMonsterKeyAndUserIdRepository is not None and not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
-            raise TypeError(f'ttsMonsterKeyAndUserIdRepository argument is malformed: \"{ttsMonsterKeyAndUserIdRepository}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
+        elif ttsMonsterTokensRepository is not None and not isinstance(ttsMonsterTokensRepository, TtsMonsterTokensRepositoryInterface):
+            raise TypeError(f'ttsMonsterTokensRepository argument is malformed: \"{ttsMonsterTokensRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif twitchChannelEditorsRepository is not None and not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
@@ -263,8 +263,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(trollmojiHelper)
         self.__clearables.append(trollmojiSettingsRepository)
-        self.__clearables.append(ttsMonsterKeyAndUserIdRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
+        self.__clearables.append(ttsMonsterTokensRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchChannelEditorsRepository)
         self.__clearables.append(twitchEmotesHelper)

@@ -1779,10 +1779,9 @@ anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
     userIdsRepository = userIdsRepository
 )
 
-chatBacksChatAction = ChatBackMessagesChatAction(
-    generalSettingsRepository = generalSettingsRepository,
+chatBackMessagesChatAction = ChatBackMessagesChatAction(
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchUtils = twitchUtils
 )
 
 chatLoggerChatAction = ChatLoggerChatAction(
@@ -1823,7 +1822,7 @@ if mostRecentAnivMessageRepository is not None:
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = anivCheckChatAction,
-    chatBackMessagesChatAction = chatBacksChatAction,
+    chatBackMessagesChatAction = chatBackMessagesChatAction,
     chatLoggerChatAction = chatLoggerChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     generalSettingsRepository = generalSettingsRepository,
@@ -2115,8 +2114,8 @@ cynanBot = CynanBot(
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsChatterRepository = None,
     ttsJsonMapper = None,
-    ttsMonsterKeyAndUserIdRepository = None,
     ttsMonsterSettingsRepository = None,
+    ttsMonsterTokensRepository = None,
     ttsSettingsRepository = None,
     twitchApiService = twitchApiService,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,

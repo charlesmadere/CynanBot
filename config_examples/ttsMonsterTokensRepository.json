@@ -1,0 +1,10 @@
+{
+    "twitchUserName1": {
+        "key": "ttsMonsterKey1",
+        "userId": "ttsMonsterUserId1"
+    },
+    "twitchUserName2": {
+        "key": "ttsMonsterKey2",
+        "userId": "ttsMonsterUserId2"
+    }
+}

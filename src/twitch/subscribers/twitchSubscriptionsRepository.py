@@ -77,7 +77,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         if subscriptionEntry is not None and subscriptionEntry.fetchTime + self.__cacheTimeToLive >= now:
             return subscriptionEntry.subscriptionStatus
 
-        userSubscription = await self.__fetchBroadcasterSubcriptionsFromTwitchApi(
+        userSubscription = await self.__fetchBroadcasterSubscriptionsFromTwitchApi(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userId = userId
@@ -152,12 +152,12 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
 
         return subscriptionStatus
 
-    async def __fetchBroadcasterSubcriptionsFromTwitchApi(
+    async def __fetchBroadcasterSubscriptionsFromTwitchApi(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
-    ) -> TwitchUserSubscription | TwitchBroadcasterSubscription | None:
+    ) -> TwitchBroadcasterSubscription | TwitchUserSubscription | None:
         try:
             return await self.__twitchApiService.fetchBroadcasterSubscription(
                 broadcasterId = twitchChannelId,
@@ -173,7 +173,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
-    ) -> TwitchUserSubscription | TwitchBroadcasterSubscription | None:
+    ) -> TwitchBroadcasterSubscription | TwitchUserSubscription | None:
         try:
             return await self.__twitchApiService.fetchUserSubscription(
                 broadcasterId = twitchChannelId,

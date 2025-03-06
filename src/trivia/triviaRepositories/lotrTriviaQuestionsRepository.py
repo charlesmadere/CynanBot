@@ -24,7 +24,9 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
@@ -75,12 +77,12 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         for answer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
-        allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
-            category = category,
-            question = question
-        )
-
-        self.__timber.log('LotrTriviaQuestionsRepository', f'All words found in question ({question=}) and category ({category=}) ({lotrTriviaQuestion.triviaId=}): ({allWords=})')
+        allWords: frozenset[str] | None = None
+        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
+            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+                category = category,
+                question = question
+            )
 
         return QuestionAnswerTriviaQuestion(
             allWords = allWords,

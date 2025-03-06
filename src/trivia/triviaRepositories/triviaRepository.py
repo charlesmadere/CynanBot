@@ -164,8 +164,8 @@ class TriviaRepository(TriviaRepositoryInterface):
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        triviaSourcesAndWeights: dict[TriviaSource, int] = await self.__triviaSettingsRepository.getAvailableTriviaSourcesAndWeights()
-        triviaSourcesToRemove: set[TriviaSource] = await self.__getCurrentlyInvalidTriviaSources(triviaFetchOptions)
+        triviaSourcesAndWeights = await self.__triviaSettingsRepository.getAvailableTriviaSourcesAndWeights()
+        triviaSourcesToRemove = await self.__getCurrentlyInvalidTriviaSources(triviaFetchOptions)
 
         for triviaSourceToRemove in triviaSourcesToRemove:
             if triviaSourceToRemove in triviaSourcesAndWeights:
@@ -189,7 +189,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         randomlyChosenTriviaSource = randomChoices[0]
         randomlyChosenTriviaRepository = self.__triviaSourceToRepositoryMap[randomlyChosenTriviaSource]
 
-        if randomlyChosenTriviaRepository is None:
+        if not isinstance(randomlyChosenTriviaRepository, TriviaQuestionRepositoryInterface):
             # this scenario should definitely be impossible, but the Python type checking was
             # getting angry without this check
             raise RuntimeError(f'Couldn\'t retrieve corresponding TriviaQuestionRepository from given randomlyChosenTriviaSource ({randomlyChosenTriviaSource=}) ({randomlyChosenTriviaRepository=}) ({self.__triviaSourceToRepositoryMap=})')
@@ -261,8 +261,8 @@ class TriviaRepository(TriviaRepositoryInterface):
                 try:
                     triviaQuestionRepository = await self.__getTriviaSource(triviaFetchOptions)
                 except UnavailableTriviaSourceException as e:
-                    self.__timber.log('TriviaRepository', f'Failed to get trivia source (required trivia source was \"{triviaFetchOptions.requiredTriviaSource}\"): {e}', e, traceback.format_exc())
-                    return
+                    self.__timber.log('TriviaRepository', f'Failed to get trivia source ({triviaFetchOptions=}): {e}', e, traceback.format_exc())
+                    return None
 
                 triviaSource = triviaQuestionRepository.triviaSource
                 attemptedTriviaSources.append(triviaSource)
@@ -300,7 +300,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         raise TooManyTriviaFetchAttemptsException(f'Unable to fetch trivia from {attemptedTriviaSources} after {retryCount} attempts (max attempts is {maxRetryCount})')
 
-    async def __getCurrentlyInvalidTriviaSources(self, triviaFetchOptions: TriviaFetchOptions) -> set[TriviaSource]:
+    async def __getCurrentlyInvalidTriviaSources(self, triviaFetchOptions: TriviaFetchOptions) -> frozenset[TriviaSource]:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
@@ -336,7 +336,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         unstableTriviaSources = await self.__getCurrentlyUnstableTriviaSources()
         currentlyInvalidTriviaSources.update(unstableTriviaSources)
 
-        return currentlyInvalidTriviaSources
+        return frozenset(currentlyInvalidTriviaSources)
 
     async def __getCurrentlyUnstableTriviaSources(self) -> set[TriviaSource]:
         instabilityThreshold = await self.__triviaSettingsRepository.getTriviaSourceInstabilityThreshold()

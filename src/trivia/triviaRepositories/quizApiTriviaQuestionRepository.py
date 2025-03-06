@@ -31,7 +31,9 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')

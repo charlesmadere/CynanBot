@@ -46,14 +46,16 @@ def cleanStr(
     htmlUnescape: bool = False,
     removeCarrots: bool = False
 ) -> str:
-    if replacement is None:
+    if s is not None and not isinstance(s, str):
+        raise TypeError(f's argument is malformed: \"{s}\"')
+    elif replacement is None:
         raise TypeError(f'replacement argument is malformed: \"{replacement}\"')
     elif not isValidBool(htmlUnescape):
         raise TypeError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
     elif not isValidBool(removeCarrots):
         raise TypeError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
 
-    if s is None or len(s) == 0:
+    if s is None or len(s) == 0 or s.isspace():
         return ''
 
     s = extraWhiteSpaceRegEx.sub(' ', s).strip()
@@ -160,6 +162,10 @@ def getBoolFromDict(d: dict[str, Any] | None, key: str, fallback: bool | None = 
     return value
 
 def getCleanedSplits(s: str | None) -> list[str]:
+    if s is not None and not isinstance(s, str):
+        raise TypeError(f's argument is malformed: \"{s}\"')
+
+    s = cleanStr(s)
     words: list[str] = list()
 
     if not isValidStr(s):

@@ -48,20 +48,20 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
     async def findFile(
         self,
-        extraConfigurationData: str | None,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> GlacialTtsFileReference | None:
-        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
-            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif voice is not None and not isinstance(voice, str):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
-            extraConfigurationData = extraConfigurationData,
             message = message,
+            voice = voice,
             provider = provider
         )
 
@@ -131,32 +131,32 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
     async def saveFile(
         self,
-        extraConfigurationData: str | None,
         fileExtension: str,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> GlacialTtsFileReference:
-        if extraConfigurationData is not None and not isinstance(extraConfigurationData, str):
-            raise TypeError(f'extraConfigurationData argument is malformed: \"{extraConfigurationData}\"')
-        elif not utils.isValidStr(fileExtension):
+        if not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif voice is not None and not isinstance(voice, str):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
-            extraConfigurationData = extraConfigurationData,
             message = message,
+            voice = voice,
             provider = provider
         )
 
         if glacialTtsData is not None:
-            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({provider=}) ({glacialTtsData=})')
+            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({voice=}) ({provider=}) ({glacialTtsData=})')
 
         glacialTtsData = await self.__glacialTtsStorageRepository.add(
-            extraConfigurationData = extraConfigurationData,
             message = message,
+            voice = voice,
             provider = provider
         )
 
@@ -166,7 +166,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         )
 
         if fileReference is not None:
-            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({provider=}) ({fileReference=})')
+            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({voice=}) ({provider=}) ({fileReference=})')
 
         providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
         fileName = f'{glacialTtsData.glacialId}.{fileExtension}'

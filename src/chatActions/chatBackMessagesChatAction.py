@@ -2,7 +2,6 @@ from datetime import timedelta
 
 from .absChatAction import AbsChatAction
 from ..misc import utils as utils
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.timedDict import TimedDict
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
@@ -15,7 +14,6 @@ class ChatBackMessagesChatAction(AbsChatAction):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         cooldown: timedelta = timedelta(minutes = 20)
@@ -29,8 +27,9 @@ class ChatBackMessagesChatAction(AbsChatAction):
 
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__lastMessageTimes: dict[str, TimedDict] = dict()
         self.__cooldown: timedelta = cooldown
+
+        self.__lastMessageTimes: dict[str, TimedDict] = dict()
 
     async def handleChat(
         self,
@@ -38,16 +37,16 @@ class ChatBackMessagesChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        messageList = user.chatBackMessages
+        chatBackMessages = user.chatBackMessages
 
         if not user.isChatBackMessagesEnabled:
             return False
-        elif messageList is None or len(messageList) == 0:
+        elif chatBackMessages is None or len(chatBackMessages) == 0:
             return False
 
         splits = utils.getCleanedSplits(message.getContent())
 
-        for msg in messageList:
+        for msg in chatBackMessages:
             if self.__lastMessageTimes.get(msg) is None:
                 self.__lastMessageTimes[msg] = TimedDict(self.__cooldown)
 

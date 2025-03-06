@@ -6,7 +6,7 @@ class TtsMonsterPrivateApiHelperInterface(ABC):
     @abstractmethod
     async def getSpeech(
         self,
-        message: str,
+        message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> bytes | None:

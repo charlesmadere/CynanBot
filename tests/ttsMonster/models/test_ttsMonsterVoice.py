@@ -19,6 +19,10 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.SHADOW.humanName
         assert result == 'Shadow'
 
+    def test_humanName_withZeroTwo(self):
+        result = TtsMonsterVoice.ZERO_TWO.humanName
+        assert result == 'Zero Two'
+
     def test_inMessageName_withAll(self):
         inMessageNames: list[str] = list()
 
@@ -34,3 +38,7 @@ class TestTtsMonsterVoice:
     def test_inMessageName_withShadow(self):
         result = TtsMonsterVoice.SHADOW.inMessageName
         assert result == 'shadow'
+
+    def test_inMessageName_withZeroTwo(self):
+        result = TtsMonsterVoice.ZERO_TWO.inMessageName
+        assert result == 'zerotwo'

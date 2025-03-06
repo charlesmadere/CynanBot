@@ -2,8 +2,8 @@ import traceback
 
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
-from ..keyAndUserIdRepository.ttsMonsterKeyAndUserIdRepositoryInterface import \
-    TtsMonsterKeyAndUserIdRepositoryInterface
+from ..tokens.ttsMonsterTokensRepositoryInterface import \
+    TtsMonsterTokensRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
@@ -14,47 +14,49 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface,
-        ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface
+        ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface,
+        ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsMonsterKeyAndUserIdRepository, TtsMonsterKeyAndUserIdRepositoryInterface):
-            raise TypeError(f'ttsMonsterKeyAndUserIdRepository argument is malformed: \"{ttsMonsterKeyAndUserIdRepository}\"')
         elif not isinstance(ttsMonsterPrivateApiService, TtsMonsterPrivateApiServiceInterface):
             raise TypeError(f'ttsMonsterPrivateApiService argument is malformed: \"{ttsMonsterPrivateApiService}\"')
+        elif not isinstance(ttsMonsterTokensRepository, TtsMonsterTokensRepositoryInterface):
+            raise TypeError(f'ttsMonsterTokensRepository argument is malformed: \"{ttsMonsterTokensRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__ttsMonsterKeyAndUserIdRepository: TtsMonsterKeyAndUserIdRepositoryInterface = ttsMonsterKeyAndUserIdRepository
         self.__ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = ttsMonsterPrivateApiService
+        self.__ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = ttsMonsterTokensRepository
 
     async def getSpeech(
         self,
-        message: str,
+        message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> bytes | None:
-        if not utils.isValidStr(message):
+        if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        keyAndUserId = await self.__ttsMonsterKeyAndUserIdRepository.get(
-            twitchChannel = twitchChannel,
+        if not utils.isValidStr(message):
+            return None
+
+        tokens = await self.__ttsMonsterTokensRepository.get(
             twitchChannelId = twitchChannelId
         )
 
-        if keyAndUserId is None:
-            self.__timber.log('TtsMonsterPrivateApiHelper', f'The given Twitch channel does not have a TTS Monster key and user ID value available ({message=}) ({twitchChannel=}) ({twitchChannelId=})')
+        if tokens is None:
+            self.__timber.log('TtsMonsterPrivateApiHelper', f'The given Twitch channel does not have any TTS Monster tokens available ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({tokens=})')
             return None
 
         try:
             ttsResponse = await self.__ttsMonsterPrivateApiService.generateTts(
-                key = keyAndUserId.key,
+                key = tokens.key,
                 message = message,
-                userId = keyAndUserId.userId
+                userId = tokens.userId
             )
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())

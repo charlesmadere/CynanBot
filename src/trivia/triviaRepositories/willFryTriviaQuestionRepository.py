@@ -24,7 +24,9 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         willFryTriviaApiService: WillFryTriviaApiServiceInterface
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

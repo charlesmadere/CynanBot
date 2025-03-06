@@ -80,13 +80,6 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
 
-        allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
-            category = category,
-            question = question
-        )
-
-        self.__timber.log('FuntoonTriviaQuestionRepository', f'All words found in question ({question=}) and category ({category=}) ({triviaId=}): ({allWords=})')
-
         compiledCorrectAnswers: list[str] = list()
         compiledCorrectAnswers.append(funtoonQuestion.answer)
 
@@ -102,6 +95,13 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         expandedCompiledCorrectAnswers: set[str] = set()
         for answer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
+
+        allWords: frozenset[str] | None = None
+        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
+            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+                category = category,
+                question = question
+            )
 
         # TODO In the future, we will also check some additional fields (`formatted_answer` and
         #  `format_type`). These will assist in providing computer-readable answer logic.

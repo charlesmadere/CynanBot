@@ -27,7 +27,9 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaDatabaseFile: str = '../db/triviaQuestionCompanyTriviaQuestionRepository.sqlite'
     ):
-        super().__init__(triviaSettingsRepository)
+        super().__init__(
+            triviaSettingsRepository = triviaSettingsRepository
+        )
 
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

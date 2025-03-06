@@ -41,11 +41,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__hashRegEx: Pattern = re.compile(r'(#)')
         self.__honoraryPrefixRegEx: Pattern = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|csar|czar|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|minister|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|president|priest|prime minister|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|tsar|tzar|warden)\s+', re.IGNORECASE)
         self.__japaneseHonorarySuffixRegEx: Pattern = re.compile(r'(\s|-)(chan|kohai|kouhai|kun|sama|san|senpai|sensei|tan)$', re.IGNORECASE)
-        self.__multipleChoiceBasicAnswerRegEx: Pattern = re.compile(r'^([a-z])\s*(\U000e0000)*$', re.IGNORECASE)
-        self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\[([a-z])\]\s*(\U000e0000)*$', re.IGNORECASE)
-        self.__multipleChoiceCleanAnswerRegEx: Pattern = re.compile(r'^[a-z]$', re.IGNORECASE)
+        self.__multipleChoiceBasicAnswerRegEx: Pattern = re.compile(r'^\s*([a-z])\s*$', re.IGNORECASE)
+        self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\s*\[([a-z])\]\s*$', re.IGNORECASE)
+        self.__multipleChoiceCleanAnswerRegEx: Pattern = re.compile(r'^\s*[a-z]\s*$', re.IGNORECASE)
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
-        self.__oddUnicodeRemovalRegEx: Pattern = re.compile(r'\U000e0000', re.IGNORECASE)
         self.__parenGroupRegEx: Pattern = re.compile(r'(\(.*?\))', re.IGNORECASE)
         self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_ ]|(?<=\s)\s+', re.IGNORECASE)
         self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
@@ -147,9 +146,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         # removes HTML tag-like junk
         answer = self.__tagRemovalRegEx.sub('', answer).strip()
-
-        # removes odd unicode characters
-        answer = self.__oddUnicodeRemovalRegEx.sub('', answer).strip()
 
         # replaces all new line characters with just a space
         answer = self.__newLineRegEx.sub(' ', answer).strip()

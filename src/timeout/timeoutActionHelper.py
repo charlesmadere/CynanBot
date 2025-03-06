@@ -219,6 +219,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         diceRoll: DiceRoll,
         rollFailureData: RollFailureData,
         ripBozoEmote: str,
+        timeoutTargetUserName: str,
         timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ):
@@ -229,11 +230,11 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         message: str
 
         if isGuaranteed or not timeoutData.isRandomChanceEnabled or timeoutData.actionType is TimeoutActionType.GRENADE:
-            message = f'{ripBozoEmote} @{timeoutData.timeoutTargetUserName} {ripBozoEmote}'
+            message = f'{ripBozoEmote} @{timeoutTargetUserName} {ripBozoEmote}'
         elif isReverse:
             message = f'{ripBozoEmote} Oh noo! @{timeoutData.instigatorUserName} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
         else:
-            message = f'{ripBozoEmote} Timed out @{timeoutData.timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Timed out @{timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -588,6 +589,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             diceRoll = diceRoll,
             rollFailureData = rollFailureData,
             ripBozoEmote = ripBozoEmote,
+            timeoutTargetUserName = timeoutTargetUserName,
             timeoutData = timeoutData,
             twitchChannel = twitchChannel
         )

@@ -9,4 +9,5 @@ class GlacialTtsData:
     storeDateTime: datetime
     glacialId: str
     message: str
+    voice: str | None
     provider: TtsProvider
