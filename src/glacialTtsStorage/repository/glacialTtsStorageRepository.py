@@ -116,7 +116,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         cursor = await connection.execute(
             '''
                 SELECT storeDateTime, glacialId FROM glacialTtsStorage
-                WHERE message = $1 AND provider = $2 AND voice = $3
+                WHERE message = $1 AND provider = $2 AND voice is NULL OR voice = $3
                 LIMIT 1
             ''',
             ( message, providerString, voice )
