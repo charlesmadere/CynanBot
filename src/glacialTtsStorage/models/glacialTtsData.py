@@ -11,3 +11,11 @@ class GlacialTtsData:
     message: str
     voice: str | None
     provider: TtsProvider
+
+    def requireVoice(self) -> str:
+        voice = self.voice
+
+        if voice is None:
+            raise RuntimeError(f'voice value has not been set: ({self=})')
+
+        return voice

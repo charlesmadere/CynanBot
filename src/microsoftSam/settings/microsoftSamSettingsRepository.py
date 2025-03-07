@@ -37,10 +37,14 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
             key = 'defaultVoice',
-            fallback = self.__microsoftSamJsonParser.serializeVoice(self.__defaultVoice)
+            fallback = await self.__microsoftSamJsonParser.serializeVoice(self.__defaultVoice)
         )
 
-        return self.__microsoftSamJsonParser.requireVoice(defaultVoice)
+        return await self.__microsoftSamJsonParser.requireVoice(defaultVoice)
+
+    async def getFileExtension(self) -> str:
+        jsonContents = await self.__readJson()
+        return utils.getStrFromDict(jsonContents, 'fileExtension', fallback = 'wav')
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()

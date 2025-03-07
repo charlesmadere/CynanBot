@@ -69,6 +69,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
         glacialId = await self.__glacialTtsIdGenerator.generateId(
             message = message,
+            voice = voice,
             provider = provider
         )
 

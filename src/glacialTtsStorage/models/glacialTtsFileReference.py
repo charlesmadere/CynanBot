@@ -13,3 +13,7 @@ class GlacialTtsFileReference:
     @property
     def storeDateTime(self) -> datetime:
         return self.glacialTtsData.storeDateTime
+
+    @property
+    def voice(self) -> str | None:
+        return self.glacialTtsData.voice

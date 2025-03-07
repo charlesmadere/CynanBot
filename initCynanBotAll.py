@@ -2120,7 +2120,9 @@ microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = Micros
 
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
     eventLoop = eventLoop,
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
     microsoftSamApiHelper = microsoftSamApiHelper,
+    microsoftSamJsonParser = microsoftSamJsonParser,
     microsoftSamMessageVoiceParser = microsoftSamMessageVoiceParser,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
     timber = timber,

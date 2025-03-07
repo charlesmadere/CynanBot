@@ -11,5 +11,9 @@ class MicrosoftSamSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getFileExtension(self) -> str:
+        pass
+
+    @abstractmethod
     async def getMediaPlayerVolume(self) -> int | None:
         pass

@@ -1,8 +1,6 @@
 import re
 import traceback
-import uuid
 from asyncio import AbstractEventLoop
-from datetime import datetime
 from typing import Pattern
 
 import aiofiles
@@ -11,10 +9,13 @@ import aiofiles.ospath
 
 from .microsoftSamApiHelperInterface import MicrosoftSamApiHelperInterface
 from .microsoftSamHelperInterface import MicrosoftSamHelperInterface
+from ..exceptions import MicrosoftSamFailedToCreateDirectoriesException
 from ..models.microsoftSamFileReference import MicrosoftSamFileReference
 from ..models.microsoftSamVoice import MicrosoftSamVoice
+from ..parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ..parser.microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
 from ..settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
+from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -27,18 +28,23 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface,
         microsoftSamApiHelper: MicrosoftSamApiHelperInterface,
+        microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        ttsDirectoryProvider: TtsDirectoryProviderInterface,
-        fileExtension: str = 'wav'
+        ttsDirectoryProvider: TtsDirectoryProviderInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(glacialTtsFileRetriever, GlacialTtsFileRetrieverInterface):
+            raise TypeError(f'glacialTtsFileRetriever argument is malformed: \"{glacialTtsFileRetriever}\"')
         elif not isinstance(microsoftSamApiHelper, MicrosoftSamApiHelperInterface):
             raise TypeError(f'microsoftSamApiHelper argument is malformed: \"{microsoftSamApiHelper}\"')
+        elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
+            raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
         elif not isinstance(microsoftSamMessageVoiceParser, MicrosoftSamMessageVoiceParserInterface):
             raise TypeError(f'microsoftSamMessageVoiceParser argument is malformed: \"{microsoftSamMessageVoiceParser}\"')
         elif not isinstance(microsoftSamSettingsRepository, MicrosoftSamSettingsRepositoryInterface):
@@ -49,37 +55,40 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
             raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
-        elif not utils.isValidStr(fileExtension):
-            raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
         self.__microsoftSamApiHelper: MicrosoftSamApiHelperInterface = microsoftSamApiHelper
+        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = microsoftSamMessageVoiceParser
         self.__microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = microsoftSamSettingsRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
-        self.__fileExtension: str = fileExtension
 
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
+        # this logic removes the file name from the file path, leaving us with just a directory tree
+        directoryMatch = self.__directoryTreeRegEx.fullmatch(filePath)
+
+        if directoryMatch is None or not utils.isValidStr(directoryMatch.group(1)):
+            raise MicrosoftSamFailedToCreateDirectoriesException(f'Failed to create Microsoft Sam file directories ({filePath=}) ({directoryMatch=})')
+
+        directory = directoryMatch.group(1)
+
         if await aiofiles.ospath.exists(
-            path = filePath,
+            path = directory,
             loop = self.__eventLoop
         ):
             return
 
         await aiofiles.os.makedirs(
-            name = filePath,
+            name = directory,
             loop = self.__eventLoop
         )
 
-        self.__timber.log('MicrosoftSamHelper', f'Created new directories ({filePath=})')
-
-    async def __generateFileName(self) -> str:
-        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
-        return f'{fileName}.{self.__fileExtension}'
+        self.__timber.log('MicrosoftSamHelper', f'Created new directories ({directory=})')
 
     async def generateTts(
         self,
@@ -106,6 +115,19 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
             voice = result.voice
             message = result.message
 
+        glacialFile = await self.__glacialTtsFileRetriever.findFile(
+            message = message,
+            voice = await self.__microsoftSamJsonParser.serializeVoice(voice),
+            provider = TtsProvider.MICROSOFT_SAM
+        )
+
+        if glacialFile is not None:
+            return MicrosoftSamFileReference(
+                storeDateTime = glacialFile.storeDateTime,
+                filePath = glacialFile.filePath,
+                voice = await self.__microsoftSamJsonParser.requireVoice(glacialFile.voice)
+            )
+
         speechBytes = await self.__microsoftSamApiHelper.getSpeech(
             voice = voice,
             message = message
@@ -114,21 +136,25 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         if speechBytes is None:
             return None
 
-        fileName = await self.__generateFileName()
-        filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.MICROSOFT_SAM)
-        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        glacialFile = await self.__glacialTtsFileRetriever.saveFile(
+            fileExtension = await self.__microsoftSamSettingsRepository.getFileExtension(),
+            message = message,
+            voice = await self.__microsoftSamJsonParser.serializeVoice(voice),
+            provider = TtsProvider.MICROSOFT_SAM
+        )
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
-            fileName = fileName,
-            filePath = filePath
+            fileName = glacialFile.fileName,
+            filePath = glacialFile.filePath
         ):
             return MicrosoftSamFileReference(
-                storeDateTime = storeDateTime,
-                filePath = f'{filePath}/{fileName}'
+                storeDateTime = glacialFile.storeDateTime,
+                filePath = glacialFile.filePath,
+                voice = voice
             )
         else:
-            self.__timber.log('MicrosoftSamHelper', f'Failed to write Microsoft Sam TTS speechBytes to file ({message=}) ({fileName=}) ({filePath=})')
+            self.__timber.log('MicrosoftSamHelper', f'Failed to write Microsoft Sam TTS speechBytes to file ({message=}) ({glacialFile=})')
             return None
 
     async def __saveSpeechBytes(

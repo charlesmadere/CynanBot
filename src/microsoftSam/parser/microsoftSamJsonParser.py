@@ -7,7 +7,7 @@ from ...misc import utils as utils
 
 class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
-    def parseVoice(self, jsonString: str | Any | None) -> MicrosoftSamVoice | None:
+    async def parseVoice(self, jsonString: str | Any | None) -> MicrosoftSamVoice | None:
         if not utils.isValidStr(jsonString):
             return None
 
@@ -17,13 +17,16 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
         return None
 
-    def requireVoice(self, jsonString: str | Any | None) -> MicrosoftSamVoice:
-        result = self.parseVoice(jsonString)
+    async def requireVoice(self, jsonString: str | Any | None) -> MicrosoftSamVoice:
+        result = await self.parseVoice(jsonString)
 
         if result is None:
             raise ValueError(f'Unable to parse \"{jsonString}\" into MicrosoftSamVoice value!')
 
         return result
 
-    def serializeVoice(self, voice: MicrosoftSamVoice):
+    async def serializeVoice(self, voice: MicrosoftSamVoice) -> str:
+        if not isinstance(voice, MicrosoftSamVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+
         return voice.jsonValue

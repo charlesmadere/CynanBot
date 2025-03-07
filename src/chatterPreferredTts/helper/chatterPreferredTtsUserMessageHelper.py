@@ -143,10 +143,10 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         microsoftSamVoiceCommand = match.group(1)
 
         if utils.isValidStr(microsoftSamVoiceCommand):
-            microsoftSamVoice = self.__microsoftSamJsonParser.parseVoice(microsoftSamVoiceCommand)
+            microsoftSamVoice = await self.__microsoftSamJsonParser.parseVoice(microsoftSamVoiceCommand)
 
         return MicrosoftSamPreferredTts(
-            voice= microsoftSamVoice
+            voice = microsoftSamVoice
         )
 
     async def __createSingingDecTalkTtsProperties(

@@ -9,6 +9,7 @@ class GlacialTtsIdGeneratorInterface(ABC):
     async def generateId(
         self,
         message: str,
+        voice: str | None,
         provider: TtsProvider
     ) -> str:
         pass

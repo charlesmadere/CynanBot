@@ -123,13 +123,13 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         if not utils.isValidStr(message):
             return None
 
+        messageVoices = await self.__determineMessageVoices(message)
+
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = message,
             voice = None,
             provider = TtsProvider.TTS_MONSTER
         )
-
-        messageVoices = await self.__determineMessageVoices(message)
 
         if glacialFile is not None:
             return TtsMonsterFileReference(
