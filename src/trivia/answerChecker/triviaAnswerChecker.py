@@ -4,6 +4,7 @@ import traceback
 from typing import Any, Generator, Pattern
 
 import polyleven
+from frozendict import frozendict
 
 from .triviaAnswerCheckResult import TriviaAnswerCheckResult
 from .triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
@@ -38,9 +39,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
-        self.__whitespacePattern: Pattern = re.compile(r'\s\s+', re.IGNORECASE)
+        self.__extraWhitespacePattern: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-        self.__irregularNouns: dict[str, frozenset[str]] = {
+        self.__irregularNouns: frozendict[str, frozenset[str]] = frozendict({
             'addendum': frozenset({ 'addenda', 'addendums' }),
             'alumna': frozenset({ 'alumnae' }),
             'bacterium': frozenset({ 'bacteria' }),
@@ -63,8 +64,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             'vertebra': frozenset({ 'vertebrae', 'vertebras' }),
             'wife': frozenset({ 'wives' }),
             'wolf': frozenset({ 'wolves' }),
-            'woman': frozenset({ 'women' })
-        }
+            'woman': frozenset({ 'women' }),
+        })
 
         self.__stopWords: frozenset[str] = frozenset({
             'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them',
@@ -91,11 +92,24 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             return TriviaAnswerCheckResult.INVALID_INPUT
 
         if isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
-            return await self.__checkAnswerMultipleChoice(answer, triviaQuestion)
+            return await self.__checkAnswerMultipleChoice(
+                answer = answer,
+                triviaQuestion = triviaQuestion
+            )
+
         elif isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
-            return await self.__checkAnswerQuestionAnswer(answer, triviaQuestion, extras)
+            return await self.__checkAnswerQuestionAnswer(
+                answer = answer,
+                triviaQuestion = triviaQuestion,
+                extras = extras
+            )
+
         elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            return await self.__checkAnswerTrueFalse(answer, triviaQuestion)
+            return await self.__checkAnswerTrueFalse(
+                answer = answer,
+                triviaQuestion = triviaQuestion
+            )
+
         else:
             raise UnsupportedTriviaTypeException(f'Unsupported TriviaType: \"{triviaQuestion.triviaType}\"')
 
@@ -169,8 +183,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
                     if expandedUserAnswer == compiledCorrectAnswer:
                         return TriviaAnswerCheckResult.CORRECT
 
-                    guessWords = self.__whitespacePattern.sub(' ', expandedUserAnswer).split(' ')
-                    answerWords = self.__whitespacePattern.sub(' ', compiledCorrectAnswer).split(' ')
+                    guessWords = self.__extraWhitespacePattern.sub(' ', expandedUserAnswer).split(' ')
+                    answerWords = self.__extraWhitespacePattern.sub(' ', compiledCorrectAnswer).split(' ')
                     minWords = min(len(guessWords), len(answerWords))
 
                     for gWords in self.__mergeWords(guessWords, minWords):

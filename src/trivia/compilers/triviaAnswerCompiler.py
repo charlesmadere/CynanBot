@@ -4,6 +4,7 @@ from typing import Collection, Pattern
 
 import roman
 import unicodedata
+from frozenlist import FrozenList
 from num2words import num2words
 from roman import RomanError
 
@@ -54,7 +55,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__thingIsPhraseRegEx: Pattern = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
         self.__thingsThatArePhraseRegEx: Pattern = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
         self.__usDollarRegEx: Pattern = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
-        self.__whiteSpaceRegEx: Pattern = re.compile(r'\s\s*', re.IGNORECASE)
+        self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
         self.__wordDashWordRegEx: Pattern = re.compile(r'[\-_]', re.IGNORECASE)
         self.__wordSlashWordRegEx: Pattern = re.compile(r'^(\w+)\/(\w+)(\/(\w+))?$', re.IGNORECASE)
         self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
@@ -174,12 +175,15 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         elif not utils.isValidBool(expandParentheses):
             raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
 
-        if answers is None or len(answers) == 0:
+        frozenAnswers: FrozenList[str | None] = FrozenList(answers)
+        frozenAnswers.freeze()
+
+        if frozenAnswers is None or len(frozenAnswers) == 0:
             return list()
 
         compiledAnswers: set[str] = set()
 
-        for answer in answers:
+        for answer in frozenAnswers:
             if not utils.isValidStr(answer):
                 continue
 
