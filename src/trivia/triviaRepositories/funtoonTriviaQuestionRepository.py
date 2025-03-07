@@ -103,9 +103,6 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question
             )
 
-        # TODO In the future, we will also check some additional fields (`formatted_answer` and
-        #  `format_type`). These will assist in providing computer-readable answer logic.
-
         return QuestionAnswerTriviaQuestion(
             allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
