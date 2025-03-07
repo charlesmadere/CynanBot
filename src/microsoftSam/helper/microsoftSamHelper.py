@@ -174,14 +174,14 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
 
         try:
             async with aiofiles.open(
-                file = f'{filePath}/{fileName}',
+                file = filePath,
                 mode = 'wb',
                 loop = self.__eventLoop
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('MicrosoftSamHelper', f'Encountered exception when trying to write Microsoft Sam TTS speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftSamHelper', f'Encountered exception when trying to write Microsoft Sam speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
             return False
 
         return True

@@ -194,7 +194,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('TtsMonsterHelper', f'Encountered exception when trying to write TTS Monster speechBytes to file ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TtsMonsterHelper', f'Encountered exception when trying to write TTS Monster speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
             return False
 
         return True

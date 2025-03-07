@@ -167,7 +167,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     message TEXT NOT NULL,
                     provider TEXT NOT NULL,
                     voice TEXT DEFAULT NULL COLLATE NOCASE,
-                    PRIMARY KEY (glacialId)
+                    PRIMARY KEY (glacialId, provider)
                 )
             '''
         )
@@ -178,20 +178,24 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
     async def remove(
         self,
-        glacialId: str
+        glacialId: str,
+        provider: TtsProvider
     ) -> GlacialTtsData | None:
         if not utils.isValidStr(glacialId):
             raise TypeError(f'glacialId argument is malformed: \"{glacialId}\"')
+        elif not isinstance(provider, TtsProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
+        providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
         connection = await self.__getDatabaseConnection()
 
         cursor = await connection.execute(
             '''
-                SELECT storeDateTime, message, provider, voice FROM glacialTtsStorage
-                WHERE glacialId = $1
+                SELECT storeDateTime, message, voice FROM glacialTtsStorage
+                WHERE glacialId = $1 AND provider = $2
                 LIMIT 1
             ''',
-            ( glacialId, )
+            ( glacialId, providerString, )
         )
 
         row = await cursor.fetchone()
@@ -201,24 +205,24 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
 
         if row is not None and len(row) >= 1:
             storeDateTime = datetime.fromisoformat(row[0])
-            provider = await self.__glacialTtsDataMapper.fromDatabaseName(row[2])
 
             glacialTtsData = GlacialTtsData(
                 storeDateTime = storeDateTime,
                 glacialId = glacialId,
                 message = row[1],
-                voice = row[3],
+                voice = row[2],
                 provider = provider
             )
 
             await connection.execute(
                 '''
                     DELETE FROM glacialTtsStorage
-                    WHERE glacialId = $1
+                    WHERE glacialId = $1 AND provider = $2
                 ''',
-                ( glacialId, )
+                ( glacialId, providerString, )
             )
 
-        await connection.commit()
+            await connection.commit()
+
         await connection.close()
         return glacialTtsData
