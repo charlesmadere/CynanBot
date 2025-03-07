@@ -156,13 +156,14 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     glacialId TEXT NOT NULL,
                     message TEXT NOT NULL,
                     provider TEXT NOT NULL,
-                    VOICE TEXT DEFAULT NULL COLLATE NOCASE,
+                    voice TEXT DEFAULT NULL COLLATE NOCASE,
                     PRIMARY KEY (glacialId)
                 )
             '''
         )
 
         await cursor.close()
+        await connection.commit()
         return connection
 
     async def remove(
@@ -177,7 +178,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         cursor = await connection.execute(
             '''
                 SELECT storeDateTime, message, provider, voice FROM glacialTtsStorage
-                WHERE glacialId = $2
+                WHERE glacialId = $1
                 LIMIT 1
             ''',
             ( glacialId, )
@@ -208,5 +209,6 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 ( glacialId, )
             )
 
+        await connection.commit()
         await connection.close()
         return glacialTtsData

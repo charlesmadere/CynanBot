@@ -123,7 +123,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voiceString: str | Any | None = configurationJson.get('microsoftSamVoice', None)
 
             if utils.isValidStr(voiceString):
-                voice = self.__microsoftSamJsonParser.parseVoice(voiceString)
+                voice = await self.__microsoftSamJsonParser.parseVoice(voiceString)
 
         return MicrosoftSamPreferredTts(
             voice = voice
