@@ -60,6 +60,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
+        self.__isPaused: bool = False
         self.__isStarted: bool = False
         self.__actionHandler: CrowdControlActionHandler | None = None
         self.__messageListener: CrowdControlMessageListener | None = None
@@ -163,6 +164,19 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
 
+    @property
+    def isPaused(self) -> bool:
+        return self.__isPaused
+
+    def pause(self) -> bool:
+        isAlreadyPaused = self.isPaused
+
+        if not isAlreadyPaused:
+            self.__isPaused = True
+
+        # indicates to the caller that we were previously resumed, but are now paused
+        return not isAlreadyPaused
+
     async def __playSoundAlert(self, action: CrowdControlAction):
         if not isinstance(action, CrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -193,6 +207,15 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
         )
 
+    def resume(self) -> bool:
+        isAlreadyResumed = not self.isPaused
+
+        if not isAlreadyResumed:
+            self.__isPaused = False
+
+        # indicates to the caller that we were previously paused, but are now resumed
+        return not isAlreadyResumed
+
     def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
         if actionHandler is not None and not isinstance(actionHandler, CrowdControlActionHandler):
             raise TypeError(f'actionHandler argument is malformed: \"{actionHandler}\"')
@@ -219,7 +242,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         while True:
             actionHandler = self.__actionHandler
 
-            if actionHandler is not None:
+            if actionHandler is not None and not self.isPaused:
                 action: CrowdControlAction | None = None
 
                 try:
