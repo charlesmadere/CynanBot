@@ -113,14 +113,24 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
 
-        cursor = await connection.execute(
-            '''
-                SELECT storeDateTime, glacialId FROM glacialTtsStorage
-                WHERE message = $1 AND provider = $2 AND voice is NULL OR voice = $3
-                LIMIT 1
-            ''',
-            ( message, providerString, voice )
-        )
+        if utils.isValidStr(voice):
+            cursor = await connection.execute(
+                '''
+                    SELECT storeDateTime, glacialId FROM glacialTtsStorage
+                    WHERE message = $1 AND provider = $2 AND voice = $3
+                    LIMIT 1
+                ''',
+                ( message, providerString, voice, )
+            )
+        else:
+            cursor = await connection.execute(
+                '''
+                    SELECT storeDateTime, glacialId FROM glacialTtsStorage
+                    WHERE message = $1 AND provider = $2 AND voice is NULL
+                    LIMIT 1
+                ''',
+                ( message, providerString, )
+            )
 
         row = await cursor.fetchone()
         await cursor.close()
