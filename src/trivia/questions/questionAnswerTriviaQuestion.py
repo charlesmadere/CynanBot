@@ -1,5 +1,7 @@
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
@@ -53,16 +55,20 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         return self.__allWords
 
     @property
-    def compiledCorrectAnswers(self) -> list[str]:
-        return utils.copyList(self.__compiledCorrectAnswers)
+    def compiledCorrectAnswers(self) -> FrozenList[str]:
+        frozenCompiledCorrectAnswers: FrozenList[str] = FrozenList(self.__compiledCorrectAnswers)
+        frozenCompiledCorrectAnswers.freeze()
+        return frozenCompiledCorrectAnswers
 
     @property
     def correctAnswers(self) -> list[str]:
         return utils.copyList(self.__correctAnswers)
 
     @property
-    def originalCorrectAnswers(self) -> list[str]:
-        return utils.copyList(self.__originalCorrectAnswers)
+    def originalCorrectAnswers(self) -> FrozenList[str]:
+        frozenOriginalCorrectAnswers: FrozenList[str] = FrozenList(self.__originalCorrectAnswers)
+        frozenOriginalCorrectAnswers.freeze()
+        return frozenOriginalCorrectAnswers
 
     @property
     def responses(self) -> list[str]:
