@@ -179,13 +179,13 @@ class TestTriviaQuestionCompiler:
         assert len(result) == 9
         assert 'the' in result
         assert 'dakotas' in result
-        assert 'this'
-        assert 'state'
-        assert 'is'
-        assert 'south'
-        assert 'of'
-        assert 'north'
-        assert 'dakota'
+        assert 'this' in result
+        assert 'state' in result
+        assert 'is' in result
+        assert 'south' in result
+        assert 'of' in result
+        assert 'north' in result
+        assert 'dakota' in result
 
     @pytest.mark.asyncio
     async def test_findAllWordsInQuestion2(self):
@@ -198,11 +198,11 @@ class TestTriviaQuestionCompiler:
         assert len(result) == 7
         assert 'hemispheres' in result
         assert 'japan' in result
-        assert 'is'
-        assert 'country'
-        assert 'in'
-        assert 'this'
-        assert 'hemisphere'
+        assert 'is' in result
+        assert 'country' in result
+        assert 'in' in result
+        assert 'this' in result
+        assert 'hemisphere' in result
 
     def test_sanity(self):
         assert self.compiler is not None
