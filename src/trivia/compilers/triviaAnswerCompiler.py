@@ -648,6 +648,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         modificationCount = len(patchedWords)
 
+        if modificationCount == 0:
+            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=})')
+            return answer
+
         # The below logic checks to see if every single word in the answer now has parens. This
         # might not truly be 100% absolutely necessary, but I think it's better to not treat every
         # word answer as optional. This could have weird unforeseen ramifications down the road.
