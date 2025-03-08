@@ -204,6 +204,26 @@ class TestTriviaQuestionCompiler:
         assert 'this' in result
         assert 'hemisphere' in result
 
+    @pytest.mark.asyncio
+    async def test_findAllWordsInQuestion3(self):
+        result = await self.compiler.findAllWordsInQuestion(
+            category = 'Movies',
+            question = 'This \"golden\" movie from the 90\'s stars James Bond.'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 10
+        assert 'movies' in result
+        assert 'this' in result
+        assert 'golden' in result
+        assert 'movie' in result
+        assert 'from' in result
+        assert 'the' in result
+        assert '90' in result # should we filter out numbers?
+        assert 'stars' in result
+        assert 'james' in result
+        assert 'bond' in result
+
     def test_sanity(self):
         assert self.compiler is not None
         assert isinstance(self.compiler, TriviaQuestionCompiler)
