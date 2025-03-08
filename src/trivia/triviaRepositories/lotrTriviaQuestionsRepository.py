@@ -56,6 +56,13 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         category = 'Lord of the Rings'
         question = await self.__triviaQuestionCompiler.compileQuestion(lotrTriviaQuestion.question)
 
+        allWords: frozenset[str] | None = None
+        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
+            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+                category = category,
+                question = question
+            )
+
         originalCorrectAnswers: list[str] = list()
         originalCorrectAnswers.extend(lotrTriviaQuestion.answers)
 
@@ -71,18 +78,25 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('LotrTriviaQuestionRepository', f'Added additional answers to question ({lotrTriviaQuestion.triviaId=})')
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
-        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
+
+        compiledCorrectAnswers: list[str] = list()
+        compiledCorrectAnswers.extend(lotrTriviaQuestion.answers)
+
+        await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
+            currentAnswers = compiledCorrectAnswers,
+            triviaId = lotrTriviaQuestion.triviaId,
+            triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
+            triviaSource = self.triviaSource
+        )
+
+        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
+            answers = correctAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for answer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
-
-        allWords: frozenset[str] | None = None
-        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
-            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
-                category = category,
-                question = question
-            )
 
         return QuestionAnswerTriviaQuestion(
             allWords = allWords,

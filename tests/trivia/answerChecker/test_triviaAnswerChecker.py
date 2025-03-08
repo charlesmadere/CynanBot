@@ -164,27 +164,50 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion(self):
+        categoryText = 'Test Category'
+        questionText = 'The Korean country farthest north.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'North Korea' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'The Korean country farthest north.',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.FUNTOON
         )
+
+        result = await self.triviaAnswerChecker.checkAnswer(None, question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer(' ', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('\n', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
 
         result = await self.triviaAnswerChecker.checkAnswer('north korea', question)
         assert result is TriviaAnswerCheckResult.CORRECT
@@ -206,26 +229,37 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withParentheticalQuestionAnswerQuestion(self):
+        categoryText = 'Test Category'
+        questionText = 'That one weird author guy'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '(Kurt) Vonnegut (Jr.)' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'That one weird author guy',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.FUNTOON
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('kurt vonnegut', question)
@@ -248,22 +282,33 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withDecades(self):
+        categoryText = 'Test Category'
+        questionText = 'In what decade did that one thing come out?'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '1950s' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'In what decade did that one thing come out?',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -416,26 +461,37 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withDigits(self):
+        categoryText = 'Test Category'
+        questionText = 'Shakespeare wrote a play about him once or something...'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '(King) Richard III' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Shakespeare wrote a play about him once or something...',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.FUNTOON
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('richard the third', question)
@@ -464,22 +520,33 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withFraulein(self):
+        categoryText = None
+        questionText = 'Something about words'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'fräulein' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = None,
+            category = categoryText,
             categoryId = None,
-            question = 'Something about words',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -497,26 +564,37 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withSpaces(self):
+        categoryText = 'Test Category'
+        questionText = 'Shakespeare wrote a play about him once or something...'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'Beach Ball' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Shakespeare wrote a play about him once or something...',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('beach ball', question)
@@ -551,26 +629,37 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_numberOnly(self):
+        categoryText = 'Test Category'
+        questionText = 'What did the book Brave New World come out?'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '1984' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
-        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for compiledCorrectAnswer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'What year is that one year people say a lot when talking about fascism and whatnot?',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.FUNTOON
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('1984', question)
@@ -587,6 +676,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_ordinalOnly(self):
+        categoryText = 'Test Category'
+        questionText = 'Christmas is on which day of the month of December?'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '25th' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -596,13 +693,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Christmas is on which day of the month of December?',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -626,6 +723,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withHash(self):
+        categoryText = 'Test Category'
+        questionText = 'Name a food coloring'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'Red Dye #5' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -635,17 +740,17 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Name a food coloring',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('red dye #5', question)
@@ -662,6 +767,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withEquation(self):
+        categoryText = 'Math'
+        questionText = 'Name a food coloring'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'X=5' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -671,13 +784,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Name a food coloring',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -707,6 +820,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withHdDvd(self):
+        categoryText = 'Test Category'
+        questionText = 'This was the competitor to blu-ray'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'HD-DVD' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -716,17 +837,17 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE
+            triviaSource = TriviaSource.FUNTOON
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('hddvd', question)
@@ -761,6 +882,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withGroanGrown(self):
+        categoryText = 'Test Category'
+        questionText = 'Something about homophones'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'groan/grown' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -770,13 +899,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about homophones',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -797,6 +926,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withTheNewMath(self):
+        categoryText = 'Test Category'
+        questionText = 'Something about math'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'The New Math' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -806,13 +943,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about math',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -845,6 +982,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withMiyamotoSan(self):
+        categoryText = 'Test Category'
+        questionText = 'This man created Mario'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'Miyamoto-san' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -854,13 +999,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about Nintendo',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -884,6 +1029,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withMrPotatoHead(self):
+        categoryText = 'Toys'
+        questionText = 'This is vegetable is a toy for children'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '(Mr) Potato Head' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -893,13 +1046,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -943,6 +1096,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withSparrballong(self):
+        categoryText: str | None = None
+        questionText = 'Something about food'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'Spärrballong' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -952,13 +1113,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = None,
+            category = categoryText,
             categoryId = None,
-            question = 'Something about food',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -976,6 +1137,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withThingsThatArePinched(self):
+        categoryText = 'Test Category'
+        questionText = 'Something about toys'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'things that are pinched' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -985,13 +1154,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -1009,6 +1178,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withThingsThatAreHello123(self):
+        categoryText = 'Test Category'
+        questionText = 'A random word question'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'things that are hello 123' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -1018,13 +1195,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -1042,6 +1219,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withUsDollarAmount1(self):
+        categoryText = 'Finance'
+        questionText = 'Something about money'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '$50,000.00 (USD)' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -1051,13 +1236,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -1075,6 +1260,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withUsDollarAmount2(self):
+        categoryText = 'Finance'
+        questionText = 'Something about money'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ '$123,456.78' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -1084,13 +1277,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -1108,6 +1301,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withVideoHomeSystem(self):
+        categoryText = 'Video'
+        questionText = 'Something about old home consumer electronics'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'VHS' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -1117,13 +1318,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -1147,6 +1348,14 @@ class TestTriviaAnswerChecker:
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withWalMart(self):
+        categoryText = 'Big Shopping'
+        questionText = 'Something about big shopping brands and stores'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
         originalCorrectAnswers: list[str] = [ 'Wal-Mart' ]
         correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
         compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
@@ -1156,13 +1365,13 @@ class TestTriviaAnswerChecker:
             expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            allWords = None,
+            allWords = allWords,
             compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
             correctAnswers = correctAnswers,
             originalCorrectAnswers = originalCorrectAnswers,
-            category = 'Test Category',
+            category = categoryText,
             categoryId = None,
-            question = 'Something about toys',
+            question = questionText,
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
@@ -1178,31 +1387,280 @@ class TestTriviaAnswerChecker:
         result = await self.triviaAnswerChecker.checkAnswer('wally world', question)
         assert result is TriviaAnswerCheckResult.INCORRECT
 
-    @pytest.mark.asyncio
-    async def test_findWords_with_categoryHelloWorld_questionHelloWorld(self):
-        result = await self.triviaQuestionCompiler.findAllWordsInQuestion(
-            category = 'hello world',
-            question = 'Hello, World!'
-        )
-
-        assert isinstance(result, frozenset)
-        assert len(result) == 2
-        assert 'hello' in result
-        assert 'world' in result
-
-    @pytest.mark.asyncio
-    async def test_findWords_with_categoryNone_questionHelloWorld(self):
-        result = await self.triviaQuestionCompiler.findAllWordsInQuestion(
-            category = None,
-            question = 'Hello, World!'
-        )
-
-        assert isinstance(result, frozenset)
-        assert len(result) == 2
-        assert 'hello' in result
-        assert 'world' in result
-
     def test_sanity(self):
         assert self.triviaAnswerChecker is not None
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerCheckerInterface)
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerChecker)
+
+    ##############################################
+    ## New trivia answer checking logic section ##
+    ##############################################
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withAllWords1(self):
+        categoryText = 'Consumer Gaming'
+        questionText = 'This console, first introduced in 2001 by Microsoft, competed with the Sony PlayStation and the Nintendo GameCube.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
+        originalCorrectAnswers: list[str] = [ 'Microsoft Xbox' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('xbox', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('microsoft xbox', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('microsoft gamecube', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('nintendo xbox', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withAllWordsNone1(self):
+        categoryText = 'Consumer Gaming'
+        questionText = 'This console, first introduced in 2001 by Microsoft, competed with the Sony PlayStation and the Nintendo GameCube.'
+
+        originalCorrectAnswers: list[str] = [ 'Microsoft Xbox' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = None
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('xbox', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('microsoft xbox', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('microsoft gamecube', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('nintendo xbox', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withAllWords2(self):
+        categoryText = 'Sauce'
+        questionText = 'This hot sauce is red and is made in Louisiana.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
+        originalCorrectAnswers: list[str] = [ 'Tabasco Hot Sauce' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('hot', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('hot sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco hot', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco sauce', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco hot sauce', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('crystal', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('crystal hot sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withAllWordsNone2(self):
+        categoryText = 'Sauce'
+        questionText = 'This hot sauce is red and is made in Louisiana.'
+
+        originalCorrectAnswers: list[str] = [ 'Tabasco Hot Sauce' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = None
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = None,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('hot', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('hot sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco hot', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('tabasco hot sauce', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('crystal', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('crystal hot', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('crystal sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('crystal hot sauce', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withAllWords3(self):
+        categoryText = 'Blue Things'
+        questionText = 'This is the color of the sky.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText
+        )
+
+        originalCorrectAnswers: list[str] = [ 'blue' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer(None, question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer(' ', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('blue', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('red', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT

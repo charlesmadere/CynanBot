@@ -10,125 +10,125 @@ class TestTriviaQuestionCompiler:
 
     timber: TimberInterface = TimberStub()
 
-    triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
+    compiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
         timber = timber
     )
 
     @pytest.mark.asyncio
     async def test_compileCategory_withEmptyString(self):
-        category = await self.triviaQuestionCompiler.compileCategory('')
+        category = await self.compiler.compileCategory('')
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileCategory_withNewLineString(self):
-        category = await self.triviaQuestionCompiler.compileCategory('\n')
+        category = await self.compiler.compileCategory('\n')
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileCategory_withNone(self):
-        category = await self.triviaQuestionCompiler.compileCategory(None)
+        category = await self.compiler.compileCategory(None)
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileCategory_withWhitespaceString(self):
-        category = await self.triviaQuestionCompiler.compileCategory(' ')
+        category = await self.compiler.compileCategory(' ')
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withEllipsis(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('...And Justice for All')
+        question = await self.compiler.compileQuestion('...And Justice for All')
         assert question is not None
         assert question == '…And Justice for All'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withEmptyString(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('')
+        question = await self.compiler.compileQuestion('')
         assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withBbCodeTags(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('[b]Scenes from a Memory[/b]')
+        question = await self.compiler.compileQuestion('[b]Scenes from a Memory[/b]')
         assert question is not None
         assert question == 'Scenes from a Memory'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withHtmlTags(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('<i>The Great Misdirect</i>')
+        question = await self.compiler.compileQuestion('<i>The Great Misdirect</i>')
         assert question is not None
         assert question == 'The Great Misdirect'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withManyUnderscores(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('The _________ river is very long.')
+        question = await self.compiler.compileQuestion('The _________ river is very long.')
         assert question is not None
         assert question == 'The ___ river is very long.'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withNewLineString(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('\n')
+        question = await self.compiler.compileQuestion('\n')
         assert question is not None
         assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withNone(self):
-        question = await self.triviaQuestionCompiler.compileQuestion(None)
+        question = await self.compiler.compileQuestion(None)
         assert question is not None
         assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withExtranneousWhiteSpace(self):
-        question = await self.triviaQuestionCompiler.compileQuestion('    \nWhat  country    is  Tokyo in? \n')
+        question = await self.compiler.compileQuestion('    \nWhat  country    is  Tokyo in? \n')
         assert question is not None
         assert question == 'What country is Tokyo in?'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withWhitespaceString(self):
-        question = await self.triviaQuestionCompiler.compileQuestion(' ')
+        question = await self.compiler.compileQuestion(' ')
         assert question is not None
         assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withEmptyString(self):
-        response = await self.triviaQuestionCompiler.compileResponse('')
+        response = await self.compiler.compileResponse('')
         assert response is not None
         assert response == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withNewLineString(self):
-        response = await self.triviaQuestionCompiler.compileResponse('\n')
+        response = await self.compiler.compileResponse('\n')
         assert response is not None
         assert response == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withNone(self):
-        response = await self.triviaQuestionCompiler.compileResponse(None)
+        response = await self.compiler.compileResponse(None)
         assert response is not None
         assert response == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withTextReplacementString_theUkraine(self):
-        response = await self.triviaQuestionCompiler.compileResponse('The Ukraine')
+        response = await self.compiler.compileResponse('The Ukraine')
         assert response == 'Ukraine'
 
     @pytest.mark.asyncio
     async def test_compileResponse_withWhitespaceString(self):
-        response = await self.triviaQuestionCompiler.compileResponse(' ')
+        response = await self.compiler.compileResponse(' ')
         assert response is not None
         assert response == ''
 
     @pytest.mark.asyncio
     async def test_compileResponses_withEmptyList(self):
-        responses = await self.triviaQuestionCompiler.compileResponses(list())
+        responses = await self.compiler.compileResponses(list())
         assert responses is not None
         assert len(responses) == 0
 
     @pytest.mark.asyncio
     async def test_compileResponses_withMixedList(self):
-        responses = await self.triviaQuestionCompiler.compileResponses(
+        responses = await self.compiler.compileResponses(
             [ '', ' ', 'One', '', 'Two', '\n', 'Three', None ]
         )
 
@@ -140,11 +140,71 @@ class TestTriviaQuestionCompiler:
 
     @pytest.mark.asyncio
     async def test_compileResponses_withNone(self):
-        responses = await self.triviaQuestionCompiler.compileResponses(None)
+        responses = await self.compiler.compileResponses(None)
         assert responses is not None
         assert len(responses) == 0
 
+    @pytest.mark.asyncio
+    async def test_findAllWordsInQuestion_withIdenticalCategoryAndQuestion(self):
+        result = await self.compiler.findAllWordsInQuestion(
+            category = 'hello world',
+            question = 'Hello, World!'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 2
+        assert 'hello' in result
+        assert 'world' in result
+
+    @pytest.mark.asyncio
+    async def test_findAllWordsInQuestion_withNoneCategory(self):
+        result = await self.compiler.findAllWordsInQuestion(
+            category = None,
+            question = 'Hello, World!'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 2
+        assert 'hello' in result
+        assert 'world' in result
+
+    @pytest.mark.asyncio
+    async def test_findAllWordsInQuestion1(self):
+        result = await self.compiler.findAllWordsInQuestion(
+            category = 'The Dakotas',
+            question = 'This state is south of North Dakota.'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 9
+        assert 'the' in result
+        assert 'dakotas' in result
+        assert 'this'
+        assert 'state'
+        assert 'is'
+        assert 'south'
+        assert 'of'
+        assert 'north'
+        assert 'dakota'
+
+    @pytest.mark.asyncio
+    async def test_findAllWordsInQuestion2(self):
+        result = await self.compiler.findAllWordsInQuestion(
+            category = 'Hemispheres',
+            question = 'Japan is a country in this hemisphere.'
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 7
+        assert 'hemispheres' in result
+        assert 'japan' in result
+        assert 'is'
+        assert 'country'
+        assert 'in'
+        assert 'this'
+        assert 'hemisphere'
+
     def test_sanity(self):
-        assert self.triviaQuestionCompiler is not None
-        assert isinstance(self.triviaQuestionCompiler, TriviaQuestionCompiler)
-        assert isinstance(self.triviaQuestionCompiler, TriviaQuestionCompilerInterface)
+        assert self.compiler is not None
+        assert isinstance(self.compiler, TriviaQuestionCompiler)
+        assert isinstance(self.compiler, TriviaQuestionCompilerInterface)

@@ -166,6 +166,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
         compiledUserAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
             answers = [ answer ],
+            allWords = triviaQuestion.allWords,
             expandParentheses = False
         )
 

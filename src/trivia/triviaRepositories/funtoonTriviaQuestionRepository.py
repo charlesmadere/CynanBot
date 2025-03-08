@@ -64,6 +64,13 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         category = await self.__triviaQuestionCompiler.compileCategory(funtoonQuestion.category)
         question = await self.__triviaQuestionCompiler.compileQuestion(funtoonQuestion.clue)
 
+        allWords: frozenset[str] | None = None
+        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
+            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+                category = category,
+                question = question
+            )
+
         originalCorrectAnswers: list[str] = list()
         originalCorrectAnswers.append(funtoonQuestion.answer)
 
@@ -90,18 +97,14 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaSource = self.triviaSource
         )
 
-        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(compiledCorrectAnswers)
+        compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
+            answers = compiledCorrectAnswers,
+            allWords = allWords
+        )
 
         expandedCompiledCorrectAnswers: set[str] = set()
         for answer in compiledCorrectAnswers:
             expandedCompiledCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
-
-        allWords: frozenset[str] | None = None
-        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
-            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
-                category = category,
-                question = question
-            )
 
         return QuestionAnswerTriviaQuestion(
             allWords = allWords,

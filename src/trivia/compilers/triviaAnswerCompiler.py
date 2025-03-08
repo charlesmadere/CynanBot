@@ -66,6 +66,18 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         # RegEx patterns for arabic and roman numerals, returning separate capturing groups for digits and ordinals
         self.__groupedNumeralRegEx: Pattern = re.compile(r'\b(?:(\d+)|([IVXLCDM]+))(st|nd|rd|th)?\b', re.IGNORECASE)
 
+        # RegEx pattern for finding every individual word in an answer, along with its parens if it has them
+        self.__findAllWordsWithOrWithoutParensRegEx: Pattern = re.compile(r'\(?\b[\w-]+\)?', re.IGNORECASE)
+
+        # RegEx pattern for verifying if a word in an answer has parens
+        self.__wordIsFullySurroundedByParensRegEx: Pattern = re.compile(r'^\([\w-]+\)$', re.IGNORECASE)
+
+        # RegEx pattern for finding all words in an answer that are surrounded by parens
+        self.__findAllWordsWithParensRegEx: Pattern = re.compile(r'\([\w-]+\)', re.IGNORECASE)
+
+        # RegEx pattern for finding all words in an answer, regardless of their parens
+        self.__findAllWordsRegEx: Pattern = re.compile(r'\b[\w-]+', re.IGNORECASE)
+
         self.__combiningDiacriticsRegEx: Pattern = re.compile(r'[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]')
 
         self.__specialCharsRegEx: Pattern = re.compile(
@@ -168,10 +180,13 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     async def compileTextAnswersList(
         self,
         answers: Collection[str | None] | None,
+        allWords: frozenset[str] | None = None,
         expandParentheses: bool = True
     ) -> list[str]:
         if answers is not None and not isinstance(answers, Collection):
             raise TypeError(f'answers argument is malformed: \"{answers}\"')
+        elif allWords is not None and not isinstance(allWords, frozenset):
+            raise TypeError(f'allWords argument is malformed: \"{allWords}\"')
         elif not utils.isValidBool(expandParentheses):
             raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
 
@@ -191,7 +206,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
             for case in cases:
                 if expandParentheses:
-                    possibilities = await self.__getParentheticalPossibilities(case)
+                    possibilities = await self.__getParentheticalPossibilities(
+                        allWords = allWords,
+                        answer = case
+                    )
                 else:
                     possibilities = [ case ]
 
@@ -447,7 +465,17 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         ]
 
     # Returns all possibilities with parenthesized phrases both included and excluded
-    async def __getParentheticalPossibilities(self, answer: str) -> list[str]:
+    async def __getParentheticalPossibilities(
+        self,
+        allWords: frozenset[str] | None,
+        answer: str
+    ) -> list[str]:
+        if allWords is not None and len(allWords) >= 1:
+            answer = await self.__patchWordsAppearingInQuestionAsOptional(
+                allWords = allWords,
+                answer = answer
+            )
+
         answer = await self.__patchAnswerFirstMiddleLastName(answer)
         answer = await self.__patchAnswerHonoraryPrefixes(answer)
         answer = await self.__patchAnswerJapaneseHonorarySuffixes(answer)
@@ -582,3 +610,61 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             return answer
 
         return f'{match.group(1)} ({match.group(2)}) {match.group(3)}'
+
+    async def __patchWordsAppearingInQuestionAsOptional(
+        self,
+        allWords: frozenset[str],
+        answer: str
+    ) -> str:
+        matches = self.__findAllWordsWithOrWithoutParensRegEx.finditer(answer)
+
+        if matches is None:
+            return answer
+
+        patchedWords: list[str] = list()
+        patchedAnswer = answer
+        totalOffset = 0
+
+        for match in matches:
+            if self.__wordIsFullySurroundedByParensRegEx.fullmatch(match.string):
+                continue
+
+            word = match.group().casefold()
+
+            if word not in allWords:
+                continue
+
+            patchedWords.append(word)
+
+            openParenIndex = match.start() + totalOffset
+            totalOffset += 1
+
+            closeParenIndex = match.end() + totalOffset
+            totalOffset += 1
+
+            # place parens around the word in the answer
+            patchedAnswer = patchedAnswer[:openParenIndex] + '(' + patchedAnswer[openParenIndex:]
+            patchedAnswer = patchedAnswer[:closeParenIndex] + ')' + patchedAnswer[closeParenIndex:]
+
+        modificationCount = len(patchedWords)
+
+        # The below logic checks to see if every single word in the answer now has parens. This
+        # might not truly be 100% absolutely necessary, but I think it's better to not treat every
+        # word answer as optional. This could have weird unforeseen ramifications down the road.
+        allWordsInAnswer = self.__findAllWordsRegEx.findall(patchedAnswer)
+        allWordsInAnswerWithParens = self.__findAllWordsWithParensRegEx.findall(patchedAnswer)
+
+        allWordsInAnswerCount = 0
+        if allWordsInAnswer is not None:
+            allWordsInAnswerCount = len(allWordsInAnswer)
+
+        allWordsInAnswerWithParensCount = 0
+        if allWordsInAnswerWithParens is not None:
+            allWordsInAnswerWithParensCount = len(allWordsInAnswerWithParens)
+
+        if allWordsInAnswerCount != 0 and allWordsInAnswerWithParensCount != 0 and allWordsInAnswerCount == allWordsInAnswerWithParensCount:
+            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=})')
+            return answer
+        else:
+            self.__timber.log('TriviaAnswerCompiler', f'Patched words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=})')
+            return patchedAnswer

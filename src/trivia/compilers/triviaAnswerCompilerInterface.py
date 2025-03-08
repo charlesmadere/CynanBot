@@ -20,6 +20,7 @@ class TriviaAnswerCompilerInterface(ABC):
     async def compileTextAnswersList(
         self,
         answers: Collection[str | None] | None,
+        allWords: frozenset[str] | None = None,
         expandParentheses: bool = True
     ) -> list[str]:
         pass
