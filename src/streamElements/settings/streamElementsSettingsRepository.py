@@ -37,10 +37,14 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
             key = 'default_voice',
-            fallback = self.__streamElementsJsonParser.serializeVoice(self.__defaultVoice)
+            fallback = await self.__streamElementsJsonParser.serializeVoice(
+                voice = self.__defaultVoice
+            )
         )
 
-        return self.__streamElementsJsonParser.requireVoice(defaultVoice)
+        return await self.__streamElementsJsonParser.requireVoice(
+            string = defaultVoice
+        )
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()

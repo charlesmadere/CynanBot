@@ -1,9 +1,9 @@
 import pytest
 
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
-from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
 from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
+from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 
 
 class TestHalfLifeMessageVoiceParser:
@@ -13,10 +13,7 @@ class TestHalfLifeMessageVoiceParser:
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withScientistMessage(self):
         result = await self.parser.determineVoiceFromMessage('scientist: Hello, World!')
-
-        if result is None:
-            assert False
-
+        assert isinstance(result, HalfLifeMessageVoiceParserInterface.Result)
         assert result.message == 'Hello, World!'
         assert result.voice is HalfLifeVoice.SCIENTIST
 
@@ -28,9 +25,7 @@ class TestHalfLifeMessageVoiceParser:
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withSoldierMessage(self):
         result = await self.parser.determineVoiceFromMessage('soldier: Hello, World!')
-        if result is None:
-            assert False
-
+        assert isinstance(result, HalfLifeMessageVoiceParserInterface.Result)
         assert result.message == 'Hello, World!'
         assert result.voice is HalfLifeVoice.SOLDIER
 

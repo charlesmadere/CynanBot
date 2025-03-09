@@ -72,18 +72,24 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
             DecTalkVoice.WENDY: wendy
         })
 
-    async def parseVoice(self, voice: str | Any | None) -> DecTalkVoice | None:
-        if not utils.isValidStr(voice):
+    async def parseVoice(
+        self,
+        string: str | Any | None
+    ) -> DecTalkVoice | None:
+        if not utils.isValidStr(string):
             return None
 
         for decTalkVoice, voiceRegExes in self.__voiceRegExes.items():
             for voiceRegEx in voiceRegExes:
-                if voiceRegEx.fullmatch(voice) is not None:
+                if voiceRegEx.fullmatch(string) is not None:
                     return decTalkVoice
 
         return None
 
-    async def requireVoice(self, voice: str | Any | None) -> DecTalkVoice:
+    async def requireVoice(
+        self,
+        voice: str | Any | None
+    ) -> DecTalkVoice:
         result = await self.parseVoice(voice)
 
         if result is None:
@@ -91,7 +97,10 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
 
         return result
 
-    async def serializeVoice(self, voice: DecTalkVoice) -> str:
+    async def serializeVoice(
+        self,
+        voice: DecTalkVoice
+    ) -> str:
         if not isinstance(voice, DecTalkVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 

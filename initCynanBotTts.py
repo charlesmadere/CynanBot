@@ -329,8 +329,6 @@ from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMon
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
     TtsMonsterMessageChunkParserInterface
-from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
-from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.ttsMonster.tokens.ttsMonsterTokensRepository import TtsMonsterTokensRepository
@@ -662,8 +660,6 @@ soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = SoundA
     soundAlertJsonMapper = soundAlertJsonMapper
 )
 
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
-
 timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
 
 ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
@@ -673,14 +669,6 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
-
-decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
-
-halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
-
-microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
-
-ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
@@ -1036,6 +1024,23 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 
 
 ##################################################
+## TTS mapper and parser initialization section ##
+##################################################
+
+decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+
+halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+
+microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+
+streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
+ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+    timber = timber
+)
+
+
+##################################################
 ## Chatter Preferred TTS initialization section ##
 ##################################################
 
@@ -1053,7 +1058,7 @@ chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterP
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
-    ttsMonsterVoiceParser = ttsMonsterVoiceParser
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
 chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterPreferredTtsRepository(
@@ -1074,7 +1079,7 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
-    ttsMonsterVoiceParser = ttsMonsterVoiceParser
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
 chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter = ChatterPreferredTtsPresenter()
@@ -1263,7 +1268,7 @@ halfLifeService: HalfLifeServiceInterface = HalfLifeService(
 )
 
 halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
-    halfLifeJsonParser = halfLifeVoiceParser
+    halfLifeVoiceParser = halfLifeVoiceParser
 )
 
 halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
@@ -1306,7 +1311,9 @@ microsoftSamApiHelper: MicrosoftSamApiHelperInterface = MicrosoftSamApiHelper(
     timber = timber
 )
 
-microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser()
+microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser(
+    microsoftSamJsonParser = microsoftSamJsonParser
+)
 
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
     eventLoop = eventLoop,

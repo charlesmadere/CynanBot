@@ -22,8 +22,8 @@ from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJ
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
+from ...ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
-from ...ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
 
 class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperInterface):
@@ -35,7 +35,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
-        ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
+        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
@@ -47,15 +47,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
         elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
             raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
-        elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
-            raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
+        elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
+            raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
 
         self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
-        self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
+        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
 
         self.__commodoreSamRegEx: Pattern = re.compile(r'^\s*commodore(?:\s+|_|-)?sam\s*$', re.IGNORECASE)
         self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*(\w+)?\s*$', re.IGNORECASE)
@@ -169,7 +169,9 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         streamElementsVoiceCommand = match.group(1)
 
         if utils.isValidStr(streamElementsVoiceCommand):
-            streamElementsVoice = self.__streamElementsJsonParser.parseVoice(streamElementsVoiceCommand)
+            streamElementsVoice = await self.__streamElementsJsonParser.parseVoice(
+                string = streamElementsVoiceCommand
+            )
 
         return StreamElementsPreferredTts(
             voice = streamElementsVoice
@@ -186,10 +188,12 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         ttsMonsterVoiceCommand = match.group(1)
 
         if utils.isValidStr(ttsMonsterVoiceCommand):
-            ttsMonsterVoice = self.__ttsMonsterVoiceParser.parseVoice(ttsMonsterVoiceCommand)
+            ttsMonsterVoice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
+                string = ttsMonsterVoiceCommand
+            )
 
         return TtsMonsterPreferredTts(
-            ttsMonsterVoice = ttsMonsterVoice
+            voice = ttsMonsterVoice
         )
 
     async def parseUserMessage(

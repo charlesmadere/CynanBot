@@ -7,13 +7,22 @@ from ..models.decTalkVoice import DecTalkVoice
 class DecTalkVoiceMapperInterface(ABC):
 
     @abstractmethod
-    async def parseVoice(self, voice: str | Any | None) -> DecTalkVoice | None:
+    async def parseVoice(
+        self,
+        string: str | Any | None
+    ) -> DecTalkVoice | None:
         pass
 
     @abstractmethod
-    async def requireVoice(self, voice: str | Any | None) -> DecTalkVoice:
+    async def requireVoice(
+        self,
+        voice: str | Any | None
+    ) -> DecTalkVoice:
         pass
 
     @abstractmethod
-    async def serializeVoice(self, voice: DecTalkVoice) -> str:
+    async def serializeVoice(
+        self,
+        voice: DecTalkVoice
+    ) -> str:
         pass

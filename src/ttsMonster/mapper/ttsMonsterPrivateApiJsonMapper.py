@@ -192,4 +192,4 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             case TtsMonsterVoice.SHADOW: return 'shadow'
             case TtsMonsterVoice.WITCH: return 'witch'
             case TtsMonsterVoice.ZERO_TWO: return 'zero_two'
-            case _: raise ValueError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')
+            case _: raise RuntimeError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')

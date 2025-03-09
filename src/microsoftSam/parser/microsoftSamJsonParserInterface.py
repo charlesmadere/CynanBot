@@ -7,13 +7,22 @@ from ..models.microsoftSamVoice import MicrosoftSamVoice
 class MicrosoftSamJsonParserInterface(ABC):
 
     @abstractmethod
-    async def parseVoice(self, jsonString: str | Any | None) -> MicrosoftSamVoice | None:
+    async def parseVoice(
+        self,
+        string: str | Any | None
+    ) -> MicrosoftSamVoice | None:
         pass
 
     @abstractmethod
-    async def requireVoice(self, jsonString: str | Any | None) -> MicrosoftSamVoice:
+    async def requireVoice(
+        self,
+        string: str | Any | None
+    ) -> MicrosoftSamVoice:
         pass
 
     @abstractmethod
-    async def serializeVoice(self, voice: MicrosoftSamVoice) -> str:
+    async def serializeVoice(
+        self,
+        voice: MicrosoftSamVoice
+    ) -> str:
         pass

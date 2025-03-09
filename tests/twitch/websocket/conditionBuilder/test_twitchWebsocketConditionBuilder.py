@@ -8,7 +8,6 @@ from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterf
     TwitchWebsocketConditionBuilderInterface
 from src.twitch.websocket.twitchWebsocketUser import TwitchWebsocketUser
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-
 from ...fakeTwitchHandleProvider import FakeTwitchHandleProvider
 from ....users.fakeUserIdsRepository import FakeUserIdsRepository
 

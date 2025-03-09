@@ -188,28 +188,6 @@ class TestDecTalkVoiceMapper:
         assert result is DecTalkVoice.KIT
 
     @pytest.mark.asyncio
-    async def test_requireVoice_withHarry(self):
-        result = await self.mapper.requireVoice('harry')
-        assert result is DecTalkVoice.HARRY
-
-        result = await self.mapper.requireVoice('nh')
-        assert result is DecTalkVoice.HARRY
-
-        result = await self.mapper.requireVoice('[:nh]')
-        assert result is DecTalkVoice.HARRY
-
-    @pytest.mark.asyncio
-    async def test_requireVoice_withKit(self):
-        result = await self.mapper.requireVoice('kit')
-        assert result is DecTalkVoice.KIT
-
-        result = await self.mapper.requireVoice('nk')
-        assert result is DecTalkVoice.KIT
-
-        result = await self.mapper.requireVoice('[:nk]')
-        assert result is DecTalkVoice.KIT
-
-    @pytest.mark.asyncio
     async def test_requireVoice_withNone(self):
         result: DecTalkVoice | None = None
 

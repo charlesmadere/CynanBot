@@ -40,12 +40,11 @@ class ChatterPreferredTtsPresenter:
 
     async def __halfLife(self, preferredTts: HalfLifePreferredTts) -> str:
         voice = preferredTts.halfLifeVoiceEntry
-        halfLifeHumanName = TtsProvider.HALF_LIFE.humanName
 
         if voice is None:
-            return halfLifeHumanName
+            return TtsProvider.HALF_LIFE.humanName
 
-        return f'{halfLifeHumanName} ({voice.humanName})'
+        return f'{TtsProvider.HALF_LIFE.humanName} ({voice.humanName})'
 
     async def __microsoftSam(self, preferredTts: MicrosoftSamPreferredTts) -> str:
         voice = preferredTts.voice
@@ -67,13 +66,12 @@ class ChatterPreferredTtsPresenter:
         return f'{TtsProvider.STREAM_ELEMENTS.humanName} ({voice.humanName})'
 
     async def __ttsMonster(self, preferredTts: TtsMonsterPreferredTts) -> str:
-        voice = preferredTts.ttsMonsterVoiceEntry
-        ttsMonsterHumanName = TtsProvider.TTS_MONSTER.humanName
+        voice = preferredTts.voice
 
         if voice is None:
-            return ttsMonsterHumanName
+            return TtsProvider.TTS_MONSTER.humanName
 
-        return f'{ttsMonsterHumanName} ({voice.humanName})'
+        return f'{TtsProvider.TTS_MONSTER.humanName} ({voice.humanName})'
 
     async def printOut(self, preferredTts: ChatterPreferredTts) -> str:
         if not isinstance(preferredTts, ChatterPreferredTts):

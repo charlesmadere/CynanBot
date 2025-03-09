@@ -35,14 +35,6 @@ class TestMicrosoftSamVoice:
         result = MicrosoftSamVoice.SAM.humanName
         assert result == 'Sam'
 
-    def test_jsonValue_withAll(self):
-        jsonValues: list[str] = list()
-
-        for voice in MicrosoftSamVoice:
-            jsonValues.append(voice.jsonValue)
-
-        assert len(jsonValues) == len(list(MicrosoftSamVoice))
-
     def test_pitch_withAll(self):
         pitchValues: list[int] = list()
 

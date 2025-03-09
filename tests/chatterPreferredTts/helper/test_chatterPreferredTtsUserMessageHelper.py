@@ -24,19 +24,30 @@ from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParse
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
+from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
+from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
-from src.ttsMonster.parser.ttsMonsterVoiceParser import TtsMonsterVoiceParser
-from src.ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
 
 class TestChatterPreferredTtsUserMessageHelper:
 
     decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+
     languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+
     halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+
     streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
-    ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = TtsMonsterVoiceParser()
+
+    timber: TimberInterface = TimberStub()
+
+    ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+        timber = timber
+    )
 
     helper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
         decTalkVoiceMapper = decTalkVoiceMapper,
@@ -44,7 +55,7 @@ class TestChatterPreferredTtsUserMessageHelper:
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
         streamElementsJsonParser = streamElementsJsonParser,
-        ttsMonsterVoiceParser = ttsMonsterVoiceParser
+        ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
     )
 
     @pytest.mark.asyncio
@@ -240,13 +251,13 @@ class TestChatterPreferredTtsUserMessageHelper:
     async def test_parseUserMessage_withTtsMonsterAndShadow(self):
         result = await self.helper.parseUserMessage('tts monster shadow')
         assert isinstance(result, TtsMonsterPreferredTts)
-        assert result.ttsMonsterVoiceEntry is TtsMonsterVoice.SHADOW
+        assert result.voice is TtsMonsterVoice.SHADOW
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withTtsMonsterAndZeroTwo(self):
         result = await self.helper.parseUserMessage('tts monster zerotwo')
         assert isinstance(result, TtsMonsterPreferredTts)
-        assert result.ttsMonsterVoiceEntry is TtsMonsterVoice.ZERO_TWO
+        assert result.voice is TtsMonsterVoice.ZERO_TWO
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withStreamElementsStrings(self):

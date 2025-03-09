@@ -1,14 +1,22 @@
 import re
 from typing import Pattern
 
+from .microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from .microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
-from ..models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc import utils as utils
 
 
 class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
 
-    def __init__(self):
+    def __init__(
+        self,
+        microsoftSamJsonParser: MicrosoftSamJsonParserInterface
+    ):
+        if not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
+            raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
+
+        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
+
         self.__voiceRegEx: Pattern = re.compile(r'(^\s*(\w+):\s+)', re.IGNORECASE)
 
     async def determineVoiceFromMessage(
@@ -26,14 +34,7 @@ class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
         if not utils.isValidStr(voiceString):
             return None
 
-        voiceString = voiceString.casefold()
-        microsoftSamVoice: MicrosoftSamVoice | None = None
-
-        for currentVoice in MicrosoftSamVoice:
-            if currentVoice.jsonValue.casefold() == voiceString:
-                microsoftSamVoice = currentVoice
-                break
-
+        microsoftSamVoice = await self.__microsoftSamJsonParser.parseVoice(voiceString)
         if microsoftSamVoice is None:
             return None
 

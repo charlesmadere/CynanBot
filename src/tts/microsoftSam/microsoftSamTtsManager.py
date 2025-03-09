@@ -59,7 +59,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __determineVoicePreset(self, event: TtsEvent) -> MicrosoftSamVoice | None:
+    async def __determineVoice(self, event: TtsEvent) -> MicrosoftSamVoice | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -142,12 +142,10 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         else:
             return None
 
-        voicePreset: MicrosoftSamVoice | None = await self.__determineVoicePreset(event)
-
-        if voicePreset is not None:
-            fullMessage = f'{voicePreset.jsonValue}: {fullMessage}'
+        voice = await self.__determineVoice(event)
 
         return await self.__microsoftSamHelper.generateTts(
+            voice = voice,
             message = fullMessage,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId

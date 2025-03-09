@@ -67,7 +67,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __determineVoicePreset(self, event: TtsEvent) -> StreamElementsVoice | None:
+    async def __determineVoice(self, event: TtsEvent) -> StreamElementsVoice | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -84,11 +84,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             self.__timber.log('StreamElementsTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        streamElementsVoiceEntry = streamElementsPreferredTts.voice
-        if streamElementsVoiceEntry is None:
-            return None
-
-        return streamElementsVoiceEntry
+        return streamElementsPreferredTts.voice
 
     async def __executeTts(self, fileName: str):
         volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
@@ -147,9 +143,10 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         else:
             return None
 
-        voicePreset: StreamElementsVoice | None = await self.__determineVoicePreset(event)
-        if voicePreset is not None:
-            fullMessage = f'{voicePreset.urlValue}: {fullMessage}'
+        voice = await self.__determineVoice(event)
+
+        if voice is not None:
+            fullMessage = f'{voice.urlValue}: {fullMessage}'
 
         speechBytes = await self.__streamElementsHelper.getSpeech(
             message = fullMessage,

@@ -7,13 +7,22 @@ from ..models.streamElementsVoice import StreamElementsVoice
 class StreamElementsJsonParserInterface(ABC):
 
     @abstractmethod
-    def parseVoice(self, jsonString: str | Any | None) -> StreamElementsVoice | None:
+    async def parseVoice(
+        self,
+        string: str | Any | None
+    ) -> StreamElementsVoice | None:
         pass
 
     @abstractmethod
-    def requireVoice(self, jsonString: str | Any | None) -> StreamElementsVoice:
+    async def requireVoice(
+        self,
+        string: str | Any | None
+    ) -> StreamElementsVoice:
         pass
 
     @abstractmethod
-    def serializeVoice(self, voice: StreamElementsVoice) -> str:
+    async def serializeVoice(
+        self,
+        voice: StreamElementsVoice
+    ) -> str:
         pass

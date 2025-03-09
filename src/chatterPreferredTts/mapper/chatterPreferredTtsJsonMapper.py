@@ -22,8 +22,8 @@ from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from ...tts.models.ttsProvider import TtsProvider
+from ...ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
-from ...ttsMonster.parser.ttsMonsterVoiceParserInterface import TtsMonsterVoiceParserInterface
 
 
 class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
@@ -35,7 +35,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
-        ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface
+        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
@@ -47,15 +47,15 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
         elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
             raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
-        elif not isinstance(ttsMonsterVoiceParser, TtsMonsterVoiceParserInterface):
-            raise TypeError(f'ttsMonsterVoiceParser argument is malformed: \"{ttsMonsterVoiceParser}\"')
+        elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
+            raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
 
         self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
-        self.__ttsMonsterVoiceParser: TtsMonsterVoiceParserInterface = ttsMonsterVoiceParser
+        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
 
     async def __parseCommodoreSamPreferredTts(
         self,
@@ -145,7 +145,9 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voiceString: str | Any | None = configurationJson.get('streamElementsVoice', None)
 
             if utils.isValidStr(voiceString):
-                voice = self.__streamElementsJsonParser.parseVoice(voiceString)
+                voice = await self.__streamElementsJsonParser.parseVoice(
+                    string = voiceString
+                )
 
         return StreamElementsPreferredTts(
             voice = voice
@@ -161,10 +163,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voiceString: str | Any | None = configurationJson.get('ttsMonsterVoice', None)
 
             if utils.isValidStr(voiceString):
-                ttsMonsterVoice = self.__ttsMonsterVoiceParser.parseVoice(voiceString)
+                ttsMonsterVoice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
+                    string = voiceString
+                )
 
         return TtsMonsterPreferredTts(
-            ttsMonsterVoice = ttsMonsterVoice
+            voice = ttsMonsterVoice
         )
 
     async def parsePreferredTts(
@@ -267,7 +271,9 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         configurationJson: dict[str, Any] = dict()
 
         if preferredTts.voice is not None:
-            configurationJson['microsoftSamVoice'] = preferredTts.voice.jsonValue
+            configurationJson['microsoftSamVoice'] = await self.__microsoftSamJsonParser.serializeVoice(
+                voice = preferredTts.voice
+            )
 
         return configurationJson
 
@@ -284,7 +290,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         configurationJson: dict[str, Any] = dict()
 
         if preferredTts.voice is not None:
-            configurationJson['streamElementsVoice'] = self.__streamElementsJsonParser.serializeVoice(
+            configurationJson['streamElementsVoice'] = await self.__streamElementsJsonParser.serializeVoice(
                 voice = preferredTts.voice
             )
 
@@ -296,8 +302,10 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
-        if preferredTts.ttsMonsterVoiceEntry is not None:
-            configurationJson['ttsMonsterVoice'] = preferredTts.ttsMonsterVoiceEntry.inMessageName
+        if preferredTts.voice is not None:
+            configurationJson['ttsMonsterVoice'] = await self.__ttsMonsterPrivateApiJsonMapper.serializeVoice(
+                voice = preferredTts.voice
+            )
 
         return configurationJson
 

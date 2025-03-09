@@ -86,11 +86,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             self.__timber.log('TtsMonsterTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        ttsMonsterVoiceEntry = ttsMonsterPreferredTts.ttsMonsterVoiceEntry
-        if ttsMonsterVoiceEntry is None:
-            return None
-
-        return ttsMonsterVoiceEntry
+        return ttsMonsterPreferredTts.voice
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
         useReducedVolumeForLoudVoices = await self.__ttsMonsterSettingsRepository.useReducedVolumeForLoudVoices()

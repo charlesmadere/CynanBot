@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.microsoftSamFileReference import MicrosoftSamFileReference
+from ..models.microsoftSamVoice import MicrosoftSamVoice
 
 
 class MicrosoftSamHelperInterface(ABC):
@@ -8,6 +9,7 @@ class MicrosoftSamHelperInterface(ABC):
     @abstractmethod
     async def generateTts(
         self,
+        voice: MicrosoftSamVoice | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
