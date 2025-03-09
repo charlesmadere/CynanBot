@@ -149,13 +149,11 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         cleanedMessage = await self.__ttsMonsterMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        if voice is not None:
-            cleanedMessage = f'{voice.inMessageName}: {cleanedMessage}'
-
         return await self.__ttsMonsterHelper.generateTts(
             message = cleanedMessage,
             twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
+            voice = voice
         )
 
     async def stopTtsEvent(self):

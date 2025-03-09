@@ -15,6 +15,7 @@ from .streamElements.apiService.streamElementsApiService import StreamElementsAp
 from .streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
 from .streamElements.helper.streamElementsHelper import StreamElementsHelper
 from .streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
+from .streamElements.models.streamElementsVoice import StreamElementsVoice
 from .streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from .streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from .streamElements.parser.streamElementsMessageVoiceParser import StreamElementsMessageVoiceParser
@@ -126,7 +127,8 @@ async def main():
     speechBytes = await streamElementsHelper.getSpeech(
         message = message,
         twitchChannel = 'twitchChannel',
-        twitchChannelId = 'twitchChannelId'
+        twitchChannelId = 'twitchChannelId',
+        voice = StreamElementsVoice.BRIAN
     )
 
     fileUri: str | None = None

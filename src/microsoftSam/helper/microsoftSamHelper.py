@@ -109,8 +109,13 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         if not utils.isValidStr(message):
             return None
 
-        if voice is None:
+        messageVoice = await self.__microsoftSamMessageVoiceParser.determineVoiceFromMessage(message)
+
+        if messageVoice is None and voice is None:
             voice = await self.__microsoftSamSettingsRepository.getDefaultVoice()
+        elif messageVoice is not None:
+            message = messageVoice.message
+            voice = messageVoice.voice
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = message,

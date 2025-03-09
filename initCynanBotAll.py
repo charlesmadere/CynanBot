@@ -2092,15 +2092,14 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-halfLifeTtsManager: HalfLifeTtsManagerInterface | None = HalfLifeTtsManager(
+halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsCommandBuilder = ttsCommandBuilder
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(

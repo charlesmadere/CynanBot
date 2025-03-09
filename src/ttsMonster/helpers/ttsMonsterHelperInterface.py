@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
+from ..models.ttsMonsterVoice import TtsMonsterVoice
 
 
 class TtsMonsterHelperInterface(ABC):
@@ -10,6 +11,7 @@ class TtsMonsterHelperInterface(ABC):
         self,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        voice: TtsMonsterVoice | None
     ) -> TtsMonsterFileReference | None:
         pass

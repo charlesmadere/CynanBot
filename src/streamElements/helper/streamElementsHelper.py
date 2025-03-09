@@ -2,6 +2,7 @@ import traceback
 
 from .streamElementsHelperInterface import StreamElementsHelperInterface
 from ..apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
+from ..models.streamElementsVoice import StreamElementsVoice
 from ..parser.streamElementsMessageVoiceParserInterface import StreamElementsMessageVoiceParserInterface
 from ..settings.streamElementsSettingsRepositoryInterface import StreamElementsSettingsRepositoryInterface
 from ..userKeyRepository.streamElementsUserKeyRepositoryInterface import StreamElementsUserKeyRepositoryInterface
@@ -41,7 +42,8 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         self,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        voice: StreamElementsVoice | None
     ) -> bytes | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -49,6 +51,8 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif voice is not None and not isinstance(voice, StreamElementsVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         if not utils.isValidStr(message):
             return None
@@ -61,12 +65,13 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             self.__timber.log('StreamElementsHelper', f'No Stream Elements user key available for this user: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({userKey=})')
             return None
 
-        result = await self.__streamElementsMessageVoiceParser.determineVoiceFromMessage(message)
-        voice = await self.__streamElementsSettingsRepository.getDefaultVoice()
+        messageVoice = await self.__streamElementsMessageVoiceParser.determineVoiceFromMessage(message)
 
-        if result is not None:
-            message = result.message
-            voice = result.voice
+        if messageVoice is None and voice is None:
+            voice = await self.__streamElementsSettingsRepository.getDefaultVoice()
+        elif messageVoice is not None:
+            message = messageVoice.message
+            voice = messageVoice.voice
 
         try:
             return await self.__streamElementsApiService.getSpeech(

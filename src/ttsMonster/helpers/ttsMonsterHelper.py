@@ -111,7 +111,8 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        voice: TtsMonsterVoice | None
     ) -> TtsMonsterFileReference | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -119,9 +120,14 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif voice is not None and not isinstance(voice, TtsMonsterVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         if not utils.isValidStr(message):
             return None
+
+        if voice is not None:
+            message = f'{voice.inMessageName}: {message}'
 
         messageVoices = await self.__determineMessageVoices(message)
 

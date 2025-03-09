@@ -3,7 +3,6 @@ import asyncio
 from frozenlist import FrozenList
 
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
-from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
@@ -14,7 +13,6 @@ from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerIn
 from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -29,7 +27,6 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
-        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
@@ -44,8 +41,6 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
-            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
@@ -55,10 +50,33 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+
+    async def __determineVoice(self, event: TtsEvent) -> HalfLifeVoice:
+        defaultVoice = await self.__halfLifeSettingsRepository.getDefaultVoice()
+
+        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return defaultVoice
+
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId
+        )
+
+        if preferredTts is None:
+            return defaultVoice
+
+        halfLifePreferredTts = preferredTts.preferredTts
+        if not isinstance(halfLifePreferredTts, HalfLifePreferredTts):
+            self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
+            return defaultVoice
+
+        if halfLifePreferredTts.halfLifeVoiceEntry is None:
+            return defaultVoice
+        else:
+            return halfLifePreferredTts.halfLifeVoiceEntry
 
     async def __executeTts(self, fileNames: FrozenList[str]):
         volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
@@ -103,56 +121,14 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
         await self.__executeTts(fileNames)
 
-    async def __determineVoicePreset(self, event: TtsEvent) -> HalfLifeVoice:
-
-        defaultVoice: HalfLifeVoice = await self.__halfLifeSettingsRepository.getDefaultVoice()
-
-        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
-            return defaultVoice
-
-        preferredTts = await self.__chatterPreferredTtsHelper.get(
-            chatterUserId = event.userId,
-            twitchChannelId = event.twitchChannelId
-        )
-
-        if preferredTts is None:
-            return defaultVoice
-
-        halfLifePreferredTts = preferredTts.preferredTts
-        if not isinstance(halfLifePreferredTts, HalfLifePreferredTts):
-            self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
-            return defaultVoice
-
-        halfLifeVoiceEntry = halfLifePreferredTts.halfLifeVoiceEntry
-        if halfLifeVoiceEntry is None:
-            return defaultVoice
-
-        return halfLifeVoiceEntry
-
     async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
-        message = await self.__halfLifeMessageCleaner.clean(event.message)
-        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
+        cleanedMessage = await self.__halfLifeMessageCleaner.clean(event.message)
+        voice = await self.__determineVoice(event)
 
-        if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {message}'
-        elif utils.isValidStr(message):
-            fullMessage = message
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
-        speechFiles = await self.__halfLifeHelper.getSpeech(
-            message = fullMessage,
-            voice = await self.__determineVoicePreset(event)
+        return await self.__halfLifeHelper.generateTts(
+            voice = voice,
+            message = cleanedMessage
         )
-
-        if speechFiles is None or len(speechFiles) == 0:
-            self.__timber.log('HalfLifeTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({speechFiles=})')
-            return None
-
-        return speechFiles
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

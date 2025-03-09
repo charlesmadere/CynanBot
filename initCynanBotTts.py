@@ -1289,8 +1289,7 @@ halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository,
-    ttsCommandBuilder = ttsCommandBuilder
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(

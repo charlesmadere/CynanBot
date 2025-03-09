@@ -145,13 +145,11 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         voice = await self.__determineVoice(event)
 
-        if voice is not None:
-            fullMessage = f'{voice.urlValue}: {fullMessage}'
-
         speechBytes = await self.__streamElementsHelper.getSpeech(
             message = fullMessage,
             twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
+            voice = voice
         )
 
         if speechBytes is None:

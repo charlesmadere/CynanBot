@@ -27,23 +27,26 @@ class HalfLifeHelper(HalfLifeHelperInterface):
         self.__halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = halfLifeMessageVoiceParser
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
 
-    async def getSpeech(
+    async def generateTts(
         self,
-        message: str | None,
-        voice: HalfLifeVoice
+        voice: HalfLifeVoice,
+        message: str | None
     ) -> FrozenList[str] | None:
-        if message is not None and not isinstance(message, str):
+        if not isinstance(voice, HalfLifeVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         if not utils.isValidStr(message):
             return None
 
         result = await self.__halfLifeMessageVoiceParser.determineVoiceFromMessage(message)
-        directory = await self.__halfLifeSettingsRepository.getSoundsDirectory()
 
         if result is not None:
             message = result.message
             voice = result.voice
+
+        directory = await self.__halfLifeSettingsRepository.getSoundsDirectory()
 
         return await self.__halfLifeService.getWavs(
             directory = directory,

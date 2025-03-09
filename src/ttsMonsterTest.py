@@ -31,6 +31,7 @@ from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMo
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
     TtsMonsterMessageChunkParserInterface
 from src.ttsMonster.models.ttsMonsterTokens import TtsMonsterTokens
+from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
 from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from src.ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
@@ -147,7 +148,8 @@ async def main():
     fileReference = await ttsMonsterHelper.generateTts(
         message = message,
         twitchChannel = twitchChannel,
-        twitchChannelId = twitchChannelId
+        twitchChannelId = twitchChannelId,
+        voice = TtsMonsterVoice.SHADOW
     )
 
     print(f'text to speech results: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')

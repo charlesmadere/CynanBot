@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from ..models.streamElementsVoice import StreamElementsVoice
+
 
 class StreamElementsHelperInterface(ABC):
 
@@ -8,6 +10,7 @@ class StreamElementsHelperInterface(ABC):
         self,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        voice: StreamElementsVoice | None
     ) -> bytes | None:
         pass

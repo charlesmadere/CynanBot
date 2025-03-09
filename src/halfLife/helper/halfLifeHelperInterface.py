@@ -8,7 +8,7 @@ from ..models.halfLifeVoice import HalfLifeVoice
 class HalfLifeHelperInterface(ABC):
 
     @abstractmethod
-    async def getSpeech(
+    async def generateTts(
         self,
         voice: HalfLifeVoice,
         message: str | None
