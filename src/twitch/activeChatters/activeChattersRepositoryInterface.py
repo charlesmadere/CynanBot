@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Collection
 
 from .activeChatter import ActiveChatter
+from ...misc.clearable import Clearable
 
 
-class ActiveChattersRepositoryInterface(ABC):
+class ActiveChattersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def add(
