@@ -1409,7 +1409,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerChatCommand.handleChatCommand(context)
 
-    @commands.command(name = 'stopttschatting')
+    @commands.command(name = 'stopttschatting', aliases = [ 'stopttschat', 'stoptts' ])
     async def command_removettschatter(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTtsChatterCommand.handleChatCommand(context)
