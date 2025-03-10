@@ -7,6 +7,7 @@ from ..models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferred
 from ..models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from ..models.google.googlePreferredTts import GooglePreferredTts
 from ..models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
+from ..models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsPreferredTts
 from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
 from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPreferredTts
 from ..models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
@@ -17,6 +18,8 @@ from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 from ...language.languageEntry import LanguageEntry
 from ...language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from ...microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
+from ...microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from ...misc import utils as utils
@@ -34,6 +37,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         halfLifeVoiceParser: HalfLifeVoiceParserInterface,
         languagesRepository: LanguagesRepositoryInterface,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
+        microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface
     ):
@@ -45,6 +49,8 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
+        elif not isinstance(microsoftTtsJsonParser, MicrosoftTtsJsonParserInterface):
+            raise TypeError(f'microsoftTtsJsonParser argument is malformed: \"{microsoftTtsJsonParser}\"')
         elif not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
             raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
@@ -54,6 +60,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
+        self.__microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = microsoftTtsJsonParser
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
 
@@ -62,6 +69,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__googleRegEx: Pattern = re.compile(r'^\s*goog(?:le?)?\s*(\w+)?\s*$', re.IGNORECASE)
         self.__halfLifeRegEx: Pattern = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
         self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__microsoftTtsRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)\s*(\w+)?\s*$', re.IGNORECASE)
         self.__singingDecTalkRegEx: Pattern = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__streamElementsRegEx: Pattern = re.compile(r'^\s*stream(?:\s+|_|-)?elements\s*(\w+)?\s*$', re.IGNORECASE)
         self.__ttsMonsterRegEx: Pattern = re.compile(r'^\s*tts(?:\s+|_|-)?monster\s*(\w+)?\s*$', re.IGNORECASE)
@@ -149,6 +157,23 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             voice = microsoftSamVoice
         )
 
+    async def __createMicrosoftTtsProperties(
+        self,
+        match: Match[str]
+    ) -> AbsPreferredTts | None:
+        if not isinstance(match, Match):
+            raise TypeError(f'match argument is malformed: \"{match}\"')
+
+        microsoftTtsVoice: MicrosoftTtsVoice | None = None
+        microsoftTtsVoiceCommand = match.group(1)
+
+        if utils.isValidStr(microsoftTtsVoiceCommand):
+            microsoftTtsVoice = await self.__microsoftTtsJsonParser.parseVoice(microsoftTtsVoiceCommand)
+
+        return MicrosoftTtsPreferredTts(
+            voice = microsoftTtsVoice
+        )
+
     async def __createSingingDecTalkTtsProperties(
         self,
         match: Match[str]
@@ -210,6 +235,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         googleMatch = self.__googleRegEx.fullmatch(userMessage)
         halfLifeMatch = self.__halfLifeRegEx.fullmatch(userMessage)
         microsoftSamMatch = self.__microsoftSamRegEx.fullmatch(userMessage)
+        microsoftTtsMatch = self.__microsoftTtsRegEx.fullmatch(userMessage)
         singingDecTalkMatch = self.__singingDecTalkRegEx.fullmatch(userMessage)
         streamElementsMatch = self.__streamElementsRegEx.fullmatch(userMessage)
         ttsMonsterMatch = self.__ttsMonsterRegEx.fullmatch(userMessage)
@@ -228,6 +254,9 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         elif microsoftSamMatch is not None:
             return await self.__createMicrosoftSamTtsProperties(microsoftSamMatch)
+
+        elif microsoftTtsMatch is not None:
+            return await self.__createMicrosoftTtsProperties(microsoftTtsMatch)
 
         elif singingDecTalkMatch is not None:
             return await self.__createSingingDecTalkTtsProperties(singingDecTalkMatch)

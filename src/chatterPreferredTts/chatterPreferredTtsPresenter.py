@@ -3,6 +3,7 @@ from .models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredT
 from .models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from .models.google.googlePreferredTts import GooglePreferredTts
 from .models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
+from .models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsPreferredTts
 from .models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
 from .models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPreferredTts
 from .models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
@@ -54,6 +55,14 @@ class ChatterPreferredTtsPresenter:
 
         return f'{TtsProvider.MICROSOFT_SAM.humanName} ({voice.humanName})'
 
+    async def __microsoftTts(self, preferredTts: MicrosoftTtsPreferredTts) -> str:
+        voice = preferredTts.voice
+
+        if voice is None:
+            return TtsProvider.MICROSOFT.humanName
+
+        return f'{TtsProvider.MICROSOFT.humanName} ({voice.humanName})'
+
     async def __singingDecTalk(self, preferredTts: SingingDecTalkPreferredTts) -> str:
         return TtsProvider.SINGING_DEC_TALK.humanName
 
@@ -93,6 +102,9 @@ class ChatterPreferredTtsPresenter:
 
         elif isinstance(absPreferredTts, MicrosoftSamPreferredTts):
             return await self.__microsoftSam(absPreferredTts)
+
+        elif isinstance(absPreferredTts, MicrosoftTtsPreferredTts):
+            return await self.__microsoftTts(absPreferredTts)
 
         elif isinstance(absPreferredTts, SingingDecTalkPreferredTts):
             return await self.__singingDecTalk(absPreferredTts)

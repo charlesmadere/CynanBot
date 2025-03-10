@@ -7,6 +7,7 @@ from src.chatterPreferredTts.models.commodoreSam.commodoreSamPreferredTts import
 from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
 from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
 from src.chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
+from src.chatterPreferredTts.models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsPreferredTts
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
 from src.chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
 from src.chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
@@ -19,6 +20,9 @@ from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParser
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
+from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
+from src.microsoft.parser.microsoftTtsJsonParser import MicrosoftTtsJsonParser
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
@@ -41,6 +45,8 @@ class TestChatterPreferredTtsUserMessageHelper:
 
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
 
+    microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = MicrosoftTtsJsonParser()
+
     streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
     timber: TimberInterface = TimberStub()
@@ -54,6 +60,7 @@ class TestChatterPreferredTtsUserMessageHelper:
         halfLifeVoiceParser = halfLifeVoiceParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
+        microsoftTtsJsonParser = microsoftTtsJsonParser,
         streamElementsJsonParser = streamElementsJsonParser,
         ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
     )
@@ -208,6 +215,32 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert result.halfLifeVoiceEntry is HalfLifeVoice.POLICE
 
     @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftStrings(self):
+        result = await self.helper.parseUserMessage('microsoft')
+        assert isinstance(result, MicrosoftTtsPreferredTts)
+
+        result = await self.helper.parseUserMessage('ms')
+        assert isinstance(result, MicrosoftTtsPreferredTts)
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftAndDavid(self):
+        result = await self.helper.parseUserMessage('microsoft david')
+        assert isinstance(result, MicrosoftTtsPreferredTts)
+        assert result.voice is MicrosoftTtsVoice.DAVID
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftAndHaruka(self):
+        result = await self.helper.parseUserMessage('microsoft haruka')
+        assert isinstance(result, MicrosoftTtsPreferredTts)
+        assert result.voice is MicrosoftTtsVoice.HARUKA
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftAndZira(self):
+        result = await self.helper.parseUserMessage('microsoft zira')
+        assert isinstance(result, MicrosoftTtsPreferredTts)
+        assert result.voice is MicrosoftTtsVoice.ZIRA
+
+    @pytest.mark.asyncio
     async def test_parseUserMessage_withMicrosoftSamStrings(self):
         result = await self.helper.parseUserMessage('microsoftsam')
         assert isinstance(result, MicrosoftSamPreferredTts)
@@ -219,6 +252,18 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, MicrosoftSamPreferredTts)
 
         result = await self.helper.parseUserMessage('microsoft-sam')
+        assert isinstance(result, MicrosoftSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('ms sam')
+        assert isinstance(result, MicrosoftSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('ms_sam')
+        assert isinstance(result, MicrosoftSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('ms-sam')
+        assert isinstance(result, MicrosoftSamPreferredTts)
+
+        result = await self.helper.parseUserMessage('mssam')
         assert isinstance(result, MicrosoftSamPreferredTts)
 
     @pytest.mark.asyncio

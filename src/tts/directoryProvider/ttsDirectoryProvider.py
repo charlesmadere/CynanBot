@@ -31,6 +31,7 @@ class TtsDirectoryProvider(TtsDirectoryProviderInterface):
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.HALF_LIFE: return 'half_life'
+            case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
