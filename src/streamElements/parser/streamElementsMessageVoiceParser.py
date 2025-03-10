@@ -1,25 +1,23 @@
 import re
 from typing import Pattern
 
-from frozendict import frozendict
-
+from .streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from .streamElementsMessageVoiceParserInterface import StreamElementsMessageVoiceParserInterface
-from ..models.streamElementsVoice import StreamElementsVoice
 from ...misc import utils as utils
 
 
 class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface):
 
-    def __init__(self):
+    def __init__(
+        self,
+        streamElementsJsonParser: StreamElementsJsonParserInterface
+    ):
+        if not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
+            raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
+
+        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
+
         self.__voiceRegEx: Pattern = re.compile(r'(^\s*(\w+):\s+)', re.IGNORECASE)
-
-    async def __buildVoiceNamesToVoiceDictionary(self) -> frozendict[str, StreamElementsVoice]:
-        voiceNamesToVoiceDictionary: dict[str, StreamElementsVoice] = dict()
-
-        for voice in StreamElementsVoice:
-            voiceNamesToVoiceDictionary[voice.humanName] = voice
-
-        return frozendict(voiceNamesToVoiceDictionary)
 
     async def determineVoiceFromMessage(
         self,
@@ -39,13 +37,7 @@ class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface
         if not utils.isValidStr(voiceString):
             return None
 
-        streamElementsVoice: StreamElementsVoice | None = None
-
-        for currentVoice in StreamElementsVoice:
-            if currentVoice.humanName.casefold() == voiceString.casefold():
-                streamElementsVoice = currentVoice
-                break
-
+        streamElementsVoice = await self.__streamElementsJsonParser.parseVoice(voiceString)
         if streamElementsVoice is None:
             return None
 

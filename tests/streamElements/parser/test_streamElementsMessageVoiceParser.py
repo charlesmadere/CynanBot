@@ -1,6 +1,8 @@
 import pytest
 
 from src.streamElements.models.streamElementsVoice import StreamElementsVoice
+from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
+from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from src.streamElements.parser.streamElementsMessageVoiceParser import \
     StreamElementsMessageVoiceParser
 from src.streamElements.parser.streamElementsMessageVoiceParserInterface import \
@@ -9,7 +11,18 @@ from src.streamElements.parser.streamElementsMessageVoiceParserInterface import 
 
 class TestStreamElementsMessageVoiceParser:
 
-    parser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
+    streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
+    parser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
+        streamElementsJsonParser = streamElementsJsonParser
+    )
+
+    @pytest.mark.asyncio
+    async def test_determineVoiceFromMessage_withAmyMessage(self):
+        result = await self.parser.determineVoiceFromMessage('amy: Hello, World!')
+        assert isinstance(result, StreamElementsMessageVoiceParserInterface.Result)
+        assert result.message == 'Hello, World!'
+        assert result.voice is StreamElementsVoice.AMY
 
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withBrianMessage(self):

@@ -23,6 +23,9 @@ class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
         self,
         message: str | None
     ) -> MicrosoftSamMessageVoiceParserInterface.Result | None:
+        if message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
         if not utils.isValidStr(message):
             return None
 

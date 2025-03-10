@@ -1352,7 +1352,9 @@ streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElem
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
+streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
+    streamElementsJsonParser = streamElementsJsonParser
+)
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
     settingsJsonReader = JsonFileReader(

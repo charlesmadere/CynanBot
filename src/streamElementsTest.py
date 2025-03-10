@@ -94,9 +94,11 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
     timber = timber
 )
 
-streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser()
-
 streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+
+streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
+    streamElementsJsonParser = streamElementsJsonParser
+)
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict()),

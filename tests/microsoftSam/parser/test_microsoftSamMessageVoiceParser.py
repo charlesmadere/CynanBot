@@ -22,6 +22,11 @@ class TestMicrosoftSamMessageVoiceParser:
         assert result.voice is MicrosoftSamVoice.BONZI_BUDDY
         assert result.message == 'Hello, World!'
 
+        result = await self.parser.determineVoiceFromMessage('bonzibuddy: Hello, World!')
+        assert isinstance(result, MicrosoftSamMessageVoiceParserInterface.Result)
+        assert result.voice is MicrosoftSamVoice.BONZI_BUDDY
+        assert result.message == 'Hello, World!'
+
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withEmptyString(self):
         result = await self.parser.determineVoiceFromMessage('')
@@ -30,6 +35,18 @@ class TestMicrosoftSamMessageVoiceParser:
     @pytest.mark.asyncio
     async def test_determineVoiceFromMessage_withNone(self):
         result = await self.parser.determineVoiceFromMessage(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_determineVoiceFromMessage_withSamMessage(self):
+        result = await self.parser.determineVoiceFromMessage('sam: Hello, World!')
+        assert isinstance(result, MicrosoftSamMessageVoiceParserInterface.Result)
+        assert result.voice is MicrosoftSamVoice.SAM
+        assert result.message == 'Hello, World!'
+
+    @pytest.mark.asyncio
+    async def test_determineVoiceFromMessage_withWhitespaceString(self):
+        result = await self.parser.determineVoiceFromMessage(' ')
         assert result is None
 
     def test_sanity(self):
