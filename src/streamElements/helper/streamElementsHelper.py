@@ -73,6 +73,9 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             message = messageVoice.message
             voice = messageVoice.voice
 
+        if voice is None:
+            raise RuntimeError(f'Failed to determine voice from message, defaults, or user preferrence, something strange has happened')
+
         try:
             return await self.__streamElementsApiService.getSpeech(
                 text = message,

@@ -117,6 +117,9 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
             message = messageVoice.message
             voice = messageVoice.voice
 
+        if voice is None:
+            raise RuntimeError(f'Failed to determine voice from message, defaults, or user preferrence, something strange has happened')
+
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = message,
             voice = await self.__microsoftSamJsonParser.serializeVoice(voice),
