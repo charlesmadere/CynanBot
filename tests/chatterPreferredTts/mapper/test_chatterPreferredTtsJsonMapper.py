@@ -168,7 +168,7 @@ class TestChatterPreferredTtsJsonMapper:
             provider = TtsProvider.MICROSOFT
         )
 
-        assert isinstance(result, MicrosoftSamPreferredTts)
+        assert isinstance(result, MicrosoftTtsPreferredTts)
         assert result.voice is None
 
     @pytest.mark.asyncio
