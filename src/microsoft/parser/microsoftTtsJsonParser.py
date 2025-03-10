@@ -23,6 +23,10 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         haruka.append(re.compile(r'^\s*haruka\s*$', re.IGNORECASE))
         haruka.freeze()
 
+        hortense: FrozenList[Pattern] = FrozenList()
+        hortense.append(re.compile(r'^\s*hortense\s*$', re.IGNORECASE))
+        hortense.freeze()
+
         zira: FrozenList[Pattern] = FrozenList()
         zira.append(re.compile(r'^\s*zira\s*$', re.IGNORECASE))
         zira.freeze()
@@ -30,6 +34,7 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         return frozendict({
             MicrosoftTtsVoice.DAVID: david,
             MicrosoftTtsVoice.HARUKA: haruka,
+            MicrosoftTtsVoice.HORTENSE: hortense,
             MicrosoftTtsVoice.ZIRA: zira
 
         })
@@ -69,5 +74,6 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         match voice:
             case MicrosoftTtsVoice.DAVID: return 'david'
             case MicrosoftTtsVoice.HARUKA: return 'haruka'
+            case MicrosoftTtsVoice.HORTENSE: return 'hortense'
             case MicrosoftTtsVoice.ZIRA: return 'zira'
             case _: raise RuntimeError(f'Encountered unknown MicrosoftTtsVoice value: \"{voice}\"')
