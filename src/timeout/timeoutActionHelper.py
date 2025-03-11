@@ -137,6 +137,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
     async def __alertViaSoundAndTextToSpeech(
         self,
         isReverse: bool,
+        timeoutTargetUserName: str,
         timeoutData: TimeoutActionData
     ):
         match timeoutData.actionType:
@@ -148,6 +149,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             case TimeoutActionType.TARGETED:
                 await self.__alertViaSoundAndTextToSpeechForTargeted(
                     isReverse = isReverse,
+                    timeoutTargetUserName = timeoutTargetUserName,
                     timeoutData = timeoutData
                 )
 
@@ -173,6 +175,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
     async def __alertViaSoundAndTextToSpeechForTargeted(
         self,
         isReverse: bool,
+        timeoutTargetUserName: str,
         timeoutData: TimeoutActionData
     ):
         soundAlert = await self.__chooseGrenadeSoundAlert(timeoutData)
@@ -184,7 +187,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             if isReverse:
                 message = f'Oh noo! @{timeoutData.instigatorUserName} got hit with a reverse! Rip bozo!'
             else:
-                message = f'{timeoutData.instigatorUserName} timed out {timeoutData.timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
+                message = f'{timeoutData.instigatorUserName} timed out {timeoutTargetUserName} for {timeoutData.durationSecondsStr} seconds! Rip bozo!'
 
             providerOverridableStatus: TtsProviderOverridableStatus
 
@@ -224,7 +227,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         twitchChannel: TwitchChannel
     ):
         if timeoutData.actionType is TimeoutActionType.TNT:
-            # TNT actions don't send Twitch chats here
+            # TNT actions don't send Twitch chats within this class
             return
 
         message: str
@@ -580,6 +583,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         await self.__alertViaSoundAndTextToSpeech(
             isReverse = isReverse,
+            timeoutTargetUserName = timeoutTargetUserName,
             timeoutData = timeoutData
         )
 

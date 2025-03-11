@@ -108,8 +108,8 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
         frozenHistoryEntries.freeze()
 
         self.__caches[twitchChannelId][chatterUserId] = TimeoutActionHistory(
-            totalTimeouts = totalTimeouts,
             entries = frozenHistoryEntries,
+            totalTimeouts = totalTimeouts,
             chatterUserId = chatterUserId,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
@@ -169,8 +169,8 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
 
         if record is None or len(record) == 0:
             timeoutActionHistory = TimeoutActionHistory(
-                totalTimeouts = 0,
                 entries = None,
+                totalTimeouts = 0,
                 chatterUserId = chatterUserId,
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
@@ -181,8 +181,8 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
             )
 
             timeoutActionHistory = TimeoutActionHistory(
-                totalTimeouts = record[0],
                 entries = entries,
+                totalTimeouts = record[0],
                 chatterUserId = record[1],
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId

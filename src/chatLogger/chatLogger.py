@@ -11,6 +11,7 @@ import aiofiles.ospath
 from .absChatMessage import AbsChatMessage
 from .chatLoggerInterface import ChatLoggerInterface
 from .chatMessage import ChatMessage
+from .cheerMessage import CheerMessage
 from .raidMessage import RaidMessage
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -57,12 +58,49 @@ class ChatLogger(ChatLoggerInterface):
 
         if isinstance(message, ChatMessage):
             logStatement = f'{logStatement} {message.userName} ({message.userId}) — {message.msg}'
+
+        elif isinstance(message, CheerMessage):
+            logStatement = f'{logStatement} {message.userName} ({message.userId}) cheered {message.bitsStr} bit(s)!'
+
         elif isinstance(message, RaidMessage):
             logStatement = f'{logStatement} Received raid from {message.fromWho} of {message.raidSizeStr}!'
+
         else:
-            raise RuntimeError(f'AbsChatMessage has unknown type: \"{type(message)=}\"')
+            raise RuntimeError(f'AbsChatMessage is of an unknown type ({message=})')
 
         return f'{logStatement.strip()}\n'
+
+    def logCheer(
+        self,
+        bits: int,
+        twitchChannel: str,
+        twitchChannelId: str,
+        userId: str,
+        userName: str
+    ):
+        if not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is malformed: {bits}')
+        elif not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userName):
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+
+        cheerMessage: AbsChatMessage = CheerMessage(
+            bits = bits,
+            dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
+            userId = userId,
+            userName = userName
+        )
+
+        self.__messageQueue.put(cheerMessage)
 
     def logMessage(
         self,

@@ -7,8 +7,8 @@ from .timeoutActionHistoryEntry import TimeoutActionHistoryEntry
 
 @dataclass(frozen = True)
 class TimeoutActionHistory:
-    totalTimeouts: int
     entries: FrozenList[TimeoutActionHistoryEntry] | None
+    totalTimeouts: int
     chatterUserId: str
     twitchChannel: str
     twitchChannelId: str

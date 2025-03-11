@@ -909,13 +909,13 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     userIdsRepository = userIdsRepository
 )
 
-twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
+twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,
-    triviaGameMachine = None,
+    triviaGameMachine = None
 )
 
 
