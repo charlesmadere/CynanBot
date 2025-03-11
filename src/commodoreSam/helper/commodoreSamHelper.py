@@ -3,7 +3,7 @@ from datetime import datetime
 
 from .commodoreSamHelperInterface import CommodoreSamHelperInterface
 from ..apiService.commodoreSamApiService import CommodoreSamApiServiceInterface
-from ..exceptions import CommodoreSamFailedToGenerateSpeechFileException
+from ..exceptions import CommodoreSamFailedToGenerateSpeechFileException, CommodoreSamExecutableIsMissingException
 from ..models.commodoreSamFileReference import CommodoreSamFileReference
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -49,8 +49,11 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
             speechFile = await self.__commodoreSamApiService.generateSpeechFile(
                 text = message
             )
+        except CommodoreSamExecutableIsMissingException as e:
+            self.__timber.log('CommodoreSamHelper', f'Encountered Commodore Sam executable file is missing exception when generating speech ({message=}): {e}', e, traceback.format_exc())
+            return None
         except CommodoreSamFailedToGenerateSpeechFileException as e:
-            self.__timber.log('CommodoreSamHelper', f'Encountered error when generating speech ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CommodoreSamHelper', f'Encountered failure to create speech file exception when generating speech ({message=}): {e}', e, traceback.format_exc())
             return None
 
         storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())

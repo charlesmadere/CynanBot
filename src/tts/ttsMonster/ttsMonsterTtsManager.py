@@ -27,7 +27,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        loudVoices: frozenset[TtsMonsterVoice] | None = frozenset({ TtsMonsterVoice.SHADOW})
+        loudVoices: frozenset[TtsMonsterVoice] | None = frozenset({
+            TtsMonsterVoice.SHADOW,
+        })
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')

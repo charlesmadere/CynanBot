@@ -1,8 +1,5 @@
 import asyncio
 
-import aiofiles.ospath
-
-from .streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
@@ -14,11 +11,11 @@ from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts imp
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
+from ...streamElements.models.StreamElementsFileReference import StreamElementsFileReference
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
-from ...streamElements.streamElementsMessageCleanerInterface import \
-    StreamElementsMessageCleanerInterface
+from ...streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -28,7 +25,6 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         self,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
-        streamElementsFileManager: StreamElementsFileManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
         streamElementsMessageCleaner: StreamElementsMessageCleanerInterface,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
@@ -40,8 +36,6 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
-        elif not isinstance(streamElementsFileManager, StreamElementsFileManagerInterface):
-            raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
         elif not isinstance(streamElementsHelper, StreamElementsHelperInterface):
             raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
         elif not isinstance(streamElementsMessageCleaner, StreamElementsMessageCleanerInterface):
@@ -57,7 +51,6 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__streamElementsFileManager: StreamElementsFileManagerInterface = streamElementsFileManager
         self.__streamElementsHelper: StreamElementsHelperInterface = streamElementsHelper
         self.__streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = streamElementsMessageCleaner
         self.__streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = streamElementsSettingsRepository
@@ -86,13 +79,13 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         return streamElementsPreferredTts.voice
 
-    async def __executeTts(self, fileName: str):
+    async def __executeTts(self, fileReference: StreamElementsFileReference):
         volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
-                filePath = fileName,
+                filePath = fileReference.filePath,
                 volume = volume
             )
 
@@ -101,7 +94,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except Exception as e:
-            self.__timber.log('StreamElementsTtsManager', f'Stopping Stream Elements TTS event due to timeout ({fileName=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('StreamElementsTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
 
     @property
@@ -119,17 +112,17 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
-        fileName = await self.__processTtsEvent(event)
+        fileReference = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('StreamElementsTtsManager', f'Failed to write TTS speech in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
+        if fileReference is None:
+            self.__timber.log('StreamElementsTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('StreamElementsTtsManager', f'Playing \"{fileName}\" TTS message in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileName)
+        self.__timber.log('StreamElementsTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        await self.__executeTts(fileReference)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> str | None:
+    async def __processTtsEvent(self, event: TtsEvent) -> StreamElementsFileReference | None:
         message = await self.__streamElementsMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
@@ -145,18 +138,12 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         voice = await self.__determineVoice(event)
 
-        speechBytes = await self.__streamElementsHelper.getSpeech(
+        return await self.__streamElementsHelper.generateTts(
             message = fullMessage,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
             voice = voice
         )
-
-        if speechBytes is None:
-            self.__timber.log('StreamElementsTtsManager', f'Failed to fetch TTS speech in \"{event.twitchChannel}\" ({event=}) ({speechBytes=})')
-            return None
-
-        return await self.__streamElementsFileManager.saveSpeechToNewFile(speechBytes)
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

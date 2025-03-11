@@ -1,6 +1,8 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
+from .glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from .glacialTtsStorage.stub.stubGlacialTtsFileRetriever import StubGlacialTtsFileRetriever
 from .google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from .google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from .location.timeZoneRepository import TimeZoneRepository
@@ -13,6 +15,8 @@ from .storage.tempFileHelper import TempFileHelper
 from .storage.tempFileHelperInterface import TempFileHelperInterface
 from .streamElements.apiService.streamElementsApiService import StreamElementsApiService
 from .streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
+from .streamElements.helper.streamElementsApiHelper import StreamElementsApiHelper
+from .streamElements.helper.streamElementsApiHelperInterface import StreamElementsApiHelperInterface
 from .streamElements.helper.streamElementsHelper import StreamElementsHelper
 from .streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from .streamElements.models.streamElementsVoice import StreamElementsVoice
@@ -30,8 +34,8 @@ from .streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface 
     StreamElementsUserKeyRepositoryInterface
 from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
-from .tts.streamElements.streamElementsFileManager import StreamElementsFileManager
-from .tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
+from .tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
+from .tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from .tts.ttsSettingsRepository import TtsSettingsRepository
 from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .twitch.twitchMessageStringUtils import TwitchMessageStringUtils
@@ -107,17 +111,26 @@ streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = St
 
 streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = FakeStreamElementsUserKeyRepository()
 
-streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
+streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
-    streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
-    streamElementsSettingsRepository = streamElementsSettingsRepository,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     timber = timber
 )
 
-streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
+ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
+
+glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = StubGlacialTtsFileRetriever(
+    timeZoneRepository = timeZoneRepository,
+    ttsDirectoryProvider = ttsDirectoryProvider
+)
+
+streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
+    streamElementsApiHelper = streamElementsApiHelper,
+    streamElementsJsonParser = streamElementsJsonParser,
+    streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
+    streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber
 )
 
@@ -126,19 +139,14 @@ async def main():
 
     message = 'Hello, World!'
 
-    speechBytes = await streamElementsHelper.getSpeech(
+    fileReference = await streamElementsHelper.generateTts(
         message = message,
         twitchChannel = 'twitchChannel',
         twitchChannelId = 'twitchChannelId',
         voice = StreamElementsVoice.BRIAN
     )
 
-    fileUri: str | None = None
-
-    if speechBytes is not None:
-        fileUri = await streamElementsFileManager.saveSpeechToNewFile(speechBytes)
-
-    print(f'{message=} {fileUri=}')
+    print(f'{message=} {fileReference=}')
 
     pass
 

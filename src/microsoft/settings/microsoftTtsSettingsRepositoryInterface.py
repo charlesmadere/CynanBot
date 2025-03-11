@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from ..models.microsoftTtsVoice import MicrosoftTtsVoice
-
 from ...misc.clearable import Clearable
 
 

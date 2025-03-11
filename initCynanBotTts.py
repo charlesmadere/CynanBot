@@ -186,9 +186,9 @@ from src.microsoft.helper.microsoftTtsHelperInterface import MicrosoftTtsHelperI
 from src.microsoft.microsoftTtsMessageCleaner import MicrosoftTtsMessageCleaner
 from src.microsoft.microsoftTtsMessageCleanerInterface import MicrosoftTtsMessageCleanerInterface
 from src.microsoft.parser.microsoftTtsJsonParser import MicrosoftTtsJsonParser
+from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
 from src.microsoft.parser.microsoftTtsMessageVoiceParser import MicrosoftTtsMessageVoiceParser
 from src.microsoft.parser.microsoftTtsMessageVoiceParserInterface import MicrosoftTtsMessageVoiceParserInterface
-from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
 from src.microsoft.settings.microsoftTtsSettingsRepository import MicrosoftTtsSettingsRepository
 from src.microsoft.settings.microsoftTtsSettingsRepositoryInterface import MicrosoftTtsSettingsRepositoryInterface
 from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
@@ -260,6 +260,8 @@ from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsS
 from src.streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from src.streamElements.apiService.streamElementsApiService import StreamElementsApiService
 from src.streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
+from src.streamElements.helper.streamElementsApiHelper import StreamElementsApiHelper
+from src.streamElements.helper.streamElementsApiHelperInterface import StreamElementsApiHelperInterface
 from src.streamElements.helper.streamElementsHelper import StreamElementsHelper
 from src.streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
@@ -324,8 +326,6 @@ from src.tts.microsoft.microsoftTtsManager import MicrosoftTtsManager
 from src.tts.microsoft.microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
 from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
-from src.tts.streamElements.streamElementsFileManager import StreamElementsFileManager
-from src.tts.streamElements.streamElementsFileManagerInterface import StreamElementsFileManagerInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
 from src.tts.streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
@@ -1440,24 +1440,25 @@ streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = Stre
     )
 )
 
-streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
+streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
-    streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
-    streamElementsSettingsRepository = streamElementsSettingsRepository,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     timber = timber
 )
 
-streamElementsFileManager: StreamElementsFileManagerInterface = StreamElementsFileManager(
+streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     eventLoop = eventLoop,
-    tempFileHelper = tempFileHelper,
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
+    streamElementsApiHelper = streamElementsApiHelper,
+    streamElementsJsonParser = streamElementsJsonParser,
+    streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
+    streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber
 )
 
 streamElementsTtsManager: StreamElementsTtsManagerInterface = StreamElementsTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    streamElementsFileManager = streamElementsFileManager,
     streamElementsHelper = streamElementsHelper,
     streamElementsMessageCleaner = streamElementsMessageCleaner,
     streamElementsSettingsRepository = streamElementsSettingsRepository,

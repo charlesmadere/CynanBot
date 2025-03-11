@@ -15,14 +15,7 @@ class MicrosoftTtsVoice(Enum):
             case MicrosoftTtsVoice.HARUKA: return 'Microsoft Haruka Desktop'
             case MicrosoftTtsVoice.HORTENSE: return 'Microsoft Hortense Desktop'
             case MicrosoftTtsVoice.ZIRA: return 'Microsoft Zira Desktop'
-
-    @property
-    def jsonValue(self) -> str:
-        match self:
-            case MicrosoftTtsVoice.DAVID: return 'david'
-            case MicrosoftTtsVoice.HARUKA: return 'haruka'
-            case MicrosoftTtsVoice.HORTENSE: return 'hortense'
-            case MicrosoftTtsVoice.ZIRA: return 'zira'
+            case _: raise RuntimeError(f'Unknown MicrosoftTtsVoice value: \"{self}\"')
 
     @property
     def humanName(self) -> str:
@@ -31,3 +24,4 @@ class MicrosoftTtsVoice(Enum):
             case MicrosoftTtsVoice.HARUKA: return 'Haruka'
             case MicrosoftTtsVoice.HORTENSE: return 'Hortense'
             case MicrosoftTtsVoice.ZIRA: return 'Zira'
+            case _: raise RuntimeError(f'Unknown MicrosoftTtsVoice value: \"{self}\"')

@@ -16,10 +16,8 @@ from ..parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInter
 from ..parser.microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
 from ..settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
-from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from ...tts.models.ttsProvider import TtsProvider
 
 
@@ -101,16 +99,14 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         if not utils.isValidStr(message):
             return None
 
-        messageVoice = await self.__microsoftSamMessageVoiceParser.determineVoiceFromMessage(message)
-
-        if messageVoice is None and voice is None:
-            voice = await self.__microsoftSamSettingsRepository.getDefaultVoice()
-        elif messageVoice is not None:
-            message = messageVoice.message
-            voice = messageVoice.voice
-
         if voice is None:
-            raise RuntimeError(f'Failed to determine voice from message, defaults, or user preferrence, something strange has happened')
+            voice = await self.__microsoftSamSettingsRepository.getDefaultVoice()
+
+        messageVoiceResult = await self.__microsoftSamMessageVoiceParser.determineVoiceFromMessage(message)
+
+        if messageVoiceResult is not None:
+            voice = messageVoiceResult.voice
+            message = messageVoiceResult.message
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = message,
@@ -121,8 +117,8 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         if glacialFile is not None:
             return MicrosoftSamFileReference(
                 storeDateTime = glacialFile.storeDateTime,
-                filePath = glacialFile.filePath,
-                voice = await self.__microsoftSamJsonParser.requireVoice(glacialFile.voice)
+                voice = await self.__microsoftSamJsonParser.requireVoice(glacialFile.voice),
+                filePath = glacialFile.filePath
             )
 
         speechBytes = await self.__microsoftSamApiHelper.getSpeech(
@@ -147,8 +143,8 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         ):
             return MicrosoftSamFileReference(
                 storeDateTime = glacialFile.storeDateTime,
-                filePath = glacialFile.filePath,
-                voice = voice
+                voice = voice,
+                filePath = glacialFile.filePath
             )
         else:
             self.__timber.log('MicrosoftSamHelper', f'Failed to write Microsoft Sam TTS speechBytes to file ({message=}) ({glacialFile=})')

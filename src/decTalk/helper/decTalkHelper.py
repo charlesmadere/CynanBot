@@ -3,7 +3,7 @@ from datetime import datetime
 
 from .decTalkHelperInterface import DecTalkHelperInterface
 from ..apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
-from ..exceptions import DecTalkFailedToGenerateSpeechFileException
+from ..exceptions import DecTalkFailedToGenerateSpeechFileException, DecTalkExecutableIsMissingException
 from ..models.decTalkFileReference import DecTalkFileReference
 from ..models.decTalkVoice import DecTalkVoice
 from ..settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
@@ -62,8 +62,11 @@ class DecTalkHelper(DecTalkHelperInterface):
                 voice = voice,
                 text = message
             )
+        except DecTalkExecutableIsMissingException as e:
+            self.__timber.log('DecTalkHelper', f'Encountered Dec Talk executable file is missing exception when generating speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            return None
         except DecTalkFailedToGenerateSpeechFileException as e:
-            self.__timber.log('DecTalkHelper', f'Encountered error when generating speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkHelper', f'Encountered failure to create speech file exception when generating speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
             return None
 
         storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())

@@ -126,10 +126,7 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftTtsFileReference | None:
-        cleanedMessage = await self.__microsoftTtsMessageCleaner.clean(
-            message = event.message
-        )
-
+        cleanedMessage = await self.__microsoftTtsMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
 

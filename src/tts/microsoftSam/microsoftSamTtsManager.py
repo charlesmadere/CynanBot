@@ -126,10 +126,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftSamFileReference | None:
-        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(
-            message = event.message
-        )
-
+        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
         fullMessage: str
 
