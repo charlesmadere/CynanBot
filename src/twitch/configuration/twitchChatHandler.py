@@ -64,9 +64,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheer: TwitchCheerMetadata | None,
         user: UserInterface
     ):
-        if not user.areCheerActionsEnabled:
-            return
-        elif cheer is None or cheer.bits < 1:
+        if cheer is None or cheer.bits < 1:
             return
 
         self.__chatLogger.logCheer(
@@ -78,22 +76,32 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         )
 
         if user.isSuperTriviaGameEnabled:
+            # TODO delete this after doing some debugging
+            self.__timber.log('TwitchChatHandler', f'__handleCheer #1: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
+
             await self.__processSuperTriviaEvent(
                 broadcasterUserId = broadcasterUserId,
                 cheer = cheer,
                 user = user
             )
 
-        if self.__cheerActionHelper is not None and await self.__cheerActionHelper.handleCheerAction(
-            bits = cheer.bits,
-            broadcasterUserId = broadcasterUserId,
-            cheerUserId = chatterUserId,
-            cheerUserName = chatterUserLogin,
-            message = chatMessage.text,
-            twitchChatMessageId = twitchChatMessageId,
-            user = user
-        ):
-            return
+            # TODO delete this after doing some debugging
+            self.__timber.log('TwitchChatHandler', f'__handleCheer #2: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
+        else:
+            # TODO delete this after doing some debugging
+            self.__timber.log('TwitchChatHandler', f'__handleCheer #3: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
+
+        if user.areCheerActionsEnabled:
+            if await self.__processCheerAction(
+                broadcasterUserId = broadcasterUserId,
+                chatterUserId = chatterUserId,
+                chatterUserLogin = chatterUserLogin,
+                twitchChatMessageId = twitchChatMessageId,
+                chatMessage = chatMessage,
+                cheer = cheer,
+                user = user
+            ):
+                return
 
         if user.isTtsEnabled:
             await self.__processTtsEvent(
@@ -143,6 +151,33 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             user = user
         )
 
+    async def __processCheerAction(
+        self,
+        broadcasterUserId: str,
+        chatterUserId: str,
+        chatterUserLogin: str,
+        twitchChatMessageId: str | None,
+        chatMessage: TwitchChatMessage,
+        cheer: TwitchCheerMetadata,
+        user: UserInterface
+    ) -> bool:
+        if not user.areCheerActionsEnabled:
+            return False
+        elif self.__cheerActionHelper is None:
+            return False
+
+        bits = cheer.bits
+
+        return await self.__cheerActionHelper.handleCheerAction(
+            bits = bits,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = chatterUserId,
+            cheerUserName = chatterUserLogin,
+            message = chatMessage.text,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user
+        )
+
     async def __processSuperTriviaEvent(
         self,
         broadcasterUserId: str,
@@ -164,7 +199,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if superTriviaCheerTriggerAmount is None or superTriviaCheerTriggerAmount < 1 or bits < superTriviaCheerTriggerAmount:
             return
 
-        numberOfGames = int(math.floor(float(bits) / superTriviaCheerTriggerAmount))
+        numberOfGames = int(math.floor(float(bits) / float(superTriviaCheerTriggerAmount)))
 
         # TODO delete this after doing some debugging
         self.__timber.log('TwitchChatHandler', f'processSuperTriviaEvent #2: ({broadcasterUserId=}) ({cheer=}) ({user=}) ({bits=}) ({superTriviaCheerTriggerAmount=}) ({superTriviaCheerTriggerMaximum=}) ({numberOfGames=})')
@@ -172,7 +207,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if numberOfGames < 1:
             return
         elif superTriviaCheerTriggerMaximum is not None and numberOfGames > superTriviaCheerTriggerMaximum:
-            numberOfGames = min(numberOfGames, superTriviaCheerTriggerMaximum)
+            numberOfGames = int(min(numberOfGames, superTriviaCheerTriggerMaximum))
 
         # TODO delete this after doing some debugging
         self.__timber.log('TwitchChatHandler', f'processSuperTriviaEvent #3: ({broadcasterUserId=}) ({cheer=}) ({user=}) ({bits=}) ({superTriviaCheerTriggerAmount=}) ({superTriviaCheerTriggerMaximum=}) ({numberOfGames=})')

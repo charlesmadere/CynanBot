@@ -35,17 +35,29 @@ class TestCheerActionChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.areCheerActionsEnabled:
-            return
-
         twitchChannelId = await ctx.getTwitchChannelId()
 
         if twitchChannelId != ctx.getAuthorId():
             self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
+        if not user.areCheerActionsEnabled:
+            self.__timber.log('TestCheerActionChatCommand', f'Command use by {ctx.getAuthorName()}:{ctx.getAuthorId()} will not proceed as cheer actions in {user.handle} are not enabled!')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Cheer actions are not enabled for this channel',
+                replyMessageId = await ctx.getMessageId()
+            )
+            return
+
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
+            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} didn\'t specify a bit amount ({splits=})')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Bit amount argument is missing. Example: !testcheeraction 100',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         bits: int | None = None
@@ -57,9 +69,14 @@ class TestCheerActionChatCommand(AbsChatCommand):
 
         if not utils.isValidInt(bits) or bits < 1 or bits > utils.getIntMaxSafeSize():
             self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} specified an invalid bit amount ({splits=}) ({bits=})')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Bit amount argument is malformed. Example: !testcheeraction 100',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
-        message = (f'cheer{bits} ' + ' '.join(splits[2:])).strip()
+        message = utils.cleanStr(f'cheer{bits} ' + ' '.join(splits[2:]))
         result: bool | None = None
         exception: Exception | None = None
 
@@ -75,7 +92,7 @@ class TestCheerActionChatCommand(AbsChatCommand):
             )
         except Exception as e:
             exception = e
-            self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform cheer action test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({bits=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform cheer action test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({message=}): {e}', e, traceback.format_exc())
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
@@ -83,4 +100,4 @@ class TestCheerActionChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TestCheerActionChatCommand', f'Handled !testcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} ({result=})')
+        self.__timber.log('TestCheerActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({message=}) ({result=})')

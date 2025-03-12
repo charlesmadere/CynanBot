@@ -69,13 +69,13 @@ class User(UserInterface):
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         anivMessageCopyTimeoutProbability: float | None,
-        superTriviaCheerTriggerAmount: float | None,
         superTriviaSubscribeTriggerAmount: float | None,
         anivMessageCopyMaxAgeSeconds: int | None,
         anivMessageCopyTimeoutMinSeconds: int | None,
         anivMessageCopyTimeoutMaxSeconds: int | None,
         maximumTtsCheerAmount: int | None,
         minimumTtsCheerAmount: int | None,
+        superTriviaCheerTriggerAmount: int | None,
         superTriviaCheerTriggerMaximum: int | None,
         superTriviaGamePoints: int | None,
         superTriviaGameRewardId: str | None,
@@ -219,8 +219,6 @@ class User(UserInterface):
             raise TypeError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
         elif anivMessageCopyTimeoutProbability is not None and not utils.isValidNum(anivMessageCopyTimeoutProbability):
             raise TypeError(f'anivMessageCopyTimeoutProbability argument is malformed: \"{anivMessageCopyTimeoutProbability}\"')
-        elif superTriviaCheerTriggerAmount is not None and not utils.isValidNum(superTriviaCheerTriggerAmount):
-            raise TypeError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
             raise TypeError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
         elif anivMessageCopyMaxAgeSeconds is not None and not utils.isValidInt(anivMessageCopyMaxAgeSeconds):
@@ -235,6 +233,8 @@ class User(UserInterface):
             raise TypeError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
             raise TypeError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
+        elif superTriviaCheerTriggerAmount is not None and not utils.isValidInt(superTriviaCheerTriggerAmount):
+            raise TypeError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaCheerTriggerMaximum is not None and not utils.isValidInt(superTriviaCheerTriggerMaximum):
             raise TypeError(f'superTriviaCheerTriggerMaximum argument is malformed: \"{superTriviaCheerTriggerMaximum}\"')
         elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
@@ -370,13 +370,13 @@ class User(UserInterface):
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__anivMessageCopyTimeoutProbability: float | None = anivMessageCopyTimeoutProbability
-        self.__superTriviaCheerTriggerAmount: float | None = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: float | None = superTriviaSubscribeTriggerAmount
         self.__anivMessageCopyMaxAgeSeconds: int | None = anivMessageCopyMaxAgeSeconds
         self.__anivMessageCopyTimeoutMinSeconds: int | None = anivMessageCopyTimeoutMinSeconds
         self.__anivMessageCopyTimeoutMaxSeconds: int | None = anivMessageCopyTimeoutMaxSeconds
         self.__maximumTtsCheerAmount: int | None = maximumTtsCheerAmount
         self.__minimumTtsCheerAmount: int | None = minimumTtsCheerAmount
+        self.__superTriviaCheerTriggerAmount: int | None = superTriviaCheerTriggerAmount
         self.__superTriviaCheerTriggerMaximum: int | None = superTriviaCheerTriggerMaximum
         self.__superTriviaGamePoints: int | None = superTriviaGamePoints
         self.__superTriviaGameRewardId: str | None = superTriviaGameRewardId
@@ -557,7 +557,7 @@ class User(UserInterface):
         return self.__speedrunProfile
 
     @property
-    def superTriviaCheerTriggerAmount(self) -> float | None:
+    def superTriviaCheerTriggerAmount(self) -> int | None:
         return self.__superTriviaCheerTriggerAmount
 
     @property

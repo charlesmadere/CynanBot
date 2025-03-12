@@ -256,8 +256,8 @@ class UsersRepository(UsersRepositoryInterface):
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
         isSuperTriviaLotrTimeoutEnabled: bool = False
-        superTriviaCheerTriggerAmount: float | None = None
         superTriviaSubscribeTriggerAmount: float | None = None
+        superTriviaCheerTriggerAmount: int | None = None
         superTriviaCheerTriggerMaximum: int | None = None
         superTriviaGamePoints: int | None = None
         superTriviaGameRewardId: str | None = None
@@ -278,11 +278,11 @@ class UsersRepository(UsersRepositoryInterface):
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
             isSuperTriviaLotrTimeoutEnabled = utils.getBoolFromDict(userJson, 'superTriviaLotrTimeoutEnabled', False)
 
-            if 'superTriviaCheerTriggerAmount' in userJson and utils.isValidNum(userJson.get('superTriviaCheerTriggerAmount')):
-                superTriviaCheerTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaCheerTriggerAmount')
-
             if 'superTriviaSubscribeTriggerAmount' in userJson and utils.isValidNum(userJson.get('superTriviaSubscribeTriggerAmount')):
                 superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount')
+
+            if 'superTriviaCheerTriggerAmount' in userJson and utils.isValidInt(userJson.get('superTriviaCheerTriggerAmount')):
+                superTriviaCheerTriggerAmount = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerAmount')
 
             superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 5)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
@@ -403,13 +403,13 @@ class UsersRepository(UsersRepositoryInterface):
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             anivMessageCopyTimeoutProbability = anivMessageCopyTimeoutProbability,
-            superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
             anivMessageCopyMaxAgeSeconds = anivMessageCopyMaxAgeSeconds,
             anivMessageCopyTimeoutMinSeconds = anivMessageCopyTimeoutMinSeconds,
             anivMessageCopyTimeoutMaxSeconds = anivMessageCopyTimeoutMaxSeconds,
             maximumTtsCheerAmount = maximumTtsCheerAmount,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
+            superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,
             superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameRewardId = superTriviaGameRewardId,

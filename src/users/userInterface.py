@@ -180,7 +180,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def superTriviaCheerTriggerAmount(self) -> float | None:
+    def superTriviaCheerTriggerAmount(self) -> int | None:
         pass
 
     @property
