@@ -166,18 +166,16 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return False
         elif self.__cheerActionHelper is None:
             return False
-
-        bits = cheer.bits
-
-        return await self.__cheerActionHelper.handleCheerAction(
-            bits = bits,
-            broadcasterUserId = broadcasterUserId,
-            cheerUserId = chatterUserId,
-            cheerUserName = chatterUserLogin,
-            message = chatMessage.text,
-            twitchChatMessageId = twitchChatMessageId,
-            user = user
-        )
+        else:
+            return await self.__cheerActionHelper.handleCheerAction(
+                bits = cheer.bits,
+                broadcasterUserId = broadcasterUserId,
+                cheerUserId = chatterUserId,
+                cheerUserName = chatterUserLogin,
+                message = chatMessage.text,
+                twitchChatMessageId = twitchChatMessageId,
+                user = user
+            )
 
     async def __processSuperTriviaEvent(
         self,
