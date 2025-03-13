@@ -646,7 +646,7 @@ class User(UserInterface):
 
     @property
     def hasTimeZones(self) -> bool:
-        return utils.hasItems(self.__timeZones)
+        return self.__timeZones is not None and len(self.__timeZones) >= 1
 
     @property
     def isAnivContentScanningEnabled(self) -> bool:

@@ -204,7 +204,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS timeoutactionhistory (
                             totaltimeouts int DEFAULT 0 NOT NULL,
@@ -217,7 +217,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS timeoutactionhistory (
                             totaltimeouts INTEGER NOT NULL DEFAULT 0,

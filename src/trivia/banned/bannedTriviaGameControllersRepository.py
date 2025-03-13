@@ -74,7 +74,8 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         count: int | None = None
-        if utils.hasItems(record):
+
+        if record is not None and len(record) >= 1:
             count = record[0]
 
         if utils.isValidInt(count) and count >= 1:
@@ -107,7 +108,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         controllers: list[BannedTriviaGameController] = list()
 
-        if not utils.hasItems(records):
+        if records is None or len(records) == 0:
             await connection.close()
             return controllers
 
@@ -135,7 +136,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
                             userid text NOT NULL PRIMARY KEY
@@ -144,7 +145,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
                             userid TEXT NOT NULL PRIMARY KEY

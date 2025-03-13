@@ -322,7 +322,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS cheeractions (
                             bits integer NOT NULL,
@@ -337,7 +337,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS cheeractions (
                             bits INTEGER NOT NULL,

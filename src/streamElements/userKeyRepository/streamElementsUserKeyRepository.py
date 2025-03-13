@@ -99,7 +99,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS streamelementsuserkeys (
                             userkey text NOT NULL,
@@ -109,7 +109,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS streamelementsuserkeys (
                             userkey TEXT NOT NULL,

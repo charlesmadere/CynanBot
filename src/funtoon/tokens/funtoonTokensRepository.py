@@ -118,7 +118,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS funtoontokens (
                             token text DEFAULT NULL,
@@ -128,7 +128,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS funtoontokens (
                             token TEXT DEFAULT NULL,

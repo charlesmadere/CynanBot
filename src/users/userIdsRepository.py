@@ -201,7 +201,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS userids (
                             userid text NOT NULL PRIMARY KEY,
@@ -211,7 +211,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS userids (
                             userid TEXT NOT NULL PRIMARY KEY,

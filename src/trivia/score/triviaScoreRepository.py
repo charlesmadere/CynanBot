@@ -227,7 +227,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviascores (
                             streak integer DEFAULT 0 NOT NULL,
@@ -242,7 +242,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviascores (
                             streak INTEGER NOT NULL DEFAULT 0,

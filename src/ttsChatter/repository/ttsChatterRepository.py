@@ -83,7 +83,7 @@ class TtsChatterRepository(TtsChatterRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS ttschatter (
                             chatteruserid text NOT NULL,
@@ -94,7 +94,7 @@ class TtsChatterRepository(TtsChatterRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS ttschatter (
                             chatteruserid TEXT NOT NULL,

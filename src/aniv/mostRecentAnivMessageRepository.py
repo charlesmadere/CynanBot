@@ -111,7 +111,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS mostrecentanivmessages (
                             datetime text NOT NULL,
@@ -122,7 +122,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS mostrecentanivmessages (
                             datetime TEXT NOT NULL,

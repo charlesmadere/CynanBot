@@ -116,7 +116,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS chatterpreferredtts (
                             chatteruserid text NOT NULL,
@@ -129,7 +129,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS chatterpreferredtts (
                             chatteruserid TEXT NOT NULL,

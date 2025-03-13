@@ -117,7 +117,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
         )
 
         row = await cursor.fetchone()
-        if not utils.hasItems(row) or len(row) != 7:
+        if row is None or len(row) != 7:
             raise RuntimeError(f'Received malformed data from WWTBAM database: {row}')
 
         triviaQuestionDict: dict[str, Any] = {

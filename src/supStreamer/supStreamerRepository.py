@@ -97,7 +97,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS supstreamerchatters (
                             chatteruserid text NOT NULL,
@@ -109,7 +109,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS supstreamerchatters (
                             chatteruserid TEXT NOT NULL,

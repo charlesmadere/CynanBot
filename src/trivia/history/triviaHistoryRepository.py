@@ -95,7 +95,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviahistory (
                             datetime text NOT NULL,
@@ -110,7 +110,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviahistory (
                             datetime TEXT NOT NULL,

@@ -132,7 +132,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviagameglobalcontrollers (
                             userid text NOT NULL PRIMARY KEY
@@ -141,7 +141,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviagameglobalcontrollers (
                             userid TEXT NOT NULL PRIMARY KEY

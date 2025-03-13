@@ -1,6 +1,7 @@
 from typing import Any
 
 import asyncpg
+from frozenlist import FrozenList
 
 from ..databaseConnection import DatabaseConnection
 from ..databaseType import DatabaseType
@@ -22,22 +23,11 @@ class PsqlDatabaseConnection(DatabaseConnection):
         self.__isClosed: bool = False
 
     async def close(self):
-        if self.isClosed():
+        if self.isClosed:
             return
 
         self.__isClosed = True
         await self.__pool.release(self.__connection)
-
-    async def createTableIfNotExists(self, query: str, *args: Any | None):
-        if not utils.isValidStr(query):
-            raise TypeError(f'query argument is malformed: \"{query}\"')
-
-        self.__requireNotClosed()
-
-        if args is not None and len(args) >= 1:
-            await self.execute(query, args)
-        else:
-            await self.execute(query)
 
     @property
     def databaseType(self) -> DatabaseType:
@@ -52,7 +42,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         async with self.__connection.transaction():
             await self.__connection.execute(query, *args)
 
-    async def fetchRow(self, query: str, *args: Any | None) -> list[Any] | None:
+    async def fetchRow(self, query: str, *args: Any | None) -> FrozenList[Any] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -63,9 +53,12 @@ class PsqlDatabaseConnection(DatabaseConnection):
         if record is None or len(record) == 0:
             return None
 
-        return list(record)
+        frozenRecord: FrozenList[Any] = FrozenList(record)
+        frozenRecord.freeze()
 
-    async def fetchRows(self, query: str, *args: Any | None) -> list[list[Any]] | None:
+        return frozenRecord
+
+    async def fetchRows(self, query: str, *args: Any | None) -> FrozenList[FrozenList[Any]] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -76,16 +69,21 @@ class PsqlDatabaseConnection(DatabaseConnection):
         if records is None or len(records) == 0:
             return None
 
-        rows: list[list[Any]] = list()
+        frozenRows: FrozenList[FrozenList[Any]] = FrozenList()
 
         for record in records:
-            rows.append(list(record))
+            frozenRecord: FrozenList[Any] = FrozenList(record)
+            frozenRecord.freeze()
 
-        return rows
+            frozenRows.append(frozenRecord)
 
+        frozenRows.freeze()
+        return frozenRows
+
+    @property
     def isClosed(self) -> bool:
         return self.__isClosed
 
     def __requireNotClosed(self):
-        if self.isClosed():
+        if self.isClosed:
             raise DatabaseConnectionIsClosedException(f'This database connection has already been closed! ({self.databaseType})')

@@ -132,7 +132,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS ttsmonstertokens (
                             key text NOT NULL,
@@ -143,7 +143,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS ttsmonstertokens (
                             key TEXT NOT NULL,

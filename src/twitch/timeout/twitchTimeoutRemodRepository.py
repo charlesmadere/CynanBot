@@ -117,7 +117,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
                             broadcasteruserid text NOT NULL,
@@ -129,7 +129,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
                             broadcasteruserid TEXT NOT NULL,

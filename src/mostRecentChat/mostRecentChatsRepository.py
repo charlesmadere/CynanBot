@@ -97,7 +97,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS mostrecentchats (
                             chatteruserid text NOT NULL,
@@ -109,7 +109,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS mostrecentchats (
                             chatteruserid TEXT NOT NULL,

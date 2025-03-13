@@ -214,7 +214,7 @@ class BeanStatsRepository(BeanStatsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS beanstats (
                             fails int DEFAULT 0 NOT NULL,
@@ -229,7 +229,7 @@ class BeanStatsRepository(BeanStatsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS beanstats (
                             fails INTEGER NOT NULL DEFAULT 0,

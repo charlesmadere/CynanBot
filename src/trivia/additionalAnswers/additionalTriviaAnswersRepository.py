@@ -307,7 +307,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
                             additionalanswer public.citext NOT NULL,
@@ -321,7 +321,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS additionaltriviaanswers (
                             additionalanswer TEXT NOT NULL COLLATE NOCASE,

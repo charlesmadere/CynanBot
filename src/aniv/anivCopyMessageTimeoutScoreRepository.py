@@ -219,7 +219,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS anivcopymessagetimeoutscores (
                             mostrecentdodge text DEFAULT NULL,
@@ -234,7 +234,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS anivcopymessagetimeoutscores (
                             mostrecentdodge TEXT DEFAULT NULL,

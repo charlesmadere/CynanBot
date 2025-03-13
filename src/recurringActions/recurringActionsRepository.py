@@ -228,7 +228,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS recurringactions (
                             actiontype text NOT NULL,
@@ -242,7 +242,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS recurringactions (
                             actiontype TEXT NOT NULL,

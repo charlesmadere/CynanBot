@@ -2,6 +2,7 @@ import sqlite3
 from typing import Any
 
 import aiosqlite
+from frozenlist import FrozenList
 
 from ..databaseConnection import DatabaseConnection
 from ..databaseType import DatabaseType
@@ -19,20 +20,11 @@ class SqliteDatabaseConnection(DatabaseConnection):
         self.__isClosed: bool = False
 
     async def close(self):
-        if self.__isClosed:
+        if self.isClosed:
             return
 
         self.__isClosed = True
         await self.__connection.close()
-
-    async def createTableIfNotExists(self, query: str, *args: Any | None):
-        if not utils.isValidStr(query):
-            raise TypeError(f'query argument is malformed: \"{query}\"')
-
-        if args is not None and len(args) >= 1:
-            await self.execute(query, args)
-        else:
-            await self.execute(query)
 
     @property
     def databaseType(self) -> DatabaseType:
@@ -48,7 +40,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
         await self.__connection.commit()
         await cursor.close()
 
-    async def fetchRow(self, query: str, *args: Any | None) -> list[Any] | None:
+    async def fetchRow(self, query: str, *args: Any | None) -> FrozenList[Any] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -65,13 +57,13 @@ class SqliteDatabaseConnection(DatabaseConnection):
             await cursor.close()
             return None
 
-        results: list[Any] = list()
-        results.extend(row)
+        frozenRow: FrozenList[Any] = FrozenList(row)
+        frozenRow.freeze()
 
         await cursor.close()
-        return results
+        return frozenRow
 
-    async def fetchRows(self, query: str, *args: Any | None) -> list[list[Any]] | None:
+    async def fetchRows(self, query: str, *args: Any | None) -> FrozenList[FrozenList[Any]] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -88,14 +80,19 @@ class SqliteDatabaseConnection(DatabaseConnection):
             await cursor.close()
             return None
 
-        records: list[list[Any]] = list()
+        frozenResults: FrozenList[FrozenList[Any]] = FrozenList()
 
         for record in rows:
-            records.append(list(record))
+            frozenRow: FrozenList[Any] = FrozenList(record)
+            frozenRow.freeze()
 
+            frozenResults.append(frozenRow)
+
+        frozenResults.freeze()
         await cursor.close()
-        return records
+        return frozenResults
 
+    @property
     def isClosed(self) -> bool:
         return self.__isClosed
 

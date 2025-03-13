@@ -337,7 +337,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS twitchtokens (
                             expirationtime text DEFAULT NULL,
@@ -349,7 +349,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS twitchtokens (
                             expirationtime TEXT DEFAULT NULL,

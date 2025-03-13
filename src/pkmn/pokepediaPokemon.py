@@ -51,7 +51,7 @@ class PokepediaPokemon:
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if damageMultiplier not in weaknessesAndResistances or not utils.hasItems(weaknessesAndResistances[damageMultiplier]):
+        if damageMultiplier not in weaknessesAndResistances or len(weaknessesAndResistances[damageMultiplier]) == 0:
             return None
 
         elementTypesStrings: list[str] = list()

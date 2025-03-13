@@ -49,7 +49,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviaemotes (
                             emoteindex smallint DEFAULT 0 NOT NULL,
@@ -59,7 +59,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviaemotes (
                             emoteindex INTEGER NOT NULL DEFAULT 0,

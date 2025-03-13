@@ -108,7 +108,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS bannedtriviaids (
                             triviaid public.citext NOT NULL,
@@ -120,7 +120,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS bannedtriviaids (
                             triviaid TEXT NOT NULL COLLATE NOCASE,

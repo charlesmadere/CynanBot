@@ -42,9 +42,12 @@ class PokepediaRepository(PokepediaRepositoryInterface):
 
         self.__pokeApiIdRegEx: Pattern = re.compile(r'^.+\/(\d+)\/$', re.IGNORECASE)
 
-    async def __buildMachineFromJsonResponse(self, jsonResponse: dict[str, Any]) -> PokepediaMachine:
-        if not utils.hasItems(jsonResponse):
-            raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+    async def __buildMachineFromJsonResponse(
+        self,
+        jsonResponse: dict[str, Any]
+    ) -> PokepediaMachine:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
         generation = PokepediaGeneration.fromStr(utils.getStrFromDict(jsonResponse['version_group'], 'name'))
         machineName = utils.getStrFromDict(jsonResponse['item'], 'name')
@@ -73,8 +76,9 @@ class PokepediaRepository(PokepediaRepositoryInterface):
         damageClass = PokepediaDamageClass.fromStr(jsonResponse['damage_class']['name'])
 
         generationMachines: dict[PokepediaGeneration, list[PokepediaMachine]] | None = None
-        if utils.hasItems(jsonResponse.get('machines')):
-            generationMachines = await self.__fetchMoveMachines(jsonResponse['machines'])
+        generationMachinesJson: list[dict[str, Any]] | Any | None = jsonResponse.get('machines')
+        if isinstance(generationMachinesJson, list) and len(generationMachinesJson) >= 1:
+            generationMachines = await self.__fetchMoveMachines(generationMachinesJson)
 
         generationMoves = await self.__getMoveGenerationDictionary(jsonResponse)
 
@@ -142,12 +146,12 @@ class PokepediaRepository(PokepediaRepositoryInterface):
             self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.statusCode}\"')
             raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.statusCode}\"')
 
-        jsonResponse = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
-            self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching machine with ID \"{machineId}\": {jsonResponse}')
-            raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching machine with ID \"{machineId}\": {jsonResponse}')
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching machine ({machineId=}): {jsonResponse}')
+            raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching machine ({machineId=}): {jsonResponse}')
 
         return await self.__buildMachineFromJsonResponse(jsonResponse)
 

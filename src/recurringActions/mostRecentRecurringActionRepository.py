@@ -85,7 +85,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
                             actiontype text NOT NULL,
@@ -96,7 +96,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
                             actiontype TEXT NOT NULL,

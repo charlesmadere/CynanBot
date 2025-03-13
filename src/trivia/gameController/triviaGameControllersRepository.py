@@ -148,7 +148,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviagamecontrollers (
                             twitchchannelid text NOT NULL,
@@ -159,7 +159,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS triviagamecontrollers (
                             twitchchannelid TEXT NOT NULL,

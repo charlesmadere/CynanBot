@@ -119,7 +119,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS shinytriviaoccurences (
                             count integer DEFAULT 0 NOT NULL,
@@ -132,7 +132,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS shinytriviaoccurences (
                             count INTEGER NOT NULL DEFAULT 0,

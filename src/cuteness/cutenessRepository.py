@@ -91,15 +91,13 @@ class CutenessRepository(CutenessRepositoryInterface):
                 userId = userId,
                 userName = userName
             )
-
-        cuteness: int = record[0]
-
-        return CutenessResult(
-            cutenessDate = cutenessDate,
-            cuteness = cuteness,
-            userId = userId,
-            userName = userName
-        )
+        else:
+            return CutenessResult(
+                cutenessDate = cutenessDate,
+                cuteness = record[0],
+                userId = userId,
+                userName = userName
+            )
 
     async def fetchCutenessChampions(
         self,
@@ -329,8 +327,13 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif specificLookupUserId is not None and not isinstance(specificLookupUserId, str):
+            raise TypeError(f'specificLookupUserId argument is malformed: \"{specificLookupUserId}\"')
+        elif specificLookupUserName is not None and not isinstance(specificLookupUserName, str):
+            raise TypeError(f'specificLookupUserName argument is malformed: \"{specificLookupUserName}\"')
 
         cutenessDate = CutenessDate()
+
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
@@ -478,7 +481,7 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS cuteness (
                             cuteness bigint DEFAULT 0 NOT NULL,
@@ -491,7 +494,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS cuteness (
                             cuteness INTEGER NOT NULL DEFAULT 0,

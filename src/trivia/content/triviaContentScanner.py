@@ -198,7 +198,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         responses = question.responses
         minMultipleChoiceResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
 
-        if not utils.hasItems(responses) or len(responses) < minMultipleChoiceResponses:
+        if responses is None or len(responses) == 0 or len(responses) < minMultipleChoiceResponses:
             self.__timber.log('TriviaContentScanner', f'Trivia question has too few multiple choice responses (min is {minMultipleChoiceResponses}): {responses}')
             return TriviaContentCode.TOO_FEW_MULTIPLE_CHOICE_RESPONSES
 

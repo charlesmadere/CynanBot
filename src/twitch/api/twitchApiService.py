@@ -598,7 +598,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
@@ -608,10 +608,10 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {responseStatusCode}')
 
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
         users: list[TwitchLiveUserDetails] = list()
 
-        if data is None or len(data) == 0:
+        if not isinstance(data, list) or len(data) == 0:
             return users
 
         for dataEntry in data:
@@ -666,7 +666,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
@@ -676,8 +676,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching moderator ({broadcasterId=}) ({userId=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching moderator ({broadcasterId=}) ({userId=}): {responseStatusCode}')
 
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
-        if not utils.hasItems(data):
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+
+        if not isinstance(data, list) or len(data) == 0:
             return None
 
         return TwitchModUser(
@@ -759,7 +760,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching user details ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
@@ -768,7 +769,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         data: list[dict[str, Any]] | None = jsonResponse.get('data')
 
-        if not utils.hasItems(data):
+        if not isinstance(data, list) or len(data) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user details ({userId=}): {jsonResponse}')
             return None
 

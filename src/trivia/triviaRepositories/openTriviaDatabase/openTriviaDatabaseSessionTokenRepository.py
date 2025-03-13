@@ -67,7 +67,7 @@ class OpenTriviaDatabaseSessionTokenRepository(OpenTriviaDatabaseSessionTokenRep
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS opentriviadatabasesessiontokens (
                             sessiontoken text DEFAULT NULL,
@@ -77,7 +77,7 @@ class OpenTriviaDatabaseSessionTokenRepository(OpenTriviaDatabaseSessionTokenRep
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS opentriviadatabasesessiontokens (
                             sessiontoken TEXT DEFAULT NULL,

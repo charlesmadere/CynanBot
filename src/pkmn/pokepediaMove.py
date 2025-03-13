@@ -27,7 +27,9 @@ class PokepediaMove:
             raise TypeError(f'contestType argument is malformed: \"{contestType}\"')
         elif not isinstance(damageClass, PokepediaDamageClass):
             raise TypeError(f'damageClass argument is malformed: \"{damageClass}\"')
-        elif not utils.hasItems(generationMoves):
+        elif generationMachines is not None and not isinstance(generationMachines, dict):
+            raise TypeError(f'generationMachines argument is malformed: \"{generationMachines}\"')
+        elif not isinstance(generationMoves, dict):
             raise TypeError(f'generationMoves argument is malformed: \"{generationMoves}\"')
         elif not utils.isValidInt(critRate):
             raise TypeError(f'critRate argument is malformed: \"{critRate}\"')
@@ -99,7 +101,7 @@ class PokepediaMove:
         return self.__contestType is not None
 
     def hasMachines(self) -> bool:
-        return utils.hasItems(self.__generationMachines)
+        return self.__generationMachines is not None and len(self.__generationMachines) >= 1
 
     def toStrList(self) -> list[str]:
         strings: list[str] = list()

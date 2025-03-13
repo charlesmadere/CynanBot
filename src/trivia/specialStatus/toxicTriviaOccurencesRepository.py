@@ -119,7 +119,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
 
         match connection.databaseType:
             case DatabaseType.POSTGRESQL:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS toxictriviaoccurences (
                             count integer DEFAULT 0 NOT NULL,
@@ -132,7 +132,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                 )
 
             case DatabaseType.SQLITE:
-                await connection.createTableIfNotExists(
+                await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS toxictriviaoccurences (
                             count INTEGER NOT NULL DEFAULT 0,
