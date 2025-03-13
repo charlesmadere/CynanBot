@@ -171,6 +171,12 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert result.languageEntry is LanguageEntry.JAPANESE
 
     @pytest.mark.asyncio
+    async def test_parseUserMessage_withGoogleAndKorea(self):
+        result = await self.helper.parseUserMessage('goog korea')
+        assert isinstance(result, GooglePreferredTts)
+        assert result.languageEntry is LanguageEntry.KOREAN
+
+    @pytest.mark.asyncio
     async def test_parseUserMessage_withGoogleAndSwedish(self):
         result = await self.helper.parseUserMessage('google sweden')
         assert isinstance(result, GooglePreferredTts)
