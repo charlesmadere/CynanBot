@@ -335,6 +335,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'bobby'
         if word in ('cathleen', 'katherine', 'kathleen', 'kathy'):
             yield 'catherine'
+        if word in ('caeser', 'ceasar', 'ceaser'):
+            yield 'caesar'
         if word in ('charlie', 'charly', 'chuck', 'chucky'):
             yield 'charles'
         if word in ('chris', 'christ', 'cris', 'kris'):
@@ -357,23 +359,33 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'george washington'
         if word == 'jakob':
             yield 'jacob'
+        if word in ('jen', 'jenn', 'jenny'):
+            yield 'jennifer'
+        if word == 'jfk':
+            yield 'john fitzgerald kennedy'
+            yield 'john kennedy'
         if word in ('jo', 'joey', 'josef', 'joseph', 'josephine'):
             yield 'joe'
         if word in ('jon', 'jhon'):
             yield 'john'
         if word == 'joshua':
             yield 'josh'
+        if word in ('ken', 'kenny'):
+            yield 'kenneth'
         if word == 'marty':
             yield 'martin'
         if word in ('micheal', 'mike'):
             yield 'michael'
-        if word in ('rob', 'robbie'):
+        if word == 'rfk':
+            yield 'robert francis kennedy'
+            yield 'robert kennedy'
+        if word in ('rob', 'roberto', 'robbie'):
             yield 'robert'
         if word in ('ron', 'ronaldo', 'ronnie'):
             yield 'ronald'
         if word in ('sadie', 'sally', 'sara'):
             yield 'sarah'
-        if word in ('steph', 'stephan', 'steven'):
+        if word in ('steph', 'stephan', 'steven', 'stevenson'):
             yield 'steve'
         if word in ('thom', 'tom', 'tommy', 'tony'):
             yield 'thomas'
@@ -1070,6 +1082,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'anime':
             yield 'animated'
             yield 'animation'
+        if word == 'auto':
+            yield 'automated'
+            yield 'automatic'
         if word == 'bday':
             yield 'birthday'
         if word == 'bunny':
@@ -1098,6 +1113,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'degrees'
         if word in ('dpt', 'dept'):
             yield 'department'
+        if word == 'drop':
+            yield 'droplet'
         if word == 'espn':
             yield 'entertainment and sports programming network'
         if word == 'est':
