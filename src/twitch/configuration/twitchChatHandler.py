@@ -67,13 +67,14 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if cheer is None or cheer.bits < 1:
             return
 
-        self.__chatLogger.logCheer(
-            bits = cheer.bits,
-            twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
-            userId = chatterUserId,
-            userName = chatterUserLogin
-        )
+        if user.isChatLoggingEnabled:
+            self.__chatLogger.logCheer(
+                bits = cheer.bits,
+                twitchChannel = user.handle,
+                twitchChannelId = broadcasterUserId,
+                userId = chatterUserId,
+                userName = chatterUserLogin
+            )
 
         if user.isSuperTriviaGameEnabled:
             # TODO delete this after doing some debugging
