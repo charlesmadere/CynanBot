@@ -6,6 +6,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from src.twitch.websocket.twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 
@@ -25,6 +26,21 @@ class TestTwitchWebsocketJsonMapper:
         timber = timber,
         twitchJsonMapper = jsonMapper
     )
+
+    @pytest.mark.asyncio
+    async def test_parseLoggingLevel_withAllString(self):
+        result = await self.websocketJsonMapper.parseLoggingLevel('all')
+        assert result is TwitchWebsocketJsonLoggingLevel.ALL
+
+    @pytest.mark.asyncio
+    async def test_parseLoggingLevel_withLimitedString(self):
+        result = await self.websocketJsonMapper.parseLoggingLevel('limited')
+        assert result is TwitchWebsocketJsonLoggingLevel.LIMITED
+
+    @pytest.mark.asyncio
+    async def test_parseLoggingLevel_withNoneString(self):
+        result = await self.websocketJsonMapper.parseLoggingLevel('none')
+        assert result is TwitchWebsocketJsonLoggingLevel.NONE
 
     @pytest.mark.asyncio
     async def test_parseWebsocketDataBundle_withEmptyDictionary(self):
@@ -90,3 +106,18 @@ class TestTwitchWebsocketJsonMapper:
         assert self.websocketJsonMapper is not None
         assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapper)
         assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeLoggingLevel_withAll(self):
+        result = await self.websocketJsonMapper.serializeLoggingLevel(TwitchWebsocketJsonLoggingLevel.ALL)
+        assert result == 'all'
+
+    @pytest.mark.asyncio
+    async def test_serializeLoggingLevel_withLimited(self):
+        result = await self.websocketJsonMapper.serializeLoggingLevel(TwitchWebsocketJsonLoggingLevel.LIMITED)
+        assert result == 'limited'
+
+    @pytest.mark.asyncio
+    async def test_serializeLoggingLevel_withNone(self):
+        result = await self.websocketJsonMapper.serializeLoggingLevel(TwitchWebsocketJsonLoggingLevel.NONE)
+        assert result == 'none'

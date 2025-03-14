@@ -3,6 +3,7 @@ from typing import Any
 
 from frozenlist import FrozenList
 
+from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..api.models.twitchChatBadge import TwitchChatBadge
@@ -47,6 +48,21 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
         self.__twitchJsonMapper: TwitchJsonMapperInterface = twitchJsonMapper
+
+    async def parseLoggingLevel(
+        self,
+        loggingLevel: str | Any | None
+    ) -> TwitchWebsocketJsonLoggingLevel:
+        if not utils.isValidStr(loggingLevel):
+            raise TypeError(f'loggingLevel argument is malformed: \"{loggingLevel}\"')
+
+        loggingLevel = loggingLevel.lower()
+
+        match loggingLevel:
+            case 'all': return TwitchWebsocketJsonLoggingLevel.ALL
+            case 'limited': return TwitchWebsocketJsonLoggingLevel.LIMITED
+            case 'none': return TwitchWebsocketJsonLoggingLevel.NONE
+            case _: raise ValueError(f'Unknown TwitchWebsocketJsonLoggingLevel value: \"{loggingLevel}\"')
 
     async def __parsePayload(
         self,
@@ -605,3 +621,16 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscriptionType = subscriptionType,
             transport = transport
         )
+
+    async def serializeLoggingLevel(
+        self,
+        loggingLevel: TwitchWebsocketJsonLoggingLevel
+    ) -> str:
+        if not isinstance(loggingLevel, TwitchWebsocketJsonLoggingLevel):
+            raise TypeError(f'loggingLevel argument is malformed: \"{loggingLevel}\"')
+
+        match loggingLevel:
+            case TwitchWebsocketJsonLoggingLevel.ALL: return 'all'
+            case TwitchWebsocketJsonLoggingLevel.LIMITED: return 'limited'
+            case TwitchWebsocketJsonLoggingLevel.NONE: return 'none'
+            case _: raise ValueError(f'Unknown TwitchWebsocketJsonLoggingLevel value: \"{loggingLevel}\"')

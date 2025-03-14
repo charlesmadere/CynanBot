@@ -148,11 +148,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         chatMessage = event.chatMessage
 
         if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
+            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({userId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
             return
 
         # TODO delete this after doing some debugging
-        self.__timber.log('TwitchChatHandler', f'onNewChat #1: ({user=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
+        self.__timber.log('TwitchChatHandler', f'onNewChat #1: ({user=}) ({userId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
 
         await self.__handleCheer(
             broadcasterUserId = userId,
@@ -165,7 +165,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         )
 
         # TODO delete this after doing some debugging
-        self.__timber.log('TwitchChatHandler', f'onNewChat #2: ({user=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
+        self.__timber.log('TwitchChatHandler', f'onNewChat #2: ({user=}) ({userId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
 
     async def __processCheerAction(
         self,

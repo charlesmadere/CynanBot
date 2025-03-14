@@ -582,7 +582,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        bits = utils.getIntFromDict(jsonResponse, 'bits')
+        bits = utils.getIntFromDict(jsonResponse, 'bits', fallback = 0)
 
         return TwitchCheerMetadata(
             bits = bits

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
@@ -10,6 +11,13 @@ from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
 
 
 class TwitchWebsocketJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseLoggingLevel(
+        self,
+        loggingLevel: str | Any | None
+    ) -> TwitchWebsocketJsonLoggingLevel:
+        pass
 
     @abstractmethod
     async def parseWebsocketDataBundle(
@@ -51,4 +59,11 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         subscriptionJson: dict[str, Any] | None
     ) -> TwitchWebsocketSubscription | None:
+        pass
+
+    @abstractmethod
+    async def serializeLoggingLevel(
+        self,
+        loggingLevel: TwitchWebsocketJsonLoggingLevel
+    ) -> str:
         pass

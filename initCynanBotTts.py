@@ -429,12 +429,14 @@ from src.twitch.websocket.instabilityHelper.twitchWebsocketInstabilityHelperInte
 from src.twitch.websocket.sessionIdHelper.twitchWebsocketSessionIdHelper import TwitchWebsocketSessionIdHelper
 from src.twitch.websocket.sessionIdHelper.twitchWebsocketSessionIdHelperInterface import \
     TwitchWebsocketSessionIdHelperInterface
+from src.twitch.websocket.settings.twitchWebsocketSettingsRepository import TwitchWebsocketSettingsRepository
+from src.twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
+    TwitchWebsocketSettingsRepositoryInterface
 from src.twitch.websocket.twitchWebsocketAllowedUsersRepository import TwitchWebsocketAllowedUsersRepository
 from src.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \
     TwitchWebsocketAllowedUsersRepositoryInterface
 from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
-from src.twitch.websocket.twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
@@ -979,6 +981,14 @@ twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInte
     twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper
 )
 
+twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = TwitchWebsocketSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/twitchWebsocketSettingsRepository.json'
+    ),
+    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
+)
+
 twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
@@ -994,7 +1004,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
         twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
-        jsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.NONE
+        twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository
     )
 
 
