@@ -93,6 +93,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__timber.log('TwitchChatHandler', f'__handleCheer #3: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
 
         if user.areCheerActionsEnabled:
+            # TODO delete this after doing some debugging
+            self.__timber.log('TwitchChatHandler', f'__handleCheer #4: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
+
             if await self.__processCheerAction(
                 broadcasterUserId = broadcasterUserId,
                 chatterUserId = chatterUserId,
@@ -105,6 +108,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 return
 
         if user.isTtsEnabled:
+            # TODO delete this after doing some debugging
+            self.__timber.log('TwitchChatHandler', f'__handleCheer #5: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
+
             await self.__processTtsEvent(
                 broadcasterUserId = broadcasterUserId,
                 chatMessage = chatMessage,
@@ -113,6 +119,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 cheer = cheer,
                 user = user
             )
+
+        # TODO delete this after doing some debugging
+        self.__timber.log('TwitchChatHandler', f'__handleCheer #6: ({broadcasterUserId=}) ({chatterUserId=}) ({chatterUserLogin=}) ({twitchChatMessageId=}) ({cheer=}) ({user=})')
 
     async def onNewChat(
         self,
@@ -142,6 +151,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
             return
 
+        # TODO delete this after doing some debugging
+        self.__timber.log('TwitchChatHandler', f'onNewChat #1: ({user=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
+
         await self.__handleCheer(
             broadcasterUserId = userId,
             chatterUserId = chatterUserId,
@@ -151,6 +163,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             cheer = event.cheer,
             user = user
         )
+
+        # TODO delete this after doing some debugging
+        self.__timber.log('TwitchChatHandler', f'onNewChat #2: ({user=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
 
     async def __processCheerAction(
         self,

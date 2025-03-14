@@ -33,7 +33,7 @@ python {
     pip 'idna:3.10'
     pip 'iniconfig:2.0.0'
     pip 'iso8601:2.1.0'
-    pip 'librosa:0.11.0rc1'
+    pip 'librosa:0.11.0'
     pip 'lru-dict:1.3.0'
     pip 'lxml:5.3.1'
     pip 'mccabe:0.7.0'

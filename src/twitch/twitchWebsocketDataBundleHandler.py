@@ -261,6 +261,11 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     for topPredictor in topPredictors:
                         await self.__addToUserIdsToUserNames(userIdsToUserNames, topPredictor.userId, topPredictor.userLogin)
 
+        if event.chatMessage is not None and event.chatMessage.fragments is not None:
+            for fragment in event.chatMessage.fragments:
+                if fragment.mention is not None:
+                    await self.__addToUserIdsToUserNames(userIdsToUserNames, fragment.mention.userId, fragment.mention.userLogin)
+
         if len(userIdsToUserNames) >= 1:
             await self.__userIdsRepository.setUsers(userIdsToUserNames)
 

@@ -10,6 +10,7 @@ from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from ..models.twitchChatBadge import TwitchChatBadge
 from ..models.twitchChatMessage import TwitchChatMessage
 from ..models.twitchChatMessageFragment import TwitchChatMessageFragment
 from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
@@ -111,6 +112,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchChannelEditorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseChatBadge(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatBadge | None:
         pass
 
     @abstractmethod

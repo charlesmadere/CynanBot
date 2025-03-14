@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..api.models.twitchChatBadge import TwitchChatBadge
 from ..api.models.twitchChatMessage import TwitchChatMessage
 from ..api.models.twitchChatMessageType import TwitchChatMessageType
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
@@ -159,6 +160,24 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'started_at' in eventJson and utils.isValidStr(eventJson.get('started_at')):
             startedAt = utils.getDateTimeFromDict(eventJson, 'started_at')
 
+        frozenBadges: FrozenList[TwitchChatBadge] | None = None
+        if 'badges' in eventJson:
+            badgesItem: Any | None = eventJson.get('badges')
+
+            if isinstance(badgesItem, list) and len(badgesItem) >= 1:
+                badges: list[TwitchChatBadge] = list()
+
+                for badgeItem in badgesItem:
+                    badge = await self.__twitchJsonMapper.parseChatBadge(badgeItem)
+
+                    if badge is not None:
+                        badges.append(badge)
+
+                if len(badges) >= 1:
+                    badges.sort(key = lambda badge: badge.badgeId)
+                    frozenBadges = FrozenList(badges)
+                    frozenBadges.freeze()
+
         frozenOutcomes: FrozenList[TwitchOutcome] | None = None
         if 'outcomes' in eventJson:
             outcomesItem: Any | None = eventJson.get('outcomes')
@@ -215,6 +234,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'category_name' in eventJson and utils.isValidStr(eventJson.get('category_name')):
             categoryName = utils.getStrFromDict(eventJson, 'category_name')
 
+        channelPointsCustomRewardId: str | None = None
+        if 'channel_points_custom_reward_id' in eventJson and utils.isValidStr(eventJson.get('channel_points_custom_reward_id')):
+            channelPointsCustomRewardId = utils.getStrFromDict(eventJson, 'channel_points_custom_reward_id')
+
         chatterUserId: str | None = None
         if 'chatter_user_id' in eventJson and utils.isValidStr(eventJson.get('chatter_user_id')):
             chatterUserId = utils.getStrFromDict(eventJson, 'chatter_user_id')
@@ -267,6 +290,22 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         rewardId: str | None = None
         if 'reward_id' in eventJson and utils.isValidStr(eventJson.get('reward_id')):
             rewardId = utils.getStrFromDict(eventJson, 'reward_id')
+
+        sourceBroadcasterUserId: str | None = None
+        if 'source_broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('source_broadcaster_user_id')):
+            sourceBroadcasterUserId = utils.getStrFromDict(eventJson, 'source_broadcaster_user_id')
+
+        sourceBroadcasterUserLogin: str | None = None
+        if 'source_broadcaster_user_login' in eventJson and utils.isValidStr(eventJson.get('source_broadcaster_user_login')):
+            sourceBroadcasterUserLogin = utils.getStrFromDict(eventJson, 'source_broadcaster_user_login')
+
+        sourceBroadcasterUserName: str | None = None
+        if 'source_broadcaster_user_name' in eventJson and utils.isValidStr(eventJson.get('source_broadcaster_user_name')):
+            sourceBroadcasterUserName = utils.getStrFromDict(eventJson, 'source_broadcaster_user_name')
+
+        sourceMessageId: str | None = None
+        if 'source_message_id' in eventJson and utils.isValidStr(eventJson.get('source_message_id')):
+            sourceMessageId = utils.getStrFromDict(eventJson, 'source_message_id')
 
         systemMessage: str | None = None
         if 'system_message' in eventJson and utils.isValidStr(eventJson.get('system_message')):
@@ -379,6 +418,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             locksAt = locksAt,
             redeemedAt = redeemedAt,
             startedAt = startedAt,
+            badges = frozenBadges,
             outcomes = frozenOutcomes,
             choices = frozenChoices,
             bits = bits,
@@ -393,6 +433,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             broadcasterUserName = broadcasterUserName,
             categoryId = categoryId,
             categoryName = categoryName,
+            channelPointsCustomRewardId = channelPointsCustomRewardId,
             chatterUserId = chatterUserId,
             chatterUserLogin = chatterUserLogin,
             chatterUserName = chatterUserName,
@@ -405,6 +446,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             message = message,
             messageId = messageId,
             rewardId = rewardId,
+            sourceBroadcasterUserId = sourceBroadcasterUserId,
+            sourceBroadcasterUserLogin = sourceBroadcasterUserLogin,
+            sourceBroadcasterUserName = sourceBroadcasterUserName,
+            sourceMessageId = sourceMessageId,
             systemMessage = systemMessage,
             text = text,
             title = title,

@@ -15,6 +15,7 @@ from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from ..models.twitchChatBadge import TwitchChatBadge
 from ..models.twitchChatMessage import TwitchChatMessage
 from ..models.twitchChatMessageFragment import TwitchChatMessageFragment
 from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
@@ -331,6 +332,31 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             editors = frozenChannelEditors
         )
 
+    async def parseChatBadge(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChatBadge | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        badgeId: str | None = None
+        if 'id' in jsonResponse and utils.isValidStr(jsonResponse.get('id')):
+            badgeId = utils.getStrFromDict(jsonResponse, 'id')
+
+        info: str | None = None
+        if 'info' in jsonResponse and utils.isValidStr(jsonResponse.get('info')):
+            info = utils.getStrFromDict(jsonResponse, 'info')
+
+        setId: str | None = None
+        if 'set_id' in jsonResponse and utils.isValidStr(jsonResponse.get('set_id')):
+            setId = utils.getStrFromDict(jsonResponse, 'set_id')
+
+        return TwitchChatBadge(
+            badgeId = badgeId,
+            info = info,
+            setId = setId
+        )
+
     async def parseChatMessage(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -345,10 +371,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not utils.isValidStr(text):
             return None
 
-        fragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
+        fragments: FrozenList[TwitchChatMessageFragment] | None = None
         fragmentsList: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
 
         if isinstance(fragmentsList, list) and len(fragmentsList) >= 1:
+            fragments = FrozenList()
+
             for index, fragmentJson in enumerate(fragmentsList):
                 fragment = await self.parseChatMessageFragment(fragmentJson)
 
@@ -357,11 +385,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 else:
                     fragments.append(fragment)
 
-        fragments.freeze()
-
-        if len(fragments) == 0:
-            # I think this should probably be impossible, but let's log it just in case.
-            self.__timber.log('TwitchJsonMapper', f'Encountered TwitchChatMessage with no fragments data ({fragments=}) ({jsonResponse=})')
+            fragments.freeze()
 
         return TwitchChatMessage(
             fragments = fragments,

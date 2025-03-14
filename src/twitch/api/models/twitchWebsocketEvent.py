@@ -3,6 +3,7 @@ from datetime import datetime
 
 from frozenlist import FrozenList
 
+from .twitchChatBadge import TwitchChatBadge
 from .twitchChatMessage import TwitchChatMessage
 from .twitchChatMessageType import TwitchChatMessageType
 from .twitchCheerMetadata import TwitchCheerMetadata
@@ -34,6 +35,7 @@ class TwitchWebsocketEvent:
     locksAt: datetime | None = None
     redeemedAt: datetime | None = None
     startedAt: datetime | None = None
+    badges: FrozenList[TwitchChatBadge] | None = None
     outcomes: FrozenList[TwitchOutcome] | None = None
     choices: FrozenList[TwitchPollChoice] | None = None
     bits: int | None = None
@@ -48,6 +50,7 @@ class TwitchWebsocketEvent:
     broadcasterUserName: str | None = None
     categoryId: str | None = None
     categoryName: str | None = None
+    channelPointsCustomRewardId: str | None = None
     chatterUserId: str | None = None
     chatterUserLogin: str | None = None
     chatterUserName: str | None = None
@@ -60,6 +63,10 @@ class TwitchWebsocketEvent:
     message: str | None = None
     messageId: str | None = None
     rewardId: str | None = None
+    sourceBroadcasterUserId: str | None = None
+    sourceBroadcasterUserLogin: str | None = None
+    sourceBroadcasterUserName: str | None = None
+    sourceMessageId: str | None = None
     systemMessage: str | None = None
     text: str | None = None
     title: str | None = None
