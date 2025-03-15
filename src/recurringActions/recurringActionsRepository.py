@@ -1,5 +1,7 @@
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .actions.cutenessRecurringAction import CutenessRecurringAction
 from .actions.recurringAction import RecurringAction
 from .actions.recurringActionType import RecurringActionType
@@ -116,7 +118,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         self,
         actionType: RecurringActionType,
         twitchChannelId: str
-    ) -> list[Any] | None:
+    ) -> FrozenList[Any] | None:
         if not isinstance(actionType, RecurringActionType):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
         elif not utils.isValidStr(twitchChannelId):
