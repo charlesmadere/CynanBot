@@ -246,7 +246,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if not shouldLog or jsonLoggingLevel is TwitchWebsocketJsonLoggingLevel.NONE:
             return
 
-        self.__timber.log('TwitchWebsocketClient', f'Websocket message: ({user=}) ({message=}) ({dataBundle=})')
+        self.__timber.log('TwitchWebsocketClient', f'Websocket message: ({user=}) ({jsonLoggingLevel=}) ({message=}) ({dataBundle=})')
 
     async def __parseMessageToDataBundleFor(
         self,
