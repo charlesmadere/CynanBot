@@ -339,17 +339,13 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        badgeId: str | None = None
-        if 'id' in jsonResponse and utils.isValidStr(jsonResponse.get('id')):
-            badgeId = utils.getStrFromDict(jsonResponse, 'id')
+        badgeId = utils.getStrFromDict(jsonResponse, 'id')
 
         info: str | None = None
         if 'info' in jsonResponse and utils.isValidStr(jsonResponse.get('info')):
             info = utils.getStrFromDict(jsonResponse, 'info')
 
-        setId: str | None = None
-        if 'set_id' in jsonResponse and utils.isValidStr(jsonResponse.get('set_id')):
-            setId = utils.getStrFromDict(jsonResponse, 'set_id')
+        setId = utils.getStrFromDict(jsonResponse, 'set_id')
 
         return TwitchChatBadge(
             badgeId = badgeId,
