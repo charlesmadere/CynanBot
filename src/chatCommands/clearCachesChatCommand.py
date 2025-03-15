@@ -59,6 +59,8 @@ from ..twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepo
 from ..twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
+from ..twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
+    TwitchWebsocketSettingsRepositoryInterface
 from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
@@ -115,6 +117,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface | None,
         twitchUtils: TwitchUtilsInterface,
+        twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: WeatherRepositoryInterface | None,
@@ -212,6 +215,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif twitchWebsocketSettingsRepository is not None and not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
+            raise TypeError(f'twitchWebsocketSettingsRepository argument is malformed: \"{twitchWebsocketSettingsRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -271,6 +276,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(twitchFollowingStatusRepository)
         self.__clearables.append(twitchSubscriptionsRepository)
         self.__clearables.append(twitchTokensRepository)
+        self.__clearables.append(twitchWebsocketSettingsRepository)
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)
         self.__clearables.append(weatherRepository)
