@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models.StreamElementsFileReference import StreamElementsFileReference
+from ..models.streamElementsFileReference import StreamElementsFileReference
 from ..models.streamElementsVoice import StreamElementsVoice
 
 

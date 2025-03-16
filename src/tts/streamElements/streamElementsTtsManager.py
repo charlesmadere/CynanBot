@@ -11,7 +11,7 @@ from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts imp
 from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
-from ...streamElements.models.StreamElementsFileReference import StreamElementsFileReference
+from ...streamElements.models.streamElementsFileReference import StreamElementsFileReference
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface

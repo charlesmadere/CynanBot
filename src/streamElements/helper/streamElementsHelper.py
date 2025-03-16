@@ -10,7 +10,7 @@ import aiofiles.ospath
 from .streamElementsApiHelperInterface import StreamElementsApiHelperInterface
 from .streamElementsHelperInterface import StreamElementsHelperInterface
 from ..exceptions import StreamElementsFailedToCreateDirectoriesException
-from ..models.StreamElementsFileReference import StreamElementsFileReference
+from ..models.streamElementsFileReference import StreamElementsFileReference
 from ..models.streamElementsVoice import StreamElementsVoice
 from ..parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from ..parser.streamElementsMessageVoiceParserInterface import StreamElementsMessageVoiceParserInterface
