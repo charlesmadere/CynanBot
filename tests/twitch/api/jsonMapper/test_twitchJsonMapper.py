@@ -192,6 +192,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchApiScope.MODERATOR_READ_FOLLOWERS
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withModeratorReadModeratorsString(self):
+        result = await self.jsonMapper.parseApiScope('moderator:read:moderators')
+        assert result is TwitchApiScope.MODERATOR_READ_MODERATORS
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withNone(self):
         result = await self.jsonMapper.parseApiScope(None)
         assert result is None

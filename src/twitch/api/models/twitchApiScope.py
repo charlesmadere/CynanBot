@@ -29,6 +29,7 @@ class TwitchApiScope(Enum):
     MODERATOR_READ_CHATTERS = auto()
     MODERATOR_READ_CHAT_SETTINGS = auto()
     MODERATOR_READ_FOLLOWERS = auto()
+    MODERATOR_READ_MODERATORS = auto()
     USER_BOT = auto()
     USER_READ_BROADCAST = auto()
     USER_READ_CHAT = auto()

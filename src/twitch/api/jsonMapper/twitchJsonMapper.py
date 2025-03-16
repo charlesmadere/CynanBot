@@ -130,6 +130,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'moderator:read:chatters': return TwitchApiScope.MODERATOR_READ_CHATTERS
             case 'moderator:read:chat_settings': return TwitchApiScope.MODERATOR_READ_CHAT_SETTINGS
             case 'moderator:read:followers': return TwitchApiScope.MODERATOR_READ_FOLLOWERS
+            case 'moderator:read:moderators': return TwitchApiScope.MODERATOR_READ_MODERATORS
             case 'user:bot': return TwitchApiScope.USER_BOT
             case 'user:read:broadcast': return TwitchApiScope.USER_READ_BROADCAST
             case 'user:read:chat': return TwitchApiScope.USER_READ_CHAT
