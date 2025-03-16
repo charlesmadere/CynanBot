@@ -161,11 +161,35 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.ZERO_TWO
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withAdam(self):
+        result = await self.mapper.requireVoice('adam')
+        assert result is TtsMonsterVoice.ADAM
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withAsmr(self):
+        result = await self.mapper.requireVoice('asmr')
+        assert result is TtsMonsterVoice.ASMR
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withEmptyString(self):
+        result: TtsMonsterVoice | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireVoice('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withKkona(self):
+        result = await self.mapper.requireVoice('kkona')
+        assert result is TtsMonsterVoice.KKONA
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withNone(self):
         result: TtsMonsterVoice | None = None
 
         with pytest.raises(ValueError):
-            result = await self.mapper.requireVoice(' ')
+            result = await self.mapper.requireVoice(None)
 
         assert result is None
 
@@ -231,6 +255,25 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert len(detailsJson) == 1
 
         assert detailsJson['provider'] == 'provider'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice(self):
+        results: set[str] = set()
+
+        for voice in TtsMonsterVoice:
+            results.add(await self.mapper.serializeVoice(voice))
+
+        assert len(results) == len(TtsMonsterVoice)
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withAdam(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.ADAM)
+        assert result == 'adam'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withAsmr(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.ASMR)
+        assert result == 'asmr'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withBrian(self):

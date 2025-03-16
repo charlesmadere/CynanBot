@@ -3,13 +3,17 @@ from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 class TestTtsMonsterVoice:
 
-    def test_humanName_withAll(self):
-        humanNames: list[str] = list()
+    def test_humanName(self):
+        humanNames: set[str] = set()
 
         for voice in TtsMonsterVoice:
-            humanNames.append(voice.humanName)
+            humanNames.add(voice.humanName)
 
-        assert len(humanNames) == len(list(TtsMonsterVoice))
+        assert len(humanNames) == len(TtsMonsterVoice)
+
+    def test_humanName_withAdam(self):
+        result = TtsMonsterVoice.ADAM.humanName
+        assert result == 'Adam'
 
     def test_humanName_withKkona(self):
         result = TtsMonsterVoice.KKONA.humanName
@@ -23,13 +27,17 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.ZERO_TWO.humanName
         assert result == 'Zero Two'
 
-    def test_inMessageName_withAll(self):
-        inMessageNames: list[str] = list()
+    def test_inMessageName(self):
+        inMessageNames: set[str] = set()
 
         for voice in TtsMonsterVoice:
-            inMessageNames.append(voice.inMessageName)
+            inMessageNames.add(voice.inMessageName)
 
-        assert len(inMessageNames) == len(list(TtsMonsterVoice))
+        assert len(inMessageNames) == len(TtsMonsterVoice)
+
+    def test_inMessageName_withAdam(self):
+        result = TtsMonsterVoice.ADAM.inMessageName
+        assert result == 'adam'
 
     def test_inMessageName_withKkona(self):
         result = TtsMonsterVoice.KKONA.inMessageName

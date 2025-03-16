@@ -30,6 +30,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         self.__voiceRegExes: frozendict[TtsMonsterVoice, Collection[Pattern]] = self.__buildVoiceRegExes()
 
     def __buildVoiceRegExes(self) -> frozendict[TtsMonsterVoice, Collection[Pattern]]:
+        adam: FrozenList[Pattern] = FrozenList()
+        adam.append(re.compile(r'^\s*adam\s*$', re.IGNORECASE))
+        adam.freeze()
+
         asmr: FrozenList[Pattern] = FrozenList()
         asmr.append(re.compile(r'^\s*asmr\s*$', re.IGNORECASE))
         asmr.freeze()
@@ -71,6 +75,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         zeroTwo.freeze()
 
         return frozendict({
+            TtsMonsterVoice.ADAM: adam,
             TtsMonsterVoice.ASMR: asmr,
             TtsMonsterVoice.BRIAN: brian,
             TtsMonsterVoice.HIKARI: hikari,
@@ -183,6 +188,8 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         match voice:
+            case TtsMonsterVoice.ADAM: return 'adam'
+            case TtsMonsterVoice.ASMR: return 'asmr'
             case TtsMonsterVoice.BRIAN: return 'brian'
             case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
