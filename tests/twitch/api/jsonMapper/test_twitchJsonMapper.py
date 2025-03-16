@@ -67,9 +67,19 @@ class TestTwitchJsonMapper:
         assert result is TwitchApiScope.CHANNEL_BOT
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelEditCommercialString(self):
+        result = await self.jsonMapper.parseApiScope('channel:edit:commercial')
+        assert result is TwitchApiScope.CHANNEL_EDIT_COMMERCIAL
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withChannelEditorString(self):
         result = await self.jsonMapper.parseApiScope('channel_editor')
         assert result is TwitchApiScope.CHANNEL_EDITOR
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelManageAdsString(self):
+        result = await self.jsonMapper.parseApiScope('channel:manage:ads')
+        assert result is TwitchApiScope.CHANNEL_MANAGE_ADS
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withChannelManageModeratorsString(self):
@@ -95,6 +105,11 @@ class TestTwitchJsonMapper:
     async def test_parseApiScope_withChannelModerateString(self):
         result = await self.jsonMapper.parseApiScope('channel:moderate')
         assert result is TwitchApiScope.CHANNEL_MODERATE
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelReadAdsString(self):
+        result = await self.jsonMapper.parseApiScope('channel:read:ads')
+        assert result is TwitchApiScope.CHANNEL_READ_ADS
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withChannelReadEditorsString(self):

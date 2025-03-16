@@ -106,11 +106,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match apiScope:
             case 'bits:read': return TwitchApiScope.BITS_READ
             case 'channel:bot': return TwitchApiScope.CHANNEL_BOT
+            case 'channel:edit:commercial': return TwitchApiScope.CHANNEL_EDIT_COMMERCIAL
+            case 'channel:manage:ads': return TwitchApiScope.CHANNEL_MANAGE_ADS
             case 'channel:manage:moderators': return TwitchApiScope.CHANNEL_MANAGE_MODERATORS
             case 'channel:manage:polls': return TwitchApiScope.CHANNEL_MANAGE_POLLS
             case 'channel:manage:predictions': return TwitchApiScope.CHANNEL_MANAGE_PREDICTIONS
             case 'channel:manage:redemptions': return TwitchApiScope.CHANNEL_MANAGE_REDEMPTIONS
             case 'channel:moderate': return TwitchApiScope.CHANNEL_MODERATE
+            case 'channel:read:ads': return TwitchApiScope.CHANNEL_READ_ADS
             case 'channel:read:editors': return TwitchApiScope.CHANNEL_READ_EDITORS
             case 'channel:read:polls': return TwitchApiScope.CHANNEL_READ_POLLS
             case 'channel:read:predictions': return TwitchApiScope.CHANNEL_READ_PREDICTIONS
