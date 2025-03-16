@@ -20,6 +20,7 @@ class TwitchApiScope(Enum):
     CHAT_EDIT = auto()
     CHAT_READ = auto()
     MODERATION_READ = auto()
+    MODERATOR_MANAGE_ANNOUNCEMENTS = auto()
     MODERATOR_MANAGE_BANNED_USERS = auto()
     MODERATOR_MANAGE_CHAT_MESSAGES = auto()
     MODERATOR_READ_CHATTERS = auto()

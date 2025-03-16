@@ -147,6 +147,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchApiScope.MODERATION_READ
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withModeratorManageAnnouncementsString(self):
+        result = await self.jsonMapper.parseApiScope('moderator:manage:announcements')
+        assert result is TwitchApiScope.MODERATOR_MANAGE_ANNOUNCEMENTS
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withModeratorManageBannedUsersString(self):
         result = await self.jsonMapper.parseApiScope('moderator:manage:banned_users')
         assert result is TwitchApiScope.MODERATOR_MANAGE_BANNED_USERS

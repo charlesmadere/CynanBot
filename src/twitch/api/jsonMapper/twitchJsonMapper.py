@@ -121,6 +121,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'chat:edit': return TwitchApiScope.CHAT_EDIT
             case 'chat:read': return TwitchApiScope.CHAT_READ
             case 'moderation:read': return TwitchApiScope.MODERATION_READ
+            case 'moderator:manage:announcements': return TwitchApiScope.MODERATOR_MANAGE_ANNOUNCEMENTS
             case 'moderator:manage:banned_users': return TwitchApiScope.MODERATOR_MANAGE_BANNED_USERS
             case 'moderator:manage:chat_messages': return TwitchApiScope.MODERATOR_MANAGE_CHAT_MESSAGES
             case 'moderator:read:chatters': return TwitchApiScope.MODERATOR_READ_CHATTERS
