@@ -60,7 +60,7 @@ class ChatLogger(ChatLoggerInterface):
             logStatement = f'{logStatement} {message.userName} ({message.userId}) — {message.msg}'
 
         elif isinstance(message, CheerMessage):
-            logStatement = f'{logStatement} {message.userName} ({message.userId}) cheered {message.bitsStr} bit(s)!'
+            logStatement = f'{logStatement} {message.userName} ({message.userId}) cheered {message.bitsStr} bit(s)'
 
         elif isinstance(message, RaidMessage):
             logStatement = f'{logStatement} Received raid from {message.fromWho} of {message.raidSizeStr}!'
