@@ -29,6 +29,7 @@ from .chatCommands.addTimeoutCheerActionCommand import AddTimeoutCheerActionComm
 from .chatCommands.addTntCheerActionWizard import AddTntCheerActionCommand
 from .chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
+from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from .chatCommands.answerChatCommand import AnswerChatCommand
 from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
@@ -99,9 +100,8 @@ from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSett
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
-from .commands import (AbsCommand, AddUserCommand, ConfirmCommand, PbsCommand,
-                       SetFuntoonTokenCommand, SetTwitchCodeCommand, StubCommand,
-                       SwQuoteCommand)
+from .commands import (AbsCommand, ConfirmCommand, PbsCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
+                       StubCommand, SwQuoteCommand)
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -702,7 +702,7 @@ class CynanBot(
         ## Initialization of command objects ##
         #######################################
 
-        self.__addUserCommand: AbsCommand = AddUserCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchUtils, usersRepository)
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
@@ -1192,7 +1192,7 @@ class CynanBot(
     @commands.command(name = 'adduser')
     async def command_adduser(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addUserCommand.handleCommand(context)
+        await self.__addUserCommand.handleChatCommand(context)
 
     @commands.command(name = 'anivtimeouts')
     async def command_anivtimeouts(self, ctx: Context):
