@@ -5,6 +5,7 @@ class StreamElementsVoice(Enum):
 
     AMY = auto()
     BRIAN = auto()
+    EMMA = auto()
     JOEY = auto()
 
     @property
@@ -12,6 +13,7 @@ class StreamElementsVoice(Enum):
         match self:
             case StreamElementsVoice.AMY: return 'Amy'
             case StreamElementsVoice.BRIAN: return 'Brian'
+            case StreamElementsVoice.EMMA: return 'Emma'
             case StreamElementsVoice.JOEY: return 'Joey'
             case _: raise RuntimeError(f'unknown StreamElementsVoice: \"{self}\"')
 
@@ -20,5 +22,6 @@ class StreamElementsVoice(Enum):
         match self:
             case StreamElementsVoice.AMY: return 'Amy'
             case StreamElementsVoice.BRIAN: return 'Brian'
+            case StreamElementsVoice.EMMA: return 'Emma'
             case StreamElementsVoice.JOEY: return 'Joey'
             case _: raise RuntimeError(f'unknown StreamElementsVoice: \"{self}\"')

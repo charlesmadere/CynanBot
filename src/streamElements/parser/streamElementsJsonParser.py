@@ -23,6 +23,10 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
         brian.append(re.compile(r'^\s*brian\s*$', re.IGNORECASE))
         brian.freeze()
 
+        emma: FrozenList[Pattern] = FrozenList()
+        emma.append(re.compile(r'^\s*emma\s*$', re.IGNORECASE))
+        emma.freeze()
+
         joey: FrozenList[Pattern] = FrozenList()
         joey.append(re.compile(r'^\s*joey\s*$', re.IGNORECASE))
         joey.freeze()
@@ -30,6 +34,7 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
         return frozendict({
             StreamElementsVoice.AMY: amy,
             StreamElementsVoice.BRIAN: brian,
+            StreamElementsVoice.EMMA: emma,
             StreamElementsVoice.JOEY: joey
         })
 
@@ -68,5 +73,6 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
         match voice:
             case StreamElementsVoice.AMY: return 'amy'
             case StreamElementsVoice.BRIAN: return 'brian'
+            case StreamElementsVoice.EMMA: return 'emma'
             case StreamElementsVoice.JOEY: return 'joey'
             case _: raise ValueError(f'Encountered unexpected StreamElementsVoice value: \"{voice}\"')

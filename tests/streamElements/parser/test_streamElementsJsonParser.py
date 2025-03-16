@@ -50,6 +50,11 @@ class TestStreamElementsJsonParser:
         assert result is StreamElementsVoice.BRIAN
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withEmma(self):
+        result = await self.parser.requireVoice('emma')
+        assert result is StreamElementsVoice.EMMA
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withEmptyString(self):
         result: StreamElementsVoice | None = None
 
@@ -82,6 +87,15 @@ class TestStreamElementsJsonParser:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_serializeVoice(self):
+        results: set[str] = set()
+
+        for voice in StreamElementsVoice:
+            results.add(await self.parser.serializeVoice(voice))
+
+        assert len(results) == len(StreamElementsVoice)
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withAmy(self):
         result = await self.parser.serializeVoice(StreamElementsVoice.AMY)
         assert result == 'amy'
@@ -90,6 +104,11 @@ class TestStreamElementsJsonParser:
     async def test_serializeVoice_withBrian(self):
         result = await self.parser.serializeVoice(StreamElementsVoice.BRIAN)
         assert result == 'brian'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withEmma(self):
+        result = await self.parser.serializeVoice(StreamElementsVoice.EMMA)
+        assert result == 'emma'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withJoey(self):

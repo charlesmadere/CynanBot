@@ -3,6 +3,14 @@ from src.streamElements.models.streamElementsVoice import StreamElementsVoice
 
 class TestStreamElementsVoice:
 
+    def test_humanName(self):
+        results: set[str] = set()
+
+        for voice in StreamElementsVoice:
+            results.add(voice.humanName)
+
+        assert len(results) == len(StreamElementsVoice)
+
     def test_humanName_withAmy(self):
         result = StreamElementsVoice.AMY.humanName
         assert result == 'Amy'
@@ -14,6 +22,14 @@ class TestStreamElementsVoice:
     def test_humanName_withJoey(self):
         result = StreamElementsVoice.JOEY.humanName
         assert result == 'Joey'
+
+    def test_urlValue(self):
+        results: set[str] = set()
+
+        for voice in StreamElementsVoice:
+            results.add(voice.urlValue)
+
+        assert len(results) == len(StreamElementsVoice)
 
     def test_urlValue_withAmy(self):
         result = StreamElementsVoice.AMY.urlValue
