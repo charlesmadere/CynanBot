@@ -5,7 +5,11 @@ class FakeUserIdsRepository(UserIdsRepositoryInterface):
 
     def __init__(self):
         self.__userIdsToUserNames: dict[str, str | None] = {
-            '123456': 'CynanBot'
+            '111111': 'CynanBot',
+            '222222': 'Eddie',
+            '333333': 'imyt',
+            '444444': 'smCharles',
+            '555555': 'stashiocat'
         }
 
     async def clearCaches(self):

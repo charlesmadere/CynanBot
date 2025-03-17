@@ -1,6 +1,8 @@
 import asyncio
 import random
 
+from frozenlist import FrozenList
+
 from .channelJoinListener import ChannelJoinListener
 from .finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from .joinChannelsEvent import JoinChannelsEvent
@@ -88,7 +90,7 @@ class TwitchChannelJoinHelper(TwitchChannelJoinHelperInterface):
             self.__isJoiningChannels = False
             return
 
-        allChannels.sort(key = lambda userHandle: userHandle.lower())
+        allChannels.sort(key = lambda userHandle: userHandle.casefold())
         self.__timber.log('ChannelJoinHelper', f'Will be joining a total of {len(allChannels)} channel(s)...')
 
         workingChannels: list[str] = list()
@@ -106,16 +108,21 @@ class TwitchChannelJoinHelper(TwitchChannelJoinHelperInterface):
                 workingChannels.remove(userHandle)
                 newChannelsToJoin.append(userHandle)
 
-            newChannelsToJoin.sort(key = lambda userHandle: userHandle.lower())
+            newChannelsToJoin.sort(key = lambda userHandle: userHandle.casefold())
+            frozenNewChannelsToJoin: FrozenList[str] = FrozenList(newChannelsToJoin)
+            frozenNewChannelsToJoin.freeze()
 
             await channelJoinListener.onNewChannelJoinEvent(JoinChannelsEvent(
-                channels = newChannelsToJoin
+                channels = frozenNewChannelsToJoin
             ))
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
+        frozenAllChannels: FrozenList[str] = FrozenList(allChannels)
+        frozenAllChannels.freeze()
+
         await channelJoinListener.onNewChannelJoinEvent(FinishedJoiningChannelsEvent(
-            allChannels = allChannels
+            allChannels = frozenAllChannels
         ))
 
         self.__timber.log('ChannelJoinHelper', f'Finished joining {len(allChannels)} channel(s)')

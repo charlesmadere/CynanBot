@@ -45,6 +45,8 @@ from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncemen
 from ..models.twitchSendChatDropReason import TwitchSendChatDropReason
 from ..models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
+from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
@@ -350,6 +352,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchSendChatMessageResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseStartCommercialDetails(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchStartCommercialDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseStartCommercialResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchStartCommercialResponse | None:
         pass
 
     @abstractmethod

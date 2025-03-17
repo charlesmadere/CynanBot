@@ -50,6 +50,8 @@ from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncemen
 from ..models.twitchSendChatDropReason import TwitchSendChatDropReason
 from ..models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
+from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
@@ -1226,6 +1228,59 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             isSent = isSent,
             messageId = messageId,
             dropReason = dropReason
+        )
+
+    async def parseStartCommercialDetails(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchStartCommercialDetails | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        length = utils.getIntFromDict(jsonResponse, 'length')
+
+        retryAfter: int | None = None
+        if 'retry_after' in jsonResponse and utils.isValidInt(jsonResponse.get('retry_after')):
+            retryAfter = utils.getIntFromDict(jsonResponse, 'retry_after')
+
+        message: str | None = None
+        if 'message' in jsonResponse and utils.isValidStr(jsonResponse.get('message')):
+            message = utils.getStrFromDict(jsonResponse, 'message')
+
+        return TwitchStartCommercialDetails(
+            length = length,
+            retryAfter = retryAfter,
+            message = message
+        )
+
+    async def parseStartCommercialResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchStartCommercialResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        if not isinstance(dataArray, list) or len(dataArray) == 0:
+            return None
+
+        data: FrozenList[TwitchStartCommercialDetails] = FrozenList()
+
+        for index, dataJson in enumerate(dataArray):
+            commercialDetails = await self.parseStartCommercialDetails(dataJson)
+
+            if commercialDetails is None:
+                self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} ({commercialDetails=}) ({jsonResponse=})')
+            else:
+                data.append(commercialDetails)
+
+        if len(data) == 0:
+            return None
+
+        data.freeze()
+
+        return TwitchStartCommercialResponse(
+            data = data
         )
 
     async def parseStreamType(

@@ -46,7 +46,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, frozendict[int, AbsCheerAction] | None] = dict()
+        self.__cache: dict[str, frozendict[int, AbsCheerAction]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -77,6 +77,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         match actionType:
+            case CheerActionType.ADGE:
+                return await self.__cheerActionJsonMapper.requireAdgeCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId
+                )
+
             case CheerActionType.BEAN_CHANCE:
                 return await self.__cheerActionJsonMapper.requireBeanChanceCheerAction(
                     isEnabled = isEnabled,
@@ -132,7 +141,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                 )
 
             case _:
-                raise RuntimeError(f'unknown CheerActionType: \"{actionType}\"')
+                raise RuntimeError(f'Unknown CheerActionType: \"{actionType}\"')
 
     async def deleteAction(self, bits: int, twitchChannelId: str) -> AbsCheerAction | None:
         if not utils.isValidInt(bits):
@@ -268,7 +277,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        cachedActions: frozendict[int, AbsCheerAction] | None = self.__cache.get(twitchChannelId, None)
+        cachedActions = self.__cache.get(twitchChannelId, None)
 
         if cachedActions is not None:
             return cachedActions

@@ -19,6 +19,7 @@ from .models.twitchModUser import TwitchModUser
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
@@ -1086,6 +1087,65 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return sendChatMessageResponse
 
+    async def startCommercial(
+        self,
+        length: int,
+        broadcasterId: str,
+        twitchAccessToken: str
+    ) -> TwitchStartCommercialResponse:
+        if not utils.isValidInt(length):
+            raise TypeError(f'length argument is malformed: \"{length}\"')
+        elif not utils.isValidStr(broadcasterId):
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        if length < 30:
+            length = 30
+        elif length > 180:
+            length = 180
+
+        self.__timber.log('TwitchApiService', f'Starting commercial... ({length=}) ({broadcasterId=}) ({twitchAccessToken=})')
+
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.post(
+                url = 'https://api.twitch.tv/helix/channels/commercial',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                    'Content-Type': 'application/json'
+                },
+                json = {
+                    'broadcaster_id': broadcasterId,
+                    'length': length
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when starting commercial ({length=}) ({broadcasterId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when starting commercial ({length=}) ({broadcasterId=}) ({twitchAccessToken=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200 and responseStatusCode != 429:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when starting commercial ({length=}) ({broadcasterId=}) ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when starting commercial ({length=}) ({broadcasterId=}) ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=})'
+            )
+
+        startCommercialResponse = await self.__twitchJsonMapper.parseStartCommercialResponse(jsonResponse)
+
+        if startCommercialResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when starting commercial ({length=}) ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=}) ({startCommercialResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when starting commercial ({length=}) ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=}) ({startCommercialResponse=})')
+
+        return startCommercialResponse
+
     async def unbanUser(
         self,
         twitchAccessToken: str,
@@ -1153,10 +1213,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when validating token ({twitchAccessToken=}) ({responseStatusCode=})')
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when validating token ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-200 HTTP status code when validating token ({twitchAccessToken=}) ({responseStatusCode=})'
+                message = f'TwitchApiService encountered non-200 HTTP status code when validating token ({twitchAccessToken=}) ({responseStatusCode=}) ({jsonResponse=})'
             )
 
         validationResponse = await self.__twitchJsonMapper.parseValidationResponse(jsonResponse)

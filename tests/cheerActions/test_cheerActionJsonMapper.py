@@ -26,19 +26,19 @@ class TestCheerActionJsonMapper:
     )
 
     @pytest.mark.asyncio
-    async def test_parseCheerActionStreamStatusRequirement_withNone(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseCheerActionStreamStatusRequirement_withWhitespaceString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(' ')
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withAnyString(self):
         result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('any')
         assert result is CheerActionStreamStatusRequirement.ANY
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionStreamStatusRequirement_withEmptyString(self):
+        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionStreamStatusRequirement_withNone(self):
+        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withOfflineString(self):
@@ -49,6 +49,16 @@ class TestCheerActionJsonMapper:
     async def test_parseCheerActionStreamStatusRequirement_withOnlineString(self):
         result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('online')
         assert result is CheerActionStreamStatusRequirement.ONLINE
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionStreamStatusRequirement_withWhitespaceString(self):
+        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionType_withAdgeString(self):
+        result = await self.jsonMapper.parseCheerActionType('adge')
+        assert result is CheerActionType.ADGE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withBeanChanceString(self):
@@ -111,6 +121,11 @@ class TestCheerActionJsonMapper:
         assert result is CheerActionStreamStatusRequirement.ONLINE
 
     @pytest.mark.asyncio
+    async def test_requireCheerActionType_withAdgeString(self):
+        result = await self.jsonMapper.requireCheerActionType('adge')
+        assert result is CheerActionType.ADGE
+
+    @pytest.mark.asyncio
     async def test_requireCheerActionType_withBeanChanceString(self):
         result = await self.jsonMapper.requireCheerActionType('bean_chance')
         assert result is CheerActionType.BEAN_CHANCE
@@ -134,6 +149,11 @@ class TestCheerActionJsonMapper:
     async def test_requireCheerActionType_withTntString(self):
         result = await self.jsonMapper.requireCheerActionType('tnt')
         assert result is CheerActionType.TNT
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, CheerActionJsonMapper)
+        assert isinstance(self.jsonMapper, CheerActionJsonMapperInterface)
 
     @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withBeanChanceCheerAction(self):
@@ -293,6 +313,15 @@ class TestCheerActionJsonMapper:
         assert dictionary['minTimeoutChatters'] == cheerAction.minTimeoutChatters
 
     @pytest.mark.asyncio
+    async def test_serializeCheerActionStreamStatusRequirement(self):
+        results: set[str] = set()
+
+        for streamStatusRequirement in CheerActionStreamStatusRequirement:
+            results.add(await self.jsonMapper.serializeCheerActionStreamStatusRequirement(streamStatusRequirement))
+
+        assert len(results) == len(CheerActionStreamStatusRequirement)
+
+    @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):
         result = await self.jsonMapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ANY)
         assert result == 'any'
@@ -306,6 +335,20 @@ class TestCheerActionJsonMapper:
     async def test_serializeCheerActionStreamStatusRequirement_withOnline(self):
         result = await self.jsonMapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ONLINE)
         assert result == 'online'
+
+    @pytest.mark.asyncio
+    async def test_serializeCheerActionType(self):
+        results: set[str] = set()
+
+        for cheerActionType in CheerActionType:
+            results.add(await self.jsonMapper.serializeCheerActionType(cheerActionType))
+
+        assert len(results) == len(CheerActionType)
+
+    @pytest.mark.asyncio
+    async def test_serializeCheerActionType_withAdge(self):
+        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.ADGE)
+        assert result == 'adge'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withBeanChance(self):

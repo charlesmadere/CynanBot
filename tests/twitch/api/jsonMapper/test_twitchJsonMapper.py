@@ -32,6 +32,7 @@ from src.twitch.api.models.twitchRaid import TwitchRaid
 from src.twitch.api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from src.twitch.api.models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from src.twitch.api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from src.twitch.api.models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from src.twitch.api.models.twitchStreamType import TwitchStreamType
 from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.models.twitchUserType import TwitchUserType
@@ -1036,6 +1037,64 @@ class TestTwitchJsonMapper:
     async def test_parseRewardRedemptionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parseRewardRedemptionStatus(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseStartCommercialDetails(self):
+        length = 120
+        retryAfter = 600
+        message = 'Commercial started!'
+
+        jsonResponse: dict[str, Any] = {
+            'length': length,
+            'retry_after': retryAfter,
+            'message': message
+        }
+
+        result = await self.jsonMapper.parseStartCommercialDetails(jsonResponse)
+        assert isinstance(result, TwitchStartCommercialDetails)
+        assert result.length == length
+        assert result.retryAfter == retryAfter
+        assert result.message == message
+
+    @pytest.mark.asyncio
+    async def test_parseStartCommercialDetails_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseStartCommercialDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseStartCommercialDetails_withNone(self):
+        result = await self.jsonMapper.parseStartCommercialDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseStartCommercialDetails_withNoneMessage(self):
+        length = 120
+        retryAfter = 600
+
+        jsonResponse: dict[str, Any] = {
+            'length': length,
+            'retry_after': retryAfter
+        }
+
+        result = await self.jsonMapper.parseStartCommercialDetails(jsonResponse)
+        assert isinstance(result, TwitchStartCommercialDetails)
+        assert result.length == length
+        assert result.retryAfter == retryAfter
+        assert result.message is None
+
+    @pytest.mark.asyncio
+    async def test_parseStartCommercialDetails_withNoneRetryAfterAndNoneMessage(self):
+        length = 60
+
+        jsonResponse: dict[str, Any] = {
+            'length': length
+        }
+
+        result = await self.jsonMapper.parseStartCommercialDetails(jsonResponse)
+        assert isinstance(result, TwitchStartCommercialDetails)
+        assert result.length == length
+        assert result.retryAfter is None
+        assert result.message is None
 
     @pytest.mark.asyncio
     async def test_parseStreamType_withEmptyString(self):

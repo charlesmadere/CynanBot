@@ -24,22 +24,40 @@ class TestTwitchWebsocketConditionBuilder:
     )
 
     @pytest.mark.asyncio
-    async def test_build_withChannelPointsRedemption(self):
+    async def test_build_withChannelChatMessage(self):
         twitchHandle = await self.twitchHandleProvider.getTwitchHandle()
         twitchId = await self.userIdsRepository.requireUserId(twitchHandle)
 
-        twitchWebsocketUser = TwitchWebsocketUser(
-            userId = twitchId,
-            userName = twitchHandle
+        websocketUserName = 'stashiocat'
+        websocketUser = TwitchWebsocketUser(
+            userId = await self.userIdsRepository.requireUserId(websocketUserName),
+            userName = websocketUserName
+        )
+
+        result = await self.conditionBuilder.build(
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
+            user = websocketUser
+        )
+
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId == websocketUser.userId
+        assert result.userId == twitchId
+
+    @pytest.mark.asyncio
+    async def test_build_withChannelPointsRedemption(self):
+        websocketUserName = 'imyt'
+        websocketUser = TwitchWebsocketUser(
+            userId = await self.userIdsRepository.requireUserId(websocketUserName),
+            userName = websocketUserName
         )
 
         result = await self.conditionBuilder.build(
             subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
-            user = twitchWebsocketUser
+            user = websocketUser
         )
 
         assert isinstance(result, TwitchWebsocketCondition)
-        assert result.broadcasterUserId == twitchId
+        assert result.broadcasterUserId == websocketUser.userId
 
     def test_sanity(self):
         assert self.conditionBuilder is not None

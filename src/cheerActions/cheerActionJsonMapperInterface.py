@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from .absCheerAction import AbsCheerAction
+from .adge.adgeCheerAction import AdgeCheerAction
 from .beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
@@ -13,6 +14,17 @@ from .tnt.tntCheerAction import TntCheerAction
 
 
 class CheerActionJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseAdgeCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> AdgeCheerAction | None:
+        pass
 
     @abstractmethod
     async def parseBeanChanceCheerAction(
@@ -92,6 +104,17 @@ class CheerActionJsonMapperInterface(ABC):
         jsonString: str | None,
         twitchChannelId: str
     ) -> TntCheerAction | None:
+        pass
+
+    @abstractmethod
+    async def requireAdgeCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> AdgeCheerAction:
         pass
 
     @abstractmethod

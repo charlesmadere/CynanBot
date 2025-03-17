@@ -16,6 +16,7 @@ from .models.twitchModUser import TwitchModUser
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
@@ -174,6 +175,15 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         chatRequest: TwitchSendChatMessageRequest
     ) -> TwitchSendChatMessageResponse:
+        pass
+
+    @abstractmethod
+    async def startCommercial(
+        self,
+        length: int,
+        broadcasterId: str,
+        twitchAccessToken: str
+    ) -> TwitchStartCommercialResponse:
         pass
 
     @abstractmethod

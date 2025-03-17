@@ -1113,8 +1113,8 @@ class CynanBot(
             self.__twitchWebsocketClient.start()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
-        self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')
-        await self.join_channels(event.getChannels())
+        self.__timber.log('CynanBot', f'Joining channels: {event}')
+        await self.join_channels(event.channels)
 
     async def waitForReady(self):
         await self.wait_for_ready()
@@ -1439,7 +1439,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleChatCommand(context)
 
-    @commands.command(name = 'supertrivia', aliases = ['supertrivialotr'])
+    @commands.command(name = 'supertrivia', aliases = [ 'supertrivialotr' ])
     async def command_supertrivia(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superTriviaCommand.handleChatCommand(context)
@@ -1449,7 +1449,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__swQuoteCommand.handleCommand(context)
 
-    @commands.command(name = 'testcheeraction')
+    @commands.command(name = 'testcheeraction', aliases = [ 'testcheer' ])
     async def command_testcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__testCheerActionCommand.handleChatCommand(context)
@@ -1484,7 +1484,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__twitchUserInfoCommand.handleChatCommand(context)
 
-    @commands.command(name = 'unbantriviaquestion')
+    @commands.command(name = 'unbantriviaquestion', aliases = [ 'unbantrivia' ])
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)

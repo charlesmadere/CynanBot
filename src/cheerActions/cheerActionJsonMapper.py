@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 from .absCheerAction import AbsCheerAction
+from .adge.adgeCheerAction import AdgeCheerAction
 from .beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
@@ -23,6 +24,33 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
 
+    async def parseAdgeCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> AdgeCheerAction | None:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        jsonContents: dict[str, Any] = json.loads(jsonString)
+
+        adgeLengthSeconds = utils.getIntFromDict(
+            d = jsonContents,
+            key = 'adgeLengthSeconds',
+            fallback = 30
+        )
+
+        return AdgeCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            adgeLengthSeconds = adgeLengthSeconds,
+            bits = bits,
+            twitchChannelId = twitchChannelId
+        )
+
     async def parseBeanChanceCheerAction(
         self,
         isEnabled: bool,
@@ -38,7 +66,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         randomChance = utils.getIntFromDict(
             d = jsonContents,
-            key = 'randomChance',
+            key = 'randomChance'
         )
 
         return BeanChanceCheerAction(
@@ -76,6 +104,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         jsonString = jsonString.lower()
 
         match jsonString:
+            case 'adge': return CheerActionType.ADGE
             case 'bean_chance': return CheerActionType.BEAN_CHANCE
             case 'crowd_control': return CheerActionType.CROWD_CONTROL
             case 'game_shuffle': return CheerActionType.GAME_SHUFFLE
@@ -242,6 +271,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             twitchChannelId = twitchChannelId
         )
 
+    async def requireAdgeCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> AdgeCheerAction:
+        action = await self.parseAdgeCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create AdgeCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
     async def requireBeanChanceCheerAction(
         self,
         isEnabled: bool,
@@ -397,7 +447,9 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not isinstance(cheerAction, AbsCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
-        if isinstance(cheerAction, BeanChanceCheerAction):
+        if isinstance(cheerAction, AdgeCheerAction):
+            return await self.__serializeAdgeCheerAction(cheerAction)
+        elif isinstance(cheerAction, BeanChanceCheerAction):
             return await self.__serializeBeanChanceCheerAction(cheerAction)
         elif isinstance(cheerAction, CrowdControlButtonPressCheerAction):
             return await self.__serializeCrowdControlButtonPressCheerAction(cheerAction)
@@ -411,6 +463,19 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             return await self.__serializeTntCheerAction(cheerAction)
         else:
             raise RuntimeError(f'Encountered unknown AbsCheerAction type ({cheerAction=})')
+
+    async def __serializeAdgeCheerAction(
+        self,
+        cheerAction: AdgeCheerAction
+    ) -> str:
+        if not isinstance(cheerAction, AdgeCheerAction):
+            raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
+
+        jsonContents: dict[str, Any] = {
+            'adgeLengthSeconds': cheerAction.adgeLengthSeconds
+        }
+
+        return json.dumps(jsonContents)
 
     async def __serializeBeanChanceCheerAction(
         self,
@@ -446,6 +511,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
 
         match actionType:
+            case CheerActionType.ADGE: return 'adge'
             case CheerActionType.BEAN_CHANCE: return 'bean_chance'
             case CheerActionType.CROWD_CONTROL: return 'crowd_control'
             case CheerActionType.GAME_SHUFFLE: return 'game_shuffle'
