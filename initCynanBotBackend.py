@@ -1050,6 +1050,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         twitchApiService = twitchApiService,
+        twitchHandleProvider = authRepository,
         twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
         twitchWebsocketConditionBuilder = twitchWebsocketConditionBuilder,
@@ -1058,7 +1059,8 @@ if generalSettingsSnapshot.isEventSubEnabled():
         twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
         twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
-        twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository
+        twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
+        userIdsRepository = userIdsRepository
     )
 
 

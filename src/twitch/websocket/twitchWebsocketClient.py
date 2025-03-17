@@ -31,11 +31,13 @@ from ..api.models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...misc.lruCache import LruCache
 from ...timber.timberInterface import TimberInterface
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchWebsocketClient(TwitchWebsocketClientInterface):
@@ -46,6 +48,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
         twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface,
@@ -55,6 +58,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface,
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
@@ -86,6 +90,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchWebsocketAllowedUsersRepository, TwitchWebsocketAllowedUsersRepositoryInterface):
@@ -104,6 +110,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketSessionIdHelper argument is malformed: \"{twitchWebsocketSessionIdHelper}\"')
         elif not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
             raise TypeError(f'twitchWebsocketSettingsRepository argument is malformed: \"{twitchWebsocketSettingsRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
@@ -133,6 +141,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = twitchWebsocketAllowedUsersRepository
         self.__twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = twitchWebsocketConditionBuilder
@@ -142,6 +151,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
         self.__twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface = twitchWebsocketSessionIdHelper
         self.__twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = twitchWebsocketSettingsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
@@ -174,7 +184,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             method = TwitchWebsocketTransportMethod.WEBSOCKET
         )
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(twitchId)
+
+        userAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
         createEventSubScriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
 
         for subscriptionType in self.__subscriptionTypes:
@@ -192,8 +206,15 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 transport = transport
             )
 
+            accessToken: str
+
+            if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
+                accessToken = twitchAccessToken
+            else:
+                accessToken = userAccessToken
+
             createEventSubScriptionCoroutines.append(self.__twitchApiService.createEventSubSubscription(
-                twitchAccessToken = twitchAccessToken,
+                twitchAccessToken = accessToken,
                 eventSubRequest = eventSubRequest
             ))
 
