@@ -1011,7 +1011,7 @@ class CynanBot(
             await self.__handleJoinChannelsEvent(event)
 
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
-        self.__timber.log('CynanBot', f'Finished joining channels ({event.getAllChannels()=})')
+        self.__timber.log('CynanBot', f'Finished joining channels ({event.allChannels=})')
 
         await self.waitForReady()
 
