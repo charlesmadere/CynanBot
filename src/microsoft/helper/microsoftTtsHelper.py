@@ -99,16 +99,14 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         if not utils.isValidStr(message):
             return None
 
-        messageVoice = await self.__microsoftTtsMessageVoiceParser.determineVoiceFromMessage(message)
-
-        if messageVoice is None and voice is None:
-            voice = await self.__microsoftTtsSettingsRepository.getDefaultVoice()
-        elif messageVoice is not None:
-            message = messageVoice.message
-            voice = messageVoice.voice
-
         if voice is None:
-            raise RuntimeError(f'Failed to determine voice from message, defaults, or user preferrence, something strange has happened')
+            voice = await self.__microsoftTtsSettingsRepository.getDefaultVoice()
+
+        messageVoiceResult = await self.__microsoftTtsMessageVoiceParser.determineVoiceFromMessage(message)
+
+        if messageVoiceResult is not None:
+            message = messageVoiceResult.message
+            voice = messageVoiceResult.voice
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = message,

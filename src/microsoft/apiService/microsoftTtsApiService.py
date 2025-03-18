@@ -1,4 +1,5 @@
 import traceback
+from typing import Any
 
 from .microsoftTtsApiServiceInterface import MicrosoftTtsApiServiceInterface
 from ..models.microsoftTtsVoice import MicrosoftTtsVoice
@@ -36,9 +37,9 @@ class MicrosoftTtsApiService(MicrosoftTtsApiServiceInterface):
         self.__timber.log('MicrosoftTtsApiService', f'Fetching speech... ({voice=}) ({message=})')
         clientSession = await self.__networkClientProvider.get()
 
-        json = {
-            'voice': f'{ voice.apiValue}',
-            'message': f'{message}'
+        json: dict[str, Any] = {
+            'message': message,
+            'voice': voice.apiValue
         }
 
         try:
