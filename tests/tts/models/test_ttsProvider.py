@@ -27,6 +27,10 @@ class TestTtsProvider:
         result = TtsProvider.HALF_LIFE.humanName
         assert result == 'Half-Life'
 
+    def test_humanName_withMicrosoft(self):
+        result = TtsProvider.MICROSOFT.humanName
+        assert result == 'Microsoft'
+
     def test_humanName_withMicrosoftSam(self):
         result = TtsProvider.MICROSOFT_SAM.humanName
         assert result == 'Microsoft Sam'
