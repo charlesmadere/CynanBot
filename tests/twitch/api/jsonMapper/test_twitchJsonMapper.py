@@ -635,6 +635,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchWebsocketConnectionStatus.VERSION_REMOVED
 
     @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebhookCallbackVerificationPendingString(self):
+        result = await self.jsonMapper.parseConnectionStatus('webhook_callback_verification_pending')
+        assert result is TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING
+
+    @pytest.mark.asyncio
     async def test_parseConnectionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parseConnectionStatus(' ')
         assert result is None

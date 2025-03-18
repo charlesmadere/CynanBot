@@ -27,7 +27,9 @@ from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
 from ..models.twitchEmoteType import TwitchEmoteType
 from ..models.twitchEmotesResponse import TwitchEmotesResponse
+from ..models.twitchEventSubDetails import TwitchEventSubDetails
 from ..models.twitchEventSubRequest import TwitchEventSubRequest
+from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchNoticeType import TwitchNoticeType
@@ -250,6 +252,20 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseEventSubDetails(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchEventSubDetails:
+        pass
+
+    @abstractmethod
+    async def parseEventSubResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchEventSubResponse | None:
+        pass
+
+    @abstractmethod
     async def parseFollower(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -378,7 +394,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSubscriberTier(
         self,
-        subscriberTier: str | None
+        subscriberTier: str | Any | None
     ) -> TwitchSubscriberTier | None:
         pass
 
@@ -474,6 +490,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireCondition(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketCondition:
+        pass
+
+    @abstractmethod
     async def requireConnectionStatus(
         self,
         connectionStatus: str | Any | None
@@ -497,7 +520,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def requireSubscriberTier(
         self,
-        subscriberTier: str | None
+        subscriberTier: str | Any | None
     ) -> TwitchSubscriberTier:
         pass
 

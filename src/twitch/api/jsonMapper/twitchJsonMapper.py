@@ -32,7 +32,9 @@ from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
 from ..models.twitchEmoteType import TwitchEmoteType
 from ..models.twitchEmotesResponse import TwitchEmotesResponse
+from ..models.twitchEventSubDetails import TwitchEventSubDetails
 from ..models.twitchEventSubRequest import TwitchEventSubRequest
+from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchNoticeType import TwitchNoticeType
@@ -724,6 +726,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'authorization_revoked': return TwitchWebsocketConnectionStatus.REVOKED
             case 'user_removed': return TwitchWebsocketConnectionStatus.USER_REMOVED
             case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
+            case 'webhook_callback_verification_pending': return TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING
             case _: return None
 
     async def parseEmoteDetails(
@@ -898,6 +901,62 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'follower': return TwitchEmoteType.FOLLOWER
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
             case _: return None
+
+    async def parseEventSubDetails(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchEventSubDetails:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+
+        createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
+        cost = utils.getIntFromDict(jsonResponse, 'cost')
+        detailsId = utils.getStrFromDict(jsonResponse, 'id')
+        version = utils.getStrFromDict(jsonResponse, 'version')
+        condition = await self.requireCondition(jsonResponse.get('condition'))
+        connectionStatus = await self.requireConnectionStatus(utils.getStrFromDict(jsonResponse, 'status'))
+        connectionType = await self.requireSubscriptionType(utils.getStrFromDict(jsonResponse, 'type'))
+        transport = await self.requireTransport(jsonResponse.get('transport'))
+
+        return TwitchEventSubDetails(
+            createdAt = createdAt,
+            cost = cost,
+            detailsId = detailsId,
+            version = version,
+            condition = condition,
+            connectionStatus = connectionStatus,
+            connectionType = connectionType,
+            transport = transport
+        )
+
+    async def parseEventSubResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchEventSubResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        eventSubDetails: list[TwitchEventSubDetails] = list()
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+
+        if isinstance(data, list) and len(data) >= 1:
+            for eventSubDetailsJson in data:
+                details = await self.parseEventSubDetails(eventSubDetailsJson)
+                eventSubDetails.append(details)
+
+        frozenEventSubDetails: FrozenList[TwitchEventSubDetails] = FrozenList(eventSubDetails)
+        frozenEventSubDetails.freeze()
+
+        maxTotalCost = utils.getIntFromDict(jsonResponse, 'max_total_cost')
+        total = utils.getIntFromDict(jsonResponse, 'total')
+        totalCost = utils.getIntFromDict(jsonResponse, 'total_cost')
+
+        return TwitchEventSubResponse(
+            data = frozenEventSubDetails,
+            maxTotalCost = maxTotalCost,
+            total = total,
+            totalCost = totalCost
+        )
 
     async def parseFollower(
         self,
@@ -1298,7 +1357,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSubscriberTier(
         self,
-        subscriberTier: str | None
+        subscriberTier: str | Any | None
     ) -> TwitchSubscriberTier | None:
         if not utils.isValidStr(subscriberTier):
             return None
@@ -1647,6 +1706,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return result
 
+    async def requireCondition(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketCondition:
+        result = await self.parseCondition(jsonResponse)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{jsonResponse}\" into TwitchWebsocketCondition value!')
+
+        return result
+
     async def requireConnectionStatus(
         self,
         connectionStatus: str | Any | None
@@ -1682,7 +1752,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireSubscriberTier(
         self,
-        subscriberTier: str | None
+        subscriberTier: str | Any | None
     ) -> TwitchSubscriberTier:
         result = await self.parseSubscriberTier(subscriberTier)
 

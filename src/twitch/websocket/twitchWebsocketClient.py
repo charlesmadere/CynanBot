@@ -175,6 +175,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscription(s) ({user=}) ({sessionId=})')
             return
 
+        userAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
+
         transport = TwitchWebsocketTransport(
             connectedAt = None,
             disconnectedAt = None,
@@ -188,7 +190,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(twitchId)
 
-        userAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
         createEventSubScriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
 
         for subscriptionType in self.__subscriptionTypes:
@@ -206,15 +207,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 transport = transport
             )
 
-            accessToken: str
-
-            if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
-                accessToken = twitchAccessToken
-            else:
-                accessToken = userAccessToken
-
             createEventSubScriptionCoroutines.append(self.__twitchApiService.createEventSubSubscription(
-                twitchAccessToken = accessToken,
+                twitchAccessToken = userAccessToken,
                 eventSubRequest = eventSubRequest
             ))
 

@@ -4,6 +4,14 @@ from src.twitch.api.models.twitchWebsocketSubscriptionType import \
 
 class TestTwitchWebsocketSubscriptionType:
 
+    def test_version(self):
+        versions: list[str] = list()
+
+        for subscriptionType in TwitchWebsocketSubscriptionType:
+            versions.append(subscriptionType.version)
+
+        assert len(versions) == len(TwitchWebsocketSubscriptionType)
+
     def test_version_withChannelChatMessage(self):
         version = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE.version
         assert version == '1'
