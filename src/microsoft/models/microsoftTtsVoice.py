@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 class MicrosoftTtsVoice(Enum):
 
+    CATHERINE = auto()
     DAVID = auto()
     HARUKA = auto()
     HORTENSE = auto()
@@ -11,6 +12,7 @@ class MicrosoftTtsVoice(Enum):
     @property
     def apiValue(self) -> str:
         match self:
+            case MicrosoftTtsVoice.CATHERINE: return 'Microsoft Catherine Desktop'
             case MicrosoftTtsVoice.DAVID: return 'Microsoft David Desktop'
             case MicrosoftTtsVoice.HARUKA: return 'Microsoft Haruka Desktop'
             case MicrosoftTtsVoice.HORTENSE: return 'Microsoft Hortense Desktop'
@@ -20,6 +22,7 @@ class MicrosoftTtsVoice(Enum):
     @property
     def humanName(self) -> str:
         match self:
+            case MicrosoftTtsVoice.CATHERINE: return 'Catherine'
             case MicrosoftTtsVoice.DAVID: return 'David'
             case MicrosoftTtsVoice.HARUKA: return 'Haruka'
             case MicrosoftTtsVoice.HORTENSE: return 'Hortense'
