@@ -3,6 +3,14 @@ from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocket
 
 class TestTwitchWebsocketTransportMethod:
 
+    def test_toStr(self):
+        results: set[str] = set()
+
+        for transportMethod in TwitchWebsocketTransportMethod:
+            results.add(transportMethod.toStr())
+
+        assert len(results) == len(TwitchWebsocketTransportMethod)
+
     def test_toStr_withConduit(self):
         string = TwitchWebsocketTransportMethod.CONDUIT.toStr()
         assert string == 'conduit'
