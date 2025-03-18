@@ -202,6 +202,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 continue
 
             eventSubRequest = TwitchEventSubRequest(
+                twitchChannel = user.userName,
+                twitchChannelId = user.userId,
                 condition = condition,
                 subscriptionType = subscriptionType,
                 transport = transport

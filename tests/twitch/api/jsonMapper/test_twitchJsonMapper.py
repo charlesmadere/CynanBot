@@ -1923,6 +1923,8 @@ class TestTwitchJsonMapper:
         )
 
         request = TwitchEventSubRequest(
+            twitchChannel = 'smCharles',
+            twitchChannelId = condition.requireBroadcasterUserId(),
             condition = condition,
             subscriptionType = subscriptionType,
             transport = transport
@@ -1971,6 +1973,8 @@ class TestTwitchJsonMapper:
         )
 
         request = TwitchEventSubRequest(
+            twitchChannel = 'smCharles',
+            twitchChannelId = condition.requireBroadcasterUserId(),
             condition = condition,
             subscriptionType = subscriptionType,
             transport = transport
@@ -2020,6 +2024,8 @@ class TestTwitchJsonMapper:
         )
 
         request = TwitchEventSubRequest(
+            twitchChannel = 'smCharles',
+            twitchChannelId = condition.requireBroadcasterUserId(),
             condition = condition,
             subscriptionType = subscriptionType,
             transport = transport

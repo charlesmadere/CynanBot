@@ -9,6 +9,8 @@ from .twitchWebsocketTransport import TwitchWebsocketTransport
 # https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
 @dataclass(frozen = True)
 class TwitchEventSubRequest:
+    twitchChannel: str # not required for the Twitch API, but shoved into here for better debugging
+    twitchChannelId: str # not required for the Twitch API, but shoved into here for better debugging
     condition: TwitchWebsocketCondition
     subscriptionType: TwitchWebsocketSubscriptionType
     transport: TwitchWebsocketTransport
