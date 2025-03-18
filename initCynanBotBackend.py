@@ -884,7 +884,6 @@ twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStrin
 
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
-    generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
     timeZoneRepository = timeZoneRepository,

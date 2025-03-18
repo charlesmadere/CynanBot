@@ -108,9 +108,6 @@ class GeneralSettingsRepositorySnapshot:
     def isTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'triviaGameEnabled', True)
 
-    def isTwitchChatApiEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'twitchChatApiEnabled', False)
-
     def requireAdministrator(self) -> str:
         administrator = self.__jsonContents.get('administrator')
 

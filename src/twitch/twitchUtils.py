@@ -15,7 +15,6 @@ from .twitchUtilsInterface import TwitchUtilsInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..sentMessageLogger.messageMethod import MessageMethod
 from ..sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from ..timber.timberInterface import TimberInterface
@@ -27,7 +26,6 @@ class TwitchUtils(TwitchUtilsInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -37,13 +35,10 @@ class TwitchUtils(TwitchUtilsInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         queueTimeoutSeconds: float = 3,
         sleepBeforeRetryTimeSeconds: float = 1,
-        sleepTimeSeconds: float = 0.5,
-        maxRetries: int = 3
+        sleepTimeSeconds: float = 0.5
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
@@ -70,13 +65,8 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not utils.isValidInt(maxRetries):
-            raise TypeError(f'maxRetries argument is malformed: \"{maxRetries}\"')
-        elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
-            raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -87,7 +77,6 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__maxRetries: int = maxRetries
 
         self.__isStarted: bool = False
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
@@ -177,35 +166,32 @@ class TwitchUtils(TwitchUtilsInterface):
         ):
             return
 
+        await self.__safeSendViaIrc(
+            messageable = messageable,
+            message = message
+        )
+
+    async def __safeSendViaIrc(
+        self,
+        messageable: TwitchMessageable,
+        message: str
+    ):
         successfullySent = False
-        numberOfRetries = 0
-        exceptions: list[Exception] | None = None
 
-        while not successfullySent and numberOfRetries < self.__maxRetries:
-            try:
-                await messageable.send(message)
-                successfullySent = True
-            except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message ({messageable.getTwitchChannelName()=}) ({numberOfRetries=}) ({len(message)=}) ({message=}): {e}', e, traceback.format_exc())
-                numberOfRetries = numberOfRetries + 1
-
-                if exceptions is None:
-                    exceptions = list()
-
-                exceptions.append(e)
-                await asyncio.sleep(self.__sleepBeforeRetryTimeSeconds)
+        try:
+            await messageable.send(message)
+            successfullySent = True
+        except Exception as e:
+            self.__timber.log('TwitchUtils', f'Encountered error when trying to send message via IRC ({messageable.getTwitchChannelName()=}) ({len(message)=}) ({message=}): {e}', e, traceback.format_exc())
 
         self.__sentMessageLogger.log(
             successfullySent = successfullySent,
-            numberOfRetries = numberOfRetries,
-            exceptions = exceptions,
+            numberOfRetries = 0,
+            exceptions = None,
             messageMethod = MessageMethod.IRC,
             msg = message,
             twitchChannel = messageable.getTwitchChannelName()
         )
-
-        if not successfullySent:
-            self.__timber.log('TwitchUtils', f'Failed to send message ({messageable.getTwitchChannelName()=}) ({numberOfRetries=}) ({len(message)=}) ({message=})')
 
     async def __safeSendViaTwitchChatApi(
         self,
@@ -213,25 +199,14 @@ class TwitchUtils(TwitchUtilsInterface):
         message: str,
         replyMessageId: str | None
     ) -> bool:
-        if not isinstance(messageable, TwitchMessageable):
-            raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidStr(message):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif replyMessageId is not None and not isinstance(replyMessageId, str):
-            raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
-
-        generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettingsSnapshot.isTwitchChatApiEnabled():
-            return False
-
         twitchChannelId = await messageable.getTwitchChannelId()
         twitchAccessToken = await self.__getTwitchAccessToken()
         senderId = await self.__getTwitchUserId()
-        sendAttempt = 0
+        sendAttempt = 1
         shouldRetry = False
         successfullySent = False
 
-        while sendAttempt == 0 or shouldRetry:
+        while sendAttempt == 1 or shouldRetry:
             chatRequest: TwitchSendChatMessageRequest
 
             if sendAttempt == 0 and utils.isValidStr(replyMessageId):
@@ -263,8 +238,10 @@ class TwitchUtils(TwitchUtilsInterface):
             successfullySent = response is not None and response.isSent and exception is None
 
             if not successfullySent:
-                self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({sendAttempt=}): {exception}', exception, traceback.format_exc())
-                sendAttempt = sendAttempt + 1
+                shouldRetry = sendAttempt == 1 and utils.isValidStr(chatRequest.replyParentMessageId)
+                self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({sendAttempt=}) ({shouldRetry=}): {exception}', exception, traceback.format_exc())
+
+            sendAttempt += 1
 
         if successfullySent:
             self.__sentMessageLogger.log(
