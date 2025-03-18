@@ -15,6 +15,14 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.ADAM.humanName
         assert result == 'Adam'
 
+    def test_humanName_withAsmr(self):
+        result = TtsMonsterVoice.ASMR.humanName
+        assert result == 'ASMR'
+
+    def test_humanName_withGlados(self):
+        result = TtsMonsterVoice.GLADOS.humanName
+        assert result == 'Glados'
+
     def test_humanName_withKkona(self):
         result = TtsMonsterVoice.KKONA.humanName
         assert result == 'Kkona'
@@ -22,6 +30,10 @@ class TestTtsMonsterVoice:
     def test_humanName_withShadow(self):
         result = TtsMonsterVoice.SHADOW.humanName
         assert result == 'Shadow'
+
+    def test_humanName_withSpongebob(self):
+        result = TtsMonsterVoice.SPONGEBOB.humanName
+        assert result == 'Spongebob'
 
     def test_humanName_withZeroTwo(self):
         result = TtsMonsterVoice.ZERO_TWO.humanName
@@ -39,6 +51,14 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.ADAM.inMessageName
         assert result == 'adam'
 
+    def test_inMessageName_withAsmr(self):
+        result = TtsMonsterVoice.ASMR.inMessageName
+        assert result == 'asmr'
+
+    def test_inMessageName_withGlados(self):
+        result = TtsMonsterVoice.GLADOS.inMessageName
+        assert result == 'glados'
+
     def test_inMessageName_withKkona(self):
         result = TtsMonsterVoice.KKONA.inMessageName
         assert result == 'kkona'
@@ -46,6 +66,10 @@ class TestTtsMonsterVoice:
     def test_inMessageName_withShadow(self):
         result = TtsMonsterVoice.SHADOW.inMessageName
         assert result == 'shadow'
+
+    def test_inMessageName_withSpongebob(self):
+        result = TtsMonsterVoice.SPONGEBOB.inMessageName
+        assert result == 'spongebob'
 
     def test_inMessageName_withZeroTwo(self):
         result = TtsMonsterVoice.ZERO_TWO.inMessageName

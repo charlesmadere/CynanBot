@@ -42,6 +42,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         brian.append(re.compile(r'^\s*brian\s*$', re.IGNORECASE))
         brian.freeze()
 
+        glados: FrozenList[Pattern] = FrozenList()
+        glados.append(re.compile(r'^\s*glados\s*$', re.IGNORECASE))
+        glados.freeze()
+
         hikari: FrozenList[Pattern] = FrozenList()
         hikari.append(re.compile(r'^\s*hikari\s*$', re.IGNORECASE))
         hikari.freeze()
@@ -66,6 +70,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         shadow.append(re.compile(r'^\s*shadow\s*$', re.IGNORECASE))
         shadow.freeze()
 
+        spongebob: FrozenList[Pattern] = FrozenList()
+        spongebob.append(re.compile(r'^\s*spongebob\s*$', re.IGNORECASE))
+        spongebob.freeze()
+
         witch: FrozenList[Pattern] = FrozenList()
         witch.append(re.compile(r'^\s*witch\s*$', re.IGNORECASE))
         witch.freeze()
@@ -78,12 +86,14 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             TtsMonsterVoice.ADAM: adam,
             TtsMonsterVoice.ASMR: asmr,
             TtsMonsterVoice.BRIAN: brian,
+            TtsMonsterVoice.GLADOS: glados,
             TtsMonsterVoice.HIKARI: hikari,
             TtsMonsterVoice.JAZZ: jazz,
             TtsMonsterVoice.KKONA: kkona,
             TtsMonsterVoice.NARRATOR: narrator,
             TtsMonsterVoice.PIRATE: pirate,
             TtsMonsterVoice.SHADOW: shadow,
+            TtsMonsterVoice.SPONGEBOB: spongebob,
             TtsMonsterVoice.WITCH: witch,
             TtsMonsterVoice.ZERO_TWO: zeroTwo
         })
@@ -191,12 +201,14 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             case TtsMonsterVoice.ADAM: return 'adam'
             case TtsMonsterVoice.ASMR: return 'asmr'
             case TtsMonsterVoice.BRIAN: return 'brian'
+            case TtsMonsterVoice.GLADOS: return 'glados'
             case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.KKONA: return 'kkona'
             case TtsMonsterVoice.NARRATOR: return 'narrator'
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
+            case TtsMonsterVoice.SPONGEBOB: return 'spongebob'
             case TtsMonsterVoice.WITCH: return 'witch'
             case TtsMonsterVoice.ZERO_TWO: return 'zero_two'
             case _: raise RuntimeError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')

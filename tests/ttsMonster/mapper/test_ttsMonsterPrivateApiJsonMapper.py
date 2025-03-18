@@ -97,6 +97,17 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseVoice(self):
+        results: set[TtsMonsterVoice] = set()
+
+        for voice in TtsMonsterVoice:
+            string = await self.mapper.serializeVoice(voice)
+            parsedVoice = await self.mapper.requireVoice(string)
+            results.add(parsedVoice)
+
+        assert len(results) == len(TtsMonsterVoice)
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withBrian(self):
         result = await self.mapper.parseVoice('brian')
         assert result is TtsMonsterVoice.BRIAN
