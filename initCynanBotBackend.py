@@ -1971,7 +1971,11 @@ twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
 )
 
 twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
-    timber = timber
+    cheerActionHelper = cheerActionHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine
 )
 
 twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(

@@ -2038,7 +2038,11 @@ twitchChatHandler: AbsTwitchChatHandler | None = TwitchChatHandler(
 )
 
 twitchCheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
-    timber = timber
+    cheerActionHelper = cheerActionHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    triviaGameBuilder = None,
+    triviaGameMachine = None
 )
 
 twitchFollowHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(

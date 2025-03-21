@@ -1029,6 +1029,9 @@ class CynanBot(
         if self.__twitchChatHandler is not None:
             self.__twitchChatHandler.setTwitchChannelProvider(self)
 
+        if self.__twitchCheerHandler is not None:
+            self.__twitchCheerHandler.setTwitchChannelProvider(self)
+
         if self.__twitchFollowHandler is not None:
             self.__twitchFollowHandler.setTwitchChannelProvider(self)
 

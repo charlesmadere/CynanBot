@@ -118,30 +118,37 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.requirePayload().event
+        self.__timber.log('TwitchChatHandler', f'Received a chat event: ({user=}) ({dataBundle=})')
 
-        if event is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that has no event: ({user=}) ({userId=}) ({dataBundle=})')
-            return
-
-        chatterUserId = event.chatterUserId
-        chatterUserLogin = event.chatterUserLogin
-        chatterUserName = event.chatterUserName
-        chatMessage = event.chatMessage
-
-        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({userId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
-            return
-
-        await self.__handleCheer(
-            broadcasterUserId = userId,
-            chatterUserId = chatterUserId,
-            chatterUserLogin = chatterUserLogin,
-            chatMessage = chatMessage,
-            twitchChatMessageId = event.messageId,
-            cheer = event.cheer,
-            user = user
-        )
+        ##################################################################################################
+        ### INTENTIONALLY COMMENTED OUT WHILE I TEST MOVING THIS FUNCTIONALITY INTO TWITCHCHEERHANDLER ###
+        ##################################################################################################
+        # return
+        #
+        # event = dataBundle.requirePayload().event
+        #
+        # if event is None:
+        #     self.__timber.log('TwitchChatHandler', f'Received a data bundle that has no event: ({user=}) ({userId=}) ({dataBundle=})')
+        #     return
+        #
+        # chatterUserId = event.chatterUserId
+        # chatterUserLogin = event.chatterUserLogin
+        # chatterUserName = event.chatterUserName
+        # chatMessage = event.chatMessage
+        #
+        # if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
+        #     self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({userId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({event.cheer=})')
+        #     return
+        #
+        # await self.__handleCheer(
+        #     broadcasterUserId = userId,
+        #     chatterUserId = chatterUserId,
+        #     chatterUserLogin = chatterUserLogin,
+        #     chatMessage = chatMessage,
+        #     twitchChatMessageId = event.messageId,
+        #     cheer = event.cheer,
+        #     user = user
+        # )
 
     async def __processCheerAction(
         self,
