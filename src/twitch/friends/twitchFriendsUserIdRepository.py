@@ -86,7 +86,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         return self.__aneevUserId
 
     async def getAnivUserId(self) -> str | None:
-        return self.__anivUserId
+        # TODO stupid hack until we have a way to have per stream aniv accounts X_X
+        return await self.getAcacUserId()
 
     async def getBastionBlueUserId(self) -> str | None:
         return self.__bastionBlueUserId
