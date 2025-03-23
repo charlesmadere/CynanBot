@@ -26,7 +26,6 @@ from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePoin
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
-from src.channelPointRedemptions.shizaPointRedemption import ShizaPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
@@ -1895,11 +1894,6 @@ pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemp
     twitchUtils = twitchUtils
 )
 
-shizaPointRedemption: ShizaPointRedemption | None = ShizaPointRedemption(
-    timber = timber,
-    twitchUtils = twitchUtils
-)
-
 if timeoutActionHelper is None:
     timeoutPointRedemption: TimeoutPointRedemption | None = None
 else:
@@ -1942,7 +1936,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketCon
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = casualGamePollPointRedemption,
     chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = cutenessPointRedemption,
@@ -1951,7 +1945,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
-    shizaPointRedemption = shizaPointRedemption,
     soundAlertPointRedemption = None,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
     timeoutPointRedemption = timeoutPointRedemption,

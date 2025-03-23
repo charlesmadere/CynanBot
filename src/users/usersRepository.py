@@ -174,7 +174,6 @@ class UsersRepository(UsersRepositoryInterface):
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
-        isShizaMessageEnabled = utils.getBoolFromDict(userJson, 'shizaMessageEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isSupStreamerEnabled = utils.getBoolFromDict(userJson, 'supStreamerEnabled', False)
@@ -197,7 +196,6 @@ class UsersRepository(UsersRepositoryInterface):
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
         randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
         setChatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'setChatterPreferredTtsRewardId', '')
-        shizaMessageRewardId = utils.getStrFromDict(userJson, 'shizaMessageRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
@@ -384,7 +382,6 @@ class UsersRepository(UsersRepositoryInterface):
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
-            isShizaMessageEnabled = isShizaMessageEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
@@ -440,7 +437,6 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnShinyRewardId = pkmnShinyRewardId,
             randomSoundAlertRewardId = randomSoundAlertRewardId,
             setChatterPreferredTtsRewardId = setChatterPreferredTtsRewardId,
-            shizaMessageRewardId = shizaMessageRewardId,
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,

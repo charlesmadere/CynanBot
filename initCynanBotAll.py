@@ -30,7 +30,6 @@ from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePoin
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
-from src.channelPointRedemptions.shizaPointRedemption import ShizaPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
@@ -1210,7 +1209,7 @@ googleTranslationApi = GoogleTranslationApi(
     timber = timber
 )
 
-translationHelper: TranslationHelperInterface | None = TranslationHelper(
+translationHelper: TranslationHelperInterface = TranslationHelper(
     deepLTranslationApi = deepLTranslationApi,
     googleTranslationApi = googleTranslationApi,
     languagesRepository = languagesRepository,
@@ -1725,29 +1724,27 @@ guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = Gu
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
-mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
+mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
 
-mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
-if mostRecentAnivMessageRepository is not None:
-    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
-        anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-        anivSettingsRepository = anivSettingsRepository,
-        anivUserIdProvider = anivUserIdProvider,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-        timber = timber,
-        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-        timeZoneRepository = timeZoneRepository,
-        trollmojiHelper = trollmojiHelper,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchHandleProvider = authRepository,
-        twitchTimeoutHelper = twitchTimeoutHelper,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils
-    )
+mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface = MostRecentAnivMessageTimeoutHelper(
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+    anivSettingsRepository = anivSettingsRepository,
+    anivUserIdProvider = anivUserIdProvider,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+    twitchHandleProvider = authRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils
+)
 
 
 ##############################################
@@ -2631,7 +2628,7 @@ accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = AccessLevelCheck
     twitchTokensRepository = twitchTokensRepository
 )
 
-anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
+anivCheckChatAction: AnivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
     anivUserIdProvider = anivUserIdProvider,
     timber = timber,
@@ -2740,7 +2737,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: CasualGamePollPointRedemption = CasualGamePollPointRedemption(
     timber = timber,
     twitchUtils = twitchUtils
 )
@@ -2790,11 +2787,6 @@ pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None = PkmnEvolvePointRed
 pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchUtils = twitchUtils
-)
-
-shizaPointRedemption: ShizaPointRedemption | None = ShizaPointRedemption(
     timber = timber,
     twitchUtils = twitchUtils
 )
@@ -2860,7 +2852,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = casualGamePollPointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
@@ -2869,7 +2861,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
-    shizaPointRedemption = shizaPointRedemption,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
     timeoutPointRedemption = timeoutPointRedemption,

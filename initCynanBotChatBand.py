@@ -903,7 +903,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketCon
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
     casualGamePollPointRedemption = None,
     chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = None,
@@ -912,7 +912,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | No
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,
     pkmnShinyPointRedemption = None,
-    shizaPointRedemption = None,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = None,
     timeoutPointRedemption = None,
