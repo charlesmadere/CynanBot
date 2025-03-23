@@ -209,7 +209,7 @@ class TwitchUtils(TwitchUtilsInterface):
         while sendAttempt == 1 or shouldRetry:
             chatRequest: TwitchSendChatMessageRequest
 
-            if sendAttempt == 0 and utils.isValidStr(replyMessageId):
+            if sendAttempt == 1 and utils.isValidStr(replyMessageId):
                 chatRequest = TwitchSendChatMessageRequest(
                     broadcasterId = twitchChannelId,
                     message = message,
