@@ -4,7 +4,19 @@ from abc import ABC, abstractmethod
 class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
+    async def getAcacUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getAlbeeesUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getAneevUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getAnivUserId(self) -> str | None:
         pass
 
     @abstractmethod
