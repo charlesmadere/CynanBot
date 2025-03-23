@@ -13,7 +13,6 @@ from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMess
 from ...microsoftSam.models.microsoftSamFileReference import MicrosoftSamFileReference
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -126,24 +125,14 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftSamFileReference | None:
-        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {cleanedMessage}'
-        elif utils.isValidStr(cleanedMessage):
-            fullMessage = cleanedMessage
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
+        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         return await self.__microsoftSamHelper.generateTts(
             voice = voice,
-            message = fullMessage,
+            donationPrefix = donationPrefix,
+            message = cleanedMessage,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )

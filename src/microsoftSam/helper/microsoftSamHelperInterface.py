@@ -10,6 +10,7 @@ class MicrosoftSamHelperInterface(ABC):
     async def generateTts(
         self,
         voice: MicrosoftSamVoice | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
