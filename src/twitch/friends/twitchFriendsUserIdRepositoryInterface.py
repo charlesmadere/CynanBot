@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
+from ...aniv.anivUserIdProviderInterface import AnivUserIdProviderInterface
 
-class TwitchFriendsUserIdRepositoryInterface(ABC):
+
+class TwitchFriendsUserIdRepositoryInterface(AnivUserIdProviderInterface, ABC):
 
     @abstractmethod
     async def getAcacUserId(self) -> str | None:

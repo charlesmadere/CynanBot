@@ -12,8 +12,6 @@ from src.aniv.anivCopyMessageTimeoutScoreRepository import AnivCopyMessageTimeou
 from src.aniv.anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from src.aniv.anivSettingsRepository import AnivSettingsRepository
 from src.aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
-from src.aniv.anivUserIdProvider import AnivUserIdProvider
-from src.aniv.anivUserIdProviderInterface import AnivUserIdProviderInterface
 from src.aniv.mostRecentAnivMessageRepository import MostRecentAnivMessageRepository
 from src.aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
@@ -1717,10 +1715,7 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     timber = timber
 )
 
-anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
-
 guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
-    anivUserIdProvider = anivUserIdProvider,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
@@ -1733,7 +1728,7 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = Most
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface = MostRecentAnivMessageTimeoutHelper(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettingsRepository = anivSettingsRepository,
-    anivUserIdProvider = anivUserIdProvider,
+    anivUserIdProvider = twitchFriendsUserIdRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
@@ -2630,7 +2625,7 @@ accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = AccessLevelCheck
 
 anivCheckChatAction: AnivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
-    anivUserIdProvider = anivUserIdProvider,
+    anivUserIdProvider = twitchFriendsUserIdRepository,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
@@ -2673,7 +2668,7 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
 )
 
 saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-    anivUserIdProvider = anivUserIdProvider,
+    anivUserIdProvider = twitchFriendsUserIdRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
 )
 
