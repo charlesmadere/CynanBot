@@ -1788,15 +1788,15 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 ## Chat Actions initialization section ##
 #########################################
 
-anivCheckChatAction: AnivCheckChatAction | None = AnivCheckChatAction(
+anivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
-    anivUserIdProvider = twitchFriendsUserIdRepository,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    whichAnivUserHelper = whichAnivUserHelper
 )
 
 chatBackMessagesChatAction = ChatBackMessagesChatAction(
@@ -1835,8 +1835,8 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
 saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
 if mostRecentAnivMessageRepository is not None:
     saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-        anivUserIdProvider = twitchFriendsUserIdRepository,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+        whichAnivUserHelper = whichAnivUserHelper
     )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(

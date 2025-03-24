@@ -1,10 +1,10 @@
 from .absChatAction import AbsChatAction
-from ..aniv.anivUserIdProviderInterface import AnivUserIdProviderInterface
 from ..aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
-from ..misc import utils as utils
+from ..aniv.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..twitch.configuration.twitchMessage import TwitchMessage
+from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..users.userInterface import UserInterface
 
 
@@ -12,16 +12,16 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
 
     def __init__(
         self,
-        anivUserIdProvider: AnivUserIdProviderInterface,
-        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface
+        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
+        whichAnivUserHelper: WhichAnivUserHelperInterface
     ):
-        if not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
-            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
-        elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
+        if not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
+        elif not isinstance(whichAnivUserHelper, TwitchFriendsUserIdRepositoryInterface):
+            raise TypeError(f'whichAnivUserHelper argument is malformed: \"{whichAnivUserHelper}\"')
 
-        self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
+        self.__whichAnivUserHelper: WhichAnivUserHelperInterface = whichAnivUserHelper
 
     async def handleChat(
         self,
@@ -29,9 +29,9 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        anivUserId = await self.__anivUserIdProvider.getAnivUserId()
+        anivUser = await self.__whichAnivUserHelper.getAnivUser(user.whichAnivUser)
 
-        if not utils.isValidStr(anivUserId) or anivUserId != message.getAuthorId():
+        if anivUser is None or anivUser.userId != message.getAuthorId():
             return False
 
         await self.__mostRecentAnivMessageRepository.set(

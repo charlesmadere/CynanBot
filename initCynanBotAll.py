@@ -2638,13 +2638,13 @@ accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = AccessLevelCheck
 
 anivCheckChatAction: AnivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
-    anivUserIdProvider = twitchFriendsUserIdRepository,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    whichAnivUserHelper = whichAnivUserHelper
 )
 
 chatBackMessagesChatAction = ChatBackMessagesChatAction(
