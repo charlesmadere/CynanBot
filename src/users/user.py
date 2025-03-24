@@ -3,6 +3,7 @@ from datetime import tzinfo
 from frozendict import frozendict
 from frozenlist import FrozenList
 
+from .aniv.whichAnivUser import WhichAnivUser
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -110,6 +111,7 @@ class User(UserInterface):
         triviaGameRewardId: str | None,
         ttsChatterRewardId: str | None,
         defaultTtsProvider: TtsProvider,
+        whichAnivUser: WhichAnivUser | None,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
@@ -295,6 +297,8 @@ class User(UserInterface):
             raise TypeError(f'ttsChatterRewardId argument is malformed: \"{ttsChatterRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
+        elif whichAnivUser is not None and not isinstance(whichAnivUser, WhichAnivUser):
+            raise TypeError(f'whichAnivUser argument is malformed: \"{whichAnivUser}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
             raise TypeError(f'crowdControlBoosterPacks argument is malformed: \"{crowdControlBoosterPacks}\"')
         elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
@@ -405,6 +409,7 @@ class User(UserInterface):
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__ttsChatterRewardId: str | None = ttsChatterRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
+        self.__whichAnivUser: WhichAnivUser | None = whichAnivUser
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = decTalkSongBoosterPacks
@@ -838,3 +843,7 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
+
+    @property
+    def whichAnivUser(self) -> WhichAnivUser | None:
+        return self.__whichAnivUser

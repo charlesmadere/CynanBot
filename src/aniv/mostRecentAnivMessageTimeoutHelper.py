@@ -1,14 +1,15 @@
 import random
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from .anivTimeoutData import AnivTimeoutData
-from .anivUserIdProviderInterface import AnivUserIdProviderInterface
 from .mostRecentAnivMessage import MostRecentAnivMessage
 from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from .whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from ..language.languageEntry import LanguageEntry
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -22,16 +23,21 @@ from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
+from ..users.aniv.whichAnivUser import WhichAnivUser
 from ..users.userInterface import UserInterface
 
 
 class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInterface):
 
+    @dataclass(frozen = True)
+    class AnivUserData:
+        userId: str
+        whichAnivUser: WhichAnivUser
+
     def __init__(
         self,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
         anivSettingsRepository: AnivSettingsRepositoryInterface,
-        anivUserIdProvider: AnivUserIdProviderInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
@@ -41,14 +47,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchUtils: TwitchUtilsInterface,
+        whichAnivUserHelper: WhichAnivUserHelperInterface
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
         elif not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
-        elif not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
-            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
         elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -69,10 +74,11 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(whichAnivUserHelper, WhichAnivUserHelperInterface):
+            raise TypeError(f'whichAnivUserHelper argument is malformed: \"{whichAnivUserHelper}\"')
 
         self.__anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = anivCopyMessageTimeoutScoreRepository
         self.__anivSettingsRepository: AnivSettingsRepositoryInterface = anivSettingsRepository
-        self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
         self.__timber: TimberInterface = timber
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
@@ -83,6 +89,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__whichAnivUserHelper: WhichAnivUserHelperInterface = whichAnivUserHelper
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
@@ -94,16 +101,30 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchChannelId: str,
         user: UserInterface
     ) -> bool:
+        if chatterMessage is not None and not isinstance(chatterMessage, str):
+            raise TypeError(f'chatterMessage argument is malformed: \"{chatterMessage}\"')
+        elif not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
         if not user.isAnivMessageCopyTimeoutEnabled:
             return False
 
-        anivUserId = await self.__anivUserIdProvider.getAnivUserId()
+        anivUser = await self.__whichAnivUserHelper.getAnivUser(user.whichAnivUser)
 
-        if not utils.isValidStr(anivUserId) or anivUserId == chatterUserId or twitchChannelId == chatterUserId:
+        if anivUser is None or anivUser.userId == chatterUserId or twitchChannelId == chatterUserId:
             return False
 
         chatterMessage = utils.cleanStr(chatterMessage)
-        anivMessage = await self.__mostRecentAnivMessageRepository.get(twitchChannelId)
+
+        anivMessage = await self.__mostRecentAnivMessageRepository.get(
+            twitchChannelId = twitchChannelId
+        )
 
         if not utils.isValidStr(chatterMessage) or anivMessage is None or not utils.isValidStr(anivMessage.message):
             return False

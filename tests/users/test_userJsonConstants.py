@@ -9,7 +9,7 @@ class TestUserJsonConstants:
         for userJsonConstant in UserJsonConstant:
             allJsonKeys.add(userJsonConstant.jsonKey)
 
-        assert len(allJsonKeys) == len(list(UserJsonConstant))
+        assert len(allJsonKeys) == len(UserJsonConstant)
 
     def test_jsonKey_withAnivContentScanningEnabled(self):
         result = UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey
@@ -94,3 +94,7 @@ class TestUserJsonConstants:
     def test_jsonKey_withWeatherEnabled(self):
         result = UserJsonConstant.WEATHER_ENABLED.jsonKey
         assert result == 'weatherEnabled'
+
+    def test_jsonKey_withWhichAnivUser(self):
+        result = UserJsonConstant.WHICH_ANIV_USER.jsonKey
+        assert result == 'whichAnivUser'

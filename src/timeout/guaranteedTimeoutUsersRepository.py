@@ -1,5 +1,6 @@
 from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..misc import utils as utils
+from ..timber.timberInterface import TimberInterface
 from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
 
@@ -7,14 +8,22 @@ class GuaranteedTimeoutUsersRepository(GuaranteedTimeoutUsersRepositoryInterface
 
     def __init__(
         self,
+        timber: TimberInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface
     ):
-        if not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
+        if not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
 
+        self.__timber: TimberInterface = timber
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
 
         self.__userIds: frozenset[str] | None = None
+
+    async def clearCaches(self):
+        self.__userIds = None
+        self.__timber.log('GuaranteedTimeoutUsersRepository', 'Caches cleared')
 
     async def getUserIds(self) -> frozenset[str]:
         userIds = self.__userIds

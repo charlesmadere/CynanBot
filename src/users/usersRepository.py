@@ -8,6 +8,7 @@ import aiofiles.ospath
 from frozendict import frozendict
 from frozenlist import FrozenList
 
+from .aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
@@ -40,6 +41,7 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
+        anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface,
         chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface,
         crowdControlJsonParser: CrowdControlJsonParserInterface,
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
@@ -54,7 +56,9 @@ class UsersRepository(UsersRepositoryInterface):
         ttsJsonMapper: TtsJsonMapperInterface,
         usersFile: str = '../config/usersRepository.json'
     ):
-        if not isinstance(chatSoundAlertJsonParser, ChatSoundAlertJsonParserInterface):
+        if not isinstance(anivUserSettingsJsonParser, AnivUserSettingsJsonParserInterface):
+            raise TypeError(f'anivUserSettingsJsonParser argument is malformed: \"{anivUserSettingsJsonParser}\"')
+        elif not isinstance(chatSoundAlertJsonParser, ChatSoundAlertJsonParserInterface):
             raise TypeError(f'chatSoundAlertJsonParser argument is malformed: \"{chatSoundAlertJsonParser}\"')
         elif not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
             raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
@@ -81,6 +85,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
+        self.__anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface = anivUserSettingsJsonParser
         self.__chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = chatSoundAlertJsonParser
         self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
         self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
@@ -337,6 +342,8 @@ class UsersRepository(UsersRepositoryInterface):
             ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
             ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
 
+        whichAnivUser = self.__anivUserSettingsJsonParser.parseWhichAnivUser(userJson.get(UserJsonConstant.WHICH_ANIV_USER.jsonKey))
+
         chatBackMessages: FrozenList[str] | None = None
         if isChatBackMessagesEnabled:
             chatBackMessagesJson: list[str] | Any | None = userJson.get('chatBackMessages', None)
@@ -442,6 +449,7 @@ class UsersRepository(UsersRepositoryInterface):
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             defaultTtsProvider = defaultTtsProvider,
+            whichAnivUser = whichAnivUser,
             crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,
             decTalkSongBoosterPacks = decTalkSongBoosterPacks,

@@ -4,6 +4,7 @@ from datetime import tzinfo
 from frozendict import frozendict
 from frozenlist import FrozenList
 
+from .aniv.whichAnivUser import WhichAnivUser
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -521,4 +522,9 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def whichAnivUser(self) -> WhichAnivUser | None:
         pass

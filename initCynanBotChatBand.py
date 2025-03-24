@@ -200,6 +200,8 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
+from src.users.aniv.anivUserSettingsJsonParser import AnivUserSettingsJsonParser
+from src.users.aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from src.users.chatSoundAlert.stub.stubChatSoundAlertJsonParser import StubChatSoundAlertJsonParser
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
@@ -406,6 +408,8 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     userIdsRepository = userIdsRepository
 )
 
+anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface = AnivUserSettingsJsonParser()
+
 chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = StubChatSoundAlertJsonParser()
 
 crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
@@ -431,6 +435,7 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
+    anivUserSettingsJsonParser = anivUserSettingsJsonParser,
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,

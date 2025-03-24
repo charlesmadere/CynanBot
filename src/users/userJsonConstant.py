@@ -24,6 +24,7 @@ class UserJsonConstant(Enum):
     TTS_ENABLED = auto()
     TTS_MONSTER_API_USAGE_REPORTING_ENABLED = auto()
     WEATHER_ENABLED = auto()
+    WHICH_ANIV_USER = auto()
 
     @property
     def jsonKey(self) -> str:
@@ -49,4 +50,5 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.TTS_ENABLED: return 'ttsEnabled'
             case UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED: return 'ttsMonsterApiUsageReportingEnabled'
             case UserJsonConstant.WEATHER_ENABLED: return 'weatherEnabled'
+            case UserJsonConstant.WHICH_ANIV_USER: return 'whichAnivUser'
             case _: raise ValueError(f'unknown UserJsonConstant value: \"{self}\"')

@@ -14,6 +14,8 @@ from src.aniv.mostRecentAnivMessageRepository import MostRecentAnivMessageReposi
 from src.aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
 from src.aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from src.aniv.whichAnivUserHelper import WhichAnivUserHelper
+from src.aniv.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from src.beanStats.beanStatsPresenter import BeanStatsPresenter
 from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from src.beanStats.beanStatsRepository import BeanStatsRepository
@@ -432,6 +434,8 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
+from src.users.aniv.anivUserSettingsJsonParser import AnivUserSettingsJsonParser
+from src.users.aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from src.users.chatSoundAlert.stub.stubChatSoundAlertJsonParser import StubChatSoundAlertJsonParser
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
@@ -642,6 +646,8 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     userIdsRepository = userIdsRepository
 )
 
+anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface = AnivUserSettingsJsonParser()
+
 chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = StubChatSoundAlertJsonParser()
 
 crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
@@ -667,6 +673,7 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
+    anivUserSettingsJsonParser = anivUserSettingsJsonParser,
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
@@ -1502,13 +1509,19 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
 )
 
 guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
+    timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
-mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
+mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository
+)
+
+whichAnivUserHelper: WhichAnivUserHelperInterface = WhichAnivUserHelper(
+    timber = timber,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
 )
 
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
@@ -1516,7 +1529,6 @@ if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
         anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
         anivSettingsRepository = anivSettingsRepository,
-        anivUserIdProvider = twitchFriendsUserIdRepository,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
         timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
@@ -1526,7 +1538,8 @@ if mostRecentAnivMessageRepository is not None:
         twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils
+        twitchUtils = twitchUtils,
+        whichAnivUserHelper = whichAnivUserHelper
     )
 
 

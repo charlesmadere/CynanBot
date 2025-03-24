@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class AnivUser(Enum):
+class WhichAnivUser(Enum):
 
     ACAC = auto()
     ANEEV = auto()

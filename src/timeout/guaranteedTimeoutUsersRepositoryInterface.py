@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
+from ..misc.clearable import Clearable
 
-class GuaranteedTimeoutUsersRepositoryInterface(ABC):
+
+class GuaranteedTimeoutUsersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getUserIds(self) -> frozenset[str]:
