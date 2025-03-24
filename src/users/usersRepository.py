@@ -9,6 +9,7 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
+from .aniv.whichAnivUser import WhichAnivUser
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
@@ -342,7 +343,9 @@ class UsersRepository(UsersRepositoryInterface):
             ttsBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('ttsBoosterPacks')
             ttsBoosterPacks = self.__ttsBoosterPackParser.parseBoosterPacks(ttsBoosterPacksJson)
 
-        whichAnivUser = self.__anivUserSettingsJsonParser.parseWhichAnivUser(userJson.get(UserJsonConstant.WHICH_ANIV_USER.jsonKey))
+        whichAnivUser = WhichAnivUser.ANEEV
+        if utils.isValidStr(userJson.get(UserJsonConstant.WHICH_ANIV_USER.jsonKey)):
+            whichAnivUser = self.__anivUserSettingsJsonParser.parseWhichAnivUser(utils.getStrFromDict(userJson, UserJsonConstant.WHICH_ANIV_USER.jsonKey))
 
         chatBackMessages: FrozenList[str] | None = None
         if isChatBackMessagesEnabled:
