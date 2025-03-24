@@ -1876,12 +1876,12 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
     userIdsRepository = userIdsRepository
 )
 
-saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-    anivUserIdProvider = twitchFriendsUserIdRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    whichAnivUserHelper = whichAnivUserHelper
 )
 
-soundAlertChatAction: SoundAlertChatAction = SoundAlertChatAction(
+soundAlertChatAction = SoundAlertChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,

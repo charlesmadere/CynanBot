@@ -1,10 +1,8 @@
 from .absChatAction import AbsChatAction
-from ..aniv.mostRecentAnivMessageRepositoryInterface import \
-    MostRecentAnivMessageRepositoryInterface
+from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..aniv.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..users.userInterface import UserInterface
 
 
@@ -17,7 +15,7 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
     ):
         if not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
-        elif not isinstance(whichAnivUserHelper, TwitchFriendsUserIdRepositoryInterface):
+        elif not isinstance(whichAnivUserHelper, WhichAnivUserHelperInterface):
             raise TypeError(f'whichAnivUserHelper argument is malformed: \"{whichAnivUserHelper}\"')
 
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
