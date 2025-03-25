@@ -17,3 +17,7 @@ class MicrosoftTtsSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getMediaPlayerVolume(self) -> int | None:
         pass
+
+    @abstractmethod
+    async def useDonationPrefix(self) -> bool:
+        pass

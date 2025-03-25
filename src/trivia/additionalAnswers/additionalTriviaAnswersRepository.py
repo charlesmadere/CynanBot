@@ -330,7 +330,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                             triviatype TEXT NOT NULL,
                             userid TEXT NOT NULL,
                             PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
-                        )
+                        ) STRICT
                     '''
                 )
 

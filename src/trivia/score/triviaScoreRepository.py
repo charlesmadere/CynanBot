@@ -252,7 +252,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                             twitchchannelid TEXT NOT NULL,
                             userid TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
-                        )
+                        ) STRICT
                     '''
                 )
 

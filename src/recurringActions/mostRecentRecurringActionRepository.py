@@ -102,7 +102,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                             actiontype TEXT NOT NULL,
                             datetime TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

@@ -114,7 +114,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                         CREATE TABLE IF NOT EXISTS streamelementsuserkeys (
                             userkey TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

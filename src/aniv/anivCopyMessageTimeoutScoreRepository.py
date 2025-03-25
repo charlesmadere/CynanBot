@@ -244,7 +244,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                             chatteruserid TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 

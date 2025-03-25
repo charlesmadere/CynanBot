@@ -253,7 +253,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                             minutesbetween INTEGER DEFAULT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (actiontype, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 

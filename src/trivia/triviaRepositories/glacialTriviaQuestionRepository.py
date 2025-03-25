@@ -129,7 +129,7 @@ class GlacialTriviaQuestionRepository(
                     triviaId TEXT NOT NULL,
                     triviaType TEXT NOT NULL,
                     PRIMARY KEY (originalTriviaSource, triviaId)
-                )
+                ) STRICT
             '''
         )
         await cursor.close()
@@ -140,7 +140,7 @@ class GlacialTriviaQuestionRepository(
                     answer TEXT NOT NULL COLLATE NOCASE,
                     originalTriviaSource TEXT NOT NULL,
                     triviaId TEXT NOT NULL
-                )
+                ) STRICT
             '''
         )
         await cursor.close()
@@ -151,7 +151,7 @@ class GlacialTriviaQuestionRepository(
                     response TEXT NOT NULL COLLATE NOCASE,
                     originalTriviaSource TEXT NOT NULL,
                     triviaId TEXT NOT NULL
-                )
+                ) STRICT
             '''
         )
         await cursor.close()

@@ -8,7 +8,6 @@ from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from ...streamElements.models.streamElementsFileReference import StreamElementsFileReference
@@ -123,23 +122,13 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> StreamElementsFileReference | None:
-        message = await self.__streamElementsMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        if utils.isValidStr(message) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {message}'
-        elif utils.isValidStr(message):
-            fullMessage = message
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
+        message = await self.__streamElementsMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         return await self.__streamElementsHelper.generateTts(
-            message = fullMessage,
+            donationPrefix = donationPrefix,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
             voice = voice

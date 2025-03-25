@@ -120,7 +120,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                             triviatype TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (triviaid, triviasource, triviatype, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 

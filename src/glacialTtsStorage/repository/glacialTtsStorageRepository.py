@@ -168,7 +168,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     provider TEXT NOT NULL,
                     voice TEXT DEFAULT NULL COLLATE NOCASE,
                     PRIMARY KEY (glacialId, provider)
-                )
+                ) STRICT
             '''
         )
 

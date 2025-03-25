@@ -80,15 +80,34 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
 
         self.__timber.log('MicrosoftTtsHelper', f'Created new directories ({directory=})')
 
+    async def __createFullMessage(
+        self,
+        donationPrefix: str | None,
+        message: str | None
+    ) -> str | None:
+        if not await self.__microsoftTtsSettingsRepository.useDonationPrefix():
+            return message
+        elif utils.isValidStr(donationPrefix) and utils.isValidStr(message):
+            return f'{donationPrefix} {message}'
+        elif utils.isValidStr(donationPrefix):
+            return donationPrefix
+        elif utils.isValidStr(message):
+            return message
+        else:
+            return None
+
     async def generateTts(
         self,
         voice: MicrosoftTtsVoice | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> MicrosoftTtsFileReference | None:
         if voice is not None and not isinstance(voice, MicrosoftTtsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
+        elif donationPrefix is not None and not isinstance(donationPrefix, str):
+            raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -96,7 +115,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not utils.isValidStr(message):
+        if not utils.isValidStr(donationPrefix) and not utils.isValidStr(message):
             return None
 
         if voice is None:
@@ -108,8 +127,16 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
             message = messageVoiceResult.message
             voice = messageVoiceResult.voice
 
+        fullMessage = await self.__createFullMessage(
+            donationPrefix = donationPrefix,
+            message = message
+        )
+
+        if not utils.isValidStr(fullMessage):
+            return None
+
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
-            message = message,
+            message = fullMessage,
             voice = await self.__microsoftTtsJsonParser.serializeVoice(voice),
             provider = TtsProvider.MICROSOFT
         )
@@ -123,7 +150,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
 
         speechBytes = await self.__microsoftTtsApiHelper.getSpeech(
             voice = voice,
-            message = message
+            message = fullMessage
         )
 
         if speechBytes is None:
@@ -131,7 +158,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
 
         glacialFile = await self.__glacialTtsFileRetriever.saveFile(
             fileExtension = await self.__microsoftTtsSettingsRepository.getFileExtension(),
-            message = message,
+            message = fullMessage,
             voice = await self.__microsoftTtsJsonParser.serializeVoice(voice),
             provider = TtsProvider.MICROSOFT
         )
@@ -147,7 +174,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
                 voice = voice
             )
         else:
-            self.__timber.log('MicrosoftTtsHelper', f'Failed to write Microsoft TTS speechBytes to file ({message=}) ({glacialFile=})')
+            self.__timber.log('MicrosoftTtsHelper', f'Failed to write Microsoft TTS speechBytes to file ({fullMessage=}) ({glacialFile=})')
             return None
 
     async def __saveSpeechBytes(

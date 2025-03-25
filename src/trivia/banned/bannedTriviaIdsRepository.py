@@ -127,7 +127,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                             triviasource TEXT NOT NULL COLLATE NOCASE,
                             userid TEXT NOT NULL,
                             PRIMARY KEY (triviaid, triviasource)
-                        )
+                        ) STRICT
                     '''
                 )
 

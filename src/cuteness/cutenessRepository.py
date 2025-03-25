@@ -502,7 +502,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                             userid TEXT NOT NULL,
                             utcyearandmonth TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
-                        )
+                        ) STRICT
                     '''
                 )
 

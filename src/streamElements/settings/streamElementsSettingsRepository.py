@@ -70,3 +70,7 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def useDonationPrefix(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'use_donation_prefix', fallback = True)

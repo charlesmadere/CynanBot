@@ -133,7 +133,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                         CREATE TABLE IF NOT EXISTS funtoontokens (
                             token TEXT DEFAULT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

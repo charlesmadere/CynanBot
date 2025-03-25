@@ -149,7 +149,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                     '''
                         CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
                             userid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

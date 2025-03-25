@@ -145,7 +145,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                     '''
                         CREATE TABLE IF NOT EXISTS triviagameglobalcontrollers (
                             userid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

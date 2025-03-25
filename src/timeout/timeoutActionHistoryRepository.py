@@ -225,7 +225,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
                             entries TEXT DEFAULT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 

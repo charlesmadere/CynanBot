@@ -10,6 +10,7 @@ class MicrosoftTtsHelperInterface(ABC):
     async def generateTts(
         self,
         voice: MicrosoftTtsVoice | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str

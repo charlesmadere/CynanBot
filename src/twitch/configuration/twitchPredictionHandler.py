@@ -101,6 +101,20 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
 
+    async def __notifyChatOfPredictionStart(
+        self,
+        title: str,
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        user: UserInterface
+    ):
+        if not user.isNotifyOfPredictionStartEnabled:
+            return
+        elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
+            return
+
+        # TODO
+        pass
+
     async def __notifyWebsocketOfPredictionEvent(
         self,
         broadcasterUserId: str,
@@ -147,20 +161,18 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         event = payload.event
 
         if event is None:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing event data ({user=}) ({dataBundle=})')
             return
 
         broadcasterUserId = event.broadcasterUserId
         title = event.title
         outcomes = event.outcomes
         winningOutcomeId = event.winningOutcomeId
+        subscriptionType = payload.requireSubscription().subscriptionType
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or outcomes is None or len(outcomes) == 0:
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
-
-        subscriptionType = payload.requireSubscription().subscriptionType
-        self.__timber.log('TwitchPredictionHandler', f'\"{user.handle}\" received prediction event ({title=}) ({outcomes=}) ({subscriptionType=})')
 
         await self.__processActiveChatters(
             outcomes = outcomes,
@@ -173,21 +185,29 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 broadcasterUserId = broadcasterUserId,
                 title = title,
                 userId = userId,
-                user = user,
-                subscriptionType = subscriptionType
+                subscriptionType = subscriptionType,
+                user = user
+            )
+
+        if user.isNotifyOfPredictionStartEnabled:
+            await self.__notifyChatOfPredictionStart(
+                title = title,
+                subscriptionType = subscriptionType,
+                user = user
+            )
+
+        if user.isNotifyOfPredictionResultsEnabled:
+            await self.__notifyChatOfPredictionResults(
+                outcomes = outcomes,
+                winningOutcomeId = winningOutcomeId,
+                predictionStatus = event.predictionStatus,
+                subscriptionType = subscriptionType,
+                user = user
             )
 
         await self.__notifyWebsocketOfPredictionEvent(
             broadcasterUserId = broadcasterUserId,
             event = event,
-            subscriptionType = subscriptionType,
-            user = user
-        )
-
-        await self.__notifyChatOfPredictionResults(
-            outcomes = outcomes,
-            winningOutcomeId = winningOutcomeId,
-            predictionStatus = event.predictionStatus,
             subscriptionType = subscriptionType,
             user = user
         )
@@ -222,8 +242,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         broadcasterUserId: str,
         title: str,
         userId: str,
-        user: UserInterface,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        user: UserInterface
     ):
         if not user.isTtsEnabled:
             return

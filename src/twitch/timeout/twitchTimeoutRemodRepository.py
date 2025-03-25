@@ -136,7 +136,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                             remoddatetime TEXT NOT NULL,
                             userid TEXT NOT NULL,
                             PRIMARY KEY (broadcasteruserid, userid)
-                        )
+                        ) STRICT
                     '''
                 )
 

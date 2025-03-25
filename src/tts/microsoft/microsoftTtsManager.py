@@ -13,7 +13,6 @@ from ...microsoft.microsoftTtsMessageCleanerInterface import MicrosoftTtsMessage
 from ...microsoft.models.microsoftTtsFileReference import MicrosoftTtsFileReference
 from ...microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
 from ...microsoft.settings.microsoftTtsSettingsRepositoryInterface import MicrosoftTtsSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -126,24 +125,14 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftTtsFileReference | None:
-        cleanedMessage = await self.__microsoftTtsMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {cleanedMessage}'
-        elif utils.isValidStr(cleanedMessage):
-            fullMessage = cleanedMessage
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
+        message = await self.__microsoftTtsMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         return await self.__microsoftTtsHelper.generateTts(
             voice = voice,
-            message = fullMessage,
+            donationPrefix = donationPrefix,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )

@@ -140,6 +140,7 @@ async def main():
     message = 'Hello, World!'
 
     fileReference = await streamElementsHelper.generateTts(
+        donationPrefix = None,
         message = message,
         twitchChannel = 'twitchChannel',
         twitchChannelId = 'twitchChannelId',

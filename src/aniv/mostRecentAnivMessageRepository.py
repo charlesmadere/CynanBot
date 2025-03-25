@@ -128,7 +128,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
                             datetime TEXT NOT NULL,
                             message TEXT DEFAULT NULL COLLATE NOCASE,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

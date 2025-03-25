@@ -149,7 +149,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                             key TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY,
                             userid TEXT NOT NULL
-                        )
+                        ) STRICT
                     '''
                 )
 

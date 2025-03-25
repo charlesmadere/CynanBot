@@ -356,7 +356,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                             accesstoken TEXT NOT NULL,
                             refreshtoken TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

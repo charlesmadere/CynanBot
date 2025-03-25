@@ -64,7 +64,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
                         CREATE TABLE IF NOT EXISTS triviaemotes (
                             emoteindex INTEGER NOT NULL DEFAULT 0,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

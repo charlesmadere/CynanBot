@@ -356,7 +356,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                             streamstatusrequirement TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (bits, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 

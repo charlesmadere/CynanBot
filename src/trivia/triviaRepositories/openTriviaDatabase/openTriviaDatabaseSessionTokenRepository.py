@@ -82,7 +82,7 @@ class OpenTriviaDatabaseSessionTokenRepository(OpenTriviaDatabaseSessionTokenRep
                         CREATE TABLE IF NOT EXISTS opentriviadatabasesessiontokens (
                             sessiontoken TEXT DEFAULT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
-                        )
+                        ) STRICT
                     '''
                 )
 

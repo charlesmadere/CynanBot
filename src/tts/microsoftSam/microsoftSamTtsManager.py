@@ -126,13 +126,13 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftSamFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(event.message)
+        message = await self.__microsoftSamMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         return await self.__microsoftSamHelper.generateTts(
             voice = voice,
             donationPrefix = donationPrefix,
-            message = cleanedMessage,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )

@@ -216,7 +216,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                         CREATE TABLE IF NOT EXISTS userids (
                             userid TEXT NOT NULL PRIMARY KEY,
                             username TEXT NOT NULL COLLATE NOCASE
-                        )
+                        ) STRICT
                     '''
                 )
 

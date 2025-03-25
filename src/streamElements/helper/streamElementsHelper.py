@@ -80,14 +80,33 @@ class StreamElementsHelper(StreamElementsHelperInterface):
 
         self.__timber.log('StreamElementsHelper', f'Created new directories ({directory=})')
 
+    async def __createFullMessage(
+        self,
+        donationPrefix: str | None,
+        message: str | None
+    ) -> str | None:
+        if not await self.__streamElementsSettingsRepository.useDonationPrefix():
+            return message
+        elif utils.isValidStr(donationPrefix) and utils.isValidStr(message):
+            return f'{donationPrefix} {message}'
+        elif utils.isValidStr(donationPrefix):
+            return donationPrefix
+        elif utils.isValidStr(message):
+            return message
+        else:
+            return None
+
     async def generateTts(
         self,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,
         voice: StreamElementsVoice | None
     ) -> StreamElementsFileReference | None:
-        if message is not None and not isinstance(message, str):
+        if donationPrefix is not None and not isinstance(donationPrefix, str):
+            raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -96,7 +115,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         elif voice is not None and not isinstance(voice, StreamElementsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        if not utils.isValidStr(message):
+        if not utils.isValidStr(donationPrefix) and not utils.isValidStr(message):
             return None
 
         if voice is None:
@@ -108,8 +127,16 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             message = messageVoiceResult.message
             voice = messageVoiceResult.voice
 
-        glacialFile = await self.__glacialTtsFileRetriever.findFile(
+        fullMessage = await self.__createFullMessage(
+            donationPrefix = donationPrefix,
             message = message,
+        )
+
+        if not utils.isValidStr(fullMessage):
+            return None
+
+        glacialFile = await self.__glacialTtsFileRetriever.findFile(
+            message = fullMessage,
             voice = await self.__streamElementsJsonParser.serializeVoice(voice),
             provider = TtsProvider.STREAM_ELEMENTS
         )
@@ -122,7 +149,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             )
 
         speechBytes = await self.__streamElementsApiHelper.getSpeech(
-            message = message,
+            message = fullMessage,
             twitchChannelId = twitchChannelId,
             voice = voice
         )
@@ -132,7 +159,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
 
         glacialFile = await self.__glacialTtsFileRetriever.saveFile(
             fileExtension = await self.__streamElementsSettingsRepository.getFileExtension(),
-            message = message,
+            message = fullMessage,
             voice = await self.__streamElementsJsonParser.serializeVoice(voice),
             provider = TtsProvider.STREAM_ELEMENTS
         )
@@ -148,7 +175,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
                 voice = voice
             )
         else:
-            self.__timber.log('StreamElementsHelper', f'Failed to write Stream Elements TTS speechBytes to file ({message=}) ({glacialFile=})')
+            self.__timber.log('StreamElementsHelper', f'Failed to write Stream Elements TTS speechBytes to file ({fullMessage=}) ({glacialFile=})')
             return None
 
     async def __saveSpeechBytes(

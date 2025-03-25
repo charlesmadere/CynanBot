@@ -137,7 +137,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
                             provider TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 

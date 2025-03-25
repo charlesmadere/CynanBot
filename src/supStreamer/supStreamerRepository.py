@@ -116,7 +116,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                             mostrecentsup TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
-                        )
+                        ) STRICT
                     '''
                 )
 
