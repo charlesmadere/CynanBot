@@ -9,6 +9,7 @@ class AsplodieStatsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def addAsplodie(
         self,
+        isSelfAsplodie: bool,
         durationAsplodiedSeconds: int,
         chatterUserId: str,
         twitchChannelId: str

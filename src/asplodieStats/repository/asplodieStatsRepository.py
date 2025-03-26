@@ -34,11 +34,54 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
 
     async def addAsplodie(
         self,
+        isSelfAsplodie: bool,
         durationAsplodiedSeconds: int,
         chatterUserId: str,
         twitchChannelId: str
     ) -> AsplodieStats:
-        raise RuntimeError()
+        if not utils.isValidBool(isSelfAsplodie):
+            raise TypeError(f'isSelfAsplodie argument is malformed: \"{isSelfAsplodie}\"')
+        elif not utils.isValidInt(durationAsplodiedSeconds):
+            raise TypeError(f'durationAsplodiedSeconds argument is malformed: \"{durationAsplodiedSeconds}\"')
+        elif not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        oldAsplodieStats = await self.get(
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId
+        )
+
+        newSelfAsplodies = oldAsplodieStats.selfAsplodies
+        if isSelfAsplodie: newSelfAsplodies += 1
+
+        newTotalAsplodies = oldAsplodieStats.totalAsplodies + 1
+        newTotalDurationAsplodiedSeconds = oldAsplodieStats.totalDurationAsplodiedSeconds + durationAsplodiedSeconds
+
+        newAsplodieStats = AsplodieStats(
+            selfAsplodies = newSelfAsplodies,
+            totalAsplodies = newTotalAsplodies,
+            totalDurationAsplodiedSeconds = newTotalDurationAsplodiedSeconds,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId
+        )
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                INSERT INTO asplodiestats (selfasplodies, totalasplodies, totaldurationasplodiedseconds, chatteruserid, twitchchannelid)
+                VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET selfasplodies = EXCLUDED.selfasplodies, totalasplodies = EXCLUDED.totalasplodies, totaldurationasplodiedseconds = EXCLUDED.totaldurationasplodiedseconds
+            ''',
+            newSelfAsplodies, newTotalAsplodies, newTotalDurationAsplodiedSeconds, chatterUserId, twitchChannelId
+        )
+
+        await connection.close()
+        self.__cache[f'{twitchChannelId}:{chatterUserId}'] = newAsplodieStats
+        self.__timber.log('AsplodieStatsRepository', f'Updated asplodie stats ({newAsplodieStats=})')
+
+        return newAsplodieStats
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -49,7 +92,47 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
         chatterUserId: str,
         twitchChannelId: str
     ) -> AsplodieStats:
-        raise RuntimeError()
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        result = self.__cache.get(f'{twitchChannelId}:{chatterUserId}', None)
+
+        if result is not None:
+            return result
+
+        connection = await self.__getDatabaseConnection()
+        record = await connection.fetchRow(
+            '''
+                SELECT selfasplodies, totalasplodies, totaldurationasplodiedseconds FROM asplodiestats
+                WHERE chatteruserid = $1 AND twitchchannelid = $2
+                LIMIT 1
+            ''',
+            chatterUserId, twitchChannelId
+        )
+
+        await connection.close()
+
+        if record is None or len(record) == 0:
+            result = AsplodieStats(
+                selfAsplodies = 0,
+                totalAsplodies = 0,
+                totalDurationAsplodiedSeconds = 0,
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId
+            )
+        else:
+            result = AsplodieStats(
+                selfAsplodies = record[0],
+                totalAsplodies = record[1],
+                totalDurationAsplodiedSeconds = record[2],
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId
+            )
+
+        self.__cache[f'{twitchChannelId}:{chatterUserId}'] = result
+        return result
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -67,6 +150,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                 await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS asplodiestats (
+                            selfasplodies int DEFAULT 0 NOT NULL,
                             totalasplodies int DEFAULT 0 NOT NULL,
                             totaldurationasplodiedseconds bigint DEFAULT 0 NOT NULL,
                             chatteruserid text NOT NULL,
@@ -80,6 +164,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                 await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS asplodiestats (
+                            selfasplodies INTEGER NOT NULL DEFAULT 0,
                             totalasplodies INTEGER NOT NULL DEFAULT 0,
                             totaldurationasplodiedseconds INTEGER NOT NULL DEFAULT 0,
                             chatteruserid TEXT NOT NULL,

@@ -59,7 +59,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if f'{twitchChannelId}:{chatterUserId}' in self.__cache:
-            return self.__cache[f'{twitchChannelId}:{chatterUserId}']
+            return self.__cache.get(f'{twitchChannelId}:{chatterUserId}', None)
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -71,13 +71,13 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             chatterUserId, twitchChannelId
         )
 
+        await connection.close()
         configurationJsonString: str | None = None
         preferredTtsProviderString: str | None = None
+
         if record is not None and len(record) >= 1:
             configurationJsonString = record[0]
             preferredTtsProviderString = record[1]
-
-        await connection.close()
 
         if not utils.isValidStr(configurationJsonString) or not utils.isValidStr(preferredTtsProviderString):
             self.__cache[f'{twitchChannelId}:{chatterUserId}'] = None

@@ -620,6 +620,54 @@ class TestUtils:
         assert isinstance(result, int)
         assert result == 0
 
+    def test_secondsToDurationMessage_with1Day(self):
+        result = utils.secondsToDurationMessage(86400)
+        assert result == '1 day'
+
+    def test_secondsToDurationMessage_with2Days(self):
+        result = utils.secondsToDurationMessage(86400 * 2)
+        assert result == '2 days'
+
+    def test_secondsToDurationMessage_with1Hour(self):
+        result = utils.secondsToDurationMessage(3600)
+        assert result == '1 hour'
+
+    def test_secondsToDurationMessage_with2Hours(self):
+        result = utils.secondsToDurationMessage(3600 * 2)
+        assert result == '2 hours'
+
+    def test_secondsToDurationMessage_with1Minute(self):
+        result = utils.secondsToDurationMessage(60)
+        assert result == '1 minute'
+
+    def test_secondsToDurationMessage_with2Minutes(self):
+        result = utils.secondsToDurationMessage(60 * 2)
+        assert result == '2 minutes'
+
+    def test_secondsToDurationMessage_with0Seconds(self):
+        result = utils.secondsToDurationMessage(0)
+        assert result == '0 seconds'
+
+    def test_secondsToDurationMessage_with1Second(self):
+        result = utils.secondsToDurationMessage(1)
+        assert result == '1 second'
+
+    def test_secondsToDurationMessage_with2Seconds(self):
+        result = utils.secondsToDurationMessage(2)
+        assert result == '2 seconds'
+
+    def test_secondsToDurationMessage_with1Week(self):
+        result = utils.secondsToDurationMessage(604800)
+        assert result == '1 week'
+
+    def test_secondsToDurationMessage_with1Week3Days35Minutes11Seconds(self):
+        result = utils.secondsToDurationMessage(604800 + (86400 * 3) + 60 + 11)
+        assert result == '1 week 3 days 1 minute 11 seconds'
+
+    def test_secondsToDurationMessage_with2Weeks(self):
+        result = utils.secondsToDurationMessage(604800 * 2)
+        assert result == '2 weeks'
+
     def test_splitLongStringIntoMessages_withEmptyMessage(self):
         result = utils.splitLongStringIntoMessages(
             maxMessages = 50,

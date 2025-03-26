@@ -104,7 +104,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         )
 
         row = await cursor.fetchone()
-        if not utils.hasItems(row) or len(row) != 10:
+        if row is None or len(row) != 10:
             raise RuntimeError(f'Received malformed data from {self.triviaSource} database: {row}')
 
         questionDict: dict[str, Any] = {

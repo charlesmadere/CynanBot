@@ -3,7 +3,7 @@ import math
 import random
 import re
 from datetime import datetime
-from typing import Any, Generator, Pattern, Sized, TypeVar, overload
+from typing import Any, Final, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
 from frozenlist import FrozenList
@@ -36,9 +36,9 @@ def boolToInt(b: bool) -> int:
     else:
         return 0
 
-carrotRemovalRegEx: Pattern = re.compile(r'<\/?\w+>', re.IGNORECASE)
-extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
-ridiculous7tvCharactersRegEx: Pattern = re.compile(r'\U000e0000', re.IGNORECASE)
+CARROT_REMOVAL_REG_EX: Final[Pattern] = re.compile(r'<\/?\w+>', re.IGNORECASE)
+EXTRA_WHITE_SPACE_REG_EX: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
+RIDICULOUS_7TV_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'\U000e0000', re.IGNORECASE)
 
 def cleanStr(
     s: str | None,
@@ -58,8 +58,8 @@ def cleanStr(
     if s is None or len(s) == 0 or s.isspace():
         return ''
 
-    s = extraWhiteSpaceRegEx.sub(' ', s).strip()
-    s = ridiculous7tvCharactersRegEx.sub('', s).strip()
+    s = EXTRA_WHITE_SPACE_REG_EX.sub(' ', s).strip()
+    s = RIDICULOUS_7TV_CHARACTERS_REG_EX.sub('', s).strip()
 
     s = s.replace('\r\n', replacement)\
          .replace('\r', replacement)\
@@ -70,7 +70,7 @@ def cleanStr(
         s = html.unescape(s)
 
     if removeCarrots:
-        s = carrotRemovalRegEx.sub('', s)
+        s = CARROT_REMOVAL_REG_EX.sub('', s)
 
     return s.strip()
 
@@ -408,7 +408,7 @@ def permuteSubArrays(array: list[Any], pos: int = 0) -> Generator[list[Any], Non
 def randomBool() -> bool:
     return bool(random.getrandbits(1))
 
-cheerRegExes: FrozenList[Pattern] = FrozenList([
+CHEER_REG_EXES: Final[FrozenList[Pattern]] = FrozenList([
     re.compile(r'(^|\s+)bitboss\d+(\s+|$)', re.IGNORECASE),
     re.compile(r'(^|\s+)cheer\d+(\s+|$)', re.IGNORECASE),
     re.compile(r'(^|\s+)doodlecheer\d+(\s+|$)', re.IGNORECASE),
@@ -416,7 +416,7 @@ cheerRegExes: FrozenList[Pattern] = FrozenList([
     re.compile(r'(^|\s+)streamlabs\d+(\s+|$)', re.IGNORECASE),
     re.compile(r'(^|\s+)uni\d+(\s+|$)', re.IGNORECASE)
 ])
-cheerRegExes.freeze()
+CHEER_REG_EXES.freeze()
 
 def removeCheerStrings(s: str, repl: str = ' ') -> str:
     if not isinstance(s, str):
@@ -424,7 +424,7 @@ def removeCheerStrings(s: str, repl: str = ' ') -> str:
     elif not isinstance(repl, str):
         raise TypeError(f'repl argument is malformed: \"{repl}\"')
 
-    for cheerRegEx in cheerRegExes:
+    for cheerRegEx in CHEER_REG_EXES:
         s = cheerRegEx.sub(repl, s.strip()).strip()
 
     return s.strip()
@@ -453,6 +453,66 @@ def safeStrToInt(s: str | None) -> int | None:
         return int(s)
     except Exception:
         return None
+
+MINUTE_IN_SECONDS: Final[int] = 60
+HOUR_IN_SECONDS: Final[int] = 3600
+DAY_IN_SECONDS: Final[int] = 86400
+WEEK_IN_SECONDS: Final[int] = 604800
+YEAR_IN_SECONDS: Final[int] = 31536000
+
+def secondsToDurationMessage(secondsDuration: int) -> str:
+    if not isValidInt(secondsDuration):
+        raise TypeError(f'secondsDuration argument is malformed: \"{secondsDuration}\"')
+    elif secondsDuration < 0 or secondsDuration > getLongMaxSafeSize():
+        raise ValueError(f'secondsDuration argument is out of bounds: {secondsDuration}')
+
+    if secondsDuration == 0:
+        return '0 seconds'
+
+    years = math.floor(secondsDuration / YEAR_IN_SECONDS)
+    if years >= 1: secondsDuration = secondsDuration - (years * YEAR_IN_SECONDS)
+
+    weeks = math.floor(secondsDuration / WEEK_IN_SECONDS)
+    if weeks >= 1: secondsDuration = secondsDuration - (weeks * WEEK_IN_SECONDS)
+
+    days = math.floor(secondsDuration / DAY_IN_SECONDS)
+    if days >= 1: secondsDuration = secondsDuration - (days * DAY_IN_SECONDS)
+
+    hours = math.floor(secondsDuration / HOUR_IN_SECONDS)
+    if hours >= 1: secondsDuration = secondsDuration - (hours * HOUR_IN_SECONDS)
+
+    minutes = math.floor(secondsDuration / MINUTE_IN_SECONDS)
+    if minutes >= 1: secondsDuration = secondsDuration - (minutes * MINUTE_IN_SECONDS)
+
+    # the only value now remaining in secondsDuration is the number of seconds
+    seconds = secondsDuration
+
+    yearsString = ''
+    if years == 1: yearsString = f'{years} year'
+    elif years > 1: yearsString = f'{years} years'
+
+    weeksString = ''
+    if weeks == 1: weeksString = f'{weeks} week'
+    elif weeks > 1: weeksString = f'{weeks} weeks'
+
+    daysString = ''
+    if days == 1: daysString = f'{days} day'
+    elif days > 1: daysString = f'{days} days'
+
+    hoursString = ''
+    if hours == 1: hoursString = f'{hours} hour'
+    elif hours > 1: hoursString = f'{hours} hours'
+
+    minutesString = ''
+    if minutes == 1: minutesString = f'{minutes} minute'
+    elif minutes > 1: minutesString = f'{minutes} minutes'
+
+    secondsString = ''
+    if seconds == 1: secondsString = f'{seconds} second'
+    elif seconds > 1: secondsString = f'{seconds} seconds'
+
+    result = f'{yearsString} {weeksString} {daysString} {hoursString} {minutesString} {secondsString}'
+    return EXTRA_WHITE_SPACE_REG_EX.sub(' ', result).strip()
 
 def splitLongStringIntoMessages(
     maxMessages: int,
@@ -498,16 +558,16 @@ def splitLongStringIntoMessages(
 
     return messages
 
-alphanumericRegEx: Pattern = re.compile(r'.*[a-z0-9]+.*', re.IGNORECASE)
+ALPHANUMERIC_REG_EX: Final[Pattern] = re.compile(r'.*[a-z0-9]+.*', re.IGNORECASE)
 
 def strContainsAlphanumericCharacters(s: str | None) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 
-    return alphanumericRegEx.match(s) is not None
+    return ALPHANUMERIC_REG_EX.match(s) is not None
 
-trueRegEx: Pattern = re.compile(r't(rue)?|y(es)?', re.IGNORECASE)
-falseRegEx: Pattern = re.compile(r'f(alse)?|n(o)?', re.IGNORECASE)
+TRUE_REG_EX: Final[Pattern] = re.compile(r't(rue)?|y(es)?', re.IGNORECASE)
+FALSE_REG_EX: Final[Pattern] = re.compile(r'f(alse)?|n(o)?', re.IGNORECASE)
 
 def strictStrToBool(s: str | None) -> bool:
     """_summary_
@@ -536,9 +596,9 @@ def strictStrToBool(s: str | None) -> bool:
     elif not isValidStr(s):
         raise ValueError(f's argument is malformed: \"{s}\"')
 
-    if trueRegEx.match(s) is not None:
+    if TRUE_REG_EX.match(s) is not None:
         return True
-    elif falseRegEx.match(s) is not None:
+    elif FALSE_REG_EX.match(s) is not None:
         return False
     else:
         raise ValueError(f'no matching bool conversion: \"{s}\"')
@@ -556,7 +616,7 @@ def strToBool(s: str | None) -> bool:
         The string to convert into a bool (can be None)
     """
 
-    if not isValidStr(s) or falseRegEx.match(s) is None:
+    if not isValidStr(s) or FALSE_REG_EX.match(s) is None:
         return True
     else:
         return False

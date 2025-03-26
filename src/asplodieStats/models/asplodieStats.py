@@ -5,10 +5,15 @@ from dataclasses import dataclass
 
 @dataclass(frozen = True)
 class AsplodieStats:
+    selfAsplodies: int
     totalAsplodies: int
     totalDurationAsplodiedSeconds: int
     chatterUserId: str
     twitchChannelId: str
+
+    @property
+    def selfAsplodiesStr(self) -> str:
+        return locale.format_string("%d", self.selfAsplodies, grouping = True)
 
     @property
     def totalAsplodiesStr(self) -> str:
