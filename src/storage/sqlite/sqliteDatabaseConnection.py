@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Any
+from typing import Any, Final
 
 import aiosqlite
 from frozenlist import FrozenList
@@ -16,7 +16,8 @@ class SqliteDatabaseConnection(DatabaseConnection):
         if not isinstance(connection, aiosqlite.Connection):
             raise TypeError(f'connection argument is malformed: \"{connection}\"')
 
-        self.__connection: aiosqlite.Connection = connection
+        self.__connection: Final[aiosqlite.Connection] = connection
+
         self.__isClosed: bool = False
 
     async def close(self):

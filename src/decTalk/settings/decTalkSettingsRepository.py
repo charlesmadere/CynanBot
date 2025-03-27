@@ -79,3 +79,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def useDonationPrefix(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'useDonationPrefix', fallback = True)

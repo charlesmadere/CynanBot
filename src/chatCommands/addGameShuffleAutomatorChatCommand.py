@@ -108,4 +108,4 @@ class AddGameShuffleAutomatorChatCommand(AbsChatCommand):
             case _:
                 raise RuntimeError(f'Unknown CrowdControlAutomatorAddResult: \"{result}\"')
 
-        self.__timber.log('AddGameShuffleAutomatorChatCommand', f'Handled !addgameshuffleautomator command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('AddGameShuffleAutomatorChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

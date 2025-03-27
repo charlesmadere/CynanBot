@@ -13,7 +13,6 @@ from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from ...decTalk.models.decTalkFileReference import DecTalkFileReference
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -122,24 +121,14 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> DecTalkFileReference | None:
-        cleanedMessage = await self.__decTalkMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {cleanedMessage}'
-        elif utils.isValidStr(cleanedMessage):
-            fullMessage = cleanedMessage
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
+        message = await self.__decTalkMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         return await self.__decTalkHelper.generateTts(
             voice = voice,
-            message = fullMessage,
+            donationPrefix = donationPrefix,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )

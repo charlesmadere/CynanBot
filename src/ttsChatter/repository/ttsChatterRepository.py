@@ -34,7 +34,7 @@ class TtsChatterRepository(TtsChatterRepositoryInterface):
 
     async def clearCaches(self):
         self.__cache.clear()
-        self.__timber.log('TtsChatterRepository', f'Caches cleared')
+        self.__timber.log('TtsChatterRepository', 'Caches cleared')
 
     async def get(
         self,
@@ -47,7 +47,7 @@ class TtsChatterRepository(TtsChatterRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if f'{twitchChannelId}:{chatterUserId}' in self.__cache:
-            return self.__cache[f'{twitchChannelId}:{chatterUserId}']
+            return self.__cache.get(f'{twitchChannelId}:{chatterUserId}', None)
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(

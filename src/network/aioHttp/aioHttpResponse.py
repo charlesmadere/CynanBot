@@ -1,6 +1,6 @@
 import traceback
 from json import JSONDecodeError
-from typing import Any
+from typing import Any, Final
 
 import aiohttp
 import xmltodict
@@ -28,9 +28,9 @@ class AioHttpResponse(NetworkResponse):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__response: aiohttp.ClientResponse = response
-        self.__url: str = url
-        self.__timber: TimberInterface = timber
+        self.__response: Final[aiohttp.ClientResponse] = response
+        self.__url: Final[str] = url
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isClosed: bool = False
 

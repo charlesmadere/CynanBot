@@ -1,4 +1,5 @@
 from asyncio import AbstractEventLoop
+from typing import Final
 
 import aiohttp
 
@@ -31,10 +32,10 @@ class AioHttpClientProvider(NetworkClientProvider):
         elif timeoutSeconds < 3 or timeoutSeconds > 60:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__cookieJarProvider: AioHttpCookieJarProvider = cookieJarProvider
-        self.__timber: TimberInterface = timber
-        self.__timeoutSeconds: int = timeoutSeconds
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__cookieJarProvider: Final[AioHttpCookieJarProvider] = cookieJarProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutSeconds: Final[int] = timeoutSeconds
 
         self.__clientSession: aiohttp.ClientSession | None = None
 

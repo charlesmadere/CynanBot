@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from ..supStreamerChatter import SupStreamerChatter
 from ..supStreamerRepositoryInterface import SupStreamerRepositoryInterface
@@ -12,7 +13,11 @@ class StubSupStreamerRepository(SupStreamerRepositoryInterface):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+
+    async def clearCaches(self):
+        # this method is intentionally empty
+        pass
 
     async def get(
         self,

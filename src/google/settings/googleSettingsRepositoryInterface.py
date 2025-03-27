@@ -17,3 +17,7 @@ class GoogleSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getVolumeGainDb(self) -> float | None:
         pass
+
+    @abstractmethod
+    async def useDonationPrefix(self) -> bool:
+        pass

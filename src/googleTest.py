@@ -173,6 +173,7 @@ async def main():
 
     fileReference = await googleTtsHelper.generateTts(
         voicePreset = GoogleVoicePreset.ITALIAN_ITALY_CHIRP_O,
+        donationPrefix = None,
         message = message,
         twitchChannel = twitchChannel,
         twitchChannelId = twitchChannelId

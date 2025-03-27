@@ -56,7 +56,7 @@ from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaC
 from .chatCommands.getRecurringActionsCommand import GetRecurringActionsCommand
 from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
-from .chatCommands.giveCutenessCommand import GiveCutenessCommand
+from .chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
@@ -838,7 +838,7 @@ class CynanBot(
             self.__cutenessCommand: AbsChatCommand = CutenessChatCommand(cutenessPresenter, cutenessRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsChatCommand = CutenessChampionsChatCommand(cutenessPresenter, cutenessRepository, timber, twitchUtils, usersRepository)
             self.__cutenessHistoryCommand: AbsChatCommand = CutenessHistoryChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
-            self.__giveCutenessCommand: AbsChatCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__giveCutenessCommand: AbsChatCommand = GiveCutenessChatCommand(cutenessRepository, timber, triviaUtils, authRepository, twitchUtils, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsChatCommand = MyCutenessChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
 
         if funtoonTokensRepository is None:

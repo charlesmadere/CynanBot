@@ -84,6 +84,22 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         self.__timber.log('TtsMonsterHelper', f'Created new directories ({directory=})')
 
+    async def __createFullMessage(
+        self,
+        donationPrefix: str | None,
+        message: str | None
+    ) -> str | None:
+        if not await self.__ttsMonsterSettingsRepository.useDonationPrefix():
+            return message
+        elif utils.isValidStr(donationPrefix) and utils.isValidStr(message):
+            return f'{donationPrefix} {message}'
+        elif utils.isValidStr(donationPrefix):
+            return donationPrefix
+        elif utils.isValidStr(message):
+            return message
+        else:
+            return None
+
     async def __determineMessageVoices(self, message: str) -> MessageVoices:
         messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
             message = message,
@@ -109,12 +125,15 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
     async def generateTts(
         self,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,
         voice: TtsMonsterVoice | None
     ) -> TtsMonsterFileReference | None:
-        if message is not None and not isinstance(message, str):
+        if donationPrefix is not None and not isinstance(donationPrefix, str):
+            raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -123,16 +142,24 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         elif voice is not None and not isinstance(voice, TtsMonsterVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        if not utils.isValidStr(message):
+        if not utils.isValidStr(donationPrefix) and not utils.isValidStr(message):
             return None
 
         if voice is not None:
             message = f'{voice.inMessageName}: {message}'
 
-        messageVoices = await self.__determineMessageVoices(message)
+        fullMessage = await self.__createFullMessage(
+            donationPrefix = donationPrefix,
+            message = message
+        )
+
+        if not utils.isValidStr(fullMessage):
+            return None
+
+        messageVoices = await self.__determineMessageVoices(fullMessage)
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
-            message = message,
+            message = fullMessage,
             voice = None,
             provider = TtsProvider.TTS_MONSTER
         )
@@ -146,7 +173,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             )
 
         speechBytes = await self.__ttsMonsterPrivateApiHelper.getSpeech(
-            message = message,
+            message = fullMessage,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
@@ -156,7 +183,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         glacialFile = await self.__glacialTtsFileRetriever.saveFile(
             fileExtension = await self.__ttsMonsterSettingsRepository.getFileExtension(),
-            message = message,
+            message = fullMessage,
             voice = None,
             provider = TtsProvider.TTS_MONSTER
         )
@@ -173,7 +200,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
                 primaryVoice = messageVoices.primaryVoice
             )
         else:
-            self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({message=}) ({glacialFile=})')
+            self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({fullMessage=}) ({glacialFile=})')
             return None
 
     async def __saveSpeechBytes(

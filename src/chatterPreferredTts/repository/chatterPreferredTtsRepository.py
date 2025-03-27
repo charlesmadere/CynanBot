@@ -46,7 +46,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
 
     async def clearCaches(self):
         self.__cache.clear()
-        self.__timber.log('ChatterPreferredTtsRepository', f'Caches cleared')
+        self.__timber.log('ChatterPreferredTtsRepository', 'Caches cleared')
 
     async def get(
         self,

@@ -41,6 +41,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def areAsplodieStatsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def areBeanStatsEnabled(self) -> bool:
         pass
 

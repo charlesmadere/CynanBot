@@ -21,3 +21,7 @@ class DecTalkSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def requireDecTalkExecutablePath(self) -> str:
         pass
+
+    @abstractmethod
+    async def useDonationPrefix(self) -> bool:
+        pass

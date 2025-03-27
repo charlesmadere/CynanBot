@@ -23,6 +23,14 @@ class TestUserJsonConstants:
         result = UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey
         assert result == 'anivMessageCopyTimeoutEnabled'
 
+    def test_jsonKey_withAsplodieStatsEnabled(self):
+        result = UserJsonConstant.ASPLODIE_STATS_ENABLED.jsonKey
+        assert result == 'asplodieStatsEnabled'
+
+    def test_jsonKey_withBeanStatsEnabled(self):
+        result = UserJsonConstant.BEAN_STATS_ENABLED.jsonKey
+        assert result == 'beanStatsEnabled'
+
     def test_jsonKey_withBlueSkyUrl(self):
         result = UserJsonConstant.BLUE_SKY_URL.jsonKey
         assert result == 'blueSkyUrl'

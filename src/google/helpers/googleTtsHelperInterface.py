@@ -10,6 +10,7 @@ class GoogleTtsHelperInterface(ABC):
     async def generateTts(
         self,
         voicePreset: GoogleVoicePreset | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str

@@ -14,5 +14,11 @@ class AsplodieStatsPresenter:
         else:
             asplodiesPluralization = 'asplodies'
 
+        selfAsplodiesPluralization: str
+        if asplodieStats.selfAsplodies == 1:
+            selfAsplodiesPluralization = 'self asplodie'
+        else:
+            selfAsplodiesPluralization = 'self asplodies'
+
         totalDurationAsplodied = utils.secondsToDurationMessage(asplodieStats.totalDurationAsplodiedSeconds)
-        return f'{asplodieStats.totalAsplodiesStr} {asplodiesPluralization} (that\'s {totalDurationAsplodied}!)'
+        return f'{asplodieStats.totalAsplodiesStr} {asplodiesPluralization} with {asplodieStats.selfAsplodiesStr} {selfAsplodiesPluralization} (that\'s {totalDurationAsplodied}!)'

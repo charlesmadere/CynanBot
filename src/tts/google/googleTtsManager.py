@@ -14,7 +14,6 @@ from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelp
 from ...google.models.googleTtsFileReference import GoogleTtsFileReference
 from ...google.models.googleVoicePreset import GoogleVoicePreset
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -131,24 +130,14 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> GoogleTtsFileReference | None:
-        cleanedMessage = await self.__googleTtsMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {cleanedMessage}'
-        elif utils.isValidStr(cleanedMessage):
-            fullMessage = cleanedMessage
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
-
+        message = await self.__googleTtsMessageCleaner.clean(event.message)
         voicePreset = await self.__determineVoicePreset(event)
 
         return await self.__googleTtsHelper.generateTts(
             voicePreset = voicePreset,
-            message = fullMessage,
+            donationPrefix = donationPrefix,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )

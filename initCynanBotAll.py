@@ -2357,6 +2357,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,

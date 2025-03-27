@@ -61,4 +61,4 @@ class AnswerChatCommand(AbsChatCommand):
             userName = ctx.getAuthorName()
         ))
 
-        self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('AnswerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

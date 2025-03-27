@@ -130,7 +130,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     async def __processCheerAction(
         self,
         bits: int,
-        chatMessage: str | None,
+        chatMessage: str,
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserLogin: str,

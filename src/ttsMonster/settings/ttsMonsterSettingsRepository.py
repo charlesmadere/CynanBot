@@ -71,6 +71,10 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         self.__cache = jsonContents
         return jsonContents
 
+    async def useDonationPrefix(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'use_donation_prefix', fallback = False)
+
     async def useReducedVolumeForLoudVoices(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'use_reduced_volume_for_loud_voices', fallback = True)

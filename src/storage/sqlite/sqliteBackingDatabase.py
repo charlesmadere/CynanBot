@@ -1,4 +1,5 @@
 from asyncio import AbstractEventLoop
+from typing import Final
 
 import aiosqlite
 
@@ -21,8 +22,8 @@ class SqliteBackingDatabase(BackingDatabase):
         elif not utils.isValidStr(backingDatabaseFile):
             raise TypeError(f'backingDatabaseFile argument is malformed: \"{backingDatabaseFile}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__backingDatabaseFile: str = backingDatabaseFile
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__backingDatabaseFile: Final[str] = backingDatabaseFile
 
     @property
     def databaseType(self) -> DatabaseType:

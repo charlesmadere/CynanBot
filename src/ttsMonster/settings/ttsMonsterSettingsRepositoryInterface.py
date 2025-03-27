@@ -23,5 +23,9 @@ class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def useDonationPrefix(self) -> bool:
+        pass
+
+    @abstractmethod
     async def useReducedVolumeForLoudVoices(self) -> bool:
         pass

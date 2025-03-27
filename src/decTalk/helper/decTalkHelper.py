@@ -35,15 +35,34 @@ class DecTalkHelper(DecTalkHelperInterface):
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
+    async def __createFullMessage(
+        self,
+        donationPrefix: str | None,
+        message: str | None
+    ) -> str | None:
+        if not await self.__decTalkSettingsRepository.useDonationPrefix():
+            return message
+        elif utils.isValidStr(donationPrefix) and utils.isValidStr(message):
+            return f'{donationPrefix} {message}'
+        elif utils.isValidStr(donationPrefix):
+            return donationPrefix
+        elif utils.isValidStr(message):
+            return message
+        else:
+            return None
+
     async def generateTts(
         self,
         voice: DecTalkVoice | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> DecTalkFileReference | None:
         if voice is not None and not isinstance(voice, DecTalkVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
+        elif donationPrefix is not None and not isinstance(donationPrefix, str):
+            raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -51,22 +70,30 @@ class DecTalkHelper(DecTalkHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not utils.isValidStr(message):
+        if not utils.isValidStr(donationPrefix) and not utils.isValidStr(message):
             return None
 
         if voice is None:
             voice = await self.__decTalkSettingsRepository.getDefaultVoice()
 
+        fullMessage = await self.__createFullMessage(
+            donationPrefix = donationPrefix,
+            message = message,
+        )
+
+        if not utils.isValidStr(fullMessage):
+            return None
+
         try:
             speechFile = await self.__decTalkApiService.generateSpeechFile(
                 voice = voice,
-                text = message
+                text = fullMessage
             )
         except DecTalkExecutableIsMissingException as e:
-            self.__timber.log('DecTalkHelper', f'Encountered Dec Talk executable file is missing exception when generating speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkHelper', f'Encountered Dec Talk executable file is missing exception when generating speech ({voice=}) ({fullMessage=}): {e}', e, traceback.format_exc())
             return None
         except DecTalkFailedToGenerateSpeechFileException as e:
-            self.__timber.log('DecTalkHelper', f'Encountered failure to create speech file exception when generating speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkHelper', f'Encountered failure to create speech file exception when generating speech ({voice=}) ({fullMessage=}): {e}', e, traceback.format_exc())
             return None
 
         storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())

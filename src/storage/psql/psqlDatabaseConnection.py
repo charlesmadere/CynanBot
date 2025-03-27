@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import asyncpg
 from frozenlist import FrozenList
@@ -17,8 +17,8 @@ class PsqlDatabaseConnection(DatabaseConnection):
         elif not isinstance(pool, asyncpg.Pool):
             raise TypeError(f'pool argument is malformed: \"{pool}\"')
 
-        self.__connection: asyncpg.Connection = connection
-        self.__pool: asyncpg.Pool = pool
+        self.__connection: Final[asyncpg.Connection] = connection
+        self.__pool: Final[asyncpg.Pool] = pool
 
         self.__isClosed: bool = False
 

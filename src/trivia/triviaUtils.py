@@ -751,5 +751,4 @@ class TriviaUtils(TriviaUtilsInterface):
                 return True
 
         administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-
         return userId == administratorUserId

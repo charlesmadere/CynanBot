@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import aiohttp
 
@@ -22,8 +22,8 @@ class AioHttpHandle(NetworkHandle):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__clientSession: aiohttp.ClientSession = clientSession
-        self.__timber: TimberInterface = timber
+        self.__clientSession: Final[aiohttp.ClientSession] = clientSession
+        self.__timber: Final[TimberInterface] = timber
 
     async def delete(
         self,

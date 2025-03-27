@@ -94,4 +94,4 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
                 self.__timber.log('AddBannedTriviaControllerChatCommand', f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
                 raise RuntimeError(f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
-        self.__timber.log('AddBannedTriviaControllerChatCommand', f'Handled !addbannedtriviacontroller command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
+        self.__timber.log('AddBannedTriviaControllerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

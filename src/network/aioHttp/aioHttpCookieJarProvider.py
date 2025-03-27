@@ -1,4 +1,5 @@
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from aiohttp import DummyCookieJar
 from aiohttp.abc import AbstractCookieJar
@@ -10,7 +11,7 @@ class AioHttpCookieJarProvider:
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
 
         self.__cookieJar: AbstractCookieJar | None = None
 

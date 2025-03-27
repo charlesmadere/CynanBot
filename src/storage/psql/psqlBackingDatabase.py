@@ -1,6 +1,7 @@
 import traceback
 from asyncio import AbstractEventLoop
 from dataclasses import dataclass
+from typing import Final
 
 import asyncpg
 
@@ -32,9 +33,9 @@ class PsqlBackingDatabase(BackingDatabase):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__psqlCredentialsProvider: PsqlCredentialsProviderInterface = psqlCredentialsProvider
-        self.__timber: TimberInterface = timber
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__psqlCredentialsProvider: Final[PsqlCredentialsProviderInterface] = psqlCredentialsProvider
+        self.__timber: Final[TimberInterface] = timber
 
         self.__connectionPool: asyncpg.Pool | None = None
 

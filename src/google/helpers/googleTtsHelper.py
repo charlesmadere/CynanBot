@@ -82,6 +82,22 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         self.__timber.log('GoogleTtsHelper', f'Created new directories ({filePath=})')
 
+    async def __createFullMessage(
+        self,
+        donationPrefix: str | None,
+        message: str | None
+    ) -> str | None:
+        if not await self.__googleSettingsRepository.useDonationPrefix():
+            return message
+        elif utils.isValidStr(donationPrefix) and utils.isValidStr(message):
+            return f'{donationPrefix} {message}'
+        elif utils.isValidStr(donationPrefix):
+            return donationPrefix
+        elif utils.isValidStr(message):
+            return message
+        else:
+            return None
+
     async def __generateFileName(self) -> str:
         fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
         audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
@@ -91,12 +107,15 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     async def generateTts(
         self,
         voicePreset: GoogleVoicePreset | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> GoogleTtsFileReference | None:
         if voicePreset is not None and not isinstance(voicePreset, GoogleVoicePreset):
             raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
+        elif donationPrefix is not None and not isinstance(donationPrefix, str):
+            raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -104,14 +123,18 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not utils.isValidStr(message):
+        if not utils.isValidStr(donationPrefix) and not utils.isValidStr(message):
             return None
 
-        synthesisInput = GoogleTextSynthesisInput(
-            text = message
+        fullMessage = await self.__createFullMessage(
+            donationPrefix = donationPrefix,
+            message = message
         )
 
-        voice: GoogleVoiceSelectionParams
+        if not utils.isValidStr(fullMessage):
+            return None
+
+        synthesisInput = GoogleTextSynthesisInput(text = fullMessage)
 
         if voicePreset is None:
             voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
@@ -157,7 +180,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
                 filePath = f'{filePath}/{fileName}'
             )
         else:
-            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({message=}) ({fileName=}) ({filePath=})')
+            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({fullMessage=}) ({request=}) ({fileName=}) ({filePath=})')
             return None
 
     async def __saveSpeechBytes(

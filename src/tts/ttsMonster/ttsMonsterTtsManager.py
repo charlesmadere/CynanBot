@@ -1,6 +1,7 @@
 import asyncio
 
 from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
+from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
@@ -23,11 +24,13 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
+        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         loudVoices: frozenset[TtsMonsterVoice] | None = frozenset({
+            TtsMonsterVoice.GLADOS,
             TtsMonsterVoice.SHADOW,
         })
     ):
@@ -37,6 +40,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
+            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsMonsterHelper, TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
         elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
@@ -51,6 +56,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
+        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = ttsMonsterMessageCleaner
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
@@ -65,8 +71,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         if loudVoices is None or len(loudVoices) == 0:
             return False
 
-        for louderVoice in loudVoices:
-            if louderVoice in fileReference.allVoices:
+        for loudVoice in loudVoices:
+            if loudVoice in fileReference.allVoices:
                 return True
 
         return False
@@ -148,11 +154,13 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterFileReference | None:
-        cleanedMessage = await self.__ttsMonsterMessageCleaner.clean(event.message)
+        donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
+        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         return await self.__ttsMonsterHelper.generateTts(
-            message = cleanedMessage,
+            donationPrefix = donationPrefix,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
             voice = voice

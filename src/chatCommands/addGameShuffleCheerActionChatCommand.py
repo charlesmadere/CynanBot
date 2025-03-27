@@ -66,4 +66,4 @@ class AddGameShuffleCheerActionChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('AddGameShuffleCheerActionChatCommand', f'Handled !addgameshufflecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('AddGameShuffleCheerActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

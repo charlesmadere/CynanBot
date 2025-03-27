@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from ..jsonReaderInterface import JsonReaderInterface
@@ -11,7 +11,7 @@ class PsqlCredentialsProvider(PsqlCredentialsProviderInterface):
         if not isinstance(credentialsJsonReader, JsonReaderInterface):
             raise TypeError(f'credentialsJsonReader argument is malformed: \"{credentialsJsonReader}\"')
 
-        self.__credentialsJsonReader: JsonReaderInterface = credentialsJsonReader
+        self.__credentialsJsonReader: Final[JsonReaderInterface] = credentialsJsonReader
 
         self.__jsonCache: dict[str, Any] | None = None
 

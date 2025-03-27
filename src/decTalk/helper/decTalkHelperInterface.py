@@ -10,6 +10,7 @@ class DecTalkHelperInterface(ABC):
     async def generateTts(
         self,
         voice: DecTalkVoice | None,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str

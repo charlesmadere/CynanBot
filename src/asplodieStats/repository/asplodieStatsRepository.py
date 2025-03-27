@@ -1,3 +1,5 @@
+from typing import Final
+
 from lru import LRU
 
 from .asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
@@ -26,8 +28,8 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
         elif cacheSize < 1 or cacheSize > 256:
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
         self.__cache: LRU[str, AsplodieStats | None] = LRU(cacheSize)
@@ -43,6 +45,8 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
             raise TypeError(f'isSelfAsplodie argument is malformed: \"{isSelfAsplodie}\"')
         elif not utils.isValidInt(durationAsplodiedSeconds):
             raise TypeError(f'durationAsplodiedSeconds argument is malformed: \"{durationAsplodiedSeconds}\"')
+        elif durationAsplodiedSeconds < 1 or durationAsplodiedSeconds > utils.getIntMaxSafeSize():
+            raise ValueError(f'durationAsplodiedSeconds argument is out of bounds: {durationAsplodiedSeconds}')
         elif not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):

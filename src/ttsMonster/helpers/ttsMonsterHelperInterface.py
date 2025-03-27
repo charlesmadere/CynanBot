@@ -9,6 +9,7 @@ class TtsMonsterHelperInterface(ABC):
     @abstractmethod
     async def generateTts(
         self,
+        donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,

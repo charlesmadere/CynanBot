@@ -151,7 +151,8 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
-        areBeanStatsEnabled = utils.getBoolFromDict(userJson, 'beanStatsEnabled', False)
+        areAsplodieStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ASPLODIE_STATS_ENABLED.jsonKey, False)
+        areBeanStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_STATS_ENABLED.jsonKey, False)
         areChatSoundAlertsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED.jsonKey, False)
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
@@ -363,6 +364,7 @@ class UsersRepository(UsersRepositoryInterface):
             timeZones.freeze()
 
         user = User(
+            areAsplodieStatsEnabled = areAsplodieStatsEnabled,
             areBeanStatsEnabled = areBeanStatsEnabled,
             areChatSoundAlertsEnabled = areChatSoundAlertsEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,

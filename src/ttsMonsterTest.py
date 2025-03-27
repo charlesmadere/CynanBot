@@ -146,6 +146,7 @@ async def main():
     twitchChannel = 'smCharles'
 
     fileReference = await ttsMonsterHelper.generateTts(
+        donationPrefix = None,
         message = message,
         twitchChannel = twitchChannel,
         twitchChannelId = twitchChannelId,
