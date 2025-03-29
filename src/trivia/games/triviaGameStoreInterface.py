@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 from .absTriviaGameState import AbsTriviaGameState
 from .superTriviaGameState import SuperTriviaGameState
 from .triviaGameState import TriviaGameState
@@ -8,11 +10,14 @@ from .triviaGameState import TriviaGameState
 class TriviaGameStoreInterface(ABC):
 
     @abstractmethod
-    async def add(self, state: AbsTriviaGameState):
+    async def add(
+        self,
+        state: AbsTriviaGameState
+    ):
         pass
 
     @abstractmethod
-    async def getAll(self) -> list[AbsTriviaGameState]:
+    async def getAll(self) -> FrozenList[AbsTriviaGameState]:
         pass
 
     @abstractmethod
@@ -28,7 +33,10 @@ class TriviaGameStoreInterface(ABC):
         pass
 
     @abstractmethod
-    async def getSuperGame(self, twitchChannelId: str) -> SuperTriviaGameState | None:
+    async def getSuperGame(
+        self,
+        twitchChannelId: str
+    ) -> SuperTriviaGameState | None:
         pass
 
     @abstractmethod
@@ -36,7 +44,7 @@ class TriviaGameStoreInterface(ABC):
         pass
 
     @abstractmethod
-    async def getTwitchChannelIdsWithActiveSuperGames(self) -> list[str]:
+    async def getTwitchChannelIdsWithActiveSuperGames(self) -> frozenset[str]:
         pass
 
     @abstractmethod
@@ -48,5 +56,8 @@ class TriviaGameStoreInterface(ABC):
         pass
 
     @abstractmethod
-    async def removeSuperGame(self, twitchChannelId: str) -> bool:
+    async def removeSuperGame(
+        self,
+        twitchChannelId: str
+    ) -> bool:
         pass

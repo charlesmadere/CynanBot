@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from .absTriviaGameState import AbsTriviaGameState
 from .superTriviaGameState import SuperTriviaGameState
 from .triviaGameState import TriviaGameState
@@ -12,7 +14,10 @@ class TriviaGameStore(TriviaGameStoreInterface):
         self.__normalGameStates: list[TriviaGameState] = list()
         self.__superGameStates: list[SuperTriviaGameState] = list()
 
-    async def add(self, state: AbsTriviaGameState):
+    async def add(
+        self,
+        state: AbsTriviaGameState
+    ):
         if not isinstance(state, AbsTriviaGameState):
             raise TypeError(f'state argument is malformed: \"{state}\"')
 
@@ -35,13 +40,14 @@ class TriviaGameStore(TriviaGameStoreInterface):
 
         self.__superGameStates.append(state)
 
-    async def getAll(self) -> list[AbsTriviaGameState]:
+    async def getAll(self) -> FrozenList[AbsTriviaGameState]:
         normalGames = await self.getNormalGames()
         superGames = await self.getSuperGames()
 
-        allGames: list[AbsTriviaGameState] = list()
+        allGames: FrozenList[AbsTriviaGameState] = FrozenList()
         allGames.extend(normalGames)
         allGames.extend(superGames)
+        allGames.freeze()
 
         return allGames
 
@@ -81,14 +87,14 @@ class TriviaGameStore(TriviaGameStoreInterface):
     async def getSuperGames(self) -> list[SuperTriviaGameState]:
         return utils.copyList(self.__superGameStates)
 
-    async def getTwitchChannelIdsWithActiveSuperGames(self) -> list[str]:
+    async def getTwitchChannelIdsWithActiveSuperGames(self) -> frozenset[str]:
         superGames = await self.getSuperGames()
         twitchChannelIds: set[str] = set()
 
         for state in superGames:
             twitchChannelIds.add(state.getTwitchChannelId())
 
-        return list(twitchChannelIds)
+        return frozenset(twitchChannelIds)
 
     async def removeNormalGame(
         self,
