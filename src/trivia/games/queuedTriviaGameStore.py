@@ -2,6 +2,8 @@ import queue
 import random
 from collections import defaultdict
 
+from frozenlist import FrozenList
+
 from .queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from ..addQueuedGamesResult import AddQueuedGamesResult
@@ -122,7 +124,10 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             oldQueueSize = oldQueueSize
         )
 
-    async def clearQueuedSuperGames(self, twitchChannelId: str) -> ClearQueuedGamesResult:
+    async def clearQueuedSuperGames(
+        self,
+        twitchChannelId: str
+    ) -> ClearQueuedGamesResult:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -136,7 +141,10 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             oldQueueSize = oldQueueSize
         )
 
-    async def getQueuedSuperGamesSize(self, twitchChannelId: str) -> int:
+    async def getQueuedSuperGamesSize(
+        self,
+        twitchChannelId: str
+    ) -> int:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -145,8 +153,11 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         else:
             return 0
 
-    async def popQueuedSuperGames(self, activeChannelIds: set[str]) -> list[StartNewSuperTriviaGameAction]:
-        superGames: list[StartNewSuperTriviaGameAction] = list()
+    async def popQueuedSuperGames(
+        self,
+        activeChannelIds: set[str]
+    ) -> FrozenList[StartNewSuperTriviaGameAction]:
+        superGames: FrozenList[StartNewSuperTriviaGameAction] = FrozenList()
 
         for twitchChannelId, queuedSuperGames in self.__queuedSuperGames.items():
             if twitchChannelId in activeChannelIds:
@@ -159,4 +170,5 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             except queue.Empty as e:
                 self.__timber.log('QueuedTriviaGameStore', f'Unable to get queued super game for \"{twitchChannelId}\" (queue size: {len(queuedSuperGames)}): {e}', e)
 
+        superGames.freeze()
         return superGames
