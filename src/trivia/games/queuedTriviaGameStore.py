@@ -109,7 +109,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             else:
                 break
 
-        def shouldShuffle():
+        def shouldShuffle() -> bool:
             for item in queuedSuperGames:
                 if item.getTriviaFetchOptions().requiredTriviaSource is not None:
                     return True
