@@ -71,4 +71,4 @@ class GetCheerActionsChatCommand(AbsChatCommand):
                     replyMessageId = await ctx.getMessageId()
                 )
 
-        self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('GetCheerActionsCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
