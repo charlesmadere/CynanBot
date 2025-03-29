@@ -34,6 +34,10 @@ class TestAnivContentScanner:
         timber = timber
     )
 
+    def test_sanity(self):
+        assert self.anivContentScanner is not None
+        assert isinstance(self.anivContentScanner, AnivContentScannerInterface)
+
     @pytest.mark.asyncio
     async def test_scan_withBadParens1(self):
         result = await self.anivContentScanner.scan('(insanefirebat')
@@ -169,10 +173,11 @@ class TestAnivContentScanner:
         assert result is AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
 
     @pytest.mark.asyncio
-    async def test_scan_withUrl(self):
-        result = await self.anivContentScanner.scan('Hello https://google.com/ World!')
+    async def test_scan_withUrl1(self):
+        result = await self.anivContentScanner.scan('https://google.com/')
         assert result is AnivContentCode.CONTAINS_URL
 
-    def test_sanity(self):
-        assert self.anivContentScanner is not None
-        assert isinstance(self.anivContentScanner, AnivContentScannerInterface)
+    @pytest.mark.asyncio
+    async def test_scan_withUrl2(self):
+        result = await self.anivContentScanner.scan('Hello https://google.com/ World!')
+        assert result is AnivContentCode.CONTAINS_URL
