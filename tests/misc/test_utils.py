@@ -56,13 +56,42 @@ class TestUtils:
         result = utils.containsUrl('')
         assert result is False
 
+    def test_containsUrl_withExampleUrlMessages(self):
+        result = utils.containsUrl('Hello, World!')
+        assert result is False
+
+        result = utils.containsUrl('Hello, example. World!')
+        assert result is False
+
+        result = utils.containsUrl('Hello, example.c World!')
+        assert result is False
+
+        result = utils.containsUrl('Hello, example.co World!')
+        assert result is True
+
+        result = utils.containsUrl('Hello, example.co.jp World!')
+        assert result is True
+
+        result = utils.containsUrl('Hello, example.co.uk World!')
+        assert result is True
+
+        result = utils.containsUrl('Hello, example.com World!')
+        assert result is True
+
     def test_containsUrl_withGoogle(self):
         result = utils.containsUrl('https://www.google.com/')
         assert result is True
 
-    def test_containsUrl_withGoogleSentence(self):
+    def test_containsUrl_withGoogleSentences(self):
         result = utils.containsUrl('There\'s a URL here: https://www.google.com/ in this sentence.')
         assert result is True
+
+        result = utils.containsUrl('And there\'s a shorthand URL here: google.com in this different sentence.')
+        assert result is True
+
+    def test_containsUrl_withHelloWorld(self):
+        result = utils.containsUrl('Hello, World!')
+        assert result is False
 
     def test_containsUrl_withNone(self):
         result = utils.containsUrl(None)
@@ -74,6 +103,10 @@ class TestUtils:
 
     def test_containsUrl_withRandomNoise2(self):
         result = utils.containsUrl('.s*&Sxwa}RZ\\\'AIkvD6:&OkVT#_YA`')
+        assert result is False
+
+    def test_containsUrl_withWhitespaceString(self):
+        result = utils.containsUrl(' ')
         assert result is False
 
     def test_copyList_withEmptyList(self):

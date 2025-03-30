@@ -74,6 +74,9 @@ def cleanStr(
 
     return s.strip()
 
+# this regex pattern is designed to match with simple strings that Twitch automatically converts into a clickable link in Twitch chat
+SHORTHAND_URL_REG_EX: Final[Pattern] = re.compile(r'^\w[\w_-]*\.(?:com|co(?:\.\w{2,})?|edu|gov|mil|net|org)$', re.IGNORECASE)
+
 def containsUrl(s: str | None) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
@@ -85,6 +88,8 @@ def containsUrl(s: str | None) -> TypeGuard[str]:
 
     for split in splits:
         if isValidUrl(split):
+            return True
+        elif SHORTHAND_URL_REG_EX.fullmatch(split):
             return True
 
     return False
