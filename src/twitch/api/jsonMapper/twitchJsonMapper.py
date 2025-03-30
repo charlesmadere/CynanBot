@@ -7,6 +7,8 @@ from frozenlist import FrozenList
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..models.twitchApiScope import TwitchApiScope
 from ..models.twitchBanRequest import TwitchBanRequest
+from ..models.twitchBanResponse import TwitchBanResponse
+from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
@@ -149,6 +151,57 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
                 return None
 
+    async def parseBanResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBanResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+
+        if not isinstance(data, list) or len(data) == 0:
+            return None
+
+        entries: list[TwitchBanResponseEntry] = list()
+
+        for dataEntry in data:
+            entry = await self.parseBanResponseEntry(dataEntry)
+            entries.append(entry)
+
+        entries.sort(key = lambda entry: entry.createdAt, reverse = True)
+        frozenEntries: FrozenList[TwitchBanResponseEntry] = FrozenList(entries)
+        frozenEntries.freeze()
+
+        return TwitchBanResponse(
+            data = frozenEntries
+        )
+
+    async def parseBanResponseEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchBanResponseEntry:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+
+        createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
+
+        endTime: datetime | None = None
+        if 'end_time' in jsonResponse and utils.isValidStr(jsonResponse.get('end_time')):
+            endTime = utils.getDateTimeFromDict(jsonResponse, 'end_time')
+
+        broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
+        moderatorId = utils.getStrFromDict(jsonResponse, 'moderator_id')
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+
+        return TwitchBanResponseEntry(
+            createdAt = createdAt,
+            endTime = endTime,
+            broadcasterId = broadcasterId,
+            moderatorId = moderatorId,
+            userId = userId
+        )
+
     async def parseBannedUserResponse(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -210,9 +263,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
 
-        if not isinstance(data, list):
-            return None
-        elif len(data) == 0:
+        if not isinstance(data, list) or len(data) == 0:
             return None
 
         dataEntry: dict[str, Any] | Any | None = data[0]

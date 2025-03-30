@@ -2,9 +2,12 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
+from .models.twitchBanResponseEntry import TwitchBanResponseEntry
 from .models.twitchBannedUserResponse import TwitchBannedUserResponse
 from .models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
@@ -150,41 +153,31 @@ class TwitchApiService(TwitchApiServiceInterface):
             createdAt = datetime.now(self.__timeZoneRepository.getDefault()) - timedelta(seconds = 3)
             endTime = createdAt + timedelta(seconds = banRequest.duration)
 
-            return TwitchBanResponse(
+            frozenEntries: FrozenList[TwitchBanResponseEntry] = FrozenList()
+            frozenEntries.append(TwitchBanResponseEntry(
                 createdAt = createdAt,
                 endTime = endTime,
-                broadcasterUserId = banRequest.broadcasterUserId,
-                moderatorUserId = banRequest.moderatorUserId,
+                broadcasterId = banRequest.broadcasterUserId,
+                moderatorId = banRequest.moderatorUserId,
                 userId = banRequest.userIdToBan
+            ))
+
+            frozenEntries.freeze()
+
+            return TwitchBanResponse(
+                data = frozenEntries
             )
         elif responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'Received a null/empty JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(f'TwitchApiService encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
-        if not isinstance(data, list) or len(data) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed \"data\" field in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'Received a null/empty \"data\" field in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=})({jsonResponse=})')
+        banResponse = await self.__twitchJsonMapper.parseBanResponse(jsonResponse)
 
-        entry: dict[str, Any] | None = data[0]
-        if not isinstance(entry, dict) or len(entry) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'Received a null/empty/malformed data entry value in JSON response when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+        if banResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when banning user ({twitchAccessToken=}) ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({banResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when banning user ({twitchAccessToken=}) ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({banResponse=})')
 
-        endTime: datetime | None = None
-        if 'end_time' in entry and utils.isValidStr(entry.get('end_time')):
-            endTime = utils.getDateTimeFromDict(entry, 'end_time')
-
-        return TwitchBanResponse(
-            createdAt = utils.getDateTimeFromDict(entry, 'created_at'),
-            endTime = endTime,
-            broadcasterUserId = utils.getStrFromDict(entry, 'broadcaster_id'),
-            moderatorUserId = utils.getStrFromDict(entry, 'moderator_id'),
-            userId = utils.getStrFromDict(entry, 'user_id')
-        )
+        return banResponse
 
     async def createEventSubSubscription(
         self,
