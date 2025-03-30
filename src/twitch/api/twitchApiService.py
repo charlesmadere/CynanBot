@@ -170,7 +170,10 @@ class TwitchApiService(TwitchApiServiceInterface):
             )
         elif responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise TwitchStatusCodeException(f'TwitchApiService encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when banning user ({banRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+            )
 
         banResponse = await self.__twitchJsonMapper.parseBanResponse(jsonResponse)
 
