@@ -253,7 +253,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             return None
 
         connection = await self.__getDatabaseConnection()
-        records: list[list[Any]] | None = None
+        records: FrozenList[FrozenList[Any]] | None = None
 
         try:
             records = await connection.fetchRows(
