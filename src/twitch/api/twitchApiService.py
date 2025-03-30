@@ -124,7 +124,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/moderation/bans?broadcaster_id={banRequest.broadcasterUserId}&moderator_id={banRequest.moderatorUserId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
+                    'Client-Id': twitchClientId,
+                    'Content-Type': 'application/json'
                 },
                 json = await self.__twitchJsonMapper.serializeBanRequest(banRequest)
             )
