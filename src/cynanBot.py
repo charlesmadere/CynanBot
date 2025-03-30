@@ -11,6 +11,8 @@ from .aniv.anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessage
 from .aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from .aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from .aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
+from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from .beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from .beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from .chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
@@ -32,6 +34,7 @@ from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChat
 from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from .chatCommands.answerChatCommand import AnswerChatCommand
+from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
@@ -262,6 +265,8 @@ class CynanBot(
         anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface | None,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface | None,
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
+        asplodieStatsPresenter: AsplodieStatsPresenter | None,
+        asplodieStatsRepository: AsplodieStatsRepositoryInterface | None,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
@@ -424,6 +429,10 @@ class CynanBot(
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
         elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
+        elif asplodieStatsPresenter is not None and not isinstance(asplodieStatsPresenter, AsplodieStatsPresenter):
+            raise TypeError(f'asplodieStatsPresenter argument is malformed: \"{asplodieStatsPresenter}\"')
+        elif asplodieStatsRepository is not None and not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
+            raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
@@ -704,7 +713,7 @@ class CynanBot(
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchUtils, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, asplodieStatsRepository, authRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)
@@ -716,6 +725,11 @@ class CynanBot(
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManager, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+
+        if asplodieStatsPresenter is None or asplodieStatsRepository is None:
+            self.__asplodieStatsCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__asplodieStatsCommand: AbsChatCommand = AsplodieStatsChatCommand(asplodieStatsPresenter, asplodieStatsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if beanStatsPresenter is None or beanStatsRepository is None:
             self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
@@ -1206,6 +1220,11 @@ class CynanBot(
     async def command_answer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleChatCommand(context)
+
+    @commands.command(name = 'asplodiestats', aliases = [ 'getasplodiestats' ])
+    async def command_asplodiestats(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__asplodieStatsCommand.handleChatCommand(context)
 
     @commands.command(name = 'bantriviaquestion', aliases = [ 'bantrivia' ])
     async def command_bantriviaquestion(self, ctx: Context):

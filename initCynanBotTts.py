@@ -18,6 +18,9 @@ from src.aniv.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTim
 from src.aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from src.aniv.whichAnivUserHelper import WhichAnivUserHelper
 from src.aniv.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
+from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
+from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
+from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.beanStats.beanStatsPresenter import BeanStatsPresenter
 from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from src.beanStats.beanStatsRepository import BeanStatsRepository
@@ -1713,6 +1716,18 @@ streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
 )
 
 
+###########################################
+## Asplodie Stats initialization section ##
+###########################################
+
+asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
+
+asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+
 ####################################
 ## Timeout initialization section ##
 ####################################
@@ -1737,6 +1752,7 @@ timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = Timeou
 
 timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     activeChattersRepository = activeChattersRepository,
+    asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -2115,6 +2131,8 @@ cynanBot = CynanBot(
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettingsRepository = anivSettingsRepository,
+    asplodieStatsPresenter = asplodieStatsPresenter,
+    asplodieStatsRepository = asplodieStatsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = None,

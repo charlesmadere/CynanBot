@@ -15,6 +15,7 @@ from .timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryReposit
 from .timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from .timeoutActionType import TimeoutActionType
 from .timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
+from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -60,6 +61,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
@@ -79,6 +81,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
+            raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
@@ -113,6 +117,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
+        self.__asplodieStatsRepository: AsplodieStatsRepositoryInterface = asplodieStatsRepository
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
@@ -417,6 +422,13 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
 
         return diceRoll.roll < rollFailureData.reverseRoll
 
+    async def __isTryingToTimeoutSelf(
+        self,
+        timeoutTargetUserId: str,
+        timeoutData: TimeoutActionData
+    ) -> bool:
+        return timeoutTargetUserId == timeoutData.instigatorUserId
+
     async def __isTryingToTimeoutTheStreamer(
         self,
         timeoutTargetUserId: str,
@@ -518,6 +530,13 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             timeoutTargetUserId = timeoutData.instigatorUserId
             timeoutTargetUserName = timeoutData.instigatorUserName
 
+        elif await self.__isTryingToTimeoutSelf(
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutData = timeoutData
+        ):
+            self.__timber.log('TimeoutActionHelper', f'Attempting to timeout self by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel} ({timeoutData=})')
+            isGuaranteed = True
+
         elif await self.__hasNewFollowerShield(
             now = now,
             ripBozoEmote = ripBozoEmote,
@@ -569,6 +588,13 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__timber.log('TimeoutActionHelper', f'Timed out {timeoutTargetUserName}:{timeoutTargetUserId} in \"{timeoutData.twitchChannel}\" from {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} ({diceRoll=}) ({rollFailureData=}) ({timeoutResult=}) ({timeoutData=})')
 
         await self.__activeChattersRepository.remove(
+            chatterUserId = timeoutTargetUserId,
+            twitchChannelId = timeoutData.twitchChannelId
+        )
+
+        await self.__asplodieStatsRepository.addAsplodie(
+            isSelfAsplodie = timeoutTargetUserId == timeoutData.instigatorUserId,
+            durationAsplodiedSeconds = timeoutData.durationSeconds,
             chatterUserId = timeoutTargetUserId,
             twitchChannelId = timeoutData.twitchChannelId
         )

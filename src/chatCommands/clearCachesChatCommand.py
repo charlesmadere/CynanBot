@@ -3,6 +3,7 @@ from frozenlist import FrozenList
 from .absChatCommand import AbsChatCommand
 from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
     ChatterPreferredTtsRepositoryInterface
 from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
@@ -74,6 +75,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
+        asplodieStatsRepository: AsplodieStatsRepositoryInterface | None,
         authRepository: AuthRepository,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
@@ -129,6 +131,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
+        elif asplodieStatsRepository is not None and not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
+            raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
@@ -235,6 +239,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(addOrRemoveUserDataHelper)
         self.__clearables.append(administratorProvider)
         self.__clearables.append(anivSettingsRepository)
+        self.__clearables.append(asplodieStatsRepository)
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)
         self.__clearables.append(bizhawkSettingsRepository)
