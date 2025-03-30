@@ -32,7 +32,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: LRU[str, AsplodieStats | None] = LRU(cacheSize)
+        self.__cache: Final[LRU[str, AsplodieStats | None]] = LRU(cacheSize)
 
     async def addAsplodie(
         self,
