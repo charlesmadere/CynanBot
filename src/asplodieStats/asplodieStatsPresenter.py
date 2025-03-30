@@ -27,4 +27,4 @@ class AsplodieStatsPresenter:
             selfAsplodiesPluralization = 'self asplodies'
 
         totalDurationAsplodied = utils.secondsToDurationMessage(asplodieStats.totalDurationAsplodiedSeconds)
-        return f'{asplodieStats.totalAsplodiesStr} {asplodiesPluralization} with {asplodieStats.selfAsplodiesStr} {selfAsplodiesPluralization} (that\'s {totalDurationAsplodied}!)'
+        return f'{asplodieStats.totalAsplodiesStr} {asplodiesPluralization}; {asplodieStats.selfAsplodiesStr} {selfAsplodiesPluralization} (that\'s {totalDurationAsplodied}!)'
