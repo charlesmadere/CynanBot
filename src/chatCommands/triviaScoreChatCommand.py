@@ -75,20 +75,19 @@ class TriviaScoreChatCommand(AbsChatCommand):
         elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
+        userId = ctx.getAuthorId()
         userName = ctx.getAuthorName()
         splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
             userName = utils.removePreceedingAt(splits[1])
 
-        userId = ctx.getAuthorId()
-
         # this means that a user is querying for another user's trivia score
         if userName.casefold() != ctx.getAuthorName().casefold():
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database')
+                self.__timber.log('TriviaScoreChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Unable to find trivia score info for \"{userName}\"',
@@ -127,4 +126,4 @@ class TriviaScoreChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TriviaScoreChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

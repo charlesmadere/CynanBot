@@ -58,6 +58,7 @@ class AsplodieStatsChatCommand(AbsChatCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
+                self.__timber.log('AsplodieStatsChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Unable to find asplodie stats score for \"{userName}\"',
@@ -70,11 +71,14 @@ class AsplodieStatsChatCommand(AbsChatCommand):
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
-        printOut = await self.__asplodieStatsPresenter.printOut(asplodieStats)
+        printOut = await self.__asplodieStatsPresenter.printOut(
+            asplodieStats = asplodieStats,
+            chatterUserName = userName
+        )
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = printOut,
+            message = f'ⓘ Asplodie stats for @{userName} — {printOut}',
             replyMessageId = await ctx.getMessageId()
         )
 

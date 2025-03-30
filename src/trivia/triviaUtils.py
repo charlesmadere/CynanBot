@@ -643,7 +643,7 @@ class TriviaUtils(TriviaUtilsInterface):
         if triviaResult.getTotal() == 0 and triviaResult.getSuperTriviaWins() == 0:
             return f'{utils.getRandomSadEmoji()} @{userName} has not played any trivia games…'
 
-        introStr = f'ⓘ @{userName} has'
+        introStr = f'ⓘ Trivia Score for @{userName} — '
         needsSemicolon = False
 
         triviaStr = ''
