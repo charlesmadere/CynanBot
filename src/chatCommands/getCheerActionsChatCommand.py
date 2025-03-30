@@ -36,10 +36,6 @@ class GetCheerActionsChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.areCheerActionsEnabled:
-            return
-
         userId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
@@ -51,16 +47,23 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        if actions is None or len(actions) == 0:
+        enabledOrDisabledState: str
+
+        if user.areCheerActionsEnabled:
+            enabledOrDisabledState = 'enabled'
+        else:
+            enabledOrDisabledState = 'disabled'
+
+        if len(actions) == 0:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ You have no cheer actions',
+                message = f'ⓘ You have no cheer actions (cheer actions are {enabledOrDisabledState} for your user)',
                 replyMessageId = await ctx.getMessageId()
             )
         else:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ You have {len(actions)} cheer action(s)',
+                message = f'ⓘ You have {len(actions)} cheer action(s) (cheer actions are {enabledOrDisabledState} for your user)',
                 replyMessageId = await ctx.getMessageId()
             )
 
