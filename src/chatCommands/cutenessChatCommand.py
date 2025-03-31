@@ -1,10 +1,7 @@
-from datetime import timedelta
-
 from .absChatCommand import AbsChatCommand
 from ..cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..misc import utils as utils
-from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -22,8 +19,7 @@ class CutenessChatCommand(AbsChatCommand):
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 2)
+        delimiter: str = ', '
     ):
         if not isinstance(cutenessPresenter, CutenessPresenterInterface):
             raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
@@ -39,8 +35,6 @@ class CutenessChatCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessPresenter: CutenessPresenterInterface = cutenessPresenter
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
@@ -49,14 +43,11 @@ class CutenessChatCommand(AbsChatCommand):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__delimiter: str = delimiter
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         userName = ctx.getAuthorName()
@@ -112,4 +103,4 @@ class CutenessChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('CutenessChatCommand', f'Handled !cuteness command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('CutenessChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

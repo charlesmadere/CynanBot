@@ -57,17 +57,40 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as username argument is malformed. Example: !removebannedtriviacontroller {user.handle}')
             return
 
-        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(userName)
+        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(
+            userName = userName
+        )
 
-        if result is RemoveBannedTriviaGameControllerResult.ERROR:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a banned trivia game controller!')
-        elif result is RemoveBannedTriviaGameControllerResult.NOT_BANNED:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Did not remove {userName} as a banned trivia game controller, as they have not already been banned')
-        elif result is RemoveBannedTriviaGameControllerResult.REMOVED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a banned trivia game controller')
-        else:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a banned trivia game controller!')
-            self.__timber.log('RemoveBannedTriviaControllerChatCommand', f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-            raise RuntimeError(f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        match result:
+            case RemoveBannedTriviaGameControllerResult.ERROR:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An error occurred when trying to remove @{userName} as a banned trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
-        self.__timber.log('RemoveBannedTriviaControllerChatCommand', f'Handled !removebannedtriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            case RemoveBannedTriviaGameControllerResult.NOT_BANNED:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ @{userName} is not a banned trivia controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case RemoveBannedTriviaGameControllerResult.REMOVED:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Removed @{userName} as a banned trivia game controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case _:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An unknown error occurred when trying to remove @{userName} as a banned trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+                self.__timber.log('RemoveBannedTriviaControllerChatCommand', f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+                raise ValueError(f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+
+        self.__timber.log('RemoveBannedTriviaControllerChatCommand', f'Handled command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

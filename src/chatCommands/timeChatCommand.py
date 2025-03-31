@@ -51,7 +51,7 @@ class TimeChatCommand(AbsChatCommand):
             if first:
                 first = False
                 formattedTime = utils.formatTime(localTime)
-                text = f'🕰️ The local time for {user.handle} is {formattedTime}.'
+                text = f'🕰️ The stream\'s local time is {formattedTime}.'
             else:
                 formattedTime = utils.formatTimeShort(localTime)
                 timeZoneName = localTime.strftime('%Z')
@@ -63,4 +63,4 @@ class TimeChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TimeChatCommand', f'Handled !time command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TimeChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

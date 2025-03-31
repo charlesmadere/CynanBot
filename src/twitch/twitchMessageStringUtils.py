@@ -1,5 +1,5 @@
 import re
-from typing import Any, Pattern
+from typing import Any, Final, Pattern
 
 from frozenlist import FrozenList
 
@@ -10,11 +10,11 @@ from ..misc import utils as utils
 class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
 
     def __init__(self):
-        self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
-        self.__userNameRegEx: Pattern = re.compile(r'^\s*@?(\w+)\s*$', re.IGNORECASE)
-        self.__userNameWithCheerRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
+        self.__extraWhiteSpaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__userNameRegEx: Final[Pattern] = re.compile(r'^\s*@?(\w+)\s*$', re.IGNORECASE)
+        self.__userNameWithCheerRegEx: Final[Pattern] = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
 
-        self.__cheerRegExes: FrozenList[Pattern] = FrozenList([
+        self.__cheerRegExes: Final[FrozenList[Pattern]] = FrozenList([
             re.compile(r'(^|\s+)bitboss\d+', re.IGNORECASE),
             re.compile(r'(^|\s+)cheer\d+', re.IGNORECASE),
             re.compile(r'(^|\s+)doodlecheer\d+', re.IGNORECASE),

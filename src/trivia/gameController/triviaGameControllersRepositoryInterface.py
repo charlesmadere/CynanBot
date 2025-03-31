@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from .triviaGameController import TriviaGameController
+from ...misc.clearable import Clearable
 
 
-class TriviaGameControllersRepositoryInterface(ABC):
+class TriviaGameControllersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def addController(
@@ -21,7 +24,7 @@ class TriviaGameControllersRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> list[TriviaGameController]:
+    ) -> FrozenList[TriviaGameController]:
         pass
 
     @abstractmethod

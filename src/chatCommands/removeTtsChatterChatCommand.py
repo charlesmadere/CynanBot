@@ -42,7 +42,7 @@ class RemoveTtsChatterChatCommand(AbsChatCommand):
         if ttsChatter is None:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ You aren\'t currently a TTS Chatter',
+                message = f'ⓘ You weren\'t already a TTS Chatter',
                 replyMessageId = await ctx.getMessageId()
             )
         else:

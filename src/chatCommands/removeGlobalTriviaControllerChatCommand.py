@@ -6,6 +6,7 @@ from ..trivia.gameController.removeTriviaGameControllerResult import RemoveTrivi
 from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -17,6 +18,7 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
+        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -26,6 +28,8 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -34,11 +38,13 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != administrator:
@@ -48,26 +54,57 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {user.handle}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {twitchHandle}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but username argument is malformed: \"{userName}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {user.handle}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {twitchHandle}',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
-        result = await self.__triviaGameGlobalControllersRepository.removeController(userName)
+        result = await self.__triviaGameGlobalControllersRepository.removeController(
+            userName = userName
+        )
 
-        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Did not remove {userName} as a global trivia game controller, as they have not already been added')
-        elif result is RemoveTriviaGameControllerResult.ERROR:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a global trivia game controller!')
-        elif result is RemoveTriviaGameControllerResult.REMOVED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a global trivia game controller')
-        else:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a global trivia game controller!')
-            self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        match result:
+            case RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ @{userName} is not a global trivia game controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
 
-        self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Handled !removeglobaltriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            case RemoveTriviaGameControllerResult.ERROR:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An error occurred when trying to remove @{userName} as a global trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case RemoveTriviaGameControllerResult.REMOVED:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'ⓘ Removed @{userName} as a global trivia game controller',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+            case _:
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = f'⚠ An unknown error occurred when trying to remove @{userName} as a global trivia game controller!',
+                    replyMessageId = await ctx.getMessageId()
+                )
+
+                self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+                raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+
+        self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Handled command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

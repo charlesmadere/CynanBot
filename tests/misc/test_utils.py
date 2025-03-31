@@ -52,6 +52,13 @@ class TestUtils:
         assert isinstance(result, int)
         assert result == 1
 
+    def test_containsUrl_withCynanBotIo(self):
+        result = utils.containsUrl('cynanbot.io')
+        assert result is True
+
+        result = utils.containsUrl('https://cynanbot.io/')
+        assert result is True
+
     def test_containsUrl_withEmptyString(self):
         result = utils.containsUrl('')
         assert result is False
@@ -78,6 +85,9 @@ class TestUtils:
         result = utils.containsUrl('Hello, example.com World!')
         assert result is True
 
+        result = utils.containsUrl('Hello, example.com. World!')
+        assert result is True
+
     def test_containsUrl_withGoogle(self):
         result = utils.containsUrl('https://www.google.com/')
         assert result is True
@@ -89,8 +99,25 @@ class TestUtils:
         result = utils.containsUrl('And there\'s a shorthand URL here: google.com in this different sentence.')
         assert result is True
 
+        result = utils.containsUrl('This sentence mentions Google and Bing, but there\'s no URL or .com mention at all!')
+        assert result is False
+
     def test_containsUrl_withHelloWorld(self):
         result = utils.containsUrl('Hello, World!')
+        assert result is False
+
+    def test_containsUrl_withHttp(self):
+        result = utils.containsUrl('http')
+        assert result is False
+
+        result = utils.containsUrl('http://')
+        assert result is False
+
+    def test_containsUrl_withHttps(self):
+        result = utils.containsUrl('https')
+        assert result is False
+
+        result = utils.containsUrl('https://')
         assert result is False
 
     def test_containsUrl_withNone(self):

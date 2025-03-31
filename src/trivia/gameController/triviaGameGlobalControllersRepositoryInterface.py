@@ -8,7 +8,10 @@ from .triviaGameGlobalController import TriviaGameGlobalController
 class TriviaGameGlobalControllersRepositoryInterface(ABC):
 
     @abstractmethod
-    async def addController(self, userName: str) -> AddTriviaGameControllerResult:
+    async def addController(
+        self,
+        userName: str
+    ) -> AddTriviaGameControllerResult:
         pass
 
     @abstractmethod
@@ -16,5 +19,8 @@ class TriviaGameGlobalControllersRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def removeController(self, userName: str) -> RemoveTriviaGameControllerResult:
+    async def removeController(
+        self,
+        userName: str
+    ) -> RemoveTriviaGameControllerResult:
         pass

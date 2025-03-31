@@ -59,5 +59,11 @@ class CutenessChampionsChatCommand(AbsChatCommand):
         )
 
         printOut = await self.__cutenessPresenter.printCutenessChampions(result)
-        await self.__twitchUtils.safeSend(ctx, printOut)
-        self.__timber.log('CutenessChampionsChatCommand', f'Handled !cutenesschampions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = printOut,
+            replyMessageId = await ctx.getMessageId()
+        )
+
+        self.__timber.log('CutenessChampionsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

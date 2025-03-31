@@ -105,18 +105,18 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         )
 
         await connection.close()
+
         controllers: list[TriviaGameGlobalController] = list()
 
-        if records is None or len(records) == 0:
-            return controllers
+        if records is not None and len(records) >= 1:
+            for record in records:
+                controllers.append(TriviaGameGlobalController(
+                    userId = record[0],
+                    userName = record[1]
+                ))
 
-        for record in records:
-            controllers.append(TriviaGameGlobalController(
-                userId = record[0],
-                userName = record[1]
-            ))
+            controllers.sort(key = lambda controller: controller.userName.casefold())
 
-        controllers.sort(key = lambda controller: controller.userName.casefold())
         return controllers
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:

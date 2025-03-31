@@ -1,17 +1,17 @@
 import traceback
 
+from frozenlist import FrozenList
+
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from .triviaGameController import TriviaGameController
-from .triviaGameControllersRepositoryInterface import \
-    TriviaGameControllersRepositoryInterface
+from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
-from ...twitch.tokens.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
+from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -39,6 +39,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
         self.__isDatabaseReady: bool = False
+        self.__cache: dict[str, FrozenList[TriviaGameController] | None] = dict()
 
     async def addController(
         self,
@@ -75,7 +76,6 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         count: int | None = None
-
         if record is not None and len(record) >= 1:
             count = record[0]
 
@@ -83,6 +83,8 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
             await connection.close()
             self.__timber.log('TriviaGameControllersRepository', f'Tried to add a trivia game controller, but this user has already been added ({twitchChannelId=}) ({userName=}) ({userId=})')
             return AddTriviaGameControllerResult.ALREADY_EXISTS
+
+        self.__cache.pop(twitchChannelId, None)
 
         await connection.execute(
             '''
@@ -97,15 +99,23 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         self.__timber.log('TriviaGameControllersRepository', f'Added a new trivia game controller ({twitchChannelId=}) ({userName=}) ({userId=})')
         return AddTriviaGameControllerResult.ADDED
 
+    async def clearCaches(self):
+        self.__cache.clear()
+        self.__timber.log('TriviaGameControllersRepository', 'Caches cleared')
+
     async def getControllers(
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> list[TriviaGameController]:
+    ) -> FrozenList[TriviaGameController]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        cachedControllers = self.__cache.get(twitchChannelId, None)
+        if cachedControllers is not None:
+            return cachedControllers
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -119,21 +129,25 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         await connection.close()
+
         controllers: list[TriviaGameController] = list()
 
-        if records is None or len(records) == 0:
-            return controllers
+        if records is not None and len(records) >= 1:
+            for record in records:
+                controllers.append(TriviaGameController(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = record[0],
+                    userId = record[1],
+                    userName = record[2]
+                ))
 
-        for record in records:
-            controllers.append(TriviaGameController(
-                twitchChannel = twitchChannel,
-                twitchChannelId = record[0],
-                userId = record[1],
-                userName = record[2]
-            ))
+            controllers.sort(key = lambda controller: controller.userName.casefold())
 
-        controllers.sort(key = lambda controller: controller.userName.casefold())
-        return controllers
+        frozenControllers: FrozenList[TriviaGameController] = FrozenList(controllers)
+        frozenControllers.freeze()
+        self.__cache[twitchChannelId] = frozenControllers
+
+        return frozenControllers
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -207,6 +221,8 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
             await connection.close()
             self.__timber.log('TriviaGameControllersRepository', f'Tried to remove trivia game controller, but they\'re not already added ({twitchChannelId=}) ({userName=}) ({userId=})')
             return RemoveTriviaGameControllerResult.DOES_NOT_EXIST
+
+        self.__cache.pop(twitchChannelId, None)
 
         await connection.execute(
             '''

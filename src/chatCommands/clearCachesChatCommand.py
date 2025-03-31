@@ -42,6 +42,8 @@ from ..timeout.timeoutActionHistoryRepositoryInterface import \
     TimeoutActionHistoryRepositoryInterface
 from ..timeout.timeoutActionSettingsRepositoryInterface import \
     TimeoutActionSettingsRepositoryInterface
+from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
+    BannedTriviaGameControllersRepositoryInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
@@ -77,6 +79,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface | None,
         authRepository: AuthRepository,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
@@ -135,6 +138,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
+        elif bannedTriviaGameControllersRepository is not None and not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
+            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif bizhawkSettingsRepository is not None and not isinstance(bizhawkSettingsRepository, BizhawkSettingsRepositoryInterface):
@@ -301,7 +306,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if administrator != ctx.getAuthorId():
-            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log('ClearCachesChatCommand', f'Attempted use of command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             return
 
         for clearable in self.__clearables:
@@ -314,4 +319,4 @@ class ClearCachesChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('ClearCachesChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
