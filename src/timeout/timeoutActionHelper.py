@@ -265,7 +265,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             else:
                 grenadesPluralization = 'grenades'
 
-            message = f'{message} (@{timeoutData.instigatorUserName} has {availableGrenadesString} {grenadesPluralization} remaining)'
+            message = f'{message} ({availableGrenadesString} {grenadesPluralization} remaining for @{timeoutData.instigatorUserName})'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
