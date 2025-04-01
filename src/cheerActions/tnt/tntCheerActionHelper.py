@@ -295,6 +295,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId
         ):
+            self.__timber.log('TntCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
             return False
 
         tntTargets = await self.__determineTntTargets(

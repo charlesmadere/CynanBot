@@ -235,6 +235,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId
         ):
+            self.__timber.log('TimeoutCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
             return False
 
         timeoutTarget = await self.__determineTimeoutTarget(
