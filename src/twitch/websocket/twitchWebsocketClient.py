@@ -64,7 +64,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         websocketCreationDelayTimeSeconds: float = 0.5,
         websocketRetrySleepTimeSeconds: float = 3,
         subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
-            TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
