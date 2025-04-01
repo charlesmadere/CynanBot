@@ -143,7 +143,7 @@ class RecentGrenadeAttacksRepository(RecentGrenadeAttacksRepositoryInterface):
         grenadeAttacksJsonString: str | None = None
 
         if record is not None and len(record) >= 1:
-            grenadeAttacksJsonString = record[1]
+            grenadeAttacksJsonString = record[0]
 
         grenadeAttacks = await self.__parseGrenadeAttacks(
             grenadeAttacksJsonString = grenadeAttacksJsonString
