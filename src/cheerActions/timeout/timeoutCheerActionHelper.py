@@ -8,6 +8,7 @@ from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ..absCheerAction import AbsCheerAction
 from ...misc import utils as utils
+from ...recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
@@ -33,6 +34,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface,
@@ -43,6 +45,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(recentGrenadeAttacksHelper, RecentGrenadeAttacksHelperInterface):
+            raise TypeError(f'recentGrenadeAttacksHelper argument is malformed: \"{recentGrenadeAttacksHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
@@ -59,6 +63,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
+        self.__recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = recentGrenadeAttacksHelper
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
         self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
@@ -223,9 +228,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         action = actions.get(bits, None)
 
-        if not isinstance(action, TimeoutCheerAction):
+        if not isinstance(action, TimeoutCheerAction) or not action.isEnabled:
             return False
-        elif not action.isEnabled:
+        elif not await self.__recentGrenadeAttacksHelper.canThrowGrenade(
+            attackerUserId = cheerUserId,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId
+        ):
             return False
 
         timeoutTarget = await self.__determineTimeoutTarget(
@@ -240,6 +249,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         if timeoutTarget is None:
             return False
+
+        await self.__recentGrenadeAttacksHelper.throwGrenade(
+            attackedUserId = timeoutTarget.userId,
+            attackerUserId = cheerUserId,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId
+        )
 
         actionType: TimeoutActionType
 

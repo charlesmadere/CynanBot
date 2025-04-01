@@ -75,6 +75,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.LOCATION_ID.jsonKey
         assert result == 'locationId'
 
+    def test_jsonKey_withMaximumGrenadesWithinCooldown(self):
+        result = UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey
+        assert result == 'maximumGrenadesWithinCooldown'
+
     def test_jsonKey_withRecurringActionsEnabled(self):
         result = UserJsonConstant.RECURRING_ACTIONS_ENABLED.jsonKey
         assert result == 'recurringActionsEnabled'

@@ -1,4 +1,5 @@
 import asyncio
+import locale
 import queue
 import random
 import traceback
@@ -19,6 +20,7 @@ from ..asplodieStats.repository.asplodieStatsRepositoryInterface import Asplodie
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
 from ..streamAlertsManager.streamAlert import StreamAlert
@@ -65,6 +67,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
+        recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
@@ -89,6 +92,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
+        elif not isinstance(recentGrenadeAttacksHelper, RecentGrenadeAttacksHelperInterface):
+            raise TypeError(f'recentGrenadeAttacksHelper argument is malformed: \"{recentGrenadeAttacksHelper}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
@@ -121,6 +126,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
+        self.__recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = recentGrenadeAttacksHelper
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
@@ -240,9 +246,26 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         if isGuaranteed or not timeoutData.isRandomChanceEnabled or timeoutData.actionType is TimeoutActionType.GRENADE:
             message = f'{ripBozoEmote} @{timeoutTargetUserName} {ripBozoEmote}'
         elif isReverse:
-            message = f'{ripBozoEmote} Oh noo! @{timeoutData.instigatorUserName} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} reverse! {ripBozoEmote} (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Oh noo! @{timeoutData.instigatorUserName} rolled a d{diceRoll.dieSize} and got a {diceRoll.roll} reverse! (needed greater than {rollFailureData.reverseRoll}) {ripBozoEmote}'
         else:
-            message = f'{ripBozoEmote} Timed out @{timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} {ripBozoEmote} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
+            message = f'{ripBozoEmote} Timed out @{timeoutTargetUserName} after rolling a d{diceRoll.dieSize} and got a {diceRoll.roll} (needed greater than {rollFailureData.failureRoll}) {ripBozoEmote}'
+
+        availableGrenades = await self.__recentGrenadeAttacksHelper.fetchAvailableGrenades(
+            attackerUserId = timeoutData.instigatorUserId,
+            twitchChannel = timeoutData.twitchChannel,
+            twitchChannelId = timeoutData.twitchChannelId
+        )
+
+        if availableGrenades is not None:
+            availableGrenadesString = locale.format_string("%d", availableGrenades, grouping = True)
+
+            grenadesPluralization: str
+            if availableGrenades == 1:
+                grenadesPluralization = 'grenade'
+            else:
+                grenadesPluralization = 'grenades'
+
+            message = f'{message} (@{timeoutData.instigatorUserName} has {availableGrenadesString} {grenadesPluralization} remaining)'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -349,6 +372,32 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             maxBullyFailureOccurrences = maxBullyFailureOccurrences,
             reverseRoll = reverseRoll
         )
+
+    async def __generateTimeoutReasonString(
+        self,
+        timeoutTargetUserId: str,
+        timeoutData: TimeoutActionData
+    ) -> str:
+        baseTimeoutReason = f'Timeout from {timeoutData.instigatorUserName} — {timeoutData.durationSeconds} second(s)'
+
+        availableGrenades = await self.__recentGrenadeAttacksHelper.fetchAvailableGrenades(
+            attackerUserId = timeoutTargetUserId,
+            twitchChannel = timeoutData.twitchChannel,
+            twitchChannelId = timeoutData.twitchChannelId
+        )
+
+        if availableGrenades is None:
+            return baseTimeoutReason
+
+        availableGrenadesString = locale.format_string("%d", availableGrenades, grouping = True)
+
+        grenadesPluralization: str
+        if availableGrenades == 1:
+            grenadesPluralization = 'grenade'
+        else:
+            grenadesPluralization = 'grenades'
+
+        return f'{baseTimeoutReason} — you have {availableGrenadesString} {grenadesPluralization} available'
 
     async def __isFailedDiceRoll(
         self,
@@ -571,9 +620,14 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             self.__timber.log('TimeoutActionHelper', f'Attempted to timeout {timeoutTargetUserName}:{timeoutTargetUserId} by {timeoutData.instigatorUserName}:{timeoutData.instigatorUserId} in {timeoutData.twitchChannel}, but they hit the failure roll ({diceRoll=}) ({rollFailureData=}) ({timeoutData=})')
             return
 
+        timeoutReasonString = await self.__generateTimeoutReasonString(
+            timeoutTargetUserId = timeoutTargetUserId,
+            timeoutData = timeoutData
+        )
+
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutData.durationSeconds,
-            reason = f'Timeout from {timeoutData.instigatorUserName} — {timeoutData.durationSeconds} second(s)',
+            reason = timeoutReasonString,
             twitchAccessToken = timeoutData.moderatorTwitchAccessToken,
             twitchChannelAccessToken = timeoutData.userTwitchAccessToken,
             twitchChannelId = timeoutData.twitchChannelId,

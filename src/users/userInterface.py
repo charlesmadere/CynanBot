@@ -151,6 +151,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def maximumGrenadesWithinCooldown(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
     def maximumTtsCheerAmount(self) -> int | None:
         pass
 

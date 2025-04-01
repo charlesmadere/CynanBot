@@ -12,6 +12,7 @@ from ..absCheerAction import AbsCheerAction
 from ..timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...timber.timberInterface import TimberInterface
@@ -49,6 +50,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
@@ -66,6 +68,8 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(recentGrenadeAttacksHelper, RecentGrenadeAttacksHelperInterface):
+            raise TypeError(f'recentGrenadeAttacksHelper argument is malformed: \"{recentGrenadeAttacksHelper}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -99,6 +103,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
+        self.__recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = recentGrenadeAttacksHelper
         self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
@@ -117,6 +122,10 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self,
         tntTargets: frozenset[TntTarget],
         durationSeconds: int,
+        broadcasterUserId: str,
+        cheerUserId: str,
+        cheerUserName: str,
+        twitchChatMessageId: str | None,
         user: UserInterface
     ):
         if len(tntTargets) == 0:
@@ -139,7 +148,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         if len(tntTargets) == 1:
             peoplePluralityString = f'{peopleCountString} person was hit'
         else:
-            peoplePluralityString = f'{peopleCountString} people were hit'
+            peoplePluralityString = f'{peopleCountString} people hit'
 
         userNames.sort(key = lambda userName: userName.casefold())
         userNamesString = ', '.join(userNames)
@@ -147,7 +156,29 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         message = f'{bombEmote} BOOM! {peoplePluralityString} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
-        await self.__twitchUtils.safeSend(twitchChannel, message)
+
+        availableGrenades = await self.__recentGrenadeAttacksHelper.fetchAvailableGrenades(
+            attackerUserId = cheerUserId,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId
+        )
+
+        if availableGrenades is not None:
+            availableGrenadesString = locale.format_string("%d", availableGrenades, grouping=True)
+
+            grenadesPluralization: str
+            if availableGrenades == 1:
+                grenadesPluralization = 'grenade'
+            else:
+                grenadesPluralization = 'grenades'
+
+            message = f'{message} (@{cheerUserName} has {availableGrenadesString} {grenadesPluralization} remaining)'
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = twitchChatMessageId
+        )
 
     async def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
         soundAlerts: list[SoundAlert] = [
@@ -257,9 +288,13 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         action = actions.get(bits, None)
 
-        if not isinstance(action, TntCheerAction):
+        if not isinstance(action, TntCheerAction) or not action.isEnabled:
             return False
-        elif not action.isEnabled:
+        elif not await self.__recentGrenadeAttacksHelper.canThrowGrenade(
+            attackerUserId = cheerUserId,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId
+        ):
             return False
 
         tntTargets = await self.__determineTntTargets(
@@ -270,7 +305,14 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         )
 
         if len(tntTargets) == 0:
-            return True
+            return False
+
+        await self.__noteGrenadeThrow(
+            tntTargets = tntTargets,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            user = user
+        )
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(
             streamStatusRequirement = action.streamStatusRequirement
@@ -286,6 +328,10 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
             tntTargets = tntTargets,
             durationSeconds = durationSeconds,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            twitchChatMessageId = twitchChatMessageId,
             user = user
         ))
 
@@ -313,6 +359,22 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             ))
 
         return True
+
+    async def __noteGrenadeThrow(
+        self,
+        tntTargets: frozenset[TntTarget],
+        broadcasterUserId: str,
+        cheerUserId: str,
+        user: UserInterface
+    ):
+        randomTntTarget = random.choice(list(tntTargets))
+
+        await self.__recentGrenadeAttacksHelper.throwGrenade(
+            attackedUserId = randomTntTarget.userId,
+            attackerUserId = cheerUserId,
+            twitchChannel = user.handle,
+            twitchChannelId = broadcasterUserId
+        )
 
     async def __playSoundAlerts(
         self,

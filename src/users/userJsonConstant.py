@@ -19,6 +19,7 @@ class UserJsonConstant(Enum):
     ENABLED = auto()
     GIVE_CUTENESS_ENABLED = auto()
     LOCATION_ID = auto()
+    MAXIMUM_GRENADES_WITHIN_COOLDOWN = auto()
     RECURRING_ACTIONS_ENABLED = auto()
     SOUND_ALERTS_ENABLED = auto()
     TIMEZONE = auto()
@@ -47,6 +48,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ENABLED: return 'enabled'
             case UserJsonConstant.GIVE_CUTENESS_ENABLED: return 'giveCutenessEnabled'
             case UserJsonConstant.LOCATION_ID: return 'locationId'
+            case UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN: return 'maximumGrenadesWithinCooldown'
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED: return 'recurringActionsEnabled'
             case UserJsonConstant.SOUND_ALERTS_ENABLED: return 'soundAlertsEnabled'
             case UserJsonConstant.TIMEZONE: return 'timeZone'

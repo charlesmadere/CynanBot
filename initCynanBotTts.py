@@ -229,6 +229,17 @@ from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
 from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from src.puptime.puptimeUserIdProvider import PuptimeUserIdProvider
 from src.puptime.puptimeUserIdProviderInterface import PuptimeUserIdProviderInterface
+from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelper import RecentGrenadeAttacksHelper
+from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
+from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapper import RecentGrenadeAttacksMapper
+from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapperInterface import RecentGrenadeAttacksMapperInterface
+from src.recentGrenadeAttacks.repository.recentGrenadeAttacksRepository import RecentGrenadeAttacksRepository
+from src.recentGrenadeAttacks.repository.recentGrenadeAttacksRepositoryInterface import \
+    RecentGrenadeAttacksRepositoryInterface
+from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepository import \
+    RecentGrenadeAttacksSettingsRepository
+from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepositoryInterface import \
+    RecentGrenadeAttacksSettingsRepositoryInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
@@ -1728,6 +1739,34 @@ asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsReposit
 )
 
 
+###################################################
+## Recent Grenade Attacks initialization section ##
+###################################################
+
+recentGrenadeAttacksMapper: RecentGrenadeAttacksMapperInterface = RecentGrenadeAttacksMapper()
+
+recentGrenadeAttacksRepository: RecentGrenadeAttacksRepositoryInterface = RecentGrenadeAttacksRepository(
+    backingDatabase = backingDatabase,
+    recentGrenadeAttacksMapper = recentGrenadeAttacksMapper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+recentGrenadeAttacksSettingsRepository: RecentGrenadeAttacksSettingsRepositoryInterface = RecentGrenadeAttacksSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/recentGrenadeAttacksSettings.json'
+    )
+)
+
+recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = RecentGrenadeAttacksHelper(
+    recentGrenadeAttacksRepository = recentGrenadeAttacksRepository,
+    recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
+    timeZoneRepository = timeZoneRepository,
+    usersRepository = usersRepository
+)
+
+
 ####################################
 ## Timeout initialization section ##
 ####################################
@@ -1756,6 +1795,7 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -1793,7 +1833,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber
 )
 
-beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanChanceCheerActionHelper(
+beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
@@ -1801,7 +1841,7 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = BeanC
     twitchUtils = twitchUtils
 )
 
-soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = SoundAlertCheerActionHelper(
+soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
@@ -1828,8 +1868,9 @@ timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = Timeou
 
 timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
 
-timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutCheerActionHelper(
+timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
     activeChattersRepository = activeChattersRepository,
+    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
@@ -1842,6 +1883,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = TimeoutChee
 tntCheerActionHelper: TntCheerActionHelperInterface = TntCheerActionHelper(
     activeChattersRepository = activeChattersRepository,
     backgroundTaskHelper = backgroundTaskHelper,
+    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
@@ -2182,6 +2224,9 @@ cynanBot = CynanBot(
     openTriviaDatabaseSessionTokenRepository = None,
     pokepediaRepository = None,
     psqlCredentialsProvider = psqlCredentialsProvider,
+    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
+    recentGrenadeAttacksRepository = recentGrenadeAttacksRepository,
+    recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
     recurringActionsEventHandler = None,
     recurringActionsHelper = None,
     recurringActionsMachine = None,
