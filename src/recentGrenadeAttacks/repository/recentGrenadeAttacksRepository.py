@@ -181,7 +181,7 @@ class RecentGrenadeAttacksRepository(RecentGrenadeAttacksRepositoryInterface):
                             attackeruserid text NOT NULL,
                             grenadeattacksjson jsonb NOT NULL,
                             twitchchannelid text NOT NULL,
-                            PRIMARY KEY (chatteruserid, twitchchannelid)
+                            PRIMARY KEY (attackeruserid, twitchchannelid)
                         )
                     '''
                 )
@@ -193,7 +193,7 @@ class RecentGrenadeAttacksRepository(RecentGrenadeAttacksRepositoryInterface):
                             attackeruserid TEXT NOT NULL,
                             grenadeattacksjson TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL,
-                            PRIMARY KEY (chatteruserid, twitchchannelid)
+                            PRIMARY KEY (attackeruserid, twitchchannelid)
                         ) STRICT
                     '''
                 )
