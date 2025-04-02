@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .absChatCommand import AbsChatCommand
@@ -48,12 +50,16 @@ from ..timeout.timeoutActionSettingsRepositoryInterface import \
     TimeoutActionSettingsRepositoryInterface
 from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
+from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
+from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
@@ -116,9 +122,12 @@ class ClearCachesChatCommand(AbsChatCommand):
         timber: TimberInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
+        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
+        ttsChatterRepository: TtsChatterRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
@@ -210,12 +219,18 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionSettingsRepository is not None and not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
             raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
+        elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
+            raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
+            raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
+        elif ttsChatterRepository is not None and not isinstance(ttsChatterRepository, TtsChatterRepositoryInterface):
+            raise TypeError(f'ttsChatterRepository argument is malformed: \"{ttsChatterRepository}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif ttsMonsterTokensRepository is not None and not isinstance(ttsMonsterTokensRepository, TtsMonsterTokensRepositoryInterface):
@@ -245,12 +260,12 @@ class ClearCachesChatCommand(AbsChatCommand):
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-        self.__clearables: FrozenList[Clearable | None] = FrozenList()
+        self.__clearables: Final[FrozenList[Clearable | None]] = FrozenList()
         self.__clearables.append(addOrRemoveUserDataHelper)
         self.__clearables.append(administratorProvider)
         self.__clearables.append(anivSettingsRepository)
@@ -287,9 +302,12 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(supStreamerRepository)
         self.__clearables.append(timeoutActionHistoryRepository)
         self.__clearables.append(timeoutActionSettingsRepository)
+        self.__clearables.append(triviaGameControllersRepository)
+        self.__clearables.append(triviaGameGlobalControllersRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(trollmojiHelper)
         self.__clearables.append(trollmojiSettingsRepository)
+        self.__clearables.append(ttsChatterRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
         self.__clearables.append(ttsMonsterTokensRepository)
         self.__clearables.append(ttsSettingsRepository)

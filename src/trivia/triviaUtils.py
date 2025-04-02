@@ -1,6 +1,7 @@
 import locale
 import traceback
 from collections import defaultdict
+from typing import Collection
 
 from .banned.bannedTriviaGameController import BannedTriviaGameController
 from .banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
@@ -534,10 +535,10 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameControllers(
         self,
-        gameControllers: list[TriviaGameController] | None,
+        gameControllers: Collection[TriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
-        if gameControllers is not None and not isinstance(gameControllers, list):
+        if gameControllers is not None and not isinstance(gameControllers, Collection):
             raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -554,10 +555,10 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: list[TriviaGameGlobalController] | None,
+        gameControllers: Collection[TriviaGameGlobalController] | None,
         delimiter: str = ', '
     ) -> str:
-        if gameControllers is not None and not isinstance(gameControllers, list):
+        if gameControllers is not None and not isinstance(gameControllers, Collection):
             raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')

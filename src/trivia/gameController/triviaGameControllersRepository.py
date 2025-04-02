@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -33,13 +34,13 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, FrozenList[TriviaGameController] | None] = dict()
+        self.__cache: Final[dict[str, FrozenList[TriviaGameController] | None]] = dict()
 
     async def addController(
         self,

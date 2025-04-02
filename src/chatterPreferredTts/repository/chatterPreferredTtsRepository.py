@@ -120,7 +120,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
                     '''
                         CREATE TABLE IF NOT EXISTS chatterpreferredtts (
                             chatteruserid text NOT NULL,
-                            configurationjson text NOT NULL,
+                            configurationjson jsonb NOT NULL,
                             provider text NOT NULL,
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)

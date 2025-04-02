@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from .triviaGameGlobalController import TriviaGameGlobalController
+from ...misc.clearable import Clearable
 
 
-class TriviaGameGlobalControllersRepositoryInterface(ABC):
+class TriviaGameGlobalControllersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def addController(
@@ -15,7 +18,7 @@ class TriviaGameGlobalControllersRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getControllers(self) -> list[TriviaGameGlobalController]:
+    async def getControllers(self) -> FrozenList[TriviaGameGlobalController]:
         pass
 
     @abstractmethod

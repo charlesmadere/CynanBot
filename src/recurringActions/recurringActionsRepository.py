@@ -234,7 +234,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                     '''
                         CREATE TABLE IF NOT EXISTS recurringactions (
                             actiontype text NOT NULL,
-                            configurationjson text DEFAULT NULL,
+                            configurationjson jsonb DEFAULT NULL,
                             isenabled smallint DEFAULT 1 NOT NULL,
                             minutesbetween integer DEFAULT NULL,
                             twitchchannelid text NOT NULL,

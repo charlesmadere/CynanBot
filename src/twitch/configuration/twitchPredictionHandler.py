@@ -171,7 +171,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         subscriptionType = payload.requireSubscription().subscriptionType
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or outcomes is None or len(outcomes) == 0:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 
         await self.__processActiveChatters(

@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 from .addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
 from .bannedTriviaGameController import BannedTriviaGameController
 from .bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from ..gameController.removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
+from .removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...storage.backingDatabase import BackingDatabase

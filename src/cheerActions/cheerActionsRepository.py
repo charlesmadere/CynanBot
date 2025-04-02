@@ -337,7 +337,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                             bits integer NOT NULL,
                             isenabled smallint DEFAULT 1 NOT NULL,
                             actiontype text NOT NULL,
-                            configurationjson text DEFAULT NULL,
+                            configurationjson jsonb DEFAULT NULL,
                             streamstatusrequirement text NOT NULL,
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (bits, twitchchannelid)

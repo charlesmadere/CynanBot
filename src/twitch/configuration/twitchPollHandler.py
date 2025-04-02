@@ -151,7 +151,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         subscriptionType = payload.requireSubscription().subscriptionType
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or choices is None or len(choices) == 0:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 
         if user.isTtsEnabled:

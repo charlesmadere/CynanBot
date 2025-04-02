@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchFollowHandler import AbsTwitchFollowHandler
@@ -21,8 +22,8 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None = twitchFollowingStatusRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface | None] = twitchFollowingStatusRepository
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
@@ -42,11 +43,15 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
+            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that has no event ({user=}) ({dataBundle=})')
             return
 
         followedAt = event.followedAt
         followerUserId = event.userId
+
+        if followedAt is None or not utils.isValidStr(followerUserId):
+            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({userId=}) ({dataBundle=}) ({followedAt=}) ({followerUserId=})')
+            return
 
         await self.__persistFollowingStatus(
             followedAt = followedAt,
@@ -56,13 +61,10 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
 
     async def __persistFollowingStatus(
         self,
-        followedAt: datetime | None,
+        followedAt: datetime,
         broadcasterUserId: str,
-        followerUserId: str | None
+        followerUserId: str
     ):
-        if followedAt is None or not utils.isValidStr(followerUserId):
-            return
-
         twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
 
         if twitchFollowingStatusRepository is None:

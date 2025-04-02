@@ -50,7 +50,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event (channel=\"{user.handle}\") ({dataBundle=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event ({user=}) ({dataBundle=})')
             return
 
         fromUserId = event.fromBroadcasterUserId
@@ -62,10 +62,8 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         viewers = event.viewers
 
         if not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName) or not utils.isValidStr(toUserId) or not utils.isValidStr(toUserLogin) or not utils.isValidStr(toUserName) or not utils.isValidInt(viewers):
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.handle}\") ({dataBundle=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')
             return
-
-        self.__timber.log('TwitchRaidHandler', f'\"{user.handle}\" received raid of {viewers} from \"{fromUserLogin}\"')
 
         if user.isChatLoggingEnabled:
             self.__chatLogger.logRaid(
