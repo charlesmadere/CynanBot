@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from queue import SimpleQueue
 from typing import Any
 
+from frozenlist import FrozenList
+
 from .actions.absTriviaAction import AbsTriviaAction
 from .actions.checkAnswerTriviaAction import CheckAnswerTriviaAction
 from .actions.checkSuperAnswerTriviaAction import CheckSuperAnswerTriviaAction
@@ -883,8 +885,13 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        await self.__triviaGameStore.removeSuperGame(twitchChannelId)
-        await self.__superTriviaCooldownHelper.update(twitchChannelId)
+        await self.__triviaGameStore.removeSuperGame(
+            twitchChannelId = twitchChannelId
+        )
+
+        await self.__superTriviaCooldownHelper.update(
+            twitchChannelId = twitchChannelId
+        )
 
     def setEventListener(self, listener: TriviaEventListener | None):
         if listener is not None and not isinstance(listener, TriviaEventListener):
@@ -894,17 +901,18 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __startActionLoop(self):
         while True:
-            actions: list[AbsTriviaAction] = list()
+            actions: FrozenList[AbsTriviaAction] = FrozenList()
 
             try:
                 while not self.__actionQueue.empty():
                     actions.append(self.__actionQueue.get_nowait())
             except queue.Empty as e:
-                self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) (actions size: {len(actions)}): {e}', e)
+                self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({actions=}): {e}', e)
+
+            actions.freeze()
 
             try:
-                for action in actions:
-
+                for index, action in enumerate(actions):
                     if isinstance(action, CheckAnswerTriviaAction):
                         await self.__handleActionCheckAnswer(action)
                     elif isinstance(action, CheckSuperAnswerTriviaAction):
@@ -916,9 +924,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                     elif isinstance(action, StartNewSuperTriviaGameAction):
                         await self.__handleActionStartNewSuperTriviaGame(action)
                     else:
-                        raise UnknownTriviaActionTypeException(f'Unknown TriviaActionType: \"{type(action)=}\"')
+                        raise UnknownTriviaActionTypeException(f'Encountered unknown AbsTriviaAction ({index=}) ({action=}) ({type(action)=})')
             except Exception as e:
-                self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) (actions size: {len(actions)}): {e}', e, traceback.format_exc())
+                self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({actions=}): {e}', e, traceback.format_exc())
 
             try:
                 await self.__refreshStatusOfTriviaGames()
@@ -932,19 +940,21 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             eventListener = self.__eventListener
 
             if eventListener is not None:
-                events: list[AbsTriviaEvent] = list()
+                events: FrozenList[AbsTriviaEvent] = FrozenList()
 
                 try:
                     while not self.__eventQueue.empty():
                         events.append(self.__eventQueue.get_nowait())
                 except queue.Empty as e:
-                    self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({events=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=}): {e}', e, traceback.format_exc())
 
-                for event in events:
+                events.freeze()
+
+                for index, event in enumerate(events):
                     try:
                         await eventListener.onNewTriviaEvent(event)
                     except Exception as e:
-                        self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({event=}): {e}', e, traceback.format_exc())
+                        self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({index=}) ({event=}) ({type(event)=}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 

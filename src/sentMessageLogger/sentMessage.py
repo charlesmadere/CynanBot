@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Collection
 
 from .messageMethod import MessageMethod
 from ..misc.simpleDateTime import SimpleDateTime
@@ -7,8 +8,8 @@ from ..misc.simpleDateTime import SimpleDateTime
 @dataclass(frozen = True)
 class SentMessage:
     successfullySent: bool
+    exceptions: Collection[Exception] | None
     numberOfRetries: int
-    exceptions: list[Exception] | None
     messageMethod: MessageMethod
     sendTime: SimpleDateTime
     msg: str

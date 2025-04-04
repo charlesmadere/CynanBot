@@ -29,7 +29,7 @@ class TriviaGameStoreInterface(ABC):
         pass
 
     @abstractmethod
-    async def getNormalGames(self) -> list[TriviaGameState]:
+    async def getNormalGames(self) -> FrozenList[TriviaGameState]:
         pass
 
     @abstractmethod
@@ -40,7 +40,7 @@ class TriviaGameStoreInterface(ABC):
         pass
 
     @abstractmethod
-    async def getSuperGames(self) -> list[SuperTriviaGameState]:
+    async def getSuperGames(self) -> FrozenList[SuperTriviaGameState]:
         pass
 
     @abstractmethod

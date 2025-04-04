@@ -3,10 +3,12 @@ import queue
 import traceback
 from collections import defaultdict
 from queue import SimpleQueue
+from typing import Collection
 
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
+from frozenlist import FrozenList
 
 from .messageMethod import MessageMethod
 from .sentMessage import SentMessage
@@ -68,20 +70,20 @@ class SentMessageLogger(SentMessageLoggerInterface):
     def log(
         self,
         successfullySent: bool,
+        exceptions: Collection[Exception] | None,
         numberOfRetries: int,
-        exceptions: list[Exception] | None,
         messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str
     ):
         if not utils.isValidBool(successfullySent):
             raise TypeError(f'successfullySent argument is malformed: \"{successfullySent}\"')
+        elif exceptions is not None and not isinstance(exceptions, Collection):
+            raise TypeError(f'exceptions argument is malformed: \"{exceptions}\"')
         elif not utils.isValidInt(numberOfRetries):
             raise TypeError(f'numberOfRetries argument is malformed: \"{numberOfRetries}\"')
         elif numberOfRetries < 0 or numberOfRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfRetries argument is out of bounds: {numberOfRetries}')
-        elif exceptions is not None and not isinstance(exceptions, list):
-            raise TypeError(f'exceptions argument is malformed: \"{exceptions}\"')
         elif not isinstance(messageMethod, MessageMethod):
             raise TypeError(f'messageMethod argument is malformed: \"{messageMethod}\"')
         elif not utils.isValidStr(msg):
@@ -89,14 +91,20 @@ class SentMessageLogger(SentMessageLoggerInterface):
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
+        frozenExceptions: FrozenList[Exception] | None = None
+
+        if exceptions is not None:
+            frozenExceptions = FrozenList(exceptions)
+            frozenExceptions.freeze()
+
         sendTime = SimpleDateTime(
             timeZone = self.__timeZoneRepository.getDefault()
         )
 
         sentMessage = SentMessage(
             successfullySent = successfullySent,
+            exceptions = frozenExceptions,
             numberOfRetries = numberOfRetries,
-            exceptions = exceptions,
             messageMethod = messageMethod,
             sendTime = sendTime,
             msg = msg,

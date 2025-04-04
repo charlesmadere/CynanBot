@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class SuperTriviaCooldownHelperInterface(ABC):
 
     @abstractmethod
-    async def getTwitchChannelIdsInCooldown(self) -> set[str]:
+    async def getTwitchChannelIdsInCooldown(self) -> frozenset[str]:
         pass
 
     @abstractmethod

@@ -49,10 +49,11 @@ class SuperAnswerChatCommand(AbsChatCommand):
         if len(splits) < 2:
             return
 
+        actionId = await self.__triviaIdGenerator.generateActionId()
         answer = ' '.join(splits[1:])
 
         self.__triviaGameMachine.submitAction(CheckSuperAnswerTriviaAction(
-            actionId = await self.__triviaIdGenerator.generateActionId(),
+            actionId = actionId,
             answer = answer,
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
@@ -61,4 +62,4 @@ class SuperAnswerChatCommand(AbsChatCommand):
             userName = ctx.getAuthorName()
         ))
 
-        self.__timber.log('SuperAnswerCommand', f'Handled !superanswer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('SuperAnswerCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({actionId=})')

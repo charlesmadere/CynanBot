@@ -26,7 +26,7 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
             lambda: datetime.now(timeZoneRepository.getDefault()) - timedelta(weeks = 1)
         )
 
-    async def getTwitchChannelIdsInCooldown(self) -> set[str]:
+    async def getTwitchChannelIdsInCooldown(self) -> frozenset[str]:
         twitchChannelIds: set[str] = set()
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
@@ -34,7 +34,7 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
             if cooldown > now:
                 twitchChannelIds.add(twitchChannelId)
 
-        return twitchChannelIds
+        return frozenset(twitchChannelIds)
 
     def isTwitchChannelInCooldown(self, twitchChannelId: str) -> bool:
         if not utils.isValidStr(twitchChannelId):

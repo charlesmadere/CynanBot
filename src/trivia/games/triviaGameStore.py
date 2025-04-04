@@ -69,8 +69,10 @@ class TriviaGameStore(TriviaGameStoreInterface):
 
         return None
 
-    async def getNormalGames(self) -> list[TriviaGameState]:
-        return utils.copyList(self.__normalGameStates)
+    async def getNormalGames(self) -> FrozenList[TriviaGameState]:
+        frozenNormalGames: FrozenList[TriviaGameState] = FrozenList(self.__normalGameStates)
+        frozenNormalGames.freeze()
+        return frozenNormalGames
 
     async def getSuperGame(self, twitchChannelId: str) -> SuperTriviaGameState | None:
         if not utils.isValidStr(twitchChannelId):
@@ -84,8 +86,10 @@ class TriviaGameStore(TriviaGameStoreInterface):
 
         return None
 
-    async def getSuperGames(self) -> list[SuperTriviaGameState]:
-        return utils.copyList(self.__superGameStates)
+    async def getSuperGames(self) -> FrozenList[SuperTriviaGameState]:
+        frozenSuperGames: FrozenList[SuperTriviaGameState] = FrozenList(self.__superGameStates)
+        frozenSuperGames.freeze()
+        return frozenSuperGames
 
     async def getTwitchChannelIdsWithActiveSuperGames(self) -> frozenset[str]:
         superGames = await self.getSuperGames()
