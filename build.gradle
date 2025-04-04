@@ -46,7 +46,7 @@ python {
     pip 'psutil:7.0.0'
     pip 'pycodestyle:2.11.1'
     pip 'pycparser:2.22'
-    pip 'pyflakes:3.3.0'
+    pip 'pyflakes:3.3.2'
     pip 'PyJWT:2.10.1'
     pip 'pytest:8.3.5'
     pip 'pytest-asyncio:0.25.3'
