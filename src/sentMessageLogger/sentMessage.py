@@ -9,7 +9,7 @@ from ..misc.simpleDateTime import SimpleDateTime
 class SentMessage:
     successfullySent: bool
     exceptions: Collection[Exception] | None
-    numberOfRetries: int
+    numberOfSendAttempts: int
     messageMethod: MessageMethod
     sendTime: SimpleDateTime
     msg: str

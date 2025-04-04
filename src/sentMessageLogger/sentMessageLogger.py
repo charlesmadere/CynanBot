@@ -60,9 +60,9 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         error = ''
         if not message.successfullySent:
-            error = f'message failed to send after {message.numberOfRetries} attempt(s) — '
-        elif message.numberOfRetries >= 1:
-            error = f'message was sent, but it required {message.numberOfRetries} attempt(s) — '
+            error = f'message failed to send after {message.numberOfSendAttempts} attempt(s) — '
+        elif message.numberOfSendAttempts > 1:
+            error = f'message was sent, but it required {message.numberOfSendAttempts} attempt(s) — '
 
         logStatement = f'{prefix}{error}{message.msg}'.strip()
         return f'{logStatement}\n'
@@ -71,7 +71,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         self,
         successfullySent: bool,
         exceptions: Collection[Exception] | None,
-        numberOfRetries: int,
+        numberOfSendAttempts: int,
         messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str
@@ -80,10 +80,10 @@ class SentMessageLogger(SentMessageLoggerInterface):
             raise TypeError(f'successfullySent argument is malformed: \"{successfullySent}\"')
         elif exceptions is not None and not isinstance(exceptions, Collection):
             raise TypeError(f'exceptions argument is malformed: \"{exceptions}\"')
-        elif not utils.isValidInt(numberOfRetries):
-            raise TypeError(f'numberOfRetries argument is malformed: \"{numberOfRetries}\"')
-        elif numberOfRetries < 0 or numberOfRetries > utils.getIntMaxSafeSize():
-            raise ValueError(f'numberOfRetries argument is out of bounds: {numberOfRetries}')
+        elif not utils.isValidInt(numberOfSendAttempts):
+            raise TypeError(f'numberOfSendAttempts argument is malformed: \"{numberOfSendAttempts}\"')
+        elif numberOfSendAttempts < 1 or numberOfSendAttempts > utils.getIntMaxSafeSize():
+            raise ValueError(f'numberOfSendAttempts argument is out of bounds: {numberOfSendAttempts}')
         elif not isinstance(messageMethod, MessageMethod):
             raise TypeError(f'messageMethod argument is malformed: \"{messageMethod}\"')
         elif not utils.isValidStr(msg):
@@ -104,7 +104,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         sentMessage = SentMessage(
             successfullySent = successfullySent,
             exceptions = frozenExceptions,
-            numberOfRetries = numberOfRetries,
+            numberOfSendAttempts = numberOfSendAttempts,
             messageMethod = messageMethod,
             sendTime = sendTime,
             msg = msg,

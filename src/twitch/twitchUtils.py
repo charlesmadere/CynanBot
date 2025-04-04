@@ -187,7 +187,7 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__sentMessageLogger.log(
             successfullySent = successfullySent,
             exceptions = None,
-            numberOfRetries = 0,
+            numberOfSendAttempts = 1,
             messageMethod = MessageMethod.IRC,
             msg = message,
             twitchChannel = messageable.getTwitchChannelName()
@@ -253,7 +253,7 @@ class TwitchUtils(TwitchUtilsInterface):
             self.__sentMessageLogger.log(
                 successfullySent = True,
                 exceptions = exceptions,
-                numberOfRetries = sendAttempt,
+                numberOfSendAttempts = sendAttempt,
                 messageMethod = MessageMethod.TWITCH_API,
                 msg = message,
                 twitchChannel = messageable.getTwitchChannelName()

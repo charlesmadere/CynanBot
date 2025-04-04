@@ -11,7 +11,7 @@ class SentMessageLoggerInterface(ABC):
         self,
         successfullySent: bool,
         exceptions: Collection[Exception] | None,
-        numberOfRetries: int,
+        numberOfSendAttempts: int,
         messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str
