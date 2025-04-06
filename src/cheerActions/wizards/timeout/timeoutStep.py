@@ -9,3 +9,4 @@ class TimeoutStep(AbsStep):
     DURATION_SECONDS = auto()
     RANDOM_CHANCE_ENABLED = auto()
     STREAM_STATUS = auto()
+    TARGET_TYPE = auto()

@@ -6,6 +6,7 @@ from frozendict import frozendict
 from .timeoutCheerAction import TimeoutCheerAction
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionMapper import TimeoutCheerActionMapper
+from .timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..absCheerAction import AbsCheerAction
 from ...misc import utils as utils
 from ...recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
@@ -127,7 +128,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userName = randomChatter.chatterUserName
         )
 
-    async def __determineTimeoutTarget(
+    async def __determineAnyTimeoutTarget(
         self,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -156,6 +157,50 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             timeoutAction = timeoutAction,
             user = user
         )
+
+    async def __determineTimeoutTarget(
+        self,
+        broadcasterUserId: str,
+        cheerUserId: str,
+        cheerUserName: str,
+        message: str,
+        userTwitchAccessToken: str,
+        timeoutAction: TimeoutCheerAction,
+        user: UserInterface
+    ) -> TimeoutTarget | None:
+        match timeoutAction.targetType:
+            case TimeoutCheerActionTargetType.ANY:
+                return await self.__determineAnyTimeoutTarget(
+                    broadcasterUserId = broadcasterUserId,
+                    cheerUserId = cheerUserId,
+                    cheerUserName = cheerUserName,
+                    message = message,
+                    userTwitchAccessToken = userTwitchAccessToken,
+                    timeoutAction = timeoutAction,
+                    user = user
+                )
+
+            case TimeoutCheerActionTargetType.RANDOM_ONLY:
+                return await self.__determineRandomTimeoutTarget(
+                    broadcasterUserId = broadcasterUserId,
+                    cheerUserId = cheerUserId,
+                    cheerUserName = cheerUserName,
+                    timeoutAction = timeoutAction,
+                    user = user
+                )
+
+            case TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY:
+                return await self.__determineUserTimeoutTarget(
+                    cheerUserId = cheerUserId,
+                    cheerUserName = cheerUserName,
+                    message = message,
+                    userTwitchAccessToken = userTwitchAccessToken,
+                    timeoutAction = timeoutAction,
+                    user = user
+                )
+
+            case _:
+                raise ValueError(f'Encountered unknown TimeoutCheerActionTargetType: {timeoutAction}')
 
     async def __determineUserTimeoutTarget(
         self,

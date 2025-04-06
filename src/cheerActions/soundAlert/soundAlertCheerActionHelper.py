@@ -76,9 +76,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
         action = actions.get(bits, None)
 
-        if not isinstance(action, SoundAlertCheerAction):
-            return False
-        elif not action.isEnabled:
+        if not isinstance(action, SoundAlertCheerAction) or not action.isEnabled:
             return False
 
         return await self.__playSoundAlert(

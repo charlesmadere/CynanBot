@@ -10,6 +10,7 @@ from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonP
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
+from .timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from .tnt.tntCheerAction import TntCheerAction
 
 
@@ -93,6 +94,13 @@ class CheerActionJsonMapperInterface(ABC):
         jsonString: str | None,
         twitchChannelId: str
     ) -> TimeoutCheerAction | None:
+        pass
+
+    @abstractmethod
+    async def parseTimeoutCheerActionTargetType(
+        self,
+        string: str | Any | None
+    ) -> TimeoutCheerActionTargetType | None:
         pass
 
     @abstractmethod
@@ -187,6 +195,13 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireTimeoutCheerActionTargetType(
+        self,
+        string: str | Any | None
+    ) -> TimeoutCheerActionTargetType:
+        pass
+
+    @abstractmethod
     async def requireTntCheerAction(
         self,
         isEnabled: bool,
@@ -215,5 +230,12 @@ class CheerActionJsonMapperInterface(ABC):
     async def serializeCheerActionType(
         self,
         actionType: CheerActionType
+    ) -> str:
+        pass
+
+    @abstractmethod
+    async def serializeTimeoutCheerActionTargetType(
+        self,
+        targetType: TimeoutCheerActionTargetType
     ) -> str:
         pass

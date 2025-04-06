@@ -4,6 +4,7 @@ from .timeoutSteps import TimeoutSteps
 from ..absWizard import AbsWizard
 from ...cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ...cheerActionType import CheerActionType
+from ...timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ....misc import utils as utils
 
 
@@ -24,6 +25,7 @@ class TimeoutWizard(AbsWizard):
         self.__streamStatus: CheerActionStreamStatusRequirement | None = None
         self.__bits: int | None = None
         self.__durationSeconds: int | None = None
+        self.__targetType: TimeoutCheerActionTargetType | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
@@ -67,6 +69,14 @@ class TimeoutWizard(AbsWizard):
 
         return streamStatus
 
+    def requireTargetType(self) -> TimeoutCheerActionTargetType:
+        targetType = self.__targetType
+
+        if targetType is None:
+            raise ValueError(f'targetType value has not been set: ({self=})')
+
+        return targetType
+
     def setBits(self, bits: int):
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
@@ -94,6 +104,12 @@ class TimeoutWizard(AbsWizard):
             raise TypeError(f'streamStatus argument is malformed: \"{streamStatus}\"')
 
         self.__streamStatus = streamStatus
+
+    def setTargetType(self, targetType: TimeoutCheerActionTargetType):
+        if not isinstance(targetType, TimeoutCheerActionTargetType):
+            raise TypeError(f'targetType argument is malformed: \"{targetType}\"')
+
+        self.__targetType = targetType
 
     def toDictionary(self) -> dict[str, Any]:
         return {

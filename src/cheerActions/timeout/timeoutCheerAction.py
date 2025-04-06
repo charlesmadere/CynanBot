@@ -1,5 +1,6 @@
 import locale
 
+from .timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
@@ -15,7 +16,8 @@ class TimeoutCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         durationSeconds: int,
-        twitchChannelId: str
+        twitchChannelId: str,
+        targetType: TimeoutCheerActionTargetType
     ):
         super().__init__(
             isEnabled = isEnabled,
@@ -30,9 +32,12 @@ class TimeoutCheerAction(AbsCheerAction):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
         elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
+        elif not isinstance(targetType, TimeoutCheerActionTargetType):
+            raise TypeError(f'targetType argument is malformed: \"{targetType}\"')
 
         self.__isRandomChanceEnabled: bool = isRandomChanceEnabled
         self.__durationSeconds: int = durationSeconds
+        self.__targetType: TimeoutCheerActionTargetType = targetType
 
     @property
     def actionType(self) -> CheerActionType:
@@ -51,4 +56,8 @@ class TimeoutCheerAction(AbsCheerAction):
         return self.__isRandomChanceEnabled
 
     def printOut(self) -> str:
-        return f'isEnabled={self.isEnabled}, isRandomChanceEnabled={self.isRandomChanceEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, durationSeconds={self.__durationSeconds}'
+        return f'isEnabled={self.isEnabled}, isRandomChanceEnabled={self.isRandomChanceEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, durationSeconds={self.durationSeconds}, targetType={self.targetType}'
+
+    @property
+    def targetType(self) -> TimeoutCheerActionTargetType:
+        return self.__targetType

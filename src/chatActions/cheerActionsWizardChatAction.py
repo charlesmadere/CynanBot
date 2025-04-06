@@ -10,6 +10,7 @@ from ..cheerActions.crowdControl.crowdControlButtonPressCheerAction import Crowd
 from ..cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from ..cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
+from ..cheerActions.timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..cheerActions.tnt.tntCheerAction import TntCheerAction
 from ..cheerActions.wizards.beanChance.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChance.beanChanceWizard import BeanChanceWizard
@@ -90,7 +91,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -118,14 +119,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
             case BeanChanceStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
                 return True
 
@@ -134,7 +135,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -160,7 +161,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Crowd Control wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -187,20 +188,20 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Crowd Control wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
             case CrowdControlStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Crowd Control wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Crowd Control wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -236,7 +237,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -264,14 +265,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
             case GameShuffleStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -281,7 +282,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -316,7 +317,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -344,14 +345,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
             case SoundAlertStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -361,7 +362,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -416,8 +417,18 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
 
+            case TimeoutStep.TARGET_TYPE:
+                try:
+                    targetType = await self.__cheerActionJsonMapper.requireTimeoutCheerActionTargetType(content)
+                    wizard.setTargetType(targetType)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set target type value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Timeout wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -434,7 +445,8 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     streamStatusRequirement = wizard.requireStreamStatus(),
                     bits = wizard.requireBits(),
                     durationSeconds = wizard.requireDurationSeconds(),
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
+                    targetType = wizard.requireTargetType()
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Timeout wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -446,14 +458,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Timeout wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
             case TimeoutStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Timeout wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -477,8 +489,19 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__send(message, f'ⓘ Next, please specify the Timeout\'s required stream status. The value must be one of the following: {streamStatusString}.')
                 return True
 
+            case TimeoutStep.TARGET_TYPE:
+                targetTypeStrings: list[str] = list()
+
+                for targetType in TimeoutCheerActionTargetType:
+                    string = await self.__cheerActionJsonMapper.serializeTimeoutCheerActionTargetType(targetType)
+                    targetTypeStrings.append(f'\"{string}\"')
+
+                targetTypeString = ', '.join(targetTypeStrings)
+                await self.__send(message, f'ⓘ Next, please specify the Timeout\'s target type. The value must be one of the following: {targetTypeString}.')
+                return True
+
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Timeout wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -544,7 +567,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -575,14 +598,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 pass
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
         match steps.getStep():
             case TntStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
@@ -604,7 +627,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 return True
 
             case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=})')
+                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True

@@ -1,5 +1,9 @@
 import json
-from typing import Any
+import re
+from typing import Any, Pattern
+
+from frozendict import frozendict
+from frozenlist import FrozenList
 
 from .absCheerAction import AbsCheerAction
 from .adge.adgeCheerAction import AdgeCheerAction
@@ -11,6 +15,7 @@ from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonP
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
 from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
+from .timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from .tnt.tntCheerAction import TntCheerAction
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
@@ -18,11 +23,38 @@ from ..timber.timberInterface import TimberInterface
 
 class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
+
+        self.__timeoutCheerActionTargetTypeRegExes = self.__createTimeoutCheerActionTargetTypeRegExes()
+
+    def __createTimeoutCheerActionTargetTypeRegExes(self) -> frozendict[TimeoutCheerActionTargetType, FrozenList[Pattern]]:
+        anyRegExes: FrozenList[Pattern] = FrozenList()
+        anyRegExes.append(re.compile(r'^\s*any\s*$', re.IGNORECASE))
+        anyRegExes.freeze()
+
+        randomRegExes: FrozenList[Pattern] = FrozenList()
+        randomRegExes.append(re.compile(r'^\s*random\s*$', re.IGNORECASE))
+        randomRegExes.append(re.compile(r'^\s*random\s*only\s*$', re.IGNORECASE))
+        randomRegExes.freeze()
+
+        specificTargetOnlyRegExes: FrozenList[Pattern] = FrozenList()
+        specificTargetOnlyRegExes.append(re.compile(r'^\s*specific\s*$', re.IGNORECASE))
+        specificTargetOnlyRegExes.append(re.compile(r'^\s*specific\s*targets?\s*$', re.IGNORECASE))
+        specificTargetOnlyRegExes.append(re.compile(r'^\s*specific\s*targets?\s*only\s*$', re.IGNORECASE))
+        specificTargetOnlyRegExes.freeze()
+
+        return frozendict({
+            TimeoutCheerActionTargetType.ANY: anyRegExes,
+            TimeoutCheerActionTargetType.RANDOM_ONLY: randomRegExes,
+            TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY: specificTargetOnlyRegExes
+        })
 
     async def parseAdgeCheerAction(
         self,
@@ -214,14 +246,37 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             fallback = True
         )
 
+        targetTypeString = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'targetType',
+            fallback = await self.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.ANY)
+        )
+
+        targetType = await self.requireTimeoutCheerActionTargetType(targetTypeString)
+
         return TimeoutCheerAction(
             isEnabled = isEnabled,
             isRandomChanceEnabled = isRandomChanceEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             durationSeconds = durationSeconds,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
+            targetType = targetType
         )
+
+    async def parseTimeoutCheerActionTargetType(
+        self,
+        string: str | Any | None
+    ) -> TimeoutCheerActionTargetType | None:
+        if not utils.isValidStr(string):
+            return None
+
+        for timeoutCheerActionTargetType, regExes in self.__timeoutCheerActionTargetTypeRegExes.items():
+            for regEx in regExes:
+                if regEx.fullmatch(string) is not None:
+                    return timeoutCheerActionTargetType
+
+        return None
 
     async def parseTntCheerAction(
         self,
@@ -419,6 +474,17 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         return action
 
+    async def requireTimeoutCheerActionTargetType(
+        self,
+        string: str | Any | None
+    ) -> TimeoutCheerActionTargetType:
+        targetType = await self.parseTimeoutCheerActionTargetType(string)
+
+        if targetType is None:
+            raise ValueError(f'Unable to parse \"{string}\" into TimeoutCheerActionTargetType value!')
+
+        return targetType
+
     async def requireTntCheerAction(
         self,
         isEnabled: bool,
@@ -564,12 +630,28 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         if not isinstance(cheerAction, TimeoutCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
+        targetTypeString = await self.serializeTimeoutCheerActionTargetType(cheerAction.targetType)
+
         jsonContents: dict[str, Any] = {
             'durationSeconds': cheerAction.durationSeconds,
-            'randomChanceEnabled': cheerAction.isRandomChanceEnabled
+            'randomChanceEnabled': cheerAction.isRandomChanceEnabled,
+            'targetType': targetTypeString
         }
 
         return json.dumps(jsonContents)
+
+    async def serializeTimeoutCheerActionTargetType(
+        self,
+        targetType: TimeoutCheerActionTargetType
+    ) -> str:
+        if not isinstance(targetType, TimeoutCheerActionTargetType):
+            raise TypeError(f'targetType argument is malformed: \"{targetType}\"')
+
+        match targetType:
+            case TimeoutCheerActionTargetType.ANY: return 'any'
+            case TimeoutCheerActionTargetType.RANDOM_ONLY: return 'random'
+            case TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY: return 'specific'
+            case _: raise ValueError(f'The given TimeoutCheerActionTargetType value is unknown: \"{targetType}\"')
 
     async def __serializeTntCheerAction(
         self,
