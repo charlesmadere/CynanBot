@@ -29,4 +29,4 @@ typing_extensions==4.13.1
 urllib3==2.3.0
 websockets==15.0.1
 xmltodict==0.14.2
-yarl==1.18.3
+yarl==1.19.0

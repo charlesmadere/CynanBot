@@ -61,5 +61,5 @@ python {
     pip 'urllib3:2.3.0'
     pip 'websockets:15.0.1'
     pip 'xmltodict:0.14.2'
-    pip 'yarl:1.18.3'
+    pip 'yarl:1.19.0'
 }
