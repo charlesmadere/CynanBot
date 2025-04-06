@@ -104,9 +104,9 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             eligibleChatters[chatter.chatterUserId] = chatter
 
         eligibleChatters.pop(broadcasterUserId, None)
-        immuneUserIds = await self.__timeoutImmuneUserIdsRepository.getUserIds()
+        allImmuneUserIds = await self.__getAllImmuneUserIds()
 
-        for immuneUserId in immuneUserIds:
+        for immuneUserId in allImmuneUserIds:
             eligibleChatters.pop(immuneUserId, None)
 
         if len(eligibleChatters) == 0:
@@ -231,6 +231,12 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userId = timeoutTargetUserId,
             userName = timeoutTargetUserName
         )
+
+    async def __getAllImmuneUserIds(self) -> frozenset[str]:
+        allImmuneUserIds: set[str] = set()
+        allImmuneUserIds.update(await self.__timeoutImmuneUserIdsRepository.getOtherUserIds())
+        allImmuneUserIds.update(await self.__timeoutImmuneUserIdsRepository.getUserIds())
+        return frozenset(allImmuneUserIds)
 
     async def handleTimeoutCheerAction(
         self,
