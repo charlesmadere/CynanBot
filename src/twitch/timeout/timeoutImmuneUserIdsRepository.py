@@ -31,8 +31,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         theRunBotUserIdProvider: TheRunBotUserIdProviderInterface,
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        additionalImmuneUserIds: frozenset[str] | None = None
+        userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(cynanBotUserIdsProvider, CynanBotUserIdsProviderInterface):
             raise TypeError(f'cynanBotUserIdsProvider argument is malformed: \"{cynanBotUserIdsProvider}\"')
@@ -60,8 +59,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif additionalImmuneUserIds is not None and not isinstance(additionalImmuneUserIds, frozenset):
-            raise TypeError(f'additionalImmuneUserIds argument is malformed: \"{additionalImmuneUserIds}\"')
 
         self.__cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = cynanBotUserIdsProvider
         self.__funtoonUserIdProvider: FuntoonUserIdProviderInterface = funtoonUserIdProvider
@@ -76,7 +73,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__additionalImmuneUserIds: frozenset[str] | None = additionalImmuneUserIds
 
         self.__userIds: frozenset[str] | None = None
         self.__twitchUserId: str | None = None
@@ -99,9 +95,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
 
         newUserIds: set[str] = set()
         newUserIds.add(await self.__getTwitchUserId())
-
-        if self.__additionalImmuneUserIds is not None and len(self.__additionalImmuneUserIds) >= 1:
-            newUserIds.update(self.__additionalImmuneUserIds)
 
         cynanBotUserId = await self.__cynanBotUserIdsProvider.getCynanBotUserId()
         if utils.isValidStr(cynanBotUserId):
