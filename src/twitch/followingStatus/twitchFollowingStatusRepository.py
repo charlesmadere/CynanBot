@@ -52,7 +52,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
     async def clearCaches(self):
         self.__caches.clear()
-        self.__timber.log('TwitchFollowerRepository', 'Caches cleared')
+        self.__timber.log('TwitchFollowingStatusRepository', 'Caches cleared')
 
     async def fetchFollowingStatus(
         self,
@@ -161,7 +161,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                 userId = userId
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
 
         if twitchFollower is None:
             return None
