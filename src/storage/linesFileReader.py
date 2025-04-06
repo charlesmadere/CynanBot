@@ -1,5 +1,6 @@
 import os
 from asyncio import AbstractEventLoop
+from typing import Final
 
 import aiofiles
 import aiofiles.ospath
@@ -20,8 +21,8 @@ class LinesFileReader(LinesReaderInterface):
         elif not utils.isValidStr(fileName):
             raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__fileName: str = fileName
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__fileName: Final[str] = fileName
 
     def readLines(self) -> list[str] | None:
         if not os.path.exists(self.__fileName):
