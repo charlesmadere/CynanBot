@@ -22,11 +22,19 @@ class TwitchFriendsUserIdRepositoryInterface(AnivUserIdProviderInterface, ABC):
         pass
 
     @abstractmethod
+    async def getAyAerithUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getBastionBlueUserId(self) -> str | None:
         pass
 
     @abstractmethod
     async def getCharlesUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getDylanStewUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -58,7 +66,15 @@ class TwitchFriendsUserIdRepositoryInterface(AnivUserIdProviderInterface, ABC):
         pass
 
     @abstractmethod
+    async def getMiaGuwuUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getOathyBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getPatLanicusUserId(self) -> str | None:
         pass
 
     @abstractmethod
