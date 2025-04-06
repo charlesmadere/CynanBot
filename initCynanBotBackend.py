@@ -646,6 +646,7 @@ twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = TwitchSu
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
