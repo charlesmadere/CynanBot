@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
+    async def getAllUserIds(self) -> frozenset[str]:
+        pass
+
+    @abstractmethod
     async def getSoundAlertsUserId(self) -> str | None:
         pass
 

@@ -25,6 +25,27 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         self.__twitchAnonymousGifterUserId: str = twitchAnonymousGifterUserId
         self.__valorantUserId: str | None = valorantUserId
 
+    async def getAllUserIds(self) -> frozenset[str]:
+        allUserIds: set[str] = set()
+
+        soundAlertsUserId = await self.getSoundAlertsUserId()
+        if utils.isValidStr(soundAlertsUserId):
+            allUserIds.add(soundAlertsUserId)
+
+        twitchAccountUserId = await self.getTwitchAccountUserId()
+        if utils.isValidStr(twitchAccountUserId):
+            allUserIds.add(twitchAccountUserId)
+
+        twitchAnonymousGifterUserId = await self.getTwitchAnonymousGifterUserId()
+        if utils.isValidStr(twitchAnonymousGifterUserId):
+            allUserIds.add(twitchAnonymousGifterUserId)
+
+        valorantUserId = await self.getValorantUserId()
+        if utils.isValidStr(valorantUserId):
+            allUserIds.add(valorantUserId)
+
+        return frozenset(allUserIds)
+
     async def getSoundAlertsUserId(self) -> str | None:
         return self.__soundAlertsUserId
 
