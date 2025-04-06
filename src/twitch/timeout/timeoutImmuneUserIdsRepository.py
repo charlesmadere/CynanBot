@@ -1,3 +1,5 @@
+import traceback
+
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
@@ -8,10 +10,12 @@ from ...misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInte
 from ...nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
 from ...puptime.puptimeUserIdProviderInterface import PuptimeUserIdProviderInterface
 from ...seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
+from ...storage.linesReaderInterface import LinesReaderInterface
 from ...streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from ...streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from ...tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
 from ...theRun.theRunBotUserIdProviderInterface import TheRunBotUserIdProviderInterface
+from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -29,9 +33,11 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         streamLabsUserIdProvider: StreamLabsUserIdProviderInterface,
         tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface,
         theRunBotUserIdProvider: TheRunBotUserIdProviderInterface,
+        timber: TimberInterface,
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
+        otherImmuneUserIdsLinesReader: LinesReaderInterface | None = None
     ):
         if not isinstance(cynanBotUserIdsProvider, CynanBotUserIdsProviderInterface):
             raise TypeError(f'cynanBotUserIdsProvider argument is malformed: \"{cynanBotUserIdsProvider}\"')
@@ -53,12 +59,16 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'tangiaBotUserIdProvider argument is malformed: \"{tangiaBotUserIdProvider}\"')
         elif not isinstance(theRunBotUserIdProvider, TheRunBotUserIdProviderInterface):
             raise TypeError(f'theRunBotUserIdProvider argument is malformed: \"{theRunBotUserIdProvider}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchFriendsUserIdProvider, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdProvider argument is malformed: \"{twitchFriendsUserIdProvider}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif otherImmuneUserIdsLinesReader is not None and not isinstance(otherImmuneUserIdsLinesReader, LinesReaderInterface):
+            raise TypeError(f'immuneUserIdsLinesReader argument is malformed: \"{otherImmuneUserIdsLinesReader}\"')
 
         self.__cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = cynanBotUserIdsProvider
         self.__funtoonUserIdProvider: FuntoonUserIdProviderInterface = funtoonUserIdProvider
@@ -70,12 +80,52 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = streamLabsUserIdProvider
         self.__tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = tangiaBotUserIdProvider
         self.__theRunBotUserIdProvider: TheRunBotUserIdProviderInterface = theRunBotUserIdProvider
+        self.__timber: TimberInterface = timber
         self.__twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__otherImmuneUserIdsLinesReader: LinesReaderInterface | None = otherImmuneUserIdsLinesReader
 
-        self.__userIds: frozenset[str] | None = None
+        self.__immuneUserIds: frozenset[str] | None = None
+        self.__otherImmuneUserIds: frozenset[str] | None = None
         self.__twitchUserId: str | None = None
+
+    async def clearCaches(self):
+        self.__immuneUserIds = None
+        self.__otherImmuneUserIds = None
+        self.__twitchUserId = None
+        self.__timber.log('TimeoutImmuneUserIdsRepository', 'Caches cleared')
+
+    async def getOtherUserIds(self) -> frozenset[str]:
+        userIds = self.__otherImmuneUserIds
+
+        if userIds is not None:
+            return userIds
+
+        newUserIds: set[str] = set()
+
+        if self.__otherImmuneUserIdsLinesReader is not None:
+            lines: list[str] | None = None
+
+            try:
+                lines = await self.__otherImmuneUserIdsLinesReader.readLinesAsync()
+            except Exception as e:
+                self.__timber.log('TimeoutImmuneUserIdsRepository', f'Encountered an exception when trying to read in other immune user IDs ({self.__otherImmuneUserIdsLinesReader=}): {e}', e, traceback.format_exc())
+
+            if lines is not None and len(lines) >= 1:
+                for index, line in enumerate(lines):
+                    cleanedLine = utils.cleanStr(line)
+
+                    if utils.isValidStr(cleanedLine):
+                        newUserIds.add(cleanedLine)
+                    else:
+                        self.__timber.log('TimeoutImmuneUserIdsRepository', f'Found invalid other immune user ID at line #{index} ({cleanedLine=}) ({self.__otherImmuneUserIdsLinesReader=})')
+
+                self.__timber.log('TimeoutImmuneUserIdsRepository', f'Read in {len(lines)} other immune user ID(s) ({self.__otherImmuneUserIdsLinesReader=})')
+
+        frozenUserIds: frozenset[str] = frozenset(newUserIds)
+        self.__otherImmuneUserIds = frozenUserIds
+        return frozenUserIds
 
     async def __getTwitchUserId(self) -> str:
         twitchUserId = self.__twitchUserId
@@ -88,7 +138,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         return twitchUserId
 
     async def getUserIds(self) -> frozenset[str]:
-        userIds = self.__userIds
+        userIds = self.__immuneUserIds
 
         if userIds is not None:
             return userIds
@@ -148,7 +198,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         newUserIds.update(officialTwitchAccountUserIds)
 
         frozenUserIds: frozenset[str] = frozenset(newUserIds)
-        self.__userIds = frozenUserIds
+        self.__immuneUserIds = frozenUserIds
         return frozenUserIds
 
     async def isImmune(self, userId: str) -> bool:

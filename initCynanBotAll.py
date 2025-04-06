@@ -1147,9 +1147,14 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
     streamLabsUserIdProvider = streamLabsUserIdProvider,
     tangiaBotUserIdProvider = tangiaBotUserIdProvider,
     theRunBotUserIdProvider = theRunBotUserIdProvider,
+    timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    otherImmuneUserIdsLinesReader = LinesFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/otherImmuneUserIds.txt'
+    )
 )
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
