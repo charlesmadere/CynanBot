@@ -308,7 +308,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         if len(tntTargets) == 0:
             return False
 
-        await self.__noteGrenadeThrow(
+        remainingGrenades = await self.__noteGrenadeThrow(
             tntTargets = tntTargets,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
@@ -341,6 +341,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
                 isRandomChanceEnabled = False,
                 bits = bits,
                 durationSeconds = durationSeconds,
+                remainingGrenades = remainingGrenades,
                 chatMessage = message,
                 instigatorUserId = cheerUserId,
                 instigatorUserName = cheerUserName,
@@ -367,10 +368,10 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         broadcasterUserId: str,
         cheerUserId: str,
         user: UserInterface
-    ):
+    ) -> int | None:
         randomTntTarget = random.choice(list(tntTargets))
 
-        await self.__recentGrenadeAttacksHelper.throwGrenade(
+        return await self.__recentGrenadeAttacksHelper.throwGrenade(
             attackedUserId = randomTntTarget.userId,
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,

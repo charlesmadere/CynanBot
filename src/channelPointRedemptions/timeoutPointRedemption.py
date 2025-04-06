@@ -225,6 +225,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
             isRandomChanceEnabled = timeoutBoosterPack.randomChanceEnabled,
             bits = None,
             durationSeconds = timeoutBoosterPack.durationSeconds,
+            remainingGrenades = None,
             chatMessage = None,
             instigatorUserId = twitchChannelPointsMessage.userId,
             instigatorUserName = twitchChannelPointsMessage.userName,

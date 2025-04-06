@@ -296,7 +296,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         if timeoutTarget is None:
             return False
 
-        await self.__recentGrenadeAttacksHelper.throwGrenade(
+        remainingGrenades = await self.__recentGrenadeAttacksHelper.throwGrenade(
             attackedUserId = timeoutTarget.userId,
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
@@ -318,6 +318,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             isRandomChanceEnabled = timeoutTarget.isRandomChanceEnabled,
             bits = bits,
             durationSeconds = action.durationSeconds,
+            remainingGrenades = remainingGrenades,
             chatMessage = message,
             instigatorUserId = cheerUserId,
             instigatorUserName = cheerUserName,

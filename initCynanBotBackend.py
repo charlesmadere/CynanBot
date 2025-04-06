@@ -1725,7 +1725,6 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,

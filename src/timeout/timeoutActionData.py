@@ -11,6 +11,7 @@ class TimeoutActionData:
     isRandomChanceEnabled: bool
     bits: int | None
     durationSeconds: int
+    remainingGrenades: int | None
     chatMessage: str | None
     instigatorUserId: str
     instigatorUserName: str
