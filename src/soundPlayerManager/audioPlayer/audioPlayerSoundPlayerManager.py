@@ -2,7 +2,7 @@ import asyncio
 import os
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Collection
+from typing import Collection, Final
 
 import aiofiles.ospath
 from frozenlist import FrozenList
@@ -46,12 +46,12 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
-        self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__chatBandInstrumentSoundsRepository: Final[ChatBandInstrumentSoundsRepositoryInterface | None] = chatBandInstrumentSoundsRepository
+        self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__playbackLoopSleepTimeSeconds: Final[float] = playbackLoopSleepTimeSeconds
 
         self.__isLoadingOrPlaying: bool = False
         self.__mediaPlayer: AudioPlayerMediaPlayer | None = None

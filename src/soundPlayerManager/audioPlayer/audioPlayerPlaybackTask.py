@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from ...misc import utils as utils
 
@@ -17,8 +17,8 @@ class AudioPlayerPlaybackTask:
         elif not utils.isValidStr(filePath):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
 
-        self.__volume: int = volume
-        self.__filePath: str = filePath
+        self.__volume: Final[int] = volume
+        self.__filePath: Final[str] = filePath
 
         self.__isCanceled: bool = False
 

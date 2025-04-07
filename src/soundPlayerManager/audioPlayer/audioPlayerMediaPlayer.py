@@ -3,7 +3,7 @@ import traceback
 from asyncio import AbstractEventLoop
 from datetime import datetime, timedelta
 from threading import Thread
-from typing import Any
+from typing import Any, Final
 
 import aiofiles.ospath
 import librosa
@@ -35,10 +35,10 @@ class AudioPlayerMediaPlayer:
         elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__playbackLoopSleepTimeSeconds: Final[float] = playbackLoopSleepTimeSeconds
 
         self.__playbackTask: AudioPlayerPlaybackTask | None = None
         self.__isPlayingOrLoading: bool = False
@@ -185,4 +185,3 @@ class AudioPlayerMediaPlayer:
 
         if playbackTask is not None:
             playbackTask.cancel()
-            playbackTask = None
