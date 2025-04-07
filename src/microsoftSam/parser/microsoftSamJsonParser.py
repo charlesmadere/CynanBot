@@ -77,10 +77,12 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
         marySpace: FrozenList[Pattern] = FrozenList()
         marySpace.append(re.compile(r'^\s*mary(?:\s+|_|-)?space\s*$', re.IGNORECASE))
+        marySpace.append(re.compile(r'^\s*mary(?:\s+|_|-)?in(?:\s+|_|-)?space\s*$', re.IGNORECASE))
         marySpace.freeze()
 
         maryStadium: FrozenList[Pattern] = FrozenList()
         maryStadium.append(re.compile(r'^\s*mary(?:\s+|_|-)?stadium\s*$', re.IGNORECASE))
+        maryStadium.append(re.compile(r'^\s*mary(?:\s+|_|-)?in(?:\s+|_|-)?stadium\s*$', re.IGNORECASE))
         maryStadium.freeze()
 
         maryTelephone: FrozenList[Pattern] = FrozenList()
@@ -97,10 +99,12 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
         mikeSpace: FrozenList[Pattern] = FrozenList()
         mikeSpace.append(re.compile(r'^\s*mike(?:\s+|_|-)?space\s*$', re.IGNORECASE))
+        mikeSpace.append(re.compile(r'^\s*mike(?:\s+|_|-)?in(?:\s+|_|-)?space\s*$', re.IGNORECASE))
         mikeSpace.freeze()
 
         mikeStadium: FrozenList[Pattern] = FrozenList()
         mikeStadium.append(re.compile(r'^\s*mike(?:\s+|_|-)?stadium\s*$', re.IGNORECASE))
+        mikeStadium.append(re.compile(r'^\s*mike(?:\s+|_|-)?in(?:\s+|_|-)?stadium\s*$', re.IGNORECASE))
         mikeStadium.freeze()
 
         mikeTelephone: FrozenList[Pattern] = FrozenList()

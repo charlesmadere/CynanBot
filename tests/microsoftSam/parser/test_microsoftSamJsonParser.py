@@ -197,6 +197,20 @@ class TestMicrosoftSamJsonParser:
         assert result is MicrosoftSamVoice.MARY_HALL
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withMaryPhone(self):
+        result = await self.parser.parseVoice('mary_phone')
+        assert result is MicrosoftSamVoice.MARY_TELEPHONE
+
+        result = await self.parser.parseVoice('mary-phone')
+        assert result is MicrosoftSamVoice.MARY_TELEPHONE
+
+        result = await self.parser.parseVoice('mary phone')
+        assert result is MicrosoftSamVoice.MARY_TELEPHONE
+
+        result = await self.parser.parseVoice('maryphone')
+        assert result is MicrosoftSamVoice.MARY_TELEPHONE
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withMarySpace(self):
         result = await self.parser.parseVoice('mary_space')
         assert result is MicrosoftSamVoice.MARY_SPACE
@@ -208,6 +222,20 @@ class TestMicrosoftSamJsonParser:
         assert result is MicrosoftSamVoice.MARY_SPACE
 
         result = await self.parser.parseVoice('maryspace')
+        assert result is MicrosoftSamVoice.MARY_SPACE
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withMaryInSpace(self):
+        result = await self.parser.parseVoice('mary_in_space')
+        assert result is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.parser.parseVoice('mary-in-space')
+        assert result is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.parser.parseVoice('mary in space')
+        assert result is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.parser.parseVoice('maryinspace')
         assert result is MicrosoftSamVoice.MARY_SPACE
 
     @pytest.mark.asyncio
@@ -236,18 +264,6 @@ class TestMicrosoftSamJsonParser:
         assert result is MicrosoftSamVoice.MARY_TELEPHONE
 
         result = await self.parser.parseVoice('marytelephone')
-        assert result is MicrosoftSamVoice.MARY_TELEPHONE
-
-        result = await self.parser.parseVoice('mary_phone')
-        assert result is MicrosoftSamVoice.MARY_TELEPHONE
-
-        result = await self.parser.parseVoice('mary-phone')
-        assert result is MicrosoftSamVoice.MARY_TELEPHONE
-
-        result = await self.parser.parseVoice('mary phone')
-        assert result is MicrosoftSamVoice.MARY_TELEPHONE
-
-        result = await self.parser.parseVoice('maryphone')
         assert result is MicrosoftSamVoice.MARY_TELEPHONE
 
     @pytest.mark.asyncio
@@ -284,6 +300,20 @@ class TestMicrosoftSamJsonParser:
         assert result is MicrosoftSamVoice.MIKE_SPACE
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withMikeInSpace(self):
+        result = await self.parser.parseVoice('mike_in_space')
+        assert result is MicrosoftSamVoice.MIKE_SPACE
+
+        result = await self.parser.parseVoice('mike-in-space')
+        assert result is MicrosoftSamVoice.MIKE_SPACE
+
+        result = await self.parser.parseVoice('mike in space')
+        assert result is MicrosoftSamVoice.MIKE_SPACE
+
+        result = await self.parser.parseVoice('mikeinspace')
+        assert result is MicrosoftSamVoice.MIKE_SPACE
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withMikeStadium(self):
         result = await self.parser.parseVoice('mike_stadium')
         assert result is MicrosoftSamVoice.MIKE_STADIUM
@@ -311,6 +341,8 @@ class TestMicrosoftSamJsonParser:
         result = await self.parser.parseVoice('miketelephone')
         assert result is MicrosoftSamVoice.MIKE_TELEPHONE
 
+    @pytest.mark.asyncio
+    async def test_parseVoice_withMikePhone(self):
         result = await self.parser.parseVoice('mike_phone')
         assert result is MicrosoftSamVoice.MIKE_TELEPHONE
 
