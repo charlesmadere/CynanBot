@@ -17,7 +17,7 @@ class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface
 
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
 
-        self.__voiceRegEx: Pattern = re.compile(r'(^\s*(\w+):\s+)', re.IGNORECASE)
+        self.__voiceRegEx: Pattern = re.compile(r'^(\s*(\w+):\s+)', re.IGNORECASE)
 
     async def determineVoiceFromMessage(
         self,
