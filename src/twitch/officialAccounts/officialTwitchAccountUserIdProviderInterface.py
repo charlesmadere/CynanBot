@@ -8,7 +8,35 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getNightbotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getPuptimeUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getSeryBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getSoundAlertsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getStreamElementsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getStreamLabsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTangiaBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTheRunBotUserId(self) -> str | None:
         pass
 
     @abstractmethod
