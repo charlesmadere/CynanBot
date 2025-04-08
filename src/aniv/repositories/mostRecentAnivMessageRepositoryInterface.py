@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from .mostRecentAnivMessage import MostRecentAnivMessage
-from ..misc.clearable import Clearable
+from ..models.mostRecentAnivMessage import MostRecentAnivMessage
+from ...misc.clearable import Clearable
 
 
 class MostRecentAnivMessageRepositoryInterface(Clearable, ABC):

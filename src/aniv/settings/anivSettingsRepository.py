@@ -1,9 +1,8 @@
 from typing import Any
 
-from .anivSettingsRepositoryInterface import \
-    AnivSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class AnivSettingsRepository(AnivSettingsRepositoryInterface):

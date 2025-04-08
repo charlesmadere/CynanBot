@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
-from ..language.languageEntry import LanguageEntry
+from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ...language.languageEntry import LanguageEntry
 
 
 class AnivCopyMessageTimeoutScorePresenterInterface(ABC):

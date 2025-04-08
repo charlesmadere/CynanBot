@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .anivContentCode import AnivContentCode
+from ..models.anivContentCode import AnivContentCode
 
 
 class AnivContentScannerInterface(ABC):

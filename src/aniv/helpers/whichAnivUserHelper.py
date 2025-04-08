@@ -1,8 +1,8 @@
 from .whichAnivUserHelperInterface import WhichAnivUserHelperInterface
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
-from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from ..users.aniv.whichAnivUser import WhichAnivUser
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
+from ...twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from ...users.aniv.whichAnivUser import WhichAnivUser
 
 
 class WhichAnivUserHelper(WhichAnivUserHelperInterface):
@@ -20,7 +20,10 @@ class WhichAnivUserHelper(WhichAnivUserHelperInterface):
         self.__timber: TimberInterface = timber
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
 
-    async def getAnivUser(self, whichAnivUser: WhichAnivUser | None) -> WhichAnivUserHelperInterface.Result | None:
+    async def getAnivUser(
+        self,
+        whichAnivUser: WhichAnivUser | None
+    ) -> WhichAnivUserHelperInterface.Result | None:
         if whichAnivUser is not None and not isinstance(whichAnivUser, WhichAnivUser):
             raise TypeError(f'whichAnivUser argument is malformed: \"{whichAnivUser}\"')
 
@@ -40,9 +43,11 @@ class WhichAnivUserHelper(WhichAnivUserHelperInterface):
                 anivUserId = await self.__twitchFriendsUserIdRepository.getAnivUserId()
 
             case _:
-                self.__timber.log('WhichAnivUserHelper', f'No aniv user ID is available for this aniv user ({whichAnivUser=})')
+                # this case is intentionally empty
+                pass
 
         if not utils.isValidStr(anivUserId):
+            self.__timber.log('WhichAnivUserHelper', f'No aniv user ID is available for this aniv user ({whichAnivUser=})')
             return None
 
         return WhichAnivUserHelperInterface.Result(

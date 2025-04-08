@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc import utils as utils
-from ..storage.backingDatabase import BackingDatabase
-from ..storage.databaseConnection import DatabaseConnection
-from ..storage.databaseType import DatabaseType
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseConnection import DatabaseConnection
+from ...storage.databaseType import DatabaseType
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositoryInterface):

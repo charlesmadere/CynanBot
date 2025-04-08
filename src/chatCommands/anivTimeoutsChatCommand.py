@@ -1,6 +1,8 @@
 from .absChatCommand import AbsChatCommand
-from ..aniv.anivCopyMessageTimeoutScorePresenterInterface import AnivCopyMessageTimeoutScorePresenterInterface
-from ..aniv.anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
+from ..aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
+    AnivCopyMessageTimeoutScorePresenterInterface
+from ..aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
+    AnivCopyMessageTimeoutScoreRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface

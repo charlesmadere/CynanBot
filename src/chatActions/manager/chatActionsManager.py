@@ -10,7 +10,7 @@ from ..saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatA
 from ..soundAlertChatAction import SoundAlertChatAction
 from ..supStreamerChatAction import SupStreamerChatAction
 from ..ttsChatterChatAction import TtsChatterChatAction
-from ...aniv.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface

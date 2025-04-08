@@ -1,9 +1,9 @@
 import traceback
 
 from .absChatAction import AbsChatAction
-from ..aniv.anivContentCode import AnivContentCode
-from ..aniv.anivContentScannerInterface import AnivContentScannerInterface
-from ..aniv.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
+from ..aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
+from ..aniv.helpers.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
+from ..aniv.models.anivContentCode import AnivContentCode
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface

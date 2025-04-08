@@ -2,29 +2,30 @@ import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
-from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
-from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
-from .anivTimeoutData import AnivTimeoutData
-from .mostRecentAnivMessage import MostRecentAnivMessage
-from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from .whichAnivUserHelperInterface import WhichAnivUserHelperInterface
-from ..language.languageEntry import LanguageEntry
-from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from ..misc import utils as utils
-from ..timber.timberInterface import TimberInterface
-from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
-from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
-from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from ..twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
-from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
-from ..twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
-from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.aniv.whichAnivUser import WhichAnivUser
-from ..users.userInterface import UserInterface
+from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ..models.anivTimeoutData import AnivTimeoutData
+from ..models.mostRecentAnivMessage import MostRecentAnivMessage
+from ..repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
+    AnivCopyMessageTimeoutScoreRepositoryInterface
+from ..repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..settings.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from ...language.languageEntry import LanguageEntry
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...misc import utils as utils
+from ...timber.timberInterface import TimberInterface
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
+from ...twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
+from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
+from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
+from ...users.aniv.whichAnivUser import WhichAnivUser
+from ...users.userInterface import UserInterface
 
 
 class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInterface):

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 
 
 class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):

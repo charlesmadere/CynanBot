@@ -3,8 +3,8 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .absChatCommand import AbsChatCommand
-from ..aniv.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
-from ..aniv.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..aniv.settings.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
 from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
     ChatterPreferredTtsRepositoryInterface

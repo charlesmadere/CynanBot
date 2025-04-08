@@ -1,8 +1,9 @@
 import pytest
 
-from src.aniv.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
-from src.aniv.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
-from src.aniv.anivCopyMessageTimeoutScorePresenterInterface import AnivCopyMessageTimeoutScorePresenterInterface
+from src.aniv.models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from src.aniv.presenters.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
+from src.aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
+    AnivCopyMessageTimeoutScorePresenterInterface
 from src.language.languageEntry import LanguageEntry
 
 

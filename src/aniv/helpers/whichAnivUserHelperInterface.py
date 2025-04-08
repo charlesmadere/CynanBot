@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from ..users.aniv.whichAnivUser import WhichAnivUser
+from ...users.aniv.whichAnivUser import WhichAnivUser
 
 
 class WhichAnivUserHelperInterface(ABC):
@@ -12,5 +12,8 @@ class WhichAnivUserHelperInterface(ABC):
         whichAnivUser: WhichAnivUser
 
     @abstractmethod
-    async def getAnivUser(self, whichAnivUser: WhichAnivUser | None) -> Result | None:
+    async def getAnivUser(
+        self,
+        whichAnivUser: WhichAnivUser | None
+    ) -> Result | None:
         pass

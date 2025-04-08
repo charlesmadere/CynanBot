@@ -5,13 +5,13 @@ from typing import Pattern
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .anivContentCode import AnivContentCode
 from .anivContentScannerInterface import AnivContentScannerInterface
-from ..contentScanner.contentCode import ContentCode
-from ..contentScanner.contentScannerInterface import ContentScannerInterface
-from ..misc import utils as utils
-from ..misc.stack import Stack
-from ..timber.timberInterface import TimberInterface
+from ..models.anivContentCode import AnivContentCode
+from ...contentScanner.contentCode import ContentCode
+from ...contentScanner.contentScannerInterface import ContentScannerInterface
+from ...misc import utils as utils
+from ...misc.stack import Stack
+from ...timber.timberInterface import TimberInterface
 
 
 class AnivContentScanner(AnivContentScannerInterface):

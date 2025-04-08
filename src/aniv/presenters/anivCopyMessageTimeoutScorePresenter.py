@@ -1,7 +1,7 @@
-from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from .anivCopyMessageTimeoutScorePresenterInterface import AnivCopyMessageTimeoutScorePresenterInterface
-from ..language.languageEntry import LanguageEntry
-from ..misc import utils as utils
+from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ...language.languageEntry import LanguageEntry
+from ...misc import utils as utils
 
 
 class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterInterface):

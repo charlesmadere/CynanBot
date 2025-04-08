@@ -1,8 +1,8 @@
 import pytest
 
-from src.aniv.anivContentCode import AnivContentCode
-from src.aniv.anivContentScanner import AnivContentScanner
-from src.aniv.anivContentScannerInterface import AnivContentScannerInterface
+from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
+from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
+from src.aniv.models.anivContentCode import AnivContentCode
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
