@@ -227,10 +227,6 @@ from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requests.requestsClientProvider import RequestsClientProvider
-from src.nightbot.nightbotUserIdProvider import NightbotUserIdProvider
-from src.nightbot.nightbotUserIdProviderInterface import NightbotUserIdProviderInterface
-from src.puptime.puptimeUserIdProvider import PuptimeUserIdProvider
-from src.puptime.puptimeUserIdProviderInterface import PuptimeUserIdProviderInterface
 from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelper import RecentGrenadeAttacksHelper
 from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
 from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapper import RecentGrenadeAttacksMapper
@@ -244,8 +240,6 @@ from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepositoryInt
     RecentGrenadeAttacksSettingsRepositoryInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
-from src.seryBot.seryBotUserIdProvider import SeryBotUserIdProvider
-from src.seryBot.seryBotUserIdProviderInterface import SeryBotUserIdProviderInterface
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
@@ -290,21 +284,13 @@ from src.streamElements.settings.streamElementsSettingsRepositoryInterface impor
     StreamElementsSettingsRepositoryInterface
 from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
 from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
-from src.streamElements.streamElementsUserIdProvider import StreamElementsUserIdProvider
-from src.streamElements.streamElementsUserIdProviderInterface import StreamElementsUserIdProviderInterface
 from src.streamElements.userKeyRepository.streamElementsUserKeyRepository import StreamElementsUserKeyRepository
 from src.streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import \
     StreamElementsUserKeyRepositoryInterface
-from src.streamLabs.streamLabsUserIdProvider import StreamLabsUserIdProvider
-from src.streamLabs.streamLabsUserIdProviderInterface import StreamLabsUserIdProviderInterface
 from src.supStreamer.supStreamerHelper import SupStreamerHelper
 from src.supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
-from src.tangia.tangiaBotUserIdProvider import TangiaBotUserIdProvider
-from src.tangia.tangiaBotUserIdProviderInterface import TangiaBotUserIdProviderInterface
-from src.theRun.theRunBotUserIdProvider import TheRunBotUserIdProvider
-from src.theRun.theRunBotUserIdProviderInterface import TheRunBotUserIdProviderInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
@@ -764,20 +750,6 @@ cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvi
 twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
 
 
-#####################################
-## Nightbot initialization section ##
-#####################################
-
-nightbotUserIdProvider: NightbotUserIdProviderInterface = NightbotUserIdProvider()
-
-
-###################################
-## Tangia initialization section ##
-###################################
-
-tangiaBotUserIdProvider: TangiaBotUserIdProviderInterface = TangiaBotUserIdProvider()
-
-
 ######################################
 ## Trollmoji initialization section ##
 ######################################
@@ -910,27 +882,10 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
-puptimeUserIdProvider: PuptimeUserIdProviderInterface = PuptimeUserIdProvider()
-
-seryBotUserIdProvider: SeryBotUserIdProviderInterface = SeryBotUserIdProvider()
-
-streamElementsUserIdProvider: StreamElementsUserIdProviderInterface = StreamElementsUserIdProvider()
-
-streamLabsUserIdProvider: StreamLabsUserIdProviderInterface = StreamLabsUserIdProvider()
-
-theRunBotUserIdProvider: TheRunBotUserIdProviderInterface = TheRunBotUserIdProvider()
-
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     funtoonUserIdProvider = funtoonUserIdProvider,
-    nightbotUserIdProvider = nightbotUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
-    puptimeUserIdProvider = puptimeUserIdProvider,
-    seryBotUserIdProvider = seryBotUserIdProvider,
-    streamElementsUserIdProvider = streamElementsUserIdProvider,
-    streamLabsUserIdProvider = streamLabsUserIdProvider,
-    tangiaBotUserIdProvider = tangiaBotUserIdProvider,
-    theRunBotUserIdProvider = theRunBotUserIdProvider,
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
     twitchHandleProvider = authRepository,

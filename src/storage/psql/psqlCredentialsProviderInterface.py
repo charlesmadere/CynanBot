@@ -6,7 +6,15 @@ from ...misc.clearable import Clearable
 class PsqlCredentialsProviderInterface(Clearable, ABC):
 
     @abstractmethod
+    async def getHost(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getPassword(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getPort(self) -> str | None:
         pass
 
     @abstractmethod

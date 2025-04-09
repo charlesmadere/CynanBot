@@ -141,24 +141,25 @@ class AnivContentScanner(AnivContentScannerInterface):
             # removed from the string, the message is now blank. So let's consider this message OK.
             return AnivContentCode.OK
 
-        if not await self.__containsMatchingCharacterPairs(
+        elif not await self.__containsMatchingCharacterPairs(
             characterPairs = self.__parens,
             message = emojiCleanedMessage
         ):
             return AnivContentCode.OPEN_PAREN
 
-        if not await self.__containsMatchingCharacterPairs(
+        elif not await self.__containsMatchingCharacterPairs(
             characterPairs = self.__quotes,
-            message = message
+            message = emojiCleanedMessage
         ):
             return AnivContentCode.OPEN_QUOTES
 
-        if not await self.__containsMatchingStraightQuotes(
-            message = message
+        elif not await self.__containsMatchingStraightQuotes(
+            message = emojiCleanedMessage
         ):
             return AnivContentCode.OPEN_QUOTES
 
-        return AnivContentCode.OK
+        else:
+            return AnivContentCode.OK
 
     async def scan(self, message: str | None) -> AnivContentCode:
         if not utils.isValidStr(message):

@@ -6,6 +6,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     def __init__(
         self,
+        frostyToolsDotComUserId: str | None = '955237329',
         nightBotUserId: str | None = '19264788',
         puptimeUserId: str | None = '213177587',
         seryBotUserId: str | None = '402337290',
@@ -18,9 +19,11 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         twitchAnonymousGifterUserId: str = '274598607',
         valorantUserId: str | None = '490592527'
     ):
-        if nightBotUserId is not None and not isinstance(nightBotUserId, str):
+        if frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
+            raise TypeError(f'frostyToolsDotComUserId argument is malformed: \"{frostyToolsDotComUserId}\"')
+        elif nightBotUserId is not None and not isinstance(nightBotUserId, str):
             raise TypeError(f'nightBotUserId argument is malformed: \"{nightBotUserId}\"')
-        if puptimeUserId is not None and not isinstance(puptimeUserId, str):
+        elif puptimeUserId is not None and not isinstance(puptimeUserId, str):
             raise TypeError(f'puptimeUserId argument is malformed: \"{puptimeUserId}\"')
         elif seryBotUserId is not None and not isinstance(seryBotUserId, str):
             raise TypeError(f'seryBotUserId argument is malformed: \"{seryBotUserId}\"')
@@ -41,6 +44,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         elif valorantUserId is not None and not isinstance(valorantUserId, str):
             raise TypeError(f'valorantUserId argument is malformed: \"{valorantUserId}\"')
 
+        self.__frostyToolsDotComUserId: str | None = frostyToolsDotComUserId
         self.__nightBotUserId: str | None = nightBotUserId
         self.__puptimeUserId: str | None = puptimeUserId
         self.__seryBotUserId: str | None = seryBotUserId
@@ -55,6 +59,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getAllUserIds(self) -> frozenset[str]:
         allUserIds: set[str] = set()
+
+        frostyToolsDotComUserId = await self.getFrostyToolsDotComUserId()
+        if utils.isValidStr(frostyToolsDotComUserId):
+            allUserIds.add(frostyToolsDotComUserId)
 
         nightBotUserId = await self.getNightbotUserId()
         if utils.isValidStr(nightBotUserId):
@@ -99,6 +107,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             allUserIds.add(valorantUserId)
 
         return frozenset(allUserIds)
+
+    async def getFrostyToolsDotComUserId(self) -> str | None:
+        return self.__frostyToolsDotComUserId
 
     async def getNightbotUserId(self) -> str | None:
         return self.__nightBotUserId

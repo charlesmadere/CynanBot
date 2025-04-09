@@ -515,7 +515,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameBannedControllers(
         self,
-        bannedControllers: list[BannedTriviaGameController] | None,
+        bannedControllers: Collection[BannedTriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
         if bannedControllers is not None and not isinstance(bannedControllers, list):

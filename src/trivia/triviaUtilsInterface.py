@@ -125,7 +125,7 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getTriviaGameBannedControllers(
         self,
-        bannedControllers: list[BannedTriviaGameController] | None,
+        bannedControllers: Collection[BannedTriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
         pass

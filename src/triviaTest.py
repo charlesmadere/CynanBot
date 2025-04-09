@@ -442,6 +442,7 @@ trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSet
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,

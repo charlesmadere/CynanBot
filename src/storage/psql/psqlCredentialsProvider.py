@@ -18,18 +18,44 @@ class PsqlCredentialsProvider(PsqlCredentialsProviderInterface):
     async def clearCaches(self):
         self.__jsonCache = None
 
+    async def getHost(self) -> str | None:
+        jsonContents = await self.__readJsonAsync()
+
+        host: str | None = None
+        if 'host' in jsonContents and utils.isValidStr(jsonContents.get('host')):
+            host = utils.getStrFromDict(jsonContents, 'host')
+
+        return host
+
     async def getPassword(self) -> str | None:
         jsonContents = await self.__readJsonAsync()
-        return utils.getStrFromDict(jsonContents, 'password', fallback = '')
 
-    async def __readJsonAsync(self) -> dict[str, Any] | None:
+        password: str | None = None
+        if 'password' in jsonContents and utils.isValidStr(jsonContents.get('password')):
+            password = utils.getStrFromDict(jsonContents, 'password')
+
+        return password
+
+    async def getPort(self) -> str | None:
+        jsonContents = await self.__readJsonAsync()
+
+        port: str | None = None
+        if 'port' in jsonContents and utils.isValidStr(jsonContents.get('port')):
+            port = utils.getStrFromDict(jsonContents, 'port')
+
+        return port
+
+    async def __readJsonAsync(self) -> dict[str, Any]:
         if self.__jsonCache is not None:
             return self.__jsonCache
 
-        jsonCache = await self.__credentialsJsonReader.readJsonAsync()
-        self.__jsonCache = jsonCache
+        jsonContents = await self.__credentialsJsonReader.readJsonAsync()
 
-        return jsonCache
+        if jsonContents is None:
+            jsonContents = dict()
+
+        self.__jsonCache = jsonContents
+        return jsonContents
 
     async def requireDatabaseName(self) -> str:
         jsonContents = await self.__readJsonAsync()

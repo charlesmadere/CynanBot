@@ -149,12 +149,15 @@ class RecentGrenadeAttacksRepository(RecentGrenadeAttacksRepositoryInterface):
             grenadeAttacksJsonString = grenadeAttacksJsonString
         )
 
-        if grenadeAttacks is None:
-            grenadeAttacks: FrozenList[GrenadeAttack] = FrozenList()
-            grenadeAttacks.freeze()
+        frozenGrenadeAttacks: FrozenList[GrenadeAttack] = FrozenList()
+
+        if grenadeAttacks is not None:
+            frozenGrenadeAttacks.extend(grenadeAttacks)
+
+        frozenGrenadeAttacks.freeze()
 
         recentGrenadeAttackData = RecentGrenadeAttackData(
-            grenadeAttacks = grenadeAttacks,
+            grenadeAttacks = frozenGrenadeAttacks,
             attackerUserId = attackerUserId,
             twitchChannelId = twitchChannelId
         )
@@ -206,7 +209,7 @@ class RecentGrenadeAttacksRepository(RecentGrenadeAttacksRepositoryInterface):
     async def __parseGrenadeAttacks(
         self,
         grenadeAttacksJsonString: str | Any | None
-    ) -> FrozenList[GrenadeAttack] | None:
+    ) -> list[GrenadeAttack] | None:
         if not utils.isValidStr(grenadeAttacksJsonString):
             return None
 
@@ -222,10 +225,7 @@ class RecentGrenadeAttacksRepository(RecentGrenadeAttacksRepositoryInterface):
             grenadeAttacks.append(grenadeAttack)
 
         grenadeAttacks.sort(key = lambda entry: entry.attackedDateTime, reverse = True)
-        frozenGrenadeAttacks: FrozenList[GrenadeAttack] = FrozenList(grenadeAttacks)
-        frozenGrenadeAttacks.freeze()
-
-        return frozenGrenadeAttacks
+        return grenadeAttacks
 
     async def __serializeGrenadeAttacks(
         self,
