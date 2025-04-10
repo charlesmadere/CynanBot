@@ -5,8 +5,8 @@ from src.streamElements.streamElementsMessageCleaner import StreamElementsMessag
 from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
-from src.tts.ttsSettingsRepository import TtsSettingsRepository
-from src.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
+from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
 from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 

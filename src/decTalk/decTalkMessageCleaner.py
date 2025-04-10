@@ -8,7 +8,7 @@ from .decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ..emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
-from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 

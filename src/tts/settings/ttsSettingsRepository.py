@@ -1,8 +1,8 @@
 from typing import Any
 
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class TtsSettingsRepository(TtsSettingsRepositoryInterface):

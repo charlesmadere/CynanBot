@@ -6,7 +6,7 @@ from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface

@@ -64,7 +64,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT emote, triviaid, triviasource, triviatype FROM triviahistory
+                SELECT datetime, emote, triviaid, triviasource, triviatype FROM triviahistory
                 WHERE emote IS NOT NULL AND emote = $1 AND twitchchannelid = $2
                 ORDER BY datetime DESC
                 LIMIT 1
@@ -78,12 +78,13 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             return None
 
         return TriviaQuestionReference(
-            emote = record[0],
-            triviaId = record[1],
+            dateTime = datetime.fromisoformat(record[0]),
+            emote = record[1],
+            triviaId = record[2],
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            triviaSource = TriviaSource.fromStr(record[2]),
-            triviaType = await self.__triviaQuestionTypeParser.parse(record[3])
+            triviaSource = TriviaSource.fromStr(record[3]),
+            triviaType = await self.__triviaQuestionTypeParser.parse(record[4])
         )
 
     async def __initDatabaseTable(self):

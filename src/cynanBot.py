@@ -194,7 +194,7 @@ from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from .tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from .ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from .ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
@@ -993,9 +993,6 @@ class CynanBot(
         await self.waitForReady()
         self.__timber.log('CynanBot', f'Finished reconnecting')
 
-    async def event_usernotice_subscription(self, metadata):
-        self.__timber.log('CynanBot', f'event_usernotice_subscription(): (metadata=\"{metadata}\")')
-
     async def __getChannel(self, twitchChannel: str) -> TwitchChannel:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -1243,7 +1240,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleChatCommand(context)
 
-    @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'getasplodiestats' ])
+    @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__asplodieStatsCommand.handleChatCommand(context)
@@ -1323,7 +1320,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__deleteCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'deletetriviaanswers')
+    @commands.command(name = 'deletetriviaanswers', aliases = [ 'removetriviaanswers' ])
     async def command_deletetriviaanswers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__deleteTriviaAnswersCommand.handleChatCommand(context)
@@ -1343,7 +1340,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__enableCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'getbannedtriviacontrollers')
+    @commands.command(name = 'getbannedtriviacontrollers', aliases = [ 'bannedtriviacontrollers' ])
     async def command_getbannedtriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
@@ -1358,7 +1355,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getCheerActionsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'getglobaltriviacontrollers')
+    @commands.command(name = 'getglobaltriviacontrollers', aliases = [ 'globaltriviacontrollers' ])
     async def command_getglobaltriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getGlobalTriviaControllersCommand.handleChatCommand(context)
@@ -1373,7 +1370,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getTriviaAnswersCommand.handleChatCommand(context)
 
-    @commands.command(name = 'gettriviacontrollers')
+    @commands.command(name = 'gettriviacontrollers', aliases = [ 'triviacontrollers' ])
     async def command_gettriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getTriviaControllersCommand.handleChatCommand(context)
@@ -1428,12 +1425,12 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeChatterPreferredTtsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removegameshuffleautomator')
+    @commands.command(name = 'removegameshuffleautomator', aliases = [ 'deletegameshuffleautomator' ])
     async def command_removegameshuffleautomator(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGameShuffleAutomatorCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removeglobaltriviacontroller')
+    @commands.command(name = 'removeglobaltriviacontroller', aliases = [ 'deleteglobaltriviacontroller' ])
     async def command_removeglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerChatCommand.handleChatCommand(context)
@@ -1458,7 +1455,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removetriviacontroller')
+    @commands.command(name = 'removetriviacontroller', aliases = [ 'deletetriviacontroller' ])
     async def command_removetriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerChatCommand.handleChatCommand(context)
@@ -1488,7 +1485,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleChatCommand(context)
 
-    @commands.command(name = 'supertrivia', aliases = [ 'supertrivialotr' ])
+    @commands.command(name = 'supertrivia', aliases = [ 'Supertrivia', 'SuperTrivia', 'supertrivialotr' ])
     async def command_supertrivia(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superTriviaCommand.handleChatCommand(context)

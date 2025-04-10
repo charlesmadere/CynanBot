@@ -58,7 +58,7 @@ from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTok
 from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
-from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \

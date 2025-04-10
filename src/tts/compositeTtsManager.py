@@ -10,10 +10,10 @@ from .microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManager
 from .models.ttsEvent import TtsEvent
 from .models.ttsProvider import TtsProvider
 from .models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from .settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
-from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface

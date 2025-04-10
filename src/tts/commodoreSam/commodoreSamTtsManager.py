@@ -4,7 +4,7 @@ from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsProvider import TtsProvider
-from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
 from ...commodoreSam.models.commodoreSamFileReference import CommodoreSamFileReference

@@ -3,7 +3,7 @@ from typing import Any, Pattern
 
 from .halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ..misc import utils as utils
-from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 

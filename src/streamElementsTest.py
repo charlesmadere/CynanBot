@@ -36,8 +36,8 @@ from .timber.timberInterface import TimberInterface
 from .timber.timberStub import TimberStub
 from .tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
 from .tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from .tts.ttsSettingsRepository import TtsSettingsRepository
-from .tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from .tts.settings.ttsSettingsRepository import TtsSettingsRepository
+from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .twitch.twitchMessageStringUtils import TwitchMessageStringUtils
 from .twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 

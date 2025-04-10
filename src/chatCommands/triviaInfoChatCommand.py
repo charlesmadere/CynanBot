@@ -1,11 +1,13 @@
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
+from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
-from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
-    AdditionalTriviaAnswersRepositoryInterface
+from ..trivia.additionalAnswers.additionalTriviaAnswers import AdditionalTriviaAnswers
+from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from ..trivia.questions.triviaQuestionReference import TriviaQuestionReference
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -51,6 +53,23 @@ class TriviaInfoChatCommand(AbsChatCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
+    async def __buildTriviaInfoMessage(
+        self,
+        additionalTriviaAnswers: AdditionalTriviaAnswers | None,
+        normalizedEmote: str,
+        reference: TriviaQuestionReference
+    ) -> str:
+        dateTime = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
+        triviaSource = reference.triviaSource.toStr()
+        triviaType = reference.triviaType.toStr()
+        isLocal = str(reference.triviaSource.isLocal).lower()
+
+        additionalAnswersLen = 0
+        if additionalTriviaAnswers is not None:
+            additionalAnswersLen = len(additionalTriviaAnswers.answers)
+
+        return f'{normalizedEmote} ({dateTime}) {triviaSource} triviaType:{triviaType} isLocal:{isLocal} triviaId:{reference.triviaId} additionalAnswers:{additionalAnswersLen}'
+
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -68,7 +87,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
+            self.__timber.log('TriviaInfoChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
@@ -80,7 +99,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('TriviaInfoChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
@@ -95,7 +114,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         )
 
         if reference is None:
-            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('TriviaInfoChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found ({emote}=) ({normalizedEmote=})')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
@@ -103,20 +122,22 @@ class TriviaInfoChatCommand(AbsChatCommand):
             )
             return
 
-        additionalAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
+        additionalTriviaAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
             triviaId = reference.triviaId,
             triviaQuestionType = reference.triviaType,
             triviaSource = reference.triviaSource
         )
 
-        additionalAnswersLen = 0
-        if additionalAnswers is not None:
-            additionalAnswersLen = len(additionalAnswers.answers)
+        triviaInfoMessage = await self.__buildTriviaInfoMessage(
+            additionalTriviaAnswers = additionalTriviaAnswers,
+            normalizedEmote = normalizedEmote,
+            reference = reference
+        )
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'{normalizedEmote} {reference.triviaSource.toStr()}:{reference.triviaId} triviaType:{reference.triviaType.toStr()} additionalAnswers:{additionalAnswersLen} isLocal:{str(reference.triviaSource.isLocal()).lower()}',
+            message = f'ⓘ {triviaInfoMessage}',
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TriviaInfoCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TriviaInfoChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

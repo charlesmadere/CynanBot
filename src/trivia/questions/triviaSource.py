@@ -36,6 +36,7 @@ class TriviaSource(EnumWithToFromStr):
             case 'will_fry_trivia_api': return TriviaSource.WILL_FRY_TRIVIA
             case _: return super().fromStr(text)
 
+    @property
     def isLocal(self) -> bool:
         match self:
             case TriviaSource.BONGO: return False

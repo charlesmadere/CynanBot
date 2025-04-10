@@ -563,7 +563,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         if triviaContentCode is TriviaContentCode.OK:
             return True
         else:
-            self.__timber.log('TriviaRepository', f'Rejected a trivia question\'s content (code=\"{triviaContentCode}\")')
+            self.__timber.log('TriviaRepository', f'Rejected a trivia question\'s content ({triviaContentCode=})')
             return False
 
     async def __verifyTriviaQuestionIsNotDuplicate(
@@ -588,5 +588,5 @@ class TriviaRepository(TriviaRepositoryInterface):
         if triviaContentCode is TriviaContentCode.OK:
             return True
         else:
-            self.__timber.log('TriviaRepository', f'Rejected a trivia question as it ended up being a duplicate (code=\"{triviaContentCode}\")')
+            self.__timber.log('TriviaRepository', f'Rejected a trivia question as it ended up being a duplicate ({triviaContentCode=})')
             return False

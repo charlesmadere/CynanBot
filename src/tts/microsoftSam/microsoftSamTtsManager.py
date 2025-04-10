@@ -5,7 +5,7 @@ from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterfa
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ..ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
 from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface

@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 
 from .commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ..misc import utils as utils
-from ..tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
