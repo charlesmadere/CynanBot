@@ -15,11 +15,11 @@ class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def getMediaPlayerVolume(self) -> int | None:
+    async def getLoudVoiceMediaPlayerVolume(self) -> int | None:
         pass
 
     @abstractmethod
-    async def getReducedMediaPlayerVolume(self) -> int | None:
+    async def getMediaPlayerVolume(self) -> int | None:
         pass
 
     @abstractmethod
@@ -27,5 +27,5 @@ class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def useReducedVolumeForLoudVoices(self) -> bool:
+    async def useVoiceDependentMediaPlayerVolume(self) -> bool:
         pass

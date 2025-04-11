@@ -32,6 +32,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         loudVoices: frozenset[TtsMonsterVoice] | None = frozenset({
             TtsMonsterVoice.GLADOS,
             TtsMonsterVoice.SHADOW,
+            TtsMonsterVoice.SPONGEBOB,
         })
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
@@ -97,13 +98,11 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         return ttsMonsterPreferredTts.voice
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
-        useReducedVolumeForLoudVoices = await self.__ttsMonsterSettingsRepository.useReducedVolumeForLoudVoices()
-        containsLoudVoices = await self.__containsLoudVoices(fileReference)
-
+        useVoiceDependentMediaPlayerVolume = await self.__ttsMonsterSettingsRepository.useVoiceDependentMediaPlayerVolume()
         volume: int | None = None
 
-        if useReducedVolumeForLoudVoices and containsLoudVoices:
-            volume = await self.__ttsMonsterSettingsRepository.getReducedMediaPlayerVolume()
+        if useVoiceDependentMediaPlayerVolume and await self.__containsLoudVoices(fileReference):
+            volume = await self.__ttsMonsterSettingsRepository.getLoudVoiceMediaPlayerVolume()
 
         if volume is None:
             volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()

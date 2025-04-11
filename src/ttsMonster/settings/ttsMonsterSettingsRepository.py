@@ -46,13 +46,13 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getStrFromDict(jsonContents, 'file_extension', fallback = 'wav')
 
+    async def getLoudVoiceMediaPlayerVolume(self) -> int | None:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'loud_voice_media_player_volume', fallback = 7)
+
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 9)
-
-    async def getReducedMediaPlayerVolume(self) -> int | None:
-        jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'reduced_media_player_volume', fallback = 7)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
@@ -75,6 +75,6 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'use_donation_prefix', fallback = False)
 
-    async def useReducedVolumeForLoudVoices(self) -> bool:
+    async def useVoiceDependentMediaPlayerVolume(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'use_reduced_volume_for_loud_voices', fallback = True)
+        return utils.getBoolFromDict(jsonContents, 'voice_dependent_media_player_volume', fallback = True)
