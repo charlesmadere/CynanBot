@@ -36,12 +36,12 @@ class PsqlCredentialsProvider(PsqlCredentialsProviderInterface):
 
         return password
 
-    async def getPort(self) -> str | None:
+    async def getPort(self) -> int | None:
         jsonContents = await self.__readJsonAsync()
 
-        port: str | None = None
-        if 'port' in jsonContents and utils.isValidStr(jsonContents.get('port')):
-            port = utils.getStrFromDict(jsonContents, 'port')
+        port: int | None = None
+        if 'port' in jsonContents and utils.isValidInt(jsonContents.get('port')):
+            port = utils.getIntFromDict(jsonContents, 'port')
 
         return port
 

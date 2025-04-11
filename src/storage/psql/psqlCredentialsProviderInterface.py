@@ -14,7 +14,7 @@ class PsqlCredentialsProviderInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def getPort(self) -> str | None:
+    async def getPort(self) -> int | None:
         pass
 
     @abstractmethod
