@@ -1,6 +1,6 @@
 services:
   cynanbot:
-    image: ghcr.io/charlesmadere/CynanBot:main
+    image: ghcr.io/charlesmadere/cynanbot:main
     # build:
     #  context: .
     #  dockerfile: Dockerfile
