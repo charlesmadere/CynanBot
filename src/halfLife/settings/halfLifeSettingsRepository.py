@@ -44,7 +44,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 52)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 8)
 
     async def getSoundsDirectory(self) -> str | None:
         jsonContents = await self.__readJson()
