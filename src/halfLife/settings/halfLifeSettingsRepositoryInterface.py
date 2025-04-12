@@ -15,5 +15,5 @@ class HalfLifeSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def getSoundsDirectory(self) -> str:
+    async def requireSoundsDirectory(self) -> str:
         pass

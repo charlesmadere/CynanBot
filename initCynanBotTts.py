@@ -1269,11 +1269,11 @@ googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
 )
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
+    halfLifeJsonParser = halfLifeVoiceParser,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/halfLifeTtsSettingsRepository.json'
-    ),
-    halfLifeJsonParser = halfLifeVoiceParser
+    )
 )
 
 halfLifeService: HalfLifeServiceInterface = HalfLifeService(

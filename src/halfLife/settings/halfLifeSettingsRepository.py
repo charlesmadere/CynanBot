@@ -11,19 +11,19 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     def __init__(
         self,
-        settingsJsonReader: JsonReaderInterface,
         halfLifeJsonParser: HalfLifeVoiceParserInterface,
+        settingsJsonReader: JsonReaderInterface,
         defaultVoice: HalfLifeVoice = HalfLifeVoice.INTERCOM
     ):
-        if not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
+        if not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
+        elif not isinstance(settingsJsonReader, JsonReaderInterface):
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(defaultVoice, HalfLifeVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeJsonParser
+        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__defaultVoice: HalfLifeVoice = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
@@ -46,10 +46,6 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 8)
 
-    async def getSoundsDirectory(self) -> str | None:
-        jsonContents = await self.__readJson()
-        return utils.getStrFromDict(jsonContents, 'sounds_directory', fallback = '../halfLife')
-
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
@@ -66,3 +62,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def requireSoundsDirectory(self) -> str:
+        jsonContents = await self.__readJson()
+        return utils.getStrFromDict(d = jsonContents, key = 'sounds_directory', fallback = '../halfLife')

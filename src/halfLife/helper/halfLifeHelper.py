@@ -46,10 +46,10 @@ class HalfLifeHelper(HalfLifeHelperInterface):
             message = result.message
             voice = result.voice
 
-        directory = await self.__halfLifeSettingsRepository.getSoundsDirectory()
+        soundsDirectory = await self.__halfLifeSettingsRepository.requireSoundsDirectory()
 
         return await self.__halfLifeService.getWavs(
-            directory = directory,
+            directory = soundsDirectory,
             text = message,
             voice = voice
         )
