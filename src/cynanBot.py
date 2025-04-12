@@ -59,7 +59,7 @@ from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaC
 from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
-from .chatCommands.getRecurringActionsCommand import GetRecurringActionsCommand
+from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
@@ -800,7 +800,7 @@ class CynanBot(
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
-            self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsChatCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)

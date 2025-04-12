@@ -68,7 +68,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         if additionalTriviaAnswers is not None:
             additionalAnswersLen = len(additionalTriviaAnswers.answers)
 
-        return f'{normalizedEmote} {triviaSource} {dateTime} triviaType:{triviaType} isLocal:{isLocal} triviaId:{reference.triviaId} additionalAnswers:{additionalAnswersLen}'
+        return f'{normalizedEmote} {triviaSource} — {dateTime} — triviaType:{triviaType} isLocal:{isLocal} triviaId:{reference.triviaId} additionalAnswers:{additionalAnswersLen}'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

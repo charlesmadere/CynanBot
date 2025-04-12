@@ -8,7 +8,7 @@ from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class GetRecurringActionsCommand(AbsChatCommand):
+class GetRecurringActionsChatCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -45,7 +45,7 @@ class GetRecurringActionsCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('GetRecurringActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
+            self.__timber.log('GetRecurringActionsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(
@@ -59,7 +59,7 @@ class GetRecurringActionsCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('GetRecurringActionsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __toStr(self, recurringActions: list[RecurringAction]) -> str:
         if not isinstance(recurringActions, list):

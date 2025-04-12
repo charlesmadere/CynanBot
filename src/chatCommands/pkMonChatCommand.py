@@ -2,6 +2,7 @@ import traceback
 
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
+from ..network.exceptions import GenericNetworkException
 from ..pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -43,15 +44,19 @@ class PkMonChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
             return
 
-        name: str = splits[1]
+        name = splits[1]
 
         try:
             mon = await self.__pokepediaRepository.searchPokemon(name)
 
             for string in mon.toStrList():
-                await self.__twitchUtils.safeSend(ctx, string)
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
+                await self.__twitchUtils.safeSend(
+                    messageable = ctx,
+                    message = string,
+                    replyMessageId = await ctx.getMessageId()
+                )
+        except (GenericNetworkException, RuntimeError, ValueError) as e:
+            self.__timber.log('PkMonChatCommand', f'Error retrieving Pokemon ({name=}): {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon: \"{name}\"')
 
-        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('PkMonChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

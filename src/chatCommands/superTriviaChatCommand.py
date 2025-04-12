@@ -117,7 +117,4 @@ class SuperTriviaChatCommand(AbsChatCommand):
             return
 
         self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
-
-        # Presumably, a command should always be the first item in the splits array, use this ref
-        # just in case we want to add more specified supertrivia commands in the future.
-        self.__timber.log('SuperTriviaChatCommand', f'Handled !{splits[0]} command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('SuperTriviaChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
