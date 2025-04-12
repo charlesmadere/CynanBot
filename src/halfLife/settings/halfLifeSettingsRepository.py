@@ -48,7 +48,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     async def getSoundsDirectory(self) -> str | None:
         jsonContents = await self.__readJson()
-        return utils.getStrFromDict(jsonContents, 'sounds_directory', fallback = '')
+        return utils.getStrFromDict(jsonContents, 'sounds_directory', fallback = '../halfLife')
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
