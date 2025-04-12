@@ -13,8 +13,8 @@ from ...crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCro
 from ...crowdControl.actions.crowdControlAction import CrowdControlAction
 from ...crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
 from ...crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
-from ...crowdControl.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from ...crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from ...crowdControl.settings.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from ...crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils

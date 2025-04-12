@@ -1,8 +1,8 @@
 from typing import Any
 
 from .crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class CrowdControlSettingsRepository(CrowdControlSettingsRepositoryInterface):
