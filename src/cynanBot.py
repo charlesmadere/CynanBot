@@ -102,9 +102,9 @@ from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterfac
 from .cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
-from .cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
+from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from .commands import (AbsCommand, ConfirmCommand, PbsCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
                        StubCommand, SwQuoteCommand)

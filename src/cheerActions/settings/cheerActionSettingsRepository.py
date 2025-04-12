@@ -1,8 +1,8 @@
 from typing import Any
 
 from .cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class CheerActionSettingsRepository(CheerActionSettingsRepositoryInterface):

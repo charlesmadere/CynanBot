@@ -4,7 +4,6 @@ from frozendict import frozendict
 
 from .absCheerAction import AbsCheerAction
 from .cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
-from .cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
@@ -15,6 +14,7 @@ from .editCheerActionResult.notFoundEditCheerActionResult import NotFoundEditChe
 from .editCheerActionResult.successfullyDisabledEditCheerActionResult import SuccessfullyDisabledEditCheerActionResult
 from .editCheerActionResult.successfullyEnabledEditCheerActionResult import SuccessfullyEnabledEditCheerActionResult
 from .exceptions import CheerActionAlreadyExistsException, TooManyCheerActionsException
+from .settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection

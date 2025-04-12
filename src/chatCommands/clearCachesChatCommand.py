@@ -10,8 +10,8 @@ from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface imp
     ChatterPreferredTtsRepositoryInterface
 from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
-from ..cheerActions.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
+from ..cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from ..commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from ..contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from ..crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
