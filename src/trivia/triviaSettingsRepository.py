@@ -142,7 +142,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getShinyProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'shiny_probability', 0.03)
+        return utils.getFloatFromDict(jsonContents, 'shiny_probability', 0.05)
 
     async def getSuperTriviaCooldownSeconds(self) -> int:
         jsonContents = await self.__readJson()
@@ -154,7 +154,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getToxicProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.03)
+        return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.04)
 
     async def getTriviaSourceInstabilityThreshold(self) -> int:
         jsonContents = await self.__readJson()
