@@ -4,6 +4,7 @@ import traceback
 
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from ..apiService.googleApiServiceInterface import GoogleApiServiceInterface
+from ..exceptions import GoogleCloudProjectIdUnavailableException
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
@@ -33,7 +34,7 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
 
         try:
             response = await self.__googleApiService.textToSpeech(request)
-        except GenericNetworkException as e:
+        except (GenericNetworkException, GoogleCloudProjectIdUnavailableException) as e:
             self.__timber.log('GoogleTtsApiHelper', f'Failed to fetch Google text to speech ({request=}): {e}', e, traceback.format_exc())
             return None
 

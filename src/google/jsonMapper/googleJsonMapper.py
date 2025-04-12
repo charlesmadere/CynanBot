@@ -18,6 +18,7 @@ from ..models.googleTranslationRequest import GoogleTranslationRequest
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ..models.googleVoiceGender import GoogleVoiceGender
+from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -228,6 +229,19 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
                 self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceGender value: \"{jsonString}\"')
                 return None
 
+    async def parseVoicePreset(
+        self,
+        jsonString: str | Any | None
+    ) -> GoogleVoicePreset | None:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        for voicePreset in GoogleVoicePreset:
+            if jsonString == voicePreset.fullName:
+                return voicePreset
+
+        return None
+
     async def requireVoiceAudioEncoding(
         self,
         jsonString: str | None
@@ -236,6 +250,17 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{jsonString}\" into GoogleVoiceAudioEncoding value!')
+
+        return result
+
+    async def requireVoicePreset(
+        self,
+        jsonString: str | Any | None
+    ) -> GoogleVoicePreset:
+        result = await self.parseVoicePreset(jsonString)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{jsonString}\" into GoogleVoicePreset value!')
 
         return result
 
@@ -411,6 +436,15 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             case GoogleVoiceGender.UNSPECIFIED: return 'SSML_VOICE_GENDER_UNSPECIFIED'
             case _:
                 raise ValueError(f'The given GoogleVoiceGender value is unknown: \"{voiceGender}\"')
+
+    async def serializeVoicePreset(
+        self,
+        voicePreset: GoogleVoicePreset
+    ) -> str:
+        if not isinstance(voicePreset, GoogleVoicePreset):
+            raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
+
+        return voicePreset.fullName
 
     async def serializeVoiceSelectionParams(
         self,

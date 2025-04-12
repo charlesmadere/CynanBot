@@ -14,6 +14,7 @@ from ..models.googleTranslationRequest import GoogleTranslationRequest
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ..models.googleVoiceGender import GoogleVoiceGender
+from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
@@ -69,6 +70,20 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseVoiceGender(
+        self,
+        jsonString: str | None
+    ) -> GoogleVoiceGender | None:
+        pass
+
+    @abstractmethod
+    async def parseVoicePreset(
+        self,
+        jsonString: str | Any | None
+    ) -> GoogleVoicePreset | None:
+        pass
+
+    @abstractmethod
     async def requireVoiceAudioEncoding(
         self,
         jsonString: str | None
@@ -76,10 +91,10 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseVoiceGender(
+    async def requireVoicePreset(
         self,
-        jsonString: str | None
-    ) -> GoogleVoiceGender | None:
+        jsonString: str | Any | None
+    ) -> GoogleVoicePreset:
         pass
 
     @abstractmethod
@@ -149,6 +164,13 @@ class GoogleJsonMapperInterface(ABC):
     async def serializeVoiceGender(
         self,
         voiceGender: GoogleVoiceGender
+    ) -> str:
+        pass
+
+    @abstractmethod
+    async def serializeVoicePreset(
+        self,
+        voicePreset: GoogleVoicePreset
     ) -> str:
         pass
 

@@ -7,6 +7,7 @@ from src.google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from src.google.models.googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
 from src.google.models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from src.google.models.googleVoiceGender import GoogleVoiceGender
+from src.google.models.googleVoicePreset import GoogleVoicePreset
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.timber.timberInterface import TimberInterface
@@ -97,6 +98,16 @@ class TestGoogleJsonMapper:
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withWhitespace(self):
         result = await self.jsonMapper.parseVoiceGender(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseVoicePreset_withJapaneseJpStandardA(self):
+        result = await self.jsonMapper.parseVoicePreset('ja-JP-Standard-A')
+        assert result is GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_A
+
+    @pytest.mark.asyncio
+    async def test_parseVoicePreset_withNone(self):
+        result = await self.jsonMapper.parseVoicePreset(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -242,3 +253,8 @@ class TestGoogleJsonMapper:
         voiceGender = GoogleVoiceGender.UNSPECIFIED
         result = await self.jsonMapper.serializeVoiceGender(voiceGender)
         assert result == 'SSML_VOICE_GENDER_UNSPECIFIED'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoicePreset_withEnglishUsStandardA(self):
+        result = await self.jsonMapper.serializeVoicePreset(GoogleVoicePreset.ENGLISH_US_STANDARD_A)
+        assert result == 'en-US-Standard-A'

@@ -63,7 +63,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         directoryMatch = self.__directoryTreeRegEx.fullmatch(filePath)
 
         if directoryMatch is None or not utils.isValidStr(directoryMatch.group(1)):
-            raise StreamElementsFailedToCreateDirectoriesException(f'Failed to create Stream Elements file directories ({filePath=}) ({directoryMatch=})')
+            raise StreamElementsFailedToCreateDirectoriesException(f'Failed to create Stream Elements TTS file directories ({filePath=}) ({directoryMatch=})')
 
         directory = directoryMatch.group(1)
 
@@ -202,7 +202,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('StreamElementsHelper', f'Encountered exception when trying to write Stream Elements speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('StreamElementsHelper', f'Encountered exception when trying to write Stream Elements TTS speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
             return False
 
         return True

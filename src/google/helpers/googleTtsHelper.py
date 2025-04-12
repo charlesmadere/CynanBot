@@ -1,8 +1,6 @@
 import re
 import traceback
-import uuid
 from asyncio import AbstractEventLoop
-from datetime import datetime
 from typing import Pattern
 
 import aiofiles
@@ -13,6 +11,8 @@ from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterfa
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
+from ..exceptions import GoogleFailedToCreateDirectoriesException
+from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
@@ -20,10 +20,9 @@ from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from ...tts.models.ttsProvider import TtsProvider
 
 
@@ -32,18 +31,22 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface,
         googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
+        googleJsonMapper: GoogleJsonMapperInterface,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsApiHelper: GoogleTtsApiHelperInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
-        timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface,
-        ttsDirectoryProvider: TtsDirectoryProviderInterface
+        timber: TimberInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(glacialTtsFileRetriever, GlacialTtsFileRetrieverInterface):
+            raise TypeError(f'glacialTtsFileRetriever argument is malformed: \"{glacialTtsFileRetriever}\"')
         elif not isinstance(googleFileExtensionHelper, GoogleFileExtensionHelperInterface):
             raise TypeError(f'googleFileExtensionHelper argument is malformed: \"{googleFileExtensionHelper}\"')
+        elif not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
+            raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
         elif not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
         elif not isinstance(googleTtsApiHelper, GoogleTtsApiHelperInterface):
@@ -52,31 +55,35 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
-            raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
         self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
+        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
         self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
         self.__googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = googleTtsVoicesHelper
         self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
 
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
+        # this logic removes the file name from the file path, leaving us with just a directory tree
+        directoryMatch = self.__directoryTreeRegEx.fullmatch(filePath)
+
+        if directoryMatch is None or not utils.isValidStr(directoryMatch.group(1)):
+            raise GoogleFailedToCreateDirectoriesException(f'Failed to create Google TTS file directories ({filePath=}) ({directoryMatch=})')
+
+        directory = directoryMatch.group(1)
+
         if await aiofiles.ospath.exists(
-            path = filePath,
+            path = directory,
             loop = self.__eventLoop
         ):
             return
 
         await aiofiles.os.makedirs(
-            name = filePath,
+            name = directory,
             loop = self.__eventLoop
         )
 
@@ -97,12 +104,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             return message
         else:
             return None
-
-    async def __generateFileName(self) -> str:
-        fileName = self.__fileNameRegEx.sub('', str(uuid.uuid4())).casefold()
-        audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
-        fileExtension = await self.__googleFileExtensionHelper.getFileExtension(audioEncoding)
-        return f'{fileName}.{fileExtension}'
 
     async def generateTts(
         self,
@@ -134,10 +135,25 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if not utils.isValidStr(fullMessage):
             return None
 
-        synthesisInput = GoogleTextSynthesisInput(text = fullMessage)
-
         if voicePreset is None:
             voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
+
+        glacialFile = await self.__glacialTtsFileRetriever.findFile(
+            message = fullMessage,
+            voice = voicePreset.fullName,
+            provider = TtsProvider.GOOGLE
+        )
+
+        if glacialFile is not None:
+            return GoogleTtsFileReference(
+                storeDateTime = glacialFile.storeDateTime,
+                filePath = glacialFile.filePath,
+                voicePreset = await self.__googleJsonMapper.requireVoicePreset(glacialFile.voice)
+            )
+
+        synthesisInput = GoogleTextSynthesisInput(
+            text = fullMessage
+        )
 
         voice = GoogleVoiceSelectionParams(
             gender = None,
@@ -166,21 +182,28 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if speechBytes is None:
             return None
 
-        fileName = await self.__generateFileName()
-        filePath = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(TtsProvider.GOOGLE)
-        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
+        fileExtension = await self.__googleFileExtensionHelper.getFileExtension(audioEncoding)
+
+        glacialFile = await self.__glacialTtsFileRetriever.saveFile(
+            fileExtension = fileExtension,
+            message = fullMessage,
+            voice = await self.__googleJsonMapper.serializeVoicePreset(voicePreset),
+            provider = TtsProvider.GOOGLE
+        )
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
-            fileName = fileName,
-            filePath = filePath
+            fileName = glacialFile.fileName,
+            filePath = glacialFile.filePath
         ):
             return GoogleTtsFileReference(
-                storeDateTime = storeDateTime,
-                filePath = f'{filePath}/{fileName}'
+                storeDateTime = glacialFile.storeDateTime,
+                voicePreset = voicePreset,
+                filePath = glacialFile.filePath
             )
         else:
-            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({fullMessage=}) ({request=}) ({fileName=}) ({filePath=})')
+            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({fullMessage=}) ({request=})')
             return None
 
     async def __saveSpeechBytes(
@@ -200,7 +223,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         try:
             async with aiofiles.open(
-                file = f'{filePath}/{fileName}',
+                file = filePath,
                 mode = 'wb',
                 loop = self.__eventLoop
             ) as file:

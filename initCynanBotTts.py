@@ -1247,13 +1247,13 @@ googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
     googleFileExtensionHelper = googleFileExtensionHelper,
+    googleJsonMapper = googleJsonMapper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    timber = timber
 )
 
 googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(

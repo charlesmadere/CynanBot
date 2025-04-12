@@ -54,6 +54,10 @@ class TestGoogleVoicePreset:
         languageCode = GoogleVoicePreset.ENGLISH_UK_STANDARD_A.languageCode
         assert languageCode == 'en-GB'
 
+    def test_languageCode_withEnglishUsStandardA(self):
+        languageCode = GoogleVoicePreset.ENGLISH_US_STANDARD_A.languageCode
+        assert languageCode == 'en-US'
+
     def test_languageCode_withJapaneseJapanStandardA(self):
         languageCode = GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_A.languageCode
         assert languageCode == 'ja-JP'
