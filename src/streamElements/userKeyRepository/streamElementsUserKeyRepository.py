@@ -52,7 +52,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
             self.__timber.log('StreamElementsUserKeyRepository', f'Seed file (\"{seedFileReader}\") does not exist')
             return
 
-        jsonContents: dict[str, str] | None = await seedFileReader.readJsonAsync()
+        jsonContents = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:

@@ -54,14 +54,14 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         if self.__settingsCache is not None:
             return self.__settingsCache
 
-        jsonContents: dict[str, Any] | None = None
+        jsonContents: dict[str, Any] | None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()
         else:
             jsonContents = dict()
 
-        if jsonContents is None:
+        if not isinstance(jsonContents, dict):
             raise IOError(f'Error reading from TTS settings file: {self.__settingsJsonReader}')
 
         self.__settingsCache = jsonContents

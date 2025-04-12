@@ -176,14 +176,14 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         if self.__cache is not None:
             return self.__cache
 
-        jsonContents: dict[str, Any] | None = None
+        jsonContents: dict[str, Any] | None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()
         else:
             jsonContents = dict()
 
-        if jsonContents is None:
+        if not isinstance(jsonContents, dict):
             raise IOError(f'Error reading from trivia settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents

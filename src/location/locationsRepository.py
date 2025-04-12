@@ -67,7 +67,7 @@ class LocationsRepository(LocationsRepositoryInterface):
     async def __readAllJson(self) -> dict[str, dict[str, Any]]:
         jsonContents: dict[str, dict[str, Any]] | None = await self.__locationsJsonReader.readJsonAsync()
 
-        if jsonContents is None:
+        if not isinstance(jsonContents, dict):
             raise IOError(f'Error reading from locations file: {self.__locationsJsonReader}')
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of locations file {self.__locationsJsonReader} is empty')
