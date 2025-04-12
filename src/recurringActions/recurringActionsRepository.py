@@ -42,13 +42,13 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> list[RecurringAction]:
+    ) -> FrozenList[RecurringAction]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        recurringActions: list[RecurringAction] = list()
+        recurringActions: FrozenList[RecurringAction] = FrozenList()
 
         cuteness = await self.getCutenessRecurringAction(
             twitchChannel = twitchChannel,
@@ -82,6 +82,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         if wordOfTheDay is not None and wordOfTheDay.isEnabled:
             recurringActions.append(wordOfTheDay)
 
+        recurringActions.freeze()
         return recurringActions
 
     async def getCutenessRecurringAction(

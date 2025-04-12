@@ -1,3 +1,5 @@
+from frozenlist import FrozenList
+
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.actions.recurringAction import RecurringAction
@@ -61,7 +63,7 @@ class GetRecurringActionsChatCommand(AbsChatCommand):
 
         self.__timber.log('GetRecurringActionsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
-    async def __toStr(self, recurringActions: list[RecurringAction]) -> str:
+    async def __toStr(self, recurringActions: FrozenList[RecurringAction]) -> str:
         if not isinstance(recurringActions, list):
             raise TypeError(f'recurringActions argument is malformed: \"{recurringActions}\"')
 

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from frozenlist import FrozenList
+
 from .actions.cutenessRecurringAction import CutenessRecurringAction
 from .actions.recurringAction import RecurringAction
 from .actions.superTriviaRecurringAction import SuperTriviaRecurringAction
@@ -14,7 +16,7 @@ class RecurringActionsRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> list[RecurringAction]:
+    ) -> FrozenList[RecurringAction]:
         pass
 
     @abstractmethod
