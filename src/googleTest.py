@@ -1,6 +1,14 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
+from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetriever import GlacialTtsFileRetriever
+from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGenerator import GlacialTtsIdGenerator
+from src.glacialTtsStorage.idGenerator.glacialTtsIdGeneratorInterface import GlacialTtsIdGeneratorInterface
+from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapper
+from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
+from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
+from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
@@ -117,19 +125,37 @@ googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
     timber = timber
 )
 
+glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
+
+glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+
+glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
+    glacialTtsDataMapper = glacialTtsDataMapper,
+    glacialTtsIdGenerator = glacialTtsIdGenerator,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
+    eventLoop = eventLoop,
+    glacialTtsStorageRepository = glacialTtsStorageRepository,
+    timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
+)
+
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
 googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
+    glacialTtsFileRetriever = glacialTtsFileRetriever,
     googleFileExtensionHelper = googleFileExtensionHelper,
+    googleJsonMapper = googleJsonMapper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    timber = timber
 )
 
 twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
