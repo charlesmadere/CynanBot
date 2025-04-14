@@ -1315,12 +1315,12 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__cynanSourceCommand.handleChatCommand(context)
 
-    @commands.command(name = 'deletecheeraction', aliases = [ 'removecheeraction' ])
+    @commands.command(name = 'deletecheeraction', aliases = [ 'delcheeraction', 'removecheeraction' ])
     async def command_deletecheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__deleteCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'deletetriviaanswers', aliases = [ 'removetriviaanswers' ])
+    @commands.command(name = 'deletetriviaanswers', aliases = [ 'deltriviaanswers', 'removetriviaanswers' ])
     async def command_deletetriviaanswers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__deleteTriviaAnswersCommand.handleChatCommand(context)
@@ -1425,17 +1425,17 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeChatterPreferredTtsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removegameshuffleautomator', aliases = [ 'deletegameshuffleautomator' ])
+    @commands.command(name = 'removegameshuffleautomator', aliases = [ 'delgameshuffleautomator', 'deletegameshuffleautomator' ])
     async def command_removegameshuffleautomator(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGameShuffleAutomatorCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removeglobaltriviacontroller', aliases = [ 'deleteglobaltriviacontroller' ])
+    @commands.command(name = 'removeglobaltriviacontroller', aliases = [ 'delglobaltriviacontroller', 'deleteglobaltriviacontroller' ])
     async def command_removeglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerChatCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'deleterecurringcutenessaction' ])
+    @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'delrecurringcutenessaction', 'deleterecurringcutenessaction' ])
     async def command_removerecurringcutenessaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringCutenessActionCommand.handleChatCommand(context)
