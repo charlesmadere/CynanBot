@@ -11,9 +11,9 @@ services:
       - ./logs:/cynanbot/logs
       - ./config:/cynanbot/config
     environment:
-      LANG: en_US.UTF-8
-      LANGUAGE: en_US:en
-      LC_ALL: en_US.UTF-8
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
+      - TZ=Europe/Rome
     depends_on:
       - cynanbot-db
 
