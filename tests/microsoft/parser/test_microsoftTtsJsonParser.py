@@ -20,6 +20,11 @@ class TestMicrosoftTtsJsonParser:
         assert result is MicrosoftTtsVoice.ANDREW
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withAntoine(self):
+        result = await self.parser.parseVoice('antoine')
+        assert result is MicrosoftTtsVoice.ANTOINE
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withAria(self):
         result = await self.parser.parseVoice('aria')
         assert result is MicrosoftTtsVoice.ARIA
@@ -60,6 +65,11 @@ class TestMicrosoftTtsJsonParser:
         assert result is MicrosoftTtsVoice.ERIC
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withFinn(self):
+        result = await self.parser.parseVoice('finn')
+        assert result is MicrosoftTtsVoice.FINN
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withGuy(self):
         result = await self.parser.parseVoice('guy')
         assert result is MicrosoftTtsVoice.GUY
@@ -73,6 +83,11 @@ class TestMicrosoftTtsJsonParser:
     async def test_parseVoice_withHortense(self):
         result = await self.parser.parseVoice('hortense')
         assert result is MicrosoftTtsVoice.HORTENSE
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withJean(self):
+        result = await self.parser.parseVoice('jean')
+        assert result is MicrosoftTtsVoice.JEAN
 
     @pytest.mark.asyncio
     async def test_parseVoice_withJenny(self):
@@ -100,6 +115,16 @@ class TestMicrosoftTtsJsonParser:
         assert result is MicrosoftTtsVoice.NANAMI
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withNatasha(self):
+        result = await self.parser.parseVoice('natasha')
+        assert result is MicrosoftTtsVoice.NATASHA
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withPernille(self):
+        result = await self.parser.parseVoice('pernille')
+        assert result is MicrosoftTtsVoice.PERNILLE
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withRoger(self):
         result = await self.parser.parseVoice('roger')
         assert result is MicrosoftTtsVoice.ROGER
@@ -108,6 +133,21 @@ class TestMicrosoftTtsJsonParser:
     async def test_parseVoice_withSteffan(self):
         result = await self.parser.parseVoice('steffan')
         assert result is MicrosoftTtsVoice.STEFFAN
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withSylvie(self):
+        result = await self.parser.parseVoice('sylvie')
+        assert result is MicrosoftTtsVoice.SYLVIE
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withThierry(self):
+        result = await self.parser.parseVoice('thierry')
+        assert result is MicrosoftTtsVoice.THIERRY
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withWilliam(self):
+        result = await self.parser.parseVoice('william')
+        assert result is MicrosoftTtsVoice.WILLIAM
 
     @pytest.mark.asyncio
     async def test_parseVoice_withZira(self):
@@ -143,6 +183,11 @@ class TestMicrosoftTtsJsonParser:
     async def test_serializeVoice_withAndrew(self):
         result = await self.parser.serializeVoice(MicrosoftTtsVoice.ANDREW)
         assert result == 'andrew'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withAntoine(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.ANTOINE)
+        assert result == 'antoine'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withAria(self):
@@ -185,6 +230,11 @@ class TestMicrosoftTtsJsonParser:
         assert result == 'eric'
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withFinn(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.FINN)
+        assert result == 'finn'
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withGuy(self):
         result = await self.parser.serializeVoice(MicrosoftTtsVoice.GUY)
         assert result == 'guy'
@@ -198,6 +248,11 @@ class TestMicrosoftTtsJsonParser:
     async def test_serializeVoice_withHortense(self):
         result = await self.parser.serializeVoice(MicrosoftTtsVoice.HORTENSE)
         assert result == 'hortense'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withJean(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.JEAN)
+        assert result == 'jean'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withJenny(self):
@@ -225,6 +280,16 @@ class TestMicrosoftTtsJsonParser:
         assert result == 'nanami'
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withNatasha(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.NATASHA)
+        assert result == 'natasha'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withPernille(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.PERNILLE)
+        assert result == 'pernille'
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withRoger(self):
         result = await self.parser.serializeVoice(MicrosoftTtsVoice.ROGER)
         assert result == 'roger'
@@ -233,6 +298,21 @@ class TestMicrosoftTtsJsonParser:
     async def test_serializeVoice_withSteffan(self):
         result = await self.parser.serializeVoice(MicrosoftTtsVoice.STEFFAN)
         assert result == 'steffan'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withSylvie(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.SYLVIE)
+        assert result == 'sylvie'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withThierry(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.THIERRY)
+        assert result == 'thierry'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withWilliam(self):
+        result = await self.parser.serializeVoice(MicrosoftTtsVoice.WILLIAM)
+        assert result == 'william'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withZira(self):

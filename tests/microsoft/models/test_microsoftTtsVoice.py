@@ -19,6 +19,10 @@ class TestMicrosoftTtsVoice:
         result = MicrosoftTtsVoice.ANDREW.apiValue
         assert result == 'Microsoft AndrewMultilingual Online'
 
+    def test_apiValue_withAntoine(self):
+        result = MicrosoftTtsVoice.ANTOINE.apiValue
+        assert result == 'Microsoft Antoine Online'
+
     def test_apiValue_withAria(self):
         result = MicrosoftTtsVoice.ARIA.apiValue
         assert result == 'Microsoft Aria Online'
@@ -51,6 +55,10 @@ class TestMicrosoftTtsVoice:
         result = MicrosoftTtsVoice.ERIC.apiValue
         assert result == 'Microsoft Eric Online'
 
+    def test_apiValue_withFinn(self):
+        result = MicrosoftTtsVoice.FINN.apiValue
+        assert result == 'Microsoft Finn Online'
+
     def test_apiValue_withGuy(self):
         result = MicrosoftTtsVoice.GUY.apiValue
         assert result == 'Microsoft Guy Online'
@@ -62,6 +70,10 @@ class TestMicrosoftTtsVoice:
     def test_apiValue_withHortense(self):
         result = MicrosoftTtsVoice.HORTENSE.apiValue
         assert result == 'Microsoft Hortense Desktop'
+
+    def test_apiValue_withJean(self):
+        result = MicrosoftTtsVoice.JEAN.apiValue
+        assert result == 'Microsoft Jean Online'
 
     def test_apiValue_withJenny(self):
         result = MicrosoftTtsVoice.JENNY.apiValue
@@ -83,6 +95,14 @@ class TestMicrosoftTtsVoice:
         result = MicrosoftTtsVoice.NANAMI.apiValue
         assert result == 'Microsoft Nanami Online'
 
+    def test_apiValue_withNatasha(self):
+        result = MicrosoftTtsVoice.NATASHA.apiValue
+        assert result == 'Microsoft Natasha Online'
+
+    def test_apiValue_withPernille(self):
+        result = MicrosoftTtsVoice.PERNILLE.apiValue
+        assert result == 'Microsoft Pernille Online'
+
     def test_apiValue_withRoger(self):
         result = MicrosoftTtsVoice.ROGER.apiValue
         assert result == 'Microsoft Roger Online'
@@ -90,6 +110,18 @@ class TestMicrosoftTtsVoice:
     def test_apiValue_withSteffan(self):
         result = MicrosoftTtsVoice.STEFFAN.apiValue
         assert result == 'Microsoft Steffan Online'
+
+    def test_apiValue_withSylvie(self):
+        result = MicrosoftTtsVoice.SYLVIE.apiValue
+        assert result == 'Microsoft Sylvie Online'
+
+    def test_apiValue_withThierry(self):
+        result = MicrosoftTtsVoice.THIERRY.apiValue
+        assert result == 'Microsoft Thierry Online'
+
+    def test_apiValue_withWilliam(self):
+        result = MicrosoftTtsVoice.WILLIAM.apiValue
+        assert result == 'Microsoft William Online'
 
     def test_apiValue_withZira(self):
         result = MicrosoftTtsVoice.ZIRA.apiValue
@@ -110,6 +142,10 @@ class TestMicrosoftTtsVoice:
     def test_humanName_withAndrew(self):
         result = MicrosoftTtsVoice.ANDREW.humanName
         assert result == 'Andrew'
+
+    def test_humanName_withAntoine(self):
+        result = MicrosoftTtsVoice.ANTOINE.humanName
+        assert result == 'Antoine'
 
     def test_humanName_withAria(self):
         result = MicrosoftTtsVoice.ARIA.humanName
@@ -143,6 +179,10 @@ class TestMicrosoftTtsVoice:
         result = MicrosoftTtsVoice.ERIC.humanName
         assert result == 'Eric'
 
+    def test_humanName_withFinn(self):
+        result = MicrosoftTtsVoice.FINN.humanName
+        assert result == 'Finn'
+
     def test_humanName_withGuy(self):
         result = MicrosoftTtsVoice.GUY.humanName
         assert result == 'Guy'
@@ -154,6 +194,10 @@ class TestMicrosoftTtsVoice:
     def test_humanName_withHortense(self):
         result = MicrosoftTtsVoice.HORTENSE.humanName
         assert result == 'Hortense'
+
+    def test_humanName_withJean(self):
+        result = MicrosoftTtsVoice.JEAN.humanName
+        assert result == 'Jean'
 
     def test_humanName_withJenny(self):
         result = MicrosoftTtsVoice.JENNY.humanName
@@ -175,6 +219,14 @@ class TestMicrosoftTtsVoice:
         result = MicrosoftTtsVoice.NANAMI.humanName
         assert result == 'Nanami'
 
+    def test_humanName_withNatasha(self):
+        result = MicrosoftTtsVoice.NATASHA.humanName
+        assert result == 'Natasha'
+
+    def test_humanName_withPernille(self):
+        result = MicrosoftTtsVoice.PERNILLE.humanName
+        assert result == 'Pernille'
+
     def test_humanName_withRoger(self):
         result = MicrosoftTtsVoice.ROGER.humanName
         assert result == 'Roger'
@@ -182,6 +234,18 @@ class TestMicrosoftTtsVoice:
     def test_humanName_withSteffan(self):
         result = MicrosoftTtsVoice.STEFFAN.humanName
         assert result == 'Steffan'
+
+    def test_humanName_withSylvie(self):
+        result = MicrosoftTtsVoice.SYLVIE.humanName
+        assert result == 'Sylvie'
+
+    def test_humanName_withThierry(self):
+        result = MicrosoftTtsVoice.THIERRY.humanName
+        assert result == 'Thierry'
+
+    def test_humanName_withWilliam(self):
+        result = MicrosoftTtsVoice.WILLIAM.humanName
+        assert result == 'William'
 
     def test_humanName_withZira(self):
         result = MicrosoftTtsVoice.ZIRA.humanName

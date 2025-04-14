@@ -23,6 +23,10 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         andrew.append(re.compile(r'^\s*andrew\s*$', re.IGNORECASE))
         andrew.freeze()
 
+        antoine: FrozenList[Pattern] = FrozenList()
+        antoine.append(re.compile(r'^\s*antoine\s*$', re.IGNORECASE))
+        antoine.freeze()
+
         aria: FrozenList[Pattern] = FrozenList()
         aria.append(re.compile(r'^\s*aria\s*$', re.IGNORECASE))
         aria.freeze()
@@ -55,6 +59,10 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         eric.append(re.compile(r'^\s*eric\s*$', re.IGNORECASE))
         eric.freeze()
 
+        finn: FrozenList[Pattern] = FrozenList()
+        finn.append(re.compile(r'^\s*finn\s*$', re.IGNORECASE))
+        finn.freeze()
+
         guy: FrozenList[Pattern] = FrozenList()
         guy.append(re.compile(r'^\s*guy\s*$', re.IGNORECASE))
         guy.freeze()
@@ -66,6 +74,10 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         hortense: FrozenList[Pattern] = FrozenList()
         hortense.append(re.compile(r'^\s*hortense\s*$', re.IGNORECASE))
         hortense.freeze()
+
+        jean: FrozenList[Pattern] = FrozenList()
+        jean.append(re.compile(r'^\s*jean\s*$', re.IGNORECASE))
+        jean.freeze()
 
         jenny: FrozenList[Pattern] = FrozenList()
         jenny.append(re.compile(r'^\s*jenny\s*$', re.IGNORECASE))
@@ -87,6 +99,14 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         nanami.append(re.compile(r'^\s*nanami\s*$', re.IGNORECASE))
         nanami.freeze()
 
+        natasha: FrozenList[Pattern] = FrozenList()
+        natasha.append(re.compile(r'^\s*natasha\s*$', re.IGNORECASE))
+        natasha.freeze()
+
+        pernille: FrozenList[Pattern] = FrozenList()
+        pernille.append(re.compile(r'^\s*pernille\s*$', re.IGNORECASE))
+        pernille.freeze()
+
         roger: FrozenList[Pattern] = FrozenList()
         roger.append(re.compile(r'^\s*roger\s*$', re.IGNORECASE))
         roger.freeze()
@@ -95,6 +115,18 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         steffan.append(re.compile(r'^\s*steffan\s*$', re.IGNORECASE))
         steffan.freeze()
 
+        sylvie: FrozenList[Pattern] = FrozenList()
+        sylvie.append(re.compile(r'^\s*sylvie\s*$', re.IGNORECASE))
+        sylvie.freeze()
+
+        thierry: FrozenList[Pattern] = FrozenList()
+        thierry.append(re.compile(r'^\s*thierry\s*$', re.IGNORECASE))
+        thierry.freeze()
+
+        william: FrozenList[Pattern] = FrozenList()
+        william.append(re.compile(r'^\s*william\s*$', re.IGNORECASE))
+        william.freeze()
+
         zira: FrozenList[Pattern] = FrozenList()
         zira.append(re.compile(r'^\s*zira\s*$', re.IGNORECASE))
         zira.freeze()
@@ -102,6 +134,7 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         return frozendict({
             MicrosoftTtsVoice.ANA: ana,
             MicrosoftTtsVoice.ANDREW: andrew,
+            MicrosoftTtsVoice.ANTOINE: antoine,
             MicrosoftTtsVoice.ARIA: aria,
             MicrosoftTtsVoice.AVA: ava,
             MicrosoftTtsVoice.BRIAN: brian,
@@ -110,16 +143,23 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
             MicrosoftTtsVoice.DAVID: david,
             MicrosoftTtsVoice.EMMA: emma,
             MicrosoftTtsVoice.ERIC: eric,
+            MicrosoftTtsVoice.FINN: finn,
             MicrosoftTtsVoice.GUY: guy,
             MicrosoftTtsVoice.HARUKA: haruka,
             MicrosoftTtsVoice.HORTENSE: hortense,
+            MicrosoftTtsVoice.JEAN: jean,
             MicrosoftTtsVoice.JENNY: jenny,
             MicrosoftTtsVoice.KEITA: keita,
             MicrosoftTtsVoice.LIAM: liam,
             MicrosoftTtsVoice.MICHELLE: michelle,
             MicrosoftTtsVoice.NANAMI: nanami,
+            MicrosoftTtsVoice.NATASHA: natasha,
+            MicrosoftTtsVoice.PERNILLE: pernille,
             MicrosoftTtsVoice.ROGER: roger,
             MicrosoftTtsVoice.STEFFAN: steffan,
+            MicrosoftTtsVoice.SYLVIE: sylvie,
+            MicrosoftTtsVoice.THIERRY: thierry,
+            MicrosoftTtsVoice.WILLIAM: william,
             MicrosoftTtsVoice.ZIRA: zira
         })
 
@@ -158,6 +198,7 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
         match voice:
             case MicrosoftTtsVoice.ANA: return 'ana'
             case MicrosoftTtsVoice.ANDREW: return 'andrew'
+            case MicrosoftTtsVoice.ANTOINE: return 'antoine'
             case MicrosoftTtsVoice.ARIA: return 'aria'
             case MicrosoftTtsVoice.AVA: return 'ava'
             case MicrosoftTtsVoice.BRIAN: return 'brian'
@@ -166,15 +207,22 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
             case MicrosoftTtsVoice.DAVID: return 'david'
             case MicrosoftTtsVoice.EMMA: return 'emma'
             case MicrosoftTtsVoice.ERIC: return 'eric'
+            case MicrosoftTtsVoice.FINN: return 'finn'
             case MicrosoftTtsVoice.GUY: return 'guy'
             case MicrosoftTtsVoice.HARUKA: return 'haruka'
             case MicrosoftTtsVoice.HORTENSE: return 'hortense'
+            case MicrosoftTtsVoice.JEAN: return 'jean'
             case MicrosoftTtsVoice.JENNY: return 'jenny'
             case MicrosoftTtsVoice.KEITA: return 'keita'
             case MicrosoftTtsVoice.LIAM: return 'liam'
             case MicrosoftTtsVoice.MICHELLE: return 'michelle'
             case MicrosoftTtsVoice.NANAMI: return 'nanami'
+            case MicrosoftTtsVoice.NATASHA: return 'natasha'
+            case MicrosoftTtsVoice.PERNILLE: return 'pernille'
             case MicrosoftTtsVoice.ROGER: return 'roger'
             case MicrosoftTtsVoice.STEFFAN: return 'steffan'
+            case MicrosoftTtsVoice.SYLVIE: return 'sylvie'
+            case MicrosoftTtsVoice.THIERRY: return 'thierry'
+            case MicrosoftTtsVoice.WILLIAM: return 'william'
             case MicrosoftTtsVoice.ZIRA: return 'zira'
             case _: raise RuntimeError(f'Encountered unknown MicrosoftTtsVoice value: \"{voice}\"')
