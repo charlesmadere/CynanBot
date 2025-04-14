@@ -471,9 +471,8 @@ from src.websocketConnection.websocketConnectionServerInterface import Websocket
 #     level = logging.DEBUG
 # )
 
-
-locale.setlocale(locale.LC_ALL, 'en_US.utf8')
-
+# should just inherit LC_ALL from the environment
+locale.setlocale(locale.LC_ALL, '')
 
 #################################
 ## Core initialization section ##
