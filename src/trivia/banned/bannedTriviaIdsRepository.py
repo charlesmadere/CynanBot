@@ -40,7 +40,10 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
-        info = await self.getInfo(triviaId = triviaId, triviaSource = triviaSource)
+        info = await self.getInfo(
+            triviaId = triviaId,
+            triviaSource = triviaSource
+        )
 
         if info is not None:
             self.__timber.log('BannedTriviaIdsRepository', f'Attempted to ban trivia question but it\'s already been banned: {info}')
@@ -163,7 +166,10 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
-        info = await self.getInfo(triviaId = triviaId, triviaSource = triviaSource)
+        info = await self.getInfo(
+            triviaId = triviaId,
+            triviaSource = triviaSource
+        )
 
         if info is None:
             self.__timber.log('BannedTriviaIdsRepository', f'Attempted to unban trivia question but it wasn\'t banned (triviaId=\"{triviaId}\", triviaSource=\"{triviaSource}\")')
