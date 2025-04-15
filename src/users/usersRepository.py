@@ -154,7 +154,7 @@ class UsersRepository(UsersRepositoryInterface):
         areAsplodieStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ASPLODIE_STATS_ENABLED.jsonKey, False)
         areBeanStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_STATS_ENABLED.jsonKey, False)
         areChatSoundAlertsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED.jsonKey, False)
-        areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, True)
+        areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTtsChattersEnabled = utils.getBoolFromDict(userJson, 'ttsChattersEnabled', False)
