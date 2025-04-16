@@ -1455,7 +1455,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removetriviacontroller', aliases = [ 'deletetriviacontroller' ])
+    @commands.command(name = 'removetriviacontroller', aliases = [ 'deltriviacontroller', 'deletetriviacontroller' ])
     async def command_removetriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerChatCommand.handleChatCommand(context)
