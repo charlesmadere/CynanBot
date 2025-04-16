@@ -161,8 +161,8 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
             return frozendict(triviaSourcesAndWeights)
 
         for key, triviaSourceJson in triviaSourcesJson.items():
-            isEnabled = utils.getBoolFromDict(triviaSourceJson, 'is_enabled', False)
             triviaSource = await self.__triviaSourceParser.parse(key)
+            isEnabled = utils.getBoolFromDict(triviaSourceJson, 'is_enabled', False)
             weight = utils.getIntFromDict(triviaSourceJson, 'weight', 1)
 
             if weight < 1 or weight > utils.getIntMaxSafeSize():
