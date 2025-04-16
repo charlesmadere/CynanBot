@@ -12,7 +12,7 @@ class TriviaSourceInstabilityHelper:
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        fallOffTimeDelta: timedelta = timedelta(minutes = 20)
+        fallOffTimeDelta: timedelta = timedelta(hours = 1)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

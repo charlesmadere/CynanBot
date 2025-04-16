@@ -667,8 +667,8 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             allWordsInAnswerWithParensCount = len(allWordsInAnswerWithParens)
 
         if allWordsInAnswerCount != 0 and allWordsInAnswerWithParensCount != 0 and allWordsInAnswerCount == allWordsInAnswerWithParensCount:
-            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=})')
+            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=})')
             return answer
         else:
-            self.__timber.log('TriviaAnswerCompiler', f'Patched words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=})')
+            self.__timber.log('TriviaAnswerCompiler', f'Patched words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=})')
             return patchedAnswer

@@ -160,12 +160,15 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__triviaQuestionSpool: SimpleQueue[AbsTriviaQuestion] = SimpleQueue()
         self.__twitchChannelId: str | None = None
 
-    async def __chooseRandomTriviaSource(self, triviaFetchOptions: TriviaFetchOptions) -> TriviaQuestionRepositoryInterface:
+    async def __chooseRandomTriviaSource(
+        self,
+        triviaFetchOptions: TriviaFetchOptions
+    ) -> TriviaQuestionRepositoryInterface:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        frozenTriviaSourcesAndWeights = await self.__triviaSettingsRepository.getTriviaSourcesAndWeights()
-        triviaSourcesAndWeights = dict(frozenTriviaSourcesAndWeights)
+        allTriviaSourcesAndWeights = await self.__triviaSettingsRepository.getTriviaSourcesAndWeights()
+        triviaSourcesAndWeights = dict(allTriviaSourcesAndWeights)
 
         triviaSourcesToRemove = await self.__getCurrentlyInvalidTriviaSources(
             triviaFetchOptions = triviaFetchOptions
@@ -183,9 +186,9 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaSources: list[TriviaSource] = list()
         triviaWeights: list[int] = list()
 
-        for triviaSource in triviaSourcesAndWeights:
+        for triviaSource, triviaSourceAndWeight in triviaSourcesAndWeights.items():
             triviaSources.append(triviaSource)
-            triviaWeights.append(triviaSourcesAndWeights[triviaSource].weight)
+            triviaWeights.append(triviaSourceAndWeight.weight)
 
         randomChoices = random.choices(
             population = triviaSources,
@@ -272,7 +275,9 @@ class TriviaRepository(TriviaRepositoryInterface):
 
             if question is None:
                 try:
-                    triviaQuestionRepository = await self.__getTriviaSource(triviaFetchOptions)
+                    triviaQuestionRepository = await self.__getTriviaSource(
+                        triviaFetchOptions = triviaFetchOptions
+                    )
                 except UnavailableTriviaSourceException as e:
                     self.__timber.log('TriviaRepository', f'Failed to get trivia source ({triviaFetchOptions=}): {e}', e, traceback.format_exc())
                     return None
@@ -311,7 +316,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             retryCount = retryCount + 1
             await asyncio.sleep(self.__triviaRetrySleepTimeSeconds * float(retryCount))
 
-        raise TooManyTriviaFetchAttemptsException(f'Unable to fetch trivia from {attemptedTriviaSources} after {retryCount} attempts (max attempts is {maxRetryCount})')
+        raise TooManyTriviaFetchAttemptsException(f'Unable to fetch trivia after {retryCount} attempts ({maxRetryCount=}) ({attemptedTriviaSources=}) ({triviaFetchOptions=})')
 
     async def __getCurrentlyInvalidTriviaSources(
         self,
@@ -349,8 +354,8 @@ class TriviaRepository(TriviaRepositoryInterface):
         if not await self.__isQuizApiTriviaQuestionRepositoryAvailable():
             currentlyInvalidTriviaSources.add(TriviaSource.QUIZ_API)
 
-        unstableTriviaSources = await self.__getCurrentlyUnstableTriviaSources()
-        currentlyInvalidTriviaSources.update(unstableTriviaSources)
+        currentlyUnstableTriviaSources = await self.__getCurrentlyUnstableTriviaSources()
+        currentlyInvalidTriviaSources.update(currentlyUnstableTriviaSources)
 
         return frozenset(currentlyInvalidTriviaSources)
 

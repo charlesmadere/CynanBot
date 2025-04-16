@@ -206,7 +206,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
             jsonContents = dict()
 
         if not isinstance(jsonContents, dict):
-            raise IOError(f'Error reading from trivia settings file: {self.__settingsJsonReader}')
+            raise IOError(f'Error reading from Trivia settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents
         return jsonContents
