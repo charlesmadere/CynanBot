@@ -284,7 +284,6 @@ from src.trivia.triviaRepositories.funtoonTriviaQuestionRepository import Funtoo
 from src.trivia.triviaRepositories.glacialTriviaQuestionRepository import GlacialTriviaQuestionRepository
 from src.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
     GlacialTriviaQuestionRepositoryInterface
-from src.trivia.triviaRepositories.jServiceTriviaQuestionRepository import JServiceTriviaQuestionRepository
 from src.trivia.triviaRepositories.lordOfTheRings.lotrDatabaseQuestionStorage import LotrDatabaseQuestionStorage
 from src.trivia.triviaRepositories.lordOfTheRings.lotrDatabaseQuestionStorageInterface import \
     LotrDatabaseQuestionStorageInterface
@@ -1378,15 +1377,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
-    jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
-        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        networkClientProvider = networkClientProvider,
-        timber = timber,
-        triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    jServiceTriviaQuestionRepository = None,
     lotrTriviaQuestionRepository = lotrTriviaQuestionRepository,
     millionaireTriviaQuestionRepository = millionaireTriviaQuestionRepository,
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
