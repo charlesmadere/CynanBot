@@ -482,15 +482,15 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if question is None:
             return
-        elif question.triviaType is not TriviaQuestionType.QUESTION_ANSWER or not isinstance(question, QuestionAnswerTriviaQuestion):
-            self.__timber.log('TriviaRepository', f'Encountered unexpected super trivia question type ({question}) when spooling a super trivia question')
+        elif not isinstance(question, QuestionAnswerTriviaQuestion) or not question.triviaType is not TriviaQuestionType.QUESTION_ANSWER:
+            self.__timber.log('TriviaRepository', f'Encountered unexpected super trivia question type when spooling a super trivia question ({question=})')
             return
 
         if not await self.__verifyTriviaQuestionContent(
             question = question,
             triviaFetchOptions = triviaFetchOptions
         ):
-            self.__timber.log('TriviaRepository', f'Encountered bad trivia question content when spooling a super trivia question')
+            self.__timber.log('TriviaRepository', f'Encountered bad trivia question content when spooling a super trivia question ({question=})')
             return
 
         self.__superTriviaQuestionSpool.put(question)
@@ -528,15 +528,15 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if question is None:
             return
-        elif question.triviaType is TriviaQuestionType.QUESTION_ANSWER or isinstance(question, QuestionAnswerTriviaQuestion):
-            self.__timber.log('TriviaRepository', f'Encountered unexpected trivia question type ({question}) when spooling a trivia question')
+        elif isinstance(question, QuestionAnswerTriviaQuestion) or question.triviaType is TriviaQuestionType.QUESTION_ANSWER:
+            self.__timber.log('TriviaRepository', f'Encountered unexpected trivia question type when spooling a trivia question ({question=})')
             return
 
         if not await self.__verifyTriviaQuestionContent(
             question = question,
             triviaFetchOptions = triviaFetchOptions
         ):
-            self.__timber.log('TriviaRepository', f'Encountered bad trivia question content when spooling a trivia question')
+            self.__timber.log('TriviaRepository', f'Encountered bad trivia question content when spooling a trivia question ({question=})')
             return
 
         self.__triviaQuestionSpool.put(question)
