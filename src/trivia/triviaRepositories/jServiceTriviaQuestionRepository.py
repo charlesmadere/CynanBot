@@ -147,7 +147,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         )
 
     async def hasQuestionSetAvailable(self) -> bool:
-        return True
+        return False
 
     @property
     def supportedTriviaTypes(self) -> set[TriviaQuestionType]:
