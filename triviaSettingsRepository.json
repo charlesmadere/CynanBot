@@ -1,5 +1,4 @@
 {
-    "scraper_enabled": true,
     "trivia_sources": {
         "bongo": {
             "is_enabled": true,
