@@ -711,6 +711,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'compact disc'
         if word == 'cmyk':
             yield 'cyan magenta yellow black'
+        if word in ('comp', 'pc'):
+            yield 'computer'
         if word == 'cpu':
             yield 'central processing unit'
             yield 'processor'
@@ -756,6 +758,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'internet protocol'
         if word in ('ms', 'msft'):
             yield 'microsoft'
+        if word == 'pc':
+            yield 'personal computer'
         if word == 'ppi':
             yield 'pixels per inch'
         if word == 'pt':
@@ -1097,6 +1101,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'control'
         if word == 'dad':
             yield 'father'
+        if word == 'dna':
+            yield 'deoxyribonucleic acid'
         if word == 'est':
             yield 'establish'
             yield 'established'
@@ -1123,6 +1129,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'established'
         if word == 'eta':
             yield 'estimated time of arrival'
+        if word == 'fi':
+            yield 'fiction'
+        if word == 'fl':
+            yield 'floor'
         if word == 'fridge':
             yield 'refrigerator'
         if word == 'ft':
@@ -1144,10 +1154,19 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'package'
         if word in ('phone', 'tel'):
             yield 'telephone'
+        if word == 'poli':
+            yield 'politic'
+            yield 'political'
         if word == 'precedent':
             yield 'president'
         if word == 'raised':
             yield 'rose'
+        if word == 'rna':
+            yield 'ribonucleic acid'
+        if word == 'sci':
+            yield 'science'
+        if word == 'scifi':
+            yield 'science fiction'
         if word in ('temp', 'tmp'):
             yield 'temperature'
             yield 'temporary'
