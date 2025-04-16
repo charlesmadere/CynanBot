@@ -43,6 +43,7 @@ from .games.triviaGameState import TriviaGameState
 from .games.triviaGameStoreInterface import TriviaGameStoreInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
+from .settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaHelper import ToxicTriviaHelper
@@ -56,7 +57,6 @@ from .triviaExceptions import (TooManyTriviaFetchAttemptsException,
 from .triviaGameMachineInterface import TriviaGameMachineInterface
 from .triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from .triviaRepositories.triviaRepositoryInterface import TriviaRepositoryInterface
-from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils

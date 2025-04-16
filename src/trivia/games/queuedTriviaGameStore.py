@@ -8,8 +8,8 @@ from .queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from ..addQueuedGamesResult import AddQueuedGamesResult
 from ..clearQueuedGamesResult import ClearQueuedGamesResult
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

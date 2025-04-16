@@ -9,7 +9,7 @@ from .pokepediaMoveTriviaQuestionType import PokepediaMoveTriviaQuestionType
 from .pokepediaTriviaQuestion import PokepediaTriviaQuestion
 from .pokepediaTriviaQuestionGeneratorInterface import PokepediaTriviaQuestionGeneratorInterface
 from .pokepediaTriviaQuestionType import PokepediaTriviaQuestionType
-from ...triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ...settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ....misc import utils as utils
 from ....pkmn.pokepediaDamageClass import PokepediaDamageClass
 from ....pkmn.pokepediaElementType import PokepediaElementType

@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 from .shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils

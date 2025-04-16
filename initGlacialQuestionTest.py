@@ -37,12 +37,14 @@ from src.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from src.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from src.trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
 from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
+from src.trivia.misc.triviaSourceParser import TriviaSourceParser
+from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
+from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
+from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from src.trivia.triviaFetchOptions import TriviaFetchOptions
 from src.trivia.triviaRepositories.glacialTriviaQuestionRepository import GlacialTriviaQuestionRepository
 from src.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
     GlacialTriviaQuestionRepositoryInterface
-from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
@@ -68,11 +70,14 @@ timber: TimberInterface = Timber(
     timeZoneRepository = timeZoneRepository
 )
 
+triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json'
-    )
+    ),
+    triviaSourceParser = triviaSourceParser
 )
 
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(

@@ -10,10 +10,10 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

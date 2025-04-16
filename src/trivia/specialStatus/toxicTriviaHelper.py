@@ -1,7 +1,7 @@
 import random
 
 from .toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

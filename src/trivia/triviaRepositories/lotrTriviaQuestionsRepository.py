@@ -7,9 +7,9 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...timber.timberInterface import TimberInterface
 
 

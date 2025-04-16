@@ -8,11 +8,11 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...pkmn.pokepediaGeneration import PokepediaGeneration
 
 

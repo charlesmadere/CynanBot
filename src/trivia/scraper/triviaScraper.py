@@ -1,8 +1,8 @@
 from .triviaScraperInterface import TriviaScraperInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...timber.timberInterface import TimberInterface
 
 

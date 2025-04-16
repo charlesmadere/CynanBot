@@ -29,6 +29,7 @@ from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..scraper.triviaScraperInterface import TriviaScraperInterface
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaExceptions import (GenericTriviaNetworkException,
                                 MalformedTriviaJsonException,
                                 NoTriviaCorrectAnswersException,
@@ -37,7 +38,6 @@ from ..triviaExceptions import (GenericTriviaNetworkException,
                                 TooManyTriviaFetchAttemptsException,
                                 UnavailableTriviaSourceException)
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from ..triviaVerifierInterface import TriviaVerifierInterface
 from ...misc import utils as utils
@@ -164,11 +164,17 @@ class TriviaRepository(TriviaRepositoryInterface):
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        triviaSourcesAndWeights = await self.__triviaSettingsRepository.getAvailableTriviaSourcesAndWeights()
-        triviaSourcesToRemove = await self.__getCurrentlyInvalidTriviaSources(triviaFetchOptions)
+        frozenTriviaSourcesAndWeights = await self.__triviaSettingsRepository.getTriviaSourcesAndWeights()
+        triviaSourcesAndWeights = dict(frozenTriviaSourcesAndWeights)
+
+        triviaSourcesToRemove = await self.__getCurrentlyInvalidTriviaSources(
+            triviaFetchOptions = triviaFetchOptions
+        )
 
         for triviaSourceToRemove in triviaSourcesToRemove:
-            if triviaSourceToRemove in triviaSourcesAndWeights:
+            triviaSourceAndWeight = triviaSourcesAndWeights.get(triviaSourceToRemove, None)
+
+            if triviaSourceAndWeight is None or not triviaSourceAndWeight.isEnabled:
                 del triviaSourcesAndWeights[triviaSourceToRemove]
 
         if len(triviaSourcesAndWeights) == 0:
@@ -179,7 +185,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         for triviaSource in triviaSourcesAndWeights:
             triviaSources.append(triviaSource)
-            triviaWeights.append(triviaSourcesAndWeights[triviaSource])
+            triviaWeights.append(triviaSourcesAndWeights[triviaSource].weight)
 
         randomChoices = random.choices(
             population = triviaSources,
@@ -219,10 +225,17 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         return frozendict(triviaSourceToRepositoryMap)
 
-    async def __getTriviaSource(self, triviaFetchOptions: TriviaFetchOptions) -> TriviaQuestionRepositoryInterface:
-        if triviaFetchOptions.requiredTriviaSource is not None:
+    async def __getTriviaSource(
+        self,
+        triviaFetchOptions: TriviaFetchOptions
+    ) -> TriviaQuestionRepositoryInterface:
+        if not isinstance(triviaFetchOptions, TriviaFetchOptions):
+            raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-            invalidTriviaSources = await self.__getCurrentlyInvalidTriviaSources(triviaFetchOptions)
+        if triviaFetchOptions.requiredTriviaSource is not None:
+            invalidTriviaSources = await self.__getCurrentlyInvalidTriviaSources(
+                triviaFetchOptions = triviaFetchOptions
+            )
 
             if triviaFetchOptions.requiredTriviaSource in invalidTriviaSources:
                 raise UnavailableTriviaSourceException("Trivia source is currently invalid")
@@ -300,7 +313,10 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         raise TooManyTriviaFetchAttemptsException(f'Unable to fetch trivia from {attemptedTriviaSources} after {retryCount} attempts (max attempts is {maxRetryCount})')
 
-    async def __getCurrentlyInvalidTriviaSources(self, triviaFetchOptions: TriviaFetchOptions) -> frozenset[TriviaSource]:
+    async def __getCurrentlyInvalidTriviaSources(
+        self,
+        triviaFetchOptions: TriviaFetchOptions
+    ) -> frozenset[TriviaSource]:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 

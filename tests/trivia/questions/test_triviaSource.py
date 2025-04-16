@@ -88,6 +88,14 @@ class TestTriviaSource:
 
         assert result is None
 
+    def test_toStr(self):
+        results: set[str] = set()
+
+        for triviaSource in TriviaSource:
+            results.add(triviaSource.toStr())
+
+        assert len(results) == len(TriviaSource)
+
     def test_toStr_withBongo(self):
         result = TriviaSource.BONGO.toStr()
         assert result == 'BONGO'

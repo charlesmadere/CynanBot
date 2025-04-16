@@ -254,10 +254,14 @@ from src.trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from src.trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
 from src.trivia.misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
+from src.trivia.misc.triviaSourceParser import TriviaSourceParser
+from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from src.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from src.trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from src.trivia.scraper.triviaScraper import TriviaScraper
 from src.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
+from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
+from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from src.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from src.trivia.specialStatus.shinyTriviaOccurencesRepository import ShinyTriviaOccurencesRepository
 from src.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
@@ -331,8 +335,6 @@ from src.trivia.triviaRepositories.willFry.willFryTriviaJsonParser import WillFr
 from src.trivia.triviaRepositories.willFry.willFryTriviaJsonParserInterface import WillFryTriviaJsonParserInterface
 from src.trivia.triviaRepositories.willFryTriviaQuestionRepository import WillFryTriviaQuestionRepository
 from src.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import WwtbamTriviaQuestionRepository
-from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from src.trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from src.trivia.triviaUtils import TriviaUtils
 from src.trivia.triviaUtilsInterface import TriviaUtilsInterface
@@ -1082,11 +1084,14 @@ toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = Toxi
     timeZoneRepository = timeZoneRepository
 )
 
+triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json'
-    )
+    ),
+    triviaSourceParser = triviaSourceParser
 )
 
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(

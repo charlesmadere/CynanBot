@@ -1,8 +1,7 @@
 import pytest
 
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
-from src.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
 from src.storage.jsonStaticReader import JsonStaticReader
@@ -12,25 +11,26 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.trivia.content.triviaContentCode import TriviaContentCode
 from src.trivia.content.triviaContentScanner import TriviaContentScanner
-from src.trivia.content.triviaContentScannerInterface import \
-    TriviaContentScannerInterface
+from src.trivia.content.triviaContentScannerInterface import TriviaContentScannerInterface
+from src.trivia.misc.triviaSourceParser import TriviaSourceParser
+from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from src.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from src.trivia.questions.multipleChoiceTriviaQuestion import \
-    MultipleChoiceTriviaQuestion
-from src.trivia.questions.questionAnswerTriviaQuestion import \
-    QuestionAnswerTriviaQuestion
+from src.trivia.questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
+from src.trivia.questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from src.trivia.questions.triviaSource import TriviaSource
 from src.trivia.questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
+from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from src.trivia.triviaDifficulty import TriviaDifficulty
-from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
 
 
 class TestTriviaContentScanner:
 
+    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-        settingsJsonReader = JsonStaticReader(dict())
+        settingsJsonReader = JsonStaticReader(dict()),
+        triviaSourceParser = triviaSourceParser
     )
 
     bannedWordsLinesReader: LinesReaderInterface = LinesStaticReader(

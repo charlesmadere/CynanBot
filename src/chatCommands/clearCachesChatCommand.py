@@ -53,9 +53,9 @@ from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
 from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
+from ..trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
-from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface

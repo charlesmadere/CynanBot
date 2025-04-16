@@ -9,11 +9,11 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import GenericTriviaNetworkException, MalformedTriviaJsonException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider

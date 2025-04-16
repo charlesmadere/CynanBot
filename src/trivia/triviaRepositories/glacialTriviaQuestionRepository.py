@@ -18,6 +18,7 @@ from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (BadTriviaTypeException,
                                 NoTriviaCorrectAnswersException,
@@ -25,7 +26,6 @@ from ..triviaExceptions import (BadTriviaTypeException,
                                 NoTriviaQuestionException,
                                 UnsupportedTriviaTypeException)
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface

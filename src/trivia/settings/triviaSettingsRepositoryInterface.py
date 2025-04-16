@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 
-from .questions.triviaSource import TriviaSource
-from ..misc.clearable import Clearable
+from frozendict import frozendict
+
+from .triviaSourceAndWeight import TriviaSourceAndWeight
+from ..questions.triviaSource import TriviaSource
+from ...misc.clearable import Clearable
 
 
 class TriviaSettingsRepositoryInterface(Clearable, ABC):
@@ -16,10 +19,6 @@ class TriviaSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def areToxicTriviasEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    async def getAvailableTriviaSourcesAndWeights(self) -> dict[TriviaSource, int]:
         pass
 
     @abstractmethod
@@ -92,6 +91,10 @@ class TriviaSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def getToxicProbability(self) -> float:
+        pass
+
+    @abstractmethod
+    async def getTriviaSourcesAndWeights(self) -> frozendict[TriviaSource, TriviaSourceAndWeight]:
         pass
 
     @abstractmethod

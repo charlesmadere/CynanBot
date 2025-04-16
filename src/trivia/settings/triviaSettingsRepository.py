@@ -1,20 +1,32 @@
-from typing import Any
+from typing import Any, Final
 
-from .questions.triviaSource import TriviaSource
-from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from frozendict import frozendict
+
+from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
+from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSourceAndWeight import TriviaSourceAndWeight
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
-    def __init__(self, settingsJsonReader: JsonReaderInterface):
+    def __init__(
+        self,
+        settingsJsonReader: JsonReaderInterface,
+        triviaSourceParser: TriviaSourceParserInterface
+    ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
+            raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
 
         self.__cache: dict[str, Any] | None = None
+        self.__cachedTriviaSourcesAndWeights: frozendict[TriviaSource, TriviaSourceAndWeight] | None = None
 
     async def areAdditionalTriviaAnswersEnabled(self) -> bool:
         jsonContents = await self.__readJson()
@@ -30,33 +42,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def clearCaches(self):
         self.__cache = None
-
-    async def getAvailableTriviaSourcesAndWeights(self) -> dict[TriviaSource, int]:
-        jsonContents = await self.__readJson()
-
-        triviaSourcesJson: dict[str, Any] | Any | None = jsonContents.get('trivia_sources', None)
-        if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
-            raise RuntimeError(f'\"trivia_sources\" field is malformed: \"{triviaSourcesJson}\"')
-
-        triviaSources: dict[TriviaSource, int] = dict()
-
-        for key, triviaSourceJson in triviaSourcesJson.items():
-            triviaSource = TriviaSource.fromStr(key)
-
-            isEnabled = utils.getBoolFromDict(triviaSourceJson, 'is_enabled', False)
-            if not isEnabled:
-                continue
-
-            weight = utils.getIntFromDict(triviaSourceJson, 'weight', 1)
-            if weight < 1:
-                raise ValueError(f'triviaSource \"{triviaSource}\" has an invalid weight: \"{weight}\"')
-
-            triviaSources[triviaSource] = weight
-
-        if len(triviaSources) == 0:
-            raise RuntimeError(f'triviaSources is empty: \"{triviaSources}\"')
-
-        return triviaSources
+        self.__cachedTriviaSourcesAndWeights = None
 
     async def getLevenshteinThresholdGrowthRate(self) -> int:
         jsonContents = await self.__readJson()
@@ -80,9 +66,9 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         minMultipleChoiceResponses = utils.getIntFromDict(jsonContents, 'min_multiple_choice_responses', 2)
 
         if minMultipleChoiceResponses < 2 or minMultipleChoiceResponses > utils.getIntMaxSafeSize():
-            raise ValueError(f'\"min_multiple_choice_responses\" is out of bounds: {minMultipleChoiceResponses}')
+            raise ValueError(f'\"min_multiple_choice_responses\" is out of bounds: ({minMultipleChoiceResponses=})')
         elif maxMultipleChoiceResponses < minMultipleChoiceResponses:
-            raise ValueError(f'\"min_multiple_choice_responses\" ({minMultipleChoiceResponses}) is less than \"max_multiple_choice_responses\" ({maxMultipleChoiceResponses})')
+            raise ValueError(f'\"min_multiple_choice_responses\" is less than \"max_multiple_choice_responses\" ({minMultipleChoiceResponses=}) ({maxMultipleChoiceResponses=})')
 
         return maxMultipleChoiceResponses
 
@@ -100,11 +86,11 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getMaxSuperTriviaQuestionSpoolSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'max_super_trivia_question_spool_size', 5)
+        return utils.getIntFromDict(jsonContents, 'max_super_trivia_question_spool_size', 3)
 
     async def getMaxTriviaQuestionSpoolSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'max_trivia_question_spool_size', 5)
+        return utils.getIntFromDict(jsonContents, 'max_trivia_question_spool_size', 3)
 
     async def getMaxRetryCount(self) -> int:
         jsonContents = await self.__readJson()
@@ -117,9 +103,14 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getMaxSuperTriviaGameQueueSize(self) -> int:
         jsonContents = await self.__readJson()
-        maxSuperGameQueueSize = utils.getIntFromDict(jsonContents, 'max_super_game_queue_size', 50)
 
-        if maxSuperGameQueueSize < -1:
+        maxSuperGameQueueSize = utils.getIntFromDict(
+            d = jsonContents,
+            key = 'max_super_game_queue_size',
+            fallback = 32
+        )
+
+        if maxSuperGameQueueSize < 0 or maxSuperGameQueueSize > 64:
             raise ValueError(f'max_super_game_queue_size is too small: \"{maxSuperGameQueueSize}\"')
 
         return maxSuperGameQueueSize
@@ -142,7 +133,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getShinyProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'shiny_probability', 0.05)
+        return utils.getFloatFromDict(jsonContents, 'shiny_probability', 0.06)
 
     async def getSuperTriviaCooldownSeconds(self) -> int:
         jsonContents = await self.__readJson()
@@ -154,7 +145,38 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getToxicProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.04)
+        return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.02)
+
+    async def getTriviaSourcesAndWeights(self) -> frozendict[TriviaSource, TriviaSourceAndWeight]:
+        cachedTriviaSourcesAndWeights = self.__cachedTriviaSourcesAndWeights
+
+        if cachedTriviaSourcesAndWeights is not None:
+            return cachedTriviaSourcesAndWeights
+
+        jsonContents = await self.__readJson()
+        triviaSourcesJson: dict[str, Any] | Any | None = jsonContents.get('trivia_sources', None)
+        triviaSourcesAndWeights: dict[TriviaSource, TriviaSourceAndWeight] = dict()
+
+        if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
+            return frozendict(triviaSourcesAndWeights)
+
+        for key, triviaSourceJson in triviaSourcesJson.items():
+            isEnabled = utils.getBoolFromDict(triviaSourceJson, 'is_enabled', False)
+            triviaSource = await self.__triviaSourceParser.parse(key)
+            weight = utils.getIntFromDict(triviaSourceJson, 'weight', 1)
+
+            if weight < 1 or weight > utils.getIntMaxSafeSize():
+                raise ValueError(f'TriviaSource weight value is out of bounds ({triviaSourceJson=}) ({weight=})')
+
+            triviaSourcesAndWeights[triviaSource] = TriviaSourceAndWeight(
+                isEnabled = isEnabled,
+                weight = weight,
+                triviaSource = triviaSource
+            )
+
+        frozenTriviaSourcesAndWeights = frozendict(triviaSourcesAndWeights)
+        self.__cachedTriviaSourcesAndWeights = frozenTriviaSourcesAndWeights
+        return frozenTriviaSourcesAndWeights
 
     async def getTriviaSourceInstabilityThreshold(self) -> int:
         jsonContents = await self.__readJson()
@@ -170,7 +192,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def isScraperEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'scraper_enabled', False)
+        return utils.getBoolFromDict(jsonContents, 'scraper_enabled', True)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
@@ -191,4 +213,4 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def useNewAnswerCheckingMethod(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'use_new_answer_checking_method', False)
+        return utils.getBoolFromDict(jsonContents, 'use_new_answer_checking_method', True)

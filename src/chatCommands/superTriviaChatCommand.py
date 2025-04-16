@@ -6,8 +6,8 @@ from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.questions.triviaSource import TriviaSource
+from ..trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ..trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface

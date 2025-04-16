@@ -2,7 +2,7 @@ from .triviaContentCode import TriviaContentCode
 from .triviaContentScannerInterface import TriviaContentScannerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...contentScanner.bannedPhrase import BannedPhrase
 from ...contentScanner.bannedWord import BannedWord
 from ...contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface

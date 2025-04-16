@@ -62,6 +62,8 @@ from .trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from .trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from .trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
 from .trivia.misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
+from .trivia.misc.triviaSourceParser import TriviaSourceParser
+from .trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from .trivia.questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from .trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from .trivia.questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
@@ -69,6 +71,8 @@ from .trivia.questions.triviaSource import TriviaSource
 from .trivia.score.triviaScoreRepository import TriviaScoreRepository
 from .trivia.scraper.triviaScraper import TriviaScraper
 from .trivia.scraper.triviaScraperInterface import TriviaScraperInterface
+from .trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
+from .trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from .trivia.specialStatus.shinyTriviaOccurencesRepository import ShinyTriviaOccurencesRepository
 from .trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
@@ -131,8 +135,6 @@ from .trivia.triviaRepositories.willFry.willFryTriviaJsonParser import WillFryTr
 from .trivia.triviaRepositories.willFry.willFryTriviaJsonParserInterface import WillFryTriviaJsonParserInterface
 from .trivia.triviaRepositories.willFryTriviaQuestionRepository import WillFryTriviaQuestionRepository
 from .trivia.triviaRepositories.wwtbamTriviaQuestionRepository import WwtbamTriviaQuestionRepository
-from .trivia.triviaSettingsRepository import TriviaSettingsRepository
-from .trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from .trivia.triviaVerifier import TriviaVerifier
 from .trollmoji.trollmojiHelper import TrollmojiHelper
@@ -260,11 +262,14 @@ triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
     triviaEmoteRepository = triviaEmoteRepository
 )
 
+triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json'
-    )
+    ),
+    triviaSourceParser = triviaSourceParser
 )
 
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(

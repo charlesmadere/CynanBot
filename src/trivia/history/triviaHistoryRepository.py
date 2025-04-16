@@ -6,7 +6,7 @@ from ..misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInt
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaQuestionReference import TriviaQuestionReference
 from ..questions.triviaSource import TriviaSource
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase

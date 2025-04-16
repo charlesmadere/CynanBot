@@ -15,6 +15,10 @@ from .timber.timber import Timber
 from .timber.timberInterface import TimberInterface
 from .trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
 from .trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
+from .trivia.misc.triviaSourceParser import TriviaSourceParser
+from .trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
+from .trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
+from .trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .trivia.triviaFetchOptions import TriviaFetchOptions
 from .trivia.triviaIdGenerator import TriviaIdGenerator
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
@@ -22,7 +26,6 @@ from .trivia.triviaRepositories.pkmnTriviaQuestionRepository import PkmnTriviaQu
 from .trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGenerator import PokepediaTriviaQuestionGenerator
 from .trivia.triviaRepositories.pokepedia.pokepediaTriviaQuestionGeneratorInterface import \
     PokepediaTriviaQuestionGeneratorInterface
-from .trivia.triviaSettingsRepository import TriviaSettingsRepository
 
 eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
@@ -52,11 +55,14 @@ pokepediaRepository = PokepediaRepository(
     timber = timber
 )
 
-triviaSettingsRepository = TriviaSettingsRepository(
+triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+
+triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json'
-    )
+    ),
+    triviaSourceParser = triviaSourceParser
 )
 
 pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(

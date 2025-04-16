@@ -8,9 +8,9 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaExceptions import GenericTriviaNetworkException, UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 

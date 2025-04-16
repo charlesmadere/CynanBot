@@ -3,14 +3,19 @@ import pytest
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.trivia.misc.multipleChoiceResponsesBuilder import MultipleChoiceResponsesBuilder
 from src.trivia.misc.multipleChoiceResponsesBuilderInterface import MultipleChoiceResponsesBuilderInterface
-from src.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.misc.triviaSourceParser import TriviaSourceParser
+from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
+from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
+from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
 
 class TestMultipleChoicesResponsesBuilder:
 
+    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-        settingsJsonReader = JsonStaticReader(dict())
+        settingsJsonReader = JsonStaticReader(dict()),
+        triviaSourceParser = triviaSourceParser
     )
 
     builder: MultipleChoiceResponsesBuilderInterface = MultipleChoiceResponsesBuilder(
@@ -34,3 +39,8 @@ class TestMultipleChoicesResponsesBuilder:
         assert result[2] == 'Pikachu'
         assert result[3] == 'Squirtle'
         assert result[4] == 'None of the above'
+
+    def test_sanity(self):
+        assert self.builder is not None
+        assert isinstance(self.builder, MultipleChoiceResponsesBuilder)
+        assert isinstance(self.builder, MultipleChoiceResponsesBuilderInterface)

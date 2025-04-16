@@ -14,8 +14,8 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaExceptions import BadTriviaAnswerException, UnsupportedTriviaTypeException
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 

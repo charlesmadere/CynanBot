@@ -2,8 +2,8 @@ from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
 from .triviaBanHelperInterface import TriviaBanHelperInterface
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ...misc import utils as utils
 

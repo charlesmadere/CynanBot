@@ -1,8 +1,8 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+from .settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
-from .triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 

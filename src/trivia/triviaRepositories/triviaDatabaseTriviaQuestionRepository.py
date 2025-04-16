@@ -8,9 +8,9 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 
 
 class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):

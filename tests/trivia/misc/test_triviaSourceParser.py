@@ -115,3 +115,88 @@ class TestTriviaSourceParser:
             result = await self.parser.parse(' ')
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, TriviaSourceParser)
+        assert isinstance(self.parser, TriviaSourceParserInterface)
+
+    @pytest.mark.asyncio
+    async def test_serialize(self):
+        results: set[str] = set()
+
+        for triviaSource in TriviaSource:
+            result = await self.parser.serialize(triviaSource)
+            results.add(result)
+
+        assert len(results) == len(TriviaSource)
+
+    @pytest.mark.asyncio
+    async def test_serialize_withBongo(self):
+        result = await self.parser.serialize(TriviaSource.BONGO)
+        assert result == 'bongo'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withFuntoon(self):
+        result = await self.parser.serialize(TriviaSource.FUNTOON)
+        assert result == 'funtoon'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withGlacial(self):
+        result = await self.parser.serialize(TriviaSource.GLACIAL)
+        assert result == 'glacial'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withJService(self):
+        result = await self.parser.serialize(TriviaSource.J_SERVICE)
+        assert result == 'j_service'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withLordOfTheRings(self):
+        result = await self.parser.serialize(TriviaSource.LORD_OF_THE_RINGS)
+        assert result == 'lord_of_the_rings'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withMillionaire(self):
+        result = await self.parser.serialize(TriviaSource.MILLIONAIRE)
+        assert result == 'millionaire'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withOpenTriviaDatabase(self):
+        result = await self.parser.serialize(TriviaSource.OPEN_TRIVIA_DATABASE)
+        assert result == 'open_trivia_database'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withOpenTriviaQa(self):
+        result = await self.parser.serialize(TriviaSource.OPEN_TRIVIA_QA)
+        assert result == 'open_trivia_qa'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withPokeApi(self):
+        result = await self.parser.serialize(TriviaSource.POKE_API)
+        assert result == 'poke_api'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withQuizApi(self):
+        result = await self.parser.serialize(TriviaSource.QUIZ_API)
+        assert result == 'quiz_api'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withTheQuestionCo(self):
+        result = await self.parser.serialize(TriviaSource.THE_QUESTION_CO)
+        assert result == 'the_question_co'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withTriviaDatabase(self):
+        result = await self.parser.serialize(TriviaSource.TRIVIA_DATABASE)
+        assert result == 'trivia_database'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withWillFryTrivia(self):
+        result = await self.parser.serialize(TriviaSource.WILL_FRY_TRIVIA)
+        assert result == 'will_fry_trivia'
+
+    @pytest.mark.asyncio
+    async def test_serialize_withWwtbam(self):
+        result = await self.parser.serialize(TriviaSource.WWTBAM)
+        assert result == 'wwtbam'

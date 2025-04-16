@@ -8,12 +8,11 @@ from .additionalTriviaAnswers import AdditionalTriviaAnswers
 from .additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..triviaExceptions import (
-    AdditionalTriviaAnswerAlreadyExistsException,
-    AdditionalTriviaAnswerIsMalformedException,
-    AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
-    TooManyAdditionalTriviaAnswersException)
-from ..triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..triviaExceptions import (AdditionalTriviaAnswerAlreadyExistsException,
+                                AdditionalTriviaAnswerIsMalformedException,
+                                AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
+                                TooManyAdditionalTriviaAnswersException)
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
