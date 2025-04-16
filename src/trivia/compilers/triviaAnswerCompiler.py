@@ -649,7 +649,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         modificationCount = len(patchedWords)
 
         if modificationCount == 0:
-            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=})')
+            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWords=})')
             return answer
 
         # The below logic checks to see if every single word in the answer now has parens. This
