@@ -4,7 +4,7 @@ from ..questions.triviaSource import TriviaSource
 
 
 @dataclass(frozen = True)
-class TriviaSourceAndWeight:
+class TriviaSourceAndProperties:
     isEnabled: bool
     weight: int
     triviaSource: TriviaSource

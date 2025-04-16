@@ -5,7 +5,7 @@ from frozendict import frozendict
 from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.triviaSource import TriviaSource
 from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from ..settings.triviaSourceAndWeight import TriviaSourceAndWeight
+from ..settings.triviaSourceAndProperties import TriviaSourceAndProperties
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -26,7 +26,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
 
         self.__cache: dict[str, Any] | None = None
-        self.__cachedTriviaSourcesAndWeights: frozendict[TriviaSource, TriviaSourceAndWeight] | None = None
+        self.__cachedTriviaSourcesAndProperties: frozendict[TriviaSource, TriviaSourceAndProperties] | None = None
 
     async def areAdditionalTriviaAnswersEnabled(self) -> bool:
         jsonContents = await self.__readJson()
@@ -42,7 +42,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def clearCaches(self):
         self.__cache = None
-        self.__cachedTriviaSourcesAndWeights = None
+        self.__cachedTriviaSourcesAndProperties = None
 
     async def getLevenshteinThresholdGrowthRate(self) -> int:
         jsonContents = await self.__readJson()
@@ -147,18 +147,18 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.02)
 
-    async def getTriviaSourcesAndWeights(self) -> frozendict[TriviaSource, TriviaSourceAndWeight]:
-        cachedTriviaSourcesAndWeights = self.__cachedTriviaSourcesAndWeights
+    async def getTriviaSourcesAndProperties(self) -> frozendict[TriviaSource, TriviaSourceAndProperties]:
+        cachedTriviaSourcesAndProperties = self.__cachedTriviaSourcesAndProperties
 
-        if cachedTriviaSourcesAndWeights is not None:
-            return cachedTriviaSourcesAndWeights
+        if cachedTriviaSourcesAndProperties is not None:
+            return cachedTriviaSourcesAndProperties
 
         jsonContents = await self.__readJson()
         triviaSourcesJson: dict[str, Any] | Any | None = jsonContents.get('trivia_sources', None)
-        triviaSourcesAndWeights: dict[TriviaSource, TriviaSourceAndWeight] = dict()
+        triviaSourcesAndProperties: dict[TriviaSource, TriviaSourceAndProperties] = dict()
 
         if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
-            return frozendict(triviaSourcesAndWeights)
+            return frozendict(triviaSourcesAndProperties)
 
         for key, triviaSourceJson in triviaSourcesJson.items():
             triviaSource = await self.__triviaSourceParser.parse(key)
@@ -168,15 +168,15 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
             if weight < 1 or weight > utils.getIntMaxSafeSize():
                 raise ValueError(f'TriviaSource weight value is out of bounds ({triviaSourceJson=}) ({weight=})')
 
-            triviaSourcesAndWeights[triviaSource] = TriviaSourceAndWeight(
+            triviaSourcesAndProperties[triviaSource] = TriviaSourceAndProperties(
                 isEnabled = isEnabled,
                 weight = weight,
                 triviaSource = triviaSource
             )
 
-        frozenTriviaSourcesAndWeights = frozendict(triviaSourcesAndWeights)
-        self.__cachedTriviaSourcesAndWeights = frozenTriviaSourcesAndWeights
-        return frozenTriviaSourcesAndWeights
+        frozenTriviaSourcesAndProperties = frozendict(triviaSourcesAndProperties)
+        self.__cachedTriviaSourcesAndProperties = frozenTriviaSourcesAndProperties
+        return frozenTriviaSourcesAndProperties
 
     async def getTriviaSourceInstabilityThreshold(self) -> int:
         jsonContents = await self.__readJson()

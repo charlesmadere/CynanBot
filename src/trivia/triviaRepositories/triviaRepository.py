@@ -167,41 +167,32 @@ class TriviaRepository(TriviaRepositoryInterface):
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        allTriviaSourcesAndWeights = await self.__triviaSettingsRepository.getTriviaSourcesAndWeights()
-        triviaSourcesAndWeights = dict(allTriviaSourcesAndWeights)
+        allTriviaSourcesAndProperties = await self.__triviaSettingsRepository.getTriviaSourcesAndProperties()
 
-        triviaSourcesToRemove = await self.__getCurrentlyInvalidTriviaSources(
+        currentlyInvalidTriviaSources = await self.__getCurrentlyInvalidTriviaSources(
             triviaFetchOptions = triviaFetchOptions
         )
-
-        for triviaSourceToRemove in triviaSourcesToRemove:
-            triviaSourceAndWeight = triviaSourcesAndWeights.get(triviaSourceToRemove, None)
-
-            if triviaSourceAndWeight is None or not triviaSourceAndWeight.isEnabled:
-                del triviaSourcesAndWeights[triviaSourceToRemove]
-
-        if len(triviaSourcesAndWeights) == 0:
-            raise RuntimeError(f'There are no trivia sources available to be fetched from! ({triviaFetchOptions=})')
 
         triviaSources: list[TriviaSource] = list()
         triviaWeights: list[int] = list()
 
-        for triviaSource, triviaSourceAndWeight in triviaSourcesAndWeights.items():
-            triviaSources.append(triviaSource)
-            triviaWeights.append(triviaSourceAndWeight.weight)
+        for triviaSource, triviaSourceAndProperties in allTriviaSourcesAndProperties.items():
+            if triviaSource in currentlyInvalidTriviaSources or not triviaSourceAndProperties.isEnabled:
+                continue
 
-        randomChoices = random.choices(
-            population = triviaSources,
-            weights = triviaWeights
-        )
+            triviaSources.append(triviaSourceAndProperties.triviaSource)
+            triviaWeights.append(triviaSourceAndProperties.weight)
 
-        randomlyChosenTriviaSource = randomChoices[0]
+        if len(triviaSources) == 0 or len(triviaWeights) == 0:
+            raise RuntimeError(f'There are no trivia sources available to be fetched from! ({triviaFetchOptions=}) ({allTriviaSourcesAndProperties=}) ({currentlyInvalidTriviaSources=})')
+
+        randomlyChosenTriviaSource = random.choices(population = triviaSources, weights = triviaWeights)[0]
         randomlyChosenTriviaRepository = self.__triviaSourceToRepositoryMap[randomlyChosenTriviaSource]
 
         if not isinstance(randomlyChosenTriviaRepository, TriviaQuestionRepositoryInterface):
             # this scenario should definitely be impossible, but the Python type checking was
             # getting angry without this check
-            raise RuntimeError(f'Couldn\'t retrieve corresponding TriviaQuestionRepository from given randomlyChosenTriviaSource ({randomlyChosenTriviaSource=}) ({randomlyChosenTriviaRepository=}) ({self.__triviaSourceToRepositoryMap=})')
+            raise RuntimeError(f'Couldn\'t retrieve corresponding TriviaQuestionRepository from given randomlyChosenTriviaSource ({triviaFetchOptions=}) ({allTriviaSourcesAndProperties=}) ({currentlyInvalidTriviaSources=}) ({randomlyChosenTriviaSource=}) ({randomlyChosenTriviaRepository=}) ({self.__triviaSourceToRepositoryMap=})')
 
         return randomlyChosenTriviaRepository
 
@@ -250,7 +241,9 @@ class TriviaRepository(TriviaRepositoryInterface):
             else:
                 return triviaSource
 
-        return await self.__chooseRandomTriviaSource(triviaFetchOptions)
+        return await self.__chooseRandomTriviaSource(
+            triviaFetchOptions = triviaFetchOptions
+        )
 
     async def fetchTrivia(
         self,

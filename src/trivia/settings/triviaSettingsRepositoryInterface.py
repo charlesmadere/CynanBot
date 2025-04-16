@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from frozendict import frozendict
 
-from .triviaSourceAndWeight import TriviaSourceAndWeight
+from .triviaSourceAndProperties import TriviaSourceAndProperties
 from ..questions.triviaSource import TriviaSource
 from ...misc.clearable import Clearable
 
@@ -94,7 +94,7 @@ class TriviaSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def getTriviaSourcesAndWeights(self) -> frozendict[TriviaSource, TriviaSourceAndWeight]:
+    async def getTriviaSourcesAndProperties(self) -> frozendict[TriviaSource, TriviaSourceAndProperties]:
         pass
 
     @abstractmethod
