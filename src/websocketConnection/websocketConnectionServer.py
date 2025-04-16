@@ -93,7 +93,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         if not isinstance(event, WebsocketEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        # TODO will add more logic here in the future if there are more event types
+        # may need to add more logic here in the future if there are ever more event types
         return json.dumps(event.eventData, sort_keys = True)
 
     def start(self):
