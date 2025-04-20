@@ -1,17 +1,24 @@
 from abc import ABC, abstractmethod
 
-from ..models.ttsChatter import TtsChatter
 from ...misc.clearable import Clearable
 
 
 class TtsChatterRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
-    async def get(
+    async def add(
         self,
         chatterUserId: str,
         twitchChannelId: str
-    ) -> TtsChatter | None:
+    ):
+        pass
+
+    @abstractmethod
+    async def isTtsChatter(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ) -> bool:
         pass
 
     @abstractmethod
@@ -19,9 +26,5 @@ class TtsChatterRepositoryInterface(Clearable, ABC):
         self,
         chatterUserId: str,
         twitchChannelId: str
-    ) -> TtsChatter | None:
-        pass
-
-    @abstractmethod
-    async def set(self, ttsChatter: TtsChatter):
+    ) -> bool:
         pass

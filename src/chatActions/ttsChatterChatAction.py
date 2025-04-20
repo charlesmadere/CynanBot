@@ -41,7 +41,10 @@ class TtsChatterChatAction(AbsChatAction):
         if not user.areTtsChattersEnabled or not user.isTtsEnabled:
             return False
 
-        if await self.__ttsChatterRepository.get(message.getAuthorId(), await message.getTwitchChannelId()) is None:
+        if not await self.__ttsChatterRepository.isTtsChatter(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        ):
             return False
 
         chatMessage = utils.cleanStr(message.getContent())

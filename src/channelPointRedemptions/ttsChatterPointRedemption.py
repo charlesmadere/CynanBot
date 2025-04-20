@@ -1,6 +1,5 @@
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
-from ..ttsChatter.models.ttsChatter import TtsChatter
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
@@ -35,21 +34,25 @@ class TtsChatterPointRedemption(AbsChannelPointRedemption):
         if not twitchUser.areTtsChattersEnabled:
             return False
 
-        ttsChatter = TtsChatter(
+        if await self.__ttsChatterRepository.isTtsChatter(
+            chatterUserId = twitchChannelPointsMessage.userId,
+            twitchChannelId = await twitchChannel.getTwitchChannelId()
+        ):
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'ⓘ @{twitchChannelPointsMessage.userName} you are already a TTS Chatter'
+            )
+            return True
+
+        await self.__ttsChatterRepository.add(
             chatterUserId = twitchChannelPointsMessage.userId,
             twitchChannelId = await twitchChannel.getTwitchChannelId()
         )
 
-        ttsChatterEntry = await self.__ttsChatterRepository.get(ttsChatter.chatterUserId, ttsChatter.twitchChannelId)
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'ⓘ @{twitchChannelPointsMessage.userName} you are now a TTS Chatter'
+        )
 
-        if ttsChatterEntry is None:
-            await self.__ttsChatterRepository.set(
-                ttsChatter = ttsChatter
-            )
-
-            await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ @{twitchChannelPointsMessage.userName} you are now a TTS Chatter')
-            self.__timber.log('TtsChatterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
-            return True
-        else:
-            await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ @{twitchChannelPointsMessage.userName} you are already a TTS Chatter')
-            return False
+        self.__timber.log('TtsChatterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        return True

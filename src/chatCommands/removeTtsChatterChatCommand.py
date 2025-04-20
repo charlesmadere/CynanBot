@@ -34,21 +34,21 @@ class RemoveTtsChatterChatCommand(AbsChatCommand):
         if not user.areTtsChattersEnabled:
             return
 
-        ttsChatter = await self.__ttsChatterRepository.remove(
+        wasTtsChatter = await self.__ttsChatterRepository.remove(
             chatterUserId = ctx.getAuthorId(),
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
-        if ttsChatter is None:
+        if wasTtsChatter:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ You weren\'t already a TTS Chatter',
+                message = f'ⓘ You are no longer a TTS Chatter',
                 replyMessageId = await ctx.getMessageId()
             )
         else:
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'ⓘ You are no longer a TTS Chatter',
+                message = f'ⓘ You weren\'t already a TTS Chatter',
                 replyMessageId = await ctx.getMessageId()
             )
 
