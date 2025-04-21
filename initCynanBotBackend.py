@@ -343,10 +343,10 @@ from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
-from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
+from src.tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
+from src.tts.provider.stub.stubCompositeTtsManagerProvider import StubCompositeTtsManagerProvider
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
@@ -1599,7 +1599,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlaye
 ## TTS initialization section ##
 ################################
 
-compositeTtsManager: CompositeTtsManagerInterface = StubCompositeTtsManager()
+compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = StubCompositeTtsManagerProvider()
 
 
 ##################################################
@@ -2078,7 +2078,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     commodoreSamSettingsRepository = None,
-    compositeTtsManager = compositeTtsManager,
+    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
     crowdControlActionHandler = None,
     crowdControlAutomator = None,
     crowdControlIdGenerator = None,
@@ -2151,6 +2151,7 @@ cynanBot = CynanBot(
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsChatterRepository = None,
+    ttsChatterSettingsRepository = None,
     ttsJsonMapper = None,
     ttsMonsterSettingsRepository = None,
     ttsMonsterTokensRepository = None,

@@ -3,11 +3,12 @@ from ..accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevel
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
-from ..streamAlertsManager.streamAlertsManagerInterface import \
-    StreamAlertsManagerInterface
+from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
+from ..ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.accessLevel.accessLevel import AccessLevel
 from ..users.userInterface import UserInterface
@@ -18,19 +19,27 @@ class TtsChatterChatAction(AbsChatAction):
     def __init__(
         self,
         accessLevelCheckingHelper: AccessLevelCheckingHelperInterface,
+        compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
-        ttsChatterRepository: TtsChatterRepositoryInterface
+        ttsChatterRepository: TtsChatterRepositoryInterface,
+        ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface
     ):
         if not isinstance(accessLevelCheckingHelper, AccessLevelCheckingHelperInterface):
             raise TypeError(f'accessLevelCheckingHelper argument is malformed: \"{accessLevelCheckingHelper}\"')
+        elif not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
+            raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(ttsChatterRepository, TtsChatterRepositoryInterface):
             raise TypeError(f'ttsChatterRepository argument is malformed: \"{ttsChatterRepository}\"')
+        elif not isinstance(ttsChatterSettingsRepository, TtsChatterSettingsRepositoryInterface):
+            raise TypeError(f'ttsChatterSettingsRepository argument is malformed: \"{ttsChatterSettingsRepository}\"')
 
         self.__accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = accessLevelCheckingHelper
+        self.__compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = compositeTtsManagerProvider
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__ttsChatterRepository: TtsChatterRepositoryInterface = ttsChatterRepository
+        self.__ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = ttsChatterSettingsRepository
 
     async def handleChat(
         self,
@@ -64,21 +73,27 @@ class TtsChatterChatAction(AbsChatAction):
         else:
             providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
-        self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = None,
+        ttsEvent = TtsEvent(
+            message = chatMessage,
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
-            ttsEvent = TtsEvent(
-                message = chatMessage,
+            userId = message.getAuthorId(),
+            userName = message.getAuthorName(),
+            donation = None,
+            provider = user.defaultTtsProvider,
+            providerOverridableStatus = providerOverridableStatus,
+            raidInfo = None
+        )
+
+        if await self.__ttsChatterSettingsRepository.useMessageQueueing():
+            self.__streamAlertsManager.submitAlert(StreamAlert(
+                soundAlert = None,
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
-                userId = message.getAuthorId(),
-                userName = message.getAuthorName(),
-                donation = None,
-                provider = user.defaultTtsProvider,
-                providerOverridableStatus = providerOverridableStatus,
-                raidInfo = None
-            )
-        ))
+                ttsEvent = ttsEvent
+            ))
 
-        return True
+            return True
+        else:
+            compositeTtsManager = self.__compositeTtsManagerProvider.constructNewCompositeTtsManagerInstance()
+            return await compositeTtsManager.playTtsEvent(ttsEvent)

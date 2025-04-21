@@ -105,10 +105,10 @@ from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsMan
 from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
-from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.stub.stubCompositeTtsManager import StubCompositeTtsManager
+from src.tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
+from src.tts.provider.stub.stubCompositeTtsManagerProvider import StubCompositeTtsManagerProvider
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.activeChatters.activeChattersRepository import ActiveChattersRepository
@@ -751,7 +751,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 ## TTS initialization section ##
 ################################
 
-compositeTtsManager: CompositeTtsManagerInterface = StubCompositeTtsManager()
+compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = StubCompositeTtsManagerProvider()
 
 
 ##################################################
@@ -940,7 +940,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = None,
     cheerActionsWizard = None,
     commodoreSamSettingsRepository = None,
-    compositeTtsManager = compositeTtsManager,
+    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
     crowdControlActionHandler = None,
     crowdControlAutomator = None,
     crowdControlIdGenerator = None,
@@ -1013,6 +1013,7 @@ cynanBot = CynanBot(
     trollmojiHelper = None,
     trollmojiSettingsRepository = None,
     ttsChatterRepository = None,
+    ttsChatterSettingsRepository = None,
     ttsJsonMapper = None,
     ttsMonsterSettingsRepository = None,
     ttsMonsterTokensRepository = None,

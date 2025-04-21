@@ -31,7 +31,7 @@ class TtsChatterRepository(TtsChatterRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: Final[LRU[str, bool]] = LRU(cacheSize)
+        self.__cache: Final[LRU[str, bool | None]] = LRU(cacheSize)
 
     async def add(
         self,

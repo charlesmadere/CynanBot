@@ -505,8 +505,6 @@ from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.commodoreSam.commodoreSamTtsManager import CommodoreSamTtsManager
 from src.tts.commodoreSam.commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
-from src.tts.compositeTtsManager import CompositeTtsManager
-from src.tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
 from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
@@ -522,6 +520,8 @@ from src.tts.microsoft.microsoftTtsManager import MicrosoftTtsManager
 from src.tts.microsoft.microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
 from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
+from src.tts.provider.compositeTtsManagerProvider import CompositeTtsManagerProvider
+from src.tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
@@ -530,6 +530,8 @@ from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
 from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from src.ttsChatter.repository.ttsChatterRepository import TtsChatterRepository
 from src.ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
+from src.ttsChatter.settings.ttsChatterSettingsRepository import TtsChatterSettingsRepository
+from src.ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from src.ttsMonster.helpers.ttsMonsterHelper import TtsMonsterHelper
@@ -2337,7 +2339,7 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-compositeTtsManager: CompositeTtsManagerInterface = CompositeTtsManager(
+compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTtsManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     commodoreSamTtsManager = commodoreSamTtsManager,
@@ -2367,7 +2369,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 
 streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
-    compositeTtsManager = compositeTtsManager,
+    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     timber = timber
@@ -2733,10 +2735,19 @@ ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
     timber = timber
 )
 
-ttsChatterChatAction: TtsChatterChatAction = TtsChatterChatAction(
+ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = TtsChatterSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/ttsChatterSettingsRepository.json'
+    )
+)
+
+ttsChatterChatAction = TtsChatterChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
+    compositeTtsManagerProvider = compositeTtsManagerProvider,
     streamAlertsManager = streamAlertsManager,
-    ttsChatterRepository = ttsChatterRepository
+    ttsChatterRepository = ttsChatterRepository,
+    ttsChatterSettingsRepository = ttsChatterSettingsRepository
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -2997,7 +3008,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
-    compositeTtsManager = compositeTtsManager,
+    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
     crowdControlActionHandler = crowdControlActionHandler,
     crowdControlAutomator = crowdControlAutomator,
     crowdControlIdGenerator = crowdControlIdGenerator,
@@ -3070,6 +3081,7 @@ cynanBot = CynanBot(
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsChatterRepository = ttsChatterRepository,
+    ttsChatterSettingsRepository = ttsChatterSettingsRepository,
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsMonsterTokensRepository = ttsMonsterTokensRepository,

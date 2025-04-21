@@ -129,7 +129,7 @@ from .halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
 from .halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from .language.jishoHelperInterface import JishoHelperInterface
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from .language.translationHelper import TranslationHelper
+from .language.translationHelperInterface import TranslationHelperInterface
 from .language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from .language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -196,6 +196,7 @@ from .tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
+from .ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
 from .ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from .ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
@@ -350,7 +351,7 @@ class CynanBot(
         timeZoneRepository: TimeZoneRepositoryInterface,
         tntCheerActionHelper: TntCheerActionHelperInterface | None,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
-        translationHelper: TranslationHelper | None,
+        translationHelper: TranslationHelperInterface | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface | None,
         triviaEventHandler: AbsTriviaEventHandler | None,
@@ -368,6 +369,7 @@ class CynanBot(
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
         ttsChatterRepository: TtsChatterRepositoryInterface | None,
+        ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface | None,
         ttsJsonMapper: TtsJsonMapperInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface | None,
@@ -592,7 +594,7 @@ class CynanBot(
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif tntCheerActionHelper is not None and not isinstance(tntCheerActionHelper, TntCheerActionHelperInterface):
             raise TypeError(f'tntCheerActionHelper argument is malformed: \"{tntCheerActionHelper}\"')
-        elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
+        elif translationHelper is not None and not isinstance(translationHelper, TranslationHelperInterface):
             raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif triviaBanHelper is not None and not isinstance(triviaBanHelper, TriviaBanHelperInterface):
             raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
@@ -628,6 +630,8 @@ class CynanBot(
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
         elif ttsChatterRepository is not None and not isinstance(ttsChatterRepository, TtsChatterRepositoryInterface):
             raise TypeError(f'ttsChatterRepository argument is malformed: \"{ttsChatterRepository}\"')
+        elif ttsChatterSettingsRepository is not None and not isinstance(ttsChatterSettingsRepository, TtsChatterSettingsRepositoryInterface):
+            raise TypeError(f'ttsChatterSettingsRepository argument is malformed: \"{ttsChatterSettingsRepository}\"')
         elif ttsJsonMapper is not None and not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
@@ -730,7 +734,7 @@ class CynanBot(
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchUtils, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, recentGrenadeAttacksRepository, recentGrenadeAttacksSettingsRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, recentGrenadeAttacksRepository, recentGrenadeAttacksSettingsRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)

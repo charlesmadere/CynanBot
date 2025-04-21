@@ -4,7 +4,7 @@ from datetime import timedelta
 from .absChatCommand import AbsChatCommand
 from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from ..language.translationHelper import TranslationHelper
+from ..language.translationHelperInterface import TranslationHelperInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.timedDict import TimedDict
@@ -21,7 +21,7 @@ class TranslateChatCommand(AbsChatCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
-        translationHelper: TranslationHelper,
+        translationHelper: TranslationHelperInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
         cooldown: timedelta = timedelta(seconds = 15)
@@ -32,7 +32,7 @@ class TranslateChatCommand(AbsChatCommand):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(translationHelper, TranslationHelper):
+        elif not isinstance(translationHelper, TranslationHelperInterface):
             raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -44,7 +44,7 @@ class TranslateChatCommand(AbsChatCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
-        self.__translationHelper: TranslationHelper = translationHelper
+        self.__translationHelper: TranslationHelperInterface = translationHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -99,11 +99,11 @@ class TranslateChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}', e, traceback.format_exc())
+            self.__timber.log('TranslateCommand', f'Error translating ({text=}): {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = '⚠ Error translating',
                 replyMessageId = await ctx.getMessageId()
             )
 
-        self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TranslateCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

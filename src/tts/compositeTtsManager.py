@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozendict import frozendict
 
 from .commodoreSam.commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
@@ -64,21 +66,21 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None = chatterPreferredTtsHelper
-        self.__commodoreSamTtsManager: TtsManagerInterface | None = commodoreSamTtsManager
-        self.__decTalkTtsManager: TtsManagerInterface | None = decTalkTtsManager
-        self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
-        self.__halfLifeTtsManager: TtsManagerInterface | None = halfLifeTtsManager
-        self.__microsoftTtsManager: TtsManagerInterface | None = microsoftTtsManager
-        self.__microsoftSamTtsManager: TtsManagerInterface | None = microsoftSamTtsManager
-        self.__singingDecTalkTtsManager: TtsManagerInterface | None = singingDecTalkTtsManager
-        self.__streamElementsTtsManager: TtsManagerInterface | None = streamElementsTtsManager
-        self.__timber: TimberInterface = timber
-        self.__ttsMonsterTtsManager: TtsManagerInterface | None = ttsMonsterTtsManager
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface | None] = chatterPreferredTtsHelper
+        self.__commodoreSamTtsManager: Final[TtsManagerInterface | None] = commodoreSamTtsManager
+        self.__decTalkTtsManager: Final[TtsManagerInterface | None] = decTalkTtsManager
+        self.__googleTtsManager: Final[TtsManagerInterface | None] = googleTtsManager
+        self.__halfLifeTtsManager: Final[TtsManagerInterface | None] = halfLifeTtsManager
+        self.__microsoftTtsManager: Final[TtsManagerInterface | None] = microsoftTtsManager
+        self.__microsoftSamTtsManager: Final[TtsManagerInterface | None] = microsoftSamTtsManager
+        self.__singingDecTalkTtsManager: Final[TtsManagerInterface | None] = singingDecTalkTtsManager
+        self.__streamElementsTtsManager: Final[TtsManagerInterface | None] = streamElementsTtsManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsMonsterTtsManager: Final[TtsManagerInterface | None] = ttsMonsterTtsManager
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
-        self.__ttsProviderToManagerMap: frozendict[TtsProvider, TtsManagerInterface | None] = self.__createTtsProviderToManagerMap()
+        self.__ttsProviderToManagerMap: Final[frozendict[TtsProvider, TtsManagerInterface | None]] = self.__createTtsProviderToManagerMap()
         self.__currentTtsManager: TtsManagerInterface | None = None
 
     def __createTtsProviderToManagerMap(self) -> frozendict[TtsProvider, TtsManagerInterface | None]:
