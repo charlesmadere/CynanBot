@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -126,6 +127,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         except TimeoutError as e:
             self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
+        except Exception as e:
+            self.__timber.log('TtsMonsterTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
+            await self.stopTtsEvent()
 
     @property
     def isLoadingOrPlaying(self) -> bool:
@@ -170,8 +174,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:

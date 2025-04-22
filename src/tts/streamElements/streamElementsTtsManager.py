@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -92,8 +93,11 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
-        except Exception as e:
+        except TimeoutError as e:
             self.__timber.log('StreamElementsTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
+        except Exception as e:
+            self.__timber.log('GoogleTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
@@ -139,8 +143,8 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('StreamElementsTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('StreamElementsTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:

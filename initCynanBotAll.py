@@ -1957,6 +1957,7 @@ commodoreSamApiService: CommodoreSamApiServiceInterface = CommodoreSamApiService
 
 commodoreSamHelper: CommodoreSamHelperInterface = CommodoreSamHelper(
     commodoreSamApiService = commodoreSamApiService,
+    commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )

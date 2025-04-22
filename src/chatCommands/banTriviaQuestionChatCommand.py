@@ -1,6 +1,7 @@
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
+from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
@@ -108,10 +109,12 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             triviaSource = reference.triviaSource
         )
 
+        dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
+
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()} — {reference.triviaId}',
+            message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()}:{reference.triviaId} — {dateAndTimeString}',
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({normalizedEmote}) ({reference.triviaSource.toStr()}:{reference.triviaId} was banned)')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({emote=}) ({normalizedEmote=}) ({reference=})')

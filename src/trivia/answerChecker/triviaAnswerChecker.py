@@ -969,6 +969,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'saturday'
         if word == 'sun':
             yield 'sunday'
+        if word == 'holiday':
+            yield 'day'
 
         # months of the year
         if word == 'jan':

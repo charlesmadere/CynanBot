@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from .microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -95,8 +96,11 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
 
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
-        except Exception as e:
+        except TimeoutError as e:
             self.__timber.log('MicrosoftTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
+        except Exception as e:
+            self.__timber.log('MicrosoftTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
@@ -110,7 +114,7 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('MicrosoftTtsManager', f'There is already an ongoing Microsoft TTS event!')
+            self.__timber.log('MicrosoftTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True
@@ -142,8 +146,8 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('MicrosoftTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('MicrosoftTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:

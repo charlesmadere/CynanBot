@@ -32,3 +32,7 @@ class CommodoreSamSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def requireCommodoreSamExecutablePath(self) -> str:
         pass
+
+    @abstractmethod
+    async def useDonationPrefix(self) -> bool:
+        pass

@@ -1,4 +1,6 @@
 import asyncio
+import traceback
+from typing import Final
 
 from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -9,7 +11,6 @@ from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMess
 from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
 from ...commodoreSam.models.commodoreSamFileReference import CommodoreSamFileReference
 from ...commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
-from ...misc import utils as utils
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -41,13 +42,13 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__commodoreSamHelper: CommodoreSamHelperInterface = commodoreSamHelper
-        self.__commodoreSamMessageCleaner: CommodoreSamMessageCleanerInterface = commodoreSamMessageCleaner
-        self.__commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = commodoreSamSettingsRepository
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__commodoreSamHelper: Final[CommodoreSamHelperInterface] = commodoreSamHelper
+        self.__commodoreSamMessageCleaner: Final[CommodoreSamMessageCleanerInterface] = commodoreSamMessageCleaner
+        self.__commodoreSamSettingsRepository: Final[CommodoreSamSettingsRepositoryInterface] = commodoreSamSettingsRepository
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -65,8 +66,11 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
 
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
+        except TimeoutError as e:
+            self.__timber.log('CommodoreSamTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
         except Exception as e:
-            self.__timber.log('CommodoreSamTtsManager', f'Stopping Commodore SAM TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('CommodoreSamTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
@@ -80,7 +84,7 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('CommodoreSamTtsManager', f'There is already an ongoing Commodore SAM event!')
+            self.__timber.log('CommodoreSamTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True
@@ -95,21 +99,12 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> CommodoreSamFileReference | None:
-        cleanedMessage = await self.__commodoreSamMessageCleaner.clean(event.message)
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        fullMessage: str
-
-        if utils.isValidStr(cleanedMessage) and utils.isValidStr(donationPrefix):
-            fullMessage = f'{donationPrefix} {cleanedMessage}'
-        elif utils.isValidStr(cleanedMessage):
-            fullMessage = cleanedMessage
-        elif utils.isValidStr(donationPrefix):
-            fullMessage = donationPrefix
-        else:
-            return None
+        message = await self.__commodoreSamMessageCleaner.clean(event.message)
 
         return await self.__commodoreSamHelper.generateTts(
-            message = fullMessage,
+            donationPrefix = donationPrefix,
+            message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId
         )
@@ -119,8 +114,8 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('CommodoreSamTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('CommodoreSamTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:

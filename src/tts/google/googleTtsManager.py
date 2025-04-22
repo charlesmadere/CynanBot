@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -103,6 +104,9 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         except TimeoutError as e:
             self.__timber.log('GoogleTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
+        except Exception as e:
+            self.__timber.log('GoogleTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
+            await self.stopTtsEvent()
 
     @property
     def isLoadingOrPlaying(self) -> bool:
@@ -147,8 +151,8 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('GoogleTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('GoogleTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:

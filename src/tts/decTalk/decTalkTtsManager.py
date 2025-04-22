@@ -1,4 +1,6 @@
 import asyncio
+import traceback
+from typing import Final
 
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -47,14 +49,14 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
-        self.__decTalkHelper: DecTalkHelperInterface = decTalkHelper
-        self.__decTalkMessageCleaner: DecTalkMessageCleanerInterface = decTalkMessageCleaner
-        self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__decTalkHelper: Final[DecTalkHelperInterface] = decTalkHelper
+        self.__decTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = decTalkMessageCleaner
+        self.__decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = decTalkSettingsRepository
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -91,8 +93,11 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
+        except TimeoutError as e:
+            self.__timber.log('DecTalkTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
         except Exception as e:
-            self.__timber.log('DecTalkTtsManager', f'Stopping DecTalk TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('DecTalkTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
@@ -106,7 +111,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('DecTalkTtsManager', f'There is already an ongoing DecTalk event!')
+            self.__timber.log('DecTalkTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True
@@ -138,8 +143,8 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('DecTalkTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('DecTalkTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:

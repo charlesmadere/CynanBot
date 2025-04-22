@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from frozenlist import FrozenList
 
@@ -93,7 +94,10 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('HalfLifeTtsManager', f'Stopping Half Life TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
+            await self.stopTtsEvent()
+        except Exception as e:
+            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to unknown exception ({fileNames=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
@@ -107,7 +111,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         if not await self.__ttsSettingsRepository.isEnabled():
             return
         elif self.isLoadingOrPlaying:
-            self.__timber.log('HalfLifeTtsManager', f'There is already an ongoing Half Life TTS event!')
+            self.__timber.log('HalfLifeTtsManager', f'There is already an ongoing TTS event!')
             return
 
         self.__isLoadingOrPlaying = True
@@ -135,8 +139,8 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             return
 
         await self.__soundPlayerManager.stop()
-        self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event')
         self.__isLoadingOrPlaying = False
+        self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event')
 
     @property
     def ttsProvider(self) -> TtsProvider:
