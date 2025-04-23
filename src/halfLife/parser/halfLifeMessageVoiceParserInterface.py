@@ -12,5 +12,8 @@ class HalfLifeMessageVoiceParserInterface(ABC):
         voice: HalfLifeVoice
 
     @abstractmethod
-    async def determineVoiceFromMessage(self, message: str | None) -> Result | None:
+    async def determineVoiceFromMessage(
+        self,
+        message: str | None
+    ) -> Result | None:
         pass

@@ -10,7 +10,7 @@ class HalfLifeHelperInterface(ABC):
     @abstractmethod
     async def generateTts(
         self,
-        voice: HalfLifeVoice,
+        voice: HalfLifeVoice | None,
         message: str | None
     ) -> FrozenList[str] | None:
         pass

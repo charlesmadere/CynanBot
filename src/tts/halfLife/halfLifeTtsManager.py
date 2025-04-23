@@ -55,11 +55,9 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __determineVoice(self, event: TtsEvent) -> HalfLifeVoice:
-        defaultVoice = await self.__halfLifeSettingsRepository.getDefaultVoice()
-
+    async def __determineVoice(self, event: TtsEvent) -> HalfLifeVoice | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
-            return defaultVoice
+            return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
@@ -67,17 +65,14 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         )
 
         if preferredTts is None:
-            return defaultVoice
+            return None
 
         halfLifePreferredTts = preferredTts.preferredTts
         if not isinstance(halfLifePreferredTts, HalfLifePreferredTts):
             self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
-            return defaultVoice
+            return None
 
-        if halfLifePreferredTts.halfLifeVoiceEntry is None:
-            return defaultVoice
-        else:
-            return halfLifePreferredTts.halfLifeVoiceEntry
+        return halfLifePreferredTts.halfLifeVoiceEntry
 
     async def __executeTts(self, fileNames: FrozenList[str]):
         volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()

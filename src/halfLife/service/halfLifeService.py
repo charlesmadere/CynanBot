@@ -79,8 +79,14 @@ class HalfLifeService(HalfLifeServiceInterface):
 
         #TODO some filenames contain `_` meaning there's 2 words and this is going to miss them.
         paths: list[str] = []
+
         for word in text.split(' '):
-            path = await self.__getWav(directory, word, voice)
+            path = await self.__getWav(
+                directory = directory,
+                text = word,
+                voice = voice
+            )
+
             if path is not None:
                 paths.append(path)
 

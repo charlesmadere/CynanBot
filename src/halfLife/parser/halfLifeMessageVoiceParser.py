@@ -23,6 +23,9 @@ class HalfLifeMessageVoiceParser(HalfLifeMessageVoiceParserInterface):
         self,
         message: str | None
     ) -> HalfLifeMessageVoiceParserInterface.Result | None:
+        if message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
         if not utils.isValidStr(message):
             return None
 
