@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from .absChatCommand import AbsChatCommand
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.simpleDateTime import SimpleDateTime
@@ -18,6 +21,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         triviaBanHelper: TriviaBanHelperInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
@@ -29,6 +33,8 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaBanHelper, TriviaBanHelperInterface):
             raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
@@ -44,12 +50,24 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaBanHelper: TriviaBanHelperInterface = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
         self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+
+    async def __getRelativeTimeString(self, dateTime: datetime) -> str:
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
+
+        if questionDateTimeVersusNowSeconds <= 60:
+            # if the question was asked about 1 minute ago or less, let's just say it was just now
+            return 'asked just now'
+        else:
+            durationMessage = utils.secondsToDurationMessage(questionDateTimeVersusNowSeconds)
+            return f'asked {durationMessage} ago'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -110,10 +128,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         )
 
         dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
+        relativeTimeString = await self.__getRelativeTimeString(reference.dateTime)
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()}:{reference.triviaId} — {dateAndTimeString}',
+            message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString})',
             replyMessageId = await ctx.getMessageId()
         )
 
