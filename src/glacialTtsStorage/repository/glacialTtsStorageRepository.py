@@ -80,6 +80,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             '''
                 INSERT INTO glacialTtsStorage
                 VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT (glacialId, provider) DO NOTHING
             ''',
             ( storeDateTime.isoformat(), glacialId, message, providerString, voice, )
         )
