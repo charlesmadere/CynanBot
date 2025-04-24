@@ -3,7 +3,6 @@ from typing import Final
 from .halfLifeTtsManager import HalfLifeTtsManager
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from .halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerProviderInterface
-from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -26,7 +25,6 @@ class HalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
         halfLifeTtsHelper: HalfLifeTtsHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
-        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
@@ -41,8 +39,6 @@ class HalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
-            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
@@ -52,7 +48,6 @@ class HalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
         self.__halfLifeTtsHelper: Final[HalfLifeTtsHelperInterface] = halfLifeTtsHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
-        self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__sharedInstance: HalfLifeTtsManagerInterface | None = None
@@ -67,9 +62,9 @@ class HalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
         soundPlayerManager: SoundPlayerManagerInterface
 
         if useSharedSoundPlayerManager:
-            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedInstance()
         else:
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
         return HalfLifeTtsManager(
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,

@@ -45,7 +45,7 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
         self.__soundPlayerManager: SoundPlayerManagerInterface | None = None
 
-    def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+    def constructNewInstance(self) -> SoundPlayerManagerInterface:
         snapshot = self.__generalSettingsRepository.getAll()
         soundPlayerType = snapshot.requireSoundPlayerType()
 
@@ -72,11 +72,11 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
             case _:
                 raise RuntimeError(f'Unknown SoundPlayerType value: \"{soundPlayerType}\"')
 
-    def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+    def getSharedInstance(self) -> SoundPlayerManagerInterface:
         soundPlayerManager = self.__soundPlayerManager
 
         if soundPlayerManager is None:
-            soundPlayerManager = self.constructNewSoundPlayerManagerInstance()
+            soundPlayerManager = self.constructNewInstance()
             self.__soundPlayerManager = soundPlayerManager
 
         return soundPlayerManager

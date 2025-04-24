@@ -168,7 +168,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             replyMessageId = twitchChatMessageId
         )
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         await soundPlayerManager.playSoundAlert(SoundAlert.BEAN)
 
     async def __rollBeanChance(

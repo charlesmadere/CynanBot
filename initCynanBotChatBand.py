@@ -211,7 +211,7 @@ from src.users.usersRepositoryInterface import UsersRepositoryInterface
 from src.websocketConnection.stub.stubWebsocketConnectionServer import StubWebsocketConnectionServer
 from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
-# Uncomment this chunk to turn on extra extra debug logging
+# Uncomment this chunk to turn on extra debug logging
 # logging.basicConfig(
 #     filename = 'generalLogging.log',
 #     level = logging.DEBUG

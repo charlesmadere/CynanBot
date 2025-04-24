@@ -394,11 +394,11 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         elif len(tntTargets) == 0:
             return
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_TNT))
         await asyncio.sleep(self.__launchTntAlertSleepTimeSeconds)
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.TNT))
         await asyncio.sleep(self.__tntAlertSleepTimeSeconds)
 
@@ -407,13 +407,13 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         while index < numberOfSounds:
             soundAlert = await self.__chooseRandomGrenadeSoundAlert()
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
             self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(soundAlert))
             index += 1
 
             await asyncio.sleep(self.__grenadeAlertSleepTimeSeconds)
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.SPLAT))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

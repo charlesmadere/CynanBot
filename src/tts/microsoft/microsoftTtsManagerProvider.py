@@ -16,7 +16,7 @@ from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManager
 from ...timber.timberInterface import TimberInterface
 
 
-class MicrosoftSamTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
+class MicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
 
     def __init__(
         self,
@@ -67,9 +67,9 @@ class MicrosoftSamTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
         soundPlayerManager: SoundPlayerManagerInterface
 
         if useSharedSoundPlayerManager:
-            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedInstance()
         else:
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
         return MicrosoftTtsManager(
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,

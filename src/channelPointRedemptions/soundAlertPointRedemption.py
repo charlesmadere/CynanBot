@@ -84,7 +84,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             return False
 
         if isImmediate:
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
             if utils.isValidStr(filePath):
                 await soundPlayerManager.playSoundFile(filePath)

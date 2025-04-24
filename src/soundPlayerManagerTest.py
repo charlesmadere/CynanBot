@@ -70,7 +70,7 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 
 async def main():
     pass
-    soundPlayerManager = soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+    soundPlayerManager = soundPlayerManagerProvider.constructNewInstance()
     await soundPlayerManager.playSoundAlert(SoundAlert.SUBSCRIBE)
     print('sleep')
     await asyncio.sleep(10)

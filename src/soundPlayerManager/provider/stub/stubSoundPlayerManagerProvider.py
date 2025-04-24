@@ -10,9 +10,9 @@ class StubSoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
     def __init__(self):
         self.__instance: Final[SoundPlayerManagerInterface] = StubSoundPlayerManager()
 
-    def constructNewSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+    def constructNewInstance(self) -> SoundPlayerManagerInterface:
         # this method kinda breaks contract, but it's fine in this case
         return self.__instance
 
-    def getSharedSoundPlayerManagerInstance(self) -> SoundPlayerManagerInterface:
+    def getSharedInstance(self) -> SoundPlayerManagerInterface:
         return self.__instance

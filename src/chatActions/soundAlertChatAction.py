@@ -126,7 +126,7 @@ class SoundAlertChatAction(AbsChatAction):
         if not utils.isValidStr(soundAlert):
             return False
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
         return await soundPlayerManager.playSoundFile(
             filePath = soundAlert,
@@ -134,7 +134,7 @@ class SoundAlertChatAction(AbsChatAction):
         )
 
     async def __playFilePathChatSoundAlert(self, chatSoundAlert: FilePathChatSoundAlert) -> bool:
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
         return await soundPlayerManager.playSoundFile(
             filePath = chatSoundAlert.filePath,
@@ -142,7 +142,7 @@ class SoundAlertChatAction(AbsChatAction):
         )
 
     async def __playSoundAlertChatSoundAlert(self, chatSoundAlert: SoundAlertChatSoundAlert) -> bool:
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
         return await soundPlayerManager.playSoundAlert(
             alert = chatSoundAlert.soundAlert,

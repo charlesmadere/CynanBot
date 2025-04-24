@@ -1,17 +1,17 @@
 from typing import Final
 
 from .compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
-from ..commodoreSam.commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
+from ..commodoreSam.commodoreSamTtsManagerProviderInterface import CommodoreSamTtsManagerProviderInterface
 from ..compositeTtsManager import CompositeTtsManager
 from ..compositeTtsManagerInterface import CompositeTtsManagerInterface
-from ..decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
-from ..google.googleTtsManagerInterface import GoogleTtsManagerInterface
-from ..halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
-from ..microsoft.microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
-from ..microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
+from ..decTalk.decTalkTtsManagerProviderInterface import DecTalkTtsManagerProviderInterface
+from ..google.googleTtsManagerProviderInterface import GoogleTtsManagerProviderInterface
+from ..halfLife.halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerProviderInterface
+from ..microsoft.microsoftTtsManagerProviderInterface import MicrosoftTtsManagerProviderInterface
+from ..microsoftSam.microsoftSamTtsManagerProviderInterface import MicrosoftSamTtsManagerProviderInterface
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from ..ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
+from ..streamElements.streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
+from ..ttsMonster.ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsManagerProviderInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -24,60 +24,60 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
-        commodoreSamTtsManager: CommodoreSamTtsManagerInterface | None,
-        decTalkTtsManager: DecTalkTtsManagerInterface | None,
-        googleTtsManager: GoogleTtsManagerInterface | None,
-        halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
-        microsoftTtsManager: MicrosoftTtsManagerInterface | None,
-        microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
-        singingDecTalkTtsManager: DecTalkTtsManagerInterface | None,
-        streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
+        commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface,
+        decTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface,
+        googleTtsManagerProvider: GoogleTtsManagerProviderInterface,
+        halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface,
+        microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface,
+        microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface,
+        singingDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface,
+        streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface,
         timber: TimberInterface,
-        ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
+        ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
-        elif commodoreSamTtsManager is not None and not isinstance(commodoreSamTtsManager, CommodoreSamTtsManagerInterface):
-            raise TypeError(f'commodoreSamTtsManager argument is malformed: \"{commodoreSamTtsManager}\"')
-        elif decTalkTtsManager is not None and not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface):
-            raise TypeError(f'decTalkTtsManager argument is malformed: \"{decTalkTtsManager}\"')
-        elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManagerInterface):
-            raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
-        elif halfLifeTtsManager is not None and not isinstance(halfLifeTtsManager, HalfLifeTtsManagerInterface):
-            raise TypeError(f'halfLifeTtsManager argument is malformed: \"{halfLifeTtsManager}\"')
-        elif microsoftTtsManager is not None and not isinstance(microsoftTtsManager, MicrosoftTtsManagerInterface):
-            raise TypeError(f'microsoftTtsManager argument is malformed: \"{microsoftTtsManager}\"')
-        elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
-            raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
-        elif singingDecTalkTtsManager is not None and not isinstance(singingDecTalkTtsManager, DecTalkTtsManagerInterface):
-            raise TypeError(f'singingDecTalkTtsManager argument is malformed: \"{singingDecTalkTtsManager}\"')
-        elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
-            raise TypeError(f'streamElementsTtsManager argument is malformed: \"{streamElementsTtsManager}\"')
+        elif not isinstance(commodoreSamTtsManagerProvider, CommodoreSamTtsManagerProviderInterface):
+            raise TypeError(f'commodoreSamTtsManagerProvider argument is malformed: \"{commodoreSamTtsManagerProvider}\"')
+        elif not isinstance(decTalkTtsManagerProvider, DecTalkTtsManagerProviderInterface):
+            raise TypeError(f'decTalkTtsManagerProvider argument is malformed: \"{decTalkTtsManagerProvider}\"')
+        elif not isinstance(googleTtsManagerProvider, GoogleTtsManagerProviderInterface):
+            raise TypeError(f'googleTtsManagerProvider argument is malformed: \"{googleTtsManagerProvider}\"')
+        elif not isinstance(halfLifeTtsManagerProvider, HalfLifeTtsManagerProviderInterface):
+            raise TypeError(f'halfLifeTtsManagerProvider argument is malformed: \"{halfLifeTtsManagerProvider}\"')
+        elif not isinstance(microsoftTtsManagerProvider, MicrosoftTtsManagerProviderInterface):
+            raise TypeError(f'microsoftTtsManagerProvider argument is malformed: \"{microsoftTtsManagerProvider}\"')
+        elif not isinstance(microsoftSamTtsManagerProvider, MicrosoftSamTtsManagerProviderInterface):
+            raise TypeError(f'microsoftSamTtsManagerProvider argument is malformed: \"{microsoftSamTtsManagerProvider}\"')
+        elif not isinstance(singingDecTalkTtsManagerProvider, DecTalkTtsManagerProviderInterface):
+            raise TypeError(f'singingDecTalkTtsManagerProvider argument is malformed: \"{singingDecTalkTtsManagerProvider}\"')
+        elif not isinstance(streamElementsTtsManagerProvider, StreamElementsTtsManagerProviderInterface):
+            raise TypeError(f'streamElementsTtsManagerProvider argument is malformed: \"{streamElementsTtsManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsMonsterTtsManager is not None and not isinstance(ttsMonsterTtsManager, TtsMonsterTtsManagerInterface):
-            raise TypeError(f'ttsMonsterTtsManager argument is malformed: \"{ttsMonsterTtsManager}\"')
+        elif not isinstance(ttsMonsterTtsManagerProvider, TtsMonsterTtsManagerProviderInterface):
+            raise TypeError(f'ttsMonsterTtsManagerProvider argument is malformed: \"{ttsMonsterTtsManagerProvider}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface | None] = chatterPreferredTtsHelper
-        self.__commodoreSamTtsManager: Final[CommodoreSamTtsManagerInterface | None] = commodoreSamTtsManager
-        self.__decTalkTtsManager: Final[DecTalkTtsManagerInterface | None] = decTalkTtsManager
-        self.__googleTtsManager: Final[GoogleTtsManagerInterface | None] = googleTtsManager
-        self.__halfLifeTtsManager: Final[HalfLifeTtsManagerInterface | None] = halfLifeTtsManager
-        self.__microsoftTtsManager: Final[MicrosoftTtsManagerInterface | None] = microsoftTtsManager
-        self.__microsoftSamTtsManager: Final[MicrosoftSamTtsManagerInterface | None] = microsoftSamTtsManager
-        self.__singingDecTalkTtsManager: Final[DecTalkTtsManagerInterface | None] = singingDecTalkTtsManager
-        self.__streamElementsTtsManager: Final[StreamElementsTtsManagerInterface | None] = streamElementsTtsManager
+        self.__commodoreSamTtsManagerProvider: Final[CommodoreSamTtsManagerProviderInterface] = commodoreSamTtsManagerProvider
+        self.__decTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = decTalkTtsManagerProvider
+        self.__googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = googleTtsManagerProvider
+        self.__halfLifeTtsManagerProvider: Final[HalfLifeTtsManagerProviderInterface] = halfLifeTtsManagerProvider
+        self.__microsoftTtsManagerProvider: Final[MicrosoftTtsManagerProviderInterface] = microsoftTtsManagerProvider
+        self.__microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] = microsoftSamTtsManagerProvider
+        self.__singingDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = singingDecTalkTtsManagerProvider
+        self.__streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = streamElementsTtsManagerProvider
         self.__timber: Final[TimberInterface] = timber
-        self.__ttsMonsterTtsManager: Final[TtsMonsterTtsManagerInterface | None] = ttsMonsterTtsManager
+        self.__ttsMonsterTtsManagerProvider: Final[TtsMonsterTtsManagerProviderInterface] = ttsMonsterTtsManagerProvider
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
-        self.__compositeTtsManager: CompositeTtsManagerInterface | None = None
+        self.__sharedInstance: CompositeTtsManagerInterface | None = None
 
     def constructNewInstance(
         self,
@@ -86,27 +86,89 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
 
+        commodoreSamTtsManager = self.__commodoreSamTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        decTalkTtsManager = self.__decTalkTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        googleTtsManager = self.__googleTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        halfLifeTtsManager = self.__halfLifeTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        microsoftTtsManager = self.__microsoftTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        microsoftSamTtsManager = self.__microsoftSamTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        singingDecTalkTtsManager = self.__singingDecTalkTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        streamElementsTtsManager = self.__streamElementsTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
+        ttsMonsterTtsManager = self.__ttsMonsterTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
         return CompositeTtsManager(
             backgroundTaskHelper = self.__backgroundTaskHelper,
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
-            commodoreSamTtsManager = self.__commodoreSamTtsManager,
-            decTalkTtsManager = self.__decTalkTtsManager,
-            googleTtsManager = self.__googleTtsManager,
-            halfLifeTtsManager = self.__halfLifeTtsManager,
-            microsoftTtsManager = self.__microsoftTtsManager,
-            microsoftSamTtsManager = self.__microsoftSamTtsManager,
-            singingDecTalkTtsManager = self.__singingDecTalkTtsManager,
-            streamElementsTtsManager = self.__streamElementsTtsManager,
+            commodoreSamTtsManager = commodoreSamTtsManager,
+            decTalkTtsManager = decTalkTtsManager,
+            googleTtsManager = googleTtsManager,
+            halfLifeTtsManager = halfLifeTtsManager,
+            microsoftTtsManager = microsoftTtsManager,
+            microsoftSamTtsManager = microsoftSamTtsManager,
+            singingDecTalkTtsManager = singingDecTalkTtsManager,
+            streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
-            ttsMonsterTtsManager = self.__ttsMonsterTtsManager,
+            ttsMonsterTtsManager = ttsMonsterTtsManager,
             ttsSettingsRepository = self.__ttsSettingsRepository
         )
 
     def getSharedInstance(self) -> CompositeTtsManagerInterface:
-        compositeTtsManager = self.__compositeTtsManager
+        sharedInstance = self.__sharedInstance
 
-        if compositeTtsManager is None:
-            compositeTtsManager = self.constructNewInstance()
-            self.__compositeTtsManager = compositeTtsManager
+        if sharedInstance is not None:
+            return sharedInstance
 
-        return compositeTtsManager
+        commodoreSamTtsManager = self.__commodoreSamTtsManagerProvider.getSharedInstance()
+        decTalkTtsManager = self.__decTalkTtsManagerProvider.getSharedInstance()
+        googleTtsManager = self.__googleTtsManagerProvider.getSharedInstance()
+        halfLifeTtsManager = self.__halfLifeTtsManagerProvider.getSharedInstance()
+        microsoftTtsManager = self.__microsoftTtsManagerProvider.getSharedInstance()
+        microsoftSamTtsManager = self.__microsoftSamTtsManagerProvider.getSharedInstance()
+        singingDecTalkTtsManager = self.__singingDecTalkTtsManagerProvider.getSharedInstance()
+        streamElementsTtsManager = self.__streamElementsTtsManagerProvider.getSharedInstance()
+        ttsMonsterTtsManager = self.__ttsMonsterTtsManagerProvider.getSharedInstance()
+
+        sharedInstance = CompositeTtsManager(
+            backgroundTaskHelper = self.__backgroundTaskHelper,
+            chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
+            commodoreSamTtsManager = commodoreSamTtsManager,
+            decTalkTtsManager = decTalkTtsManager,
+            googleTtsManager = googleTtsManager,
+            halfLifeTtsManager = halfLifeTtsManager,
+            microsoftTtsManager = microsoftTtsManager,
+            microsoftSamTtsManager = microsoftSamTtsManager,
+            singingDecTalkTtsManager = singingDecTalkTtsManager,
+            streamElementsTtsManager = streamElementsTtsManager,
+            timber = self.__timber,
+            ttsMonsterTtsManager = ttsMonsterTtsManager,
+            ttsSettingsRepository = self.__ttsSettingsRepository
+        )
+
+        self.__sharedInstance = sharedInstance
+        return sharedInstance

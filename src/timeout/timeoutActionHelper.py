@@ -175,7 +175,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         if soundAlert is None:
             return
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         await soundPlayerManager.playSoundAlert(soundAlert)
 
     async def __alertViaSoundAndTextToSpeechForTargeted(

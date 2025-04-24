@@ -107,7 +107,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             return False
 
         self.__timber.log('SoundAlertCheertActionHelper', f'Playing sound alert CheerAction from {cheerUserName}:{cheerUserId} ({soundAlertPath=}) ({user.handle=}) ({action=})')
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         await soundPlayerManager.playSoundFile(soundAlertPath)
 
         return True

@@ -503,31 +503,31 @@ from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepositor
 from src.trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from src.tts.commodoreSam.commodoreSamTtsManager import CommodoreSamTtsManager
-from src.tts.commodoreSam.commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
-from src.tts.decTalk.decTalkTtsManager import DecTalkTtsManager
-from src.tts.decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
-from src.tts.decTalk.singingDecTalkTtsManager import SingingDecTalkTtsManager
+from src.tts.commodoreSam.commodoreSamTtsManagerProvider import CommodoreSamTtsManagerProvider
+from src.tts.commodoreSam.commodoreSamTtsManagerProviderInterface import CommodoreSamTtsManagerProviderInterface
+from src.tts.decTalk.decTalkTtsManagerProvider import DecTalkTtsManagerProvider
+from src.tts.decTalk.decTalkTtsManagerProviderInterface import DecTalkTtsManagerProviderInterface
+from src.tts.decTalk.singingDecTalkTtsManagerProvider import SingingDecTalkTtsManagerProvider
 from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
 from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from src.tts.google.googleTtsManager import GoogleTtsManager
-from src.tts.google.googleTtsManagerInterface import GoogleTtsManagerInterface
-from src.tts.halfLife.halfLifeTtsManager import HalfLifeTtsManager
-from src.tts.halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
+from src.tts.google.googleTtsManagerProvider import GoogleTtsManagerProvider
+from src.tts.google.googleTtsManagerProviderInterface import GoogleTtsManagerProviderInterface
+from src.tts.halfLife.halfLifeTtsManagerProvider import HalfLifeTtsManagerProvider
+from src.tts.halfLife.halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerProviderInterface
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.microsoft.microsoftTtsManager import MicrosoftTtsManager
-from src.tts.microsoft.microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
-from src.tts.microsoftSam.microsoftSamTtsManager import MicrosoftSamTtsManager
-from src.tts.microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
+from src.tts.microsoft.microsoftTtsManagerProvider import MicrosoftTtsManagerProvider
+from src.tts.microsoft.microsoftTtsManagerProviderInterface import MicrosoftTtsManagerProviderInterface
+from src.tts.microsoftSam.microsoftSamTtsManagerProvider import MicrosoftSamTtsManagerProvider
+from src.tts.microsoftSam.microsoftSamTtsManagerProviderInterface import MicrosoftSamTtsManagerProviderInterface
 from src.tts.provider.compositeTtsManagerProvider import CompositeTtsManagerProvider
 from src.tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from src.tts.streamElements.streamElementsTtsManager import StreamElementsTtsManager
-from src.tts.streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from src.tts.ttsMonster.ttsMonsterTtsManager import TtsMonsterTtsManager
-from src.tts.ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
+from src.tts.streamElements.streamElementsTtsManagerProvider import StreamElementsTtsManagerProvider
+from src.tts.streamElements.streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
+from src.tts.ttsMonster.ttsMonsterTtsManagerProvider import TtsMonsterTtsManagerProvider
+from src.tts.ttsMonster.ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsManagerProviderInterface
 from src.ttsChatter.repository.ttsChatterRepository import TtsChatterRepository
 from src.ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from src.ttsChatter.settings.ttsChatterSettingsRepository import TtsChatterSettingsRepository
@@ -674,7 +674,7 @@ from src.websocketConnection.settings.websocketConnectionServerSettingsInterface
 from src.websocketConnection.websocketConnectionServer import WebsocketConnectionServer
 from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
-# Uncomment this chunk to turn on extra extra debug logging
+# Uncomment this chunk to turn on extra debug logging
 # logging.basicConfig(
 #     filename = 'generalLogging.log',
 #     level = logging.DEBUG
@@ -1967,11 +1967,11 @@ commodoreSamMessageCleaner: CommodoreSamMessageCleanerInterface = CommodoreSamMe
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-commodoreSamTtsManager: CommodoreSamTtsManagerInterface = CommodoreSamTtsManager(
+commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface = CommodoreSamTtsManagerProvider(
     commodoreSamHelper = commodoreSamHelper,
     commodoreSamMessageCleaner = commodoreSamMessageCleaner,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
@@ -2006,29 +2006,31 @@ decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-decTalkTtsManager: DecTalkTtsManagerInterface = DecTalkTtsManager(
+decTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = DecTalkTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-singingDecTalkTtsManager: DecTalkTtsManagerInterface = SingingDecTalkTtsManager(
+singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+    emojiHelper = emojiHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    sing = True
+)
+
+singingDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = SingingDecTalkTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
-    decTalkMessageCleaner = DecTalkMessageCleaner(
-        emojiHelper = emojiHelper,
-        timber = timber,
-        ttsSettingsRepository = ttsSettingsRepository,
-        twitchMessageStringUtils = twitchMessageStringUtils,
-        sing = True
-    ),
+    decTalkMessageCleaner = singingDecTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
@@ -2067,13 +2069,13 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     timber = timber
 )
 
-googleTtsManager: GoogleTtsManagerInterface = GoogleTtsManager(
+googleTtsManagerProvider: GoogleTtsManagerProviderInterface = GoogleTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
@@ -2106,12 +2108,12 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
+halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface = HalfLifeTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     halfLifeTtsHelper = halfLifeTtsHelper,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository
 )
@@ -2153,12 +2155,12 @@ microsoftTtsMessageCleaner: MicrosoftTtsMessageCleanerInterface = MicrosoftTtsMe
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-microsoftTtsManager: MicrosoftTtsManagerInterface = MicrosoftTtsManager(
+microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface = MicrosoftTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     microsoftTtsHelper = microsoftTtsHelper,
     microsoftTtsMessageCleaner = microsoftTtsMessageCleaner,
     microsoftTtsSettingsRepository = microsoftTtsSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
@@ -2201,12 +2203,12 @@ microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMe
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-microsoftSamTtsManager: MicrosoftSamTtsManagerInterface = MicrosoftSamTtsManager(
+microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface = MicrosoftSamTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     microsoftSamHelper = microsoftSamHelper,
     microsoftSamMessageCleaner = microsoftSamMessageCleaner,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
@@ -2260,9 +2262,9 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     timber = timber
 )
 
-streamElementsTtsManager: StreamElementsTtsManagerInterface = StreamElementsTtsManager(
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = StreamElementsTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamElementsHelper = streamElementsHelper,
     streamElementsMessageCleaner = streamElementsMessageCleaner,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
@@ -2317,9 +2319,9 @@ ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageC
     twitchMessageStringUtils = twitchMessageStringUtils
 )
 
-ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface = TtsMonsterTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsMonsterHelper = ttsMonsterHelper,
@@ -2331,16 +2333,16 @@ ttsMonsterTtsManager: TtsMonsterTtsManagerInterface = TtsMonsterTtsManager(
 compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTtsManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    commodoreSamTtsManager = commodoreSamTtsManager,
-    decTalkTtsManager = decTalkTtsManager,
-    googleTtsManager = googleTtsManager,
-    halfLifeTtsManager = halfLifeTtsManager,
-    microsoftSamTtsManager = microsoftSamTtsManager,
-    microsoftTtsManager = microsoftTtsManager,
-    singingDecTalkTtsManager = singingDecTalkTtsManager,
-    streamElementsTtsManager = streamElementsTtsManager,
+    commodoreSamTtsManagerProvider = commodoreSamTtsManagerProvider,
+    decTalkTtsManagerProvider = decTalkTtsManagerProvider,
+    googleTtsManagerProvider = googleTtsManagerProvider,
+    halfLifeTtsManagerProvider = halfLifeTtsManagerProvider,
+    microsoftSamTtsManagerProvider = microsoftSamTtsManagerProvider,
+    microsoftTtsManagerProvider = microsoftTtsManagerProvider,
+    singingDecTalkTtsManagerProvider = singingDecTalkTtsManagerProvider,
+    streamElementsTtsManagerProvider = streamElementsTtsManagerProvider,
     timber = timber,
-    ttsMonsterTtsManager = ttsMonsterTtsManager,
+    ttsMonsterTtsManagerProvider = ttsMonsterTtsManagerProvider,
     ttsSettingsRepository = ttsSettingsRepository
 )
 
@@ -2359,7 +2361,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
-    soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
+    soundPlayerManager = soundPlayerManagerProvider.getSharedInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     timber = timber
 )

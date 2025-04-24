@@ -67,9 +67,9 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
         soundPlayerManager: SoundPlayerManagerInterface
 
         if useSharedSoundPlayerManager:
-            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedInstance()
         else:
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
         return TtsMonsterTtsManager(
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
