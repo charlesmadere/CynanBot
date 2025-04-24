@@ -48,6 +48,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
         self.__parenGroupRegEx: Pattern = re.compile(r'(\(.*?\))', re.IGNORECASE)
         self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_ ]|(?<=\s)\s+', re.IGNORECASE)
+        self.__phraseDigitAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_/ ]|(?<=\s)\s+', re.IGNORECASE)
         self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
         self.__prefixRegEx: Pattern = re.compile(r'^(a|an|and|at|as|by|for|in|of|on|that|the|these|this|those|to|with((\s+that)|(\s+the)|(\s+these)|(\s+this)|(\s+those))?)\s+', re.IGNORECASE)
         self.__simpleTimeDurationRegEx: Pattern = re.compile(r'^((\d+)\s+(second|minute|hour|day|month|year)s?)(\s+old)?$', re.IGNORECASE)
@@ -57,7 +58,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__usDollarRegEx: Pattern = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
         self.__wordDashWordRegEx: Pattern = re.compile(r'[\-_]', re.IGNORECASE)
-        self.__wordSlashWordRegEx: Pattern = re.compile(r'^(\w+)\/(\w+)(\/(\w+))?$', re.IGNORECASE)
+        self.__wordSlashWordRegEx: Pattern = re.compile(r'^([a-z]+)/([a-z]+)(/([a-z]+))?$', re.IGNORECASE)
         self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
 
         # RegEx pattern for arabic and roman numerals, returning only one capturing group
@@ -169,10 +170,14 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         # convert special characters to latin where possible
         answer = await self.__fancyToLatin(answer)
 
-        # completely removes most special characters
-        answer = self.__phraseAnswerRegEx.sub('', answer).strip()
+        if any(character.isdigit() for character in answer):
+            # only remove some special characters (if there are digits in the answer)
+            answer = self.__phraseDigitAnswerRegEx.sub('', answer).strip()
+        else:
+            # completely remove most special characters (if there are no digits in the answer)
+            answer = self.__phraseAnswerRegEx.sub('', answer).strip()
 
-        # removes common phrase prefixes
+        # removes common prefix words that shouldn't be necessary to an answer's comprehensibility
         answer = self.__prefixRegEx.sub('', answer).strip()
 
         return answer

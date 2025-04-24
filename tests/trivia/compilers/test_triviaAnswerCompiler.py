@@ -419,14 +419,14 @@ class TestTriviaAnswerCompiler:
         assert 'vampire' in result
 
     @pytest.mark.asyncio
-    async def test_compileTextAnswersList_withHelloWorld123(self):
-        result = await self.compiler.compileTextAnswersList(['hello/world/123'])
+    async def test_compileTextAnswersList_withHelloWorldFoo(self):
+        result = await self.compiler.compileTextAnswersList(['hello/world/foo'])
         assert isinstance(result, list)
         assert len(result) == 4
-        assert 'helloworld123' in result
+        assert 'helloworldfoo' in result
         assert 'hello' in result
         assert 'world' in result
-        assert '123' in result
+        assert 'foo' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withHerPonytail(self):
@@ -611,6 +611,13 @@ class TestTriviaAnswerCompiler:
         assert len(result) == 2
         assert '0 hours' in result
         assert '0' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_with2DividedBy3(self):
+        result = await self.compiler.compileTextAnswersList(['2/3'])
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert '2/3' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_with3MonthsOld(self):
