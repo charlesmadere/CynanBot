@@ -194,6 +194,7 @@ from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from .tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
+from .tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from .ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from .ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
@@ -296,7 +297,7 @@ class CynanBot(
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         cheerActionsWizard: CheerActionsWizardInterface | None,
         commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface | None,
-        compositeTtsManager: CompositeTtsManagerInterface,
+        compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         crowdControlActionHandler: CrowdControlActionHandler | None,
         crowdControlAutomator: CrowdControlAutomatorInterface | None,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
@@ -486,8 +487,8 @@ class CynanBot(
             raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
         elif commodoreSamSettingsRepository is not None and not isinstance(commodoreSamSettingsRepository, CommodoreSamSettingsRepositoryInterface):
             raise TypeError(f'commodoreSamSettingsRepository argument is malformed: \"{commodoreSamSettingsRepository}\"')
-        elif not isinstance(compositeTtsManager, CompositeTtsManagerInterface):
-            raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
+        elif not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
+            raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
         elif crowdControlActionHandler is not None and not isinstance(crowdControlActionHandler, CrowdControlActionHandler):
             raise TypeError(f'crowdControlActionHandler argument is malformed: \"{crowdControlActionHandler}\"')
         elif crowdControlAutomator is not None and not isinstance(crowdControlAutomator, CrowdControlAutomatorInterface):
@@ -743,7 +744,7 @@ class CynanBot(
         self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
-        self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManager, timber, twitchChannelEditorsRepository)
+        self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
 
