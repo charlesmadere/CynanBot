@@ -97,7 +97,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             self.__timber.log('StreamElementsTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
         except Exception as e:
-            self.__timber.log('GoogleTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
+            self.__timber.log('StreamElementsTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
