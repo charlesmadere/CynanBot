@@ -1,29 +1,29 @@
 from frozenlist import FrozenList
 
-from .halfLifeHelperInterface import HalfLifeHelperInterface
+from .halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
 from ..models.halfLifeVoice import HalfLifeVoice
 from ..parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
-from ..service.halfLifeServiceInterface import HalfLifeServiceInterface
+from ..service.halfLifeTtsServiceInterface import HalfLifeTtsServiceInterface
 from ..settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
 
 
-class HalfLifeHelper(HalfLifeHelperInterface):
+class HalfLifeTtsHelper(HalfLifeTtsHelperInterface):
 
     def __init__(
         self,
-        halfLifeService: HalfLifeServiceInterface,
+        halfLifeTtsService: HalfLifeTtsServiceInterface,
         halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface
     ):
-        if not isinstance(halfLifeService, HalfLifeServiceInterface):
-            raise TypeError(f'halfLifeApiService argument is malformed: \"{halfLifeService}\"')
+        if not isinstance(halfLifeTtsService, HalfLifeTtsServiceInterface):
+            raise TypeError(f'halfLifeTtsService argument is malformed: \"{halfLifeTtsService}\"')
         elif not isinstance(halfLifeMessageVoiceParser, HalfLifeMessageVoiceParserInterface):
             raise TypeError(f'halfLifeMessageVoiceParser argument is malformed: \"{halfLifeMessageVoiceParser}\"')
         elif not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
 
-        self.__halfLifeService: HalfLifeServiceInterface = halfLifeService
+        self.__halfLifeTtsService: HalfLifeTtsServiceInterface = halfLifeTtsService
         self.__halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = halfLifeMessageVoiceParser
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
 
@@ -51,8 +51,8 @@ class HalfLifeHelper(HalfLifeHelperInterface):
 
         soundsDirectory = await self.__halfLifeSettingsRepository.requireSoundsDirectory()
 
-        return await self.__halfLifeService.getWavs(
+        return await self.__halfLifeTtsService.getWavs(
+            voice = voice,
             directory = soundsDirectory,
-            text = message,
-            voice = voice
+            text = message
         )

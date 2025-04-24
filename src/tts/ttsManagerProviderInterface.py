@@ -10,11 +10,11 @@ class TtsManagerProviderInterface(ABC):
     def constructNewInstance(
         self,
         useSharedSoundPlayerManager: bool = True
-    ) -> TtsManagerInterface:
+    ) -> TtsManagerInterface | None:
         pass
 
     @abstractmethod
-    def getSharedInstance(self) -> TtsManagerInterface:
+    def getSharedInstance(self) -> TtsManagerInterface | None:
         pass
 
     @property

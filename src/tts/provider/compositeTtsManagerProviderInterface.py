@@ -6,9 +6,12 @@ from ..compositeTtsManagerInterface import CompositeTtsManagerInterface
 class CompositeTtsManagerProviderInterface(ABC):
 
     @abstractmethod
-    def constructNewCompositeTtsManagerInstance(self) -> CompositeTtsManagerInterface:
+    def constructNewInstance(
+        self,
+        useSharedSoundPlayerManager: bool = True
+    ) -> CompositeTtsManagerInterface:
         pass
 
     @abstractmethod
-    def getSharedCompositeTtsManagerInstance(self) -> CompositeTtsManagerInterface:
+    def getSharedInstance(self) -> CompositeTtsManagerInterface:
         pass

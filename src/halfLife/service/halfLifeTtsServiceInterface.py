@@ -6,13 +6,13 @@ from ..models.halfLifeVoice import HalfLifeVoice
 from ...misc.clearable import Clearable
 
 
-class HalfLifeServiceInterface(Clearable, ABC):
+class HalfLifeTtsServiceInterface(Clearable, ABC):
 
     @abstractmethod
     async def getWavs(
         self,
+        voice: HalfLifeVoice,
         directory: str,
-        text: str,
-        voice: HalfLifeVoice
+        text: str
     ) -> FrozenList[str]:
         pass

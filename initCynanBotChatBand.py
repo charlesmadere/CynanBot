@@ -848,10 +848,10 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-if soundPlayerManagerProvider is None or soundPlayerRandomizerHelper is None or streamAlertsManager is None:
-    soundAlertPointRedemption: SoundAlertPointRedemption | None = None
-else:
-    soundAlertPointRedemption: SoundAlertPointRedemption | None = SoundAlertPointRedemption(
+soundAlertPointRedemption: SoundAlertPointRedemption | None = None
+
+if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not None and streamAlertsManager is not None:
+    soundAlertPointRedemption = SoundAlertPointRedemption(
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
         streamAlertsManager = streamAlertsManager
@@ -940,7 +940,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = None,
     cheerActionsWizard = None,
     commodoreSamSettingsRepository = None,
-    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
+    compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
     crowdControlActionHandler = None,
     crowdControlAutomator = None,
     crowdControlIdGenerator = None,
@@ -956,7 +956,7 @@ cynanBot = CynanBot(
     funtoonTokensRepository = None,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = None,
-    halfLifeService = None,
+    halfLifeTtsService = None,
     halfLifeSettingsRepository = None,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = None,

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from .microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
-from ..models.ttsProvider import TtsProvider
 from ..ttsManagerProviderInterface import TtsManagerProviderInterface
 
 
@@ -11,14 +10,9 @@ class MicrosoftTtsManagerProviderInterface(TtsManagerProviderInterface, ABC):
     def constructNewInstance(
         self,
         useSharedSoundPlayerManager: bool = True
-    ) -> MicrosoftTtsManagerInterface:
+    ) -> MicrosoftTtsManagerInterface | None:
         pass
 
     @abstractmethod
-    def getSharedInstance(self) -> MicrosoftTtsManagerInterface:
-        pass
-
-    @property
-    @abstractmethod
-    def ttsProvider(self) -> TtsProvider:
+    def getSharedInstance(self) -> MicrosoftTtsManagerInterface | None:
         pass

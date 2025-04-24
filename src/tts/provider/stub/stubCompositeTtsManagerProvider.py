@@ -8,9 +8,12 @@ class StubCompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
     def __init__(self):
         self.__instance: CompositeTtsManagerInterface = StubCompositeTtsManager()
 
-    def constructNewCompositeTtsManagerInstance(self) -> CompositeTtsManagerInterface:
+    def constructNewInstance(
+        self,
+        useSharedSoundPlayerManager: bool = True
+    ) -> CompositeTtsManagerInterface:
         # this method kinda breaks contract, but it's fine in this case
         return self.__instance
 
-    def getSharedCompositeTtsManagerInstance(self) -> CompositeTtsManagerInterface:
+    def getSharedInstance(self) -> CompositeTtsManagerInterface:
         return self.__instance

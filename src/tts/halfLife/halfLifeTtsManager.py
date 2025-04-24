@@ -11,7 +11,7 @@ from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInter
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
-from ...halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
+from ...halfLife.helper.halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
@@ -23,21 +23,21 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
     def __init__(
         self,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
-        halfLifeHelper: HalfLifeHelperInterface,
         halfLifeMessageCleaner: HalfLifeMessageCleanerInterface,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
+        halfLifeTtsHelper: HalfLifeTtsHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
-        elif not isinstance(halfLifeHelper, HalfLifeHelperInterface):
-            raise TypeError(f'halfLifeHelper argument is malformed: \"{halfLifeHelper}\"')
         elif not isinstance(halfLifeMessageCleaner, HalfLifeMessageCleanerInterface):
             raise TypeError(f'halfLifeMessageCleaner argument is malformed: \"{halfLifeMessageCleaner}\"')
         elif not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
+        elif not isinstance(halfLifeTtsHelper, HalfLifeTtsHelperInterface):
+            raise TypeError(f'halfLifeTtsHelper argument is malformed: \"{halfLifeTtsHelper}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -46,9 +46,9 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
-        self.__halfLifeHelper: HalfLifeHelperInterface = halfLifeHelper
         self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
         self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
+        self.__halfLifeTtsHelper: HalfLifeTtsHelperInterface = halfLifeTtsHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
@@ -124,7 +124,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         cleanedMessage = await self.__halfLifeMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        return await self.__halfLifeHelper.generateTts(
+        return await self.__halfLifeTtsHelper.generateTts(
             voice = voice,
             message = cleanedMessage
         )

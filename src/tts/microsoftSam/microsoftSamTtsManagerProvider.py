@@ -60,7 +60,7 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
     def constructNewInstance(
         self,
         useSharedSoundPlayerManager: bool = True
-    ) -> MicrosoftSamTtsManagerInterface:
+    ) -> MicrosoftSamTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
 
@@ -82,7 +82,7 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
             ttsSettingsRepository = self.__ttsSettingsRepository
         )
 
-    def getSharedInstance(self) -> MicrosoftSamTtsManagerInterface:
+    def getSharedInstance(self) -> MicrosoftSamTtsManagerInterface | None:
         sharedInstance = self.__sharedInstance
 
         if sharedInstance is None:
@@ -93,4 +93,4 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
 
     @property
     def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.STREAM_ELEMENTS
+        return TtsProvider.MICROSOFT_SAM

@@ -187,14 +187,14 @@ from src.google.settings.googleSettingsRepository import GoogleSettingsRepositor
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from src.halfLife.halfLifeMessageCleaner import HalfLifeMessageCleaner
 from src.halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
-from src.halfLife.helper.halfLifeHelper import HalfLifeHelper
-from src.halfLife.helper.halfLifeHelperInterface import HalfLifeHelperInterface
+from src.halfLife.helper.halfLifeTtsHelper import HalfLifeTtsHelper
+from src.halfLife.helper.halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
 from src.halfLife.parser.halfLifeMessageVoiceParser import HalfLifeMessageVoiceParser
 from src.halfLife.parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
 from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
-from src.halfLife.service.halfLifeService import HalfLifeService
-from src.halfLife.service.halfLifeServiceInterface import HalfLifeServiceInterface
+from src.halfLife.service.halfLifeTtsService import HalfLifeTtsService
+from src.halfLife.service.halfLifeTtsServiceInterface import HalfLifeTtsServiceInterface
 from src.halfLife.settings.halfLifeSettingsRepository import HalfLifeSettingsRepository
 from src.halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from src.jisho.jishoApiService import JishoApiService
@@ -2087,7 +2087,7 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
     )
 )
 
-halfLifeService: HalfLifeServiceInterface = HalfLifeService(
+halfLifeTtsService: HalfLifeTtsServiceInterface = HalfLifeTtsService(
     timber = timber
 )
 
@@ -2095,8 +2095,8 @@ halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessag
     halfLifeVoiceParser = halfLifeVoiceParser
 )
 
-halfLifeHelper: HalfLifeHelperInterface = HalfLifeHelper(
-    halfLifeService = halfLifeService,
+halfLifeTtsHelper: HalfLifeTtsHelperInterface = HalfLifeTtsHelper(
+    halfLifeTtsService = halfLifeTtsService,
     halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
     halfLifeSettingsRepository = halfLifeSettingsRepository
 )
@@ -2108,9 +2108,9 @@ halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner
 
 halfLifeTtsManager: HalfLifeTtsManagerInterface = HalfLifeTtsManager(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    halfLifeHelper = halfLifeHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
+    halfLifeTtsHelper = halfLifeTtsHelper,
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository
@@ -2271,18 +2271,6 @@ streamElementsTtsManager: StreamElementsTtsManagerInterface = StreamElementsTtsM
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
-    timber = timber
-)
-
-ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
-    ttsJsonMapper = ttsJsonMapper
-)
-
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
-    timber = timber
-)
-
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -2370,7 +2358,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 
 streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
-    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
+    compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
     soundPlayerManager = soundPlayerManagerProvider.getSharedSoundPlayerManagerInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     timber = timber
@@ -3009,7 +2997,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
-    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
+    compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
     crowdControlActionHandler = crowdControlActionHandler,
     crowdControlAutomator = crowdControlAutomator,
     crowdControlIdGenerator = crowdControlIdGenerator,
@@ -3025,7 +3013,7 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = googleSettingsRepository,
-    halfLifeService = halfLifeService,
+    halfLifeTtsService = halfLifeTtsService,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = jishoHelper,

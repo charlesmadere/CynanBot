@@ -60,7 +60,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
     def constructNewInstance(
         self,
         useSharedSoundPlayerManager: bool = True
-    ) -> TtsMonsterTtsManagerInterface:
+    ) -> TtsMonsterTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
 
@@ -82,7 +82,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
             ttsSettingsRepository = self.__ttsSettingsRepository
         )
 
-    def getSharedInstance(self) -> TtsMonsterTtsManagerInterface:
+    def getSharedInstance(self) -> TtsMonsterTtsManagerInterface | None:
         sharedInstance = self.__sharedInstance
 
         if sharedInstance is None:

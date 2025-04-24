@@ -1,45 +1,40 @@
 from typing import Final
 
-from .streamElementsTtsManager import StreamElementsTtsManager
-from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
-from .streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
+from .commodoreSamTtsManager import CommodoreSamTtsManager
+from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
+from .commodoreSamTtsManagerProviderInterface import CommodoreSamTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
+from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
+from ...commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
-from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
-from ...streamElements.settings.streamElementsSettingsRepositoryInterface import \
-    StreamElementsSettingsRepositoryInterface
-from ...streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
 from ...timber.timberInterface import TimberInterface
 
 
-class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface):
+class CommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface):
 
     def __init__(
         self,
-        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
+        commodoreSamHelper: CommodoreSamHelperInterface,
+        commodoreSamMessageCleaner: CommodoreSamMessageCleanerInterface,
+        commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
-        streamElementsHelper: StreamElementsHelperInterface,
-        streamElementsMessageCleaner: StreamElementsMessageCleanerInterface,
-        streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
-            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        if not isinstance(commodoreSamHelper, CommodoreSamHelperInterface):
+            raise TypeError(f'commodoreSamHelper argument is malformed: \"{commodoreSamHelper}\"')
+        elif not isinstance(commodoreSamMessageCleaner, CommodoreSamMessageCleanerInterface):
+            raise TypeError(f'commodoreSamMessageCleaner argument is malformed: \"{commodoreSamMessageCleaner}\"')
+        elif not isinstance(commodoreSamSettingsRepository, CommodoreSamSettingsRepositoryInterface):
+            raise TypeError(f'commodoreSamSettingsRepository argument is malformed: \"{commodoreSamSettingsRepository}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
-        elif not isinstance(streamElementsHelper, StreamElementsHelperInterface):
-            raise TypeError(f'streamElementsHelper argument is malformed: \"{streamElementsHelper}\"')
-        elif not isinstance(streamElementsMessageCleaner, StreamElementsMessageCleanerInterface):
-            raise TypeError(f'streamElementsMessageCleaner argument is malformed: \"{streamElementsMessageCleaner}\"')
-        elif not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
-            raise TypeError(f'streamElementsSettingsRepository argument is malformed: \"{streamElementsSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
@@ -47,21 +42,20 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__commodoreSamHelper: Final[CommodoreSamHelperInterface] = commodoreSamHelper
+        self.__commodoreSamMessageCleaner: Final[CommodoreSamMessageCleanerInterface] = commodoreSamMessageCleaner
+        self.__commodoreSamSettingsRepository: Final[CommodoreSamSettingsRepositoryInterface] = commodoreSamSettingsRepository
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
-        self.__streamElementsHelper: Final[StreamElementsHelperInterface] = streamElementsHelper
-        self.__streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = streamElementsMessageCleaner
-        self.__streamElementsSettingsRepository: Final[StreamElementsSettingsRepositoryInterface] = streamElementsSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
-        self.__sharedInstance: StreamElementsTtsManagerInterface | None = None
+        self.__sharedInstance: CommodoreSamTtsManagerInterface | None = None
 
     def constructNewInstance(
         self,
         useSharedSoundPlayerManager: bool = True
-    ) -> StreamElementsTtsManagerInterface | None:
+    ) -> CommodoreSamTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
 
@@ -72,18 +66,17 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
         else:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewSoundPlayerManagerInstance()
 
-        return StreamElementsTtsManager(
-            chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
+        return CommodoreSamTtsManager(
+            commodoreSamHelper = self.__commodoreSamHelper,
+            commodoreSamMessageCleaner = self.__commodoreSamMessageCleaner,
+            commodoreSamSettingsRepository = self.__commodoreSamSettingsRepository,
             soundPlayerManager = soundPlayerManager,
-            streamElementsHelper = self.__streamElementsHelper,
-            streamElementsMessageCleaner = self.__streamElementsMessageCleaner,
-            streamElementsSettingsRepository = self.__streamElementsSettingsRepository,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,
             ttsSettingsRepository = self.__ttsSettingsRepository
         )
 
-    def getSharedInstance(self) -> StreamElementsTtsManagerInterface | None:
+    def getSharedInstance(self) -> CommodoreSamTtsManagerInterface | None:
         sharedInstance = self.__sharedInstance
 
         if sharedInstance is None:
@@ -94,4 +87,4 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
 
     @property
     def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.STREAM_ELEMENTS
+        return TtsProvider.COMMODORE_SAM

@@ -1,13 +1,13 @@
 import aiofiles.ospath
 from frozenlist import FrozenList
 
-from .halfLifeServiceInterface import HalfLifeServiceInterface
+from .halfLifeTtsServiceInterface import HalfLifeTtsServiceInterface
 from ..models.halfLifeVoice import HalfLifeVoice
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
-class HalfLifeService(HalfLifeServiceInterface):
+class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
     def __init__(
         self,
@@ -22,7 +22,7 @@ class HalfLifeService(HalfLifeServiceInterface):
 
     async def clearCaches(self):
         self.__cache.clear()
-        self.__timber.log('HalfLifeService', 'Caches cleared')
+        self.__timber.log('HalfLifeTtsService', 'Caches cleared')
 
     async def __getPath(
         self,
@@ -66,16 +66,16 @@ class HalfLifeService(HalfLifeServiceInterface):
 
     async def getWavs(
         self,
+        voice: HalfLifeVoice,
         directory: str,
-        text: str,
-        voice: HalfLifeVoice
+        text: str
     ) -> FrozenList[str]:
-        if not utils.isValidStr(directory):
+        if not isinstance(voice, HalfLifeVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+        elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
         elif not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
-        elif not isinstance(voice, HalfLifeVoice):
-            raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
         #TODO some filenames contain `_` meaning there's 2 words and this is going to miss them.
         paths: list[str] = []

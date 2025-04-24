@@ -1917,10 +1917,10 @@ pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemp
     twitchUtils = twitchUtils
 )
 
-if timeoutActionHelper is None:
-    timeoutPointRedemption: TimeoutPointRedemption | None = None
-else:
-    timeoutPointRedemption: TimeoutPointRedemption | None = TimeoutPointRedemption(
+timeoutPointRedemption: TimeoutPointRedemption | None = None
+
+if timeoutActionHelper is not None:
+    timeoutPointRedemption = TimeoutPointRedemption(
         activeChattersRepository = activeChattersRepository,
         timber = timber,
         timeoutActionHelper = timeoutActionHelper,
@@ -1931,17 +1931,17 @@ else:
         userIdsRepository = userIdsRepository
     )
 
-if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
-    superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = None
-    triviaGamePointRedemption: TriviaGamePointRedemption | None = None
-else:
-    superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTriviaGamePointRedemption(
+superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = None
+triviaGamePointRedemption: TriviaGamePointRedemption | None = None
+
+if cutenessRepository is not None and triviaGameBuilder is not None and triviaGameMachine is not None and triviaScoreRepository is not None and triviaUtils is not None:
+    superTriviaGamePointRedemption = SuperTriviaGamePointRedemption(
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
         triviaGameMachine = triviaGameMachine
     )
 
-    triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRedemption(
+    triviaGamePointRedemption = TriviaGamePointRedemption(
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
         triviaGameMachine = triviaGameMachine
@@ -2078,7 +2078,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     commodoreSamSettingsRepository = None,
-    compositeTtsManager = compositeTtsManagerProvider.getSharedCompositeTtsManagerInstance(),
+    compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
     crowdControlActionHandler = None,
     crowdControlAutomator = None,
     crowdControlIdGenerator = None,
@@ -2094,7 +2094,7 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = None,
-    halfLifeService = None,
+    halfLifeTtsService = None,
     halfLifeSettingsRepository = None,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = jishoHelper,

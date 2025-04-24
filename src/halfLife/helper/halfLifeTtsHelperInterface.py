@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 from ..models.halfLifeVoice import HalfLifeVoice
 
 
-class HalfLifeHelperInterface(ABC):
+class HalfLifeTtsHelperInterface(ABC):
 
     @abstractmethod
     async def generateTts(

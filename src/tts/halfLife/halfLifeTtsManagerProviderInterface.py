@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
-from ..models.ttsProvider import TtsProvider
 from ..ttsManagerProviderInterface import TtsManagerProviderInterface
 
 
@@ -11,14 +10,9 @@ class HalfLifeTtsManagerProviderInterface(TtsManagerProviderInterface, ABC):
     def constructNewInstance(
         self,
         useSharedSoundPlayerManager: bool = True
-    ) -> HalfLifeTtsManagerInterface:
+    ) -> HalfLifeTtsManagerInterface | None:
         pass
 
     @abstractmethod
-    def getSharedInstance(self) -> HalfLifeTtsManagerInterface:
-        pass
-
-    @property
-    @abstractmethod
-    def ttsProvider(self) -> TtsProvider:
+    def getSharedInstance(self) -> HalfLifeTtsManagerInterface | None:
         pass

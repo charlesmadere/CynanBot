@@ -13,6 +13,7 @@ from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInter
 from ..streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from ..ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
+from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -78,7 +79,13 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
 
         self.__compositeTtsManager: CompositeTtsManagerInterface | None = None
 
-    def constructNewCompositeTtsManagerInstance(self) -> CompositeTtsManagerInterface:
+    def constructNewInstance(
+        self,
+        useSharedSoundPlayerManager: bool = True
+    ) -> CompositeTtsManagerInterface:
+        if not utils.isValidBool(useSharedSoundPlayerManager):
+            raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
+
         return CompositeTtsManager(
             backgroundTaskHelper = self.__backgroundTaskHelper,
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
@@ -95,11 +102,11 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             ttsSettingsRepository = self.__ttsSettingsRepository
         )
 
-    def getSharedCompositeTtsManagerInstance(self) -> CompositeTtsManagerInterface:
+    def getSharedInstance(self) -> CompositeTtsManagerInterface:
         compositeTtsManager = self.__compositeTtsManager
 
         if compositeTtsManager is None:
-            compositeTtsManager = self.constructNewCompositeTtsManagerInstance()
+            compositeTtsManager = self.constructNewInstance()
             self.__compositeTtsManager = compositeTtsManager
 
         return compositeTtsManager
