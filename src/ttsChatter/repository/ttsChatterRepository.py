@@ -110,8 +110,9 @@ class TtsChatterRepository(TtsChatterRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if f'{twitchChannelId}:{chatterUserId}' in self.__cache:
-            return self.__cache.get(f'{twitchChannelId}:{chatterUserId}', False)
+        cachedValue = self.__cache.get(f'{twitchChannelId}:{chatterUserId}', None)
+        if cachedValue is not None:
+            return cachedValue
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
