@@ -95,5 +95,8 @@ class TtsChatterChatAction(AbsChatAction):
 
             return True
         else:
-            compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance()
+            compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance(
+                useSharedSoundPlayerManager = False
+            )
+
             return await compositeTtsManager.playTtsEvent(ttsEvent)
