@@ -35,6 +35,14 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.SPONGEBOB.humanName
         assert result == 'Spongebob'
 
+    def test_humanName_withVomit(self):
+        result = TtsMonsterVoice.VOMIT.humanName
+        assert result == 'Vomit'
+
+    def test_humanName_withWitch(self):
+        result = TtsMonsterVoice.WITCH.humanName
+        assert result == 'Witch'
+
     def test_humanName_withZeroTwo(self):
         result = TtsMonsterVoice.ZERO_TWO.humanName
         assert result == 'Zero Two'
@@ -70,6 +78,14 @@ class TestTtsMonsterVoice:
     def test_inMessageName_withSpongebob(self):
         result = TtsMonsterVoice.SPONGEBOB.inMessageName
         assert result == 'spongebob'
+
+    def test_inMessageName_withVomit(self):
+        result = TtsMonsterVoice.VOMIT.inMessageName
+        assert result == 'vomit'
+
+    def test_inMessageName_withWitch(self):
+        result = TtsMonsterVoice.WITCH.inMessageName
+        assert result == 'witch'
 
     def test_inMessageName_withZeroTwo(self):
         result = TtsMonsterVoice.ZERO_TWO.inMessageName

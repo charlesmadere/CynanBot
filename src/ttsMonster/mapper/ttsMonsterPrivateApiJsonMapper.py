@@ -74,6 +74,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         spongebob.append(re.compile(r'^\s*spongebob\s*$', re.IGNORECASE))
         spongebob.freeze()
 
+        vomit: FrozenList[Pattern] = FrozenList()
+        vomit.append(re.compile(r'^\s*vomit\s*$', re.IGNORECASE))
+        vomit.freeze()
+
         witch: FrozenList[Pattern] = FrozenList()
         witch.append(re.compile(r'^\s*witch\s*$', re.IGNORECASE))
         witch.freeze()
@@ -94,6 +98,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             TtsMonsterVoice.PIRATE: pirate,
             TtsMonsterVoice.SHADOW: shadow,
             TtsMonsterVoice.SPONGEBOB: spongebob,
+            TtsMonsterVoice.VOMIT: vomit,
             TtsMonsterVoice.WITCH: witch,
             TtsMonsterVoice.ZERO_TWO: zeroTwo
         })
@@ -209,6 +214,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
             case TtsMonsterVoice.SPONGEBOB: return 'spongebob'
+            case TtsMonsterVoice.VOMIT: return 'vomit'
             case TtsMonsterVoice.WITCH: return 'witch'
             case TtsMonsterVoice.ZERO_TWO: return 'zero_two'
             case _: raise RuntimeError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')

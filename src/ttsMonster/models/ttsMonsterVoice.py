@@ -14,6 +14,7 @@ class TtsMonsterVoice(Enum):
     PIRATE = auto()
     SHADOW = auto()
     SPONGEBOB = auto()
+    VOMIT = auto()
     WITCH = auto()
     ZERO_TWO = auto()
 
@@ -31,6 +32,7 @@ class TtsMonsterVoice(Enum):
             case TtsMonsterVoice.PIRATE: return 'Pirate'
             case TtsMonsterVoice.SHADOW: return 'Shadow'
             case TtsMonsterVoice.SPONGEBOB: return 'Spongebob'
+            case TtsMonsterVoice.VOMIT: return 'Vomit'
             case TtsMonsterVoice.WITCH: return 'Witch'
             case TtsMonsterVoice.ZERO_TWO: return 'Zero Two'
             case _: raise ValueError(f'Unknown TtsMonsterVoice value: \"{self}\"')
@@ -49,6 +51,7 @@ class TtsMonsterVoice(Enum):
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
             case TtsMonsterVoice.SPONGEBOB: return 'spongebob'
+            case TtsMonsterVoice.VOMIT: return 'vomit'
             case TtsMonsterVoice.WITCH: return 'witch'
             case TtsMonsterVoice.ZERO_TWO: return 'zerotwo'
             case _: raise ValueError(f'Unknown TtsMonsterVoice value: \"{self}\"')
