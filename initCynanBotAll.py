@@ -326,8 +326,6 @@ from src.storage.psql.psqlCredentialsProviderInterface import PsqlCredentialsPro
 from src.storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
 from src.storage.storageJsonMapper import StorageJsonMapper
 from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
-from src.storage.tempFileHelper import TempFileHelper
-from src.storage.tempFileHelperInterface import TempFileHelperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
@@ -1913,10 +1911,6 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
         eventLoop = eventLoop,
         fileName = '../config/ttsSettingsRepository.json'
     )
-)
-
-tempFileHelper: TempFileHelperInterface = TempFileHelper(
-    eventLoop = eventLoop
 )
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()

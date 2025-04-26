@@ -11,8 +11,6 @@ from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from .network.networkClientProvider import NetworkClientProvider
 from .storage.jsonStaticReader import JsonStaticReader
-from .storage.tempFileHelper import TempFileHelper
-from .storage.tempFileHelperInterface import TempFileHelperInterface
 from .streamElements.apiService.streamElementsApiService import StreamElementsApiService
 from .streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
 from .streamElements.helper.streamElementsApiHelper import StreamElementsApiHelper
@@ -62,10 +60,6 @@ asyncio.set_event_loop(eventLoop)
 timber: TimberInterface = TimberStub()
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
-
-tempFileHelper: TempFileHelperInterface = TempFileHelper(
-    eventLoop = eventLoop
-)
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
