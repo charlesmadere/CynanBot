@@ -122,33 +122,17 @@ class TestChatterPreferredTtsJsonMapper:
         assert result.languageEntry is LanguageEntry.JAPANESE
 
     @pytest.mark.asyncio
-    async def test_serializePreferredTts_withDecTalk(self):
-        preferredTts = DecTalkPreferredTts(
-            voice = None
-        )
-
-        result = await self.mapper.serializePreferredTts(
-            preferredTts = preferredTts
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 0
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTts_withGoogle(self):
-        preferredTts = GooglePreferredTts(
-            languageEntry = None
-        )
-
-        result = await self.mapper.serializePreferredTts(
-            preferredTts = preferredTts
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 0
-
-    @pytest.mark.asyncio
     async def test_parsePreferredTts_withHalfLife(self):
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = dict(),
+            provider = TtsProvider.HALF_LIFE
+        )
+
+        assert isinstance(result, HalfLifePreferredTts)
+        assert result.halfLifeVoiceEntry is None
+
+    @pytest.mark.asyncio
+    async def test_parsePreferredTts_withHalfLifeAndScientistVoice(self):
         halfLifeVoiceString = HalfLifeVoice.SCIENTIST.keyName
 
         result = await self.mapper.parsePreferredTts(
@@ -172,6 +156,128 @@ class TestChatterPreferredTtsJsonMapper:
         assert result.voice is None
 
     @pytest.mark.asyncio
+    async def test_parsePreferredTts_withMicrosoftSam(self):
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = dict(),
+            provider = TtsProvider.MICROSOFT_SAM
+        )
+
+        assert isinstance(result, MicrosoftSamPreferredTts)
+        assert result.voice is None
+
+    @pytest.mark.asyncio
+    async def test_parsePreferredTts_withStreamElements(self):
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = dict(),
+            provider = TtsProvider.STREAM_ELEMENTS
+        )
+
+        assert isinstance(result, StreamElementsPreferredTts)
+        assert result.voice is None
+
+    @pytest.mark.asyncio
+    async def test_parsePreferredTts_withStreamElementsAndAmyVoice(self):
+        streamElementsVoiceString = await self.streamElementsJsonParser.serializeVoice(
+            voice = StreamElementsVoice.AMY
+        )
+
+        result = await self.mapper.parsePreferredTts(
+            configurationJson = {
+                'streamElementsVoice': streamElementsVoiceString
+            },
+            provider = TtsProvider.STREAM_ELEMENTS
+        )
+
+        assert isinstance(result, StreamElementsPreferredTts)
+        assert result.voice is StreamElementsVoice.AMY
+
+    def test_sanity(self):
+        assert self.mapper is not None
+        assert isinstance(self.mapper, ChatterPreferredTtsJsonMapper)
+        assert isinstance(self.mapper, ChatterPreferredTtsJsonMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withDecTalk(self):
+        preferredTts = DecTalkPreferredTts(
+            voice = None
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withDecTalkAndWendyVoice(self):
+        preferredTts = DecTalkPreferredTts(
+            voice = DecTalkVoice.WENDY
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        decTalkVoiceString: str | Any | None = result.get('voice', None)
+        assert isinstance(decTalkVoiceString, str)
+
+        decTalkVoice = await self.decTalkVoiceMapper.requireVoice(decTalkVoiceString)
+        assert decTalkVoice is DecTalkVoice.WENDY
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withGoogle(self):
+        preferredTts = GooglePreferredTts(
+            languageEntry = None
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withGoogleAndKoreanLanguageEntry(self):
+        preferredTts = GooglePreferredTts(
+            languageEntry = LanguageEntry.KOREAN
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        iso6391Code: str | Any | None = result.get('iso6391', None)
+        assert isinstance(iso6391Code, str)
+
+        assert iso6391Code == LanguageEntry.KOREAN.iso6391Code
+
+    @pytest.mark.asyncio
+    async def test_serializePreferredTts_withGoogleAndSwedishLanguageEntry(self):
+        preferredTts = GooglePreferredTts(
+            languageEntry = LanguageEntry.SWEDISH
+        )
+
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = preferredTts
+        )
+
+        assert isinstance(result, dict)
+        assert len(result) == 1
+
+        iso6391Code: str | Any | None = result.get('iso6391', None)
+        assert isinstance(iso6391Code, str)
+
+        assert iso6391Code == LanguageEntry.SWEDISH.iso6391Code
+
+    @pytest.mark.asyncio
     async def test_serializePreferredTts_withMicrosoftAndHarukaVoiceEntry(self):
         preferredTts = MicrosoftTtsPreferredTts(
             voice = MicrosoftTtsVoice.HARUKA
@@ -191,14 +297,15 @@ class TestChatterPreferredTtsJsonMapper:
         assert microsoftTtsVoice is MicrosoftTtsVoice.HARUKA
 
     @pytest.mark.asyncio
-    async def test_parsePreferredTts_withMicrosoftSam(self):
-        result = await self.mapper.parsePreferredTts(
-            configurationJson = dict(),
-            provider = TtsProvider.MICROSOFT_SAM
+    async def test_serializePreferredTts_withMicrosoftSam(self):
+        result = await self.mapper.serializePreferredTts(
+            preferredTts = MicrosoftSamPreferredTts(
+                voice = None
+            )
         )
 
-        assert isinstance(result, MicrosoftSamPreferredTts)
-        assert result.voice is None
+        assert isinstance(result, dict)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_serializePreferredTts_withMicrosoftSamAndMaryInSpaceVoiceEntry(self):
@@ -233,7 +340,7 @@ class TestChatterPreferredTtsJsonMapper:
         assert len(result) == 0
 
     @pytest.mark.asyncio
-    async def test_serializePreferredTts_withStreamElementsAndJoey(self):
+    async def test_serializePreferredTts_withStreamElementsAndJoeyVoice(self):
         preferredTts = StreamElementsPreferredTts(
             voice = StreamElementsVoice.JOEY
         )
@@ -250,35 +357,3 @@ class TestChatterPreferredTtsJsonMapper:
 
         streamElementsVoice = await self.streamElementsJsonParser.parseVoice(streamElementsVoiceString)
         assert streamElementsVoice is StreamElementsVoice.JOEY
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTts_withGoogleAndSwedishLanguageEntry(self):
-        preferredTts = GooglePreferredTts(
-            languageEntry = LanguageEntry.SWEDISH
-        )
-
-        result = await self.mapper.serializePreferredTts(
-            preferredTts = preferredTts
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 1
-
-        iso6391Code = result['iso6391']
-        assert iso6391Code == LanguageEntry.SWEDISH.iso6391Code
-
-    @pytest.mark.asyncio
-    async def test_serializePreferredTts_withMicrosoftSam(self):
-        result = await self.mapper.serializePreferredTts(
-            preferredTts = MicrosoftSamPreferredTts(
-                voice = None
-            )
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 0
-
-    def test_sanity(self):
-        assert self.mapper is not None
-        assert isinstance(self.mapper, ChatterPreferredTtsJsonMapper)
-        assert isinstance(self.mapper, ChatterPreferredTtsJsonMapperInterface)

@@ -266,7 +266,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         configurationJson: dict[str, Any] = dict()
 
         if preferredTts.voice is not None:
-            configurationJson['decTalkVoice'] = await self.__decTalkVoiceMapper.serializeVoice(preferredTts.voice)
+            configurationJson['voice'] = await self.__decTalkVoiceMapper.serializeVoice(preferredTts.voice)
 
         return configurationJson
 
