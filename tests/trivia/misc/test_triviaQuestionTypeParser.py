@@ -90,6 +90,20 @@ class TestTriviaQuestionTypeParser:
 
         assert result is None
 
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, TriviaQuestionTypeParser)
+        assert isinstance(self.parser, TriviaQuestionTypeParserInterface)
+
+    @pytest.mark.asyncio
+    async def test_serialize(self):
+        results: set[str] = set()
+
+        for triviaQuestionType in TriviaQuestionType:
+            results.add(await self.parser.serialize(triviaQuestionType))
+
+        assert len(results) == len(TriviaQuestionType)
+
     @pytest.mark.asyncio
     async def test_serialize_withMultipleChoice(self):
         result = await self.parser.serialize(TriviaQuestionType.MULTIPLE_CHOICE)
