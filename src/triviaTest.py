@@ -58,6 +58,7 @@ from .trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from .trivia.games.triviaGameStore import TriviaGameStore
 from .trivia.history.triviaHistoryRepository import TriviaHistoryRepository
 from .trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from .trivia.history.triviaQuestionOccurrencesRepository import TriviaQuestionOccurrencesRepository
 from .trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from .trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from .trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
@@ -570,6 +571,10 @@ triviaGameMachine = TriviaGameMachine(
             timber = timber,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
+        ),
+        triviaQuestionOccurrencesRepository = TriviaQuestionOccurrencesRepository(
+            backingDatabase = backingDatabase,
+            timber = timber
         ),
         triviaScraper = triviaScraper,
         triviaSettingsRepository = triviaSettingsRepository,

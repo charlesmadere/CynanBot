@@ -48,6 +48,7 @@ class TriviaSource(EnumWithToFromStr):
             case TriviaSource.OPEN_TRIVIA_DATABASE: return False
             case TriviaSource.OPEN_TRIVIA_QA: return True
             case TriviaSource.POKE_API: return False
+            case TriviaSource.QUIZ_API: return False
             case TriviaSource.THE_QUESTION_CO: return True
             case TriviaSource.TRIVIA_DATABASE: return True
             case TriviaSource.WILL_FRY_TRIVIA: return False
@@ -56,4 +57,19 @@ class TriviaSource(EnumWithToFromStr):
 
     @override
     def toStr(self) -> str:
-        return super().toStr().upper()
+        match self:
+            case TriviaSource.BONGO: return 'BONGO'
+            case TriviaSource.FUNTOON: return 'FUNTOON'
+            case TriviaSource.GLACIAL: return 'GLACIAL'
+            case TriviaSource.J_SERVICE: return 'J_SERVICE'
+            case TriviaSource.LORD_OF_THE_RINGS: return 'LORD_OF_THE_RINGS'
+            case TriviaSource.MILLIONAIRE: return 'MILLIONAIRE'
+            case TriviaSource.OPEN_TRIVIA_DATABASE: return 'OPEN_TRIVIA_DATABASE'
+            case TriviaSource.OPEN_TRIVIA_QA: return 'OPEN_TRIVIA_QA'
+            case TriviaSource.POKE_API: return 'POKE_API'
+            case TriviaSource.QUIZ_API: return 'QUIZ_API'
+            case TriviaSource.THE_QUESTION_CO: return 'THE_QUESTION_CO'
+            case TriviaSource.TRIVIA_DATABASE: return 'TRIVIA_DATABASE'
+            case TriviaSource.WILL_FRY_TRIVIA: return 'WILL_FRY_TRIVIA'
+            case TriviaSource.WWTBAM: return 'WWTBAM'
+            case _: raise RuntimeError(f'unknown TriviaSource: \"{self}\"')

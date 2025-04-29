@@ -192,7 +192,6 @@ from .trivia.triviaRepositories.triviaRepositoryInterface import TriviaRepositor
 from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
-from .tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from .tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface

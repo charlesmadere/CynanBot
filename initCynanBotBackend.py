@@ -250,6 +250,8 @@ from src.trivia.games.triviaGameStore import TriviaGameStore
 from src.trivia.games.triviaGameStoreInterface import TriviaGameStoreInterface
 from src.trivia.history.triviaHistoryRepository import TriviaHistoryRepository
 from src.trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from src.trivia.history.triviaQuestionOccurrencesRepository import TriviaQuestionOccurrencesRepository
+from src.trivia.history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
 from src.trivia.misc.triviaDifficultyParser import TriviaDifficultyParser
 from src.trivia.misc.triviaDifficultyParserInterface import TriviaDifficultyParserInterface
 from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
@@ -1365,6 +1367,11 @@ triviaScraper: TriviaScraperInterface = TriviaScraper(
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = TriviaQuestionOccurrencesRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
 triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = bongoTriviaQuestionRepository,
@@ -1396,6 +1403,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
     triviaScraper = triviaScraper,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaSourceInstabilityHelper = triviaSourceInstabilityHelper,

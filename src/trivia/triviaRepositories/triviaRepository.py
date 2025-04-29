@@ -23,6 +23,7 @@ from .triviaRepositoryInterface import TriviaRepositoryInterface
 from .willFryTriviaQuestionRepository import WillFryTriviaQuestionRepository
 from .wwtbamTriviaQuestionRepository import WwtbamTriviaQuestionRepository
 from ..content.triviaContentCode import TriviaContentCode
+from ..history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
 from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
@@ -65,6 +66,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         timber: TimberInterface,
         triviaDatabaseTriviaQuestionRepository: TriviaDatabaseTriviaQuestionRepository,
         triviaQuestionCompanyTriviaQuestionRepository: TriviaQuestionCompanyTriviaQuestionRepository,
+        triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface,
         triviaScraper: TriviaScraperInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper,
@@ -104,6 +106,8 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise TypeError(f'triviaDatabaseTriviaQuestionRepository argument is malformed: \"{triviaDatabaseTriviaQuestionRepository}\"')
         elif not isinstance(triviaQuestionCompanyTriviaQuestionRepository, TriviaQuestionCompanyTriviaQuestionRepository):
             raise TypeError(f'triviaQuestionCompanyTriviaQuestionRepository argument is malformed: \"{triviaQuestionCompanyTriviaQuestionRepository}\"')
+        elif not isinstance(triviaQuestionOccurrencesRepository, TriviaQuestionOccurrencesRepositoryInterface):
+            raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
         elif triviaScraper is not None and not isinstance(triviaScraper, TriviaScraperInterface):
             raise TypeError(f'triviaScraper argument is malformed: \"{triviaScraper}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
@@ -143,6 +147,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__timber: TimberInterface = timber
         self.__triviaDatabaseTriviaQuestionRepository: TriviaQuestionRepositoryInterface = triviaDatabaseTriviaQuestionRepository
         self.__triviaQuestionCompanyTriviaQuestionRepository: TriviaQuestionRepositoryInterface = triviaQuestionCompanyTriviaQuestionRepository
+        self.__triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = triviaQuestionOccurrencesRepository
         self.__triviaScraper: TriviaScraperInterface | None = triviaScraper
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = triviaSourceInstabilityHelper
@@ -600,6 +605,10 @@ class TriviaRepository(TriviaRepositoryInterface):
         )
 
         if triviaContentCode is TriviaContentCode.OK:
+            await self.__triviaQuestionOccurrencesRepository.incrementOccurrencesFromQuestion(
+                triviaQuestion = question
+            )
+
             return True
         else:
             self.__timber.log('TriviaRepository', f'Rejected a trivia question as it ended up being a duplicate ({triviaContentCode=})')

@@ -88,6 +88,70 @@ class TestTriviaSource:
 
         assert result is None
 
+    def test_isLocal(self):
+        results: list[bool] = list()
+
+        for triviaSource in TriviaSource:
+            results.append(triviaSource.isLocal)
+
+        assert len(results) == len(TriviaSource)
+
+    def test_isLocal_withBongo(self):
+        result = TriviaSource.BONGO.isLocal
+        assert result is False
+
+    def test_isLocal_withFuntoon(self):
+        result = TriviaSource.FUNTOON.isLocal
+        assert result is False
+
+    def test_isLocal_withGlacial(self):
+        result = TriviaSource.GLACIAL.isLocal
+        assert result is True
+
+    def test_isLocal_withJService(self):
+        result = TriviaSource.J_SERVICE.isLocal
+        assert result is False
+
+    def test_isLocal_withLordOfTheRings(self):
+        result = TriviaSource.LORD_OF_THE_RINGS.isLocal
+        assert result is True
+
+    def test_isLocal_withMillionaire(self):
+        result = TriviaSource.MILLIONAIRE.isLocal
+        assert result is True
+
+    def test_isLocal_withOpenTriviaDatabase(self):
+        result = TriviaSource.OPEN_TRIVIA_DATABASE.isLocal
+        assert result is False
+
+    def test_isLocal_withOpenTriviaQa(self):
+        result = TriviaSource.OPEN_TRIVIA_QA.isLocal
+        assert result is True
+
+    def test_isLocal_withPokeApi(self):
+        result = TriviaSource.POKE_API.isLocal
+        assert result is False
+
+    def test_isLocal_withQuizApi(self):
+        result = TriviaSource.QUIZ_API.isLocal
+        assert result is False
+
+    def test_isLocal_withTheQuestionCo(self):
+        result = TriviaSource.THE_QUESTION_CO.isLocal
+        assert result is True
+
+    def test_isLocal_withTriviaDatabase(self):
+        result = TriviaSource.TRIVIA_DATABASE.isLocal
+        assert result is True
+
+    def test_isLocal_withWillFryTrivia(self):
+        result = TriviaSource.WILL_FRY_TRIVIA.isLocal
+        assert result is False
+
+    def test_isLocal_withWwtbam(self):
+        result = TriviaSource.WWTBAM.isLocal
+        assert result is True
+
     def test_toStr(self):
         results: set[str] = set()
 
