@@ -323,6 +323,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'allen'
         if word in ('alberta', 'bert', 'berta', 'bertie'):
             yield 'albert'
+        if word == 'alex':
+            yield 'alexander'
         if word in ('andy', 'andrew', 'drew'):
             yield 'andrew'
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
@@ -1083,6 +1085,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'air conditioner'
             yield 'air conditioning'
             yield 'alternating current'
+        if word == 'accel':
+            yield 'accelerate'
+            yield 'acceleration'
         if word == 'alright':
             yield 'all right'
         if word == 'anime':
@@ -1103,6 +1108,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'control'
         if word == 'dad':
             yield 'father'
+        if word == 'decel':
+            yield 'decelerate'
+            yield 'deceleration'
         if word == 'dna':
             yield 'deoxyribonucleic acid'
         if word == 'est':
