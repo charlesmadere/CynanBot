@@ -209,7 +209,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
                         CREATE TABLE IF NOT EXISTS timeoutactionhistory (
                             totaltimeouts int DEFAULT 0 NOT NULL,
                             chatteruserid text NOT NULL,
-                            entries text DEFAULT NULL,
+                            entries jsonb DEFAULT NULL,
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
