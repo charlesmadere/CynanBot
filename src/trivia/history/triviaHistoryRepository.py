@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 from .triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..content.triviaContentCode import TriviaContentCode
 from ..misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
+from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaQuestionReference import TriviaQuestionReference
-from ..questions.triviaSource import TriviaSource
 from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -23,7 +23,8 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         triviaQuestionTypeParser: TriviaQuestionTypeParserInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSourceParser: TriviaSourceParserInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -35,12 +36,15 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             raise TypeError(f'triviaQuestionTypeParser argument is malformed: \"{triviaQuestionTypeParser}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
+            raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = triviaQuestionTypeParser
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSourceParser: TriviaSourceParserInterface = triviaSourceParser
 
         self.__isDatabaseReady: bool = False
 
@@ -83,7 +87,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             triviaId = record[2],
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            triviaSource = TriviaSource.fromStr(record[3]),
+            triviaSource = await self.__triviaSourceParser.parse(record[3]),
             triviaType = await self.__triviaQuestionTypeParser.parse(record[4])
         )
 
@@ -150,6 +154,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         if question.originalTriviaSource is not None:
             workingTriviaSource = question.originalTriviaSource
 
+        triviaSource = await self.__triviaSourceParser.serialize(workingTriviaSource)
         triviaType = await self.__triviaQuestionTypeParser.serialize(question.triviaType)
 
         connection = await self.__getDatabaseConnection()
@@ -159,7 +164,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3 AND twitchchannelid = $4
                 LIMIT 1
             ''',
-            question.triviaId, workingTriviaSource.toStr(), triviaType, twitchChannelId
+            question.triviaId, triviaSource, triviaType, twitchChannelId
         )
 
         nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
@@ -171,7 +176,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                     INSERT INTO triviahistory (datetime, emote, triviaid, triviasource, triviatype, twitchchannelid)
                     VALUES ($1, $2, $3, $4, $5, $6)
                 ''',
-                nowDateTimeStr, emote, question.triviaId, workingTriviaSource.toStr(), triviaType, twitchChannelId
+                nowDateTimeStr, emote, question.triviaId, triviaSource, triviaType, twitchChannelId
             )
 
             await connection.close()
@@ -192,7 +197,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 SET datetime = $1, emote = $2
                 WHERE triviaid = $3 AND triviasource = $4 AND triviatype = $5 AND twitchchannelid = $6
             ''',
-            nowDateTimeStr, emote, question.triviaId, question.triviaSource.toStr(), triviaType, twitchChannelId
+            nowDateTimeStr, emote, question.triviaId, triviaSource, triviaType, twitchChannelId
         )
 
         await connection.close()

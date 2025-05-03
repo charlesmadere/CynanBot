@@ -1396,7 +1396,8 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     triviaQuestionTypeParser = triviaQuestionTypeParser,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSourceParser = triviaSourceParser
 )
 
 triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(

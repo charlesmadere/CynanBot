@@ -1,10 +1,14 @@
+from datetime import datetime
+
 from .absChatCommand import AbsChatCommand
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 from ..trivia.additionalAnswers.additionalTriviaAnswers import AdditionalTriviaAnswers
-from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
+from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.questions.triviaQuestionReference import TriviaQuestionReference
@@ -21,6 +25,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
@@ -33,6 +38,8 @@ class TriviaInfoChatCommand(AbsChatCommand):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
@@ -47,6 +54,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
         self.__triviaUtils: TriviaUtilsInterface = triviaUtils
@@ -59,7 +67,8 @@ class TriviaInfoChatCommand(AbsChatCommand):
         normalizedEmote: str,
         reference: TriviaQuestionReference
     ) -> str:
-        dateTime = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
+        dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
+        relativeTimeString = await self.__getRelativeTimeString(reference.dateTime)
         triviaSource = reference.triviaSource.toStr()
         triviaType = reference.triviaType.toStr()
         isLocal = str(reference.triviaSource.isLocal).lower()
@@ -68,7 +77,17 @@ class TriviaInfoChatCommand(AbsChatCommand):
         if additionalTriviaAnswers is not None:
             additionalAnswersLen = len(additionalTriviaAnswers.answers)
 
-        return f'{normalizedEmote} {triviaSource} — {dateTime} — triviaType:{triviaType} isLocal:{isLocal} triviaId:{reference.triviaId} additionalAnswers:{additionalAnswersLen}'
+        return f'{normalizedEmote} {triviaSource}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString}) — triviaType:{triviaType} isLocal:{isLocal} additionalAnswers:{additionalAnswersLen}'
+
+    async def __getRelativeTimeString(self, dateTime: datetime) -> str:
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
+
+        if questionDateTimeVersusNowSeconds <= 30:
+            return 'asked just now'
+        else:
+            durationMessage = utils.secondsToDurationMessage(questionDateTimeVersusNowSeconds)
+            return f'asked {durationMessage} ago'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

@@ -62,8 +62,8 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         now = datetime.now(self.__timeZoneRepository.getDefault())
         questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
 
-        if questionDateTimeVersusNowSeconds <= 60:
-            # if the question was asked about 1 minute ago or less, let's just say it was just now
+        if questionDateTimeVersusNowSeconds <= 30:
+            # if the question was asked about 30 seconds ago or less, let's just say it was just now
             return 'asked just now'
         else:
             durationMessage = utils.secondsToDurationMessage(questionDateTimeVersusNowSeconds)
