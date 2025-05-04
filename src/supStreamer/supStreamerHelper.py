@@ -1,5 +1,5 @@
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 from .supStreamerHelperInterface import SupStreamerHelperInterface
 from ..misc import utils as utils
@@ -8,7 +8,7 @@ from ..misc import utils as utils
 class SupStreamerHelper(SupStreamerHelperInterface):
 
     def __init__(self):
-        self.__supStreamerRegEx: Pattern = re.compile(r'[^[:alnum:]]', re.IGNORECASE)
+        self.__supStreamerRegEx: Final[Pattern] = re.compile(r'[^[:alnum:]]', re.IGNORECASE)
 
     async def isSupStreamerMessage(
         self,
@@ -21,11 +21,10 @@ class SupStreamerHelper(SupStreamerHelperInterface):
             raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
 
         chatMessage = utils.cleanStr(chatMessage)
-
         if not utils.isValidStr(chatMessage):
             return False
 
-        # take these incoming message strings and replace every non alphanumeric character with ' '
+        # take these incoming message strings and replace every non-alphanumeric character with ' '
         chatMessage = self.__supStreamerRegEx.sub(' ', chatMessage).strip().casefold()
         supStreamerMessage = self.__supStreamerRegEx.sub(' ', supStreamerMessage).strip().casefold()
 
