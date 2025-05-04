@@ -1,5 +1,6 @@
+import traceback
 from json import JSONDecodeError
-from typing import Any
+from typing import Any, Final
 
 import xmltodict
 from requests.models import Response
@@ -26,9 +27,9 @@ class RequestsResponse(NetworkResponse):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__response: Response = response
-        self.__url: str = url
-        self.__timber: TimberInterface = timber
+        self.__response: Final[Response] = response
+        self.__url: Final[str] = url
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isClosed: bool = False
 
@@ -48,7 +49,10 @@ class RequestsResponse(NetworkResponse):
         try:
             return self.__response.json()
         except JSONDecodeError as e:
-            self.__timber.log('RequestsResponse', f'Unable to decode response into JSON for url \"{self.__url}\"', e)
+            self.__timber.log('RequestsResponse', f'Encountered JSON error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            return None
+        except Exception as e:
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
             return None
 
     @property

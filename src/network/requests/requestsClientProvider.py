@@ -1,3 +1,5 @@
+from typing import Final
+
 from .requestsHandle import RequestsHandle
 from ..networkClientProvider import NetworkClientProvider
 from ..networkClientType import NetworkClientType
@@ -20,8 +22,8 @@ class RequestsClientProvider(NetworkClientProvider):
         elif timeoutSeconds < 3 or timeoutSeconds > 60:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
-        self.__timber: TimberInterface = timber
-        self.__timeoutSeconds: int = timeoutSeconds
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutSeconds: Final[int] = timeoutSeconds
 
     async def get(self) -> NetworkHandle:
         return RequestsHandle(

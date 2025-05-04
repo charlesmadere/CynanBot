@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import requests
 from requests.models import Response
@@ -26,8 +26,8 @@ class RequestsHandle(NetworkHandle):
         elif timeoutSeconds < 3 or timeoutSeconds > 16:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
-        self.__timber: TimberInterface = timber
-        self.__timeoutSeconds: int = timeoutSeconds
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutSeconds: Final[int] = timeoutSeconds
 
     async def delete(
         self,
