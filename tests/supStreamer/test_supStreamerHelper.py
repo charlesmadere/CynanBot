@@ -169,3 +169,8 @@ class TestSupStreamerHelper:
             )
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.helper is not None
+        assert isinstance(self.helper, SupStreamerHelper)
+        assert isinstance(self.helper, SupStreamerHelperInterface)
