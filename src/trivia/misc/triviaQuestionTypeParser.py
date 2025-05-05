@@ -29,6 +29,9 @@ class TriviaQuestionTypeParser(TriviaQuestionTypeParserInterface):
         self,
         triviaQuestionType: TriviaQuestionType
     ) -> str:
+        if not isinstance(triviaQuestionType, TriviaQuestionType):
+            raise TypeError(f'triviaQuestionType argument is malformed: \"{triviaQuestionType}\"')
+
         match triviaQuestionType:
             case TriviaQuestionType.MULTIPLE_CHOICE: return 'multiple-choice'
             case TriviaQuestionType.QUESTION_ANSWER: return 'question-answer'

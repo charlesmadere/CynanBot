@@ -74,6 +74,11 @@ class TestTriviaQuestionTypeParser:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parse_withTrueDashFalseString(self):
+        result = await self.parser.parse('true-false')
+        assert result is TriviaQuestionType.TRUE_FALSE
+
+    @pytest.mark.asyncio
     async def test_parse_withTrueFalseStrings(self):
         strings: set[str] = { 'true-false', 'true_false', 'true false' }
 
