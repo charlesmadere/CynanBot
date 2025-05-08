@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from .absEccoTimeRemaining import AbsEccoTimeRemaining
 from .eccoTimeRemainingType import EccoTimeRemainingType
 from ...misc import utils as utils
@@ -7,38 +9,24 @@ class EccoTimeRemaining(AbsEccoTimeRemaining):
 
     def __init__(
         self,
-        hours: int,
-        minutes: int,
-        seconds: int
+        timerDateTime: datetime,
+        remainingSeconds: int
     ):
-        if not utils.isValidInt(hours):
-            raise TypeError(f'hours argument is malformed: \"{hours}\"')
-        elif hours < 0 or hours > utils.getIntMaxSafeSize():
-            raise ValueError(f'hours argument is out of bounds: {hours}')
-        elif not utils.isValidInt(minutes):
-            raise TypeError(f'minutes argument is malformed: \"{minutes}\"')
-        elif minutes < 0 or minutes > utils.getIntMaxSafeSize():
-            raise ValueError(f'minutes argument is out of bounds: {minutes}')
-        elif not utils.isValidInt(seconds):
-            raise TypeError(f'seconds argument is malformed: \"{seconds}\"')
-        elif seconds < 0 or seconds > utils.getIntMaxSafeSize():
-            raise ValueError(f'seconds argument is out of bounds: {seconds}')
+        if not isinstance(timerDateTime, datetime):
+            raise TypeError(f'timerDateTime argument is malformed: \"{timerDateTime}\"')
+        elif not utils.isValidInt(remainingSeconds):
+            raise TypeError(f'remainingSeconds argument is malformed: \"{remainingSeconds}\"')
 
-        self.__hours: int = hours
-        self.__minutes: int = minutes
-        self.__seconds: int = seconds
+        self.__timerDateTime: datetime = timerDateTime
+        self.__remainingSeconds: int = remainingSeconds
 
     @property
-    def hours(self) -> int:
-        return self.__hours
+    def timerDateTime(self) -> datetime:
+        return self.__timerDateTime
 
     @property
-    def minutes(self) -> int:
-        return self.__minutes
-
-    @property
-    def seconds(self) -> int:
-        return self.__seconds
+    def remainingSeconds(self) -> int:
+        return self.__remainingSeconds
 
     @property
     def timeRemainingType(self) -> EccoTimeRemainingType:

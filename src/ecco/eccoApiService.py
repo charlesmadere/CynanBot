@@ -1,9 +1,10 @@
 import traceback
+from datetime import datetime
 from typing import Final
 
 from .eccoApiServiceInterface import EccoApiServiceInterface
 from .eccoResponseParserInterface import EccoResponseParserInterface
-from .models.eccoTimerData import EccoTimerData
+from ..misc import utils as utils
 from ..network.exceptions import GenericNetworkException
 from ..network.networkClientProvider import NetworkClientProvider
 from ..timber.timberInterface import TimberInterface
@@ -28,22 +29,38 @@ class EccoApiService(EccoApiServiceInterface):
         self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
         self.__timber: Final[TimberInterface] = timber
 
-    async def fetchEccoTimerData(self) -> EccoTimerData:
+    async def fetchEccoTimerDateTime(self) -> datetime:
         self.__timber.log('EccoApiService', f'Fetching Ecco website...')
         clientSession = await self.__networkClientProvider.get()
 
         try:
             response = await clientSession.get('https://www.eccothedolphin.com/')
         except GenericNetworkException as e:
-            self.__timber.log('EccoApiService', f'Encountered network error when fetching Ecco website: {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'EccoApiService encountered network error when fetching Ecco website: {e}')
+            self.__timber.log('EccoApiService', f'Encountered network error when fetching main Ecco website: {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'EccoApiService encountered network error when fetching main Ecco website: {e}')
 
         htmlString = await response.string()
-        timerData = await self.__eccoResponseParser.parseTimerData(htmlString)
         await response.close()
 
-        if timerData is None:
-            self.__timber.log('EccoApiService', f'Unable to retrieve timer data from network response ({response=}) ({timerData=})')
-            raise GenericNetworkException(f'EccoApiService was unable to retrieve timer data from network response ({response=}) ({timerData=})')
+        scriptSource = await self.__eccoResponseParser.findTimerScriptSource(htmlString)
 
-        return timerData
+        if not utils.isValidUrl(scriptSource):
+            self.__timber.log('EccoApiService', f'Unable to retrieve script source from network response ({response=}) ({scriptSource=})')
+            raise GenericNetworkException(f'EccoApiService was unable to retrieve script source from network response ({response=}) ({scriptSource=})')
+
+        try:
+            response = await clientSession.get(scriptSource)
+        except GenericNetworkException as e:
+            self.__timber.log('EccoApiService', f'Encountered network error when fetching Ecco script file ({scriptSource=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'EccoApiService encountered network error when fetching Ecco script file ({scriptSource=}): {e}')
+
+        htmlString = await response.string()
+        await response.close()
+
+        timerDateTime = await self.__eccoResponseParser.findTimerDateValue(htmlString)
+
+        if timerDateTime is None:
+            self.__timber.log('EccoApiService', f'Unable to retrieve datetime from network response ({response=}) ({timerDateTime=})')
+            raise GenericNetworkException(f'EccoApiService was unable to retrieve datetime from network response ({response=}) ({timerDateTime=})')
+
+        return timerDateTime

@@ -36,8 +36,8 @@ eccoApiService: EccoApiServiceInterface = EccoApiService(
 async def main():
     pass
 
-    eccoTimerData = await eccoApiService.fetchEccoTimerData()
-    print(f'{eccoTimerData=}')
+    eccoTimerDateTime = await eccoApiService.fetchEccoTimerDateTime()
+    print(f'{eccoTimerDateTime=}')
 
     pass
 

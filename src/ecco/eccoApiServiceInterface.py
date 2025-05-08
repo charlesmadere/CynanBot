@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-
-from .models.eccoTimerData import EccoTimerData
+from datetime import datetime
 
 
 class EccoApiServiceInterface(ABC):
 
     @abstractmethod
-    async def fetchEccoTimerData(self) -> EccoTimerData:
+    async def fetchEccoTimerDateTime(self) -> datetime:
         pass
