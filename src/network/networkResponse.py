@@ -37,6 +37,10 @@ class NetworkResponse(ABC):
         pass
 
     @abstractmethod
+    async def string(self) -> str | None:
+        pass
+
+    @abstractmethod
     def toDictionary(self) -> dict[str, Any]:
         pass
 

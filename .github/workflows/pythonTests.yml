@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install aiosqlite emoji flake8 frozendict frozenlist num2words polyleven pytest pytest-asyncio pytz roman typing-extensions
+          pip install aiosqlite emoji flake8 frozendict frozenlist lxml num2words polyleven pytest pytest-asyncio pytz roman typing-extensions
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |

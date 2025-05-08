@@ -61,7 +61,12 @@ class RequestsResponse(NetworkResponse):
 
     async def read(self) -> bytes | None:
         self.__requireNotClosed()
-        return self.__response.content
+
+        try:
+            return self.__response.content
+        except Exception as e:
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into bytes ({self}): {e}', e, traceback.format_exc())
+            return None
 
     def __requireNotClosed(self):
         if self.isClosed():
@@ -71,6 +76,15 @@ class RequestsResponse(NetworkResponse):
     def statusCode(self) -> int:
         self.__requireNotClosed()
         return self.__response.status_code
+
+    async def string(self) -> str | None:
+        self.__requireNotClosed()
+
+        try:
+            return self.__response.text
+        except Exception as e:
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into string ({self}): {e}', e, traceback.format_exc())
+            return None
 
     def toDictionary(self) -> dict[str, Any]:
         return {
@@ -95,5 +109,5 @@ class RequestsResponse(NetworkResponse):
 
             return xmltodict.parse(rawBytes)
         except Exception as e:
-            self.__timber.log('RequestsResponse', f'Unable to decode response into XML for url \"{self.__url}\"', e)
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into XML ({self}): {e}', e, traceback.format_exc())
             return None
