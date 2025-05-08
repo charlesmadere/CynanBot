@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class EccoResponse:
+class EccoTimerData:
     hours: int
     minutes: int
     seconds: int

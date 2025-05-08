@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .models.eccoResponse import EccoResponse
+from .models.eccoTimerData import EccoTimerData
 
 
 class EccoResponseParserInterface(ABC):
 
     @abstractmethod
-    async def parseResponse(
+    async def parseTimerData(
         self,
-        htmlContents: Any | None
-    ) -> EccoResponse | None:
+        htmlString: str | Any | None
+    ) -> EccoTimerData | None:
         pass

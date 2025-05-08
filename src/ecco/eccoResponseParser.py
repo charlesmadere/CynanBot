@@ -7,7 +7,7 @@ from lxml import etree
 from lxml.etree import HTMLParser
 
 from .eccoResponseParserInterface import EccoResponseParserInterface
-from .models.eccoResponse import EccoResponse
+from .models.eccoTimerData import EccoTimerData
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
@@ -31,15 +31,15 @@ class EccoResponseParser(EccoResponseParserInterface):
         self.__minutesSecondsRegEx: Final[Pattern] = re.compile(r'^(\d+):(\d+)$', re.IGNORECASE)
         self.__secondsRegEx: Final[Pattern] = re.compile(r'^(\d+)$', re.IGNORECASE)
 
-    async def parseResponse(
+    async def parseTimerData(
         self,
-        htmlContents: str | Any | None
-    ) -> EccoResponse | None:
-        if not utils.isValidStr(htmlContents):
+        htmlString: str | Any | None
+    ) -> EccoTimerData | None:
+        if not utils.isValidStr(htmlString):
             return None
 
         result = etree.fromstring(
-            text = htmlContents,
+            text = htmlString,
             parser = self.__htmlParser
         )
 
@@ -62,7 +62,7 @@ class EccoResponseParser(EccoResponseParserInterface):
 
         h1Element = frozenH1Elements[0]
         h1Text: str | Any | None = h1Element.text
-        result = await self.__parseTextIntoEccoResponse(h1Text)
+        result = await self.__parseTextIntoTimerData(h1Text)
 
         if result is None:
             self.__timber.log('EccoResponseParser', f'Unable to parse timer text ({h1Element=}) ({h1Text=})')
@@ -70,10 +70,10 @@ class EccoResponseParser(EccoResponseParserInterface):
         else:
             return result
 
-    async def __parseTextIntoEccoResponse(
+    async def __parseTextIntoTimerData(
         self,
         text: str | Any | None
-    ) -> EccoResponse | None:
+    ) -> EccoTimerData | None:
         if not utils.isValidStr(text):
             return None
 
@@ -101,7 +101,7 @@ class EccoResponseParser(EccoResponseParserInterface):
         if hours is None or minutes is None or seconds is None:
             return None
         else:
-            return EccoResponse(
+            return EccoTimerData(
                 hours = hours,
                 minutes = minutes,
                 seconds = seconds,
