@@ -23,7 +23,7 @@ class RequestsHandle(NetworkHandle):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(timeoutSeconds):
             raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
-        elif timeoutSeconds < 3 or timeoutSeconds > 16:
+        elif timeoutSeconds < 3 or timeoutSeconds > 60:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         self.__timber: Final[TimberInterface] = timber
