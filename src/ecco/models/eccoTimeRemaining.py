@@ -16,17 +16,19 @@ class EccoTimeRemaining(AbsEccoTimeRemaining):
             raise TypeError(f'timerDateTime argument is malformed: \"{timerDateTime}\"')
         elif not utils.isValidInt(remainingSeconds):
             raise TypeError(f'remainingSeconds argument is malformed: \"{remainingSeconds}\"')
+        elif remainingSeconds < 0 or remainingSeconds > utils.getLongMaxSafeSize():
+            raise ValueError(f'remainingSeconds argument is out of bounds: {remainingSeconds}')
 
         self.__timerDateTime: datetime = timerDateTime
         self.__remainingSeconds: int = remainingSeconds
 
     @property
-    def timerDateTime(self) -> datetime:
-        return self.__timerDateTime
-
-    @property
     def remainingSeconds(self) -> int:
         return self.__remainingSeconds
+
+    @property
+    def timerDateTime(self) -> datetime:
+        return self.__timerDateTime
 
     @property
     def timeRemainingType(self) -> EccoTimeRemainingType:

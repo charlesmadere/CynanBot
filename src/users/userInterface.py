@@ -351,6 +351,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isEccoEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isEnabled(self) -> bool:
         pass
 

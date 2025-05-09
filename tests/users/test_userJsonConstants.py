@@ -63,6 +63,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.DISCORD_URL.jsonKey
         assert result == 'discordUrl'
 
+    def test_jsonKey_withEccoEnabled(self):
+        result = UserJsonConstant.ECCO_ENABLED.jsonKey
+        assert result == 'eccoEnabled'
+
     def test_jsonKey_withEnabled(self):
         result = UserJsonConstant.ENABLED.jsonKey
         assert result == 'enabled'

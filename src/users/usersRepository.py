@@ -170,6 +170,7 @@ class UsersRepository(UsersRepositoryInterface):
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
+        isEccoEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ECCO_ENABLED.jsonKey, False)
         isEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ENABLED.jsonKey, True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
@@ -386,6 +387,7 @@ class UsersRepository(UsersRepositoryInterface):
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isDecTalkSongsEnabled = isDecTalkSongsEnabled,
+            isEccoEnabled = isEccoEnabled,
             isEnabled = isEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,

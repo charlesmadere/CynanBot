@@ -318,6 +318,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'saint'
 
         # common names
+        if word in ('abe', 'abram'):
+            yield 'abraham'
         if word == 'al':
             yield 'alan'
             yield 'allen'
@@ -370,7 +372,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'joe'
         if word in ('jon', 'jhon'):
             yield 'john'
-        if word == 'joshua':
+        if word in ('jos', 'joshua'):
             yield 'josh'
         if word in ('ken', 'kenny'):
             yield 'kenneth'
@@ -378,10 +380,22 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'martin'
         if word in ('micheal', 'mike'):
             yield 'michael'
+        if word == 'oliver':
+            yield 'ollie'
+        if word in ('paddy', 'pat'):
+            yield 'patrick'
+        if word == 'perry':
+            yield 'pelegrine'
+        if word in ('pate', 'pete'):
+            yield 'peter'
+        if word in ('phil', 'phili', 'philli'):
+            yield 'phillip'
+        if word == 'ralph':
+            yield 'raphael'
         if word == 'rfk':
             yield 'robert francis kennedy'
             yield 'robert kennedy'
-        if word in ('rob', 'roberto', 'robbie'):
+        if word in ('rob', 'robbie', 'roberto', 'robin'):
             yield 'robert'
         if word in ('ron', 'ronaldo', 'ronnie'):
             yield 'ronald'
@@ -389,12 +403,18 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'sarah'
         if word in ('steph', 'stephan', 'steven', 'stevenson'):
             yield 'steve'
+        if word in ('tim', 'timmy'):
+            yield 'timothy'
         if word in ('thom', 'tom', 'tommy', 'tony'):
             yield 'thomas'
-        if word == 'toni':
+        if word in ('anthony', 'toni'):
             yield 'tony'
+        if word in ('vin', 'vince', 'vinny'):
+            yield 'vincent'
         if word in ('william', 'willie', 'willy'):
             yield 'will'
+        if word in ('diah', 'dyer', 'zed'):
+            yield 'zedediah'
 
         # geographical features/streets
         if word in ('aly', 'ally'):
@@ -748,9 +768,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('hd', 'hdd'):
             yield 'hard disk drive'
             yield 'hard drive'
-        if word == 'http':
+        if word in ('http', 'https'):
             yield 'hypertext transfer protocol'
-        if word == 'https':
             yield 'hypertext transfer protocol secure'
         if word == 'ie':
             yield 'internet explorer'
@@ -760,6 +779,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'internet protocol'
         if word in ('ms', 'msft'):
             yield 'microsoft'
+        if word == 'op':
+            yield 'operation'
+        if word == 'os':
+            yield 'operating system'
         if word == 'pc':
             yield 'personal computer'
         if word == 'ppi':
@@ -777,6 +800,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'red green blue sync'
         if word == 'sd':
             yield 'standard definition'
+        if word == 'sec':
+            yield 'security'
         if word == 'sftp':
             yield 'secure file transfer protocol'
         if word == 'sp':

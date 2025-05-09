@@ -77,6 +77,12 @@ from src.deepL.deepLApiService import DeepLApiService
 from src.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
 from src.deepL.deepLJsonMapper import DeepLJsonMapper
 from src.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
+from src.ecco.eccoApiService import EccoApiService
+from src.ecco.eccoApiServiceInterface import EccoApiServiceInterface
+from src.ecco.eccoHelper import EccoHelper
+from src.ecco.eccoHelperInterface import EccoHelperInterface
+from src.ecco.eccoResponseParser import EccoResponseParser
+from src.ecco.eccoResponseParserInterface import EccoResponseParserInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -1957,6 +1963,28 @@ if cutenessRepository is not None and triviaGameBuilder is not None and triviaGa
     )
 
 
+#################################
+## Ecco initialization section ##
+#################################
+
+eccoResponseParser: EccoResponseParserInterface = EccoResponseParser(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+eccoApiService: EccoApiServiceInterface = EccoApiService(
+    eccoResponseParser = eccoResponseParser,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+eccoHelper: EccoHelperInterface = EccoHelper(
+    eccoApiService = eccoApiService,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+
 ########################################################
 ## Websocket Connection Server initialization section ##
 ########################################################
@@ -2099,6 +2127,7 @@ cynanBot = CynanBot(
     cutenessRepository = cutenessRepository,
     cutenessUtils = cutenessUtils,
     decTalkSettingsRepository = None,
+    eccoHelper = eccoHelper,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,

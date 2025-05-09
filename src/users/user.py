@@ -41,6 +41,7 @@ class User(UserInterface):
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
         isDecTalkSongsEnabled: bool,
+        isEccoEnabled: bool,
         isEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
@@ -163,6 +164,8 @@ class User(UserInterface):
             raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
         elif not utils.isValidBool(isDecTalkSongsEnabled):
             raise TypeError(f'isDecTalkSongsEnabled argument is malformed: \"{isDecTalkSongsEnabled}\"')
+        elif not utils.isValidBool(isEccoEnabled):
+            raise TypeError(f'isEccoEnabled argument is malformed: \"{isEccoEnabled}\"')
         elif not utils.isValidBool(isEnabled):
             raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
@@ -344,6 +347,7 @@ class User(UserInterface):
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
+        self.__isEccoEnabled: bool = isEccoEnabled
         self.__isEnabled: bool = isEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
@@ -708,6 +712,10 @@ class User(UserInterface):
     @property
     def isDecTalkSongsEnabled(self) -> bool:
         return self.__isDecTalkSongsEnabled
+
+    @property
+    def isEccoEnabled(self) -> bool:
+        return self.__isEccoEnabled
 
     @property
     def isEnabled(self) -> bool:

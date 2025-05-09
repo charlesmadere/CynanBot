@@ -30,14 +30,14 @@ class EccoApiService(EccoApiServiceInterface):
         self.__timber: Final[TimberInterface] = timber
 
     async def fetchEccoTimerDateTime(self) -> datetime:
-        self.__timber.log('EccoApiService', f'Fetching Ecco website...')
+        self.__timber.log('EccoApiService', f'Fetching Ecco timer datetime...')
         clientSession = await self.__networkClientProvider.get()
 
         try:
             response = await clientSession.get('https://www.eccothedolphin.com/')
         except GenericNetworkException as e:
-            self.__timber.log('EccoApiService', f'Encountered network error when fetching main Ecco website: {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'EccoApiService encountered network error when fetching main Ecco website: {e}')
+            self.__timber.log('EccoApiService', f'Encountered network error when fetching main Ecco website HTML: {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'EccoApiService encountered network error when fetching main Ecco website HTML: {e}')
 
         htmlString = await response.string()
         await response.close()
@@ -57,10 +57,10 @@ class EccoApiService(EccoApiServiceInterface):
         htmlString = await response.string()
         await response.close()
 
-        timerDateTime = await self.__eccoResponseParser.findTimerDateValue(htmlString)
+        timerDateTime = await self.__eccoResponseParser.findTimerDateTimeValue(htmlString)
 
         if timerDateTime is None:
-            self.__timber.log('EccoApiService', f'Unable to retrieve datetime from network response ({response=}) ({timerDateTime=})')
-            raise GenericNetworkException(f'EccoApiService was unable to retrieve datetime from network response ({response=}) ({timerDateTime=})')
+            self.__timber.log('EccoApiService', f'Unable to retrieve datetime from Ecco script file ({scriptSource=}) ({response=}) ({timerDateTime=})')
+            raise GenericNetworkException(f'EccoApiService was unable to retrieve datetime from Ecco script file ({scriptSource=}) ({response=}) ({timerDateTime=})')
 
         return timerDateTime

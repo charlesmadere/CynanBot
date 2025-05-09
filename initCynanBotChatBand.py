@@ -952,6 +952,7 @@ cynanBot = CynanBot(
     cutenessRepository = None,
     cutenessUtils = None,
     decTalkSettingsRepository = None,
+    eccoHelper = None,
     funtoonHelper = None,
     funtoonTokensRepository = None,
     generalSettingsRepository = generalSettingsRepository,

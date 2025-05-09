@@ -6,5 +6,5 @@ from .models.absEccoTimeRemaining import AbsEccoTimeRemaining
 class EccoHelperInterface(ABC):
 
     @abstractmethod
-    async def getEccoTimeRemaining(self) -> AbsEccoTimeRemaining:
+    async def fetchEccoTimeRemaining(self) -> AbsEccoTimeRemaining:
         pass

@@ -54,6 +54,7 @@ from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatComm
 from .chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
 from .chatCommands.discordChatCommand import DiscordChatCommand
+from .chatCommands.eccoChatCommand import EccoChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
@@ -122,6 +123,7 @@ from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from .decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
+from .ecco.eccoHelperInterface import EccoHelperInterface
 from .funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
@@ -308,6 +310,7 @@ class CynanBot(
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface | None,
+        eccoHelper: EccoHelperInterface | None,
         funtoonHelper: FuntoonHelperInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -510,6 +513,8 @@ class CynanBot(
             raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif decTalkSettingsRepository is not None and not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
+        elif eccoHelper is not None and not isinstance(eccoHelper, EccoHelperInterface):
+            raise TypeError(f'eccoHelper argument is malformed: \"{eccoHelper}\"')
         elif funtoonHelper is not None and not isinstance(funtoonHelper, FuntoonHelperInterface):
             raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -933,6 +938,11 @@ class CynanBot(
         else:
             self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(cheerActionHelper, timber, twitchUtils, usersRepository)
 
+        if eccoHelper is None:
+            self.__eccoCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__eccoCommand: AbsChatCommand = EccoChatCommand(eccoHelper, timber, twitchUtils, usersRepository)
+
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1338,6 +1348,11 @@ class CynanBot(
     async def command_discord(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__discordCommand.handleChatCommand(context)
+
+    @commands.command(name = 'ecco', aliases = [ 'Ecco' ])
+    async def command_ecco(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__eccoCommand.handleChatCommand(context)
 
     @commands.command(name = 'enablecheeraction')
     async def command_enablecheeraction(self, ctx: Context):

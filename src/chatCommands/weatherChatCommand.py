@@ -6,7 +6,6 @@ from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
-from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -61,25 +60,35 @@ class WeatherChatCommand(AbsChatCommand):
         locationId = user.locationId
 
         if not utils.isValidStr(locationId):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Weather for {user.handle} is enabled, but no location ID is available')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ No location ID is available')
             return
 
         try:
             location = await self.__locationsRepository.getLocation(locationId)
         except NoSuchLocationException as e:
-            self.__timber.log('WeatherCommand', f'Unable to get location ID when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} ({locationId=}): {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching your user account\'s location ID')
+            self.__timber.log('WeatherCommand', f'Unable to get location ID when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=}): {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ Error fetching weather',
+                replyMessageId = await ctx.getMessageId()
+            )
             return
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
             weatherReportString = await self.__weatherReportPresenter.toString(weatherReport)
-            await self.__twitchUtils.safeSend(ctx, weatherReportString)
-        except OpenWeatherApiKeyUnavailableException as e:
-            self.__timber.log('WeatherCommand', f'Unable to fetch weather for \"{locationId}\" as no OpenWeather API key is available: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('WeatherCommand', f'Error fetching weather for \"{locationId}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
-        self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = weatherReportString,
+                replyMessageId = await ctx.getMessageId()
+            )
+        except Exception as e:
+            self.__timber.log('WeatherCommand', f'Error fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=}): {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = '⚠ Error fetching weather',
+                replyMessageId = await ctx.getMessageId()
+            )
+
+        self.__timber.log('WeatherCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

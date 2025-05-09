@@ -16,6 +16,7 @@ class UserJsonConstant(Enum):
     CUTENESS_ENABLED = auto()
     CYNAN_SOURCE_ENABLED = auto()
     DISCORD_URL = auto()
+    ECCO_ENABLED = auto()
     ENABLED = auto()
     GIVE_CUTENESS_ENABLED = auto()
     LOCATION_ID = auto()
@@ -45,6 +46,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.CUTENESS_ENABLED: return 'cutenessEnabled'
             case UserJsonConstant.CYNAN_SOURCE_ENABLED: return 'cynanSourceEnabled'
             case UserJsonConstant.DISCORD_URL: return 'discordUrl'
+            case UserJsonConstant.ECCO_ENABLED: return 'eccoEnabled'
             case UserJsonConstant.ENABLED: return 'enabled'
             case UserJsonConstant.GIVE_CUTENESS_ENABLED: return 'giveCutenessEnabled'
             case UserJsonConstant.LOCATION_ID: return 'locationId'
