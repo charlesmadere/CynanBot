@@ -37,6 +37,12 @@ class CurrentStreamAlert:
     def streamAlert(self) -> StreamAlert:
         return self.__streamAlert
 
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'alertState': self.__alertState,
+            'streamAlert': self.__streamAlert
+        }
+
     @property
     def ttsEvent(self) -> TtsEvent | None:
         return self.__streamAlert.ttsEvent
@@ -48,9 +54,3 @@ class CurrentStreamAlert:
     @property
     def twitchChannelId(self) -> str:
         return self.__streamAlert.twitchChannelId
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'alertState': self.__alertState,
-            'streamAlert': self.__streamAlert
-        }
