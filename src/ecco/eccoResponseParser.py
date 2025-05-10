@@ -1,6 +1,6 @@
 import re
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Collection, Final, Pattern
 from xml.etree.ElementTree import Element
 
