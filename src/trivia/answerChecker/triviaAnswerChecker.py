@@ -1,7 +1,7 @@
 import math
 import re
 import traceback
-from typing import Any, Generator, Pattern
+from typing import Any, Final, Generator, Pattern
 
 import polyleven
 from frozendict import frozendict
@@ -35,13 +35,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = triviaAnswerCompiler
+        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
 
-        self.__extraWhitespacePattern: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__extraWhitespacePattern: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
 
-        self.__irregularNouns: frozendict[str, frozenset[str]] = frozendict({
+        self.__irregularNouns: Final[frozendict[str, frozenset[str]]] = frozendict({
             'addendum': frozenset({ 'addenda', 'addendums' }),
             'alumna': frozenset({ 'alumnae' }),
             'bacterium': frozenset({ 'bacteria' }),
@@ -67,7 +67,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             'woman': frozenset({ 'women' }),
         })
 
-        self.__stopWords: frozenset[str] = frozenset({
+        self.__stopWords: Final[frozenset[str]] = frozenset({
             'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them',
             'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were',
             'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the',
