@@ -3,8 +3,7 @@ import pytest
 from src.contentScanner.bannedPhrase import BannedPhrase
 from src.contentScanner.bannedWord import BannedWord
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
-from src.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.storage.linesReaderInterface import LinesReaderInterface
 from src.storage.linesStaticReader import LinesStaticReader
 from src.timber.timberInterface import TimberInterface
@@ -16,7 +15,7 @@ class TestBannedWordsRepository:
     timber: TimberInterface = TimberStub()
 
     bannedWordsLinesReader: LinesReaderInterface = LinesStaticReader(
-        lines = [ 'Hello', 'WORLD', '"QAnon"', 'world' ]
+        lines = [ 'Hello', 'WORLD', '\"QAnon\"', 'world' ]
     )
 
     emptyBannedWordsLinesReader: LinesReaderInterface = LinesStaticReader(

@@ -1,8 +1,7 @@
 import pytest
 
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
-from src.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentCode import ContentCode
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
@@ -17,7 +16,7 @@ class TestContentScanner:
 
     bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
         bannedWordsLinesReader = LinesStaticReader(
-            lines = [ 'Nintendo', 'SONY', '"QAnon"', 'sony' ]
+            lines = [ 'Nintendo', 'SONY', '\"QAnon\"', 'sony' ]
         ),
         timber = timber
     )
@@ -82,4 +81,5 @@ class TestContentScanner:
 
     def test_sanity(self):
         assert self.contentScanner is not None
+        assert isinstance(self.contentScanner, ContentScanner)
         assert isinstance(self.contentScanner, ContentScannerInterface)
