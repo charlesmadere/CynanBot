@@ -602,6 +602,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'united nations'
         if word in ('us', 'usa'):
             yield 'united states'
+            yield 'united states america'
             yield 'united states of america'
         if word in ('russia', 'ussr'):
             yield 'soviet union'
@@ -686,9 +687,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'southwest'
         if word in ('se', 'southeast', 'southeastern'):
             yield 'southeast'
-        if word in ('l', 'left'):
+        if word in ('l', 'left', 'lft'):
             yield 'left'
-        if word in ('r', 'right'):
+        if word in ('r', 'right', 'rite'):
             yield 'right'
 
         # corporation things
@@ -753,6 +754,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'digital video disc'
         if word == 'ff':
             yield 'firefox'
+        if word == 'float':
+            yield 'floating point'
         if word == 'fps':
             yield 'frames per second'
         if word == 'ftp':
