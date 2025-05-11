@@ -370,7 +370,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'john kennedy'
         if word in ('jo', 'joey', 'josef', 'joseph', 'josephine'):
             yield 'joe'
-        if word in ('jon', 'jhon'):
+        if word in ('jon', 'jhon', 'johnny', 'jhonny', 'jonny'):
             yield 'john'
         if word in ('jos', 'joshua'):
             yield 'josh'
