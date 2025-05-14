@@ -1,0 +1,4 @@
+{
+    "useMessageQueueing": false,
+    "subscribersOnly": false
+}

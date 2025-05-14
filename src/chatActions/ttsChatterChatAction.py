@@ -63,7 +63,7 @@ class TtsChatterChatAction(AbsChatAction):
         if chatMessage.startswith('!'):
             return False
 
-        if not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
+        if self.__ttsChatterSettingsRepository.subscriberOnly and not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
             return False
 
         providerOverridableStatus: TtsProviderOverridableStatus

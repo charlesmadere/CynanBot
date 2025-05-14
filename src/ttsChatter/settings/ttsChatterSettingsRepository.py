@@ -38,3 +38,7 @@ class TtsChatterSettingsRepository(TtsChatterSettingsRepositoryInterface):
     async def useMessageQueueing(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'useMessageQueueing', fallback = True)
+
+    async def subscriberOnly(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'subscriberOnly', fallback = True)
