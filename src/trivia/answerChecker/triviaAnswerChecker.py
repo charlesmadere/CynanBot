@@ -327,10 +327,20 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'albert'
         if word == 'alex':
             yield 'alexander'
+        if word in ('allie', 'elsie', 'lisa'):
+            yield 'alice'
+            yield 'alicia'
         if word in ('andy', 'andrew', 'drew'):
             yield 'andrew'
+        if word in ('annie', 'nan', 'nanny', 'nana', 'nancy'):
+            yield 'ann'
+            yield 'anne'
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
             yield 'erin'
+        if word in ('bab', 'babs', 'barby', 'bobbie'):
+            yield 'barbara'
+        if word in ('bea', 'trisha', 'trix', 'trixie'):
+            yield 'beatrice'
         if word in ('ben', 'benny'):
             yield 'benjamin'
         if word in ('billie', 'billy'):
@@ -343,6 +353,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'caesar'
         if word in ('charlie', 'charly', 'chuck', 'chucky'):
             yield 'charles'
+        if word in ('char', 'lottie', 'lotta', 'sherry'):
+            yield 'charlotte'
         if word in ('chris', 'christ', 'cris', 'kris'):
             yield 'christian'
             yield 'christopher'
@@ -365,6 +377,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'jacob'
         if word in ('jen', 'jenn', 'jenny'):
             yield 'jennifer'
+        if word in ('jess', 'jesse', 'jessika', 'jessy'):
+            yield 'jessica'
         if word == 'jfk':
             yield 'john fitzgerald kennedy'
             yield 'john kennedy'
@@ -376,6 +390,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'josh'
         if word in ('ken', 'kenny'):
             yield 'kenneth'
+        if word in ('lou', 'louie'):
+            yield 'louis'
         if word == 'marty':
             yield 'martin'
         if word in ('micheal', 'mike'):
@@ -401,6 +417,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'ronald'
         if word in ('sadie', 'sally', 'sara'):
             yield 'sarah'
+        if word in ('scott', 'scotty', 'pres'):
+            yield 'prescott'
         if word in ('steph', 'stephan', 'steven', 'stevenson'):
             yield 'steve'
         if word in ('tim', 'timmy'):
