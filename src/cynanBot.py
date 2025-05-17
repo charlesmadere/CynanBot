@@ -91,6 +91,7 @@ from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
+from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -226,6 +227,7 @@ from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import Twi
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from .twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
+from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from .twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from .twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -351,6 +353,7 @@ class CynanBot(
         timeoutActionHelper: TimeoutActionHelperInterface | None,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
+        timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface | None,
         timeZoneRepository: TimeZoneRepositoryInterface,
         tntCheerActionHelper: TntCheerActionHelperInterface | None,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
@@ -593,6 +596,8 @@ class CynanBot(
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionSettingsRepository is not None and not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
             raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
+        elif timeoutImmuneUserIdsRepository is not None and not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
+            raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
@@ -942,6 +947,11 @@ class CynanBot(
             self.__eccoCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__eccoCommand: AbsChatCommand = EccoChatCommand(eccoHelper, timber, twitchUtils, usersRepository)
+
+        if timeoutImmuneUserIdsRepository is None:
+            self.__vulnerableChattersCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__vulnerableChattersCommand: AbsChatCommand = VulnerableChattersChatCommand(activeChattersRepository, timber, timeoutImmuneUserIdsRepository, twitchUtils, usersRepository)
 
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
@@ -1553,6 +1563,11 @@ class CynanBot(
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
+
+    @commands.command(name = 'vulnerablechatters', aliases = [ 'vc' ])
+    async def command_vulnerablechatters(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__vulnerableChattersCommand.handleChatCommand(context)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):

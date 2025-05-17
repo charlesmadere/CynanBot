@@ -61,6 +61,12 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__twitchUserId = None
         self.__timber.log('TimeoutImmuneUserIdsRepository', 'Caches cleared')
 
+    async def getAllUserIds(self) -> frozenset[str]:
+        allUserIds: set[str] = set()
+        allUserIds.update(await self.getOtherUserIds())
+        allUserIds.update(await self.getUserIds())
+        return frozenset(allUserIds)
+
     async def getOtherUserIds(self) -> frozenset[str]:
         userIds = self.__otherImmuneUserIds
 

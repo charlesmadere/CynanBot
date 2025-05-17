@@ -993,6 +993,7 @@ cynanBot = CynanBot(
     timeoutActionHelper = None,
     timeoutActionHistoryRepository = None,
     timeoutActionSettingsRepository = None,
+    timeoutImmuneUserIdsRepository = None,
     timeZoneRepository = timeZoneRepository,
     tntCheerActionHelper = None,
     toxicTriviaOccurencesRepository = None,

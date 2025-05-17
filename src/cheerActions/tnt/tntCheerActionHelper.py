@@ -217,7 +217,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             eligibleChatters[chatter.chatterUserId] = chatter
 
         eligibleChatters.pop(broadcasterUserId, None)
-        allImmuneUserIds = await self.__getAllImmuneUserIds()
+        allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
 
         for immuneUserId in allImmuneUserIds:
             eligibleChatters.pop(immuneUserId, None)
@@ -246,12 +246,6 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self.__timber.log('TntCheerActionHelper', f'Selected TNT target(s) ({tntAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({tntTargetCount=}) ({frozenTntTargets=})')
 
         return frozenTntTargets
-
-    async def __getAllImmuneUserIds(self) -> frozenset[str]:
-        allImmuneUserIds: set[str] = set()
-        allImmuneUserIds.update(await self.__timeoutImmuneUserIdsRepository.getOtherUserIds())
-        allImmuneUserIds.update(await self.__timeoutImmuneUserIdsRepository.getUserIds())
-        return frozenset(allImmuneUserIds)
 
     async def handleTntCheerAction(
         self,
