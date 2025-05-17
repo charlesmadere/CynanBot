@@ -7,12 +7,14 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     def __init__(
         self,
         frostyToolsDotComUserId: str | None = '955237329',
+        moobotUserId: str | None = '1564983',
         nightBotUserId: str | None = '19264788',
         puptimeUserId: str | None = '213177587',
         seryBotUserId: str | None = '402337290',
         soundAlertsUserId: str | None = '216527497',
         streamElementsUserId: str | None = '100135110',
         streamLabsUserId: str | None = '105166207',
+        streamStickersUserId: str | None = '431026547',
         tangiaBotUserId: str | None = '853402143',
         theRunBotUserId: str | None = '795719761',
         twitchAccountUserId: str = '12826',
@@ -21,6 +23,8 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     ):
         if frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
             raise TypeError(f'frostyToolsDotComUserId argument is malformed: \"{frostyToolsDotComUserId}\"')
+        elif moobotUserId is not None and not isinstance(moobotUserId, str):
+            raise TypeError(f'moobotUserId argument is malformed: \"{moobotUserId}\"')
         elif nightBotUserId is not None and not isinstance(nightBotUserId, str):
             raise TypeError(f'nightBotUserId argument is malformed: \"{nightBotUserId}\"')
         elif puptimeUserId is not None and not isinstance(puptimeUserId, str):
@@ -33,6 +37,8 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             raise TypeError(f'streamElementsUserId argument is malformed: \"{streamElementsUserId}\"')
         elif streamLabsUserId is not None and not isinstance(streamLabsUserId, str):
             raise TypeError(f'streamLabsUserId argument is malformed: \"{streamLabsUserId}\"')
+        elif streamStickersUserId is not None and not isinstance(streamStickersUserId, str):
+            raise TypeError(f'streamStickersUserId argument is malformed: \"{streamStickersUserId}\"')
         elif tangiaBotUserId is not None and not isinstance(tangiaBotUserId, str):
             raise TypeError(f'tangiaBotUserId argument is malformed: \"{tangiaBotUserId}\"')
         elif theRunBotUserId is not None and not isinstance(theRunBotUserId, str):
@@ -45,12 +51,14 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             raise TypeError(f'valorantUserId argument is malformed: \"{valorantUserId}\"')
 
         self.__frostyToolsDotComUserId: str | None = frostyToolsDotComUserId
+        self.__moobotUserId: str | None = moobotUserId
         self.__nightBotUserId: str | None = nightBotUserId
         self.__puptimeUserId: str | None = puptimeUserId
         self.__seryBotUserId: str | None = seryBotUserId
         self.__soundAlertsUserId: str | None = soundAlertsUserId
         self.__streamElementsUserId: str | None = streamElementsUserId
         self.__streamLabsUserId: str | None = streamLabsUserId
+        self.__streamStickersUserId: str | None = streamStickersUserId
         self.__tangiaBotUserId: str | None = tangiaBotUserId
         self.__theRunBotUserId: str | None = theRunBotUserId
         self.__twitchAccountUserId: str = twitchAccountUserId
@@ -63,6 +71,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         frostyToolsDotComUserId = await self.getFrostyToolsDotComUserId()
         if utils.isValidStr(frostyToolsDotComUserId):
             allUserIds.add(frostyToolsDotComUserId)
+
+        moobotUserId = await self.getMoobotUserId()
+        if utils.isValidStr(moobotUserId):
+            allUserIds.add(moobotUserId)
 
         nightBotUserId = await self.getNightbotUserId()
         if utils.isValidStr(nightBotUserId):
@@ -88,6 +100,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         if utils.isValidStr(streamLabsUserId):
             allUserIds.add(streamLabsUserId)
 
+        streamStickersUserId = await self.getStreamStickersUserId()
+        if utils.isValidStr(streamStickersUserId):
+            allUserIds.add(streamStickersUserId)
+
         tangiaBotUserId = await self.getTangiaBotUserId()
         if utils.isValidStr(tangiaBotUserId):
             allUserIds.add(tangiaBotUserId)
@@ -111,6 +127,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     async def getFrostyToolsDotComUserId(self) -> str | None:
         return self.__frostyToolsDotComUserId
 
+    async def getMoobotUserId(self) -> str | None:
+        return self.__moobotUserId
+
     async def getNightbotUserId(self) -> str | None:
         return self.__nightBotUserId
 
@@ -128,6 +147,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getStreamLabsUserId(self) -> str | None:
         return self.__streamLabsUserId
+
+    async def getStreamStickersUserId(self) -> str | None:
+        return self.__streamStickersUserId
 
     async def getTangiaBotUserId(self) -> str | None:
         return self.__tangiaBotUserId

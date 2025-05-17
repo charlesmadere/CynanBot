@@ -12,6 +12,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getMoobotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getNightbotUserId(self) -> str | None:
         pass
 
@@ -33,6 +37,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getStreamLabsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getStreamStickersUserId(self) -> str | None:
         pass
 
     @abstractmethod
