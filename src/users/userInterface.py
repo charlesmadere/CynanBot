@@ -491,6 +491,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isVulnerableChattersEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isWeatherEnabled(self) -> bool:
         pass
 

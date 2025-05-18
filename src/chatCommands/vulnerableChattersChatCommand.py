@@ -71,6 +71,9 @@ class VulnerableChattersChatCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
+        if not user.isVulnerableChattersEnabled:
+            return
+
         chattersData = await self.__getVulnerableChattersData(
             twitchChannelId = await ctx.getTwitchChannelId()
         )

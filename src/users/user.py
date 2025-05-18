@@ -68,6 +68,7 @@ class User(UserInterface):
         isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
         isTtsMonsterApiUsageReportingEnabled: bool,
+        isVulnerableChattersEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         anivMessageCopyTimeoutProbability: float | None,
@@ -218,6 +219,8 @@ class User(UserInterface):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isTtsMonsterApiUsageReportingEnabled):
             raise TypeError(f'isTtsMonsterApiUsageReportingEnabled argument is malformed: \"{isTtsMonsterApiUsageReportingEnabled}\"')
+        elif not utils.isValidBool(isVulnerableChattersEnabled):
+            raise TypeError(f'isVulnerableChattersEnabled argument is malformed: \"{isVulnerableChattersEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
             raise TypeError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
@@ -375,6 +378,7 @@ class User(UserInterface):
         self.__areTtsChattersEnabled: bool = areTtsChattersEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
+        self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__anivMessageCopyTimeoutProbability: float | None = anivMessageCopyTimeoutProbability
