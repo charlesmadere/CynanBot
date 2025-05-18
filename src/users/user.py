@@ -822,6 +822,10 @@ class User(UserInterface):
         return self.__isTtsEnabled
 
     @property
+    def isVulnerableChattersEnabled(self) -> bool:
+        return self.__isVulnerableChattersEnabled
+
+    @property
     def areTtsChattersEnabled(self) -> bool:
         return self.__areTtsChattersEnabled
 
