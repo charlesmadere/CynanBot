@@ -33,6 +33,7 @@ class TwitchUtils(TwitchUtilsInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        isTwitchChatIrcFallbackEnabled: bool = False,
         queueTimeoutSeconds: float = 3,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5
@@ -53,6 +54,8 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidBool(isTwitchChatIrcFallbackEnabled):
+            raise TypeError(f'isTwitchChatIrcFallbackEnabled argument is malformed: \"{isTwitchChatIrcFallbackEnabled}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
@@ -74,6 +77,7 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__isTwitchChatIrcFallbackEnabled: bool = isTwitchChatIrcFallbackEnabled
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
@@ -165,11 +169,15 @@ class TwitchUtils(TwitchUtilsInterface):
             replyMessageId = replyMessageId
         )
 
-        if not successfullySentViaTwitchChatApi:
+        if successfullySentViaTwitchChatApi:
+            return
+        elif self.__isTwitchChatIrcFallbackEnabled:
             await self.__safeSendViaIrc(
                 messageable = messageable,
                 message = message
             )
+        else:
+            self.__timber.log('TwitchUtils', f'Not attempting to fallback to sending chat message via IRC ({messageable=}) ({replyMessageId=}) ({len(message)=}) ({message=})')
 
     async def __safeSendViaIrc(
         self,
