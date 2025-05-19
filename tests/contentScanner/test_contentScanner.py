@@ -16,7 +16,7 @@ class TestContentScanner:
 
     bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
         bannedWordsLinesReader = LinesStaticReader(
-            lines = [ 'Nintendo', 'SONY', '\"QAnon\"', 'sony' ]
+            lines = [ '\"meth\"', 'Nintendo', 'SONY', '\"QAnon\"', 'sony' ]
         ),
         timber = timber
     )
@@ -67,16 +67,24 @@ class TestContentScanner:
         assert result is ContentCode.IS_NONE
 
     @pytest.mark.asyncio
+    async def test_scan_withSomething(self):
+        # the word "something" contains the word "meth" which is a banned word
+        result = await self.contentScanner.scan('something')
+        assert result is ContentCode.OK
+
+    @pytest.mark.asyncio
     async def test_scan_withUrl(self):
         result = await self.contentScanner.scan('Hello https://google.com/ World!')
         assert result is ContentCode.CONTAINS_URL
 
     @pytest.mark.asyncio
     async def test_updatePhrasesContent(self):
+        # TODO
         pass
 
     @pytest.mark.asyncio
     async def test_updateWordsContent(self):
+        # TODO
         pass
 
     def test_sanity(self):
