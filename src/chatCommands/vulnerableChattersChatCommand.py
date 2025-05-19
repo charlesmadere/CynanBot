@@ -78,7 +78,7 @@ class VulnerableChattersChatCommand(AbsChatCommand):
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 
-        message = f'ⓘ There are {chattersData.totalVulnerableChattersStr} total vulnerable chatter(s) and {chattersData.totalActiveChattersStr} total active chatter(s)'
+        message = f'ⓘ There are {chattersData.totalVulnerableChattersStr} vulnerable chatter(s) and {chattersData.totalActiveChattersStr} active chatter(s)'
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
