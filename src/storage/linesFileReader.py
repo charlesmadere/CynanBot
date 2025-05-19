@@ -24,6 +24,10 @@ class LinesFileReader(LinesReaderInterface):
         self.__eventLoop: Final[AbstractEventLoop] = eventLoop
         self.__fileName: Final[str] = fileName
 
+    @property
+    def fileName(self) -> str:
+        return self.__fileName
+
     def readLines(self) -> list[str] | None:
         if not os.path.exists(self.__fileName):
             raise FileNotFoundError(f'File not found: \"{self.__fileName}\"')
@@ -50,3 +54,6 @@ class LinesFileReader(LinesReaderInterface):
             lines = await file.readlines()
 
         return lines
+
+    def __repr__(self) -> str:
+        return self.__fileName

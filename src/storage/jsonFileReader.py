@@ -42,6 +42,10 @@ class JsonFileReader(JsonReaderInterface):
             loop = self.__eventLoop
         )
 
+    @property
+    def fileName(self) -> str:
+        return self.__fileName
+
     def readJson(self) -> dict[Any, Any] | None:
         if not self.fileExists():
             raise FileNotFoundError(f'File not found: \"{self.__fileName}\"')
@@ -71,10 +75,4 @@ class JsonFileReader(JsonReaderInterface):
         return jsonContents
 
     def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'fileName': self.__fileName
-        }
+        return self.__fileName
