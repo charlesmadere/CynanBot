@@ -30,8 +30,8 @@ from .storage.backingDatabase import BackingDatabase
 from .storage.jsonFileReader import JsonFileReader
 from .storage.linesFileReader import LinesFileReader
 from .storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
-from .timber.timber import Timber
 from .timber.timberInterface import TimberInterface
+from .timber.timberStub import TimberStub
 from .trivia.additionalAnswers.additionalTriviaAnswersRepository import AdditionalTriviaAnswersRepository
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
@@ -169,10 +169,7 @@ backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(event
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
-timber: TimberInterface = Timber(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timeZoneRepository = timeZoneRepository
-)
+timber: TimberInterface = TimberStub()
 
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader(
