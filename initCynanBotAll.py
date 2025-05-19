@@ -2501,7 +2501,9 @@ crowdControlAutomator: CrowdControlAutomatorInterface = CrowdControlAutomator(
     usersRepository = usersRepository
 )
 
-crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils()
+crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils(
+    twitchMessageStringUtils = twitchMessageStringUtils
+)
 
 crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdControlCheerActionHelper(
     crowdControlIdGenerator = crowdControlIdGenerator,

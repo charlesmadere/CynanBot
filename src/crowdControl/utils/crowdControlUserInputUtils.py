@@ -1,17 +1,26 @@
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 from frozendict import frozendict
 
 from .crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from ..actions.crowdControlButton import CrowdControlButton
 from ...misc import utils as utils
+from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
 
-    def __init__(self):
-        self.__buttonToUserInputs: frozendict[CrowdControlButton, frozenset[str]] = frozendict({
+    def __init__(
+        self,
+        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
+    ):
+        if not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
+            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
+
+        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
+
+        self.__buttonToUserInputs: Final[frozendict[CrowdControlButton, frozenset[str]]] = frozendict({
             CrowdControlButton.BUTTON_A: frozenset({ 'a' }),
             CrowdControlButton.BUTTON_B: frozenset({ 'b' }),
             CrowdControlButton.BUTTON_C: frozenset({ 'c' }),
@@ -24,12 +33,11 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
             CrowdControlButton.DPAD_UP: frozenset({ 'up', 'dpad_up', 'dpad up', 'up dpad' }),
             CrowdControlButton.SELECT: frozenset({ 'select', 'sel' }),
             CrowdControlButton.START: frozenset({ 'start', 'pause' }),
-            CrowdControlButton.TRIGGER_LEFT: frozenset({ 'left trigger', 'left_trigger', 'trigger_left', 'trigger left' }),
-            CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'trigger_right', 'trigger right' })
+            CrowdControlButton.TRIGGER_LEFT: frozenset({ 'left trigger', 'left_trigger', 'l trigger', 'l_trigger', 'trigger_left', 'trigger left' }),
+            CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'r trigger', 'r_trigger', 'trigger_right', 'trigger right' })
         })
 
-        self.__cheerRegEx: Pattern = re.compile(r'^cheer\d+\s+', re.IGNORECASE)
-        self.__extraWhitespaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__extraWhitespaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def parseButtonFromUserInput(
         self,
@@ -38,9 +46,9 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
         if not utils.isValidStr(userInput):
             return None
 
-        userInput = userInput.strip().lower()
-        userInput = self.__cheerRegEx.sub('', userInput).strip()
-        userInput = self.__extraWhitespaceRegEx.sub(' ', userInput).strip()
+        userInput = utils.cleanStr(userInput.lower())
+        userInput = await self.__twitchMessageStringUtils.removeCheerStrings(userInput)
+        userInput = utils.cleanStr(userInput)
 
         for button, userInputs in self.__buttonToUserInputs.items():
             if userInput in userInputs:

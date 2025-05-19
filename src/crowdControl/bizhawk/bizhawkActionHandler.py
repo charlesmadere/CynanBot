@@ -3,7 +3,7 @@ import struct
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Final
 
 import psutil
 import pywintypes
@@ -65,13 +65,13 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         elif not isinstance(processConnectionTimeToLive, timedelta):
             raise TypeError(f'processConnectionTimeToLive argument is malformed: \"{processConnectionTimeToLive}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = bizhawkSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__processConnectionCheckSleepTimeSeconds: float = processConnectionCheckSleepTimeSeconds
-        self.__keyPressDelayFrames: int = keyPressDelayFrames
-        self.__processConnectionTimeToLive: timedelta = processConnectionTimeToLive
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__bizhawkSettingsRepository: Final[BizhawkSettingsRepositoryInterface] = bizhawkSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__processConnectionCheckSleepTimeSeconds: Final[float] = processConnectionCheckSleepTimeSeconds
+        self.__keyPressDelayFrames: Final[int] = keyPressDelayFrames
+        self.__processConnectionTimeToLive: Final[timedelta] = processConnectionTimeToLive
 
         self.__bizhawkConnection: BizhawkActionHandler.BizhawkConnection | None = None
         self.__isStarted: bool = False

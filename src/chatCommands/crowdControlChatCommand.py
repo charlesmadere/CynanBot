@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
@@ -46,24 +47,26 @@ class CrowdControlChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
-        self.__crowdControlMachine: CrowdControlMachineInterface = crowdControlMachine
-        self.__crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = crowdControlUserInputUtils
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
+        self.__crowdControlMachine: Final[CrowdControlMachineInterface] = crowdControlMachine
+        self.__crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = crowdControlUserInputUtils
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        userId = await ctx.getTwitchChannelId()
+
+        if not user.isCrowdControlEnabled:
+            return
+
+        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
+        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('CrowdControlChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
-        elif not user.isCrowdControlEnabled:
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -86,7 +89,7 @@ class CrowdControlChatCommand(AbsChatCommand):
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
                 twitchChannel = user.handle,
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 twitchChatMessageId = await ctx.getMessageId()
             )
         else:
@@ -97,7 +100,7 @@ class CrowdControlChatCommand(AbsChatCommand):
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
                 twitchChannel = user.handle,
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 twitchChatMessageId = await ctx.getMessageId()
             )
 
@@ -109,4 +112,4 @@ class CrowdControlChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('CrowdControlChatCommand', f'Handled !crowdcontrol command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({button=})')
+        self.__timber.log('CrowdControlChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({button=})')

@@ -3,15 +3,24 @@ import pytest
 from src.crowdControl.actions.crowdControlButton import CrowdControlButton
 from src.crowdControl.utils.crowdControlUserInputUtils import CrowdControlUserInputUtils
 from src.crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestCrowdControlUserInputUtils:
 
-    utils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils()
+    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+
+    utils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils(
+        twitchMessageStringUtils = twitchMessageStringUtils
+    )
 
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withA(self):
         result = await self.utils.parseButtonFromUserInput('a')
+        assert result is CrowdControlButton.BUTTON_A
+
+        result = await self.utils.parseButtonFromUserInput('A')
         assert result is CrowdControlButton.BUTTON_A
 
     @pytest.mark.asyncio
@@ -19,9 +28,15 @@ class TestCrowdControlUserInputUtils:
         result = await self.utils.parseButtonFromUserInput('b')
         assert result is CrowdControlButton.BUTTON_B
 
+        result = await self.utils.parseButtonFromUserInput('B')
+        assert result is CrowdControlButton.BUTTON_B
+
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withC(self):
         result = await self.utils.parseButtonFromUserInput('c')
+        assert result is CrowdControlButton.BUTTON_C
+
+        result = await self.utils.parseButtonFromUserInput('C')
         assert result is CrowdControlButton.BUTTON_C
 
     @pytest.mark.asyncio
@@ -124,6 +139,14 @@ class TestCrowdControlUserInputUtils:
         assert result is CrowdControlButton.DPAD_LEFT
 
     @pytest.mark.asyncio
+    async def test_parseButtonFromUserInput_withLTrigger(self):
+        result = await self.utils.parseButtonFromUserInput('l_trigger')
+        assert result is CrowdControlButton.TRIGGER_LEFT
+
+        result = await self.utils.parseButtonFromUserInput('l trigger')
+        assert result is CrowdControlButton.TRIGGER_LEFT
+
+    @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withLeftTrigger(self):
         result = await self.utils.parseButtonFromUserInput('left_trigger')
         assert result is CrowdControlButton.TRIGGER_LEFT
@@ -153,6 +176,14 @@ class TestCrowdControlUserInputUtils:
 
         result = await self.utils.parseButtonFromUserInput('right dpad')
         assert result is CrowdControlButton.DPAD_RIGHT
+
+    @pytest.mark.asyncio
+    async def test_parseButtonFromUserInput_withRTrigger(self):
+        result = await self.utils.parseButtonFromUserInput('r_trigger')
+        assert result is CrowdControlButton.TRIGGER_RIGHT
+
+        result = await self.utils.parseButtonFromUserInput('r trigger')
+        assert result is CrowdControlButton.TRIGGER_RIGHT
 
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withRightTrigger(self):
@@ -213,14 +244,23 @@ class TestCrowdControlUserInputUtils:
         result = await self.utils.parseButtonFromUserInput('x')
         assert result is CrowdControlButton.BUTTON_X
 
+        result = await self.utils.parseButtonFromUserInput('X')
+        assert result is CrowdControlButton.BUTTON_X
+
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withY(self):
         result = await self.utils.parseButtonFromUserInput('y')
         assert result is CrowdControlButton.BUTTON_Y
 
+        result = await self.utils.parseButtonFromUserInput('Y')
+        assert result is CrowdControlButton.BUTTON_Y
+
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withZ(self):
         result = await self.utils.parseButtonFromUserInput('z')
+        assert result is CrowdControlButton.BUTTON_Z
+
+        result = await self.utils.parseButtonFromUserInput('Z')
         assert result is CrowdControlButton.BUTTON_Z
 
     def test_sanity(self):
