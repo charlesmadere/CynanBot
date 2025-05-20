@@ -139,7 +139,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         userNames: list[str] = list()
 
         for tntTarget in tntTargets:
-            userNames.append(tntTarget.userName)
+            userNames.append(f'@{tntTarget.userName}')
 
         durationSecondsString = locale.format_string("%d", durationSeconds, grouping = True)
         peopleCountString = locale.format_string("%d", len(tntTargets), grouping = True)
@@ -156,23 +156,6 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         message = f'{bombEmote} BOOM! {peoplePluralityString} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
-
-        availableGrenades = await self.__recentGrenadeAttacksHelper.fetchAvailableGrenades(
-            attackerUserId = cheerUserId,
-            twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId
-        )
-
-        if availableGrenades is not None:
-            availableGrenadesString = locale.format_string("%d", availableGrenades, grouping=True)
-
-            grenadesPluralization: str
-            if availableGrenades == 1:
-                grenadesPluralization = 'grenade'
-            else:
-                grenadesPluralization = 'grenades'
-
-            message = f'{message} (@{cheerUserName} has {availableGrenadesString} {grenadesPluralization} remaining)'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -397,7 +380,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         await asyncio.sleep(self.__tntAlertSleepTimeSeconds)
 
         index = 0
-        numberOfSounds = int(round(len(tntTargets) * 0.5))
+        numberOfSounds = len(tntTargets)
 
         while index < numberOfSounds:
             soundAlert = await self.__chooseRandomGrenadeSoundAlert()
