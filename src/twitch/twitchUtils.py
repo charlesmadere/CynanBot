@@ -215,7 +215,7 @@ class TwitchUtils(TwitchUtilsInterface):
         successfullySent = False
         exceptions: list[Exception] | None = None
 
-        while sendAttempt == 0 or shouldRetry:
+        while not successfullySent and (sendAttempt == 0 or shouldRetry):
             chatRequest: TwitchSendChatMessageRequest
 
             if sendAttempt == 0 and utils.isValidStr(replyMessageId):
