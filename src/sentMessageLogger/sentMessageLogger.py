@@ -3,7 +3,7 @@ import queue
 import traceback
 from collections import defaultdict
 from queue import SimpleQueue
-from typing import Collection
+from typing import Collection, Final
 
 import aiofiles
 import aiofiles.os
@@ -43,14 +43,14 @@ class SentMessageLogger(SentMessageLoggerInterface):
         elif not utils.isValidStr(logRootDirectory):
             raise TypeError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__logRootDirectory: str = logRootDirectory
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
+        self.__logRootDirectory: Final[str] = logRootDirectory
 
         self.__isStarted: bool = False
-        self.__messageQueue: SimpleQueue[SentMessage] = SimpleQueue()
+        self.__messageQueue: Final[SimpleQueue[SentMessage]] = SimpleQueue()
 
     def __getLogStatement(self, message: SentMessage) -> str:
         if not isinstance(message, SentMessage):
@@ -60,9 +60,9 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         error = ''
         if not message.successfullySent:
-            error = f'message failed to send after {message.numberOfSendAttempts} attempt(s) — '
+            error = f'(failed to send after {message.numberOfSendAttempts} attempt(s)) — '
         elif message.numberOfSendAttempts > 1:
-            error = f'message was sent, but it required {message.numberOfSendAttempts} attempt(s) — '
+            error = f'(successfully sent after {message.numberOfSendAttempts} attempt(s)) — '
 
         logStatement = f'{prefix}{error}{message.msg}'.strip()
         return f'{logStatement}\n'
@@ -131,7 +131,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
                     message = self.__messageQueue.get_nowait()
                     messages.append(message)
             except queue.Empty as e:
-                self.__timber.log('SentMessageLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (events size: {len(messages)}): {e}', e, traceback.format_exc())
+                self.__timber.log('SentMessageLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (messages size: {len(messages)}): {e}', e, traceback.format_exc())
 
             await self.__writeToLogFiles(messages)
             await asyncio.sleep(self.__sleepTimeSeconds)
