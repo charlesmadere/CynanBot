@@ -155,7 +155,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        message = f'{bombEmote} BOOM! {peoplePluralityString} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
+        message = f'{bombEmote} BOOM! {peoplePluralityString} by @{cheerUserName} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
