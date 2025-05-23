@@ -491,6 +491,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isVoicemailEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isVulnerableChattersEnabled(self) -> bool:
         pass
 

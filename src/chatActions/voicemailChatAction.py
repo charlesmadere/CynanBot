@@ -1,0 +1,94 @@
+from typing import Final
+
+from .absChatAction import AbsChatAction
+from ..misc import utils as utils
+from ..mostRecentChat.mostRecentChat import MostRecentChat
+from ..streamAlertsManager.streamAlert import StreamAlert
+from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
+from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
+from ..twitch.configuration.twitchMessage import TwitchMessage
+from ..users.userInterface import UserInterface
+from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
+from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
+
+
+class VoicemailChatAction(AbsChatAction):
+
+    def __init__(
+        self,
+        compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
+        streamAlertsManager: StreamAlertsManagerInterface,
+        voicemailHelper: VoicemailHelperInterface,
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+    ):
+        if not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
+            raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(voicemailHelper, VoicemailHelperInterface):
+            raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
+        elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
+            raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
+
+        self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
+        self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
+
+    async def handleChat(
+        self,
+        mostRecentChat: MostRecentChat | None,
+        message: TwitchMessage,
+        user: UserInterface
+    ) -> bool:
+        if not user.isVoicemailEnabled or not user.isTtsEnabled:
+            return False
+
+        voicemailData = await self.__voicemailHelper.getForTargetUser(
+            targetUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
+
+        if voicemailData is None:
+            return False
+
+        voicemailMessage = utils.cleanStr(voicemailData.message)
+        if not utils.isValidStr(voicemailMessage):
+            return False
+
+        providerOverridableStatus: TtsProviderOverridableStatus
+
+        if user.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
+        ttsEvent = TtsEvent(
+            message = voicemailMessage,
+            twitchChannel = user.handle,
+            twitchChannelId = await message.getTwitchChannelId(),
+            userId = message.getAuthorId(),
+            userName = message.getAuthorName(),
+            donation = None,
+            provider = user.defaultTtsProvider,
+            providerOverridableStatus = providerOverridableStatus,
+            raidInfo = None
+        )
+
+        if await self.__voicemailSettingsRepository.useMessageQueueing():
+            self.__streamAlertsManager.submitAlert(StreamAlert(
+                soundAlert = None,
+                twitchChannel = user.handle,
+                twitchChannelId = await message.getTwitchChannelId(),
+                ttsEvent = ttsEvent
+            ))
+
+            return True
+        else:
+            compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance(
+                useSharedSoundPlayerManager = False
+            )
+
+            return await compositeTtsManager.playTtsEvent(ttsEvent)
