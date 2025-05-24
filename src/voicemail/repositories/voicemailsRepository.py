@@ -88,7 +88,7 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         await connection.execute(
             '''
                 INSERT INTO voicemails (createddatetime, message, originatinguserid, targetuserid, ttsprovider, twitchchannelid, voicemailid)
-                VALUES ($1, $2, $3, $4, $5, $6)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
             ''',
             now.isoformat(), message, originatingUserId, targetUserId, ttsProviderString, twitchChannelId, voicemailId
         )
