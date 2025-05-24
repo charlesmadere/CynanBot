@@ -10,6 +10,7 @@ from ..models.voicemailData import VoicemailData
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
+from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
 
 
@@ -70,6 +71,10 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         # TODO
         raise RuntimeError(f'todo')
 
+    async def __getDatabaseConnection(self):
+        await self.__initDatabaseTable()
+        return await self.__backingDatabase.getConnection()
+
     async def getForTargetUser(
         self,
         targetUserId: str,
@@ -82,6 +87,47 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
 
         # TODO
         raise RuntimeError(f'todo')
+
+    async def __initDatabaseTable(self):
+        if self.__isDatabaseReady:
+            return
+
+        self.__isDatabaseReady = True
+        connection = await self.__backingDatabase.getConnection()
+
+        match connection.databaseType:
+            case DatabaseType.POSTGRESQL:
+                await connection.execute(
+                    '''
+                        CREATE TABLE IF NOT EXISTS voicemails (
+                            createddatetime text NOT NULL,
+                            message text NOT NULL,
+                            originatinguserid text NOT NULL,
+                            targetuserid text NOT NULL,
+                            twitchchannelid text NOT NULL,
+                            PRIMARY KEY (originatinguserid, targetuserid, twitchchannelid)
+                        )
+                    '''
+                )
+
+            case DatabaseType.SQLITE:
+                await connection.execute(
+                    '''
+                        CREATE TABLE IF NOT EXISTS voicemails (
+                            createddatetime TEXT NOT NULL,
+                            message TEXT NOT NULL,
+                            originatinguserid TEXT NOT NULL,
+                            targetuserid TEXT NOT NULL,
+                            twitchchannelid TEXT NOT NULL,
+                            PRIMARY KEY (originatinguserid, targetuserid, twitchchannelid)
+                        ) STRICT
+                    '''
+                )
+
+            case _:
+                raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
+
+        await connection.close()
 
     async def removeVoicemail(
         self,
