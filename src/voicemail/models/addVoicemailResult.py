@@ -3,6 +3,6 @@ from enum import Enum, auto
 
 class AddVoicemailResult(Enum):
 
-    MAXIMUM_ALREADY_SET = auto()
+    MAXIMUM_FOR_TARGET_USER = auto()
+    MESSAGE_MALFORMED = auto()
     OK = auto()
-    TARGET_USER_ALREADY_SET = auto()

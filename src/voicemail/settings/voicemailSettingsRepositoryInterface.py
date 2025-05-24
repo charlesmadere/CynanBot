@@ -14,6 +14,10 @@ class VoicemailSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getMaximumVoicemailAgeDays(self) -> int:
+        pass
+
+    @abstractmethod
     async def isEnabled(self) -> bool:
         pass
 

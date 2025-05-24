@@ -6,6 +6,7 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
@@ -46,7 +47,14 @@ class VoicemailChatAction(AbsChatAction):
         if not user.isVoicemailEnabled or not user.isTtsEnabled:
             return False
 
-        voicemailData = await self.__voicemailHelper.getForTargetUser(
+        # TODO notify the user of the number of voicemails that they have
+        voicemails = await self.__voicemailHelper.getAllForTargetUser(
+            targetUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
+
+        # TODO move the below into a command class
+        voicemailData = await self.__voicemailHelper.getAndRemoveForTargetUser(
             targetUserId = message.getAuthorId(),
             twitchChannelId = await message.getTwitchChannelId()
         )
@@ -58,12 +66,11 @@ class VoicemailChatAction(AbsChatAction):
         if not utils.isValidStr(voicemailMessage):
             return False
 
-        providerOverridableStatus: TtsProviderOverridableStatus
-
-        if user.isChatterPreferredTtsEnabled:
-            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        ttsProvider: TtsProvider
+        if voicemailData.ttsProvider is not None:
+            ttsProvider = voicemailData.ttsProvider
         else:
-            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+            ttsProvider = user.defaultTtsProvider
 
         ttsEvent = TtsEvent(
             message = voicemailMessage,
@@ -72,8 +79,8 @@ class VoicemailChatAction(AbsChatAction):
             userId = message.getAuthorId(),
             userName = message.getAuthorName(),
             donation = None,
-            provider = user.defaultTtsProvider,
-            providerOverridableStatus = providerOverridableStatus,
+            provider = ttsProvider,
+            providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
             raidInfo = None
         )
 

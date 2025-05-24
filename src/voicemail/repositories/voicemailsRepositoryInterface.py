@@ -5,9 +5,11 @@ from frozenlist import FrozenList
 from ..models.addVoicemailResult import AddVoicemailResult
 from ..models.removeVoicemailResult import RemoveVoicemailResult
 from ..models.voicemailData import VoicemailData
+from ...misc.clearable import Clearable
+from ...tts.models.ttsProvider import TtsProvider
 
 
-class VoicemailsRepositoryInterface(ABC):
+class VoicemailsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def addVoicemail(
@@ -15,7 +17,8 @@ class VoicemailsRepositoryInterface(ABC):
         message: str,
         originatingUserId: str,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
+        ttsProvider: TtsProvider | None
     ) -> AddVoicemailResult:
         pass
 
@@ -23,6 +26,14 @@ class VoicemailsRepositoryInterface(ABC):
     async def getAllForOriginatingUser(
         self,
         originatingUserId: str,
+        twitchChannelId: str
+    ) -> FrozenList[VoicemailData]:
+        pass
+
+    @abstractmethod
+    async def getAllForTargetUser(
+        self,
+        targetUserId: str,
         twitchChannelId: str
     ) -> FrozenList[VoicemailData]:
         pass

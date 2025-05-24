@@ -11,6 +11,7 @@ class VoicemailHelperInterface(ABC):
     @abstractmethod
     async def addVoicemail(
         self,
+        message: str | None,
         originatingUserId: str,
         targetUserId: str,
         twitchChannelId: str
@@ -21,6 +22,14 @@ class VoicemailHelperInterface(ABC):
     async def getAllForOriginatingUser(
         self,
         originatingUserId: str,
+        twitchChannelId: str
+    ) -> FrozenList[VoicemailData]:
+        pass
+
+    @abstractmethod
+    async def getAllForTargetUser(
+        self,
+        targetUserId: str,
         twitchChannelId: str
     ) -> FrozenList[VoicemailData]:
         pass
