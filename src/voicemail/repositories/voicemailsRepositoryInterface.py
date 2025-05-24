@@ -5,10 +5,9 @@ from frozenlist import FrozenList
 from ..models.addVoicemailResult import AddVoicemailResult
 from ..models.removeVoicemailResult import RemoveVoicemailResult
 from ..models.voicemailData import VoicemailData
-from ...misc.clearable import Clearable
 
 
-class VoicemailsRepositoryInterface(Clearable, ABC):
+class VoicemailsRepositoryInterface(ABC):
 
     @abstractmethod
     async def addVoicemail(

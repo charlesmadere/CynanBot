@@ -26,7 +26,7 @@ class VoicemailHelperInterface(ABC):
         pass
 
     @abstractmethod
-    async def getForTargetUser(
+    async def getAndRemoveForTargetUser(
         self,
         targetUserId: str,
         twitchChannelId: str
