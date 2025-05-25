@@ -70,6 +70,7 @@ from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
+from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
@@ -969,9 +970,11 @@ class CynanBot(
         else:
             self.__vulnerableChattersCommand: AbsChatCommand = VulnerableChattersChatCommand(activeChattersRepository, timber, timeoutImmuneUserIdsRepository, twitchUtils, usersRepository)
 
-        if voicemailsRepository is None or voicemailSettingsRepository is None:
+        if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
+            self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
             self.__voicemailsCommand: AbsChatCommand = StubChatCommand()
         else:
+            self.__playVoicemailCommand: AbsChatCommand = PlayVoicemailChatCommand(compositeTtsManagerProvider, streamAlertsManager, timber, twitchTokensUtils, twitchUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
             self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, twitchTokensUtils, twitchUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
 
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
@@ -1458,15 +1461,20 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__myCutenessCommand.handleChatCommand(context)
 
-    @commands.command(name = 'pbs')
-    async def command_pbs(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pbsCommand.handleCommand(context)
-
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMonCommand.handleChatCommand(context)
+
+    @commands.command(name = 'playvoicemail')
+    async def command_playvoicemail(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__playVoicemailCommand.handleChatCommand(context)
+
+    @commands.command(name = 'pbs')
+    async def command_pbs(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__pbsCommand.handleCommand(context)
 
     @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
     async def command_pkmove(self, ctx: Context):
@@ -1592,6 +1600,11 @@ class CynanBot(
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
+
+    @commands.command(name = 'voicemails', aliases = [ 'voicemail' ])
+    async def command_voicemails(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__voicemailsCommand.handleChatCommand(context)
 
     @commands.command(name = 'vulnerablechatters', aliases = [ 'vc' ])
     async def command_vulnerablechatters(self, ctx: Context):
