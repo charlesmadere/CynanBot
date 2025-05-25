@@ -1775,7 +1775,8 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     tntCheerActionHelper = tntCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    voicemailCheerActionHelper = None
 )
 
 
@@ -2012,7 +2013,8 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     triviaGamePointRedemption = triviaGamePointRedemption,
     ttsChatterPointRedemption = None,
     timber = timber,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    voicemailPointRedemption = None
 )
 
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(

@@ -799,7 +799,8 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     tntCheerActionHelper = None,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    voicemailCheerActionHelper = None
 )
 
 
@@ -840,7 +841,8 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     supStreamerChatAction = None,
     ttsChatterChatAction = None,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
+    voicemailChatAction = None
 )
 
 
@@ -884,7 +886,8 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     triviaGamePointRedemption = None,
     ttsChatterPointRedemption = None,
     timber = timber,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    voicemailPointRedemption = None
 )
 
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
@@ -1039,7 +1042,7 @@ cynanBot = CynanBot(
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    voicemailHelper = voicemailHelper,
+    voicemailHelper = None,
     voicemailsRepository = None,
     voicemailSettingsRepository = None,
     weatherReportPresenter = None,
