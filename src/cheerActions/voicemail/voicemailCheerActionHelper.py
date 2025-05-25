@@ -172,6 +172,14 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
                     action = action
                 )
 
+            case AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER:
+                await self.__sendMessage(
+                    message = f'⚠ Sorry @{cheerUserName}, you can\'t send yourself a voicemail',
+                    twitchChatMessageId = twitchChatMessageId,
+                    user = user,
+                    action = action
+                )
+
             case _:
                 self.__timber.log('VoicemailCheerActionHelper', f'Encountered unknown AddVoicemailResult ({bits=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=}) ({addVoicemailResult=})')
 

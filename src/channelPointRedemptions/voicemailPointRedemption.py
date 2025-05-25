@@ -141,7 +141,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
             case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
                 await self.__twitchUtils.safeSend(
                     messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox.'
+                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox'
                 )
 
             case AddVoicemailResult.MESSAGE_MALFORMED:
@@ -149,7 +149,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
 
                 await self.__twitchUtils.safeSend(
                     messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}.'
+                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}'
                 )
 
             case AddVoicemailResult.OK:
@@ -158,12 +158,18 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
                     message = f'☎️ @{twitchChannelPointsMessage.userName} your voicemail message for @{targetedUserData.userName} has been sent!'
                 )
 
+            case AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER:
+                await self.__twitchUtils.safeSend(
+                    messageable = twitchChannel,
+                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send yourself a voicemail'
+                )
+
             case _:
                 self.__timber.log('VoicemailPointRedemption', f'Encountered unknown AddVoicemailResult ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=}) ({addVoicemailResult=})')
 
                 await self.__twitchUtils.safeSend(
                     messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}.'
+                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}'
                 )
 
         self.__timber.log('VoicemailPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')

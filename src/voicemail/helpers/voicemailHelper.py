@@ -57,6 +57,8 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         if not utils.isValidStr(cleanedMessage):
             return AddVoicemailResult.MESSAGE_MALFORMED
+        elif targetUserId == originatingUserId:
+            return AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER
 
         allTargetUserVoicemails = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
