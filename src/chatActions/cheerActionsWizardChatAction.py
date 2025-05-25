@@ -12,6 +12,7 @@ from ..cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerActio
 from ..cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
 from ..cheerActions.timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..cheerActions.tnt.tntCheerAction import TntCheerAction
+from ..cheerActions.voicemail.voicemailCheerAction import VoicemailCheerAction
 from ..cheerActions.wizards.beanChance.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChance.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.crowdControl.crowdControlStep import CrowdControlStep
@@ -25,6 +26,8 @@ from ..cheerActions.wizards.timeout.timeoutStep import TimeoutStep
 from ..cheerActions.wizards.timeout.timeoutWizard import TimeoutWizard
 from ..cheerActions.wizards.tnt.tntStep import TntStep
 from ..cheerActions.wizards.tnt.tntWizard import TntWizard
+from ..cheerActions.wizards.voicemail.voicemailStep import VoicemailStep
+from ..cheerActions.wizards.voicemail.voicemailWizard import VoicemailWizard
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
@@ -632,6 +635,72 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
+    async def __configureVoicemailWizard(
+        self,
+        content: str,
+        wizard: VoicemailWizard,
+        message: TwitchMessage
+    ) -> bool:
+        steps = wizard.getSteps()
+        step = steps.getStep()
+
+        match step:
+            case VoicemailStep.BITS:
+                try:
+                    bits = int(content)
+                    wizard.setBits(bits)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Voicemail wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Voicemail wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Voicemail wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__cheerActionsRepository.setAction(VoicemailCheerAction(
+                    isEnabled = True,
+                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
+                    bits = wizard.requireBits(),
+                    twitchChannelId = wizard.twitchChannelId
+                ))
+
+                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Voicemail wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__send(message, f'ⓘ Finished configuring Voicemail ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                # this is intentionally empty
+                pass
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Voicemail wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Voicemail wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        match steps.getStep():
+            case VoicemailStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Voicemail wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Voicemail wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Voicemail wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Voicemail wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
     async def handleChat(
         self,
         mostRecentChat: MostRecentChat | None,
@@ -682,6 +751,13 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
         elif isinstance(wizard, TntWizard):
             return await self.__configureTntWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+
+        elif isinstance(wizard, VoicemailWizard):
+            return await self.__configureVoicemailWizard(
                 content = content,
                 wizard = wizard,
                 message = message

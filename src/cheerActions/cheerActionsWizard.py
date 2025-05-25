@@ -9,6 +9,7 @@ from .wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
 from .wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from .wizards.timeout.timeoutWizard import TimeoutWizard
 from .wizards.tnt.tntWizard import TntWizard
+from .wizards.voicemail.voicemailWizard import VoicemailWizard
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
@@ -60,6 +61,9 @@ class CheerActionsWizard(CheerActionsWizardInterface):
             self.__timber.log('CheerActionsWizard', f'Starting a new \"{cheerActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
 
         match cheerActionType:
+            case CheerActionType.ADGE:
+                raise RuntimeError('Not implemented')
+
             case CheerActionType.BEAN_CHANCE:
                 return await self.__startNewBeanChanceWizard(
                     twitchChannel = twitchChannel,
@@ -92,6 +96,12 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
             case CheerActionType.TNT:
                 return await self.__startNewTntWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
+            case CheerActionType.VOICEMAIL:
+                return await self.__startNewVoicemailWizard(
                     twitchChannel = twitchChannel,
                     twitchChannelId = twitchChannelId
                 )
@@ -216,5 +226,25 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
         self.__wizards[twitchChannelId] = wizard
         self.__timber.log('CheerActionsWizard', f'Started new TNT wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
+
+    async def __startNewVoicemailWizard(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> VoicemailWizard:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        wizard = VoicemailWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('CheerActionsWizard', f'Started new Voicemail wizard for {twitchChannel}:{twitchChannelId}')
 
         return wizard

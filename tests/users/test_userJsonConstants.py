@@ -107,6 +107,14 @@ class TestUserJsonConstants:
         result = UserJsonConstant.TTS_MONSTER_API_USAGE_REPORTING_ENABLED.jsonKey
         assert result == 'ttsMonsterApiUsageReportingEnabled'
 
+    def test_jsonkey_withVoicemailEnabled(self):
+        result = UserJsonConstant.VOICEMAIL_ENABLED.jsonKey
+        assert result == 'voicemailEnabled'
+
+    def test_jsonKey_withVulnerableChattersEnabled(self):
+        result = UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey
+        assert result == 'vulnerableChattersEnabled'
+
     def test_jsonKey_withWeatherEnabled(self):
         result = UserJsonConstant.WEATHER_ENABLED.jsonKey
         assert result == 'weatherEnabled'

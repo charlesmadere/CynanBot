@@ -76,6 +76,8 @@ from ..twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface impo
 from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..voicemail.repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
+from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
@@ -140,6 +142,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
+        voicemailsRepository: VoicemailsRepositoryInterface | None,
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface | None,
         weatherRepository: WeatherRepositoryInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
     ):
@@ -257,6 +261,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif voicemailsRepository is not None and not isinstance(voicemailsRepository, VoicemailsRepositoryInterface):
+            raise TypeError(f'voicemailsRepository argument is malformed: \"{voicemailsRepository}\"')
+        elif voicemailSettingsRepository is not None and not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
+            raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
@@ -322,6 +330,8 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(twitchWebsocketSettingsRepository)
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)
+        self.__clearables.append(voicemailsRepository)
+        self.__clearables.append(voicemailSettingsRepository)
         self.__clearables.append(weatherRepository)
         self.__clearables.append(wordOfTheDayRepository)
         self.__clearables.freeze()

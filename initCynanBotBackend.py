@@ -1885,7 +1885,8 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     supStreamerChatAction = None,
     ttsChatterChatAction = None,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
+    voicemailChatAction = None
 )
 
 
@@ -2214,6 +2215,9 @@ cynanBot = CynanBot(
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
+    voicemailHelper = None,
+    voicemailsRepository = None,
+    voicemailSettingsRepository = None,
     weatherReportPresenter = weatherReportPresenter,
     weatherRepository = weatherRepository,
     websocketConnectionServer = None,

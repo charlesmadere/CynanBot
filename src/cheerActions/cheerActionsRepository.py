@@ -140,6 +140,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     twitchChannelId = twitchChannelId
                 )
 
+            case CheerActionType.VOICEMAIL:
+                return await self.__cheerActionJsonMapper.requireVoicemailCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId
+                )
+
             case _:
                 raise RuntimeError(f'Unknown CheerActionType: \"{actionType}\"')
 

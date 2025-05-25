@@ -17,6 +17,7 @@ from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTrivi
 from ...channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from ...channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
+from ...channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -41,7 +42,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         triviaGamePointRedemption: TriviaGamePointRedemption | None,
         ttsChatterPointRedemption: TtsChatterPointRedemption | None,
         timber: TimberInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
+        voicemailPointRedemption: VoicemailPointRedemption | None,
     ):
         if casualGamePollPointRedemption is not None and not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption):
             raise TypeError(f'casualGamePollPointRedemption argument is malformed: \"{casualGamePollPointRedemption}\"')
@@ -73,6 +75,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif voicemailPointRedemption is not None and not isinstance(voicemailPointRedemption, VoicemailPointRedemption):
+            raise TypeError(f'voicemailPointRedemption argument is malformed: \"{voicemailPointRedemption}\"')
 
         if casualGamePollPointRedemption is None:
             self.__casualGamePollPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -138,6 +142,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__ttsChatterPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
             self.__ttsChatterPointRedemption: AbsChannelPointRedemption = ttsChatterPointRedemption
+
+        if voicemailPointRedemption is None:
+            self.__voicemailPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+        else:
+            self.__voicemailPointRedemption: AbsChannelPointRedemption = voicemailPointRedemption
 
         self.__timber: TimberInterface = timber
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -285,6 +294,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.areTtsChattersEnabled and channelPointsMessage.rewardId == user.ttsChatterRewardId:
             if await self.__ttsChatterPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.isVoicemailEnabled and channelPointsMessage.rewardId == user.voicemailRewardId:
+            if await self.__voicemailPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):

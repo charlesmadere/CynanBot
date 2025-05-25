@@ -40,6 +40,7 @@ from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriv
 from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
+from src.channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
@@ -52,6 +53,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.soundAlertChatAction import SoundAlertChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
+from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
 from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.chatLogger.chatLogger import ChatLogger
@@ -91,6 +93,8 @@ from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCh
 from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from src.cheerActions.tnt.tntCheerActionHelper import TntCheerActionHelper
 from src.cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
+from src.cheerActions.voicemail.voicemailCheerActionHelper import VoicemailCheerActionHelper
+from src.cheerActions.voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from src.commodoreSam.apiService.commodoreSamApiService import CommodoreSamApiService
 from src.commodoreSam.apiService.commodoreSamApiServiceInterface import CommodoreSamApiServiceInterface
 from src.commodoreSam.commodoreSamMessageCleaner import CommodoreSamMessageCleaner
@@ -668,6 +672,14 @@ from src.users.userIdsRepository import UserIdsRepository
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
 from src.users.usersRepositoryInterface import UsersRepositoryInterface
+from src.voicemail.helpers.voicemailHelper import VoicemailHelper
+from src.voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
+from src.voicemail.idGenerator.voicemailIdGenerator import VoicemailIdGenerator
+from src.voicemail.idGenerator.voicemailIdGeneratorInterface import VoicemailIdGeneratorInterface
+from src.voicemail.repositories.voicemailsRepository import VoicemailsRepository
+from src.voicemail.repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
+from src.voicemail.settings.voicemailSettingsRepository import VoicemailSettingsRepository
+from src.voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 from src.weather.weatherReportPresenter import WeatherReportPresenter
 from src.weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from src.weather.weatherRepository import WeatherRepository
@@ -2534,6 +2546,64 @@ crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
 )
 
 
+######################################
+## Voicemail initialization section ##
+######################################
+
+voicemailSettingsRepository: VoicemailSettingsRepositoryInterface = VoicemailSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/voicemailSettings.json'
+    )
+)
+
+voicemailIdGenerator: VoicemailIdGeneratorInterface = VoicemailIdGenerator()
+
+voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    ttsJsonMapper = ttsJsonMapper,
+    voicemailIdGenerator = voicemailIdGenerator,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
+    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    timber = timber,
+    voicemailsRepository = voicemailsRepository,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailChatAction = VoicemailChatAction(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchUtils = twitchUtils,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
+    timber = timber,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailPointRedemption = VoicemailPointRedemption(
+    timber = timber,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+
 ##########################################
 ## Cheer Actions initialization section ##
 ##########################################
@@ -2609,7 +2679,8 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     tntCheerActionHelper = tntCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    voicemailCheerActionHelper = voicemailCheerActionHelper
 )
 
 
@@ -2768,7 +2839,8 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     supStreamerChatAction = supStreamerChatAction,
     ttsChatterChatAction = ttsChatterChatAction,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
+    voicemailChatAction = voicemailChatAction
 )
 
 
@@ -3132,6 +3204,9 @@ cynanBot = CynanBot(
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailsRepository = voicemailsRepository,
+    voicemailSettingsRepository = voicemailSettingsRepository,
     weatherReportPresenter = weatherReportPresenter,
     weatherRepository = weatherRepository,
     websocketConnectionServer = websocketConnectionServer,

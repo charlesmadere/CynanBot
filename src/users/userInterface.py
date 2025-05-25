@@ -491,6 +491,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isVoicemailEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isVulnerableChattersEnabled(self) -> bool:
         pass
 
@@ -542,6 +547,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def voicemailRewardId(self) -> str | None:
         pass
 
     @property

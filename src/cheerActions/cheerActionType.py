@@ -10,3 +10,4 @@ class CheerActionType(Enum):
     SOUND_ALERT = auto()
     TIMEOUT = auto()
     TNT = auto()
+    VOICEMAIL = auto()

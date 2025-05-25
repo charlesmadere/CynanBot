@@ -34,6 +34,7 @@ from .chatCommands.addTntCheerActionWizard import AddTntCheerActionCommand
 from .chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from .chatCommands.addUserChatCommand import AddUserChatCommand
+from .chatCommands.addVoicemailCheerActionCommand import AddVoicemailCheerActionCommand
 from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from .chatCommands.answerChatCommand import AnswerChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
@@ -91,6 +92,7 @@ from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
+from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
@@ -247,6 +249,9 @@ from .users.addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.userInterface import UserInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
+from .voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
+from .voicemail.repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
+from .voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 from .weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from .weather.weatherRepositoryInterface import WeatherRepositoryInterface
 from .websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
@@ -399,6 +404,9 @@ class CynanBot(
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
+        voicemailHelper: VoicemailHelperInterface | None,
+        voicemailsRepository: VoicemailsRepositoryInterface | None,
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface | None,
         weatherReportPresenter: WeatherReportPresenterInterface | None,
         weatherRepository: WeatherRepositoryInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
@@ -688,6 +696,12 @@ class CynanBot(
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif voicemailHelper is not None and not isinstance(voicemailHelper, VoicemailHelperInterface):
+            raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
+        elif voicemailsRepository is not None and not isinstance(voicemailsRepository, VoicemailsRepositoryInterface):
+            raise TypeError(f'voicemailsRepository argument is malformed: \"{voicemailsRepository}\"')
+        elif voicemailSettingsRepository is not None and not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
+            raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
         elif weatherReportPresenter is not None and not isinstance(weatherReportPresenter, WeatherReportPresenterInterface):
             raise TypeError(f'weatherReportPresenter argument is malformed: \"{weatherReportPresenter}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
@@ -744,7 +758,7 @@ class CynanBot(
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchUtils, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeTtsService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, recentGrenadeAttacksRepository, recentGrenadeAttacksSettingsRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettingsRepository, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, halfLifeTtsService, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, recentGrenadeAttacksRepository, recentGrenadeAttacksSettingsRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettingsRepository, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)
@@ -773,6 +787,7 @@ class CynanBot(
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTntCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addVoicemailCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__beanInstructionsCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__disableCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -784,6 +799,7 @@ class CynanBot(
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTntCheerActionCommand: AbsChatCommand = AddTntCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addVoicemailCheerActionCommand: AbsChatCommand = AddVoicemailCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__beanInstructionsCommand: AbsChatCommand = BeanInstructionsChatCommand(cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
@@ -953,6 +969,11 @@ class CynanBot(
         else:
             self.__vulnerableChattersCommand: AbsChatCommand = VulnerableChattersChatCommand(activeChattersRepository, timber, timeoutImmuneUserIdsRepository, twitchUtils, usersRepository)
 
+        if voicemailsRepository is None or voicemailSettingsRepository is None:
+            self.__voicemailsCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, twitchTokensUtils, twitchUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
+
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1079,6 +1100,9 @@ class CynanBot(
         self.__chatLogger.start()
         self.__streamAlertsManager.start()
         self.__twitchUtils.start()
+
+        if self.__chatActionsManager is not None:
+            self.__chatActionsManager.setTwitchChannelProvider(self)
 
         if self.__twitchChannelPointRedemptionHandler is not None:
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
@@ -1253,6 +1277,11 @@ class CynanBot(
     async def command_adduser(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addUserCommand.handleChatCommand(context)
+
+    @commands.command(name = 'addvoicemailcheeraction')
+    async def command_addvoicemailcheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addVoicemailCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'anivtimeouts')
     async def command_anivtimeouts(self, ctx: Context):

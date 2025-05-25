@@ -17,6 +17,7 @@ from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
 from .timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from .tnt.tntCheerAction import TntCheerAction
+from .voicemail.voicemailCheerAction import VoicemailCheerAction
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 
@@ -143,6 +144,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             case 'sound_alert': return CheerActionType.SOUND_ALERT
             case 'timeout': return CheerActionType.TIMEOUT
             case 'tnt': return CheerActionType.TNT
+            case 'voicemail': return CheerActionType.VOICEMAIL
             case _:
                 self.__timber.log('CheerActionJsonMapper', f'Encountered unknown CheerActionType value: \"{jsonString}\"')
                 return None
@@ -326,6 +328,21 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             twitchChannelId = twitchChannelId
         )
 
+    async def parseVoicemailCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> VoicemailCheerAction | None:
+        return VoicemailCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            twitchChannelId = twitchChannelId
+        )
+
     async def requireAdgeCheerAction(
         self,
         isEnabled: bool,
@@ -506,6 +523,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         return action
 
+    async def requireVoicemailCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> VoicemailCheerAction:
+        action = await self.parseVoicemailCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create VoicemailCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
     async def serializeAbsCheerAction(
         self,
         cheerAction: AbsCheerAction
@@ -527,6 +565,8 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             return await self.__serializeTimeoutCheerAction(cheerAction)
         elif isinstance(cheerAction, TntCheerAction):
             return await self.__serializeTntCheerAction(cheerAction)
+        elif isinstance(cheerAction, VoicemailCheerAction):
+            return await self.__serializeVoicemailCheerAction(cheerAction)
         else:
             raise RuntimeError(f'Encountered unknown AbsCheerAction type ({cheerAction=})')
 
@@ -584,6 +624,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             case CheerActionType.SOUND_ALERT: return 'sound_alert'
             case CheerActionType.TIMEOUT: return 'timeout'
             case CheerActionType.TNT: return 'tnt'
+            case CheerActionType.VOICEMAIL: return 'voicemail'
             case _: raise ValueError(f'The given CheerActionType value is unknown: \"{actionType}\"')
 
     async def __serializeCrowdControlButtonPressCheerAction(
@@ -667,4 +708,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             'minTimeoutChatters': cheerAction.minTimeoutChatters
         }
 
+        return json.dumps(jsonContents)
+
+    async def __serializeVoicemailCheerAction(
+        self,
+        cheerAction: VoicemailCheerAction
+    ) -> str:
+        if not isinstance(cheerAction, VoicemailCheerAction):
+            raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
+
+        jsonContents: dict[str, Any] = dict()
         return json.dumps(jsonContents)

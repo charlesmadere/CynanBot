@@ -68,6 +68,7 @@ class User(UserInterface):
         isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
         isTtsMonsterApiUsageReportingEnabled: bool,
+        isVoicemailEnabled: bool,
         isVulnerableChattersEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
@@ -114,6 +115,7 @@ class User(UserInterface):
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
         ttsChatterRewardId: str | None,
+        voicemailRewardId: str | None,
         defaultTtsProvider: TtsProvider,
         whichAnivUser: WhichAnivUser | None,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
@@ -219,6 +221,8 @@ class User(UserInterface):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isTtsMonsterApiUsageReportingEnabled):
             raise TypeError(f'isTtsMonsterApiUsageReportingEnabled argument is malformed: \"{isTtsMonsterApiUsageReportingEnabled}\"')
+        elif not utils.isValidBool(isVoicemailEnabled):
+            raise TypeError(f'isVoicemailEnabled argument is malformed: \"{isVoicemailEnabled}\"')
         elif not utils.isValidBool(isVulnerableChattersEnabled):
             raise TypeError(f'isVulnerableChattersEnabled argument is malformed: \"{isVulnerableChattersEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
@@ -307,6 +311,8 @@ class User(UserInterface):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif ttsChatterRewardId is not None and not isinstance(ttsChatterRewardId, str):
             raise TypeError(f'ttsChatterRewardId argument is malformed: \"{ttsChatterRewardId}\"')
+        elif voicemailRewardId is not None and not isinstance(voicemailRewardId, str):
+            raise TypeError(f'voicemailRewardId argument is malformed: \"{voicemailRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif whichAnivUser is not None and not isinstance(whichAnivUser, WhichAnivUser):
@@ -378,6 +384,7 @@ class User(UserInterface):
         self.__areTtsChattersEnabled: bool = areTtsChattersEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
+        self.__isVoicemailEnabled: bool = isVoicemailEnabled
         self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
@@ -424,6 +431,7 @@ class User(UserInterface):
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__ttsChatterRewardId: str | None = ttsChatterRewardId
+        self.__voicemailRewardId: str | None = voicemailRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__whichAnivUser: WhichAnivUser | None = whichAnivUser
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
@@ -822,6 +830,10 @@ class User(UserInterface):
         return self.__isTtsEnabled
 
     @property
+    def isVoicemailEnabled(self) -> bool:
+        return self.__isVoicemailEnabled
+
+    @property
     def isVulnerableChattersEnabled(self) -> bool:
         return self.__isVulnerableChattersEnabled
 
@@ -875,6 +887,10 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
+
+    @property
+    def voicemailRewardId(self) -> str | None:
+        return self.__voicemailRewardId
 
     @property
     def whichAnivUser(self) -> WhichAnivUser | None:

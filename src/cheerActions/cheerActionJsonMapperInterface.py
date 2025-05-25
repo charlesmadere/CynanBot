@@ -12,6 +12,7 @@ from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
 from .timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from .tnt.tntCheerAction import TntCheerAction
+from .voicemail.voicemailCheerAction import VoicemailCheerAction
 
 
 class CheerActionJsonMapperInterface(ABC):
@@ -115,6 +116,17 @@ class CheerActionJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseVoicemailCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> VoicemailCheerAction | None:
+        pass
+
+    @abstractmethod
     async def requireAdgeCheerAction(
         self,
         isEnabled: bool,
@@ -210,6 +222,17 @@ class CheerActionJsonMapperInterface(ABC):
         jsonString: str | None,
         twitchChannelId: str
     ) -> TntCheerAction:
+        pass
+
+    @abstractmethod
+    async def requireVoicemailCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str
+    ) -> VoicemailCheerAction:
         pass
 
     @abstractmethod

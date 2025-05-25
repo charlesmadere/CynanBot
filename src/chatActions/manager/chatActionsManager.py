@@ -10,11 +10,13 @@ from ..saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatA
 from ..soundAlertChatAction import SoundAlertChatAction
 from ..supStreamerChatAction import SupStreamerChatAction
 from ..ttsChatterChatAction import TtsChatterChatAction
+from ..voicemailChatAction import VoicemailChatAction
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchMessage import TwitchMessage
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
@@ -40,7 +42,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
         supStreamerChatAction: SupStreamerChatAction | None,
         ttsChatterChatAction: TtsChatterChatAction | None,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
+        voicemailChatAction: VoicemailChatAction | None
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -74,6 +77,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif voicemailChatAction is not None and not isinstance(voicemailChatAction, VoicemailChatAction):
+            raise TypeError(f'voicemailChatAction argument is malformed: \"{voicemailChatAction}\"')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__anivCheckChatAction: AbsChatAction | None = anivCheckChatAction
@@ -89,7 +94,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
         self.__ttsChatterChatAction: AbsChatAction | None = ttsChatterChatAction
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__soundAlertChatActionPlayed: bool = False
+        self.__voicemailChatAction: VoicemailChatAction | None = voicemailChatAction
+
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __handleAnivChatActions(
         self,
@@ -190,24 +197,49 @@ class ChatActionsManager(ChatActionsManagerInterface):
                 user = user
             )
 
-        if self.__soundAlertChatAction is not None:
-            self.__soundAlertChatActionPlayed = await self.__soundAlertChatAction.handleChat(
+        if self.__voicemailChatAction is not None:
+            await self.__voicemailChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
                 user = user
             )
 
-        if self.__supStreamerChatAction is not None:
-            await self.__supStreamerChatAction.handleChat(
-                mostRecentChat = mostRecentChat,
-                message = message,
-                user = user
-            )
+        await self.__handleSoundMessage(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        )
 
-        if self.__ttsChatterChatAction is not None:
-            if not self.__soundAlertChatActionPlayed:
-                await self.__ttsChatterChatAction.handleChat(
-                    mostRecentChat = mostRecentChat,
-                    message = message,
-                    user = user
-                )
+    async def __handleSoundMessage(
+        self,
+        mostRecentChat: MostRecentChat | None,
+        message: TwitchMessage,
+        user: UserInterface
+    ):
+        if self.__supStreamerChatAction is not None and await self.__supStreamerChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return
+
+        elif self.__soundAlertChatAction is not None and await self.__soundAlertChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return
+
+        elif self.__ttsChatterChatAction is not None and await self.__ttsChatterChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return
+
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        if self.__voicemailChatAction is not None:
+            self.__voicemailChatAction.setTwitchChannelProvider(provider)

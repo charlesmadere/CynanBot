@@ -1,3 +1,5 @@
+from typing import Final
+
 from .beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
@@ -5,6 +7,7 @@ from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlChe
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from .timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
+from .voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from ..misc import utils as utils
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
@@ -24,7 +27,8 @@ class CheerActionHelper(CheerActionHelperInterface):
         tntCheerActionHelper: TntCheerActionHelperInterface | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
+        voicemailCheerActionHelper: VoicemailCheerActionHelperInterface | None
     ):
         if beanChanceCheerActionHelper is not None and not isinstance(beanChanceCheerActionHelper, BeanChanceCheerActionHelperInterface):
             raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
@@ -44,16 +48,19 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif voicemailCheerActionHelper is not None and not isinstance(voicemailCheerActionHelper, VoicemailCheerActionHelperInterface):
+            raise TypeError(f'voicemailCheerActionHelper argument is malformed: \"{voicemailCheerActionHelper}\"')
 
-        self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
-        self.__crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None = crowdControlCheerActionHelper
-        self.__soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = soundAlertCheerActionHelper
-        self.__timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None = timeoutCheerActionHelper
-        self.__tntCheerActionHelper: TntCheerActionHelperInterface | None = tntCheerActionHelper
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__beanChanceCheerActionHelper: Final[BeanChanceCheerActionHelperInterface | None] = beanChanceCheerActionHelper
+        self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
+        self.__crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface | None] = crowdControlCheerActionHelper
+        self.__soundAlertCheerActionHelper: Final[SoundAlertCheerActionHelperInterface | None] = soundAlertCheerActionHelper
+        self.__timeoutCheerActionHelper: Final[TimeoutCheerActionHelperInterface | None] = timeoutCheerActionHelper
+        self.__tntCheerActionHelper: Final[TntCheerActionHelperInterface | None] = tntCheerActionHelper
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__voicemailCheerActionHelper: Final[VoicemailCheerActionHelperInterface | None] = voicemailCheerActionHelper
 
     async def handleCheerAction(
         self,
@@ -173,6 +180,19 @@ class CheerActionHelper(CheerActionHelperInterface):
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChatMessageId = twitchChatMessageId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user
+        ):
+            return True
+
+        elif self.__voicemailCheerActionHelper is not None and not await self.__voicemailCheerActionHelper.handleVoicemailCheerAction(
+            actions = actions,
+            bits = bits,
+            broadcasterUserId = broadcasterUserId,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user
