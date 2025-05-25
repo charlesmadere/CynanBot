@@ -164,6 +164,12 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
                     message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send yourself a voicemail'
                 )
 
+            case AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER:
+                await self.__twitchUtils.safeSend(
+                    messageable = twitchChannel,
+                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send the streamer a voicemail'
+                )
+
             case _:
                 self.__timber.log('VoicemailPointRedemption', f'Encountered unknown AddVoicemailResult ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=}) ({addVoicemailResult=})')
 

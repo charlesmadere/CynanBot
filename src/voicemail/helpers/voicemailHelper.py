@@ -59,6 +59,8 @@ class VoicemailHelper(VoicemailHelperInterface):
             return AddVoicemailResult.MESSAGE_MALFORMED
         elif targetUserId == originatingUserId:
             return AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER
+        elif targetUserId == twitchChannelId:
+            return AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER
 
         allTargetUserVoicemails = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
