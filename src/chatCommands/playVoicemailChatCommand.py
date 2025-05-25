@@ -84,12 +84,16 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         else:
             ttsProvider = user.defaultTtsProvider
 
+        preparedVoicemail = await self.__voicemailHelper.prepareVoicemailMessage(
+            voicemail = voicemail
+        )
+
         ttsEvent = TtsEvent(
-            message = voicemail.message,
+            message = preparedVoicemail.preparedMessage,
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = ctx.getAuthorId(),
-            userName = ctx.getAuthorName(),
+            userId = preparedVoicemail.originatingUserId,
+            userName = preparedVoicemail.originatingUserName,
             donation = None,
             provider = ttsProvider,
             providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
@@ -113,7 +117,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = await self.__toString(
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                originatingUserName = preparedVoicemail.originatingUserName,
                 voicemail = voicemail
             ),
             replyMessageId = await ctx.getMessageId()
@@ -123,15 +127,8 @@ class PlayVoicemailChatCommand(AbsChatCommand):
 
     async def __toString(
         self,
-        twitchChannelId: str,
+        originatingUserName: str,
         voicemail: VoicemailData
     ) -> str:
-        originatingUserName = await self.__userIdsRepository.requireUserName(
-            userId = voicemail.originatingUserId,
-            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                twitchChannelId = twitchChannelId
-            )
-        )
-
         voicemailDateTime = SimpleDateTime(voicemail.createdDateTime).getDateAndTimeStr()
         return f'☎️ Playing back voicemail message from @{originatingUserName} ({voicemailDateTime})…'

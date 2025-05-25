@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from frozenlist import FrozenList
 
 from ..models.addVoicemailResult import AddVoicemailResult
+from ..models.preparedVoicemailData import PreparedVoicemailData
 from ..models.voicemailData import VoicemailData
 
 
@@ -46,5 +47,5 @@ class VoicemailHelperInterface(ABC):
     async def prepareVoicemailMessage(
         self,
         voicemail: VoicemailData
-    ) -> str:
+    ) -> PreparedVoicemailData:
         pass

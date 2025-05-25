@@ -4,6 +4,7 @@ from frozenlist import FrozenList
 
 from .voicemailHelperInterface import VoicemailHelperInterface
 from ..models.addVoicemailResult import AddVoicemailResult
+from ..models.preparedVoicemailData import PreparedVoicemailData
 from ..models.voicemailData import VoicemailData
 from ..repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
 from ..settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
@@ -12,6 +13,7 @@ from ...chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface im
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.models.ttsProvider import TtsProvider
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class VoicemailHelper(VoicemailHelperInterface):
@@ -20,6 +22,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         self,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface,
         timber: TimberInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         voicemailsRepository: VoicemailsRepositoryInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
     ):
@@ -27,6 +30,8 @@ class VoicemailHelper(VoicemailHelperInterface):
             raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(voicemailsRepository, VoicemailsRepositoryInterface):
             raise TypeError(f'voicemailsRepository argument is malformed: \"{voicemailsRepository}\"')
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
@@ -34,6 +39,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
         self.__timber: Final[TimberInterface] = timber
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__voicemailsRepository: Final[VoicemailsRepositoryInterface] = voicemailsRepository
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
@@ -184,9 +190,18 @@ class VoicemailHelper(VoicemailHelperInterface):
     async def prepareVoicemailMessage(
         self,
         voicemail: VoicemailData
-    ) -> str:
+    ) -> PreparedVoicemailData:
         if not isinstance(voicemail, VoicemailData):
             raise TypeError(f'voicemail argument is malformed: \"{voicemail}\"')
 
-        # TODO
-        raise RuntimeError('TODO')
+        originatingUserName = await self.__userIdsRepository.requireUserName(
+            userId = voicemail.originatingUserId
+        )
+
+        preparedMessage = f'Playing back voicemail from {originatingUserName} — {voicemail.message}'
+
+        return PreparedVoicemailData(
+            originatingUserName = originatingUserName,
+            preparedMessage = preparedMessage,
+            voicemail = voicemail
+        )
