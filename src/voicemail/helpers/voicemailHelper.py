@@ -178,3 +178,13 @@ class VoicemailHelper(VoicemailHelperInterface):
         )
 
         return voicemail
+
+    async def prepareVoicemailMessage(
+        self,
+        voicemail: VoicemailData
+    ) -> str:
+        if not isinstance(voicemail, VoicemailData):
+            raise TypeError(f'voicemail argument is malformed: \"{voicemail}\"')
+
+        # TODO
+        raise RuntimeError('TODO')
