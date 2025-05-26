@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import Final
 
 from .absChatCommand import AbsChatCommand
-from ..misc.simpleDateTime import SimpleDateTime
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
@@ -23,6 +25,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
@@ -34,6 +37,8 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -46,6 +51,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
@@ -109,5 +115,13 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         self.__timber.log('PlayVoicemailChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __toString(self, voicemail: PreparedVoicemailData) -> str:
-        voicemailDateTime = SimpleDateTime(voicemail.createdDateTime).getDateAndTimeStr()
-        return f'☎️ Playing back voicemail message from @{voicemail.originatingUserName} ({voicemailDateTime})…'
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        timeDifferenceSeconds = round((now - voicemail.createdDateTime).total_seconds())
+
+        durationAgoMessage: str
+        if timeDifferenceSeconds < 30:
+            durationAgoMessage = 'moments'
+        else:
+            durationAgoMessage = utils.secondsToDurationMessage(timeDifferenceSeconds)
+
+        return f'☎️ Playing back voicemail message from @{voicemail.originatingUserName} ({durationAgoMessage} ago)…'

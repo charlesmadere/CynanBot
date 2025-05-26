@@ -8,11 +8,8 @@ from ..models.preparedVoicemailData import PreparedVoicemailData
 from ..models.voicemailData import VoicemailData
 from ..repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
 from ..settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
-from ...chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
-    ChatterPreferredTtsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...tts.models.ttsProvider import TtsProvider
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -21,16 +18,13 @@ class VoicemailHelper(VoicemailHelperInterface):
 
     def __init__(
         self,
-        chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface,
         timber: TimberInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailsRepository: VoicemailsRepositoryInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
     ):
-        if not isinstance(chatterPreferredTtsRepository, ChatterPreferredTtsRepositoryInterface):
-            raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
@@ -41,7 +35,6 @@ class VoicemailHelper(VoicemailHelperInterface):
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
-        self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -99,21 +92,10 @@ class VoicemailHelper(VoicemailHelperInterface):
                 twitchChannelId = twitchChannelId
             )
 
-        chatterPreferredTts = await self.__chatterPreferredTtsRepository.get(
-            chatterUserId = originatingUserId,
-            twitchChannelId = twitchChannelId
-        )
-
-        ttsProvider: TtsProvider | None = None
-
-        if chatterPreferredTts is not None:
-            ttsProvider = chatterPreferredTts.preferredTts.preferredTtsProvider
-
         return await self.__voicemailsRepository.addVoicemail(
             message = cleanedMessage,
             originatingUserId = originatingUserId,
             targetUserId = targetUserId,
-            ttsProvider = ttsProvider,
             twitchChannelId = twitchChannelId
         )
 

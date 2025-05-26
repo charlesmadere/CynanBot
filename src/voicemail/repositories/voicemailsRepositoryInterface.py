@@ -6,7 +6,6 @@ from ..models.addVoicemailResult import AddVoicemailResult
 from ..models.removeVoicemailResult import RemoveVoicemailResult
 from ..models.voicemailData import VoicemailData
 from ...misc.clearable import Clearable
-from ...tts.models.ttsProvider import TtsProvider
 
 
 class VoicemailsRepositoryInterface(Clearable, ABC):
@@ -17,8 +16,7 @@ class VoicemailsRepositoryInterface(Clearable, ABC):
         message: str,
         originatingUserId: str,
         targetUserId: str,
-        twitchChannelId: str,
-        ttsProvider: TtsProvider | None
+        twitchChannelId: str
     ) -> AddVoicemailResult:
         pass
 

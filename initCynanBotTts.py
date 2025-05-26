@@ -1799,13 +1799,11 @@ voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    ttsJsonMapper = ttsJsonMapper,
     voicemailIdGenerator = voicemailIdGenerator,
     voicemailSettingsRepository = voicemailSettingsRepository
 )
 
 voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
-    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     timber = timber,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,

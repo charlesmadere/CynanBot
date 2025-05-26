@@ -16,8 +16,6 @@ from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
-from ...tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from ...tts.models.ttsProvider import TtsProvider
 
 
 class VoicemailsRepository(VoicemailsRepositoryInterface):
@@ -27,7 +25,6 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        ttsJsonMapper: TtsJsonMapperInterface,
         voicemailIdGenerator: VoicemailIdGeneratorInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
     ):
@@ -37,8 +34,6 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
-            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif not isinstance(voicemailIdGenerator, VoicemailIdGeneratorInterface):
             raise TypeError(f'voicemailIdGenerator argument is malformed: \"{voicemailIdGenerator}\"')
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
@@ -47,7 +42,6 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
         self.__voicemailIdGenerator: Final[VoicemailIdGeneratorInterface] = voicemailIdGenerator
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
@@ -59,8 +53,7 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         message: str,
         originatingUserId: str,
         targetUserId: str,
-        twitchChannelId: str,
-        ttsProvider: TtsProvider | None
+        twitchChannelId: str
     ) -> AddVoicemailResult:
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -70,8 +63,6 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
             raise TypeError(f'targetUserId argument is malformed: \"{targetUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif ttsProvider is not None and not isinstance(ttsProvider, TtsProvider):
-            raise TypeError(f'ttsProvider argument is malformed: \"{ttsProvider}\"')
 
         self.__cache[twitchChannelId].pop(targetUserId, None)
 
@@ -79,20 +70,16 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         now = datetime.now(self.__timeZoneRepository.getDefault())
         voicemailId = await self.__generateNewVoicemailId(connection)
 
-        ttsProviderString: str | None = None
-        if ttsProvider is not None:
-            ttsProviderString = await self.__ttsJsonMapper.asyncSerializeProvider(ttsProvider)
-
         await connection.execute(
             '''
-                INSERT INTO voicemails (createddatetime, message, originatinguserid, targetuserid, ttsprovider, twitchchannelid, voicemailid)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                INSERT INTO voicemails (createddatetime, message, originatinguserid, targetuserid, twitchchannelid, voicemailid)
+                VALUES ($1, $2, $3, $4, $5, $6)
             ''',
-            now.isoformat(), message, originatingUserId, targetUserId, ttsProviderString, twitchChannelId, voicemailId
+            now.isoformat(), message, originatingUserId, targetUserId, twitchChannelId, voicemailId
         )
 
         await connection.close()
-        self.__timber.log('VoicemailsRepository', f'Added new voicemail ({originatingUserId=}) ({targetUserId=}) ({ttsProvider=}) ({twitchChannelId=}) ({voicemailId=})')
+        self.__timber.log('VoicemailsRepository', f'Added new voicemail ({originatingUserId=}) ({targetUserId=}) ({twitchChannelId=}) ({voicemailId=})')
 
         return AddVoicemailResult.OK
 
@@ -141,7 +128,7 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT createddatetime, message, targetuserid, ttsprovider, voicemailid FROM voicemails
+                SELECT createddatetime, message, targetuserid, voicemailid FROM voicemails
                 WHERE originatinguserid = $1 AND twitchchannelid = $2
                 ORDER BY createddatetime ASC
             ''',
@@ -162,9 +149,8 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
                 message = record[1],
                 originatingUserId = originatingUserId,
                 targetUserId = record[2],
-                ttsProvider = await self.__ttsJsonMapper.asyncParseProvider(record[3]),
                 twitchChannelId = twitchChannelId,
-                voicemailId = record[4]
+                voicemailId = record[3]
             ))
 
         voicemails.freeze()
@@ -187,7 +173,7 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT createddatetime, message, originatinguserid, ttsprovider, voicemailid FROM voicemails
+                SELECT createddatetime, message, originatinguserid, voicemailid FROM voicemails
                 WHERE targetuserid = $1 AND twitchchannelid = $2
                 ORDER BY createddatetime ASC
             ''',
@@ -208,9 +194,8 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
                 message = record[1],
                 originatingUserId = record[2],
                 targetUserId = targetUserId,
-                ttsProvider = await self.__ttsJsonMapper.asyncParseProvider(record[3]),
                 twitchChannelId = twitchChannelId,
-                voicemailId = record[4]
+                voicemailId = record[3]
             ))
 
         voicemails.freeze()
@@ -256,7 +241,6 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
                             message text NOT NULL,
                             originatinguserid text NOT NULL,
                             targetuserid text NOT NULL,
-                            ttsprovider text DEFAULT NULL,
                             twitchchannelid text NOT NULL,
                             voicemailid text NOT NULL,
                             PRIMARY KEY (originatinguserid, targetuserid, twitchchannelid, voicemailid)
@@ -272,7 +256,6 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
                             message TEXT NOT NULL,
                             originatinguserid TEXT NOT NULL,
                             targetuserid TEXT NOT NULL,
-                            ttsprovider TEXT DEFAULT NULL,
                             twitchchannelid TEXT NOT NULL,
                             voicemailid TEXT NOT NULL,
                             PRIMARY KEY (originatinguserid, targetuserid, twitchchannelid, voicemailid)
