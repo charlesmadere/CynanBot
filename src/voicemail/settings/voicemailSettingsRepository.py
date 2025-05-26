@@ -61,4 +61,4 @@ class VoicemailSettingsRepository(VoicemailSettingsRepositoryInterface):
 
     async def useMessageQueueing(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'useMessageQueueing', False)
+        return utils.getBoolFromDict(jsonContents, 'useMessageQueueing', True)
