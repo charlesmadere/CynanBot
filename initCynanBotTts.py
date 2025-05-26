@@ -1807,6 +1807,7 @@ voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
 voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     timber = timber,
+    twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
     voicemailsRepository = voicemailsRepository,
     voicemailSettingsRepository = voicemailSettingsRepository

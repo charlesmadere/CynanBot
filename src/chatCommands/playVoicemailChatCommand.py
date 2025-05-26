@@ -6,16 +6,13 @@ from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.models.ttsEvent import TtsEvent
-from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
-from ..voicemail.models.voicemailData import VoicemailData
+from ..voicemail.models.preparedVoicemailData import PreparedVoicemailData
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
@@ -26,9 +23,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
@@ -39,12 +34,8 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
@@ -55,9 +46,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
@@ -78,25 +67,22 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         if voicemail is None:
             return
 
-        ttsProvider: TtsProvider
-        if voicemail.ttsProvider is not None:
-            ttsProvider = voicemail.ttsProvider
-        else:
-            ttsProvider = user.defaultTtsProvider
+        providerOverridableStatus: TtsProviderOverridableStatus
 
-        preparedVoicemail = await self.__voicemailHelper.prepareVoicemailMessage(
-            voicemail = voicemail
-        )
+        if user.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
         ttsEvent = TtsEvent(
-            message = preparedVoicemail.preparedMessage,
+            message = voicemail.preparedMessage,
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = preparedVoicemail.originatingUserId,
-            userName = preparedVoicemail.originatingUserName,
+            userId = voicemail.originatingUserId,
+            userName = voicemail.originatingUserName,
             donation = None,
-            provider = ttsProvider,
-            providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
+            provider = user.defaultTtsProvider,
+            providerOverridableStatus = providerOverridableStatus,
             raidInfo = None
         )
 
@@ -116,19 +102,12 @@ class PlayVoicemailChatCommand(AbsChatCommand):
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = await self.__toString(
-                originatingUserName = preparedVoicemail.originatingUserName,
-                voicemail = voicemail
-            ),
+            message = await self.__toString(voicemail),
             replyMessageId = await ctx.getMessageId()
         )
 
         self.__timber.log('PlayVoicemailChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
-    async def __toString(
-        self,
-        originatingUserName: str,
-        voicemail: VoicemailData
-    ) -> str:
+    async def __toString(self, voicemail: PreparedVoicemailData) -> str:
         voicemailDateTime = SimpleDateTime(voicemail.createdDateTime).getDateAndTimeStr()
-        return f'☎️ Playing back voicemail message from @{originatingUserName} ({voicemailDateTime})…'
+        return f'☎️ Playing back voicemail message from @{voicemail.originatingUserName} ({voicemailDateTime})…'

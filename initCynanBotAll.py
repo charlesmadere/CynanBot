@@ -2571,6 +2571,7 @@ voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
 voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     timber = timber,
+    twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
     voicemailsRepository = voicemailsRepository,
     voicemailSettingsRepository = voicemailSettingsRepository
@@ -2938,6 +2939,65 @@ ttsChatterPointRedemption: TtsChatterPointRedemption | None = TtsChatterPointRed
     twitchUtils = twitchUtils
 )
 
+######################################
+## Voicemail initialization section ##
+######################################
+
+voicemailSettingsRepository: VoicemailSettingsRepositoryInterface = VoicemailSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/voicemailSettings.json'
+    )
+)
+
+voicemailIdGenerator: VoicemailIdGeneratorInterface = VoicemailIdGenerator()
+
+voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    ttsJsonMapper = ttsJsonMapper,
+    voicemailIdGenerator = voicemailIdGenerator,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
+    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    timber = timber,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+    voicemailsRepository = voicemailsRepository,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailChatAction = VoicemailChatAction(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchUtils = twitchUtils,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
+    timber = timber,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailPointRedemption = VoicemailPointRedemption(
+    timber = timber,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
 
 #################################
 ## Ecco initialization section ##
@@ -3002,7 +3062,8 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     triviaGamePointRedemption = triviaGamePointRedemption,
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
+    voicemailPointRedemption = voicemailPointRedemption
 )
 
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(

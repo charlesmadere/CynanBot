@@ -40,12 +40,5 @@ class VoicemailHelperInterface(ABC):
         self,
         targetUserId: str,
         twitchChannelId: str
-    ) -> VoicemailData | None:
-        pass
-
-    @abstractmethod
-    async def prepareVoicemailMessage(
-        self,
-        voicemail: VoicemailData
-    ) -> PreparedVoicemailData:
+    ) -> PreparedVoicemailData | None:
         pass

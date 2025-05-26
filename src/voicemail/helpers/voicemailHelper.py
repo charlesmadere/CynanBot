@@ -13,6 +13,7 @@ from ...chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface im
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...tts.models.ttsProvider import TtsProvider
+from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -22,6 +23,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         self,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface,
         timber: TimberInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailsRepository: VoicemailsRepositoryInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
@@ -30,6 +32,8 @@ class VoicemailHelper(VoicemailHelperInterface):
             raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(voicemailsRepository, VoicemailsRepositoryInterface):
@@ -39,6 +43,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__voicemailsRepository: Final[VoicemailsRepositoryInterface] = voicemailsRepository
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
@@ -166,42 +171,40 @@ class VoicemailHelper(VoicemailHelperInterface):
         self,
         targetUserId: str,
         twitchChannelId: str
-    ) -> VoicemailData | None:
+    ) -> PreparedVoicemailData | None:
         if not utils.isValidStr(targetUserId):
             raise TypeError(f'targetUserId argument is malformed: \"{targetUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        voicemail = await self.__voicemailsRepository.getForTargetUser(
-            targetUserId = targetUserId,
-            twitchChannelId = twitchChannelId
-        )
+        while True:
+            voicemail = await self.__voicemailsRepository.getForTargetUser(
+                targetUserId = targetUserId,
+                twitchChannelId = twitchChannelId
+            )
 
-        if voicemail is None:
-            return None
+            if voicemail is None:
+                return None
 
-        await self.__voicemailsRepository.removeVoicemail(
-            twitchChannelId = twitchChannelId,
-            voicemailId = voicemail.voicemailId
-        )
+            await self.__voicemailsRepository.removeVoicemail(
+                twitchChannelId = twitchChannelId,
+                voicemailId = voicemail.voicemailId
+            )
 
-        return voicemail
+            originatingUserName = await self.__userIdsRepository.fetchUserName(
+                userId = voicemail.originatingUserId,
+                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                    twitchChannelId = twitchChannelId
+                )
+            )
 
-    async def prepareVoicemailMessage(
-        self,
-        voicemail: VoicemailData
-    ) -> PreparedVoicemailData:
-        if not isinstance(voicemail, VoicemailData):
-            raise TypeError(f'voicemail argument is malformed: \"{voicemail}\"')
+            if utils.isValidStr(originatingUserName):
+                preparedMessage = f'Playing back voicemail from {originatingUserName} — {voicemail.message}'
 
-        originatingUserName = await self.__userIdsRepository.requireUserName(
-            userId = voicemail.originatingUserId
-        )
-
-        preparedMessage = f'Playing back voicemail from {originatingUserName} — {voicemail.message}'
-
-        return PreparedVoicemailData(
-            originatingUserName = originatingUserName,
-            preparedMessage = preparedMessage,
-            voicemail = voicemail
-        )
+                return PreparedVoicemailData(
+                    originatingUserName = originatingUserName,
+                    preparedMessage = preparedMessage,
+                    voicemail = voicemail
+                )
+            else:
+                self.__timber.log('VoicemailHelper', f'Failed to fetch originating user name for a voicemail ({targetUserId=}) ({twitchChannelId=}) ({voicemail=}) ({originatingUserName=})')
