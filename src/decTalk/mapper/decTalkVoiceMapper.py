@@ -42,7 +42,7 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
 
         paul: FrozenList[Pattern] = FrozenList()
         paul.append(re.compile(r'^\s*\[?:?np\]?\s*$', re.IGNORECASE))
-        paul.append(re.compile(r'^\s*paul\s*$', re.IGNORECASE))
+        paul.append(re.compile(r'^\s*(?:perfect\s*)?paul\s*$', re.IGNORECASE))
         paul.freeze()
 
         rita: FrozenList[Pattern] = FrozenList()
@@ -57,7 +57,7 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
 
         wendy: FrozenList[Pattern] = FrozenList()
         wendy.append(re.compile(r'^\s*\[?:?nw\]?\s*$', re.IGNORECASE))
-        wendy.append(re.compile(r'^\s*wendy\s*$', re.IGNORECASE))
+        wendy.append(re.compile(r'^\s*(?:whispering\s*)?wendy\s*$', re.IGNORECASE))
         wendy.freeze()
 
         return frozendict({
