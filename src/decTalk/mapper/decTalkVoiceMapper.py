@@ -17,7 +17,7 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
     def __buildVoiceRegExes(self) -> frozendict[DecTalkVoice, Collection[Pattern]]:
         betty: FrozenList[Pattern] = FrozenList()
         betty.append(re.compile(r'^\s*\[?:?nb\]?\s*$', re.IGNORECASE))
-        betty.append(re.compile(r'^\s*betty\s*$', re.IGNORECASE))
+        betty.append(re.compile(r'^\s*(?:beautiful\s*)?betty\s*$', re.IGNORECASE))
         betty.freeze()
 
         dennis: FrozenList[Pattern] = FrozenList()
@@ -27,17 +27,17 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
 
         frank: FrozenList[Pattern] = FrozenList()
         frank.append(re.compile(r'^\s*\[?:?nf\]?\s*$', re.IGNORECASE))
-        frank.append(re.compile(r'^\s*frank\s*$', re.IGNORECASE))
+        frank.append(re.compile(r'^\s*(?:fail\s*)?frank\s*$', re.IGNORECASE))
         frank.freeze()
 
         harry: FrozenList[Pattern] = FrozenList()
         harry.append(re.compile(r'^\s*\[?:?nh\]?\s*$', re.IGNORECASE))
-        harry.append(re.compile(r'^\s*harry\s*$', re.IGNORECASE))
+        harry.append(re.compile(r'^\s*(?:huge\s*)?harry\s*$', re.IGNORECASE))
         harry.freeze()
 
         kit: FrozenList[Pattern] = FrozenList()
         kit.append(re.compile(r'^\s*\[?:?nk\]?\s*$', re.IGNORECASE))
-        kit.append(re.compile(r'^\s*kit\s*$', re.IGNORECASE))
+        kit.append(re.compile(r'^\s*kit(?:\s*the\s*kid)?\s*$', re.IGNORECASE))
         kit.freeze()
 
         paul: FrozenList[Pattern] = FrozenList()
@@ -47,7 +47,7 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
 
         rita: FrozenList[Pattern] = FrozenList()
         rita.append(re.compile(r'^\s*\[?:?nr\]?\s*$', re.IGNORECASE))
-        rita.append(re.compile(r'^\s*rita\s*$', re.IGNORECASE))
+        rita.append(re.compile(r'^\s*(?:rough\s*)?rita\s*$', re.IGNORECASE))
         rita.freeze()
 
         ursula: FrozenList[Pattern] = FrozenList()

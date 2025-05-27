@@ -14,6 +14,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.parseVoice('betty')
         assert result is DecTalkVoice.BETTY
 
+        result = await self.mapper.parseVoice('beautiful betty')
+        assert result is DecTalkVoice.BETTY
+
         result = await self.mapper.parseVoice('nb')
         assert result is DecTalkVoice.BETTY
 
@@ -41,6 +44,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.parseVoice('frank')
         assert result is DecTalkVoice.FRANK
 
+        result = await self.mapper.parseVoice('fail frank')
+        assert result is DecTalkVoice.FRANK
+
         result = await self.mapper.parseVoice('nf')
         assert result is DecTalkVoice.FRANK
 
@@ -52,6 +58,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.parseVoice('harry')
         assert result is DecTalkVoice.HARRY
 
+        result = await self.mapper.parseVoice('huge harry')
+        assert result is DecTalkVoice.HARRY
+
         result = await self.mapper.parseVoice('nh')
         assert result is DecTalkVoice.HARRY
 
@@ -61,6 +70,9 @@ class TestDecTalkVoiceMapper:
     @pytest.mark.asyncio
     async def test_parseVoice_withKit(self):
         result = await self.mapper.parseVoice('kit')
+        assert result is DecTalkVoice.KIT
+
+        result = await self.mapper.parseVoice('kit the kid')
         assert result is DecTalkVoice.KIT
 
         result = await self.mapper.parseVoice('nk')
@@ -79,6 +91,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.parseVoice('paul')
         assert result is DecTalkVoice.PAUL
 
+        result = await self.mapper.parseVoice('perfect paul')
+        assert result is DecTalkVoice.PAUL
+
         result = await self.mapper.parseVoice('np')
         assert result is DecTalkVoice.PAUL
 
@@ -88,6 +103,9 @@ class TestDecTalkVoiceMapper:
     @pytest.mark.asyncio
     async def test_parseVoice_withRita(self):
         result = await self.mapper.parseVoice('rita')
+        assert result is DecTalkVoice.RITA
+
+        result = await self.mapper.parseVoice('rough rita')
         assert result is DecTalkVoice.RITA
 
         result = await self.mapper.parseVoice('nr')
@@ -131,6 +149,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.requireVoice('betty')
         assert result is DecTalkVoice.BETTY
 
+        result = await self.mapper.requireVoice('beautiful betty')
+        assert result is DecTalkVoice.BETTY
+
         result = await self.mapper.requireVoice('nb')
         assert result is DecTalkVoice.BETTY
 
@@ -162,6 +183,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.requireVoice('frank')
         assert result is DecTalkVoice.FRANK
 
+        result = await self.mapper.requireVoice('fail frank')
+        assert result is DecTalkVoice.FRANK
+
         result = await self.mapper.requireVoice('nf')
         assert result is DecTalkVoice.FRANK
 
@@ -173,6 +197,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.requireVoice('harry')
         assert result is DecTalkVoice.HARRY
 
+        result = await self.mapper.requireVoice('huge harry')
+        assert result is DecTalkVoice.HARRY
+
         result = await self.mapper.requireVoice('nh')
         assert result is DecTalkVoice.HARRY
 
@@ -182,6 +209,9 @@ class TestDecTalkVoiceMapper:
     @pytest.mark.asyncio
     async def test_requireVoice_withKit(self):
         result = await self.mapper.requireVoice('kit')
+        assert result is DecTalkVoice.KIT
+
+        result = await self.mapper.requireVoice('kit the kid')
         assert result is DecTalkVoice.KIT
 
         result = await self.mapper.requireVoice('nk')
@@ -218,6 +248,9 @@ class TestDecTalkVoiceMapper:
         result = await self.mapper.requireVoice('rita')
         assert result is DecTalkVoice.RITA
 
+        result = await self.mapper.requireVoice('rough rita')
+        assert result is DecTalkVoice.RITA
+
         result = await self.mapper.requireVoice('nr')
         assert result is DecTalkVoice.RITA
 
@@ -238,6 +271,9 @@ class TestDecTalkVoiceMapper:
     @pytest.mark.asyncio
     async def test_requireVoice_withWendy(self):
         result = await self.mapper.requireVoice('wendy')
+        assert result is DecTalkVoice.WENDY
+
+        result = await self.mapper.requireVoice('whispering wendy')
         assert result is DecTalkVoice.WENDY
 
         result = await self.mapper.requireVoice('nw')
