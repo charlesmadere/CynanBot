@@ -123,31 +123,53 @@ class VoicemailHelper(VoicemailHelperInterface):
         self,
         originatingUserId: str,
         twitchChannelId: str
-    ) -> FrozenList[VoicemailData]:
+    ) -> FrozenList[PreparedVoicemailData]:
         if not utils.isValidStr(originatingUserId):
             raise TypeError(f'originatingUserId argument is malformed: \"{originatingUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        return await self.__voicemailsRepository.getAllForOriginatingUser(
+        allForOriginatingUser = await self.__voicemailsRepository.getAllForOriginatingUser(
             originatingUserId = originatingUserId,
             twitchChannelId = twitchChannelId
         )
+
+        prepared: FrozenList[PreparedVoicemailData] = FrozenList()
+
+        for voicemail in allForOriginatingUser:
+            prepared.append(await self.__prepareVoicemailData(
+                twitchChannelId = twitchChannelId,
+                voicemail = voicemail
+            ))
+
+        prepared.freeze()
+        return prepared
 
     async def getAllForTargetUser(
         self,
         targetUserId: str,
         twitchChannelId: str
-    ) -> FrozenList[VoicemailData]:
+    ) -> FrozenList[PreparedVoicemailData]:
         if not utils.isValidStr(targetUserId):
             raise TypeError(f'targetUserId argument is malformed: \"{targetUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        return await self.__voicemailsRepository.getAllForTargetUser(
+        allForTargetUser = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
             twitchChannelId = twitchChannelId
         )
+
+        prepared: FrozenList[PreparedVoicemailData] = FrozenList()
+
+        for voicemail in allForTargetUser:
+            prepared.append(await self.__prepareVoicemailData(
+                twitchChannelId = twitchChannelId,
+                voicemail = voicemail
+            ))
+
+        prepared.freeze()
+        return prepared
 
     async def getAndRemoveForTargetUser(
         self,
@@ -168,25 +190,47 @@ class VoicemailHelper(VoicemailHelperInterface):
             if voicemail is None:
                 return None
 
-            await self.__voicemailsRepository.removeVoicemail(
+            preparedVoicemail = await self.__prepareVoicemailData(
                 twitchChannelId = twitchChannelId,
-                voicemailId = voicemail.voicemailId
+                voicemail = voicemail
             )
 
-            originatingUserName = await self.__userIdsRepository.fetchUserName(
-                userId = voicemail.originatingUserId,
-                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = twitchChannelId
-                )
-            )
-
-            if utils.isValidStr(originatingUserName):
-                preparedMessage = f'Playing back voicemail from {originatingUserName} — {voicemail.message}'
-
-                return PreparedVoicemailData(
-                    originatingUserName = originatingUserName,
-                    preparedMessage = preparedMessage,
-                    voicemail = voicemail
+            if preparedVoicemail is None:
+                await self.__voicemailsRepository.removeVoicemail(
+                    twitchChannelId = twitchChannelId,
+                    voicemailId = voicemail.voicemailId
                 )
             else:
-                self.__timber.log('VoicemailHelper', f'Failed to fetch originating user name for a voicemail ({targetUserId=}) ({twitchChannelId=}) ({voicemail=}) ({originatingUserName=})')
+                return preparedVoicemail
+
+    async def __prepareVoicemailData(
+        self,
+        twitchChannelId: str,
+        voicemail: VoicemailData
+    ) -> PreparedVoicemailData | None:
+        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+            twitchChannelId = twitchChannelId
+        )
+
+        originatingUserName = await self.__userIdsRepository.fetchUserName(
+            userId = voicemail.originatingUserId,
+            twitchAccessToken = twitchAccessToken
+        )
+
+        targetUserName = await self.__userIdsRepository.fetchUserName(
+            userId = voicemail.targetUserId,
+            twitchAccessToken = twitchAccessToken
+        )
+
+        if utils.isValidStr(originatingUserName) and utils.isValidStr(targetUserName):
+            preparedMessage = f'Playing back voicemail from {originatingUserName} — {voicemail.message}'
+
+            return PreparedVoicemailData(
+                originatingUserName = originatingUserName,
+                preparedMessage = preparedMessage,
+                targetUserName = targetUserName,
+                voicemail = voicemail
+            )
+        else:
+            self.__timber.log('VoicemailHelper', f'Failed to fetch originating user name and/or target user name for a voicemail ({twitchChannelId=}) ({voicemail=}) ({originatingUserName=}) ({targetUserName=})')
+            return None

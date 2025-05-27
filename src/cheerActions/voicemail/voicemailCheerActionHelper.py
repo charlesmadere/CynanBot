@@ -148,7 +148,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         match addVoicemailResult:
             case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
                 await self.__sendMessage(
-                    message = f'⚠ Sorry @{cheerUserName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox.',
+                    message = f'⚠ Sorry @{cheerUserName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox',
                     twitchChatMessageId = twitchChatMessageId,
                     user = user,
                     action = action

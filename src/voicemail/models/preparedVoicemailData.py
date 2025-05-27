@@ -8,6 +8,7 @@ from .voicemailData import VoicemailData
 class PreparedVoicemailData:
     originatingUserName: str
     preparedMessage: str
+    targetUserName: str
     voicemail: VoicemailData
 
     @property

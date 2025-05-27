@@ -16,7 +16,7 @@ from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
-from ..voicemail.models.voicemailData import VoicemailData
+from ..voicemail.models.preparedVoicemailData import PreparedVoicemailData
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
@@ -24,7 +24,7 @@ class VoicemailsChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True)
     class VoicemailLookupData:
-        voicemails: FrozenList[VoicemailData]
+        voicemails: FrozenList[PreparedVoicemailData]
         chatterUserId: str
         chatterUserName: str
 
@@ -92,7 +92,7 @@ class VoicemailsChatCommand(AbsChatCommand):
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = await self.__toString(
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                ctx = ctx,
                 voicemailLookupData = voicemailLookupData
             ),
             replyMessageId = await ctx.getMessageId()
@@ -108,9 +108,9 @@ class VoicemailsChatCommand(AbsChatCommand):
         twitchChannelId: str
     ) -> VoicemailLookupData:
         splits = utils.getCleanedSplits(messageContent)
-
         lookupUserName: str
         lookupUserId: str
+
         if len(splits) >= 2:
             lookupUserName = utils.removePreceedingAt(splits[1])
 
@@ -137,7 +137,7 @@ class VoicemailsChatCommand(AbsChatCommand):
 
     async def __toString(
         self,
-        twitchChannelId: str,
+        ctx: TwitchContext,
         voicemailLookupData: VoicemailLookupData
     ) -> str:
         voicemailsSize = len(voicemailLookupData.voicemails)
@@ -156,12 +156,13 @@ class VoicemailsChatCommand(AbsChatCommand):
             return f'ⓘ @{voicemailLookupData.chatterUserName} has {voicemailsSizeStr} {voicemailsPlurality} (maximum voicemail inbox size is {maximumVoicemailsStr})'
 
         mostRecentVoicemail = voicemailLookupData.voicemails[voicemailsSize - 1]
-        mostRecentVoicemailUserName = await self.__userIdsRepository.requireUserName(
-            userId = mostRecentVoicemail.originatingUserId,
-            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                twitchChannelId = twitchChannelId
-            )
-        )
-
+        mostRecentVoicemailUserName = mostRecentVoicemail.originatingUserName
         mostRecentVoicemailDateTime = SimpleDateTime(mostRecentVoicemail.createdDateTime).getDateAndTimeStr()
-        return f'ⓘ @{voicemailLookupData.chatterUserName} has {voicemailsSizeStr} {voicemailsPlurality} (most recent voicemail is from @{mostRecentVoicemailUserName}, {mostRecentVoicemailDateTime}). You can play voicemails with the !playvoicemail command! (maximum voicemail inbox size is {maximumVoicemailsStr})'
+
+        commandTutorialMessage: str
+        if voicemailLookupData.chatterUserId == ctx.getAuthorId():
+            commandTutorialMessage = ''
+        else:
+            commandTutorialMessage = ' You can play voicemails with the !playvoicemail command!'
+
+        return f'ⓘ @{voicemailLookupData.chatterUserName} has {voicemailsSizeStr} {voicemailsPlurality} (most recent voicemail is from @{mostRecentVoicemailUserName}, {mostRecentVoicemailDateTime}).{commandTutorialMessage} (maximum voicemail inbox size is {maximumVoicemailsStr})'

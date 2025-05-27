@@ -4,7 +4,6 @@ from frozenlist import FrozenList
 
 from ..models.addVoicemailResult import AddVoicemailResult
 from ..models.preparedVoicemailData import PreparedVoicemailData
-from ..models.voicemailData import VoicemailData
 
 
 class VoicemailHelperInterface(ABC):
@@ -24,7 +23,7 @@ class VoicemailHelperInterface(ABC):
         self,
         originatingUserId: str,
         twitchChannelId: str
-    ) -> FrozenList[VoicemailData]:
+    ) -> FrozenList[PreparedVoicemailData]:
         pass
 
     @abstractmethod
@@ -32,7 +31,7 @@ class VoicemailHelperInterface(ABC):
         self,
         targetUserId: str,
         twitchChannelId: str
-    ) -> FrozenList[VoicemailData]:
+    ) -> FrozenList[PreparedVoicemailData]:
         pass
 
     @abstractmethod
