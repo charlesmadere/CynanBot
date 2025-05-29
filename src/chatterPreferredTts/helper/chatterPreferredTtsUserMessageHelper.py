@@ -72,7 +72,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__microsoftTtsRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)\s*(\w+)?\s*$', re.IGNORECASE)
         self.__singingDecTalkRegEx: Pattern = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__streamElementsRegEx: Pattern = re.compile(r'^\s*stream(?:\s+|_|-)?elements\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__ttsMonsterRegEx: Pattern = re.compile(r'^\s*tts(?:\s+|_|-)?monster\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__ttsMonsterRegEx: Pattern = re.compile(r'^\s*tts(?:\s+|_|-)?monster:?\s*(\w+)?\s*$', re.IGNORECASE)
 
     async def __createCommodoreSamTtsProperties(
         self,

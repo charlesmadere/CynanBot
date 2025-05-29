@@ -370,6 +370,26 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, TtsMonsterPreferredTts)
         assert result.voice is TtsMonsterVoice.SHADOW
 
+        result = await self.helper.parseUserMessage('tts monster: shadow')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.voice is TtsMonsterVoice.SHADOW
+
+        result = await self.helper.parseUserMessage('tts_monster shadow')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.voice is TtsMonsterVoice.SHADOW
+
+        result = await self.helper.parseUserMessage('tts_monster: shadow')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.voice is TtsMonsterVoice.SHADOW
+
+        result = await self.helper.parseUserMessage('tts-monster shadow')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.voice is TtsMonsterVoice.SHADOW
+
+        result = await self.helper.parseUserMessage('tts-monster: shadow')
+        assert isinstance(result, TtsMonsterPreferredTts)
+        assert result.voice is TtsMonsterVoice.SHADOW
+
     @pytest.mark.asyncio
     async def test_parseUserMessage_withTtsMonsterAndZeroTwo(self):
         result = await self.helper.parseUserMessage('tts monster zerotwo')
