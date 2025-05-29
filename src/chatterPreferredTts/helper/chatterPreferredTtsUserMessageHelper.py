@@ -65,7 +65,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
 
         self.__commodoreSamRegEx: Pattern = re.compile(r'^\s*commodore(?:\s+|_|-)?sam\s*$', re.IGNORECASE)
-        self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk:?\s*(\w+\s*\w*)?\s*$', re.IGNORECASE)
         self.__googleRegEx: Pattern = re.compile(r'^\s*goog(?:le?)?\s*(\w+)?\s*$', re.IGNORECASE)
         self.__halfLifeRegEx: Pattern = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
         self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*(\w+)?\s*$', re.IGNORECASE)

@@ -121,7 +121,15 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, DecTalkPreferredTts)
         assert result.voice is DecTalkVoice.PAUL
 
+        result = await self.helper.parseUserMessage('dectalk: paul')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.PAUL
+
         result = await self.helper.parseUserMessage('dec talk paul')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.PAUL
+
+        result = await self.helper.parseUserMessage('dec talk: paul')
         assert isinstance(result, DecTalkPreferredTts)
         assert result.voice is DecTalkVoice.PAUL
 
@@ -129,9 +137,67 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, DecTalkPreferredTts)
         assert result.voice is DecTalkVoice.PAUL
 
+        result = await self.helper.parseUserMessage('dec_talk perfect paul')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.PAUL
+
+        result = await self.helper.parseUserMessage('dec_talk: paul')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.PAUL
+
+        result = await self.helper.parseUserMessage('dec_talk: perfect paul')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.PAUL
+
         result = await self.helper.parseUserMessage('dec-talk paul')
         assert isinstance(result, DecTalkPreferredTts)
         assert result.voice is DecTalkVoice.PAUL
+
+        result = await self.helper.parseUserMessage('dec-talk: paul')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.PAUL
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withDecTalkAndWendy(self):
+        result = await self.helper.parseUserMessage('dectalk wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dectalk: wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec talk wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec talk: wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec_talk wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec_talk: wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec_talk whispering wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec_talk: whispering wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec-talk wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
+
+        result = await self.helper.parseUserMessage('dec-talk: wendy')
+        assert isinstance(result, DecTalkPreferredTts)
+        assert result.voice is DecTalkVoice.WENDY
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withEmptyString(self):
