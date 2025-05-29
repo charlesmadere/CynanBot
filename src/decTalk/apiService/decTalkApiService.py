@@ -6,7 +6,7 @@ from asyncio import AbstractEventLoop, CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
 from dataclasses import dataclass
-from typing import ByteString, Pattern
+from typing import ByteString, Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -51,13 +51,13 @@ class DecTalkApiService(DecTalkApiServiceInterface):
         elif not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
-        self.__fileExtension: str = fileExtension
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = decTalkSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = ttsDirectoryProvider
+        self.__fileExtension: Final[str] = fileExtension
 
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__fileNameRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def __createTtsDirectory(self, ttsDirectory: str):
         if await aiofiles.ospath.exists(
