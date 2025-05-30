@@ -97,7 +97,7 @@ class TestCheerActionChatCommand(AbsChatCommand):
                 exception = e
                 self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to perform onNewCheer test for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({message=}): {e}', e, traceback.format_exc())
 
-        elif self.__twitchCheerHandler is not None:
+        elif self.__cheerActionHelper is not None:
             try:
                 result = await self.__cheerActionHelper.handleCheerAction(
                     bits = bits,
