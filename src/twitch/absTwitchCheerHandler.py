@@ -10,7 +10,21 @@ class AbsTwitchCheerHandler(ABC):
     @abstractmethod
     async def onNewCheer(
         self,
-        userId: str,
+        bits: int | None,
+        broadcasterUserId: str,
+        chatMessage: str | None,
+        cheerUserId: str | None,
+        cheerUserLogin: str | None,
+        cheerUserName: str | None,
+        twitchChatMessageId: str | None,
+        user: UserInterface,
+    ):
+        pass
+
+    @abstractmethod
+    async def onNewCheerDataBundle(
+        self,
+        broadcasterUserId: str,
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle
     ):

@@ -89,12 +89,41 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
     async def onNewCheer(
         self,
-        userId: str,
+        bits: int | None,
+        broadcasterUserId: str,
+        chatMessage: str | None,
+        cheerUserId: str | None,
+        cheerUserLogin: str | None,
+        cheerUserName: str | None,
+        twitchChatMessageId: str | None,
+        user: UserInterface
+    ):
+        if not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+
+        if bits is None or bits < 1 or not utils.isValidStr(chatMessage) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({broadcasterUserId=}) ({bits=}) ({chatMessage=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=}) ({twitchChatMessageId=})')
+            return
+
+        await self.__handleCheer(
+            bits = bits,
+            broadcasterUserId = broadcasterUserId,
+            chatMessage = chatMessage,
+            cheerUserId = cheerUserId,
+            cheerUserLogin = cheerUserLogin,
+            cheerUserName = cheerUserName,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user
+        )
+
+    async def onNewCheerDataBundle(
+        self,
+        broadcasterUserId: str,
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle
     ):
-        if not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        if not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -103,26 +132,16 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: ({user=}) ({userId=}) ({dataBundle=})')
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: ({user=}) ({broadcasterUserId=}) ({dataBundle=})')
             return
 
-        bits = event.bits
-        chatMessage = event.message
-        cheerUserId = event.userId
-        cheerUserLogin = event.userLogin
-        cheerUserName = event.userName
-
-        if bits is None or bits < 1 or not utils.isValidStr(chatMessage) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({userId=}) ({dataBundle=}) ({bits=}) ({chatMessage=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
-            return
-
-        await self.__handleCheer(
-            bits = bits,
-            broadcasterUserId = userId,
-            chatMessage = chatMessage,
-            cheerUserId = cheerUserId,
-            cheerUserLogin = cheerUserLogin,
-            cheerUserName = cheerUserName,
+        await self.onNewCheer(
+            bits = event.bits,
+            broadcasterUserId = broadcasterUserId,
+            chatMessage = event.message,
+            cheerUserId = event.userId,
+            cheerUserLogin = event.userLogin,
+            cheerUserName = event.userName,
             twitchChatMessageId = event.messageId,
             user = user
         )

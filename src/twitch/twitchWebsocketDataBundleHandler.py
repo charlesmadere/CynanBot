@@ -179,8 +179,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             cheerHandler = self.__cheerHandler
 
             if cheerHandler is not None:
-                await cheerHandler.onNewCheer(
-                    userId = userId,
+                await cheerHandler.onNewCheerDataBundle(
+                    broadcasterUserId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
