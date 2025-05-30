@@ -955,10 +955,7 @@ class CynanBot(
         else:
             self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
-        if twitchCheerHandler is None and cheerActionHelper is None:
-            self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(twitchCheerHandler, cheerActionHelper, timber, twitchUtils, usersRepository)
+        self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(twitchCheerHandler, cheerActionHelper, timber, twitchUtils, usersRepository)
 
         if eccoHelper is None:
             self.__eccoCommand: AbsChatCommand = StubChatCommand()
