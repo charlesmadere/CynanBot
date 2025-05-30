@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from .absTwitchChatHandler import AbsTwitchChatHandler
 from .absTwitchCheerHandler import AbsTwitchCheerHandler
@@ -55,17 +57,17 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = channelPointRedemptionHandler
-        self.__chatHandler: AbsTwitchChatHandler | None = chatHandler
-        self.__cheerHandler: AbsTwitchCheerHandler | None = cheerHandler
-        self.__followHandler: AbsTwitchFollowHandler | None = followHandler
-        self.__pollHandler: AbsTwitchPollHandler | None = pollHandler
-        self.__predictionHandler: AbsTwitchPredictionHandler | None = predictionHandler
-        self.__raidHandler: AbsTwitchRaidHandler | None = raidHandler
-        self.__subscriptionHandler: AbsTwitchSubscriptionHandler | None = subscriptionHandler
-        self.__timber: TimberInterface = timber
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__channelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler | None] = channelPointRedemptionHandler
+        self.__chatHandler: Final[AbsTwitchChatHandler | None] = chatHandler
+        self.__cheerHandler: Final[AbsTwitchCheerHandler | None] = cheerHandler
+        self.__followHandler: Final[AbsTwitchFollowHandler | None] = followHandler
+        self.__pollHandler: Final[AbsTwitchPollHandler | None] = pollHandler
+        self.__predictionHandler: Final[AbsTwitchPredictionHandler | None] = predictionHandler
+        self.__raidHandler: Final[AbsTwitchRaidHandler | None] = raidHandler
+        self.__subscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = subscriptionHandler
+        self.__timber: Final[TimberInterface] = timber
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __isChannelPointsRedemptionType(
         self,
@@ -156,80 +158,64 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subscriptionType = dataBundle.metadata.subscriptionType
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
-            channelPointRedemptionHandler = self.__channelPointRedemptionHandler
-
-            if channelPointRedemptionHandler is not None:
-                await channelPointRedemptionHandler.onNewChannelPointRedemption(
+            if self.__channelPointRedemptionHandler is not None:
+                await self.__channelPointRedemptionHandler.onNewChannelPointRedemption(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isChatType(subscriptionType):
-            chatHandler = self.__chatHandler
-
-            if chatHandler is not None:
-                await chatHandler.onNewChat(
+            if self.__chatHandler is not None:
+                await self.__chatHandler.onNewChat(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isCheerType(subscriptionType):
-            cheerHandler = self.__cheerHandler
-
-            if cheerHandler is not None:
-                await cheerHandler.onNewCheerDataBundle(
+            if self.__cheerHandler is not None:
+                await self.__cheerHandler.onNewCheerDataBundle(
                     broadcasterUserId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isFollowType(subscriptionType):
-            followHandler = self.__followHandler
-
-            if followHandler is not None:
-                await followHandler.onNewFollow(
+            if self.__followHandler is not None:
+                await self.__followHandler.onNewFollow(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isPollType(subscriptionType):
-            pollHandler = self.__pollHandler
-
-            if pollHandler is not None:
-                await pollHandler.onNewPoll(
+            if self.__pollHandler is not None:
+                await self.__pollHandler.onNewPoll(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isPredictionType(subscriptionType):
-            predictionHandler = self.__predictionHandler
-
-            if predictionHandler is not None:
-                await predictionHandler.onNewPrediction(
+            if self.__predictionHandler is not None:
+                await self.__predictionHandler.onNewPrediction(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isRaidType(subscriptionType):
-            raidHandler = self.__raidHandler
-
-            if raidHandler is not None:
-                await raidHandler.onNewRaid(
+            if self.__raidHandler is not None:
+                await self.__raidHandler.onNewRaid(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
 
         elif await self.__isSubscriptionType(subscriptionType):
-            subscriptionHandler = self.__subscriptionHandler
-
-            if subscriptionHandler is not None:
-                await subscriptionHandler.onNewSubscription(
+            if self.__subscriptionHandler is not None:
+                await self.__subscriptionHandler.onNewSubscription(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
