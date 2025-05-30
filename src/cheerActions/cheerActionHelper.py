@@ -186,7 +186,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             return True
 
-        elif self.__voicemailCheerActionHelper is not None and not await self.__voicemailCheerActionHelper.handleVoicemailCheerAction(
+        elif self.__voicemailCheerActionHelper is not None and await self.__voicemailCheerActionHelper.handleVoicemailCheerAction(
             actions = actions,
             bits = bits,
             broadcasterUserId = broadcasterUserId,
