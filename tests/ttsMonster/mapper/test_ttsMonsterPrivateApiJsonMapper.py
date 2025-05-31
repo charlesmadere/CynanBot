@@ -6,6 +6,7 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapper import TtsMonsterPrivateApiJsonMapper
 from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from src.ttsMonster.models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConfig
 from src.ttsMonster.models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from src.ttsMonster.models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
@@ -18,6 +19,36 @@ class TestTtsMonsterPrivateApiJsonMapper:
     mapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
         timber = timber
     )
+
+    @pytest.mark.asyncio
+    async def test_parseDonationPrefixConfig_withDisabled(self):
+        result = await self.mapper.parseDonationPrefixConfig('disabled')
+        assert result is TtsMonsterDonationPrefixConfig.DISABLED
+
+    @pytest.mark.asyncio
+    async def test_parseDonationPrefixConfig_withEmptyString(self):
+        result = await self.mapper.parseDonationPrefixConfig('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseDonationPrefixConfig_withEnabled(self):
+        result = await self.mapper.parseDonationPrefixConfig('enabled')
+        assert result is TtsMonsterDonationPrefixConfig.ENABLED
+
+    @pytest.mark.asyncio
+    async def test_parseDonationPrefixConfig_withIfMessageIsBlank(self):
+        result = await self.mapper.parseDonationPrefixConfig('if_message_is_blank')
+        assert result is TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK
+
+    @pytest.mark.asyncio
+    async def test_parseDonationPrefixConfig_withNone(self):
+        result = await self.mapper.parseDonationPrefixConfig(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseDonationPrefixConfig_withWhitespaceString(self):
+        result = await self.mapper.parseDonationPrefixConfig(' ')
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTtsData(self):
@@ -177,6 +208,48 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.ZERO_TWO
 
     @pytest.mark.asyncio
+    async def test_requireDonationPrefixConfig_withDisabled(self):
+        result = await self.mapper.requireDonationPrefixConfig('disabled')
+        assert result is TtsMonsterDonationPrefixConfig.DISABLED
+
+    @pytest.mark.asyncio
+    async def test_requireDonationPrefixConfig_withEmptyString(self):
+        result: TtsMonsterDonationPrefixConfig | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireDonationPrefixConfig('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireDonationPrefixConfig_withEnabled(self):
+        result = await self.mapper.requireDonationPrefixConfig('enabled')
+        assert result is TtsMonsterDonationPrefixConfig.ENABLED
+
+    @pytest.mark.asyncio
+    async def test_requireDonationPrefixConfig_withIfMessageIsBlank(self):
+        result = await self.mapper.requireDonationPrefixConfig('if_message_is_blank')
+        assert result is TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK
+
+    @pytest.mark.asyncio
+    async def test_requireDonationPrefixConfig_withNone(self):
+        result: TtsMonsterDonationPrefixConfig | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireDonationPrefixConfig(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireDonationPrefixConfig_withWhitespaceString(self):
+        result: TtsMonsterDonationPrefixConfig | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireDonationPrefixConfig(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withAdam(self):
         result = await self.mapper.requireVoice('adam')
         assert result is TtsMonsterVoice.ADAM
@@ -246,6 +319,30 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert self.mapper is not None
         assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapper)
         assert isinstance(self.mapper, TtsMonsterPrivateApiJsonMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeDonationPrefixConfig_withAll(self):
+        results: set[str] = set()
+
+        for donationPrefixConfig in TtsMonsterDonationPrefixConfig:
+            results.add(await self.mapper.serializeDonationPrefixConfig(donationPrefixConfig))
+
+        assert len(results) == len(TtsMonsterDonationPrefixConfig)
+
+    @pytest.mark.asyncio
+    async def test_serializeDonationPrefixConfig_withDisabled(self):
+        result = await self.mapper.serializeDonationPrefixConfig(TtsMonsterDonationPrefixConfig.DISABLED)
+        assert result == 'disabled'
+
+    @pytest.mark.asyncio
+    async def test_serializeDonationPrefixConfig_withEnabled(self):
+        result = await self.mapper.serializeDonationPrefixConfig(TtsMonsterDonationPrefixConfig.ENABLED)
+        assert result == 'enabled'
+
+    @pytest.mark.asyncio
+    async def test_serializeDonationPrefixConfig_withIfMessageIsBlank(self):
+        result = await self.mapper.serializeDonationPrefixConfig(TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK)
+        assert result == 'if_message_is_blank'
 
     @pytest.mark.asyncio
     async def test_serializeGenerateTtsJsonBody(self):

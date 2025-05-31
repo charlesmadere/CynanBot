@@ -1,7 +1,8 @@
-from typing import Any
+from typing import Any, Final
 
 from .ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from ..models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConfig
 from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
@@ -13,6 +14,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         self,
         settingsJsonReader: JsonReaderInterface,
         ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
+        defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
         defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
@@ -22,9 +24,10 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         elif not isinstance(defaultVoice, TtsMonsterVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
-        self.__defaultVoice: TtsMonsterVoice = defaultVoice
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
+        self.__defaultDonationPrefixConfig: Final[TtsMonsterDonationPrefixConfig] = defaultDonationPrefixConfig
+        self.__defaultVoice: Final[TtsMonsterVoice] = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -41,6 +44,17 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         )
 
         return await self.__ttsMonsterPrivateApiJsonMapper.requireVoice(defaultVoiceString)
+
+    async def getDonationPrefixConfig(self) -> TtsMonsterDonationPrefixConfig:
+        jsonContents = await self.__readJson()
+
+        donationPrefixConfigString = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'donation_prefix_config',
+            fallback = await self.__ttsMonsterPrivateApiJsonMapper.serializeDonationPrefixConfig(self.__defaultDonationPrefixConfig)
+        )
+
+        return await self.__ttsMonsterPrivateApiJsonMapper.requireDonationPrefixConfig(donationPrefixConfigString)
 
     async def getFileExtension(self) -> str:
         jsonContents = await self.__readJson()
@@ -70,10 +84,6 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
         self.__cache = jsonContents
         return jsonContents
-
-    async def useDonationPrefix(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'use_donation_prefix', fallback = False)
 
     async def useVoiceDependentMediaPlayerVolume(self) -> bool:
         jsonContents = await self.__readJson()

@@ -5,6 +5,7 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
+from ..models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConfig
 from ..models.ttsMonsterPrivateApiTtsData import TtsMonsterPrivateApiTtsData
 from ..models.ttsMonsterPrivateApiTtsResponse import TtsMonsterPrivateApiTtsResponse
 from ..models.ttsMonsterVoice import TtsMonsterVoice
@@ -103,6 +104,21 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             TtsMonsterVoice.ZERO_TWO: zeroTwo
         })
 
+    async def parseDonationPrefixConfig(
+        self,
+        string: str | Any | None
+    ) -> TtsMonsterDonationPrefixConfig | None:
+        if not utils.isValidStr(string):
+            return None
+
+        string = string.lower()
+
+        match string:
+            case 'disabled': return TtsMonsterDonationPrefixConfig.DISABLED
+            case 'enabled': return TtsMonsterDonationPrefixConfig.ENABLED
+            case 'if_message_is_blank': return TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK
+            case _: return None
+
     async def parseTtsData(
         self,
         jsonContents: dict[str, Any] | Any | None
@@ -159,6 +175,17 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         return None
 
+    async def requireDonationPrefixConfig(
+        self,
+        string: str | Any | None
+    ) -> TtsMonsterDonationPrefixConfig:
+        result = await self.parseDonationPrefixConfig(string)
+
+        if result is None:
+            raise ValueError(f'Unable to parse TtsMonsterDonationPrefixConfig from string: \"{string}\"')
+
+        return result
+
     async def requireVoice(
         self,
         string: str | Any | None
@@ -169,6 +196,19 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             raise ValueError(f'Unable to parse TtsMonsterVoice from string: \"{string}\"')
 
         return result
+
+    async def serializeDonationPrefixConfig(
+        self,
+        donationPrefixConfig: TtsMonsterDonationPrefixConfig
+    ) -> str:
+        if not isinstance(donationPrefixConfig, TtsMonsterDonationPrefixConfig):
+            raise TypeError(f'donationPrefixConfig argument is malformed: \"{donationPrefixConfig}\"')
+
+        match donationPrefixConfig:
+            case TtsMonsterDonationPrefixConfig.DISABLED: return 'disabled'
+            case TtsMonsterDonationPrefixConfig.ENABLED: return 'enabled'
+            case TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK: return 'if_message_is_blank'
+            case _: raise RuntimeError(f'Encountered unknown TtsMonsterDonationPrefixConfig value: \"{donationPrefixConfig}\"')
 
     async def serializeGenerateTtsJsonBody(
         self,

@@ -13,6 +13,7 @@ from .ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..exceptions import TtsMonsterFailedToCreateDirectoriesException
 from ..messageChunkParser.ttsMonsterMessageChunkParserInterface import TtsMonsterMessageChunkParserInterface
+from ..models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConfig
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
 from ..models.ttsMonsterMessageChunk import TtsMonsterMessageChunk
 from ..models.ttsMonsterVoice import TtsMonsterVoice
@@ -89,16 +90,35 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         donationPrefix: str | None,
         message: str | None
     ) -> str | None:
-        if not await self.__ttsMonsterSettingsRepository.useDonationPrefix():
-            return message
-        elif utils.isValidStr(donationPrefix) and utils.isValidStr(message):
-            return f'{donationPrefix} {message}'
-        elif utils.isValidStr(donationPrefix):
-            return donationPrefix
-        elif utils.isValidStr(message):
-            return message
-        else:
-            return None
+        donationPrefixConfig = await self.__ttsMonsterSettingsRepository.getDonationPrefixConfig()
+
+        match donationPrefixConfig:
+            case TtsMonsterDonationPrefixConfig.DISABLED:
+                if utils.isValidStr(message):
+                    return message
+                else:
+                    return None
+
+            case TtsMonsterDonationPrefixConfig.ENABLED:
+                if utils.isValidStr(donationPrefix) and utils.isValidStr(message):
+                    return f'{donationPrefix} {message}'
+                elif utils.isValidStr(donationPrefix):
+                    return donationPrefix
+                elif utils.isValidStr(message):
+                    return message
+                else:
+                    return None
+
+            case TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK:
+                if utils.isValidStr(message):
+                    return message
+                elif utils.isValidStr(donationPrefix):
+                    return donationPrefix
+                else:
+                    return None
+
+            case _:
+                raise RuntimeError(f'Encountered unknown TtsMonsterDonationPrefixConfig value: \"{donationPrefixConfig}\"')
 
     async def __determineMessageVoices(self, message: str) -> MessageVoices:
         messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
@@ -145,9 +165,6 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         if not utils.isValidStr(donationPrefix) and not utils.isValidStr(message):
             return None
 
-        if voice is not None:
-            message = f'{voice.inMessageName}: {message}'
-
         fullMessage = await self.__createFullMessage(
             donationPrefix = donationPrefix,
             message = message
@@ -155,6 +172,9 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         if not utils.isValidStr(fullMessage):
             return None
+
+        if voice is not None:
+            fullMessage = f'{voice.inMessageName}: {fullMessage}'
 
         messageVoices = await self.__determineMessageVoices(fullMessage)
 
