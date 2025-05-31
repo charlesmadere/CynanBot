@@ -105,12 +105,10 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return event.provider
 
-        chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper
-
-        if chatterPreferredTtsHelper is None:
+        if self.__chatterPreferredTtsHelper is None:
             return event.provider
 
-        preferredTts = await chatterPreferredTtsHelper.get(
+        preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
             twitchChannelId = event.twitchChannelId
         )
