@@ -2,6 +2,7 @@ import asyncio
 import queue
 import traceback
 from queue import SimpleQueue
+from typing import Final
 
 from .currentStreamAlert import CurrentStreamAlert
 from .streamAlert import StreamAlert
@@ -46,17 +47,17 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 3:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__compositeTtsManager: CompositeTtsManagerInterface = compositeTtsManager
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = streamAlertsSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
-        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__compositeTtsManager: Final[CompositeTtsManagerInterface] = compositeTtsManager
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__streamAlertsSettingsRepository: Final[StreamAlertsSettingsRepositoryInterface] = streamAlertsSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
 
         self.__isStarted: bool = False
         self.__currentAlert: CurrentStreamAlert | None = None
-        self.__alertQueue: SimpleQueue[StreamAlert] = SimpleQueue()
+        self.__alertQueue: Final[SimpleQueue[StreamAlert]] = SimpleQueue()
 
     async def __processCurrentAlert(self) -> bool:
         currentAlert = self.__currentAlert
@@ -118,7 +119,8 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             if newAlert is not None:
                 self.__currentAlert = CurrentStreamAlert(newAlert)
 
-            await asyncio.sleep(await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds())
+            alertsDelayBetweenSeconds = await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds()
+            await asyncio.sleep(alertsDelayBetweenSeconds)
 
     def submitAlert(self, alert: StreamAlert):
         if not isinstance(alert, StreamAlert):

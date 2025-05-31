@@ -83,7 +83,7 @@ class TestTtsCommandBuilder:
         assert result == 'stashiocat subscribed!'
 
     @pytest.mark.asyncio
-    async def test_buildDonationPrefix_withSubscriptionDonation(self):
+    async def test_buildDonationPrefix_withSubscriptionDonation1(self):
         donation = TtsSubscriptionDonation(
             isAnonymous = False,
             cumulativeMonths = None,
@@ -106,6 +106,31 @@ class TestTtsCommandBuilder:
 
         result = await self.commandBuilder.buildDonationPrefix(ttsEvent)
         assert result == 'stashiocat gifted 5 subs!'
+
+    @pytest.mark.asyncio
+    async def test_buildDonationPrefix_withSubscriptionDonation2(self):
+        donation = TtsSubscriptionDonation(
+            isAnonymous = False,
+            cumulativeMonths = None,
+            durationMonths = None,
+            numberOfGiftedSubs = 1,
+            tier = TwitchSubscriberTier.TIER_ONE
+        )
+
+        ttsEvent = TtsEvent(
+            message = None,
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'abc123',
+            userId = 'def456',
+            userName = 'MAERKLiG',
+            donation = donation,
+            provider = TtsProvider.DEC_TALK,
+            providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
+            raidInfo = None
+        )
+
+        result = await self.commandBuilder.buildDonationPrefix(ttsEvent)
+        assert result == 'MAERKLiG gifted 1 sub!'
 
     def test_sanity(self):
         assert self.commandBuilder is not None

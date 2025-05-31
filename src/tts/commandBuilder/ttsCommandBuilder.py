@@ -49,11 +49,13 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
                 event = event,
                 donation = donation
             )
+
         elif isinstance(donation, TtsSubscriptionDonation):
             return await self.__processSubscriptionDonationPrefix(
                 event = event,
                 donation = donation
             )
+
         else:
             raise RuntimeError(f'donation type is unknown: \"{type(donation)=}\"')
 
