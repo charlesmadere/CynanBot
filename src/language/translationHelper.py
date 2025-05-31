@@ -75,7 +75,7 @@ class TranslationHelper(TranslationHelperInterface):
 
         if targetLanguage is None:
             targetLanguage = await self.__languagesRepository.requireLanguageForCommand(
-                command = 'en',
+                command = LanguageEntry.ENGLISH.primaryCommandName,
                 hasIso6391Code = True
             )
 
