@@ -442,9 +442,9 @@ class LanguageEntry(Enum):
             case LanguageEntry.CZECH: return None
             case LanguageEntry.DANISH: return None
             case LanguageEntry.DUTCH: return 'nl'
+            case LanguageEntry.ENGLISH: return None
             case LanguageEntry.ENGLISH_FOR_PORTUGUESE_SPEAKERS: return 'en-pt'
             case LanguageEntry.ENGLISH_FOR_SPANISH_SPEAKERS: return 'en-es'
-            case LanguageEntry.ENGLISH: return None
             case LanguageEntry.FILIPINO: return None
             case LanguageEntry.FINNISH: return None
             case LanguageEntry.FRENCH: return 'fr'

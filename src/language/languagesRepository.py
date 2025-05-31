@@ -1,8 +1,9 @@
 import random
-from typing import Collection
+from typing import Final
 
 from frozenlist import FrozenList
 
+from .exceptions import NoLanguageEntryFoundForCommandException, NoLanguageEntryFoundForWotdApiCodeException
 from .languageEntry import LanguageEntry
 from .languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..misc import utils as utils
@@ -11,7 +12,7 @@ from ..misc import utils as utils
 class LanguagesRepository(LanguagesRepositoryInterface):
 
     def __init__(self):
-        self.__languageList: Collection[LanguageEntry] = self.__createLanguageList()
+        self.__languageList: Final[FrozenList[LanguageEntry]] = self.__createLanguageList()
 
     def __createLanguageList(self) -> FrozenList[LanguageEntry]:
         languagesList: list[LanguageEntry] = list(LanguageEntry)
@@ -35,7 +36,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         for entry in validEntries:
             wotdApiCodes.append(entry.primaryCommandName)
 
-        wotdApiCodes.sort(key = lambda commandName: commandName.lower())
+        wotdApiCodes.sort(key = lambda commandName: commandName.casefold())
         return delimiter.join(wotdApiCodes)
 
     async def getExampleLanguageEntry(
@@ -167,7 +168,10 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         )
 
         if languageEntry is None:
-            raise RuntimeError(f'Unable to find LanguageEntry for command ({command=})')
+            raise NoLanguageEntryFoundForCommandException(
+                message = f'Unable to find LanguageEntry for command ({command=})',
+                command = command
+            )
 
         return languageEntry
 
@@ -183,6 +187,9 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         )
 
         if languageEntry is None:
-            raise RuntimeError(f'Unable to find LanguageEntry for wotdApiCode ({wotdApiCode=})')
+            raise NoLanguageEntryFoundForWotdApiCodeException(
+                message = f'Unable to find LanguageEntry for wotdApiCode ({wotdApiCode=})',
+                wotdApiCode = wotdApiCode
+            )
 
         return languageEntry

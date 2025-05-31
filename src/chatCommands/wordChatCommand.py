@@ -2,13 +2,13 @@ import traceback
 from datetime import timedelta
 
 from .absChatCommand import AbsChatCommand
+from ..language.exceptions import NoLanguageEntryFoundForCommandException, NoLanguageEntryFoundForWotdApiCodeException
 from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
-from ..network.exceptions import GenericNetworkException
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -77,7 +77,7 @@ class WordChatCommand(AbsChatCommand):
                 command = language,
                 hasWotdApiCode = True
             )
-        except (RuntimeError, TypeError, ValueError) as e:
+        except (NoLanguageEntryFoundForCommandException, NoLanguageEntryFoundForWotdApiCodeException, RuntimeError, TypeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error retrieving LanguageEntry ({language=}): {e}', e, traceback.format_exc())
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
             await self.__twitchUtils.safeSend(
@@ -100,7 +100,7 @@ class WordChatCommand(AbsChatCommand):
                 message = wordOfTheDayString,
                 replyMessageId = await ctx.getMessageId()
             )
-        except (GenericNetworkException, RuntimeError, ValueError) as e:
+        except Exception as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day ({languageEntry=}): {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,

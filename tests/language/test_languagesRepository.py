@@ -37,6 +37,14 @@ class TestLanguagesRepository:
             assert languageEntry is LanguageEntry.SWEDISH
 
     @pytest.mark.asyncio
+    async def test_getLanguageForCommand_withEn(self):
+        languageEntry = await self.languagesRepository.getLanguageForCommand(
+            command = 'en'
+        )
+
+        assert languageEntry is LanguageEntry.ENGLISH
+
+    @pytest.mark.asyncio
     async def test_getLanguageForCommand_withEnglish(self):
         languageEntry = await self.languagesRepository.getLanguageForCommand(
             command = 'english'
@@ -54,6 +62,14 @@ class TestLanguagesRepository:
 
             result = await self.languagesRepository.getLanguageForIso6391Code(iso6391Code)
             assert result is languageEntry
+
+    @pytest.mark.asyncio
+    async def test_requireLanguageForCommand_withEn(self):
+        languageEntry = await self.languagesRepository.requireLanguageForCommand(
+            command = 'en'
+        )
+
+        assert languageEntry is LanguageEntry.ENGLISH
 
     def test_sanity(self):
         assert self.languagesRepository is not None

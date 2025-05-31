@@ -81,7 +81,7 @@ class TranslateChatCommand(AbsChatCommand):
 
         targetLanguageEntry = await self.__determineOptionalLanguageEntry(splits)
 
-        startSplitIndex: int = 1
+        startSplitIndex = 1
         if targetLanguageEntry is not None:
             startSplitIndex = 2
 
@@ -99,7 +99,7 @@ class TranslateChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('TranslateCommand', f'Error translating ({text=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TranslateCommand', f'Error translating ({targetLanguageEntry=}) ({text=}): {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = '⚠ Error translating',

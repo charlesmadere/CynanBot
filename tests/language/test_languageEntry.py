@@ -1,3 +1,5 @@
+from typing import Collection
+
 import src.misc.utils as utils
 from src.language.languageEntry import LanguageEntry
 
@@ -5,12 +7,26 @@ from src.language.languageEntry import LanguageEntry
 class TestLanguageEntry:
 
     def test_commandNames_withAll(self):
+        allCommandNames: list[Collection[str]] = list()
+
         for languageEntry in LanguageEntry:
             commandNames = languageEntry.commandNames
             assert len(commandNames) >= 1
 
+            allCommandNames.append(commandNames)
+
             for commandName in commandNames:
                 assert utils.isValidStr(commandName)
+
+        assert len(allCommandNames) == len(LanguageEntry)
+
+    def test_flag_withAll(self):
+        allFlags: list[str] = list()
+
+        for languageEntry in LanguageEntry:
+            allFlags.append(languageEntry.flag)
+
+        assert len(allFlags) == len(LanguageEntry)
 
     def test_humanName_withAll(self):
         for languageEntry in LanguageEntry:
@@ -104,3 +120,19 @@ class TestLanguageEntry:
     def test_humanName_withUrdu(self):
         humanName = LanguageEntry.URDU.humanName
         assert humanName == 'Urdu'
+
+    def test_primaryCommandName_withAll(self):
+        primaryCommandNames: set[str] = set()
+
+        for languageEntry in LanguageEntry:
+            primaryCommandNames.add(languageEntry.primaryCommandName)
+
+        assert len(primaryCommandNames) == len(LanguageEntry)
+
+    def test_wotdApiCode_withAll(self):
+        wotdApiCodes: list[str | None] = list()
+
+        for languageEntry in LanguageEntry:
+            wotdApiCodes.append(languageEntry.wotdApiCode)
+
+        assert len(wotdApiCodes) == len(LanguageEntry)

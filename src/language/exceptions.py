@@ -2,6 +2,28 @@ from .languageEntry import LanguageEntry
 from .translationApiSource import TranslationApiSource
 
 
+class NoLanguageEntryFoundForCommandException(Exception):
+
+    def __init__(self, message: str, command: str):
+        if not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(command, str):
+            raise TypeError(f'command argument is malformed: \"{command}\"')
+
+        super().__init__(message, command)
+
+
+class NoLanguageEntryFoundForWotdApiCodeException(Exception):
+
+    def __init__(self, message: str, wotdApiCode: str):
+        if not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(wotdApiCode, str):
+            raise TypeError(f'wotdApiCode argument is malformed: \"{wotdApiCode}\"')
+
+        super().__init__(message, wotdApiCode)
+
+
 class NoTranslationEnginesAvailableException(Exception):
 
     def __init__(self, message: str):
