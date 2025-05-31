@@ -10,7 +10,7 @@ from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class TestCheerActionChatCommand(AbsChatCommand):
+class TestCheerChatCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -39,19 +39,19 @@ class TestCheerActionChatCommand(AbsChatCommand):
         twitchChannelId = await ctx.getTwitchChannelId()
 
         if twitchChannelId != ctx.getAuthorId():
-            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
+            self.__timber.log('TestCheerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         if not user.areCheerActionsEnabled:
-            self.__timber.log('TestCheerActionChatCommand', f'Command use by {ctx.getAuthorName()}:{ctx.getAuthorId()} will not proceed as cheer actions in {user.handle} are not enabled!')
+            self.__timber.log('TestCheerChatCommand', f'Command use by {ctx.getAuthorName()}:{ctx.getAuthorId()} will not proceed as cheer actions in {user.handle} are not enabled!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} didn\'t specify a bit amount ({splits=})')
+            self.__timber.log('TestCheerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} didn\'t specify a bit amount ({splits=})')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'⚠ Bit amount argument is missing. Example: !testcheeraction 100',
+                message = f'⚠ Bit amount argument is missing. Example: !testcheer 100',
                 replyMessageId = await ctx.getMessageId()
             )
             return
@@ -64,22 +64,22 @@ class TestCheerActionChatCommand(AbsChatCommand):
             pass
 
         if not utils.isValidInt(bits) or bits < 1 or bits > utils.getIntMaxSafeSize():
-            self.__timber.log('TestCheerActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} specified an invalid bit amount ({splits=}) ({bits=})')
+            self.__timber.log('TestCheerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} specified an invalid bit amount ({splits=}) ({bits=})')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
-                message = f'⚠ Bit amount argument is malformed. Example: !testcheeraction 100',
+                message = f'⚠ Bit amount argument is malformed. Example: !testcheer 100',
                 replyMessageId = await ctx.getMessageId()
             )
             return
 
-        message = utils.cleanStr(f'cheer{bits} ' + ' '.join(splits[2:]))
+        chatMessage = utils.cleanStr(f'cheer{bits} ' + ' '.join(splits[2:]))
         exception: Exception | None = None
 
         try:
             await self.__twitchCheerHandler.onNewCheer(
                 bits = bits,
                 broadcasterUserId = twitchChannelId,
-                chatMessage = message,
+                chatMessage = chatMessage,
                 cheerUserId = ctx.getAuthorId(),
                 cheerUserLogin = ctx.getAuthorName(),
                 cheerUserName = ctx.getAuthorName(),
@@ -88,12 +88,12 @@ class TestCheerActionChatCommand(AbsChatCommand):
             )
         except Exception as e:
             exception = e
-            self.__timber.log('TestCheerActionChatCommand', f'Encountered exception when attempting to run onNewCheer() for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TestCheerChatCommand', f'Encountered exception when attempting to run onNewCheer() for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=}): {e}', e, traceback.format_exc())
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'ⓘ Cheer Action test results ({bits=}) ({message=}) ({exception=})',
+            message = f'ⓘ Cheer test results ({bits=}) ({chatMessage=}) ({exception=})',
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('TestCheerActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({message=})')
+        self.__timber.log('TestCheerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=})')

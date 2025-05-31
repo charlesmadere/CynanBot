@@ -8,9 +8,9 @@ from ..users.userInterface import UserInterface
 class AbsTwitchSubscriptionHandler(ABC):
 
     @abstractmethod
-    async def onNewSubscription(
+    async def onNewSubscriptionDataBundle(
         self,
-        userId: str,
+        broadcasterUserId: str,
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle
     ):

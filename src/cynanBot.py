@@ -85,7 +85,7 @@ from .chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from .chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
-from .chatCommands.testCheerActionChatCommand import TestCheerActionChatCommand
+from .chatCommands.testCheerChatCommand import TestCheerChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
@@ -956,9 +956,9 @@ class CynanBot(
             self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
         if twitchCheerHandler is None:
-            self.__testCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__testCheerCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__testCheerActionCommand: AbsChatCommand = TestCheerActionChatCommand(twitchCheerHandler, timber, twitchUtils, usersRepository)
+            self.__testCheerCommand: AbsChatCommand = TestCheerChatCommand(twitchCheerHandler, timber, twitchUtils, usersRepository)
 
         if eccoHelper is None:
             self.__eccoCommand: AbsChatCommand = StubChatCommand()
@@ -1561,10 +1561,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__swQuoteCommand.handleCommand(context)
 
-    @commands.command(name = 'testcheeraction', aliases = [ 'testcheer' ])
-    async def command_testcheeraction(self, ctx: Context):
+    @commands.command(name = 'testcheer', aliases = [ 'testcheeraction' ])
+    async def command_testcheer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__testCheerActionCommand.handleChatCommand(context)
+        await self.__testCheerCommand.handleChatCommand(context)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx: Context):

@@ -1,5 +1,6 @@
 import math
 import random
+from typing import Final
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -64,62 +65,37 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = officialTwitchAccountUserIdProvider
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
-        self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
-        self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
+        self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
+        self.__twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = twitchEmotesHelper
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def onNewSubscription(
+    async def __handleSubscription(
         self,
-        userId: str,
-        user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        isAnonymous: bool | None,
+        isGift: bool | None,
+        total: int | None,
+        broadcasterUserId: str,
+        chatMessage: str | None,
+        eventUserId: str,
+        eventUserLogin: str,
+        eventUserName: str,
+        userInput: str | None,
+        communitySubGift: TwitchCommunitySubGift | None,
+        resub: TwitchResub | None,
+        subGift: TwitchSubGift | None,
+        tier: TwitchSubscriberTier | None,
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        user: UserInterface
     ):
-        if not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
-
-        payload = dataBundle.requirePayload()
-        event = payload.event
-        subscription = payload.subscription
-
-        if event is None or subscription is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event ({user=}) ({dataBundle=})')
-            return
-
-        subscriptionType = subscription.subscriptionType
-        isAnonymous = event.isAnonymous
-        isGift = event.isGift
-        communitySubGift = event.communitySubGift
-        message = event.message
-        broadcasterUserId = event.broadcasterUserId
-        eventId = event.eventId
-        resub = event.resub
-        subGift = event.subGift
-        total = event.total
-        eventUserId = event.userId
-        eventUserInput = event.userInput
-        eventUserLogin = event.userLogin
-        eventUserName = event.userName
-        tier = event.tier
-
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(eventUserId) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
-            return
-
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({message=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
-
         if user.isSubGiftThankingEnabled:
             await self.__processCynanBotAsGiftRecipient(
                 broadcasterUserId = broadcasterUserId,
@@ -143,10 +119,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 isGift = isGift,
                 total = total,
                 broadcasterUserId = broadcasterUserId,
-                message = message,
-                userId = eventUserId,
-                userInput = eventUserInput,
-                userName = eventUserName,
+                chatMessage = chatMessage,
+                eventUserId = eventUserId,
+                eventUserName = eventUserLogin,
+                userInput = userInput,
                 communitySubGift = communitySubGift,
                 resub = resub,
                 subGift = subGift,
@@ -154,6 +130,66 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 subscriptionType = subscriptionType,
                 user = user
             )
+
+    async def onNewSubscriptionDataBundle(
+        self,
+        broadcasterUserId: str,
+        user: UserInterface,
+        dataBundle: TwitchWebsocketDataBundle
+    ):
+        if not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+
+        payload = dataBundle.requirePayload()
+        event = payload.event
+        subscription = payload.subscription
+
+        if event is None or subscription is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event ({user=}) ({dataBundle=})')
+            return
+
+        subscriptionType = subscription.subscriptionType
+        isAnonymous = event.isAnonymous
+        isGift = event.isGift
+        communitySubGift = event.communitySubGift
+        chatMessage = event.message
+        eventId = event.eventId
+        resub = event.resub
+        subGift = event.subGift
+        total = event.total
+        eventUserId = event.userId
+        eventUserLogin = event.userLogin
+        eventUserName = event.userName
+        userInput = event.userInput
+        tier = event.tier
+
+        if not utils.isValidStr(eventUserId) or tier is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({chatMessage=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({userInput=}) ({tier=})')
+            return
+
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({chatMessage=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({userInput=}) ({tier=})')
+
+        await self.__handleSubscription(
+            isAnonymous = isAnonymous,
+            isGift = isGift,
+            total = total,
+            broadcasterUserId = broadcasterUserId,
+            chatMessage = chatMessage,
+            eventUserId = eventUserId,
+            eventUserLogin = eventUserLogin,
+            eventUserName = eventUserName,
+            userInput = userInput,
+            communitySubGift = communitySubGift,
+            resub = resub,
+            subGift = subGift,
+            tier = tier,
+            subscriptionType = subscriptionType,
+            user = user
+        )
 
     async def __processCynanBotAsGiftRecipient(
         self,
@@ -253,10 +289,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         isGift: bool | None,
         total: int | None,
         broadcasterUserId: str,
-        message: str | None,
-        userId: str | None,
+        chatMessage: str | None,
+        eventUserId: str | None,
+        eventUserName: str | None,
         userInput: str | None,
-        userName: str | None,
         communitySubGift: TwitchCommunitySubGift | None,
         resub: TwitchResub | None,
         subGift: TwitchSubGift | None,
@@ -272,7 +308,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             # users who received a gifted sub, so we're going to return here.
             return
 
-        actualMessage = message
+        actualMessage = chatMessage
         if not utils.isValidStr(actualMessage):
             actualMessage = userInput
 
@@ -282,8 +318,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             else:
                 isAnonymous = False
 
-        actualUserId = userId
-        actualUserName = userName
+        actualUserId = eventUserId
+        actualUserName = eventUserName
 
         if not utils.isValidStr(actualUserId) or not utils.isValidStr(actualUserName):
             if isAnonymous:
@@ -298,7 +334,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     twitchAccessToken = twitchAccessToken
                 )
             else:
-                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=}) ({communitySubGift=}) ({subscriptionType=})')
+                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({eventUserId=}) ({eventUserName=}) ({communitySubGift=}) ({resub=}) ({subscriptionType=})')
                 return
 
         if total is None and communitySubGift is not None:
@@ -310,14 +346,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if resub is not None:
             cumulativeMonths = resub.cumulativeMonths
             durationMonths = resub.durationMonths
-
-        donation = TtsSubscriptionDonation(
-            isAnonymous = isAnonymous,
-            cumulativeMonths = cumulativeMonths,
-            durationMonths = durationMonths,
-            numberOfGiftedSubs = total,
-            tier = tier
-        )
 
         providerOverridableStatus: TtsProviderOverridableStatus
 
@@ -336,7 +364,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 twitchChannelId = broadcasterUserId,
                 userId = actualUserId,
                 userName = actualUserName,
-                donation = donation,
+                donation = TtsSubscriptionDonation(
+                    isAnonymous = isAnonymous,
+                    cumulativeMonths = cumulativeMonths,
+                    durationMonths = durationMonths,
+                    numberOfGiftedSubs = total,
+                    tier = tier
+                ),
                 provider = user.defaultTtsProvider,
                 providerOverridableStatus = providerOverridableStatus,
                 raidInfo = None

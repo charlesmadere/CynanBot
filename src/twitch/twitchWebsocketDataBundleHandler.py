@@ -215,8 +215,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         elif await self.__isSubscriptionType(subscriptionType):
             if self.__subscriptionHandler is not None:
-                await self.__subscriptionHandler.onNewSubscription(
-                    userId = userId,
+                await self.__subscriptionHandler.onNewSubscriptionDataBundle(
+                    broadcasterUserId = userId,
                     user = user,
                     dataBundle = dataBundle
                 )
