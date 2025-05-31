@@ -21,6 +21,7 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
         self,
         twitchChannelId: str
     ) -> Collection[ActiveChatter]:
+        # TODO refactor this method to return frozendict[str, ActiveChatter]
         pass
 
     @abstractmethod
