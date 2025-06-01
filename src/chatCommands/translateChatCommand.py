@@ -6,7 +6,6 @@ from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..language.translationHelperInterface import TranslationHelperInterface
 from ..misc import utils as utils
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -18,7 +17,6 @@ class TranslateChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
         translationHelper: TranslationHelperInterface,
@@ -26,9 +24,7 @@ class TranslateChatCommand(AbsChatCommand):
         usersRepository: UsersRepositoryInterface,
         cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
+        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -41,7 +37,6 @@ class TranslateChatCommand(AbsChatCommand):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
         self.__translationHelper: TranslationHelperInterface = translationHelper
@@ -63,9 +58,8 @@ class TranslateChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTranslateEnabled() or not user.isTranslateEnabled:
+        if not user.isTranslateEnabled:
             return
         elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return

@@ -102,9 +102,6 @@ class GeneralSettingsRepositorySnapshot:
     def isSuperTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'superTriviaGameEnabled', False)
 
-    def isTranslateEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'translateEnabled', True)
-
     def isTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'triviaGameEnabled', True)
 
