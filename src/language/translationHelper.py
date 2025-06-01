@@ -74,10 +74,7 @@ class TranslationHelper(TranslationHelperInterface):
         text = utils.cleanStr(text)
 
         if targetLanguage is None:
-            targetLanguage = await self.__languagesRepository.requireLanguageForCommand(
-                command = LanguageEntry.ENGLISH.primaryCommandName,
-                hasIso6391Code = True
-            )
+            targetLanguage = LanguageEntry.ENGLISH
 
         translationApis = await self.__getAvailableTranslationApis()
 
@@ -85,7 +82,6 @@ class TranslationHelper(TranslationHelperInterface):
             raise NoTranslationEnginesAvailableException(f'No translation engines are available! ({text=}) ({targetLanguage=})')
 
         attempt = 0
-        translationApi: TranslationApi | None = None
         translationResponse: TranslationResponse | None = None
 
         while translationResponse is None and len(translationApis) >= 1:
