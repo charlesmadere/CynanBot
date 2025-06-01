@@ -21,7 +21,7 @@ class TestLanguageEntry:
         assert len(allCommandNames) == len(LanguageEntry)
 
     def test_flag_withAll(self):
-        allFlags: list[str] = list()
+        allFlags: list[str | None] = list()
 
         for languageEntry in LanguageEntry:
             allFlags.append(languageEntry.flag)
