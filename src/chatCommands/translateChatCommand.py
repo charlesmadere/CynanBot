@@ -92,7 +92,7 @@ class TranslateChatCommand(AbsChatCommand):
                 message = response.toStr(),
                 replyMessageId = await ctx.getMessageId()
             )
-        except (RuntimeError, ValueError) as e:
+        except Exception as e:
             self.__timber.log('TranslateCommand', f'Error translating ({targetLanguageEntry=}) ({text=}): {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
