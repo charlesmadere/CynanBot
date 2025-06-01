@@ -242,9 +242,9 @@ class LanguageEntry(Enum):
             case LanguageEntry.CZECH: return '🇨🇿'
             case LanguageEntry.DANISH: return '🇩🇰'
             case LanguageEntry.DUTCH: return '🇳🇱'
+            case LanguageEntry.ENGLISH: return '🇬🇧'
             case LanguageEntry.ENGLISH_FOR_PORTUGUESE_SPEAKERS: return None
             case LanguageEntry.ENGLISH_FOR_SPANISH_SPEAKERS: return None
-            case LanguageEntry.ENGLISH: return '🇬🇧'
             case LanguageEntry.FILIPINO: return '🇵🇭'
             case LanguageEntry.FINNISH: return '🇫🇮'
             case LanguageEntry.FRENCH: return '🇫🇷'
@@ -299,9 +299,9 @@ class LanguageEntry(Enum):
             case LanguageEntry.CZECH: return 'Czech'
             case LanguageEntry.DANISH: return 'Danish'
             case LanguageEntry.DUTCH: return 'Dutch'
+            case LanguageEntry.ENGLISH: return 'English'
             case LanguageEntry.ENGLISH_FOR_PORTUGUESE_SPEAKERS: return 'English for Portuguese speakers'
             case LanguageEntry.ENGLISH_FOR_SPANISH_SPEAKERS: return 'English for Spanish speakers'
-            case LanguageEntry.ENGLISH: return 'English'
             case LanguageEntry.FILIPINO: return 'Filipino'
             case LanguageEntry.FINNISH: return 'Finnish'
             case LanguageEntry.FRENCH: return 'French'
@@ -356,7 +356,7 @@ class LanguageEntry(Enum):
             case LanguageEntry.CZECH: return 'cs'
             case LanguageEntry.DANISH: return 'da'
             case LanguageEntry.DUTCH: return 'nl'
-            case LanguageEntry.ENGLISH: return None
+            case LanguageEntry.ENGLISH: return 'en'
             case LanguageEntry.ENGLISH_FOR_PORTUGUESE_SPEAKERS: return 'en-pt'
             case LanguageEntry.ENGLISH_FOR_SPANISH_SPEAKERS: return 'en-es'
             case LanguageEntry.FILIPINO: return 'fil'
