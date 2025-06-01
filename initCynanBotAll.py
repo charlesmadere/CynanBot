@@ -1162,24 +1162,6 @@ wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository
 
 wordOfTheDayPresenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
 
-deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
-    languagesRepository = languagesRepository,
-    timber = timber
-)
-
-deepLApiService: DeepLApiServiceInterface = DeepLApiService(
-    deepLAuthKeyProvider = authRepository,
-    deepLJsonMapper = deepLJsonMapper,
-    networkClientProvider = networkClientProvider,
-    timber = timber
-)
-
-deepLTranslationApi = DeepLTranslationApi(
-    deepLApiService = deepLApiService,
-    deepLAuthKeyProvider = authRepository,
-    timber = timber
-)
-
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository
@@ -1202,20 +1184,6 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     googleJsonMapper = googleJsonMapper,
     googleJwtBuilder = googleJwtBuilder,
     networkClientProvider = networkClientProvider,
-    timber = timber
-)
-
-googleTranslationApi = GoogleTranslationApi(
-    googleApiService = googleApiService,
-    googleCloudProjectCredentialsProvider = authRepository,
-    languagesRepository = languagesRepository,
-    timber = timber
-)
-
-translationHelper: TranslationHelperInterface = TranslationHelper(
-    deepLTranslationApi = deepLTranslationApi,
-    googleTranslationApi = googleTranslationApi,
-    languagesRepository = languagesRepository,
     timber = timber
 )
 
@@ -2384,6 +2352,43 @@ streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
     soundPlayerManager = soundPlayerManagerProvider.getSharedInstance(),
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
+    timber = timber
+)
+
+
+########################################
+## Translation initialization section ##
+########################################
+
+deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
+deepLApiService: DeepLApiServiceInterface = DeepLApiService(
+    deepLAuthKeyProvider = authRepository,
+    deepLJsonMapper = deepLJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+deepLTranslationApi = DeepLTranslationApi(
+    deepLApiService = deepLApiService,
+    deepLAuthKeyProvider = authRepository,
+    timber = timber
+)
+
+googleTranslationApi = GoogleTranslationApi(
+    googleApiService = googleApiService,
+    googleCloudProjectCredentialsProvider = authRepository,
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
+translationHelper: TranslationHelperInterface = TranslationHelper(
+    deepLTranslationApi = deepLTranslationApi,
+    googleTranslationApi = googleTranslationApi,
+    languagesRepository = languagesRepository,
     timber = timber
 )
 

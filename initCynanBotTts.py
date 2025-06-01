@@ -124,6 +124,10 @@ from src.decTalk.mapper.decTalkVoiceMapper import DecTalkVoiceMapper
 from src.decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from src.decTalk.settings.decTalkSettingsRepository import DecTalkSettingsRepository
 from src.decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
+from src.deepL.deepLApiService import DeepLApiService
+from src.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
+from src.deepL.deepLJsonMapper import DeepLJsonMapper
+from src.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
@@ -182,6 +186,10 @@ from src.language.jsonMapper.languageEntryJsonMapper import LanguageEntryJsonMap
 from src.language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.language.translation.deepLTranslationApi import DeepLTranslationApi
+from src.language.translation.googleTranslationApi import GoogleTranslationApi
+from src.language.translationHelper import TranslationHelper
+from src.language.translationHelperInterface import TranslationHelperInterface
 from src.location.locationsRepository import LocationsRepository
 from src.location.locationsRepositoryInterface import LocationsRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
@@ -1699,6 +1707,43 @@ streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
 )
 
 
+########################################
+## Translation initialization section ##
+########################################
+
+deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
+deepLApiService: DeepLApiServiceInterface = DeepLApiService(
+    deepLAuthKeyProvider = authRepository,
+    deepLJsonMapper = deepLJsonMapper,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+deepLTranslationApi = DeepLTranslationApi(
+    deepLApiService = deepLApiService,
+    deepLAuthKeyProvider = authRepository,
+    timber = timber
+)
+
+googleTranslationApi = GoogleTranslationApi(
+    googleApiService = googleApiService,
+    googleCloudProjectCredentialsProvider = authRepository,
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
+translationHelper: TranslationHelperInterface = TranslationHelper(
+    deepLTranslationApi = deepLTranslationApi,
+    googleTranslationApi = googleTranslationApi,
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
+
 ###########################################
 ## Asplodie Stats initialization section ##
 ###########################################
@@ -2275,7 +2320,7 @@ cynanBot = CynanBot(
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = None,
     tntCheerActionHelper = tntCheerActionHelper,
-    translationHelper = None,
+    translationHelper = translationHelper,
     triviaBanHelper = None,
     triviaEmoteGenerator = None,
     triviaEventHandler = None,
