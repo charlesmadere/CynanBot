@@ -108,16 +108,16 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> HalfLifeTtsProperties:
-        halfLifeVoice: HalfLifeVoice | None = None
+        voice: HalfLifeVoice | None = None
 
         if len(configurationJson) >= 1:
             voiceString: str | Any | None = configurationJson.get('halfLifeVoice', None)
 
             if utils.isValidStr(voiceString):
-                halfLifeVoice = self.__halfLifeJsonParser.parseVoice(voiceString)
+                voice = self.__halfLifeJsonParser.parseVoice(voiceString)
 
         return HalfLifeTtsProperties(
-            voice= halfLifeVoice
+            voice = voice
         )
 
     async def __parseMicrosoftSamPreferredTts(
@@ -180,18 +180,18 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any]
     ) -> TtsMonsterTtsProperties:
-        ttsMonsterVoice: TtsMonsterVoice | None = None
+        voice: TtsMonsterVoice | None = None
 
         if len(configurationJson) >= 1:
             voiceString: str | Any | None = configurationJson.get('ttsMonsterVoice', None)
 
             if utils.isValidStr(voiceString):
-                ttsMonsterVoice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
+                voice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
                     string = voiceString
                 )
 
         return TtsMonsterTtsProperties(
-            voice = ttsMonsterVoice
+            voice = voice
         )
 
     async def parsePreferredTts(

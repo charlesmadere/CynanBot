@@ -266,7 +266,7 @@ class TestChatterPreferredTtsUserMessageHelper:
     async def test_parseUserMessage_withHalfLifeAndGarbledText(self):
         result = await self.helper.parseUserMessage('half life fdsiklahfkldsajlfdklsflad')
         assert isinstance(result, HalfLifeTtsProperties)
-        assert result.voice is HalfLifeVoice.ALL
+        assert result.voice is None
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withHalfLifeAndScientist(self):
