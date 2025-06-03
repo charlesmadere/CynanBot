@@ -85,7 +85,7 @@ class TestDecTalkMessageCleaner:
     @pytest.mark.asyncio
     async def test_clean_withCrazyLoudSirenSound1(self):
         result = await self.cleaner.clean('[:phoneme arpabet on] [:nh][:dv gv 100][:dv ap 10000][:dv hs 200][llao<90047,999>][burr<90047,40>][aa<90047,999>][hxae<900047,40>] [burr<90047,40>]')
-        assert result == None
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_clean_withCrazyLoudSirenSound2(self):
