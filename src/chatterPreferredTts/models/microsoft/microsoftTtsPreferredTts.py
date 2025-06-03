@@ -1,9 +1,11 @@
-from ..absPreferredTts import AbsPreferredTts
+from typing import Final
+
+from ..absTtsProperties import AbsTtsProperties
 from ....microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-class MicrosoftTtsPreferredTts(AbsPreferredTts):
+class MicrosoftTtsTtsProperties(AbsTtsProperties):
 
     def __init__(
         self,
@@ -12,10 +14,10 @@ class MicrosoftTtsPreferredTts(AbsPreferredTts):
         if voice is not None and not isinstance(voice, MicrosoftTtsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        self.__voice: MicrosoftTtsVoice | None = voice
+        self.__voice: Final[MicrosoftTtsVoice | None] = voice
 
     @property
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         return TtsProvider.MICROSOFT
 
     @property

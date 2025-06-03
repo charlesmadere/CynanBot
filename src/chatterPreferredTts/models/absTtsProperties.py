@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from ...tts.models.ttsProvider import TtsProvider
 
 
-class AbsPreferredTts(ABC):
+class AbsTtsProperties(ABC):
 
     @property
     @abstractmethod
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         pass

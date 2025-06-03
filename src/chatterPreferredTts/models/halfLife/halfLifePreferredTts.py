@@ -1,23 +1,25 @@
-from ..absPreferredTts import AbsPreferredTts
+from typing import Final
+
+from ..absTtsProperties import AbsTtsProperties
 from ....halfLife.models.halfLifeVoice import HalfLifeVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-class HalfLifePreferredTts(AbsPreferredTts):
+class HalfLifeTtsProperties(AbsTtsProperties):
 
     def __init__(
         self,
-        halfLifeVoice: HalfLifeVoice | None
+        voice: HalfLifeVoice | None
     ):
-        if halfLifeVoice is not None and not isinstance(halfLifeVoice, HalfLifeVoice):
-            raise TypeError(f'halfLifeVoice argument is malformed: \"{halfLifeVoice}\"')
+        if voice is not None and not isinstance(voice, HalfLifeVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        self.__halfLifeVoiceEntry: HalfLifeVoice | None = halfLifeVoice
-
-    @property
-    def halfLifeVoiceEntry(self) -> HalfLifeVoice | None:
-        return self.__halfLifeVoiceEntry
+        self.__voice: Final[HalfLifeVoice | None] = voice
 
     @property
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         return TtsProvider.HALF_LIFE
+
+    @property
+    def voice(self) -> HalfLifeVoice | None:
+        return self.__voice

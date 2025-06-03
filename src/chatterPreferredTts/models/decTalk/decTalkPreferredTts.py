@@ -1,9 +1,11 @@
-from ..absPreferredTts import AbsPreferredTts
+from typing import Final
+
+from ..absTtsProperties import AbsTtsProperties
 from ....decTalk.models.decTalkVoice import DecTalkVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-class DecTalkPreferredTts(AbsPreferredTts):
+class DecTalkTtsProperties(AbsTtsProperties):
 
     def __init__(
         self,
@@ -12,10 +14,10 @@ class DecTalkPreferredTts(AbsPreferredTts):
         if voice is not None and not isinstance(voice, DecTalkVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        self.__voice: DecTalkVoice | None = voice
+        self.__voice: Final[DecTalkVoice | None] = voice
 
     @property
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         return TtsProvider.DEC_TALK
 
     @property

@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
+from ...chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamTtsProperties
 from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from ...microsoftSam.models.microsoftSamFileReference import MicrosoftSamFileReference
@@ -71,16 +71,11 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        microsoftSamPreferredTts = preferredTts.preferredTts
-        if not isinstance(microsoftSamPreferredTts, MicrosoftSamPreferredTts):
+        if not isinstance(preferredTts.properties, MicrosoftSamTtsProperties):
             self.__timber.log('MicrosoftSamTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        microsoftSamVoiceEntry = microsoftSamPreferredTts.voice
-        if microsoftSamVoiceEntry is None:
-            return None
-
-        return microsoftSamVoiceEntry
+        return preferredTts.properties.voice
 
     async def __executeTts(self, fileReference: MicrosoftSamFileReference):
         volume = await self.__microsoftSamSettingsRepository.getMediaPlayerVolume()

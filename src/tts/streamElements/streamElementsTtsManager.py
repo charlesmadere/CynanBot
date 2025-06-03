@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
+from ...chatterPreferredTts.models.streamElements.streamElementsPreferredTts import StreamElementsTtsProperties
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from ...streamElements.models.streamElementsFileReference import StreamElementsFileReference
@@ -72,12 +72,11 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        streamElementsPreferredTts = preferredTts.preferredTts
-        if not isinstance(streamElementsPreferredTts, StreamElementsPreferredTts):
+        if not isinstance(preferredTts.properties, StreamElementsTtsProperties):
             self.__timber.log('StreamElementsTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        return streamElementsPreferredTts.voice
+        return preferredTts.properties.voice
 
     async def __executeTts(self, fileReference: StreamElementsFileReference):
         volume = await self.__streamElementsSettingsRepository.getMediaPlayerVolume()

@@ -41,7 +41,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         if preferredTts is None:
             return None
 
-        if not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(preferredTts.preferredTts.preferredTtsProvider):
+        if not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(preferredTts.properties.provider):
             return None
 
         return await self.__chatterPreferredTtsRepository.get(

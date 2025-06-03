@@ -32,7 +32,7 @@ class VoicemailSettingsRepository(VoicemailSettingsRepositoryInterface):
 
     async def getMaximumVoicemailAgeDays(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maximumVoicemailAgeDays', 365)
+        return utils.getIntFromDict(jsonContents, 'maximumVoicemailAgeDays', 42)
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()

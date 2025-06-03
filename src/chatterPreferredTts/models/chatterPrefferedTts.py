@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from .absPreferredTts import AbsPreferredTts
+from .absTtsProperties import AbsTtsProperties
 
 
 @dataclass(frozen = True)
 class ChatterPreferredTts:
-    preferredTts: AbsPreferredTts
+    properties: AbsTtsProperties
     chatterUserId: str
     twitchChannelId: str

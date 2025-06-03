@@ -1,9 +1,11 @@
-from ..absPreferredTts import AbsPreferredTts
+from typing import Final
+
+from ..absTtsProperties import AbsTtsProperties
 from ....tts.models.ttsProvider import TtsProvider
 from ....ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 
-class TtsMonsterPreferredTts(AbsPreferredTts):
+class TtsMonsterTtsProperties(AbsTtsProperties):
 
     def __init__(
         self,
@@ -12,10 +14,10 @@ class TtsMonsterPreferredTts(AbsPreferredTts):
         if voice is not None and not isinstance(voice, TtsMonsterVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        self.__voice: TtsMonsterVoice | None = voice
+        self.__voice: Final[TtsMonsterVoice | None] = voice
 
     @property
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         return TtsProvider.TTS_MONSTER
 
     @property

@@ -2,8 +2,8 @@ import pytest
 
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.models.chatterPrefferedTts import ChatterPreferredTts
-from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
-from src.chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
+from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkTtsProperties
+from src.chatterPreferredTts.models.google.googlePreferredTts import GoogleTtsProperties
 from src.decTalk.models.decTalkVoice import DecTalkVoice
 from src.language.languageEntry import LanguageEntry
 
@@ -14,12 +14,12 @@ class TestChatterPreferredTtsPresenter:
 
     @pytest.mark.asyncio
     async def test_printOut_withDecTalkPreferredTts(self):
-        decTalkPreferredTts = DecTalkPreferredTts(
+        properties = DecTalkTtsProperties(
             voice = None
         )
 
         chatterPreferredTts = ChatterPreferredTts(
-            preferredTts = decTalkPreferredTts,
+            properties = properties,
             chatterUserId = 'abc123',
             twitchChannelId = 'def456'
         )
@@ -29,12 +29,12 @@ class TestChatterPreferredTtsPresenter:
 
     @pytest.mark.asyncio
     async def test_printOut_withDecTalkPreferredTtsAndWendyVoice(self):
-        decTalkPreferredTts = DecTalkPreferredTts(
+        properties = DecTalkTtsProperties(
             voice = DecTalkVoice.WENDY
         )
 
         chatterPreferredTts = ChatterPreferredTts(
-            preferredTts = decTalkPreferredTts,
+            properties = properties,
             chatterUserId = 'abc123',
             twitchChannelId = 'def456'
         )
@@ -44,12 +44,12 @@ class TestChatterPreferredTtsPresenter:
 
     @pytest.mark.asyncio
     async def test_printOut_withGooglePreferredTts(self):
-        googlePreferredTts = GooglePreferredTts(
+        properties = GoogleTtsProperties(
             languageEntry = None
         )
 
         chatterPreferredTts = ChatterPreferredTts(
-            preferredTts = googlePreferredTts,
+            properties = properties,
             chatterUserId = 'abc123',
             twitchChannelId = 'def456'
         )
@@ -59,12 +59,12 @@ class TestChatterPreferredTtsPresenter:
 
     @pytest.mark.asyncio
     async def test_printOut_withGooglePreferredTtsAndJapaneseLanguageEntry(self):
-        googlePreferredTts = GooglePreferredTts(
+        properties = GoogleTtsProperties(
             languageEntry = LanguageEntry.JAPANESE
         )
 
         chatterPreferredTts = ChatterPreferredTts(
-            preferredTts = googlePreferredTts,
+            properties = properties,
             chatterUserId = 'abc123',
             twitchChannelId = 'def456'
         )
@@ -74,12 +74,12 @@ class TestChatterPreferredTtsPresenter:
 
     @pytest.mark.asyncio
     async def test_printOut_withGooglePreferredTtsAndKoreanLanguageEntry(self):
-        googlePreferredTts = GooglePreferredTts(
+        properties = GoogleTtsProperties(
             languageEntry = LanguageEntry.KOREAN
         )
 
         chatterPreferredTts = ChatterPreferredTts(
-            preferredTts = googlePreferredTts,
+            properties = properties,
             chatterUserId = 'abc123',
             twitchChannelId = 'def456'
         )

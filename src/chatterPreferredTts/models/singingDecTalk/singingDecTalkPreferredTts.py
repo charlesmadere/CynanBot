@@ -1,9 +1,9 @@
-from ..absPreferredTts import AbsPreferredTts
+from ..absTtsProperties import AbsTtsProperties
 from ....tts.models.ttsProvider import TtsProvider
 
 
-class SingingDecTalkPreferredTts(AbsPreferredTts):
+class SingingDecTalkTtsProperties(AbsTtsProperties):
 
     @property
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         return TtsProvider.SINGING_DEC_TALK

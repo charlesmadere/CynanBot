@@ -95,7 +95,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         )
 
         preferredTts = ChatterPreferredTts(
-            preferredTts = absPreferredTts,
+            properties= absPreferredTts,
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId
         )
@@ -185,13 +185,13 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'preferredTts argument is malformed: \"{preferredTts}\"')
 
         configurationJson = await self.__chatterPreferredTtsJsonMapper.serializePreferredTts(
-            preferredTts = preferredTts.preferredTts
+            preferredTts = preferredTts.properties
         )
 
         configurationJsonString = json.dumps(configurationJson, sort_keys = True)
 
         preferredTtsProvider = await self.__ttsJsonMapper.asyncSerializeProvider(
-            ttsProvider = preferredTts.preferredTts.preferredTtsProvider
+            ttsProvider = preferredTts.properties.provider
         )
 
         connection = await self.__getDatabaseConnection()

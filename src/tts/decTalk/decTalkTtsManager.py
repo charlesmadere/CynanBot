@@ -9,7 +9,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
+from ...chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkTtsProperties
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from ...decTalk.models.decTalkFileReference import DecTalkFileReference
@@ -72,12 +72,11 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        decTalkPreferredTts = preferredTts.preferredTts
-        if not isinstance(decTalkPreferredTts, DecTalkPreferredTts):
+        if not isinstance(preferredTts.properties, DecTalkTtsProperties):
             self.__timber.log('DecTalkTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        return decTalkPreferredTts.voice
+        return preferredTts.properties.voice
 
     async def __executeTts(self, fileReference: DecTalkFileReference):
         volume = await self.__decTalkSettingsRepository.getMediaPlayerVolume()

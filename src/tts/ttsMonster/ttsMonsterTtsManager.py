@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
+from ...chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterTtsProperties
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface
@@ -91,12 +91,11 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        ttsMonsterPreferredTts = preferredTts.preferredTts
-        if not isinstance(ttsMonsterPreferredTts, TtsMonsterPreferredTts):
+        if not isinstance(preferredTts.properties, TtsMonsterTtsProperties):
             self.__timber.log('TtsMonsterTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        return ttsMonsterPreferredTts.voice
+        return preferredTts.properties.voice
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
         useVoiceDependentMediaPlayerVolume = await self.__ttsMonsterSettingsRepository.useVoiceDependentMediaPlayerVolume()

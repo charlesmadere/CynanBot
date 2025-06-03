@@ -1,9 +1,11 @@
-from ..absPreferredTts import AbsPreferredTts
+from typing import Final
+
+from ..absTtsProperties import AbsTtsProperties
 from ....streamElements.models.streamElementsVoice import StreamElementsVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-class StreamElementsPreferredTts(AbsPreferredTts):
+class StreamElementsTtsProperties(AbsTtsProperties):
 
     def __init__(
         self,
@@ -12,10 +14,10 @@ class StreamElementsPreferredTts(AbsPreferredTts):
         if voice is not None and not isinstance(voice, StreamElementsVoice):
             raise TypeError(f'voice is malformed: \"{voice}\"')
 
-        self.__voice: StreamElementsVoice | None = voice
+        self.__voice: Final[StreamElementsVoice | None] = voice
 
     @property
-    def preferredTtsProvider(self) -> TtsProvider:
+    def provider(self) -> TtsProvider:
         return TtsProvider.STREAM_ELEMENTS
 
     @property

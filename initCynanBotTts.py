@@ -1844,12 +1844,12 @@ voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    voicemailIdGenerator = voicemailIdGenerator,
-    voicemailSettingsRepository = voicemailSettingsRepository
+    voicemailIdGenerator = voicemailIdGenerator
 )
 
 voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
     voicemailsRepository = voicemailsRepository,

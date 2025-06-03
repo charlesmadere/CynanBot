@@ -65,7 +65,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         if not user.isVoicemailEnabled or not user.isTtsEnabled:
             return
 
-        voicemail = await self.__voicemailHelper.getAndRemoveForTargetUser(
+        voicemail = await self.__voicemailHelper.popForTargetUser(
             targetUserId = ctx.getAuthorId(),
             twitchChannelId = await ctx.getTwitchChannelId()
         )
@@ -81,7 +81,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
         ttsEvent = TtsEvent(
-            message = voicemail.preparedMessage,
+            message = f'Playing back voicemail from {voicemail.originatingUserName}... {voicemail.message}',
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = voicemail.originatingUserId,
@@ -124,4 +124,4 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         else:
             durationAgoMessage = utils.secondsToDurationMessage(timeDifferenceSeconds)
 
-        return f'☎️ Playing back voicemail message from @{voicemail.originatingUserName} ({durationAgoMessage} ago)…'
+        return f'☎️ Playing back voicemail from @{voicemail.originatingUserName} left {durationAgoMessage} ago…'

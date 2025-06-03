@@ -52,17 +52,17 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
         if not twitchUser.isChatterPreferredTtsEnabled:
             return False
 
-        absPreferredTts = await self.__chatterPreferredTtsUserMessageHelper.parseUserMessage(
+        ttsProperties = await self.__chatterPreferredTtsUserMessageHelper.parseUserMessage(
             userMessage = twitchChannelPointsMessage.redemptionMessage
         )
 
-        if absPreferredTts is None or not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(absPreferredTts.preferredTtsProvider):
+        if ttsProperties is None or not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(ttsProperties.provider):
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ @{twitchChannelPointsMessage.userName} failed to set your preferred TTS voice! Please check your input and try again.')
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS voice ({twitchChannelPointsMessage=}) ({absPreferredTts=})')
+            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS voice ({twitchChannelPointsMessage=}) ({ttsProperties=})')
             return False
 
         preferredTts = ChatterPreferredTts(
-            preferredTts = absPreferredTts,
+            properties = ttsProperties,
             chatterUserId = twitchChannelPointsMessage.userId,
             twitchChannelId = await twitchChannel.getTwitchChannelId()
         )

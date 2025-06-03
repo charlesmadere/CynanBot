@@ -1,16 +1,16 @@
 from typing import Any
 
 from .chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMapperInterface
-from ..models.absPreferredTts import AbsPreferredTts
-from ..models.commodoreSam.commodoreSamPreferredTts import CommodoreSamPreferredTts
-from ..models.decTalk.decTalkPreferredTts import DecTalkPreferredTts
-from ..models.google.googlePreferredTts import GooglePreferredTts
-from ..models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
-from ..models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsPreferredTts
-from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamPreferredTts
-from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkPreferredTts
-from ..models.streamElements.streamElementsPreferredTts import StreamElementsPreferredTts
-from ..models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterPreferredTts
+from ..models.absTtsProperties import AbsTtsProperties
+from ..models.commodoreSam.commodoreSamPreferredTts import CommodoreSamTtsProperties
+from ..models.decTalk.decTalkPreferredTts import DecTalkTtsProperties
+from ..models.google.googlePreferredTts import GoogleTtsProperties
+from ..models.halfLife.halfLifePreferredTts import HalfLifeTtsProperties
+from ..models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsTtsProperties
+from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamTtsProperties
+from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkTtsProperties
+from ..models.streamElements.streamElementsPreferredTts import StreamElementsTtsProperties
+from ..models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterTtsProperties
 from ...decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
@@ -67,13 +67,13 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     async def __parseCommodoreSamPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> CommodoreSamPreferredTts:
-        return CommodoreSamPreferredTts()
+    ) -> CommodoreSamTtsProperties:
+        return CommodoreSamTtsProperties()
 
     async def __parseDecTalkPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> DecTalkPreferredTts:
+    ) -> DecTalkTtsProperties:
         voice: DecTalkVoice | None = None
 
         if len(configurationJson) >= 1:
@@ -82,14 +82,14 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             if utils.isValidStr(voiceString):
                 voice = await self.__decTalkVoiceMapper.parseVoice(voiceString)
 
-        return DecTalkPreferredTts(
+        return DecTalkTtsProperties(
             voice = voice
         )
 
     async def __parseGooglePreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> GooglePreferredTts:
+    ) -> GoogleTtsProperties:
         languageEntry: LanguageEntry | None = None
 
         if len(configurationJson) >= 1:
@@ -100,14 +100,14 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
                     iso6391Code = languageEntryString
                 )
 
-        return GooglePreferredTts(
+        return GoogleTtsProperties(
             languageEntry = languageEntry
         )
 
     async def __parseHalfLifePreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> HalfLifePreferredTts:
+    ) -> HalfLifeTtsProperties:
         halfLifeVoice: HalfLifeVoice | None = None
 
         if len(configurationJson) >= 1:
@@ -116,14 +116,14 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             if utils.isValidStr(voiceString):
                 halfLifeVoice = self.__halfLifeJsonParser.parseVoice(voiceString)
 
-        return HalfLifePreferredTts(
-            halfLifeVoice = halfLifeVoice
+        return HalfLifeTtsProperties(
+            voice= halfLifeVoice
         )
 
     async def __parseMicrosoftSamPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> MicrosoftSamPreferredTts:
+    ) -> MicrosoftSamTtsProperties:
         voice: MicrosoftSamVoice | None = None
 
         if len(configurationJson) >= 1:
@@ -132,14 +132,14 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             if utils.isValidStr(voiceString):
                 voice = await self.__microsoftSamJsonParser.parseVoice(voiceString)
 
-        return MicrosoftSamPreferredTts(
+        return MicrosoftSamTtsProperties(
             voice = voice
         )
 
     async def __parseMicrosoftTtsPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> MicrosoftTtsPreferredTts:
+    ) -> MicrosoftTtsTtsProperties:
         voice: MicrosoftTtsVoice | None = None
 
         if len(configurationJson) >= 1:
@@ -148,20 +148,20 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             if utils.isValidStr(voiceString):
                 voice = await self.__microsoftTtsJsonParser.parseVoice(voiceString)
 
-        return MicrosoftTtsPreferredTts(
+        return MicrosoftTtsTtsProperties(
             voice = voice
         )
 
     async def __parseSingingDecTalkPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> SingingDecTalkPreferredTts:
-        return SingingDecTalkPreferredTts()
+    ) -> SingingDecTalkTtsProperties:
+        return SingingDecTalkTtsProperties()
 
     async def __parseStreamElementsPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> StreamElementsPreferredTts:
+    ) -> StreamElementsTtsProperties:
         voice: StreamElementsVoice | None = None
 
         if len(configurationJson) >= 1:
@@ -172,14 +172,14 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
                     string = voiceString
                 )
 
-        return StreamElementsPreferredTts(
+        return StreamElementsTtsProperties(
             voice = voice
         )
 
     async def __parseTtsMonsterPreferredTts(
         self,
         configurationJson: dict[str, Any]
-    ) -> TtsMonsterPreferredTts:
+    ) -> TtsMonsterTtsProperties:
         ttsMonsterVoice: TtsMonsterVoice | None = None
 
         if len(configurationJson) >= 1:
@@ -190,7 +190,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
                     string = voiceString
                 )
 
-        return TtsMonsterPreferredTts(
+        return TtsMonsterTtsProperties(
             voice = ttsMonsterVoice
         )
 
@@ -198,7 +198,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self,
         configurationJson: dict[str, Any],
         provider: TtsProvider
-    ) -> AbsPreferredTts:
+    ) -> AbsTtsProperties:
         if not isinstance(configurationJson, dict):
             raise TypeError(f'configurationJson argument is malformed: \"{configurationJson}\"')
         elif not isinstance(provider, TtsProvider):
@@ -255,13 +255,13 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def __serializeCommodoreSamPreferredTts(
         self,
-        preferredTts: CommodoreSamPreferredTts
+        preferredTts: CommodoreSamTtsProperties
     ) -> dict[str, Any]:
         return dict()
 
     async def __serializeDecTalkPreferredTts(
         self,
-        preferredTts: DecTalkPreferredTts
+        preferredTts: DecTalkTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
@@ -272,7 +272,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def __serializeGooglePreferredTts(
         self,
-        preferredTts: GooglePreferredTts
+        preferredTts: GoogleTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
@@ -283,18 +283,18 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def __serializeHalfLifePreferredTts(
         self,
-        preferredTts: HalfLifePreferredTts
+        preferredTts: HalfLifeTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
-        if preferredTts.halfLifeVoiceEntry is not None:
-            configurationJson['halfLifeVoice'] = preferredTts.halfLifeVoiceEntry.keyName
+        if preferredTts.voice is not None:
+            configurationJson['halfLifeVoice'] = preferredTts.voice.keyName
 
         return configurationJson
 
     async def __serializeMicrosoftSamPreferredTts(
         self,
-        preferredTts: MicrosoftSamPreferredTts
+        preferredTts: MicrosoftSamTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
@@ -307,7 +307,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def __serializeMicrosoftTtsPreferredTts(
         self,
-        preferredTts: MicrosoftTtsPreferredTts
+        preferredTts: MicrosoftTtsTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
@@ -320,13 +320,13 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def __serializeSingingDecTalkPreferredTts(
         self,
-        preferredTts: SingingDecTalkPreferredTts
+        preferredTts: SingingDecTalkTtsProperties
     ) -> dict[str, Any]:
         return dict()
 
     async def __serializeStreamElementsPreferredTts(
         self,
-        preferredTts: StreamElementsPreferredTts
+        preferredTts: StreamElementsTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
@@ -339,7 +339,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def __serializeTtsMonsterPreferredTts(
         self,
-        preferredTts: TtsMonsterPreferredTts
+        preferredTts: TtsMonsterTtsProperties
     ) -> dict[str, Any]:
         configurationJson: dict[str, Any] = dict()
 
@@ -352,52 +352,52 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
     async def serializePreferredTts(
         self,
-        preferredTts: AbsPreferredTts
+        preferredTts: AbsTtsProperties
     ) -> dict[str, Any]:
-        if not isinstance(preferredTts, AbsPreferredTts):
+        if not isinstance(preferredTts, AbsTtsProperties):
             raise TypeError(f'preferredTts argument is malformed: \"{preferredTts}\"')
 
-        if isinstance(preferredTts, CommodoreSamPreferredTts):
+        if isinstance(preferredTts, CommodoreSamTtsProperties):
             return await self.__serializeCommodoreSamPreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, DecTalkPreferredTts):
+        elif isinstance(preferredTts, DecTalkTtsProperties):
             return await self.__serializeDecTalkPreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, GooglePreferredTts):
+        elif isinstance(preferredTts, GoogleTtsProperties):
             return await self.__serializeGooglePreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, HalfLifePreferredTts):
+        elif isinstance(preferredTts, HalfLifeTtsProperties):
             return await self.__serializeHalfLifePreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, MicrosoftSamPreferredTts):
+        elif isinstance(preferredTts, MicrosoftSamTtsProperties):
             return await self.__serializeMicrosoftSamPreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, MicrosoftTtsPreferredTts):
+        elif isinstance(preferredTts, MicrosoftTtsTtsProperties):
             return await self.__serializeMicrosoftTtsPreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, SingingDecTalkPreferredTts):
+        elif isinstance(preferredTts, SingingDecTalkTtsProperties):
             return await self.__serializeSingingDecTalkPreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, StreamElementsPreferredTts):
+        elif isinstance(preferredTts, StreamElementsTtsProperties):
             return await self.__serializeStreamElementsPreferredTts(
                 preferredTts = preferredTts
             )
 
-        elif isinstance(preferredTts, TtsMonsterPreferredTts):
+        elif isinstance(preferredTts, TtsMonsterTtsProperties):
             return await self.__serializeTtsMonsterPreferredTts(
                 preferredTts = preferredTts
             )

@@ -9,7 +9,6 @@ from ..idGenerator.voicemailIdGeneratorInterface import VoicemailIdGeneratorInte
 from ..models.addVoicemailResult import AddVoicemailResult
 from ..models.removeVoicemailResult import RemoveVoicemailResult
 from ..models.voicemailData import VoicemailData
-from ..settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -25,8 +24,7 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        voicemailIdGenerator: VoicemailIdGeneratorInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailIdGenerator: VoicemailIdGeneratorInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -36,14 +34,11 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(voicemailIdGenerator, VoicemailIdGeneratorInterface):
             raise TypeError(f'voicemailIdGenerator argument is malformed: \"{voicemailIdGenerator}\"')
-        elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
-            raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__voicemailIdGenerator: Final[VoicemailIdGeneratorInterface] = voicemailIdGenerator
-        self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
         self.__isDatabaseReady: bool = False
         self.__cache: dict[str, dict[str, FrozenList[VoicemailData | None]]] = defaultdict(lambda: dict())

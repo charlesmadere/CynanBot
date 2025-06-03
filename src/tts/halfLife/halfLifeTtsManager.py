@@ -9,7 +9,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifePreferredTts
+from ...chatterPreferredTts.models.halfLife.halfLifePreferredTts import HalfLifeTtsProperties
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
 from ...halfLife.helper.halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
@@ -67,12 +67,11 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        halfLifePreferredTts = preferredTts.preferredTts
-        if not isinstance(halfLifePreferredTts, HalfLifePreferredTts):
+        if not isinstance(preferredTts.properties, HalfLifeTtsProperties):
             self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        return halfLifePreferredTts.halfLifeVoiceEntry
+        return preferredTts.properties.voice
 
     async def __executeTts(self, fileNames: FrozenList[str]):
         volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()

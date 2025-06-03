@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsPreferredTts
+from ...chatterPreferredTts.models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsTtsProperties
 from ...microsoft.helper.microsoftTtsHelperInterface import MicrosoftTtsHelperInterface
 from ...microsoft.microsoftTtsMessageCleanerInterface import MicrosoftTtsMessageCleanerInterface
 from ...microsoft.models.microsoftTtsFileReference import MicrosoftTtsFileReference
@@ -71,16 +71,11 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        microsoftTtsPreferredTts = preferredTts.preferredTts
-        if not isinstance(microsoftTtsPreferredTts, MicrosoftTtsPreferredTts):
+        if not isinstance(preferredTts.properties, MicrosoftTtsTtsProperties):
             self.__timber.log('MicrosoftTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        microsoftTtsVoiceEntry = microsoftTtsPreferredTts.voice
-        if microsoftTtsVoiceEntry is None:
-            return None
-
-        return microsoftTtsVoiceEntry
+        return preferredTts.properties.voice
 
     async def __executeTts(self, fileReference: MicrosoftTtsFileReference):
         volume = await self.__microsoftTtsSettingsRepository.getMediaPlayerVolume()

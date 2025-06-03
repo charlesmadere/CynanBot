@@ -1,0 +1,7 @@
+{
+    "hoursBetweenAutomaticVoicemailChatNotifications": 8,
+    "maximumPerOriginatingUser": 3,
+    "maximumPerTargetUser": 3,
+    "maximumVoicemailAgeDays": 365,
+    "enabled": true
+}

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..models.absPreferredTts import AbsPreferredTts
+from ..models.absTtsProperties import AbsTtsProperties
 from ...tts.models.ttsProvider import TtsProvider
 
 
@@ -12,12 +12,12 @@ class ChatterPreferredTtsJsonMapperInterface(ABC):
         self,
         configurationJson: dict[str, Any],
         provider: TtsProvider
-    ) -> AbsPreferredTts:
+    ) -> AbsTtsProperties:
         pass
 
     @abstractmethod
     async def serializePreferredTts(
         self,
-        preferredTts: AbsPreferredTts
+        preferredTts: AbsTtsProperties
     ) -> dict[str, Any]:
         pass

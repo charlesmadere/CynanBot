@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..models.absPreferredTts import AbsPreferredTts
+from ..models.absTtsProperties import AbsTtsProperties
 
 
 class ChatterPreferredTtsUserMessageHelperInterface(ABC):
@@ -10,5 +10,5 @@ class ChatterPreferredTtsUserMessageHelperInterface(ABC):
     async def parseUserMessage(
         self,
         userMessage: str | Any | None
-    ) -> AbsPreferredTts | None:
+    ) -> AbsTtsProperties | None:
         pass

@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.google.googlePreferredTts import GooglePreferredTts
+from ...chatterPreferredTts.models.google.googlePreferredTts import GoogleTtsProperties
 from ...google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from ...google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
 from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
@@ -76,16 +76,18 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         if preferredTts is None:
             return None
 
-        googlePreferredTts = preferredTts.preferredTts
-        if not isinstance(googlePreferredTts, GooglePreferredTts):
+        if not isinstance(preferredTts.properties, GoogleTtsProperties):
             self.__timber.log('GoogleTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-        languageEntry = googlePreferredTts.languageEntry
+        languageEntry = preferredTts.properties.languageEntry
+
         if languageEntry is None:
             return None
-
-        return await self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
+        else:
+            return await self.__googleTtsVoicesHelper.getVoiceForLanguage(
+                languageEntry = languageEntry
+            )
 
     async def __executeTts(self, fileReference: GoogleTtsFileReference):
         volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
