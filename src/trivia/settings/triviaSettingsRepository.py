@@ -190,6 +190,10 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'debug_logging_enabled', True)
 
+    async def isEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'is_enabled', True)
+
     async def isScraperEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'scraper_enabled', True)
