@@ -208,6 +208,11 @@ class VoicemailHelper(VoicemailHelperInterface):
             )
 
             if preparedVoicemail is not None:
+                await self.__voicemailsRepository.removeVoicemail(
+                    twitchChannelId = twitchChannelId,
+                    voicemailId = voicemail.voicemailId
+                )
+
                 return preparedVoicemail
 
     async def __prepareVoicemailData(
