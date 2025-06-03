@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -30,11 +32,11 @@ class SuperAnswerChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
+        self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
