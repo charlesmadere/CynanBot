@@ -846,11 +846,11 @@ class CynanBot(
             self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchUtils, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
 
-        if chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None:
+        if chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None or chatterPreferredTtsSettingsRepository is None:
             self.__getChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__getChatterPreferredTtsCommand: AbsChatCommand = GetChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, timber, twitchUtils, usersRepository)
+            self.__getChatterPreferredTtsCommand: AbsChatCommand = GetChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchTokensUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, timber, twitchUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaScoreRepository is None or triviaSettingsRepository is None or triviaUtils is None:
@@ -1406,7 +1406,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
 
-    @commands.command(name = 'getpreferredtts', aliases = [ 'getchatterpreferredtts', 'mytts', 'preferredtts' ])
+    @commands.command(name = 'getpreferredtts', aliases = [ 'getchatterpreferredtts', 'mytts', 'mypreferredtts', 'preferredtts' ])
     async def command_getchatterpreferredtts(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getChatterPreferredTtsCommand.handleChatCommand(context)
@@ -1586,7 +1586,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__triviaScoreCommand.handleChatCommand(context)
 
-    @commands.command(name = 'tts', aliases = [ 'TTS' ])
+    @commands.command(name = 'tts', aliases = [ 'TTS', 'Tts', 'TTs' ])
     async def command_tts(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__ttsCommand.handleChatCommand(context)

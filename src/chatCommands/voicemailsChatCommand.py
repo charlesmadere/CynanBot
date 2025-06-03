@@ -69,7 +69,7 @@ class VoicemailsChatCommand(AbsChatCommand):
         if not user.isVoicemailEnabled or not user.isTtsEnabled:
             return
 
-        messageContent = ctx.getMessageContent()
+        messageContent = utils.cleanStr(ctx.getMessageContent())
 
         try:
             voicemailLookupData = await self.__lookupVoicemails(
