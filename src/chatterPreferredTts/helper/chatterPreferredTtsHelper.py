@@ -1,3 +1,5 @@
+from typing import Final
+
 from .chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..models.chatterPrefferedTts import ChatterPreferredTts
 from ..repository.chatterPreferredTtsRepositoryInterface import ChatterPreferredTtsRepositoryInterface
@@ -17,8 +19,8 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         elif not isinstance(chatterPreferredTtsSettingsRepository, ChatterPreferredTtsSettingsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
 
-        self.__chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = chatterPreferredTtsRepository
-        self.__chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface = chatterPreferredTtsSettingsRepository
+        self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
+        self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
 
     async def get(
         self,
@@ -34,17 +36,15 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             return None
 
         preferredTts = await self.__chatterPreferredTtsRepository.get(
-            chatterUserId,
-            twitchChannelId
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId
         )
 
         if preferredTts is None:
             return None
-
-        if not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(preferredTts.properties.provider):
+        elif not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
+            provider = preferredTts.properties.provider
+        ):
             return None
-
-        return await self.__chatterPreferredTtsRepository.get(
-            chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
-        )
+        else:
+            return preferredTts
