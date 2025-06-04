@@ -1,11 +1,13 @@
 import locale
 import traceback
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Final
 
 from frozenlist import FrozenList
 
 from .absChatCommand import AbsChatCommand
+from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
@@ -31,6 +33,7 @@ class VoicemailsChatCommand(AbsChatCommand):
     def __init__(
         self,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -40,6 +43,8 @@ class VoicemailsChatCommand(AbsChatCommand):
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -54,6 +59,7 @@ class VoicemailsChatCommand(AbsChatCommand):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
         self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
