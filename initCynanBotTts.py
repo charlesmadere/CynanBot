@@ -1834,7 +1834,7 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
 voicemailSettingsRepository: VoicemailSettingsRepositoryInterface = VoicemailSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/voicemailSettings.json'
+        fileName = '../config/voicemailSettingsRepository.json'
     )
 )
 
