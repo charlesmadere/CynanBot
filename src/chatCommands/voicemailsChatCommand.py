@@ -1,7 +1,6 @@
 import locale
 import traceback
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Final
 
 from frozenlist import FrozenList

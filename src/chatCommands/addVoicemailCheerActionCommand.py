@@ -40,7 +40,6 @@ class AddVoicemailCheerActionCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
         if not user.areCheerActionsEnabled:
             return
 

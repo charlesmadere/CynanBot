@@ -63,7 +63,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
-            self.__timber.log('GiveCutenessChatCommand', f'Less than 3 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log('GiveCutenessChatCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Username and amount is necessary for this command. Example: !givecuteness {twitchHandle} 5',
