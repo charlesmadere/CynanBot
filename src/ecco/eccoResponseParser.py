@@ -1,9 +1,11 @@
 import re
 import traceback
-from datetime import datetime
+from dataclasses import dataclass
+from datetime import datetime, tzinfo
 from typing import Any, Collection, Final, Pattern
 from xml.etree.ElementTree import Element
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 from lxml import etree
 from lxml.etree import HTMLParser
@@ -15,6 +17,11 @@ from ..timber.timberInterface import TimberInterface
 
 
 class EccoResponseParser(EccoResponseParserInterface):
+
+    @dataclass(frozen = True)
+    class CleanedDateTimeInfo:
+        dateTimeString: str
+        timeZone: tzinfo
 
     def __init__(
         self,
@@ -33,6 +40,15 @@ class EccoResponseParser(EccoResponseParserInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__baseUrl: Final[str] = baseUrl
 
+        self.__timeZoneAbbreviationToTimeZoneName: Final[frozendict[str, str | None]] = frozendict({
+            'cdt': 'America/Chicago',
+            'cst': 'America/Chicago',
+            'edt': 'America/New_York',
+            'est': 'America/New_York',
+            'pdt': 'America/Los_Angeles',
+            'pst': 'America/Los_Angeles'
+        })
+
         self.__htmlParser: Final[HTMLParser] = etree.HTMLParser(
             no_network = True,
             recover = True,
@@ -40,30 +56,36 @@ class EccoResponseParser(EccoResponseParserInterface):
             remove_comments = True
         )
 
+        self.__dateTimeAndTimeZoneRegEx: Final[Pattern] = re.compile(r'^(.+?)(?:\s+([a-z]{2,3}))?\s*$', re.IGNORECASE)
         self.__scriptSourceRegEx: Final[Pattern] = re.compile(r'page-\w+\.js$', re.IGNORECASE)
-        self.__timerDateValueRegEx: Final[Pattern] = re.compile(r'new Date\("(.*?)"\)', re.IGNORECASE)
+        self.__scriptTimerRegEx: Final[Pattern] = re.compile(r'new Date\("(.*?)"\)', re.IGNORECASE)
 
     async def findTimerDateTimeValue(
         self,
-        htmlString: str | Any | None
+        scriptString: str | Any | None
     ) -> datetime | None:
-        if not utils.isValidStr(htmlString):
+        if not utils.isValidStr(scriptString):
             return None
 
-        match = self.__timerDateValueRegEx.search(htmlString)
+        scriptTimerMatch = self.__scriptTimerRegEx.search(scriptString)
 
-        if match is None:
+        if scriptTimerMatch is None:
+            self.__timber.log('EccoResponseParser', f'Unable to find script timer match ({scriptTimerMatch=})')
             return None
 
-        dateTimeString = match.group(1)
+        cleanedDateTimeInfo = await self.__cleanDateTimeInfo(scriptTimerMatch.group(1))
+
+        if cleanedDateTimeInfo is None:
+            self.__timber.log('EccoResponseParser', f'Unable to clean date time info ({scriptTimerMatch=}) ({cleanedDateTimeInfo=})')
+            return None
 
         try:
-            dateTime = datetime.strptime(dateTimeString, '%b %d, %Y %H:%M:%S')
+            dateTime = datetime.strptime(cleanedDateTimeInfo.dateTimeString, '%b %d, %Y %H:%M:%S')
         except Exception as e:
-            self.__timber.log('EccoResponseParser', f'Unable to parse datetime ({match=}) ({dateTimeString=}): {e}', e, traceback.format_exc())
+            self.__timber.log('EccoResponseParser', f'Unable to parse datetime ({scriptTimerMatch=}) ({cleanedDateTimeInfo=}): {e}', e, traceback.format_exc())
             return None
 
-        return dateTime.replace(tzinfo = self.__timeZoneRepository.getDefault())
+        return dateTime.replace(tzinfo = cleanedDateTimeInfo.timeZone)
 
     async def findTimerScriptSource(
         self,
@@ -102,3 +124,27 @@ class EccoResponseParser(EccoResponseParserInterface):
                 return f'{self.__baseUrl}{scriptSrc}'
 
         return None
+
+    async def __cleanDateTimeInfo(self, scriptTimer: str | None) -> CleanedDateTimeInfo | None:
+        if not utils.isValidStr(scriptTimer):
+            return None
+
+        dateTimeAndTimeZoneZoneMatch = self.__dateTimeAndTimeZoneRegEx.fullmatch(scriptTimer)
+
+        if dateTimeAndTimeZoneZoneMatch is None:
+            return None
+
+        dateTimeString = dateTimeAndTimeZoneZoneMatch.group(1)
+        timeZoneAbbreviation: str | None = dateTimeAndTimeZoneZoneMatch.group(2)
+        timeZone = self.__timeZoneRepository.getDefault()
+
+        if utils.isValidStr(timeZoneAbbreviation):
+            fullTimeZoneName = self.__timeZoneAbbreviationToTimeZoneName.get(timeZoneAbbreviation.casefold(), None)
+
+            if utils.isValidStr(fullTimeZoneName):
+                timeZone = self.__timeZoneRepository.getTimeZone(fullTimeZoneName)
+
+        return EccoResponseParser.CleanedDateTimeInfo(
+            dateTimeString = dateTimeString,
+            timeZone = timeZone
+        )

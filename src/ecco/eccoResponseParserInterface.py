@@ -8,7 +8,7 @@ class EccoResponseParserInterface(ABC):
     @abstractmethod
     async def findTimerDateTimeValue(
         self,
-        htmlString: str | Any | None
+        scriptString: str | Any | None
     ) -> datetime | None:
         pass
 

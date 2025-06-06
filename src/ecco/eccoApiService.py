@@ -54,10 +54,10 @@ class EccoApiService(EccoApiServiceInterface):
             self.__timber.log('EccoApiService', f'Encountered network error when fetching Ecco script file ({scriptSource=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'EccoApiService encountered network error when fetching Ecco script file ({scriptSource=}): {e}')
 
-        htmlString = await response.string()
+        scriptString = await response.string()
         await response.close()
 
-        timerDateTime = await self.__eccoResponseParser.findTimerDateTimeValue(htmlString)
+        timerDateTime = await self.__eccoResponseParser.findTimerDateTimeValue(scriptString)
 
         if timerDateTime is None:
             self.__timber.log('EccoApiService', f'Unable to retrieve datetime from Ecco script file ({scriptSource=}) ({response=}) ({timerDateTime=})')
