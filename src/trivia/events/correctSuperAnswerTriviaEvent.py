@@ -6,7 +6,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..score.triviaScoreResult import TriviaScoreResult
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from ..specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
-from ...cuteness.cutenessResult import CutenessResult
+from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
 from ...misc import utils as utils
 
 
@@ -15,7 +15,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        cutenessResult: CutenessResult,
+        cutenessResult: IncrementedCutenessResult,
         pointsForWinning: int,
         remainingQueueSize: int,
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
@@ -40,7 +40,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not isinstance(cutenessResult, CutenessResult):
+        elif not isinstance(cutenessResult, IncrementedCutenessResult):
             raise TypeError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif not utils.isValidInt(pointsForWinning):
             raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
@@ -76,7 +76,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__cutenessResult: CutenessResult = cutenessResult
+        self.__cutenessResult: IncrementedCutenessResult = cutenessResult
         self.__pointsForWinning: int = pointsForWinning
         self.__remainingQueueSize: int = remainingQueueSize
         self.__toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = toxicTriviaPunishmentResult
@@ -101,7 +101,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__celebratoryTwitchEmote
 
     @property
-    def cutenessResult(self) -> CutenessResult:
+    def cutenessResult(self) -> IncrementedCutenessResult:
         return self.__cutenessResult
 
     @property

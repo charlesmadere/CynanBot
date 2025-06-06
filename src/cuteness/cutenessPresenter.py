@@ -27,14 +27,12 @@ class CutenessPresenter(CutenessPresenterInterface):
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        champions = result.champions
-
-        if champions is None or len(champions) == 0:
-            return f'There are no cuteness champions 😿'
+        if result.champions is None or len(result.champions) == 0:
+            return f'😿 There are no cuteness champions'
 
         championsStrs: list[str] = list()
 
-        for champion in champions:
+        for champion in result.champions:
             championsStrs.append(await self.printLeaderboardPlacement(champion))
 
         championsStr = delimiter.join(championsStrs)
@@ -51,7 +49,7 @@ class CutenessPresenter(CutenessPresenterInterface):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if result.entries is None or len(result.entries) == 0:
-            return f'{result.cutenessDate.getHumanString()} Leaderboard is empty 😿'
+            return f'😿 {result.cutenessDate.getHumanString()} Leaderboard is empty'
 
         specificLookupText: str | None = None
 

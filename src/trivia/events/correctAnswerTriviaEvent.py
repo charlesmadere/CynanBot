@@ -5,7 +5,7 @@ from .triviaEventType import TriviaEventType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..score.triviaScoreResult import TriviaScoreResult
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from ...cuteness.cutenessResult import CutenessResult
+from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
 from ...misc import utils as utils
 
 
@@ -14,7 +14,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        cutenessResult: CutenessResult,
+        cutenessResult: IncrementedCutenessResult,
         pointsForWinning: int,
         specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
@@ -37,7 +37,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not isinstance(cutenessResult, CutenessResult):
+        elif not isinstance(cutenessResult, IncrementedCutenessResult):
             raise TypeError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif not utils.isValidInt(pointsForWinning):
             raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
@@ -67,7 +67,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__cutenessResult: CutenessResult = cutenessResult
+        self.__cutenessResult: IncrementedCutenessResult = cutenessResult
         self.__pointsForWinning: int = pointsForWinning
         self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
         self.__answer: str = answer
@@ -90,7 +90,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         return self.__celebratoryTwitchEmote
 
     @property
-    def cutenessResult(self) -> CutenessResult:
+    def cutenessResult(self) -> IncrementedCutenessResult:
         return self.__cutenessResult
 
     @property

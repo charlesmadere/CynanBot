@@ -1,12 +1,12 @@
 import locale
 from dataclasses import dataclass
 
-from ...cuteness.cutenessResult import CutenessResult
+from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
 
 
 @dataclass(frozen = True)
 class ToxicTriviaPunishment:
-    cutenessResult: CutenessResult
+    cutenessResult: IncrementedCutenessResult
     numberOfPunishments: int
     punishedByPoints: int
     userId: str

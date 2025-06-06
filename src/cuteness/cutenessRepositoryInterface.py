@@ -5,6 +5,7 @@ from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
 from .cutenessLeaderboardResult import CutenessLeaderboardResult
 from .cutenessResult import CutenessResult
+from .incrementedCutenessResult import IncrementedCutenessResult
 
 
 class CutenessRepositoryInterface(ABC):
@@ -45,7 +46,7 @@ class CutenessRepositoryInterface(ABC):
         twitchChannelId: str,
         userId: str,
         userName: str
-    ) -> CutenessResult:
+    ) -> IncrementedCutenessResult:
         pass
 
     @abstractmethod

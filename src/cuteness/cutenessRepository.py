@@ -9,6 +9,7 @@ from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
 from .cutenessLeaderboardResult import CutenessLeaderboardResult
 from .cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cutenessResult import CutenessResult
+from .incrementedCutenessResult import IncrementedCutenessResult
 from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
@@ -258,7 +259,7 @@ class CutenessRepository(CutenessRepositoryInterface):
         twitchChannelId: str,
         userId: str,
         userName: str
-    ) -> CutenessResult:
+    ) -> IncrementedCutenessResult:
         if not utils.isValidInt(incrementAmount):
             raise TypeError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
         elif incrementAmount < utils.getLongMinSafeSize() or incrementAmount > utils.getLongMaxSafeSize():
@@ -286,17 +287,17 @@ class CutenessRepository(CutenessRepositoryInterface):
             twitchChannelId, userId, cutenessDate.getDatabaseString()
         )
 
-        oldCuteness = 0
+        previousCuteness = 0
 
         if record is not None and len(record) >= 1:
-            oldCuteness = record[0]
+            previousCuteness = record[0]
 
-        newCuteness = oldCuteness + incrementAmount
+        newCuteness = previousCuteness + incrementAmount
 
         if newCuteness < 0:
             newCuteness = 0
         elif newCuteness > utils.getLongMaxSafeSize():
-            raise OverflowError(f'New cuteness ({newCuteness}) would be too large ({oldCuteness=}) ({incrementAmount=})')
+            raise OverflowError(f'New cuteness would be too large ({newCuteness=}) ({previousCuteness=}) ({incrementAmount=})')
 
         await connection.execute(
             '''
@@ -309,9 +310,10 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         await connection.close()
 
-        return CutenessResult(
+        return IncrementedCutenessResult(
             cutenessDate = cutenessDate,
-            cuteness = newCuteness,
+            newCuteness = newCuteness,
+            previousCuteness = previousCuteness,
             userId = userId,
             userName = userName
         )

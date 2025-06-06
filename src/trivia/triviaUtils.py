@@ -19,7 +19,7 @@ from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResu
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
 from .triviaQuestionPresenterInterface import TriviaQuestionPresenterInterface
 from .triviaUtilsInterface import TriviaUtilsInterface
-from ..cuteness.cutenessResult import CutenessResult
+from ..cuteness.incrementedCutenessResult import IncrementedCutenessResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
@@ -89,7 +89,7 @@ class TriviaUtils(TriviaUtilsInterface):
     async def getCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        newCuteness: CutenessResult,
+        newCuteness: IncrementedCutenessResult,
         celebratoryEmote: str | None,
         emote: str,
         userNameThatRedeemed: str,
@@ -99,7 +99,7 @@ class TriviaUtils(TriviaUtilsInterface):
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(newCuteness, CutenessResult):
+        elif not isinstance(newCuteness, IncrementedCutenessResult):
             raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif celebratoryEmote is not None and not isinstance(celebratoryEmote, str):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
@@ -127,7 +127,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         infix = ''
         if twitchUser.isCutenessEnabled:
-            infix = f'Your new cuteness is {newCuteness.cutenessStr}.'
+            infix = f'Your new cuteness is {newCuteness.newCutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
@@ -326,7 +326,7 @@ class TriviaUtils(TriviaUtilsInterface):
     async def getSuperTriviaCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        newCuteness: CutenessResult,
+        newCuteness: IncrementedCutenessResult,
         points: int,
         celebratoryEmote: str | None,
         emote: str,
@@ -337,7 +337,7 @@ class TriviaUtils(TriviaUtilsInterface):
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(newCuteness, CutenessResult):
+        elif not isinstance(newCuteness, IncrementedCutenessResult):
             raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidInt(points):
             raise TypeError(f'points argument is malformed: \"{points}\"')
@@ -365,7 +365,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         infix = ''
         if twitchUser.isCutenessEnabled:
-            infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.cutenessStr}.'
+            infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.newCutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
