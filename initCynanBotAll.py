@@ -3105,6 +3105,7 @@ cynanBot = CynanBot(
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+    chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
     cheerActionHelper = cheerActionHelper,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,

@@ -937,6 +937,7 @@ cynanBot = CynanBot(
     chatterPreferredTtsPresenter = None,
     chatterPreferredTtsRepository = None,
     chatterPreferredTtsSettingsRepository = None,
+    chatterPreferredTtsUserMessageHelper = None,
     cheerActionHelper = None,
     cheerActionJsonMapper = None,
     cheerActionSettingsRepository = None,
