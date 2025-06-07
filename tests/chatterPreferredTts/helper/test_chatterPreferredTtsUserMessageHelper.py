@@ -26,6 +26,7 @@ from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJso
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
+from src.streamElements.models.streamElementsVoice import StreamElementsVoice
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
 from src.timber.timberInterface import TimberInterface
@@ -243,8 +244,18 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert result.languageEntry is LanguageEntry.KOREAN
 
     @pytest.mark.asyncio
+    async def test_parseUserMessage_withGoogleAndSpanish(self):
+        result = await self.helper.parseUserMessage('google: spanish')
+        assert isinstance(result, GoogleTtsProperties)
+        assert result.languageEntry is LanguageEntry.SPANISH
+
+    @pytest.mark.asyncio
     async def test_parseUserMessage_withGoogleAndSwedish(self):
         result = await self.helper.parseUserMessage('google sweden')
+        assert isinstance(result, GoogleTtsProperties)
+        assert result.languageEntry is LanguageEntry.SWEDISH
+
+        result = await self.helper.parseUserMessage('google swedish')
         assert isinstance(result, GoogleTtsProperties)
         assert result.languageEntry is LanguageEntry.SWEDISH
 
@@ -339,29 +350,115 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, MicrosoftSamTtsProperties)
 
     @pytest.mark.asyncio
-    async def test_parseUserMessage_withMicrosoftSamAndMaryForSpace(self):
-        result = await self.helper.parseUserMessage('microsoft sam mary_space')
-        assert isinstance(result, MicrosoftSamTtsProperties)
-        assert result.voice is MicrosoftSamVoice.MARY_SPACE
-
-    @pytest.mark.asyncio
     async def test_parseUserMessage_withMicrosoftSamAndBonziBuddy(self):
         result = await self.helper.parseUserMessage('microsoft sam bonzi_buddy')
         assert isinstance(result, MicrosoftSamTtsProperties)
         assert result.voice is MicrosoftSamVoice.BONZI_BUDDY
 
+        result = await self.helper.parseUserMessage('microsoft sam bonzi buddy')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.BONZI_BUDDY
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withMicrosoftSamAndMaryInSpace(self):
+        result = await self.helper.parseUserMessage('microsoft sam mary_in_space')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.helper.parseUserMessage('microsoft sam mary-in-space')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.helper.parseUserMessage('microsoft sam mary in space')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.helper.parseUserMessage('microsoft sam mary_space')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.helper.parseUserMessage('microsoft sam mary-space')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+        result = await self.helper.parseUserMessage('microsoft sam mary space')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+        assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withStreamElementsAndJoey(self):
+        result = await self.helper.parseUserMessage('streamelements: joey')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is StreamElementsVoice.JOEY
+
+        result = await self.helper.parseUserMessage('streamElements: joey')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is StreamElementsVoice.JOEY
+
+        result = await self.helper.parseUserMessage('stream elements joey')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is StreamElementsVoice.JOEY
+
+        result = await self.helper.parseUserMessage('stream-elements joe')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is StreamElementsVoice.JOEY
+
+        result = await self.helper.parseUserMessage('stream_elements joey')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is StreamElementsVoice.JOEY
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withStreamElementsStrings(self):
+        result = await self.helper.parseUserMessage('streamelements')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is None
+
+        result = await self.helper.parseUserMessage('streamElements')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is None
+
+        result = await self.helper.parseUserMessage('stream elements')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is None
+
+        result = await self.helper.parseUserMessage('stream-elements')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is None
+
+        result = await self.helper.parseUserMessage('stream_elements')
+        assert isinstance(result, StreamElementsTtsProperties)
+        assert result.voice is None
+
     @pytest.mark.asyncio
     async def test_parseUserMessage_withTtsMonsterStrings(self):
+        result = await self.helper.parseUserMessage('ttsmonster')
+        assert isinstance(result, TtsMonsterTtsProperties)
+
+        result = await self.helper.parseUserMessage('ttsmonster:')
+        assert isinstance(result, TtsMonsterTtsProperties)
+
         result = await self.helper.parseUserMessage('ttsMonster')
         assert isinstance(result, TtsMonsterTtsProperties)
 
-        result = await self.helper.parseUserMessage('tts monster')
+        result = await self.helper.parseUserMessage('ttsMonster:')
+        assert isinstance(result, TtsMonsterTtsProperties)
+
+        result = await self.helper.parseUserMessage('tts_monster')
+        assert isinstance(result, TtsMonsterTtsProperties)
+
+        result = await self.helper.parseUserMessage('tts_monster:')
         assert isinstance(result, TtsMonsterTtsProperties)
 
         result = await self.helper.parseUserMessage('tts-monster')
         assert isinstance(result, TtsMonsterTtsProperties)
 
-        result = await self.helper.parseUserMessage('tts_monster')
+        result = await self.helper.parseUserMessage('tts-monster:')
+        assert isinstance(result, TtsMonsterTtsProperties)
+
+        result = await self.helper.parseUserMessage('tts monster')
+        assert isinstance(result, TtsMonsterTtsProperties)
+
+        result = await self.helper.parseUserMessage('tts monster:')
         assert isinstance(result, TtsMonsterTtsProperties)
 
     @pytest.mark.asyncio
@@ -395,23 +492,6 @@ class TestChatterPreferredTtsUserMessageHelper:
         result = await self.helper.parseUserMessage('tts monster zerotwo')
         assert isinstance(result, TtsMonsterTtsProperties)
         assert result.voice is TtsMonsterVoice.ZERO_TWO
-
-    @pytest.mark.asyncio
-    async def test_parseUserMessage_withStreamElementsStrings(self):
-        result = await self.helper.parseUserMessage('streamelements')
-        assert isinstance(result, StreamElementsTtsProperties)
-
-        result = await self.helper.parseUserMessage('streamElements')
-        assert isinstance(result, StreamElementsTtsProperties)
-
-        result = await self.helper.parseUserMessage('stream elements')
-        assert isinstance(result, StreamElementsTtsProperties)
-
-        result = await self.helper.parseUserMessage('stream-elements')
-        assert isinstance(result, StreamElementsTtsProperties)
-
-        result = await self.helper.parseUserMessage('stream_elements')
-        assert isinstance(result, StreamElementsTtsProperties)
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withNone(self):

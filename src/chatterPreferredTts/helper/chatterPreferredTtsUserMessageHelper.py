@@ -1,5 +1,5 @@
 import re
-from typing import Any, Match, Pattern
+from typing import Any, Final, Match, Pattern
 
 from .chatterPreferredTtsUserMessageHelperInterface import ChatterPreferredTtsUserMessageHelperInterface
 from ..models.absTtsProperties import AbsTtsProperties
@@ -56,23 +56,23 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
 
-        self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
-        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
-        self.__microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = microsoftTtsJsonParser
-        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
-        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
+        self.__decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = decTalkVoiceMapper
+        self.__halfLifeJsonParser: Final[HalfLifeVoiceParserInterface] = halfLifeVoiceParser
+        self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
+        self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
+        self.__microsoftTtsJsonParser: Final[MicrosoftTtsJsonParserInterface] = microsoftTtsJsonParser
+        self.__streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = streamElementsJsonParser
+        self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
 
-        self.__commodoreSamRegEx: Pattern = re.compile(r'^\s*commodore(?:\s+|_|-)?sam\s*$', re.IGNORECASE)
-        self.__decTalkRegEx: Pattern = re.compile(r'^\s*dec(?:\s+|_|-)?talk:?\s*(\w+\s*\w*)?\s*$', re.IGNORECASE)
-        self.__googleRegEx: Pattern = re.compile(r'^\s*goog(?:le?)?\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__halfLifeRegEx: Pattern = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__microsoftSamRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__microsoftTtsRegEx: Pattern = re.compile(r'^\s*(?:microsoft|ms)\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__singingDecTalkRegEx: Pattern = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
-        self.__streamElementsRegEx: Pattern = re.compile(r'^\s*stream(?:\s+|_|-)?elements\s*(\w+)?\s*$', re.IGNORECASE)
-        self.__ttsMonsterRegEx: Pattern = re.compile(r'^\s*tts(?:\s+|_|-)?monster:?\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__commodoreSamRegEx: Final[Pattern] = re.compile(r'^\s*commodore(?:\s+|_|-)?sam\s*$', re.IGNORECASE)
+        self.__decTalkRegEx: Final[Pattern] = re.compile(r'^\s*dec(?:\s+|_|-)?talk:?\s*(\w+\s*\w*)?\s*$', re.IGNORECASE)
+        self.__googleRegEx: Final[Pattern] = re.compile(r'^\s*goog(?:le?)?:?\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__halfLifeRegEx: Final[Pattern] = re.compile(r'^\s*half(?:\s+|_|-)?life\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__microsoftSamRegEx: Final[Pattern] = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
+        self.__microsoftTtsRegEx: Final[Pattern] = re.compile(r'^\s*(?:microsoft|ms)\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__singingDecTalkRegEx: Final[Pattern] = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
+        self.__streamElementsRegEx: Final[Pattern] = re.compile(r'^\s*stream(?:\s+|_|-)?elements:?\s*(\w+)?\s*$', re.IGNORECASE)
+        self.__ttsMonsterRegEx: Final[Pattern] = re.compile(r'^\s*tts(?:\s+|_|-)?monster:?\s*(\w+)?\s*$', re.IGNORECASE)
 
     async def __createCommodoreSamTtsProperties(
         self,

@@ -25,10 +25,12 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
 
         emma: FrozenList[Pattern] = FrozenList()
         emma.append(re.compile(r'^\s*emma\s*$', re.IGNORECASE))
+        emma.append(re.compile(r'^\s*ema\s*$', re.IGNORECASE))
         emma.freeze()
 
         joey: FrozenList[Pattern] = FrozenList()
         joey.append(re.compile(r'^\s*joey\s*$', re.IGNORECASE))
+        joey.append(re.compile(r'^\s*joe\s*$', re.IGNORECASE))
         joey.freeze()
 
         return frozendict({
