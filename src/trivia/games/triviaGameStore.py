@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .absTriviaGameState import AbsTriviaGameState
@@ -11,8 +13,8 @@ from ...misc import utils as utils
 class TriviaGameStore(TriviaGameStoreInterface):
 
     def __init__(self):
-        self.__normalGameStates: list[TriviaGameState] = list()
-        self.__superGameStates: list[SuperTriviaGameState] = list()
+        self.__normalGameStates: Final[list[TriviaGameState]] = list()
+        self.__superGameStates: Final[list[SuperTriviaGameState]] = list()
 
     async def add(
         self,
@@ -26,7 +28,7 @@ class TriviaGameStore(TriviaGameStoreInterface):
         elif isinstance(state, SuperTriviaGameState):
             await self.__addSuperGame(state)
         else:
-            raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType: \"{state.getTriviaGameType()}\"')
+            raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType ({state=}): \"{state.triviaGameType}\"')
 
     async def __addNormalGame(self, state: TriviaGameState):
         if not isinstance(state, TriviaGameState):

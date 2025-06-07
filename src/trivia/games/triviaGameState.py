@@ -47,11 +47,12 @@ class TriviaGameState(AbsTriviaGameState):
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getTriviaGameType(self) -> TriviaGameType:
-        return TriviaGameType.NORMAL
-
     def getUserId(self) -> str:
         return self.__userId
 
     def getUserName(self) -> str:
         return self.__userName
+
+    @property
+    def triviaGameType(self) -> TriviaGameType:
+        return TriviaGameType.NORMAL

@@ -373,7 +373,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             )
 
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
-            incrementAmount = state.getPointsForWinning(),
+            incrementAmount = state.pointsForWinning,
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId(),
             userId = action.getUserId(),
@@ -391,7 +391,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__submitEvent(CorrectAnswerTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),
             cutenessResult = cutenessResult,
-            pointsForWinning = state.getPointsForWinning(),
+            pointsForWinning = state.pointsForWinning,
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = action.actionId,
             answer = action.requireAnswer(),
@@ -468,7 +468,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
-        pointsForWinning = state.getPointsForWinning()
+        pointsForWinning = state.pointsForWinning
 
         if state.isShiny():
             await self.__shinyTriviaHelper.shinyTriviaWin(
@@ -616,14 +616,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
             pointsForWinning = pointsForWinning * action.getShinyMultiplier()
 
-        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.getSecondsToLive())
+        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
 
         state = TriviaGameState(
             triviaQuestion = triviaQuestion,
             endTime = endTime,
             basePointsForWinning = action.pointsForWinning,
             pointsForWinning = pointsForWinning,
-            secondsToLive = action.getSecondsToLive(),
+            secondsToLive = action.secondsToLive,
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.actionId,
             emote = emote,
@@ -639,7 +639,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__submitEvent(NewTriviaGameEvent(
             triviaQuestion = triviaQuestion,
             pointsForWinning = pointsForWinning,
-            secondsToLive = action.getSecondsToLive(),
+            secondsToLive = action.secondsToLive,
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.actionId,
             emote = emote,
@@ -686,8 +686,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
             await self.__submitEvent(NewQueuedSuperTriviaGameEvent(
                 numberOfGames = queueResult.amountAdded,
-                pointsForWinning = action.getPointsForWinning(),
-                secondsToLive = action.getSecondsToLive(),
+                pointsForWinning = action.pointsForWinning,
+                secondsToLive = action.secondsToLive,
                 shinyMultiplier = action.getShinyMultiplier(),
                 actionId = action.actionId,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
@@ -728,7 +728,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         specialTriviaStatus: SpecialTriviaStatus | None = None
-        pointsForWinning = action.getPointsForWinning()
+        pointsForWinning = action.pointsForWinning
 
         if action.isShinyTriviaEnabled and await self.__shinyTriviaHelper.isShinySuperTriviaQuestion(
             twitchChannelId = action.getTwitchChannelId()
@@ -741,16 +741,16 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC
             pointsForWinning = pointsForWinning * action.getToxicMultiplier()
 
-        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.getSecondsToLive())
+        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
 
         state = SuperTriviaGameState(
             triviaQuestion = triviaQuestion,
             endTime = endTime,
-            basePointsForWinning = action.getPointsForWinning(),
-            perUserAttempts = action.getPerUserAttempts(),
+            basePointsForWinning = action.pointsForWinning,
+            perUserAttempts = action.perUserAttempts,
             pointsForWinning = pointsForWinning,
             regularTriviaPointsForWinning = action.getRegularTriviaPointsForWinning(),
-            secondsToLive = action.getSecondsToLive(),
+            secondsToLive = action.secondsToLive,
             toxicTriviaPunishmentMultiplier = action.getToxicTriviaPunishmentMultiplier(),
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.actionId,
@@ -765,7 +765,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__submitEvent(NewSuperTriviaGameEvent(
             triviaQuestion = triviaQuestion,
             pointsForWinning = pointsForWinning,
-            secondsToLive = action.getSecondsToLive(),
+            secondsToLive = action.secondsToLive,
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.actionId,
             emote = emote,
@@ -794,7 +794,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             elif isinstance(state, SuperTriviaGameState):
                 await self.__removeDeadSuperTriviaGame(state)
             else:
-                raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType ({state.getGameId()=}) ({state.getTwitchChannel()=}) ({state.actionId=}): \"{state.getTriviaGameType()}\"')
+                raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType ({state=}) ({state.getGameId()=}) ({state.getTwitchChannel()=}) ({state.actionId=}): \"{state.triviaGameType}\"')
 
     async def __removeDeadNormalTriviaGame(self, state: TriviaGameState):
         if not isinstance(state, TriviaGameState):
@@ -815,7 +815,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
         await self.__submitEvent(OutOfTimeTriviaEvent(
             triviaQuestion = state.getTriviaQuestion(),
-            pointsForWinning = state.getPointsForWinning(),
+            pointsForWinning = state.pointsForWinning,
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = state.actionId,
             emote = state.emote,
@@ -838,7 +838,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
-        pointsForWinning = state.getPointsForWinning()
+        pointsForWinning = state.pointsForWinning
 
         if state.isToxic():
             toxicTriviaPunishmentResult = await self.__applyToxicSuperTriviaPunishment(

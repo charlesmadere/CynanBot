@@ -83,15 +83,8 @@ class AbsTriviaGameState(ABC):
     def getGameId(self) -> str:
         return self.__gameId
 
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
-
-    @abstractmethod
-    def getTriviaGameType(self) -> TriviaGameType:
-        pass
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion
@@ -109,5 +102,14 @@ class AbsTriviaGameState(ABC):
         return self.__specialTriviaStatus is SpecialTriviaStatus.TOXIC
 
     @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
     def secondsToLive(self) -> int:
         return self.__secondsToLive
+
+    @property
+    @abstractmethod
+    def triviaGameType(self) -> TriviaGameType:
+        pass

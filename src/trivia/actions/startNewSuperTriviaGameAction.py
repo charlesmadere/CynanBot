@@ -98,32 +98,14 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def creationTime(self) -> SimpleDateTime:
         return self.__creationTime
 
-    def getPerUserAttempts(self) -> int:
-        return self.__perUserAttempts
-
-    def getPointsForWinning(self) -> int:
-        return self.__pointsForWinning
-
-    def getPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
-
     def getRegularTriviaPointsForWinning(self) -> int:
         return self.__regularTriviaPointsForWinning
 
     def getRegularTriviaPointsForWinningStr(self) -> str:
         return locale.format_string("%d", self.__regularTriviaPointsForWinning, grouping = True)
 
-    def getSecondsToLive(self) -> int:
-        return self.__secondsToLive
-
-    def getSecondsToLiveStr(self) -> str:
-        return locale.format_string("%d", self.__secondsToLive, grouping = True)
-
     def getShinyMultiplier(self) -> int:
         return self.__shinyMultiplier
-
-    def getShinyMultiplierStr(self) -> str:
-        return locale.format_string("%d", self.__shinyMultiplier, grouping = True)
 
     def getToxicMultiplier(self) -> int:
         return self.__toxicMultiplier
@@ -165,6 +147,18 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     @property
     def numberOfGamesStr(self) -> str:
         return locale.format_string("%d", self.__numberOfGames, grouping = True)
+
+    @property
+    def perUserAttempts(self) -> int:
+        return self.__perUserAttempts
+
+    @property
+    def pointsForWinning(self) -> int:
+        return self.__pointsForWinning
+
+    @property
+    def secondsToLive(self) -> int:
+        return self.__secondsToLive
 
     @property
     def triviaActionType(self) -> TriviaActionType:

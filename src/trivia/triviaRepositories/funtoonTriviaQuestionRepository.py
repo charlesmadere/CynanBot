@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
 from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
@@ -43,11 +44,11 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
-        self.__funtoonApiService: FuntoonApiServiceInterface = funtoonApiService
-        self.__timber: TimberInterface = timber
-        self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
-        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
+        self.__additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = additionalTriviaAnswersRepository
+        self.__funtoonApiService: Final[FuntoonApiServiceInterface] = funtoonApiService
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = triviaAnswerCompiler
+        self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):

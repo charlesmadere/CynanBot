@@ -59,17 +59,11 @@ class SuperTriviaGameState(AbsTriviaGameState):
     def getAnsweredUserIds(self) -> dict[str, int]:
         return dict(self.__answeredUserIds)
 
-    def getPerUserAttempts(self) -> int:
-        return self.__perUserAttempts
-
     def getRegularTriviaPointsForWinning(self) -> int:
         return self.__regularTriviaPointsForWinning
 
     def getToxicTriviaPunishmentMultiplier(self) -> int:
         return self.__toxicTriviaPunishmentMultiplier
-
-    def getTriviaGameType(self) -> TriviaGameType:
-        return TriviaGameType.SUPER
 
     def incrementAnswerCount(self, userId: str):
         if not utils.isValidStr(userId):
@@ -82,3 +76,11 @@ class SuperTriviaGameState(AbsTriviaGameState):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         return self.__answeredUserIds[userId] < self.__perUserAttempts
+
+    @property
+    def perUserAttempts(self) -> int:
+        return self.__perUserAttempts
+
+    @property
+    def triviaGameType(self) -> TriviaGameType:
+        return TriviaGameType.SUPER

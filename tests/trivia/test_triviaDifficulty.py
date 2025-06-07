@@ -55,6 +55,14 @@ class TestTriviaDifficulty:
         result = TriviaDifficulty.fromStr(' ')
         assert result is TriviaDifficulty.UNKNOWN
 
+    def test_toInt(self):
+        results: set[int] = set()
+
+        for difficulty in TriviaDifficulty:
+            results.add(difficulty.toInt())
+
+        assert len(results) == len(TriviaDifficulty)
+
     def test_toInt_withEasy(self):
         result = TriviaDifficulty.EASY.toInt()
         assert result == 1
@@ -70,6 +78,14 @@ class TestTriviaDifficulty:
     def test_toInt_withUnknown(self):
         result = TriviaDifficulty.UNKNOWN.toInt()
         assert result == 0
+
+    def test_toStr(self):
+        results: set[str] = set()
+
+        for difficulty in TriviaDifficulty:
+            results.add(difficulty.toStr())
+
+        assert len(results) == len(TriviaDifficulty)
 
     def test_toStr_withEasy(self):
         result = TriviaDifficulty.EASY.toStr()

@@ -1,5 +1,3 @@
-import locale
-
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -58,17 +56,8 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         self.__userName: str = userName
         self.__triviaFetchOptions: TriviaFetchOptions = triviaFetchOptions
 
-    def getSecondsToLive(self) -> int:
-        return self.__secondsToLive
-
-    def getSecondsToLiveStr(self) -> str:
-        return locale.format_string("%d", self.__secondsToLive, grouping = True)
-
     def getShinyMultiplier(self) -> int:
         return self.__shinyMultiplier
-
-    def getShinyMultiplierStr(self) -> str:
-        return locale.format_string("%d", self.__shinyMultiplier, grouping = True)
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
@@ -90,8 +79,8 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         return self.__pointsForWinning
 
     @property
-    def pointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__pointsForWinning, grouping = True)
+    def secondsToLive(self) -> int:
+        return self.__secondsToLive
 
     @property
     def triviaActionType(self) -> TriviaActionType:
