@@ -1,3 +1,4 @@
+import locale
 from datetime import datetime
 
 from .absChatCommand import AbsChatCommand
@@ -11,6 +12,8 @@ from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface impor
     AdditionalTriviaAnswersRepositoryInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from ..trivia.history.triviaQuestionOccurrences import TriviaQuestionOccurrences
+from ..trivia.history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
 from ..trivia.questions.triviaQuestionReference import TriviaQuestionReference
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -28,6 +31,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         timeZoneRepository: TimeZoneRepositoryInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
+        triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
@@ -44,6 +48,8 @@ class TriviaInfoChatCommand(AbsChatCommand):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif not isinstance(triviaQuestionOccurrencesRepository, TriviaQuestionOccurrencesRepositoryInterface):
+            raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -57,6 +63,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
+        self.__triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = triviaQuestionOccurrencesRepository
         self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -65,6 +72,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         self,
         additionalTriviaAnswers: AdditionalTriviaAnswers | None,
         normalizedEmote: str,
+        occurrences: TriviaQuestionOccurrences,
         reference: TriviaQuestionReference
     ) -> str:
         dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
@@ -77,7 +85,9 @@ class TriviaInfoChatCommand(AbsChatCommand):
         if additionalTriviaAnswers is not None:
             additionalAnswersLen = len(additionalTriviaAnswers.answers)
 
-        return f'{normalizedEmote} {triviaSource}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString}) — triviaType:{triviaType} isLocal:{isLocal} additionalAnswers:{additionalAnswersLen}'
+        occurrencesStr = locale.format_string("%d", occurrences.occurrences, grouping = True)
+
+        return f'{normalizedEmote} {triviaSource}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString}) — triviaType:{triviaType} isLocal:{isLocal} additionalAnswers:{additionalAnswersLen} occurrences:{occurrencesStr}'
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -147,9 +157,15 @@ class TriviaInfoChatCommand(AbsChatCommand):
             triviaSource = reference.triviaSource
         )
 
+        occurrences = await self.__triviaQuestionOccurrencesRepository.getOccurrences(
+            triviaId = reference.triviaId,
+            triviaSource = reference.triviaSource
+        )
+
         triviaInfoMessage = await self.__buildTriviaInfoMessage(
             additionalTriviaAnswers = additionalTriviaAnswers,
             normalizedEmote = normalizedEmote,
+            occurrences = occurrences,
             reference = reference
         )
 

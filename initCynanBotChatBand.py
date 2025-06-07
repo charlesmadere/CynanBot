@@ -1011,6 +1011,7 @@ cynanBot = CynanBot(
     triviaGameMachine = None,
     triviaHistoryRepository = None,
     triviaIdGenerator = None,
+    triviaQuestionOccurrencesRepository = None,
     triviaRepository = None,
     triviaScoreRepository = None,
     triviaSettingsRepository = None,
