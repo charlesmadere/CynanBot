@@ -87,6 +87,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.RECURRING_ACTIONS_ENABLED.jsonKey
         assert result == 'recurringActionsEnabled'
 
+    def test_jsonKey_withRedemptionCountersEnabled(self):
+        result = UserJsonConstant.REDEMPTION_COUNTERS_ENABLED.jsonKey
+        assert result == 'redemptionCountersEnabled'
+
     def test_jsonKey_withSoundAlertsEnabled(self):
         result = UserJsonConstant.SOUND_ALERTS_ENABLED.jsonKey
         assert result == 'soundAlertsEnabled'

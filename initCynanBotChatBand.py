@@ -198,6 +198,9 @@ from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoost
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
 from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
+from src.users.redemptionCounter.redemptionCounterBoosterPackParser import RedemptionCounterBoosterPackParser
+from src.users.redemptionCounter.redemptionCounterBoosterPackParserInterface import \
+    RedemptionCounterBoosterPackParserInterface
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.soundAlert.stub.stubSoundAlertRedemptionJsonParser import StubSoundAlertRedemptionJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
@@ -411,6 +414,8 @@ pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJ
     timber = timber
 )
 
+redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface = RedemptionCounterBoosterPackParser()
+
 soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = StubSoundAlertRedemptionJsonParser()
 
 timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
@@ -429,6 +434,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
+    redemptionCounterBoosterPackParser = redemptionCounterBoosterPackParser,
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
@@ -880,6 +886,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,
     pkmnShinyPointRedemption = None,
+    redemptionCounterPointRedemption = None,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = None,
     timeoutPointRedemption = None,

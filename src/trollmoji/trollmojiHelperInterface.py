@@ -14,6 +14,10 @@ class TrollmojiHelperInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getDinkDonkEmote(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getEmote(
         self,
         emoteText: str | None,

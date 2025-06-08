@@ -312,6 +312,14 @@ def getRandomSpaceEmoji() -> str:
     spaceEmoji: list[str] = [ '🚀', '👾', '☄️', '🌌', '👨‍🚀', '👩‍🚀', '👽', '🌠' ]
     return random.choice(spaceEmoji)
 
+def getShortMaxSafeSize() -> int:
+    # taken from Java's Short.MAX_VALUE constant
+    return 32767
+
+def getShortMinSafeSize() -> int:
+    # taken from Java's Short.MIN_VALUE constant
+    return -32768
+
 def getStrFromDict(
     d: dict[str, Any] | None,
     key: str,

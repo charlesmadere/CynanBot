@@ -21,6 +21,8 @@ from .decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoost
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
+from .redemptionCounter.redemptionCounterBoosterPackParserInterface import RedemptionCounterBoosterPackParserInterface
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
@@ -49,6 +51,7 @@ class UsersRepository(UsersRepositoryInterface):
         decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface,
         languageEntryJsonMapper: LanguageEntryJsonMapperInterface,
         pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface,
+        redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface,
         soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface,
         timber: TimberInterface,
         timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
@@ -71,6 +74,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'languageEntryJsonMapper argument is malformed: \"{languageEntryJsonMapper}\"')
         elif not isinstance(pkmnBoosterPackJsonParser, PkmnBoosterPackJsonParserInterface):
             raise TypeError(f'pkmnBoosterPackJsonParser argument is malformed: \"{pkmnBoosterPackJsonParser}\"')
+        elif not isinstance(redemptionCounterBoosterPackParser, RedemptionCounterBoosterPackParserInterface):
+            raise TypeError(f'redemptionCounterBoosterPackParser argument is malformed: \"{redemptionCounterBoosterPackParser}\"')
         elif not isinstance(soundAlertRedemptionJsonParser, SoundAlertRedemptionJsonParserInterface):
             raise TypeError(f'soundAlertRedemptionJsonParser argument is malformed: \"{soundAlertRedemptionJsonParser}\"')
         elif not isinstance(timber, TimberInterface):
@@ -93,6 +98,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = decTalkSongBoosterPackParser
         self.__languageEntryJsonMapper: LanguageEntryJsonMapperInterface = languageEntryJsonMapper
         self.__pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = pkmnBoosterPackJsonParser
+        self.__redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface = redemptionCounterBoosterPackParser
         self.__soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = soundAlertRedemptionJsonParser
         self.__timber: TimberInterface = timber
         self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
@@ -156,6 +162,7 @@ class UsersRepository(UsersRepositoryInterface):
         areChatSoundAlertsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED.jsonKey, False)
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
+        areRedemptionCountersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.REDEMPTION_COUNTERS_ENABLED.jsonKey, False)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         areTtsChattersEnabled = utils.getBoolFromDict(userJson, 'ttsChattersEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey, False)
@@ -241,6 +248,11 @@ class UsersRepository(UsersRepositoryInterface):
         if areChatSoundAlertsEnabled:
             chatSoundAlertsJson: list[dict[str, Any]] | None = userJson.get('chatSoundAlerts')
             chatSoundAlerts = self.__chatSoundAlertJsonParser.parseChatSoundAlerts(chatSoundAlertsJson)
+
+        redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None = None
+        if areRedemptionCountersEnabled:
+            redemptionCounterBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('redemptionCounterBoosterPacks')
+            redemptionCounterBoosterPacks = self.__redemptionCounterBoosterPackParser.parseBoosterPacks(redemptionCounterBoosterPacksJson)
 
         decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = None
         if isDecTalkSongsEnabled:
@@ -377,6 +389,7 @@ class UsersRepository(UsersRepositoryInterface):
             areChatSoundAlertsEnabled = areChatSoundAlertsEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
+            areRedemptionCountersEnabled = areRedemptionCountersEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
@@ -472,6 +485,7 @@ class UsersRepository(UsersRepositoryInterface):
             cutenessBoosterPacks = cutenessBoosterPacks,
             decTalkSongBoosterPacks = decTalkSongBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
+            redemptionCounterBoosterPacks = redemptionCounterBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
             timeoutBoosterPacks = timeoutBoosterPacks,
             chatSoundAlerts = chatSoundAlerts,

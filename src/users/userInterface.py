@@ -10,6 +10,7 @@ from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
@@ -62,6 +63,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def areRecurringActionsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def areRedemptionCountersEnabled(self) -> bool:
         pass
 
     @property
@@ -517,6 +523,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def pkmnCatchBoosterPacks(self) -> frozendict[str, PkmnCatchBoosterPack] | None:
+        pass
+
+    @property
+    @abstractmethod
+    def redemptionCounterBoosterPacks(self) -> frozendict[str, RedemptionCounterBoosterPack] | None:
         pass
 
     @property

@@ -60,6 +60,17 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         else:
             return await self.__trollmojiSettingsRepository.getBombEmoteBackup()
 
+    async def getDinkDonkEmote(self) -> str | None:
+        dinkDonkEmote = await self.__trollmojiSettingsRepository.getDinkDonkEmote()
+
+        if dinkDonkEmote is None:
+            return None
+
+        return await self.getEmote(
+            emoteText = dinkDonkEmote.emoteText,
+            twitchEmoteChannelId = dinkDonkEmote.twitchChannelId
+        )
+
     async def getEmote(
         self,
         emoteText: str | None,

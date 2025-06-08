@@ -13,6 +13,8 @@ class DecTalkSongBoosterPackParser(DecTalkSongBoosterPackParserInterface):
         self,
         jsonContents: dict[str, Any]
     ) -> DecTalkSongBoosterPack:
+        if not isinstance(jsonContents, dict):
+            raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         song = utils.getStrFromDict(jsonContents, 'song')
         rewardId = utils.getStrFromDict(jsonContents, 'rewardId')
@@ -34,9 +36,9 @@ class DecTalkSongBoosterPackParser(DecTalkSongBoosterPackParserInterface):
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None
 
-        decTalkSongBoosterPacks: dict[str, DecTalkSongBoosterPack] = dict()
+        boosterPacks: dict[str, DecTalkSongBoosterPack] = dict()
         for boosterPackJson in jsonContents:
             boosterPack = self.parseBoosterPack(boosterPackJson)
-            decTalkSongBoosterPacks[boosterPack.rewardId] = boosterPack
+            boosterPacks[boosterPack.rewardId] = boosterPack
 
-        return frozendict(decTalkSongBoosterPacks)
+        return frozendict(boosterPacks)

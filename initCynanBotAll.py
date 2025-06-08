@@ -35,6 +35,7 @@ from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePoin
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
+from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
@@ -310,6 +311,12 @@ from src.recurringActions.recurringActionsRepository import RecurringActionsRepo
 from src.recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from src.recurringActions.recurringActionsWizard import RecurringActionsWizard
 from src.recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
+from src.redemptionCounter.helpers.redemptionCounterHelper import RedemptionCounterHelper
+from src.redemptionCounter.helpers.redemptionCounterHelperInterface import RedemptionCounterHelperInterface
+from src.redemptionCounter.repositories.redemptionCounterRepository import RedemptionCounterRepository
+from src.redemptionCounter.repositories.redemptionCounterRepositoryInterface import RedemptionCounterRepositoryInterface
+from src.redemptionCounter.settings.redemptionCounterSettings import RedemptionCounterSettings
+from src.redemptionCounter.settings.redemptionCounterSettingsInterface import RedemptionCounterSettingsInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
@@ -662,6 +669,9 @@ from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoost
 from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
 from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
+from src.users.redemptionCounter.redemptionCounterBoosterPackParser import RedemptionCounterBoosterPackParser
+from src.users.redemptionCounter.redemptionCounterBoosterPackParserInterface import \
+    RedemptionCounterBoosterPackParserInterface
 from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemptionJsonParser
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
@@ -896,6 +906,8 @@ pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJ
     timber = timber
 )
 
+redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface = RedemptionCounterBoosterPackParser()
+
 soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = SoundAlertRedemptionJsonParser(
     soundAlertJsonMapper = soundAlertJsonMapper
 )
@@ -918,6 +930,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
+    redemptionCounterBoosterPackParser = redemptionCounterBoosterPackParser,
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
@@ -2987,6 +3000,39 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 )
 
 
+###############################################
+## Redemption Counter initialization section ##
+###############################################
+
+redemptionCounterRepository: RedemptionCounterRepositoryInterface = RedemptionCounterRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+redemptionCounterSettings: RedemptionCounterSettingsInterface = RedemptionCounterSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/redemptionCounterSettings.json'
+    )
+)
+
+redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHelper(
+    redemptionCounterRepository = redemptionCounterRepository,
+    redemptionCounterSettings = redemptionCounterSettings,
+    timber = timber,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository
+)
+
+redemptionCounterPointRedemption: RedemptionCounterPointRedemption | None = RedemptionCounterPointRedemption(
+    redemptionCounterHelper = redemptionCounterHelper,
+    redemptionCounterSettings = redemptionCounterSettings,
+    timber = timber,
+    trollmojiHelper = trollmojiHelper,
+    twitchUtils = twitchUtils
+)
+
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -3000,6 +3046,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
+    redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
     timeoutPointRedemption = timeoutPointRedemption,

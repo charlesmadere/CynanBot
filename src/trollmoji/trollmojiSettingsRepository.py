@@ -45,6 +45,9 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
     async def getBombEmoteBackup(self) -> str:
         return self.__bombEmoteBackup
 
+    async def getDinkDonkEmote(self) -> TrollmojiDetails | None:
+        return await self.__getSamusEmote('samusDinkDonk')
+
     async def getGottemEmote(self) -> TrollmojiDetails | None:
         return await self.__getSamusEmote('samusGOTTEM')
 

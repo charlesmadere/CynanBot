@@ -9,6 +9,7 @@ from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
@@ -27,6 +28,7 @@ class User(UserInterface):
         areChatSoundAlertsEnabled: bool,
         areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
+        areRedemptionCountersEnabled: bool,
         areSoundAlertsEnabled: bool,
         areTtsChattersEnabled: bool,
         isAnivContentScanningEnabled: bool,
@@ -122,6 +124,7 @@ class User(UserInterface):
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
+        redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
         timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None,
         chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None,
@@ -139,6 +142,8 @@ class User(UserInterface):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
+        elif not utils.isValidBool(areRedemptionCountersEnabled):
+            raise TypeError(f'areRedemptionCountersEnabled argument is malformed: \"{areRedemptionCountersEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
         elif not utils.isValidBool(areTtsChattersEnabled):
@@ -325,6 +330,8 @@ class User(UserInterface):
             raise TypeError(f'decTalkSongBoosterPacks argument is malformed: \"{decTalkSongBoosterPacks}\"')
         elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, frozendict):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
+        elif redemptionCounterBoosterPacks is not None and not isinstance(redemptionCounterBoosterPacks, RedemptionCounterBoosterPack):
+            raise TypeError(f'redemptionCounterBoosterPacks argument is malformed: \"{redemptionCounterBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
         elif timeoutBoosterPacks is not None and not isinstance(timeoutBoosterPacks, frozendict):
@@ -343,6 +350,7 @@ class User(UserInterface):
         self.__areChatSoundAlertsEnabled: bool = areChatSoundAlertsEnabled
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
+        self.__areRedemptionCountersEnabled: bool = areRedemptionCountersEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
@@ -438,6 +446,7 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = decTalkSongBoosterPacks
         self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
+        self.__redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None = redemptionCounterBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
         self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
         self.__chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None = chatSoundAlerts
@@ -480,6 +489,10 @@ class User(UserInterface):
     @property
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
+
+    @property
+    def areRedemptionCountersEnabled(self) -> bool:
+        return self.__areRedemptionCountersEnabled
 
     @property
     def areSoundAlertsEnabled(self) -> bool:
@@ -863,6 +876,10 @@ class User(UserInterface):
 
     def __repr__(self) -> str:
         return self.__handle
+
+    @property
+    def redemptionCounterBoosterPacks(self) -> frozendict[str, RedemptionCounterBoosterPack] | None:
+        return self.__redemptionCounterBoosterPacks
 
     @property
     def setChatterPreferredTtsRewardId(self) -> str | None:
