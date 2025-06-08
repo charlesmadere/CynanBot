@@ -330,7 +330,7 @@ class User(UserInterface):
             raise TypeError(f'decTalkSongBoosterPacks argument is malformed: \"{decTalkSongBoosterPacks}\"')
         elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, frozendict):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
-        elif redemptionCounterBoosterPacks is not None and not isinstance(redemptionCounterBoosterPacks, RedemptionCounterBoosterPack):
+        elif redemptionCounterBoosterPacks is not None and not isinstance(redemptionCounterBoosterPacks, frozendict):
             raise TypeError(f'redemptionCounterBoosterPacks argument is malformed: \"{redemptionCounterBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
