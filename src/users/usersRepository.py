@@ -354,7 +354,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         whichAnivUser = WhichAnivUser.ANEEV
         if utils.isValidStr(userJson.get(UserJsonConstant.WHICH_ANIV_USER.jsonKey)):
-            whichAnivUser = self.__anivUserSettingsJsonParser.parseWhichAnivUser(utils.getStrFromDict(userJson, UserJsonConstant.WHICH_ANIV_USER.jsonKey))
+            whichAnivUser = self.__anivUserSettingsJsonParser.requireWhichAnivUser(utils.getStrFromDict(userJson, UserJsonConstant.WHICH_ANIV_USER.jsonKey))
 
         chatBackMessages: FrozenList[str] | None = None
         if isChatBackMessagesEnabled:
