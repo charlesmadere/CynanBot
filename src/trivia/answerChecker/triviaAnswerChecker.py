@@ -351,7 +351,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'catherine'
         if word in ('caeser', 'ceasar', 'ceaser'):
             yield 'caesar'
-        if word in ('charlie', 'charly', 'chuck', 'chucky'):
+        if word in ('carl', 'chad', 'charlie', 'charly', 'chuck', 'chucky'):
             yield 'charles'
         if word in ('char', 'lottie', 'lotta', 'sherry'):
             yield 'charlotte'
@@ -362,6 +362,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'clair'
         if word == 'delanor':
             yield 'delano'
+        if word in ('don', 'donny'):
+            yield 'donald'
         if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
             yield 'richard'
         if word in ('ed', 'eddie', 'eddy'):
@@ -373,6 +375,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'george'
         if word == 'gw':
             yield 'george washington'
+        if word in ('ella', 'ellen', 'ellie', 'lena'):
+            yield 'helen'
+            yield 'helene'
         if word == 'jakob':
             yield 'jacob'
         if word in ('jen', 'jenn', 'jenny'):
@@ -396,9 +401,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'martin'
         if word in ('micheal', 'mike'):
             yield 'michael'
+        if word in ('nat', 'nate', 'nathan', 'natty', 'than'):
+            yield 'nathaniel'
         if word == 'oliver':
             yield 'ollie'
-        if word in ('paddy', 'pat'):
+        if word in ('ossy', 'ozzy', 'waldo'):
+            yield 'oswald'
+        if word in ('paddy', 'pat', 'pate', 'patsy', 'peter'):
             yield 'patrick'
         if word == 'perry':
             yield 'pelegrine'
@@ -421,16 +430,26 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'prescott'
         if word in ('steph', 'stephan', 'steven', 'stevenson'):
             yield 'steve'
+        if word == 'terry':
+            yield 'terence'
         if word in ('tim', 'timmy'):
             yield 'timothy'
         if word in ('thom', 'tom', 'tommy', 'tony'):
             yield 'thomas'
         if word in ('anthony', 'toni'):
             yield 'tony'
+        if word in ('nessa', 'essa', 'vanna'):
+            yield 'vanessa'
+        if word in ('franky', 'frony', 'ron', 'ronna', 'ronnie', 'vonnie'):
+            yield 'veronica'
+        if word == 'vicky':
+            yield 'victoria'
         if word in ('vin', 'vince', 'vinny'):
             yield 'vincent'
         if word in ('william', 'willie', 'willy'):
             yield 'will'
+        if word == 'winnie':
+            yield 'winifred'
         if word in ('diah', 'dyer', 'zed'):
             yield 'zedediah'
 
