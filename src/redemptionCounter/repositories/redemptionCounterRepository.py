@@ -172,7 +172,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
                         CREATE TABLE IF NOT EXISTS redemptioncounter (
                             count bigint DEFAULT 0 NOT NULL,
                             chatteruserid text NOT NULL,
-                            countername text NOT NULL
+                            countername text NOT NULL,
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, countername, twitchchannelid)
                         )
