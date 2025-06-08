@@ -24,7 +24,7 @@ class RedemptionCounterSettings(RedemptionCounterSettingsInterface):
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = False)
+        return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = True)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:
