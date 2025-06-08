@@ -325,7 +325,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'allen'
         if word in ('alberta', 'bert', 'berta', 'bertie'):
             yield 'albert'
-        if word == 'alex':
+        if word in ('alex', 'al', 'eleck', 'sandy'):
             yield 'alexander'
         if word in ('allie', 'elsie', 'lisa'):
             yield 'alice'
