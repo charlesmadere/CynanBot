@@ -2115,6 +2115,7 @@ if timeoutActionHelper is not None:
         activeChattersRepository = activeChattersRepository,
         timber = timber,
         timeoutActionHelper = timeoutActionHelper,
+        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
         twitchHandleProvider = authRepository,
         twitchMessageStringUtils = twitchMessageStringUtils,
         twitchTokensRepository = twitchTokensRepository,

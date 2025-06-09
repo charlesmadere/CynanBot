@@ -94,27 +94,23 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                 userName = cheerUserName
             )
 
-        chatters = await self.__activeChattersRepository.get(
+        activeChatters = await self.__activeChattersRepository.get(
             twitchChannelId = broadcasterUserId
         )
 
-        eligibleChatters: dict[str, ActiveChatter] = dict()
+        vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
+        vulnerableChatters.pop(broadcasterUserId, None)
 
-        for chatter in chatters:
-            eligibleChatters[chatter.chatterUserId] = chatter
-
-        eligibleChatters.pop(broadcasterUserId, None)
         allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
 
         for immuneUserId in allImmuneUserIds:
-            eligibleChatters.pop(immuneUserId, None)
+            vulnerableChatters.pop(immuneUserId, None)
 
-        if len(eligibleChatters) == 0:
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout random target from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({chatters=})')
+        if len(vulnerableChatters) == 0:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout random target from {cheerUserName}:{cheerUserId} in {user.handle}, but no active chatter was found ({timeoutAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({activeChatters=}) ({vulnerableChatters=})')
             return None
 
-        eligibleChattersList: list[ActiveChatter] = list(eligibleChatters.values())
-        randomChatter = random.choice(eligibleChattersList)
+        randomChatter = random.choice(list(vulnerableChatters.values()))
 
         await self.__activeChattersRepository.remove(
             chatterUserId = randomChatter.chatterUserId,

@@ -146,16 +146,17 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         peoplePluralityString: str
         if len(tntTargets) == 1:
-            peoplePluralityString = f'{peopleCountString} person was hit'
+            peoplePluralityString = f'{peopleCountString} chatter was hit'
         else:
-            peoplePluralityString = f'{peopleCountString} people hit'
+            peoplePluralityString = f'{peopleCountString} chatters hit'
 
         userNames.sort(key = lambda userName: userName.casefold())
         userNamesString = ', '.join(userNames)
 
+        explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup()
         bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        message = f'{bombEmote} BOOM! {peoplePluralityString} by @{cheerUserName} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
+        message = f'{explodedEmote} BOOM! {peoplePluralityString} by @{cheerUserName} with a {durationSecondsString}s timeout! {userNamesString} {bombEmote}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -190,28 +191,25 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
                 userName = cheerUserName
             ))
 
-        chatters = await self.__activeChattersRepository.get(
+        activeChatters = await self.__activeChattersRepository.get(
             twitchChannelId = broadcasterUserId
         )
 
-        eligibleChatters: dict[str, ActiveChatter] = dict()
+        vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
+        vulnerableChatters.pop(broadcasterUserId, None)
 
-        for chatter in chatters:
-            eligibleChatters[chatter.chatterUserId] = chatter
-
-        eligibleChatters.pop(broadcasterUserId, None)
         allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
 
         for immuneUserId in allImmuneUserIds:
-            eligibleChatters.pop(immuneUserId, None)
+            vulnerableChatters.pop(immuneUserId, None)
 
         tntTargetCount = random.randint(tntAction.minTimeoutChatters, tntAction.maxTimeoutChatters)
-        eligibleChattersList: list[ActiveChatter] = list(eligibleChatters.values())
+        vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
-        while len(tntTargets) < tntTargetCount and len(eligibleChattersList) >= 1:
-            randomChatterIndex = random.randint(0, len(eligibleChattersList) - 1)
-            randomChatter = eligibleChattersList[randomChatterIndex]
-            del eligibleChattersList[randomChatterIndex]
+        while len(tntTargets) < tntTargetCount and len(vulnerableChattersList) >= 1:
+            randomChatterIndex = random.randint(0, len(vulnerableChattersList) - 1)
+            randomChatter = vulnerableChattersList[randomChatterIndex]
+            del vulnerableChattersList[randomChatterIndex]
 
             tntTargets.add(TntCheerActionHelper.TntTarget(
                 userId = randomChatter.chatterUserId,
@@ -289,6 +287,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         )
 
         if len(tntTargets) == 0:
+            self.__timber.log('TntCheerActionHelper', f'Unable to find any vulnerable TNT targets ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=}) ({tntTargets=})')
             return False
 
         remainingGrenades = await self.__noteGrenadeThrow(

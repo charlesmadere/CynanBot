@@ -1,9 +1,9 @@
 import traceback
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Any, Collection
+from typing import Any, Final
 
-from frozenlist import FrozenList
+from frozendict import frozendict
 
 from .activeChatter import ActiveChatter
 from .activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -25,7 +25,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
         def __init__(self):
             self.__chattersHaveBeenFetched: bool = False
-            self.__chatters: list[ActiveChatter] = list()
+            self.__chatters: Final[list[ActiveChatter]] = list()
 
         @property
         def chatters(self) -> list[ActiveChatter]:
@@ -56,7 +56,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        maxActiveChattersSize: int = 200,
+        maxActiveChattersSize: int = 256,
         maxActiveChattersTimeToLive: timedelta = timedelta(hours = 1)
     ):
         if not isinstance(timber, TimberInterface):
@@ -73,21 +73,21 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(maxActiveChattersSize):
             raise TypeError(f'cacheSize argument is malformed: \"{maxActiveChattersSize}\"')
-        elif maxActiveChattersSize < 8 or maxActiveChattersSize > 512:
+        elif maxActiveChattersSize < 16 or maxActiveChattersSize > 512:
             raise ValueError(f'maxActiveChattersSize argument is out of bounds: {maxActiveChattersSize}')
         elif not isinstance(maxActiveChattersTimeToLive, timedelta):
             raise TypeError(f'maxActiveChattersTimeToLive argument is malformed: \"{maxActiveChattersTimeToLive}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__maxActiveChattersSize: int = maxActiveChattersSize
-        self.__maxActiveChattersTimeToLive: timedelta = maxActiveChattersTimeToLive
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__maxActiveChattersSize: Final[int] = maxActiveChattersSize
+        self.__maxActiveChattersTimeToLive: Final[timedelta] = maxActiveChattersTimeToLive
 
-        self.__twitchChannelIdToActiveChatters: dict[str, ActiveChattersRepository.Entry] = defaultdict(lambda: ActiveChattersRepository.Entry())
+        self.__twitchChannelIdToActiveChatters: Final[dict[str, ActiveChattersRepository.Entry]] = defaultdict(lambda: ActiveChattersRepository.Entry())
 
     async def add(
         self,
@@ -168,7 +168,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
 
         if not utils.isValidStr(twitchId):
-            # this should be impossible but let's just be overly careful
+            # this should be impossible here but let's just be overly careful
             return entry.chatters
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
@@ -176,7 +176,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if not utils.isValidStr(twitchAccessToken):
             return entry.chatters
 
-        first = round(self.__maxActiveChattersSize * 0.75)
+        first = max(round(self.__maxActiveChattersSize * 0.75), 8)
         self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({first=})')
 
         try:
@@ -212,7 +212,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     async def get(
         self,
         twitchChannelId: str
-    ) -> Collection[ActiveChatter]:
+    ) -> frozendict[str, ActiveChatter]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -224,10 +224,12 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             activeChatters = activeChatters
         )
 
-        frozenActiveChatters: FrozenList[ActiveChatter] = FrozenList(activeChatters)
-        frozenActiveChatters.freeze()
+        activeChattersDictionary: dict[str, ActiveChatter] = dict()
 
-        return frozenActiveChatters
+        for activeChatter in activeChatters:
+            activeChattersDictionary[activeChatter.chatterUserId] = activeChatter
+
+        return frozendict(activeChattersDictionary)
 
     async def __getCurrentActiveChatters(
         self,

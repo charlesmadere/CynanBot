@@ -1,7 +1,6 @@
 import random
 from dataclasses import dataclass
-
-from frozenlist import FrozenList
+from typing import Final
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
@@ -14,6 +13,7 @@ from ..twitch.activeChatters.activeChatter import ActiveChatter
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
@@ -37,6 +37,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
+        timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -49,6 +50,8 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
             raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
+        elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
+            raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
@@ -60,29 +63,35 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
-        self.__timber: TimberInterface = timber
-        self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutActionHelper: Final[TimeoutActionHelperInterface] = timeoutActionHelper
+        self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
     async def __determineRandomTimeoutTarget(
         self,
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> TimeoutTarget | None:
-        chatters = await self.__activeChattersRepository.get(
+        activeChatters = await self.__activeChattersRepository.get(
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId
         )
 
-        frozenChatters: FrozenList[ActiveChatter] = FrozenList(chatters)
-        frozenChatters.freeze()
+        vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
+        vulnerableChatters.pop(twitchChannelPointsMessage.twitchChannelId, None)
 
-        if len(frozenChatters) == 0:
-            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}, but was unable to find an active chatter: ({twitchChannelPointsMessage=}) ({chatters=})')
+        allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
+
+        for immuneUserId in allImmuneUserIds:
+            vulnerableChatters.pop(immuneUserId, None)
+
+        if len(vulnerableChatters) == 0:
+            self.__timber.log('TimeoutCheerActionHelper', f'Attempted to timeout from from {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}, but was unable to find an active chatter: ({twitchChannelPointsMessage=}) ({activeChatters=}) ({vulnerableChatters=})')
 
             await self.__twitchUtils.safeSend(
                 messageable = twitchChannel,
@@ -91,7 +100,7 @@ class TimeoutPointRedemption(AbsChannelPointRedemption):
 
             return None
 
-        randomChatter = random.choice(frozenChatters)
+        randomChatter = random.choice(list(vulnerableChatters.values()))
 
         return TimeoutPointRedemption.TimeoutTarget(
             userId = randomChatter.chatterUserId,

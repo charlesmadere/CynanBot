@@ -51,19 +51,20 @@ class VulnerableChattersChatCommand(AbsChatCommand):
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __getVulnerableChattersData(self, twitchChannelId: str) -> VulnerableChattersData:
-        chatters = await self.__activeChattersRepository.get(
+        activeChatters = await self.__activeChattersRepository.get(
             twitchChannelId = twitchChannelId
         )
 
-        allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
-        vulnerableChatters: list[ActiveChatter] = list()
+        vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
+        vulnerableChatters.pop(twitchChannelId, None)
 
-        for chatter in chatters:
-            if chatter.chatterUserId not in allImmuneUserIds:
-                vulnerableChatters.append(chatter)
+        allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
+
+        for immuneUserId in allImmuneUserIds:
+            vulnerableChatters.pop(immuneUserId, None)
 
         return VulnerableChattersChatCommand.VulnerableChattersData(
-            totalActiveChatters = len(chatters),
+            totalActiveChatters = len(activeChatters),
             totalVulnerableChatters = len(vulnerableChatters)
         )
 

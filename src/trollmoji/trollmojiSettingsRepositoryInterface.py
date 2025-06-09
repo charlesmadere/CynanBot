@@ -19,6 +19,14 @@ class TrollmojiSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getExplodedEmote(self) -> TrollmojiDetails | None:
+        pass
+
+    @abstractmethod
+    async def getExplodedEmoteBackup(self) -> str:
+        pass
+
+    @abstractmethod
     async def getGottemEmote(self) -> TrollmojiDetails | None:
         pass
 

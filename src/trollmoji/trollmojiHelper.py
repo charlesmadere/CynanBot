@@ -109,6 +109,25 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             self.__timber.log('TriviaTwitchEmoteHelper', f'Emote isn\'t available ({emoteText=}) ({twitchEmoteChannelId=})')
             return None
 
+    async def getExplodedEmote(self) -> str | None:
+        explodedEmote = await self.__trollmojiSettingsRepository.getExplodedEmote()
+
+        if explodedEmote is None:
+            return None
+
+        return await self.getEmote(
+            emoteText = explodedEmote.emoteText,
+            twitchEmoteChannelId = explodedEmote.twitchChannelId
+        )
+
+    async def getExplodedEmoteOrBackup(self) -> str:
+        explodedEmote = await self.getExplodedEmote()
+
+        if utils.isValidStr(explodedEmote):
+            return explodedEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getExplodedEmoteBackup()
+
     async def getGottemEmote(self) -> str | None:
         gottemEmote = await self.__trollmojiSettingsRepository.getGottemEmote()
 

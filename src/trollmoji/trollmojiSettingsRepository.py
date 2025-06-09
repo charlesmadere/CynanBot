@@ -10,6 +10,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
         self,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         bombEmoteBackup: str = '💣',
+        explodedEmoteBackup: str = '💥',
         gottemEmoteBackup: str = 'RIPBOZO',
         hypeEmoteBackup: str = '🎉',
         thumbsDownEmoteBackup: str = '👎',
@@ -19,6 +20,8 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif not utils.isValidStr(bombEmoteBackup):
             raise TypeError(f'bombEmoteBackup argument is malformed: \"{bombEmoteBackup}\"')
+        elif not utils.isValidStr(explodedEmoteBackup):
+            raise TypeError(f'explodedEmoteBackup argument is malformed: \"{explodedEmoteBackup}\"')
         elif not utils.isValidStr(gottemEmoteBackup):
             raise TypeError(f'gottemEmoteBackup argument is malformed: \"{gottemEmoteBackup}\"')
         elif not utils.isValidStr(hypeEmoteBackup):
@@ -30,6 +33,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
         self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
         self.__bombEmoteBackup: str = bombEmoteBackup
+        self.__explodedEmoteBackup: str = explodedEmoteBackup
         self.__gottemEmoteBackup: str = gottemEmoteBackup
         self.__hypeEmoteBackup: str = hypeEmoteBackup
         self.__thumbsDownEmoteBackup: str = thumbsDownEmoteBackup
@@ -47,6 +51,12 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
     async def getDinkDonkEmote(self) -> TrollmojiDetails | None:
         return await self.__getSamusEmote('samusDinkDonk')
+
+    async def getExplodedEmote(self) -> TrollmojiDetails | None:
+        return await self.__getSamusEmote('samusAsplodies')
+
+    async def getExplodedEmoteBackup(self) -> str:
+        return self.__explodedEmoteBackup
 
     async def getGottemEmote(self) -> TrollmojiDetails | None:
         return await self.__getSamusEmote('samusGOTTEM')

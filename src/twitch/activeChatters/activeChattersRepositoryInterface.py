@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Collection
+
+from frozendict import frozendict
 
 from .activeChatter import ActiveChatter
 from ...misc.clearable import Clearable
@@ -20,8 +21,7 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         twitchChannelId: str
-    ) -> Collection[ActiveChatter]:
-        # TODO refactor this method to return frozendict[str, ActiveChatter]
+    ) -> frozendict[str, ActiveChatter]:
         pass
 
     @abstractmethod
