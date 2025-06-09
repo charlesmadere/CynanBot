@@ -219,11 +219,10 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
 
         if user.areRedemptionCountersEnabled:
-            if await self.__redemptionCounterPointRedemption.handlePointRedemption(
+            await self.__redemptionCounterPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
-            ):
-                return
+            )
 
         if user.isCasualGamePollEnabled and channelPointsMessage.rewardId == user.casualGamePollRewardId:
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
