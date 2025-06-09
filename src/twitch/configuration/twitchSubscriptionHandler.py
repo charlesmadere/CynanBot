@@ -92,7 +92,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         communitySubGift: TwitchCommunitySubGift | None,
         resub: TwitchResub | None,
         subGift: TwitchSubGift | None,
-        tier: TwitchSubscriberTier | None,
+        tier: TwitchSubscriberTier,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
     ):
@@ -167,11 +167,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         userInput = event.userInput
         tier = event.tier
 
-        if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or tier is None:
+        if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({chatMessage=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({userInput=}) ({tier=})')
             return
-
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({chatMessage=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({userInput=}) ({tier=})')
 
         await self.__handleSubscription(
             isAnonymous = isAnonymous,
