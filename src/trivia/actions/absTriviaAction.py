@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Final
 
 from .triviaActionType import TriviaActionType
 from ...misc import utils as utils
@@ -11,7 +11,7 @@ class AbsTriviaAction(ABC):
         if not utils.isValidStr(actionId):
             raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
 
-        self.__actionId: str = actionId
+        self.__actionId: Final[str] = actionId
 
     @property
     def actionId(self) -> str:

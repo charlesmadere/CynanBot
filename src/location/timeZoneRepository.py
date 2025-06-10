@@ -1,5 +1,5 @@
 from datetime import timezone, tzinfo
-from typing import Collection
+from typing import Collection, Final
 
 import pytz
 from frozenlist import FrozenList
@@ -16,8 +16,9 @@ class TimeZoneRepository(TimeZoneRepositoryInterface):
         if not isinstance(defaultTimeZone, tzinfo):
             raise TypeError(f'defaultTimeZone argument is malformed: \"{defaultTimeZone}\"')
 
-        self.__defaultTimeZone: tzinfo = defaultTimeZone
-        self.__timeZones: dict[str, tzinfo] = dict()
+        self.__defaultTimeZone: Final[tzinfo] = defaultTimeZone
+
+        self.__timeZones: Final[dict[str, tzinfo]] = dict()
 
     def getDefault(self) -> tzinfo:
         return self.__defaultTimeZone

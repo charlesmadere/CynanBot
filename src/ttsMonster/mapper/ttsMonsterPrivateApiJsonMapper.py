@@ -72,7 +72,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         shadow.freeze()
 
         spongebob: FrozenList[Pattern] = FrozenList()
-        spongebob.append(re.compile(r'^\s*spongebob\s*$', re.IGNORECASE))
+        spongebob.append(re.compile(r'^\s*sponge(?:\s+|_|-)?bob\s*$', re.IGNORECASE))
         spongebob.freeze()
 
         vomit: FrozenList[Pattern] = FrozenList()
@@ -85,6 +85,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         zeroTwo: FrozenList[Pattern] = FrozenList()
         zeroTwo.append(re.compile(r'^\s*zero(?:\s+|_|-)?two\s*$', re.IGNORECASE))
+        zeroTwo.append(re.compile(r'^\s*02\s*$', re.IGNORECASE))
         zeroTwo.freeze()
 
         return frozendict({

@@ -41,12 +41,12 @@ class EccoResponseParser(EccoResponseParserInterface):
         self.__baseUrl: Final[str] = baseUrl
 
         self.__timeZoneAbbreviationToTimeZoneName: Final[frozendict[str, str | None]] = frozendict({
-            'cdt': 'America/Chicago',
-            'cst': 'America/Chicago',
-            'edt': 'America/New_York',
-            'est': 'America/New_York',
-            'pdt': 'America/Los_Angeles',
-            'pst': 'America/Los_Angeles'
+            'CDT': 'America/Chicago',
+            'CST': 'America/Chicago',
+            'EDT': 'America/New_York',
+            'EST': 'America/New_York',
+            'PDT': 'America/Los_Angeles',
+            'PST': 'America/Los_Angeles'
         })
 
         self.__htmlParser: Final[HTMLParser] = etree.HTMLParser(
@@ -136,15 +136,21 @@ class EccoResponseParser(EccoResponseParserInterface):
 
         dateTimeString = dateTimeAndTimeZoneZoneMatch.group(1)
         timeZoneAbbreviation: str | None = dateTimeAndTimeZoneZoneMatch.group(2)
-        timeZone = self.__timeZoneRepository.getDefault()
-
-        if utils.isValidStr(timeZoneAbbreviation):
-            fullTimeZoneName = self.__timeZoneAbbreviationToTimeZoneName.get(timeZoneAbbreviation.casefold(), None)
-
-            if utils.isValidStr(fullTimeZoneName):
-                timeZone = self.__timeZoneRepository.getTimeZone(fullTimeZoneName)
+        timeZone = await self.__determineTimeZone(timeZoneAbbreviation)
 
         return EccoResponseParser.CleanedDateTimeInfo(
             dateTimeString = dateTimeString,
             timeZone = timeZone
         )
+
+    async def __determineTimeZone(
+        self,
+        timeZoneAbbreviation: str | Any | None
+    ) -> tzinfo:
+        if utils.isValidStr(timeZoneAbbreviation):
+            fullTimeZoneName = self.__timeZoneAbbreviationToTimeZoneName.get(timeZoneAbbreviation, None)
+
+            if utils.isValidStr(fullTimeZoneName):
+                return self.__timeZoneRepository.getTimeZone(fullTimeZoneName)
+
+        return self.__timeZoneRepository.getDefault()

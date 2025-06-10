@@ -23,9 +23,21 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.GLADOS.humanName
         assert result == 'Glados'
 
+    def test_humanName_withHikari(self):
+        result = TtsMonsterVoice.HIKARI.humanName
+        assert result == 'Hikari'
+
+    def test_humanName_withJazz(self):
+        result = TtsMonsterVoice.JAZZ.humanName
+        assert result == 'Jazz'
+
     def test_humanName_withKkona(self):
         result = TtsMonsterVoice.KKONA.humanName
         assert result == 'Kkona'
+
+    def test_humanName_withNarrator(self):
+        result = TtsMonsterVoice.NARRATOR.humanName
+        assert result == 'Narrator'
 
     def test_humanName_withShadow(self):
         result = TtsMonsterVoice.SHADOW.humanName

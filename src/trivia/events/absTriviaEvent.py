@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Final
 
 from .triviaEventType import TriviaEventType
 from ...misc import utils as utils
@@ -17,8 +17,8 @@ class AbsTriviaEvent(ABC):
         elif not utils.isValidStr(eventId):
             raise TypeError(f'eventId argument is malformed: \"{eventId}\"')
 
-        self.__actionId: str = actionId
-        self.__eventId: str = eventId
+        self.__actionId: Final[str] = actionId
+        self.__eventId: Final[str] = eventId
 
     @property
     def actionId(self) -> str:
