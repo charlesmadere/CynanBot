@@ -18,6 +18,11 @@ class RedemptionCounterBoosterPackParser(RedemptionCounterBoosterPackParserInter
 
         incrementAmount = utils.getIntFromDict(jsonContents, 'incrementAmount', fallback = 1)
         counterName = utils.getStrFromDict(jsonContents, 'counterName')
+
+        emote: str | None = None
+        if 'emote' in jsonContents and utils.isValidStr(jsonContents.get('emote', None)):
+            emote = utils.getStrFromDict(jsonContents, 'emote')
+
         rewardId = utils.getStrFromDict(jsonContents, 'rewardId')
 
         if not utils.isValidInt(incrementAmount):
@@ -32,6 +37,7 @@ class RedemptionCounterBoosterPackParser(RedemptionCounterBoosterPackParserInter
         return RedemptionCounterBoosterPack(
             incrementAmount = incrementAmount,
             counterName = counterName,
+            emote = emote,
             rewardId = rewardId
         )
 

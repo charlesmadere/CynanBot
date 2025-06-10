@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Match, Pattern
+from typing import Final, Match, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -14,17 +14,18 @@ from ...misc import utils as utils
 class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
 
     @dataclass(frozen = True)
-    class MessageChunkData:
+    class WorkingMessageChunk:
         start: int
         end: int
         voice: TtsMonsterVoice
 
     def __init__(self):
-        self.__voicePatternRegEx: Pattern = re.compile(r'(?:^|\s+)(\w+):', re.IGNORECASE)
+        self.__voiceNamesToVoiceDictionary: Final[frozendict[str, TtsMonsterVoice]] = self.__createVoiceNamesToVoiceDictionary()
+        self.__voicePatternRegEx: Final[Pattern] = re.compile(r'(?:^|\s+)(\w+):', re.IGNORECASE)
 
-    async def __buildMessagePairs(
+    async def __buildMessageChunks(
         self,
-        voiceMessageHeaders: FrozenList[MessageChunkData],
+        workingMessageChunks: FrozenList[WorkingMessageChunk],
         message: str
     ) -> FrozenList[TtsMonsterMessageChunk] | None:
         voicePairs: FrozenList[TtsMonsterMessageChunk] = FrozenList()
@@ -32,13 +33,13 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
         sectionStart: int | None = None
         sectionVoice: TtsMonsterVoice | None = None
 
-        for voiceMessageHeader in voiceMessageHeaders:
+        for workingMessageChunk in workingMessageChunks:
             if sectionStart is None or sectionVoice is None:
-                sectionStart = voiceMessageHeader.end
-                sectionVoice = voiceMessageHeader.voice
+                sectionStart = workingMessageChunk.end
+                sectionVoice = workingMessageChunk.voice
                 continue
 
-            sectionEnd = voiceMessageHeader.start
+            sectionEnd = workingMessageChunk.start
             sectionMessage = message[sectionStart:sectionEnd].strip()
 
             if len(sectionMessage) >= 1:
@@ -47,8 +48,8 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
                     voice = sectionVoice
                 ))
 
-            sectionStart = voiceMessageHeader.end
-            sectionVoice = voiceMessageHeader.voice
+            sectionStart = workingMessageChunk.end
+            sectionVoice = workingMessageChunk.voice
 
         if sectionStart is None or sectionVoice is None:
             voicePairs.freeze()
@@ -68,44 +69,43 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
         voicePairs.freeze()
         return voicePairs
 
-    async def __buildVoiceMessageHeaders(
+    async def __buildWorkingMessageChunks(
         self,
-        voiceNamesToVoice: frozendict[str, TtsMonsterVoice],
         message: str,
         defaultVoice: TtsMonsterVoice
-    ) -> FrozenList[MessageChunkData]:
-        locations: FrozenList[TtsMonsterMessageChunkParser.MessageChunkData] = FrozenList()
+    ) -> FrozenList[WorkingMessageChunk]:
+        chunks: FrozenList[TtsMonsterMessageChunkParser.WorkingMessageChunk] = FrozenList()
         occurrencesIterator = self.__voicePatternRegEx.finditer(message)
 
         if occurrencesIterator is None:
             if defaultVoice is not None:
-                locations.append(TtsMonsterMessageChunkParser.MessageChunkData(
+                chunks.append(TtsMonsterMessageChunkParser.WorkingMessageChunk(
                     start = 0,
                     end = 0,
                     voice = defaultVoice
                 ))
 
-            locations.freeze()
-            return locations
+            chunks.freeze()
+            return chunks
 
         occurrences: list[Match[str]] = list(occurrencesIterator)
 
         if len(occurrences) == 0:
             if defaultVoice is not None:
-                locations.append(TtsMonsterMessageChunkParser.MessageChunkData(
+                chunks.append(TtsMonsterMessageChunkParser.WorkingMessageChunk(
                     start = 0,
                     end = 0,
                     voice = defaultVoice
                 ))
 
-            locations.freeze()
-            return locations
+            chunks.freeze()
+            return chunks
 
         # check for a prefix chunk of text that has no written voice
         prefixMessageChunk: str | None = message[0:occurrences[0].start()].strip()
 
         if utils.isValidStr(prefixMessageChunk) and defaultVoice is not None:
-            locations.append(TtsMonsterMessageChunkParser.MessageChunkData(
+            chunks.append(TtsMonsterMessageChunkParser.WorkingMessageChunk(
                 start = 0,
                 end = 0,
                 voice = defaultVoice
@@ -113,7 +113,7 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
 
         for occurrence in occurrences:
             voiceName = occurrence.group(1).casefold()
-            voice = voiceNamesToVoice.get(voiceName, None)
+            voice = self.__voiceNamesToVoiceDictionary.get(voiceName, None)
 
             if voice is None:
                 continue
@@ -124,16 +124,16 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
             while message[start].isspace():
                 start = start + 1
 
-            locations.append(TtsMonsterMessageChunkParser.MessageChunkData(
+            chunks.append(TtsMonsterMessageChunkParser.WorkingMessageChunk(
                 start = start,
                 end = end,
                 voice = voice
             ))
 
-        locations.freeze()
-        return locations
+        chunks.freeze()
+        return chunks
 
-    async def __buildVoiceNamesToVoiceDictionary(self) -> frozendict[str, TtsMonsterVoice]:
+    def __createVoiceNamesToVoiceDictionary(self) -> frozendict[str, TtsMonsterVoice]:
         voiceNamesToVoiceDictionary: dict[str, TtsMonsterVoice] = dict()
 
         for voice in TtsMonsterVoice:
@@ -154,18 +154,15 @@ class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
         if not utils.isValidStr(message):
             return None
 
-        voiceNamesToVoice = await self.__buildVoiceNamesToVoiceDictionary()
-
-        messageChunks = await self.__buildVoiceMessageHeaders(
-            voiceNamesToVoice = voiceNamesToVoice,
+        workingMessageChunks = await self.__buildWorkingMessageChunks(
             message = message,
             defaultVoice = defaultVoice
         )
 
-        if len(messageChunks) == 0:
+        if len(workingMessageChunks) == 0:
             return None
 
-        return await self.__buildMessagePairs(
-            voiceMessageHeaders = messageChunks,
+        return await self.__buildMessageChunks(
+            workingMessageChunks = workingMessageChunks,
             message = message
         )

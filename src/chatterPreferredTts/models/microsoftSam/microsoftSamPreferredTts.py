@@ -1,25 +1,14 @@
-from typing import Final
+from dataclasses import dataclass
 
 from ..absTtsProperties import AbsTtsProperties
 from ....microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
+@dataclass(frozen = True)
 class MicrosoftSamTtsProperties(AbsTtsProperties):
-
-    def __init__(
-        self,
-        voice: MicrosoftSamVoice | None
-    ):
-        if voice is not None and not isinstance(voice, MicrosoftSamVoice):
-            raise TypeError(f'voice argument is malformed: \"{voice}\"')
-
-        self.__voice: Final[MicrosoftSamVoice | None] = voice
+    voice: MicrosoftSamVoice | None
 
     @property
     def provider(self) -> TtsProvider:
         return TtsProvider.MICROSOFT_SAM
-
-    @property
-    def voice(self) -> MicrosoftSamVoice | None:
-        return self.__voice

@@ -71,16 +71,18 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
             self.__timber.log('RedemptionCounterPointRedemption', f'Unable to find the user of the given user ID ({twitchChannelPointsMessage=}): {e}', e, traceback.format_exc())
             return True
 
-        if await self.__redemptionCounterSettings.automaticallyPrintInChatAfterRedemption():
-            emote = await self.__trollmojiHelper.getDinkDonkEmote()
+        prefixEmote = await self.__trollmojiHelper.getDinkDonkEmote()
+        if not utils.isValidStr(prefixEmote):
+            prefixEmote = 'ⓘ'
 
-            if not utils.isValidStr(emote):
-                emote = 'ⓘ'
+        suffixEmote = ''
+        if utils.isValidStr(boosterPack.emote):
+            suffixEmote = f' {boosterPack.emote}'
 
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'{emote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}!'
-            )
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'{prefixEmote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}!{suffixEmote}'
+        )
 
         self.__timber.log('RedemptionCounterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return True

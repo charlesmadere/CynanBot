@@ -5,4 +5,5 @@ from dataclasses import dataclass
 class RedemptionCounterBoosterPack:
     incrementAmount: int
     counterName: str
+    emote: str | None
     rewardId: str

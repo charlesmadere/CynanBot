@@ -15,10 +15,6 @@ class RedemptionCounterSettings(RedemptionCounterSettingsInterface):
 
         self.__settingsCache: dict[str, Any] | None = None
 
-    async def automaticallyPrintInChatAfterRedemption(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'automaticallyPrint', fallback = True)
-
     async def clearCaches(self):
         self.__settingsCache = None
 

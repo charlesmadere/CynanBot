@@ -70,6 +70,18 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseTtsData_withMalformedLink(self):
+        link: str | None = 'hFuNRoM0lY13jIhA4ElL1'
+        warning = 'This is a warning message!'
+
+        result = await self.mapper.parseTtsData({
+            'link': link,
+            'warning': warning
+        })
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseTtsData_withNone(self):
         result = await self.mapper.parseTtsData(None)
         assert result is None
