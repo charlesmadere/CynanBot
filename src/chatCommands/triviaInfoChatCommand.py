@@ -87,17 +87,17 @@ class TriviaInfoChatCommand(AbsChatCommand):
 
         occurrencesStr = locale.format_string("%d", occurrences.occurrences, grouping = True)
 
-        return f'{normalizedEmote} {triviaSource}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString}) — triviaType:{triviaType} isLocal:{isLocal} additionalAnswers:{additionalAnswersLen} occurrences:{occurrencesStr}'
+        return f'{normalizedEmote} {triviaSource}:{reference.triviaId} — dateTime:{dateAndTimeString} ({relativeTimeString}) triviaType:{triviaType} isLocal:{isLocal} additionalAnswers:{additionalAnswersLen} occurrences:{occurrencesStr}'
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
         now = datetime.now(self.__timeZoneRepository.getDefault())
         questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
 
-        if questionDateTimeVersusNowSeconds <= 30:
-            return 'asked just now'
+        if questionDateTimeVersusNowSeconds <= 3:
+            return 'just now'
         else:
             durationMessage = utils.secondsToDurationMessage(questionDateTimeVersusNowSeconds)
-            return f'asked {durationMessage} ago'
+            return f'{durationMessage} ago'
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

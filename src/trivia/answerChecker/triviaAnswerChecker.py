@@ -317,7 +317,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'st':
             yield 'saint'
 
-        # common names
+        # common names and nicknames
         if word in ('abe', 'abram'):
             yield 'abraham'
         if word == 'al':
@@ -330,19 +330,24 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('allie', 'elsie', 'lisa'):
             yield 'alice'
             yield 'alicia'
-        if word in ('andy', 'andrew', 'drew'):
+        if word in ('andy', 'drew'):
             yield 'andrew'
-        if word in ('annie', 'nan', 'nanny', 'nana', 'nancy'):
+        if word in ('annette', 'annie', 'antoinette', 'nan', 'nanny', 'nana', 'nancy'):
             yield 'ann'
             yield 'anne'
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
             yield 'erin'
+        if word in ('august', 'austin', 'gus'):
+            yield 'augustine'
+            yield 'augustus'
         if word in ('bab', 'babs', 'barby', 'bobbie'):
             yield 'barbara'
         if word in ('bea', 'trisha', 'trix', 'trixie'):
             yield 'beatrice'
         if word in ('ben', 'benny'):
             yield 'benjamin'
+        if word in ('bert', 'bertie', 'birdie'):
+            yield 'bertha'
         if word in ('billie', 'billy'):
             yield 'bill'
         if word == 'bob':
@@ -355,19 +360,24 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'charles'
         if word in ('char', 'lottie', 'lotta', 'sherry'):
             yield 'charlotte'
-        if word in ('chris', 'christ', 'cris', 'kris'):
+        if word in ('chris', 'christ', 'cris', 'kit', 'kris'):
             yield 'christian'
             yield 'christopher'
         if word in ('claire', 'clare'):
             yield 'clair'
+        if word in ('dave', 'davey', 'day'):
+            yield 'david'
         if word == 'delanor':
             yield 'delano'
         if word in ('don', 'donny'):
             yield 'donald'
         if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
             yield 'richard'
-        if word in ('ed', 'eddie', 'eddy'):
+        if word in ('ed', 'eddie', 'eddy', 'ned', 'ted', 'teddy'):
             yield 'edward'
+        if word in ('fran', 'frances', 'frank', 'frankie'):
+            yield 'francis'
+            yield 'franklin'
         if word == 'fdr':
             yield 'franklin roosevelt'
             yield 'franklin delano roosevelt'
@@ -389,7 +399,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'john kennedy'
         if word in ('jo', 'joey', 'josef', 'joseph', 'josephine'):
             yield 'joe'
-        if word in ('jon', 'jhon', 'johnny', 'jhonny', 'jonny'):
+        if word in ('jack', 'jock', 'jon', 'jhon', 'johnny', 'jhonny', 'jonny'):
             yield 'john'
         if word in ('jos', 'joshua'):
             yield 'josh'
@@ -403,6 +413,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'michael'
         if word in ('nat', 'nate', 'nathan', 'natty', 'than'):
             yield 'nathaniel'
+        if word in ('claas', 'claes', 'nicolas', 'nick'):
+            yield 'nicholas'
         if word == 'oliver':
             yield 'ollie'
         if word in ('ossy', 'ozzy', 'waldo'):
@@ -420,7 +432,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'rfk':
             yield 'robert francis kennedy'
             yield 'robert kennedy'
-        if word in ('rob', 'robbie', 'roberto', 'robin'):
+        if word in ('bob', 'bobby', 'rob', 'robb', 'robbie', 'robby', 'roberto', 'robin', 'rupert'):
             yield 'robert'
         if word in ('ron', 'ronaldo', 'ronnie'):
             yield 'ronald'

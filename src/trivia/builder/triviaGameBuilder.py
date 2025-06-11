@@ -1,3 +1,5 @@
+from typing import Final
+
 from .triviaGameBuilderInterface import TriviaGameBuilderInterface
 from .triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
@@ -25,9 +27,9 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface = triviaGameBuilderSettings
-        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__triviaGameBuilderSettings: Final[TriviaGameBuilderSettingsInterface] = triviaGameBuilderSettings
+        self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def createNewTriviaGame(
         self,
