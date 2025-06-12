@@ -171,7 +171,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'ⓘ {triviaInfoMessage}',
+            message = triviaInfoMessage,
             replyMessageId = await ctx.getMessageId()
         )
 
