@@ -23,6 +23,18 @@ class TestMicrosoftSamJsonParser:
         result = await self.parser.parseVoice('adultfemale1')
         assert result is MicrosoftSamVoice.ADULT_FEMALE_1
 
+        result = await self.parser.parseVoice('adult_female')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.parseVoice('adult-female')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.parseVoice('adult female')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.parseVoice('adultfemale')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
     @pytest.mark.asyncio
     async def test_parseVoice_withAdultFemale2(self):
         result = await self.parser.parseVoice('adult_female_2')
@@ -63,6 +75,18 @@ class TestMicrosoftSamJsonParser:
         assert result is MicrosoftSamVoice.ADULT_MALE_1
 
         result = await self.parser.parseVoice('adultmale1')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.parseVoice('adult_male')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.parseVoice('adult-male')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.parseVoice('adult male')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.parseVoice('adultmale')
         assert result is MicrosoftSamVoice.ADULT_MALE_1
 
     @pytest.mark.asyncio
@@ -369,6 +393,9 @@ class TestMicrosoftSamJsonParser:
         result = await self.parser.parseVoice('robo1')
         assert result is MicrosoftSamVoice.ROBO_1
 
+        result = await self.parser.parseVoice('robo')
+        assert result is MicrosoftSamVoice.ROBO_1
+
     @pytest.mark.asyncio
     async def test_parseVoice_withRobo2(self):
         result = await self.parser.parseVoice('robo_2')
@@ -449,9 +476,42 @@ class TestMicrosoftSamJsonParser:
         result = await self.parser.requireVoice('adult_female_1')
         assert result is MicrosoftSamVoice.ADULT_FEMALE_1
 
+        result = await self.parser.requireVoice('adult-female-1')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.requireVoice('adult female 1')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.requireVoice('adult_female')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.requireVoice('adult-female')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.requireVoice('adult female')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
+        result = await self.parser.requireVoice('adultfemale')
+        assert result is MicrosoftSamVoice.ADULT_FEMALE_1
+
     @pytest.mark.asyncio
     async def test_requireVoice_withAdultMale1(self):
         result = await self.parser.requireVoice('adult_male_1')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.requireVoice('adult-male-1')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.requireVoice('adult male 1')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.requireVoice('adult_male')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.requireVoice('adult male')
+        assert result is MicrosoftSamVoice.ADULT_MALE_1
+
+        result = await self.parser.requireVoice('adultmale')
         assert result is MicrosoftSamVoice.ADULT_MALE_1
 
     @pytest.mark.asyncio
@@ -468,6 +528,23 @@ class TestMicrosoftSamJsonParser:
     async def test_requireVoice_withMike(self):
         result = await self.parser.requireVoice('mike')
         assert result is MicrosoftSamVoice.MIKE
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withRobo1(self):
+        result = await self.parser.requireVoice('robo_1')
+        assert result is MicrosoftSamVoice.ROBO_1
+
+        result = await self.parser.requireVoice('robo-1')
+        assert result is MicrosoftSamVoice.ROBO_1
+
+        result = await self.parser.requireVoice('robo_1')
+        assert result is MicrosoftSamVoice.ROBO_1
+
+        result = await self.parser.requireVoice('robo1')
+        assert result is MicrosoftSamVoice.ROBO_1
+
+        result = await self.parser.requireVoice('robo')
+        assert result is MicrosoftSamVoice.ROBO_1
 
     @pytest.mark.asyncio
     async def test_requireVoice_withSam(self):

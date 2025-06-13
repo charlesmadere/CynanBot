@@ -1,5 +1,5 @@
 import re
-from typing import Any, Collection, Pattern
+from typing import Any, Collection, Final, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -12,11 +12,11 @@ from ...misc import utils as utils
 class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
     def __init__(self):
-        self.__voiceRegExes: frozendict[MicrosoftSamVoice, Collection[Pattern]] = self.__buildVoiceRegExes()
+        self.__voiceRegExes: Final[frozendict[MicrosoftSamVoice, Collection[Pattern]]] = self.__buildVoiceRegExes()
 
     def __buildVoiceRegExes(self) -> frozendict[MicrosoftSamVoice, Collection[Pattern]]:
         adultFemale1: FrozenList[Pattern] = FrozenList()
-        adultFemale1.append(re.compile(r'^\s*adult(?:\s+|_|-)?female(?:\s+|_|-)?1\s*$', re.IGNORECASE))
+        adultFemale1.append(re.compile(r'^\s*adult(?:\s+|_|-)?female(?:\s+|_|-)?1?\s*$', re.IGNORECASE))
         adultFemale1.freeze()
 
         adultFemale2: FrozenList[Pattern] = FrozenList()
@@ -28,7 +28,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         adultFemaleWhisper.freeze()
 
         adultMale1: FrozenList[Pattern] = FrozenList()
-        adultMale1.append(re.compile(r'^\s*adult(?:\s+|_|-)?male(?:\s+|_|-)?1\s*$', re.IGNORECASE))
+        adultMale1.append(re.compile(r'^\s*adult(?:\s+|_|-)?male(?:\s+|_|-)?1?\s*$', re.IGNORECASE))
         adultMale1.freeze()
 
         adultMale2: FrozenList[Pattern] = FrozenList()
@@ -112,7 +112,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         mikeTelephone.freeze()
 
         robo1: FrozenList[Pattern] = FrozenList()
-        robo1.append(re.compile(r'^\s*robo(?:\s+|_|-)?1\s*$', re.IGNORECASE))
+        robo1.append(re.compile(r'^\s*robo(?:\s+|_|-)?1?\s*$', re.IGNORECASE))
         robo1.freeze()
 
         robo2: FrozenList[Pattern] = FrozenList()
