@@ -72,9 +72,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         enabledTtsProviders: FrozenList[TtsProvider] = FrozenList()
 
         for ttsProvider in TtsProvider:
-            if ttsProvider in self.__illegalRandomTtsProviders:
-                continue
-            elif await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
+            if await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
                 provider = ttsProvider
             ):
                 enabledTtsProviders.append(ttsProvider)
@@ -82,7 +80,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         enabledTtsProviders.freeze()
 
         if len(enabledTtsProviders) == 0:
-            raise NoEnabledTtsProvidersException(f'Can\'t randomly apply a preferred TTS as there are no TTS Providers enabled ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=}) ({self.__illegalRandomTtsProviders=})')
+            raise NoEnabledTtsProvidersException(f'Can\'t randomly apply a preferred TTS as there are no TTS Providers enabled ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
         ttsProvider = random.choice(enabledTtsProviders)
         properties: AbsTtsProperties | None = None
