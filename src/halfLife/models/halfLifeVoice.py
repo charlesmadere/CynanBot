@@ -12,18 +12,6 @@ class HalfLifeVoice(Enum):
     SOLDIER = auto()
 
     @property
-    def keyName(self) -> str:
-        match self:
-            case HalfLifeVoice.ALL: return 'all'
-            case HalfLifeVoice.BARNEY: return 'barney'
-            case HalfLifeVoice.HEV: return 'hev'
-            case HalfLifeVoice.INTERCOM: return 'intercom'
-            case HalfLifeVoice.POLICE: return 'police'
-            case HalfLifeVoice.SCIENTIST: return 'scientist'
-            case HalfLifeVoice.SOLDIER: return 'soldier'
-            case _: raise RuntimeError(f'unknown HalfLifeVoice: \"{self}\"')
-
-    @property
     def humanName(self) -> str:
         match self:
             case HalfLifeVoice.ALL: return 'All'
@@ -33,4 +21,16 @@ class HalfLifeVoice(Enum):
             case HalfLifeVoice.POLICE: return 'Police'
             case HalfLifeVoice.SCIENTIST: return 'Scientist'
             case HalfLifeVoice.SOLDIER: return 'Soldier'
+            case _: raise RuntimeError(f'unknown HalfLifeVoice: \"{self}\"')
+
+    @property
+    def keyName(self) -> str:
+        match self:
+            case HalfLifeVoice.ALL: return 'all'
+            case HalfLifeVoice.BARNEY: return 'barney'
+            case HalfLifeVoice.HEV: return 'hev'
+            case HalfLifeVoice.INTERCOM: return 'intercom'
+            case HalfLifeVoice.POLICE: return 'police'
+            case HalfLifeVoice.SCIENTIST: return 'scientist'
+            case HalfLifeVoice.SOLDIER: return 'soldier'
             case _: raise RuntimeError(f'unknown HalfLifeVoice: \"{self}\"')

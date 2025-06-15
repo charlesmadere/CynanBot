@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterTtsProperties
+from ...chatterPreferredTts.models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface

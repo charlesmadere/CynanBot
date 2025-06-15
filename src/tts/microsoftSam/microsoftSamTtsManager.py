@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamTtsProperties
+from ...chatterPreferredTts.models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
 from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from ...microsoftSam.models.microsoftSamFileReference import MicrosoftSamFileReference

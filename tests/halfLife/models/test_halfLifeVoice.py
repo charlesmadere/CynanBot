@@ -46,3 +46,31 @@ class TestHalfLifeVoice:
             results.add(voice.humanName)
 
         assert len(results) == len(HalfLifeVoice)
+
+    def test_humanName_withAll(self):
+        result = HalfLifeVoice.ALL.humanName
+        assert result == 'All'
+
+    def test_humanName_withBarney(self):
+        result = HalfLifeVoice.BARNEY.humanName
+        assert result == 'Barney'
+
+    def test_humanName_withHev(self):
+        result = HalfLifeVoice.HEV.humanName
+        assert result == 'Hazardous EnVironment suit (HEV)'
+
+    def test_humanName_withIntercom(self):
+        result = HalfLifeVoice.INTERCOM.humanName
+        assert result == 'Intercom'
+
+    def test_humanName_withPolice(self):
+        result = HalfLifeVoice.POLICE.humanName
+        assert result == 'Police'
+
+    def test_humanName_withScientist(self):
+        result = HalfLifeVoice.SCIENTIST.humanName
+        assert result == 'Scientist'
+
+    def test_humanName_withSoldier(self):
+        result = HalfLifeVoice.SOLDIER.humanName
+        assert result == 'Soldier'

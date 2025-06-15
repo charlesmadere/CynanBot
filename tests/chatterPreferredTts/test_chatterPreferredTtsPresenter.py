@@ -2,8 +2,8 @@ import pytest
 
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.models.chatterPrefferedTts import ChatterPreferredTts
-from src.chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkTtsProperties
-from src.chatterPreferredTts.models.google.googlePreferredTts import GoogleTtsProperties
+from src.chatterPreferredTts.models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
+from src.chatterPreferredTts.models.google.googleTtsProperties import GoogleTtsProperties
 from src.decTalk.models.decTalkVoice import DecTalkVoice
 from src.language.languageEntry import LanguageEntry
 

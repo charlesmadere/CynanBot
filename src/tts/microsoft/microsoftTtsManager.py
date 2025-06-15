@@ -8,7 +8,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsTtsProperties
+from ...chatterPreferredTts.models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from ...microsoft.helper.microsoftTtsHelperInterface import MicrosoftTtsHelperInterface
 from ...microsoft.microsoftTtsMessageCleanerInterface import MicrosoftTtsMessageCleanerInterface
 from ...microsoft.models.microsoftTtsFileReference import MicrosoftTtsFileReference

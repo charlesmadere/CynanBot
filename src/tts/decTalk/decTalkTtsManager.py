@@ -9,7 +9,7 @@ from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ...chatterPreferredTts.models.decTalk.decTalkPreferredTts import DecTalkTtsProperties
+from ...chatterPreferredTts.models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
 from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from ...decTalk.models.decTalkFileReference import DecTalkFileReference

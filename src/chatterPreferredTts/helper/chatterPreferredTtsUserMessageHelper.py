@@ -3,15 +3,15 @@ from typing import Any, Final, Match, Pattern
 
 from .chatterPreferredTtsUserMessageHelperInterface import ChatterPreferredTtsUserMessageHelperInterface
 from ..models.absTtsProperties import AbsTtsProperties
-from ..models.commodoreSam.commodoreSamPreferredTts import CommodoreSamTtsProperties
-from ..models.decTalk.decTalkPreferredTts import DecTalkTtsProperties
-from ..models.google.googlePreferredTts import GoogleTtsProperties
-from ..models.halfLife.halfLifePreferredTts import HalfLifeTtsProperties
-from ..models.microsoft.microsoftTtsPreferredTts import MicrosoftTtsTtsProperties
-from ..models.microsoftSam.microsoftSamPreferredTts import MicrosoftSamTtsProperties
-from ..models.singingDecTalk.singingDecTalkPreferredTts import SingingDecTalkTtsProperties
-from ..models.streamElements.streamElementsPreferredTts import StreamElementsTtsProperties
-from ..models.ttsMonster.ttsMonsterPreferredTts import TtsMonsterTtsProperties
+from ..models.commodoreSam.commodoreSamTtsProperties import CommodoreSamTtsProperties
+from ..models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
+from ..models.google.googleTtsProperties import GoogleTtsProperties
+from ..models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
+from ..models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
+from ..models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
+from ..models.singingDecTalk.singingDecTalkTtsProperties import SingingDecTalkTtsProperties
+from ..models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
+from ..models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
 from ...decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
