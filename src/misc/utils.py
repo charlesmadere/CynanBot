@@ -451,8 +451,11 @@ def removePreceedingAt(s: str) -> str:
     ...
 
 def removePreceedingAt(s: str | None) -> str | None:
+    if s is not None and not isinstance(s, str):
+        raise TypeError(f's argument is malformed: \"{s}\"')
+
     if s is None:
-        return s
+        return None
     elif s.startswith('@'):
         return s[1:]
     else:
