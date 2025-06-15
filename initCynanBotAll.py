@@ -1892,15 +1892,6 @@ chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterP
     ttsJsonMapper = ttsJsonMapper
 )
 
-googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
-
-chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferredTtsHelper(
-    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
-    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
-    googleTtsVoicesHelper = googleTtsVoicesHelper,
-    timber = timber
-)
-
 chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
     decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
@@ -1909,6 +1900,16 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     microsoftTtsJsonParser = microsoftTtsJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+)
+
+googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
+
+chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferredTtsHelper(
+    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+    chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
+    googleTtsVoicesHelper = googleTtsVoicesHelper,
+    timber = timber
 )
 
 chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter = ChatterPreferredTtsPresenter()

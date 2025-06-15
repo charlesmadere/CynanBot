@@ -4,7 +4,9 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
-from ..exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException
+from .chatterPreferredTtsUserMessageHelperInterface import ChatterPreferredTtsUserMessageHelperInterface
+from ..exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, \
+    UnableToParseUserMessageIntoTtsException, TtsProviderIsNotEnabledException
 from ..models.absTtsProperties import AbsTtsProperties
 from ..models.chatterPrefferedTts import ChatterPreferredTts
 from ..models.commodoreSam.commodoreSamTtsProperties import CommodoreSamTtsProperties
@@ -36,30 +38,26 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         self,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface,
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface,
+        chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
         timber: TimberInterface,
-        illegalRandomTtsProviders: frozenset[TtsProvider] = frozenset({
-            TtsProvider.COMMODORE_SAM,
-            TtsProvider.HALF_LIFE,
-            TtsProvider.SINGING_DEC_TALK,
-        }),
     ):
         if not isinstance(chatterPreferredTtsRepository, ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
         elif not isinstance(chatterPreferredTtsSettingsRepository, ChatterPreferredTtsSettingsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
+        elif not isinstance(chatterPreferredTtsUserMessageHelper, ChatterPreferredTtsUserMessageHelperInterface):
+            raise TypeError(f'chatterPreferredTtsUserMessageHelper argument is malformed: \"{chatterPreferredTtsUserMessageHelper}\"')
         elif not isinstance(googleTtsVoicesHelper, GoogleTtsVoicesHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(illegalRandomTtsProviders, frozenset):
-            raise TypeError(f'illegalRandomTtsProviders argument is malformed: \"{illegalRandomTtsProviders}\"')
 
         self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
+        self.__chatterPreferredTtsUserMessageHelper: Final[ChatterPreferredTtsUserMessageHelperInterface] = chatterPreferredTtsUserMessageHelper
         self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
         self.__timber: Final[TimberInterface] = timber
-        self.__illegalRandomTtsProviders: Final[frozenset[TtsProvider]] = illegalRandomTtsProviders
 
     async def applyRandomPreferredTts(
         self,
@@ -118,10 +116,12 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
                 properties = await self.__chooseRandomTtsMonsterProperties()
 
             case _:
-                raise ValueError(f'The given TTS Provider is unknown ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=}) ({self.__illegalRandomTtsProviders=})')
+                raise ValueError(f'The given TTS Provider is unknown ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
-        if properties is None or ttsProvider in self.__illegalRandomTtsProviders:
-            raise FailedToChooseRandomTtsException(f'Failed to choose a random preferred TTS ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=}) ({self.__illegalRandomTtsProviders=})')
+        if properties is None or not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
+            provider = properties.provider
+        ):
+            raise FailedToChooseRandomTtsException(f'Failed to choose a random preferred TTS ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
         preferredTts = ChatterPreferredTts(
             properties = properties,
@@ -134,6 +134,43 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         )
 
         self.__timber.log('ChatterPreferredTtsHelper', f'Randomly chose and assigned new TTS ({preferredTts=}) ({chatterUserId=}) ({twitchChannelId=})')
+        return preferredTts
+
+    async def applyUserMessagePreferredTts(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+        userMessage: str | None
+    ) -> ChatterPreferredTts:
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif userMessage is not None and not isinstance(userMessage, str):
+            raise TypeError(f'userMessage argument is malformed: \"{userMessage}\"')
+
+        properties = await self.__chatterPreferredTtsUserMessageHelper.parseUserMessage(
+            userMessage = userMessage
+        )
+
+        if properties is None:
+            raise UnableToParseUserMessageIntoTtsException(f'Failed to parse user message into TTS ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
+        elif not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
+            provider = properties.provider
+        ):
+            raise TtsProviderIsNotEnabledException(f'The TtsProvider specified in the given user message is not enabled ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
+
+        preferredTts = ChatterPreferredTts(
+            properties = properties,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId
+        )
+
+        await self.__chatterPreferredTtsRepository.set(
+            preferredTts = preferredTts
+        )
+
+        self.__timber.log('ChatterPreferredTtsHelper', f'Assigned TTS from user message ({preferredTts=}) ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
         return preferredTts
 
     async def __chooseCommodoreSamProperties(self) -> CommodoreSamTtsProperties:

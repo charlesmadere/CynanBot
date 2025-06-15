@@ -14,6 +14,15 @@ class ChatterPreferredTtsHelperInterface(ABC):
         pass
 
     @abstractmethod
+    async def applyUserMessagePreferredTts(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+        userMessage: str | None
+    ) -> ChatterPreferredTts:
+        pass
+
+    @abstractmethod
     async def get(
         self,
         chatterUserId: str,
