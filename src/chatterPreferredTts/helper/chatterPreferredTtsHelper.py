@@ -156,6 +156,9 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             if googleVoicePreset is not None:
                 languageEntries.append(languageEntry)
 
+        if len(languageEntries) == 0:
+            raise RuntimeError(f'Failed to find any LanguageEntry with an associated GoogleVoicePreset ({languageEntries=})')
+
         languageEntry = random.choice(languageEntries)
 
         return GoogleTtsProperties(
