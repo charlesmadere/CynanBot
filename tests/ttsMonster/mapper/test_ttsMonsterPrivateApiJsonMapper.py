@@ -151,6 +151,27 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert len(results) == len(TtsMonsterVoice)
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withAdam(self):
+        result = await self.mapper.parseVoice('adam')
+        assert result is TtsMonsterVoice.ADAM
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withAnnouncer(self):
+        result = await self.mapper.parseVoice('announcer')
+        assert result is TtsMonsterVoice.ANNOUNCER
+
+        result = await self.mapper.parseVoice('announce')
+        assert result is TtsMonsterVoice.ANNOUNCER
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withAsmr(self):
+        result = await self.mapper.parseVoice('asmr')
+        assert result is TtsMonsterVoice.ASMR
+
+        result = await self.mapper.parseVoice('a.s.m.r.')
+        assert result is TtsMonsterVoice.ASMR
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withBrian(self):
         result = await self.mapper.parseVoice('brian')
         assert result is TtsMonsterVoice.BRIAN
@@ -169,6 +190,14 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_parseVoice_withJazz(self):
         result = await self.mapper.parseVoice('jazz')
         assert result is TtsMonsterVoice.JAZZ
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withJohnny(self):
+        result = await self.mapper.parseVoice('johnny')
+        assert result is TtsMonsterVoice.JOHNNY
+
+        result = await self.mapper.parseVoice('john')
+        assert result is TtsMonsterVoice.JOHNNY
 
     @pytest.mark.asyncio
     async def test_parseVoice_withKkona(self):
@@ -218,6 +247,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.VOMIT
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withWeeb(self):
+        result = await self.mapper.parseVoice('weeb')
+        assert result is TtsMonsterVoice.WEEB
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withWhitespaceString(self):
         result = await self.mapper.parseVoice(' ')
         assert result is None
@@ -243,6 +277,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
 
         result = await self.mapper.parseVoice('02')
         assert result is TtsMonsterVoice.ZERO_TWO
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withZoomer(self):
+        result = await self.mapper.parseVoice('zoomer')
+        assert result is TtsMonsterVoice.ZOOMER
 
     @pytest.mark.asyncio
     async def test_requireDonationPrefixConfig_withDisabled(self):
@@ -292,6 +331,14 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.ADAM
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withAnnouncer(self):
+        result = await self.mapper.requireVoice('announcer')
+        assert result is TtsMonsterVoice.ANNOUNCER
+
+        result = await self.mapper.requireVoice('announce')
+        assert result is TtsMonsterVoice.ANNOUNCER
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withAsmr(self):
         result = await self.mapper.requireVoice('asmr')
         assert result is TtsMonsterVoice.ASMR
@@ -326,6 +373,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.JAZZ
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withJohnny(self):
+        result = await self.mapper.requireVoice('johnny')
+        assert result is TtsMonsterVoice.JOHNNY
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withKkona(self):
         result = await self.mapper.requireVoice('kkona')
         assert result is TtsMonsterVoice.KKONA
@@ -348,6 +400,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.SHADOW
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withSonic(self):
+        result = await self.mapper.requireVoice('sonic')
+        assert result is TtsMonsterVoice.SONIC
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withSpongebob(self):
         result = await self.mapper.requireVoice('spongebob')
         assert result is TtsMonsterVoice.SPONGEBOB
@@ -365,6 +422,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_requireVoice_withVomit(self):
         result = await self.mapper.requireVoice('vomit')
         assert result is TtsMonsterVoice.VOMIT
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withWeeb(self):
+        result = await self.mapper.requireVoice('weeb')
+        assert result is TtsMonsterVoice.WEEB
 
     @pytest.mark.asyncio
     async def test_requireVoice_withWitch(self):
@@ -396,6 +458,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
 
         result = await self.mapper.requireVoice('02')
         assert result is TtsMonsterVoice.ZERO_TWO
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withZoomer(self):
+        result = await self.mapper.requireVoice('zoomer')
+        assert result is TtsMonsterVoice.ZOOMER
 
     def test_sanity(self):
         assert self.mapper is not None
@@ -471,6 +538,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result == 'adam'
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withAnnouncer(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.ANNOUNCER)
+        assert result == 'announcer'
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withAsmr(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.ASMR)
         assert result == 'asmr'
@@ -489,6 +561,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_serializeVoice_withJazz(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.JAZZ)
         assert result == 'jazz'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withJohnny(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.JOHNNY)
+        assert result == 'johnny'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withKkona(self):
@@ -511,6 +588,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result == 'shadow'
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withSonic(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.SONIC)
+        assert result == 'sonic'
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withSpongebob(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.SPONGEBOB)
         assert result == 'spongebob'
@@ -521,6 +603,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result == 'vomit'
 
     @pytest.mark.asyncio
+    async def test_serializeVoice_withWeeb(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.WEEB)
+        assert result == 'weeb'
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withWitch(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.WITCH)
         assert result == 'witch'
@@ -529,3 +616,8 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_serializeVoice_withZeroTwo(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.ZERO_TWO)
         assert result == 'zero_two'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withZoomer(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.ZOOMER)
+        assert result == 'zoomer'

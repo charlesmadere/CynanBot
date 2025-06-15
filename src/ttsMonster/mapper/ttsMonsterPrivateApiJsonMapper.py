@@ -35,8 +35,13 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         adam.append(re.compile(r'^\s*adam\s*$', re.IGNORECASE))
         adam.freeze()
 
+        announcer: FrozenList[Pattern] = FrozenList()
+        announcer.append(re.compile(r'^\s*announcer?\s*$', re.IGNORECASE))
+        announcer.freeze()
+
         asmr: FrozenList[Pattern] = FrozenList()
         asmr.append(re.compile(r'^\s*asmr\s*$', re.IGNORECASE))
+        asmr.append(re.compile(r'^\s*a\.s\.m\.r\.\s*$', re.IGNORECASE))
         asmr.freeze()
 
         brian: FrozenList[Pattern] = FrozenList()
@@ -55,6 +60,11 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         jazz.append(re.compile(r'^\s*jazz\s*$', re.IGNORECASE))
         jazz.freeze()
 
+        johnny: FrozenList[Pattern] = FrozenList()
+        johnny.append(re.compile(r'^\s*joh?n\s*$', re.IGNORECASE))
+        johnny.append(re.compile(r'^\s*joh?nn?y\s*$', re.IGNORECASE))
+        johnny.freeze()
+
         kkona: FrozenList[Pattern] = FrozenList()
         kkona.append(re.compile(r'^\s*kk?ona\s*$', re.IGNORECASE))
         kkona.freeze()
@@ -71,6 +81,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         shadow.append(re.compile(r'^\s*shadow\s*$', re.IGNORECASE))
         shadow.freeze()
 
+        sonic: FrozenList[Pattern] = FrozenList()
+        sonic.append(re.compile(r'^\s*sonic\s*$', re.IGNORECASE))
+        sonic.freeze()
+
         spongebob: FrozenList[Pattern] = FrozenList()
         spongebob.append(re.compile(r'^\s*sponge(?:\s+|_|-)?bob\s*$', re.IGNORECASE))
         spongebob.freeze()
@@ -78,6 +92,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         vomit: FrozenList[Pattern] = FrozenList()
         vomit.append(re.compile(r'^\s*vomit\s*$', re.IGNORECASE))
         vomit.freeze()
+
+        weeb: FrozenList[Pattern] = FrozenList()
+        weeb.append(re.compile(r'^\s*weeb\s*$', re.IGNORECASE))
+        weeb.freeze()
 
         witch: FrozenList[Pattern] = FrozenList()
         witch.append(re.compile(r'^\s*witch\s*$', re.IGNORECASE))
@@ -88,21 +106,30 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         zeroTwo.append(re.compile(r'^\s*02\s*$', re.IGNORECASE))
         zeroTwo.freeze()
 
+        zoomer: FrozenList[Pattern] = FrozenList()
+        zoomer.append(re.compile(r'^\s*zoome?r\s*$', re.IGNORECASE))
+        zoomer.freeze()
+
         return frozendict({
             TtsMonsterVoice.ADAM: adam,
+            TtsMonsterVoice.ANNOUNCER: announcer,
             TtsMonsterVoice.ASMR: asmr,
             TtsMonsterVoice.BRIAN: brian,
             TtsMonsterVoice.GLADOS: glados,
             TtsMonsterVoice.HIKARI: hikari,
             TtsMonsterVoice.JAZZ: jazz,
+            TtsMonsterVoice.JOHNNY: johnny,
             TtsMonsterVoice.KKONA: kkona,
             TtsMonsterVoice.NARRATOR: narrator,
             TtsMonsterVoice.PIRATE: pirate,
             TtsMonsterVoice.SHADOW: shadow,
+            TtsMonsterVoice.SONIC: sonic,
             TtsMonsterVoice.SPONGEBOB: spongebob,
             TtsMonsterVoice.VOMIT: vomit,
+            TtsMonsterVoice.WEEB: weeb,
             TtsMonsterVoice.WITCH: witch,
-            TtsMonsterVoice.ZERO_TWO: zeroTwo
+            TtsMonsterVoice.ZERO_TWO: zeroTwo,
+            TtsMonsterVoice.ZOOMER: zoomer,
         })
 
     async def parseDonationPrefixConfig(
@@ -245,17 +272,22 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         match voice:
             case TtsMonsterVoice.ADAM: return 'adam'
+            case TtsMonsterVoice.ANNOUNCER: return 'announcer'
             case TtsMonsterVoice.ASMR: return 'asmr'
             case TtsMonsterVoice.BRIAN: return 'brian'
             case TtsMonsterVoice.GLADOS: return 'glados'
             case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
+            case TtsMonsterVoice.JOHNNY: return 'johnny'
             case TtsMonsterVoice.KKONA: return 'kkona'
             case TtsMonsterVoice.NARRATOR: return 'narrator'
             case TtsMonsterVoice.PIRATE: return 'pirate'
             case TtsMonsterVoice.SHADOW: return 'shadow'
+            case TtsMonsterVoice.SONIC: return 'sonic'
             case TtsMonsterVoice.SPONGEBOB: return 'spongebob'
             case TtsMonsterVoice.VOMIT: return 'vomit'
+            case TtsMonsterVoice.WEEB: return 'weeb'
             case TtsMonsterVoice.WITCH: return 'witch'
             case TtsMonsterVoice.ZERO_TWO: return 'zero_two'
+            case TtsMonsterVoice.ZOOMER: return 'zoomer'
             case _: raise RuntimeError(f'Encountered unknown TtsMonsterVoice value: \"{voice}\"')
