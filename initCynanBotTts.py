@@ -1102,9 +1102,12 @@ chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterP
     ttsJsonMapper = ttsJsonMapper
 )
 
+googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
+
 chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferredTtsHelper(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
-    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository
+    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+    googleTtsVoicesHelper = googleTtsVoicesHelper
 )
 
 chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
@@ -1267,8 +1270,6 @@ googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
     googleApiService = googleApiService,
     timber = timber
 )
-
-googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
