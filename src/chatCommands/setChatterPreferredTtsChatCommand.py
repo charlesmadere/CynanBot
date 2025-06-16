@@ -137,7 +137,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
             return
 
-        userMessage = ' '.join(splits[2:])
+        userMessage = utils.cleanStr(' '.join(splits[2:]))
         preferredTts: ChatterPreferredTts
 
         try:
@@ -152,7 +152,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
                     twitchChannelId = await ctx.getTwitchChannelId(),
                     userMessage = userMessage
                 )
-        except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, TtsProviderIsNotEnabledException, UnableToParseUserMessageIntoTtsException) as e:
+        except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
             self.__timber.log('SetChatterPreferredTtsChatCommand', f'Failed to set preferred TTS given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({lookupUser=}) ({userMessage=}): {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
@@ -160,9 +160,23 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId()
             )
             return
+        except TtsProviderIsNotEnabledException as e:
+            self.__timber.log('SetChatterPreferredTtsChatCommand', f'The TTS Provider given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}  is not enabled ({lookupUser=}) ({userMessage=}): {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(
+                messageable = ctx,
+                message = f'⚠ The TTS provider requested for @{lookupUser.userName} is not available! Please try a different TTS provider.',
+                replyMessageId = await ctx.getMessageId()
+            )
+            return
 
         printOut = await self.__chatterPreferredTtsPresenter.printOut(preferredTts)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ New preferred TTS set for @{lookupUser.userName} — {printOut}')
+
+        await self.__twitchUtils.safeSend(
+            messageable = ctx,
+            message = f'ⓘ New preferred TTS set for @{lookupUser.userName} — {printOut}',
+            replyMessageId = await ctx.getMessageId()
+        )
+
         self.__timber.log('SetChatterPreferredTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __lookupUser(

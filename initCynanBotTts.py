@@ -2088,10 +2088,9 @@ casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGame
 )
 
 chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
-    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
-    chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
     timber = timber,
     twitchUtils = twitchUtils
 )

@@ -30,11 +30,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        loudVoices: frozenset[TtsMonsterVoice] | None = frozenset({
-            TtsMonsterVoice.GLADOS,
-            TtsMonsterVoice.SHADOW,
-            TtsMonsterVoice.SPONGEBOB,
-        })
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -52,8 +47,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not loudVoices is not None and not isinstance(loudVoices, frozenset):
-            raise TypeError(f'loudVoices argument is malformed: \"{loudVoices}\"')
 
         self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
@@ -63,15 +56,11 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
         self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__loudVoices: frozenset[TtsMonsterVoice] | None = loudVoices
 
         self.__isLoadingOrPlaying: bool = False
 
     async def __containsLoudVoices(self, fileReference: TtsMonsterFileReference) -> bool:
-        loudVoices = self.__loudVoices
-
-        if loudVoices is None or len(loudVoices) == 0:
-            return False
+        loudVoices = await self.__ttsMonsterSettingsRepository.getLoudVoices()
 
         for loudVoice in loudVoices:
             if loudVoice in fileReference.allVoices:

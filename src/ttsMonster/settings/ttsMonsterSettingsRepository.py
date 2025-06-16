@@ -14,18 +14,29 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         self,
         settingsJsonReader: JsonReaderInterface,
         ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
+        defaultLoudVoices: frozenset[TtsMonsterVoice] = frozenset({
+            TtsMonsterVoice.GLADOS,
+            TtsMonsterVoice.JAZZ,
+            TtsMonsterVoice.SHADOW,
+            TtsMonsterVoice.SPONGEBOB,
+        }),
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
-        defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN
+        defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
+        elif not isinstance(defaultLoudVoices, frozenset):
+            raise TypeError(f'defaultLoudVoices argument is malformed: \"{defaultLoudVoices}\"')
+        elif not isinstance(defaultDonationPrefixConfig, TtsMonsterDonationPrefixConfig):
+            raise TypeError(f'defaultDonationPrefixConfig argument is malformed: \"{defaultDonationPrefixConfig}\"')
         elif not isinstance(defaultVoice, TtsMonsterVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
+        self.__defaultLoudVoices: Final[frozenset[TtsMonsterVoice]] = defaultLoudVoices
         self.__defaultDonationPrefixConfig: Final[TtsMonsterDonationPrefixConfig] = defaultDonationPrefixConfig
         self.__defaultVoice: Final[TtsMonsterVoice] = defaultVoice
 
@@ -63,6 +74,20 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
     async def getLoudVoiceMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'loud_voice_media_player_volume', fallback = 7)
+
+    async def getLoudVoices(self) -> frozenset[TtsMonsterVoice]:
+        jsonContents = await self.__readJson()
+        loudVoicesStrings: list[str] | None = jsonContents.get('loud_voices', None)
+
+        if loudVoicesStrings is None:
+            return self.__defaultLoudVoices
+
+        loudVoices: set[TtsMonsterVoice] = set()
+
+        for loudVoiceString in loudVoicesStrings:
+            loudVoices.add(await self.__ttsMonsterPrivateApiJsonMapper.requireVoice(loudVoiceString))
+
+        return frozenset(loudVoices)
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()

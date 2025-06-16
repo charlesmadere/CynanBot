@@ -30,5 +30,9 @@ class VoicemailSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def targetUserMustNotBeActiveInChat(self) -> bool:
+        pass
+
+    @abstractmethod
     async def useMessageQueueing(self) -> bool:
         pass

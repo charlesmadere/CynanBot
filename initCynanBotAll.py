@@ -2869,7 +2869,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: CasualGamePollPointRedemption = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
     timber = timber,
     twitchUtils = twitchUtils
 )
@@ -2881,10 +2881,9 @@ cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemptio
 )
 
 chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
-    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
-    chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
     timber = timber,
     twitchUtils = twitchUtils
 )
