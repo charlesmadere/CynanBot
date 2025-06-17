@@ -1,6 +1,8 @@
 from collections import defaultdict
 from datetime import datetime
 
+from frozendict import frozendict
+
 from .absTriviaGameState import AbsTriviaGameState
 from .triviaGameType import TriviaGameType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -56,14 +58,9 @@ class SuperTriviaGameState(AbsTriviaGameState):
 
         self.__answeredUserIds: dict[str, int] = defaultdict(lambda: 0)
 
-    def getAnsweredUserIds(self) -> dict[str, int]:
-        return dict(self.__answeredUserIds)
-
-    def getRegularTriviaPointsForWinning(self) -> int:
-        return self.__regularTriviaPointsForWinning
-
-    def getToxicTriviaPunishmentMultiplier(self) -> int:
-        return self.__toxicTriviaPunishmentMultiplier
+    @property
+    def answeredUserIds(self) -> frozendict[str, int]:
+        return frozendict(self.__answeredUserIds)
 
     def incrementAnswerCount(self, userId: str):
         if not utils.isValidStr(userId):
@@ -80,6 +77,14 @@ class SuperTriviaGameState(AbsTriviaGameState):
     @property
     def perUserAttempts(self) -> int:
         return self.__perUserAttempts
+
+    @property
+    def regularTriviaPointsForWinning(self) -> int:
+        return self.__regularTriviaPointsForWinning
+
+    @property
+    def toxicTriviaPunishmentMultiplier(self) -> int:
+        return self.__toxicTriviaPunishmentMultiplier
 
     @property
     def triviaGameType(self) -> TriviaGameType:

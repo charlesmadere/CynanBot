@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Final
 
 from .trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
@@ -27,14 +28,14 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         elif not isinstance(cacheTimeBuffer, timedelta):
             raise TypeError(f'cacheTimeBuffer argument is malformed: \"{cacheTimeBuffer}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = trollmojiSettingsRepository
-        self.__twitchEmotesHelper: TwitchEmotesHelperInterface = twitchEmotesHelper
-        self.__cacheTimeBuffer: timedelta = cacheTimeBuffer
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__trollmojiSettingsRepository: Final[TrollmojiSettingsRepositoryInterface] = trollmojiSettingsRepository
+        self.__twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = twitchEmotesHelper
+        self.__cacheTimeBuffer: Final[timedelta] = cacheTimeBuffer
 
-        self.__isAvailableCache: dict[str, bool | None] = dict()
-        self.__timeCache: dict[str, datetime | None] = dict()
+        self.__isAvailableCache: Final[dict[str, bool | None]] = dict()
+        self.__timeCache: Final[dict[str, datetime | None]] = dict()
 
     async def clearCaches(self):
         self.__isAvailableCache.clear()

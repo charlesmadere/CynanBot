@@ -4,6 +4,7 @@ import random
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
+from typing import Final
 
 from .actions.cutenessRecurringAction import CutenessRecurringAction
 from .actions.recurringAction import RecurringAction
@@ -109,29 +110,29 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__cutenessRepository: CutenessRepositoryInterface | None = cutenessRepository
-        self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
-        self.__locationsRepository: LocationsRepositoryInterface = locationsRepository
-        self.__mostRecentRecurringActionsRepository: MostRecentRecurringActionRepositoryInterface = mostRecentRecurringActionRepository
-        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__weatherRepository: WeatherRepositoryInterface | None = weatherRepository
-        self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
-        self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
-        self.__refreshSleepTimeSeconds: float = refreshSleepTimeSeconds
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
-        self.__superTriviaCountdownSeconds: int = superTriviaCountdownSeconds
-        self.__cooldown: timedelta = cooldown
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__cutenessRepository: Final[CutenessRepositoryInterface | None] = cutenessRepository
+        self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
+        self.__locationsRepository: Final[LocationsRepositoryInterface] = locationsRepository
+        self.__mostRecentRecurringActionsRepository: Final[MostRecentRecurringActionRepositoryInterface] = mostRecentRecurringActionRepository
+        self.__recurringActionsRepository: Final[RecurringActionsRepositoryInterface] = recurringActionsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
+        self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__weatherRepository: Final[WeatherRepositoryInterface | None] = weatherRepository
+        self.__wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = wordOfTheDayRepository
+        self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+        self.__refreshSleepTimeSeconds: Final[float] = refreshSleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
+        self.__superTriviaCountdownSeconds: Final[int] = superTriviaCountdownSeconds
+        self.__cooldown: Final[timedelta] = cooldown
 
         self.__isStarted: bool = False
         self.__eventListener: RecurringActionEventListener | None = None
-        self.__eventQueue: SimpleQueue[RecurringEvent] = SimpleQueue()
+        self.__eventQueue: Final[SimpleQueue[RecurringEvent]] = SimpleQueue()
 
     async def __fetchViableUsers(self) -> list[UserInterface]:
         users = await self.__usersRepository.getUsersAsync()
@@ -250,22 +251,26 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return await self.__processCutenessRecurringAction(
                 user = user,
                 action = action
+
             )
         elif isinstance(action, SuperTriviaRecurringAction):
             return await self.__processSuperTriviaRecurringAction(
                 user = user,
                 action = action
             )
+
         elif isinstance(action, WeatherRecurringAction):
             return await self.__processWeatherRecurringAction(
                 user = user,
                 action = action
             )
+
         elif isinstance(action, WordOfTheDayRecurringAction):
             return await self.__processWordOfTheDayRecurringAction(
                 user = user,
                 action = action
             )
+
         else:
             raise RuntimeError(f'Unknown RecurringAction: {action=}')
 
@@ -318,13 +323,13 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         try:
             location = await self.__locationsRepository.getLocation(locationId)
         except NoSuchLocationException as e:
-            self.__timber.log('RecurringActionsMachine', f'Unable to get location ({locationId=}) ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RecurringActionsMachine', f'Unable to get location ({locationId=}) ({user=}) ({action=}): {e}', e, traceback.format_exc())
             return False
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
         except GenericNetworkException as e:
-            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching weather ({locationId=}) ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching weather ({location=}) ({locationId=}) ({user=}) ({action=}): {e}', e, traceback.format_exc())
             return False
 
         if action.isAlertsOnly and len(weatherReport.report.alerts) == 0:
@@ -350,14 +355,13 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         languageEntry = action.languageEntry
-
         if languageEntry is None:
             return False
 
         try:
             wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
         except GenericNetworkException as e:
-            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching Word of the Day ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching Word of the Day ({languageEntry=}) ({user=}) ({action=}): {e}', e, traceback.format_exc())
             return False
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(

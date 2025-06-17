@@ -3,7 +3,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -136,31 +136,31 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__queuedTriviaGameStore: QueuedTriviaGameStoreInterface = queuedTriviaGameStore
-        self.__shinyTriviaHelper: ShinyTriviaHelper = shinyTriviaHelper
-        self.__superTriviaCooldownHelper: SuperTriviaCooldownHelperInterface = superTriviaCooldownHelper
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__toxicTriviaHelper: ToxicTriviaHelper = toxicTriviaHelper
-        self.__triviaAnswerChecker: TriviaAnswerCheckerInterface = triviaAnswerChecker
-        self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
-        self.__triviaGameStore: TriviaGameStoreInterface = triviaGameStore
-        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaRepository: TriviaRepositoryInterface = triviaRepository
-        self.__triviaScoreRepository: TriviaScoreRepositoryInterface = triviaScoreRepository
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = triviaTwitchEmoteHelper
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = queuedTriviaGameStore
+        self.__shinyTriviaHelper: Final[ShinyTriviaHelper] = shinyTriviaHelper
+        self.__superTriviaCooldownHelper: Final[SuperTriviaCooldownHelperInterface] = superTriviaCooldownHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__toxicTriviaHelper: Final[ToxicTriviaHelper] = toxicTriviaHelper
+        self.__triviaAnswerChecker: Final[TriviaAnswerCheckerInterface] = triviaAnswerChecker
+        self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
+        self.__triviaGameStore: Final[TriviaGameStoreInterface] = triviaGameStore
+        self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__triviaRepository: Final[TriviaRepositoryInterface] = triviaRepository
+        self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
+        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = triviaTwitchEmoteHelper
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
         self.__isStarted: bool = False
         self.__eventListener: TriviaEventListener | None = None
-        self.__actionQueue: SimpleQueue[AbsTriviaAction] = SimpleQueue()
-        self.__eventQueue: SimpleQueue[AbsTriviaEvent] = SimpleQueue()
+        self.__actionQueue: Final[SimpleQueue[AbsTriviaAction]] = SimpleQueue()
+        self.__eventQueue: Final[SimpleQueue[AbsTriviaEvent]] = SimpleQueue()
 
     async def __applyToxicSuperTriviaPunishment(
         self,
@@ -175,22 +175,22 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if not state.isToxic():
             return None
 
-        toxicTriviaPunishmentMultiplier = state.getToxicTriviaPunishmentMultiplier()
+        toxicTriviaPunishmentMultiplier = state.toxicTriviaPunishmentMultiplier
 
         if toxicTriviaPunishmentMultiplier <= 0:
             return None
 
-        answeredUserIds = state.getAnsweredUserIds()
+        answeredUserIds = dict(state.answeredUserIds)
 
         if action is not None:
-            del answeredUserIds[action.getUserId()]
+            answeredUserIds.pop(action.userId, None)
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(state.getTwitchChannelId())
         toxicTriviaPunishments: list[ToxicTriviaPunishment] = list()
         totalPointsStolen = 0
 
         for userId, answerCount in answeredUserIds.items():
-            punishedByPoints = -1 * answerCount * toxicTriviaPunishmentMultiplier * state.getRegularTriviaPointsForWinning()
+            punishedByPoints = -1 * answerCount * toxicTriviaPunishmentMultiplier * state.regularTriviaPointsForWinning
             totalPointsStolen = totalPointsStolen + abs(punishedByPoints)
 
             userName = await self.__userIdsRepository.requireUserName(
@@ -414,7 +414,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CHECK_SUPER_ANSWER}: \"{action.triviaActionType}\"')
 
         state = await self.__triviaGameStore.getSuperGame(
-            twitchChannelId = action.getTwitchChannelId()
+            twitchChannelId = action.twitchChannelId
         )
 
         if state is None:
@@ -422,27 +422,27 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 actionId = action.actionId,
                 answer = action.answer,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName()
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
+                userId = action.userId,
+                userName = action.userName
             ))
             return
 
-        if not state.isEligibleToAnswer(action.getUserId()):
+        if not state.isEligibleToAnswer(action.userId):
             return
 
-        state.incrementAnswerCount(action.getUserId())
+        state.incrementAnswerCount(action.userId)
 
         checkResult = await self.__checkAnswer(
             answer = action.answer,
             triviaQuestion = state.getTriviaQuestion(),
             extras = {
                 'actionId': action.actionId,
-                'twitchChannel': action.getTwitchChannel(),
-                'twitchChannelId': action.getTwitchChannelId(),
-                'userId': action.getUserId(),
-                'userName': action.getUserName()
+                'twitchChannel': action.twitchChannel,
+                'twitchChannelId': action.twitchChannelId,
+                'userId': action.userId,
+                'userName': action.userName
             }
         )
 
@@ -456,15 +456,15 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.getGameId(),
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName()
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
+                userId = action.userId,
+                userName = action.userName
             ))
             return
 
         await self.__removeSuperTriviaGame(
-            twitchChannelId = action.getTwitchChannelId()
+            twitchChannelId = action.twitchChannelId
         )
 
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
@@ -474,8 +474,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             await self.__shinyTriviaHelper.shinyTriviaWin(
                 twitchChannel = state.getTwitchChannel(),
                 twitchChannelId = state.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName()
+                userId = action.userId,
+                userName = action.userName
             )
         elif state.isToxic():
             toxicTriviaPunishmentResult = await self.__applyToxicSuperTriviaPunishment(
@@ -487,8 +487,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 await self.__toxicTriviaHelper.toxicTriviaWin(
                     twitchChannel = state.getTwitchChannel(),
                     twitchChannelId = state.getTwitchChannelId(),
-                    userId = action.getUserId(),
-                    userName = action.getUserName()
+                    userId = action.userId,
+                    userName = action.userName
                 )
 
                 pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.totalPointsStolen
@@ -497,18 +497,18 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             incrementAmount = pointsForWinning,
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId(),
-            userId = action.getUserId(),
-            userName = action.getUserName()
+            userId = action.userId,
+            userName = action.userName
         )
 
         remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
-            twitchChannelId = action.getTwitchChannelId()
+            twitchChannelId = action.twitchChannelId
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementSuperTriviaWins(
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId(),
-            userId = action.getUserId()
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId,
+            userId = action.userId
         )
 
         celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote()
@@ -526,11 +526,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             emote = state.emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId(),
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId,
             twitchChatMessageId = action.twitchChatMessageId,
-            userId = action.getUserId(),
-            userName = action.getUserName(),
+            userId = action.userId,
+            userName = action.userName,
             triviaScoreResult = triviaScoreResult
         ))
 
@@ -614,7 +614,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             userName = action.getUserName()
         ):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
-            pointsForWinning = pointsForWinning * action.getShinyMultiplier()
+            pointsForWinning = pointsForWinning * action.shinyMultiplier
 
         endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
 
@@ -688,7 +688,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 numberOfGames = queueResult.amountAdded,
                 pointsForWinning = action.pointsForWinning,
                 secondsToLive = action.secondsToLive,
-                shinyMultiplier = action.getShinyMultiplier(),
+                shinyMultiplier = action.shinyMultiplier,
                 actionId = action.actionId,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 twitchChannel = action.getTwitchChannel(),
@@ -713,7 +713,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         try:
             triviaQuestion = await self.__triviaRepository.fetchTrivia(
                 emote = emote,
-                triviaFetchOptions = action.getTriviaFetchOptions()
+                triviaFetchOptions = action.triviaFetchOptions
             )
         except TooManyTriviaFetchAttemptsException as e:
             self.__timber.log('TriviaGameMachine', f'Reached limit on trivia fetch attempts without being able to successfully retrieve a super trivia question for \"{action.getTwitchChannel()}\" ({action.actionId=}): {e}', e, traceback.format_exc())
@@ -734,12 +734,12 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannelId = action.getTwitchChannelId()
         ):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
-            pointsForWinning = pointsForWinning * action.getShinyMultiplier()
+            pointsForWinning = pointsForWinning * action.shinyMultiplier
         elif action.isToxicTriviaEnabled and await self.__toxicTriviaHelper.isToxicSuperTriviaQuestion(
             twitchChannelId = action.getTwitchChannelId()
         ):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC
-            pointsForWinning = pointsForWinning * action.getToxicMultiplier()
+            pointsForWinning = pointsForWinning * action.toxicMultiplier
 
         endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
 
@@ -749,9 +749,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             basePointsForWinning = action.pointsForWinning,
             perUserAttempts = action.perUserAttempts,
             pointsForWinning = pointsForWinning,
-            regularTriviaPointsForWinning = action.getRegularTriviaPointsForWinning(),
+            regularTriviaPointsForWinning = action.regularTriviaPointsForWinning,
             secondsToLive = action.secondsToLive,
-            toxicTriviaPunishmentMultiplier = action.getToxicTriviaPunishmentMultiplier(),
+            toxicTriviaPunishmentMultiplier = action.toxicTriviaPunishmentMultiplier,
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.actionId,
             emote = emote,

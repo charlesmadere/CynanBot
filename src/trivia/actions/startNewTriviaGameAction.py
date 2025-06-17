@@ -56,9 +56,6 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         self.__userName: str = userName
         self.__triviaFetchOptions: TriviaFetchOptions = triviaFetchOptions
 
-    def getShinyMultiplier(self) -> int:
-        return self.__shinyMultiplier
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
@@ -81,6 +78,10 @@ class StartNewTriviaGameAction(AbsTriviaAction):
     @property
     def secondsToLive(self) -> int:
         return self.__secondsToLive
+
+    @property
+    def shinyMultiplier(self) -> int:
+        return self.__shinyMultiplier
 
     @property
     def triviaActionType(self) -> TriviaActionType:

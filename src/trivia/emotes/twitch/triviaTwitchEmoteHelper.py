@@ -1,3 +1,5 @@
+from typing import Final
+
 from .triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
 from ....trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 
@@ -11,7 +13,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
         if not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
 
-        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
 
     async def getCelebratoryEmote(self) -> str | None:
         return await self.__trollmojiHelper.getHypeEmote()

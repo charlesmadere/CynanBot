@@ -37,7 +37,6 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         self.__timber: TimberInterface = timber
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
         self.__queuedSuperGames: dict[str, list[StartNewSuperTriviaGameAction]] = defaultdict(lambda: list())
 
@@ -94,15 +93,15 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                     numberOfGames = 1,
                     perUserAttempts = action.perUserAttempts,
                     pointsForWinning = action.pointsForWinning,
-                    regularTriviaPointsForWinning = action.getRegularTriviaPointsForWinning(),
+                    regularTriviaPointsForWinning = action.regularTriviaPointsForWinning,
                     secondsToLive = action.secondsToLive,
-                    shinyMultiplier = action.getShinyMultiplier(),
-                    toxicMultiplier = action.getToxicMultiplier(),
-                    toxicTriviaPunishmentMultiplier = action.getToxicTriviaPunishmentMultiplier(),
+                    shinyMultiplier = action.shinyMultiplier,
+                    toxicMultiplier = action.toxicMultiplier,
+                    toxicTriviaPunishmentMultiplier = action.toxicTriviaPunishmentMultiplier,
                     actionId = await self.__triviaIdGenerator.generateActionId(),
                     twitchChannel = action.getTwitchChannel(),
                     twitchChannelId = action.getTwitchChannelId(),
-                    triviaFetchOptions = action.getTriviaFetchOptions()
+                    triviaFetchOptions = action.triviaFetchOptions
                 ))
 
                 amountAdded += 1
@@ -111,7 +110,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
         def shouldShuffle() -> bool:
             for item in queuedSuperGames:
-                if item.getTriviaFetchOptions().requiredTriviaSource is not None:
+                if item.triviaFetchOptions.requiredTriviaSource is not None:
                     return True
             return False
 

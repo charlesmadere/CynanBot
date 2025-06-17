@@ -1,7 +1,7 @@
 import traceback
 from asyncio import AbstractEventLoop
 
-from twitchio import Message
+from twitchio import Channel, Message, User
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
@@ -997,6 +997,8 @@ class CynanBot(
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
     async def event_channel_join_failure(self, channel: str):
+        self.__timber.log('CynanBot', f'Encountered channel join failure ({channel=})')
+
         userId = await self.__userIdsRepository.fetchUserId(channel)
         user: UserInterface | None = None
         exception: Exception | None = None
@@ -1025,6 +1027,9 @@ class CynanBot(
         else:
             raise error
 
+    async def event_join(self, channel: Channel, user: User):
+        self.__timber.log('CynanBot', f'Received JOIN event ({channel=}) ({user=})')
+
     async def event_message(self, message: Message):
         if message.echo:
             return
@@ -1039,6 +1044,12 @@ class CynanBot(
 
         await self.handle_commands(message)
 
+    async def event_mode(self, channel: Channel, user: User, status: str):
+        self.__timber.log('CynanBot', f'Received MODE event ({channel=}) ({user=}) ({status=})')
+
+    async def event_part(self, user: User):
+        self.__timber.log('CynanBot', f'Received PART event ({user=})')
+
     async def event_ready(self):
         await self.waitForReady()
 
@@ -1049,7 +1060,7 @@ class CynanBot(
         self.__twitchChannelJoinHelper.joinChannels()
 
     async def event_reconnect(self):
-        self.__timber.log('CynanBot', f'Received new reconnect event')
+        self.__timber.log('CynanBot', f'Received RECONNECT event')
         await self.waitForReady()
         self.__timber.log('CynanBot', f'Finished reconnecting')
 

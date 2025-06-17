@@ -1,5 +1,3 @@
-import locale
-
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -98,30 +96,6 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def creationTime(self) -> SimpleDateTime:
         return self.__creationTime
 
-    def getRegularTriviaPointsForWinning(self) -> int:
-        return self.__regularTriviaPointsForWinning
-
-    def getRegularTriviaPointsForWinningStr(self) -> str:
-        return locale.format_string("%d", self.__regularTriviaPointsForWinning, grouping = True)
-
-    def getShinyMultiplier(self) -> int:
-        return self.__shinyMultiplier
-
-    def getToxicMultiplier(self) -> int:
-        return self.__toxicMultiplier
-
-    def getToxicMultiplierStr(self) -> str:
-        return locale.format_string("%d", self.__toxicMultiplier, grouping = True)
-
-    def getToxicTriviaPunishmentMultiplier(self) -> int:
-        return self.__toxicTriviaPunishmentMultiplier
-
-    def getToxicTriviaPunishmentMultiplierStr(self) -> str:
-        return locale.format_string("%d", self.__toxicTriviaPunishmentMultiplier, grouping = True)
-
-    def getTriviaFetchOptions(self) -> TriviaFetchOptions:
-        return self.__triviaFetchOptions
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
@@ -145,10 +119,6 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
         return self.__numberOfGames
 
     @property
-    def numberOfGamesStr(self) -> str:
-        return locale.format_string("%d", self.__numberOfGames, grouping = True)
-
-    @property
     def perUserAttempts(self) -> int:
         return self.__perUserAttempts
 
@@ -157,9 +127,29 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
         return self.__pointsForWinning
 
     @property
+    def regularTriviaPointsForWinning(self) -> int:
+        return self.__regularTriviaPointsForWinning
+
+    @property
     def secondsToLive(self) -> int:
         return self.__secondsToLive
 
     @property
+    def shinyMultiplier(self) -> int:
+        return self.__shinyMultiplier
+
+    @property
+    def toxicMultiplier(self) -> int:
+        return self.__toxicMultiplier
+
+    @property
+    def toxicTriviaPunishmentMultiplier(self) -> int:
+        return self.__toxicTriviaPunishmentMultiplier
+
+    @property
     def triviaActionType(self) -> TriviaActionType:
         return TriviaActionType.START_NEW_SUPER_GAME
+
+    @property
+    def triviaFetchOptions(self) -> TriviaFetchOptions:
+        return self.__triviaFetchOptions

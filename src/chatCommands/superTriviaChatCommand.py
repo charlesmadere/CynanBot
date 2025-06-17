@@ -80,8 +80,8 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
             try:
                 numberOfGames = int(numberOfGamesStr)
-            except (SyntaxError, TypeError, ValueError) as e:
-                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}): {e}', e, traceback.format_exc())
+            except Exception as e:
+                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}) ({numberOfGamesStr=}): {e}', e, traceback.format_exc())
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
@@ -92,7 +92,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperTriviaGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
-                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
+                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({numberOfGames=}) ({numberOfGamesStr=})')
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',

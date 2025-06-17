@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ...misc import utils as utils
@@ -30,28 +32,16 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__answer: str | None = answer
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__twitchChatMessageId: str = twitchChatMessageId
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__answer: Final[str | None] = answer
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def answer(self) -> str | None:
         return self.__answer
-
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
 
     def requireAnswer(self) -> str:
         answer = self.__answer
@@ -66,5 +56,21 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         return TriviaActionType.CHECK_SUPER_ANSWER
 
     @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
     def twitchChatMessageId(self) -> str:
         return self.__twitchChatMessageId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName
