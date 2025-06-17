@@ -1028,7 +1028,8 @@ class CynanBot(
             raise error
 
     async def event_join(self, channel: Channel, user: User):
-        self.__timber.log('CynanBot', f'Received JOIN event ({channel=}) ({user=})')
+        # intentionally empty for now
+        pass
 
     async def event_message(self, message: Message):
         if message.echo:
@@ -1048,7 +1049,8 @@ class CynanBot(
         self.__timber.log('CynanBot', f'Received MODE event ({channel=}) ({user=}) ({status=})')
 
     async def event_part(self, user: User):
-        self.__timber.log('CynanBot', f'Received PART event ({user=})')
+        # intentionally empty for now
+        pass
 
     async def event_ready(self):
         await self.waitForReady()
