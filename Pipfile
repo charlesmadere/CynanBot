@@ -21,7 +21,7 @@ num2words = "0.5.14"
 polyleven = "0.9"
 psutil = "7.0.0"
 pyjwt = "2.10.1"
-pytest = "8.4.0"
+pytest = "8.4.1"
 pytest-asyncio = "1.0.0"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'win32'" }
 pytz = "2025.2"

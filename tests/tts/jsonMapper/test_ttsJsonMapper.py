@@ -17,20 +17,25 @@ class TestTtsJsonMapper:
 
     @pytest.mark.asyncio
     async def test_allTtsProvidersAreParsed(self):
+        parsedProviders: set[TtsProvider] = set()
+
         for ttsProvider in TtsProvider:
-            serializedTtsProvider = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
-            parsedTtsProvider = await self.jsonMapper.asyncParseProvider(serializedTtsProvider)
-            assert parsedTtsProvider == ttsProvider
+            serialized = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
+            parsed = await self.jsonMapper.asyncParseProvider(serialized)
+            assert parsed is ttsProvider
+            parsedProviders.add(parsed)
+
+        assert len(parsedProviders) == len(TtsProvider)
 
     @pytest.mark.asyncio
     async def test_allTtsProvidersAreSerialized(self):
-        serializedTtsProviders: set[str] = set()
+        serializedProviders: set[str] = set()
 
         for ttsProvider in TtsProvider:
-            serializedTtsProvider = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
-            serializedTtsProviders.add(serializedTtsProvider)
+            serializedProvider = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
+            serializedProviders.add(serializedProvider)
 
-        assert len(serializedTtsProviders) == len(list(TtsProvider))
+        assert len(serializedProviders) == len(TtsProvider)
 
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withCommodoreSamString(self):
@@ -58,9 +63,19 @@ class TestTtsJsonMapper:
         assert result is TtsProvider.HALF_LIFE
 
     @pytest.mark.asyncio
+    async def test_asyncParseProvider_withMicrosoftString(self):
+        result = await self.jsonMapper.asyncParseProvider('microsoft')
+        assert result is TtsProvider.MICROSOFT
+
+    @pytest.mark.asyncio
     async def test_asyncParseProvider_withMicrosoftSamString(self):
         result = await self.jsonMapper.asyncParseProvider('microsoft_sam')
         assert result is TtsProvider.MICROSOFT_SAM
+
+    @pytest.mark.asyncio
+    async def test_asyncParseProvider_withNone(self):
+        result = await self.jsonMapper.asyncParseProvider(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withSingingDecTalk(self):
@@ -103,18 +118,14 @@ class TestTtsJsonMapper:
         assert result == 'half_life'
 
     @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withMicrosoft(self):
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.MICROSOFT)
+        assert result == 'microsoft'
+
+    @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withMicrosoftSam(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
-
-    @pytest.mark.asyncio
-    async def test_asyncSerializeProvider_withNone(self):
-        result: str | None = None
-
-        with pytest.raises(TypeError):
-            result = await self.jsonMapper.asyncSerializeProvider(None) # type: ignore
-
-        assert result is None
 
     @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withSingingDecTalk(self):
@@ -128,6 +139,11 @@ class TestTtsJsonMapper:
 
     @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withTtsMonster(self):
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.TTS_MONSTER)
+        assert result == 'tts_monster'
+
+    @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withWhitespaceString(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
 
@@ -150,6 +166,10 @@ class TestTtsJsonMapper:
     def test_parseProvider_withHalfLifeString(self):
         result = self.jsonMapper.parseProvider('half_life')
         assert result is TtsProvider.HALF_LIFE
+
+    def test_parseProvider_withMicrosoftString(self):
+        result = self.jsonMapper.parseProvider('microsoft')
+        assert result is TtsProvider.MICROSOFT
 
     def test_parseProvider_withMicrosoftSamString(self):
         result = self.jsonMapper.parseProvider('microsoft_sam')
@@ -186,7 +206,7 @@ class TestTtsJsonMapper:
     def test_requireProvider_withEmptyString(self):
         result: TtsProvider | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = self.jsonMapper.requireProvider('')
 
         assert result is None
@@ -199,6 +219,10 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.requireProvider('half_life')
         assert result is TtsProvider.HALF_LIFE
 
+    def test_requireProvider_withMicrosoftString(self):
+        result = self.jsonMapper.requireProvider('microsoft')
+        assert result is TtsProvider.MICROSOFT
+
     def test_requireProvider_withMicrosoftSamString(self):
         result = self.jsonMapper.requireProvider('microsoft_sam')
         assert result is TtsProvider.MICROSOFT_SAM
@@ -206,7 +230,7 @@ class TestTtsJsonMapper:
     def test_requireProvider_withNone(self):
         result: TtsProvider | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = self.jsonMapper.requireProvider(None)
 
         assert result is None
@@ -226,10 +250,15 @@ class TestTtsJsonMapper:
     def test_requireProvider_withWhitespaceString(self):
         result: TtsProvider | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = self.jsonMapper.requireProvider(' ')
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, TtsJsonMapper)
+        assert isinstance(self.jsonMapper, TtsJsonMapperInterface)
 
     def test_serializeProvider_withCommodoreSam(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.COMMODORE_SAM)
@@ -247,17 +276,13 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.serializeProvider(TtsProvider.HALF_LIFE)
         assert result == 'half_life'
 
+    def test_serializeProvider_withMicrosoft(self):
+        result = self.jsonMapper.serializeProvider(TtsProvider.MICROSOFT)
+        assert result == 'microsoft'
+
     def test_serializeProvider_withMicrosoftSam(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
-
-    def test_serializeProvider_withNone(self):
-        result: str | None = None
-
-        with pytest.raises(Exception):
-            result = self.jsonMapper.serializeProvider(None) # type: ignore
-
-        assert result is None
 
     def test_serializeProvider_withSingingDecTalk(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.SINGING_DEC_TALK)

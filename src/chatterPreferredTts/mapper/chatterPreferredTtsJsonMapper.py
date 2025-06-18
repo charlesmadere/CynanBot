@@ -64,13 +64,13 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
         self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
 
-    async def __parseCommodoreSamPreferredTts(
+    async def __parseCommodoreSamTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> CommodoreSamTtsProperties:
         return CommodoreSamTtsProperties()
 
-    async def __parseDecTalkPreferredTts(
+    async def __parseDecTalkTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> DecTalkTtsProperties:
@@ -86,7 +86,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voice = voice
         )
 
-    async def __parseGooglePreferredTts(
+    async def __parseGoogleTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> GoogleTtsProperties:
@@ -104,7 +104,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             languageEntry = languageEntry
         )
 
-    async def __parseHalfLifePreferredTts(
+    async def __parseHalfLifeTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> HalfLifeTtsProperties:
@@ -120,7 +120,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voice = voice
         )
 
-    async def __parseMicrosoftSamPreferredTts(
+    async def __parseMicrosoftSamTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> MicrosoftSamTtsProperties:
@@ -136,7 +136,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voice = voice
         )
 
-    async def __parseMicrosoftTtsPreferredTts(
+    async def __parseMicrosoftTtsTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> MicrosoftTtsTtsProperties:
@@ -152,13 +152,13 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voice = voice
         )
 
-    async def __parseSingingDecTalkPreferredTts(
+    async def __parseSingingDecTalkTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> SingingDecTalkTtsProperties:
         return SingingDecTalkTtsProperties()
 
-    async def __parseStreamElementsPreferredTts(
+    async def __parseStreamElementsTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> StreamElementsTtsProperties:
@@ -176,7 +176,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voice = voice
         )
 
-    async def __parseTtsMonsterPreferredTts(
+    async def __parseTtsMonsterTtsProperties(
         self,
         configurationJson: dict[str, Any]
     ) -> TtsMonsterTtsProperties:
@@ -206,47 +206,47 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
         match provider:
             case TtsProvider.COMMODORE_SAM:
-                return await self.__parseCommodoreSamPreferredTts(
+                return await self.__parseCommodoreSamTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.DEC_TALK:
-                return await self.__parseDecTalkPreferredTts(
+                return await self.__parseDecTalkTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.GOOGLE:
-                return await self.__parseGooglePreferredTts(
+                return await self.__parseGoogleTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.HALF_LIFE:
-                return await self.__parseHalfLifePreferredTts(
+                return await self.__parseHalfLifeTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.MICROSOFT:
-                return await self.__parseMicrosoftTtsPreferredTts(
+                return await self.__parseMicrosoftTtsTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.MICROSOFT_SAM:
-                return await self.__parseMicrosoftSamPreferredTts(
+                return await self.__parseMicrosoftSamTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.SINGING_DEC_TALK:
-                return await self.__parseSingingDecTalkPreferredTts(
+                return await self.__parseSingingDecTalkTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.STREAM_ELEMENTS:
-                return await self.__parseStreamElementsPreferredTts(
+                return await self.__parseStreamElementsTtsProperties(
                     configurationJson = configurationJson
                 )
 
             case TtsProvider.TTS_MONSTER:
-                return await self.__parseTtsMonsterPreferredTts(
+                return await self.__parseTtsMonsterTtsProperties(
                     configurationJson = configurationJson
                 )
 

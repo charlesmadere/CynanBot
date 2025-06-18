@@ -1,5 +1,5 @@
 import re
-from typing import Any, Collection, Pattern
+from typing import Any, Collection, Final, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -25,10 +25,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         if not utils.isValidStr(provider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__provider: str = provider
+        self.__timber: Final[TimberInterface] = timber
+        self.__provider: Final[str] = provider
 
-        self.__voiceRegExes: frozendict[TtsMonsterVoice, Collection[Pattern]] = self.__buildVoiceRegExes()
+        self.__voiceRegExes: Final[frozendict[TtsMonsterVoice, Collection[Pattern]]] = self.__buildVoiceRegExes()
 
     def __buildVoiceRegExes(self) -> frozendict[TtsMonsterVoice, Collection[Pattern]]:
         adam: FrozenList[Pattern] = FrozenList()
