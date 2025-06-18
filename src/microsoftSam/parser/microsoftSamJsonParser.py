@@ -86,7 +86,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         maryStadium.freeze()
 
         maryTelephone: FrozenList[Pattern] = FrozenList()
-        maryTelephone.append(re.compile(r'^\s*mary(?:\s+|_|-)?(tele)?phone\s*$', re.IGNORECASE))
+        maryTelephone.append(re.compile(r'^\s*mary(?:\s+|_|-)?(?:tele)?phone\s*$', re.IGNORECASE))
         maryTelephone.freeze()
 
         mike: FrozenList[Pattern] = FrozenList()
@@ -108,7 +108,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
         mikeStadium.freeze()
 
         mikeTelephone: FrozenList[Pattern] = FrozenList()
-        mikeTelephone.append(re.compile(r'^\s*mike(?:\s+|_|-)?(tele)?phone\s*$', re.IGNORECASE))
+        mikeTelephone.append(re.compile(r'^\s*mike(?:\s+|_|-)?(?:tele)?phone\s*$', re.IGNORECASE))
         mikeTelephone.freeze()
 
         robo1: FrozenList[Pattern] = FrozenList()

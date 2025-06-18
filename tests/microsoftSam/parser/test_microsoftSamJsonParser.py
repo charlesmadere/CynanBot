@@ -557,6 +557,15 @@ class TestMicrosoftSamJsonParser:
         assert isinstance(self.parser, MicrosoftSamJsonParserInterface)
 
     @pytest.mark.asyncio
+    async def test_serializeVoice(self):
+        results: set[str] = set()
+
+        for voice in MicrosoftSamVoice:
+            results.add(await self.parser.serializeVoice(voice))
+
+        assert len(results) == len(MicrosoftSamVoice)
+
+    @pytest.mark.asyncio
     async def test_serializeVoice_withAdultFemale1(self):
         result = await self.parser.serializeVoice(MicrosoftSamVoice.ADULT_FEMALE_1)
         assert result == 'adult_female_1'
