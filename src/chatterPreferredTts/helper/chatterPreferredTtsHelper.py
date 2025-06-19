@@ -186,7 +186,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         languageEntries: list[LanguageEntry] = list()
 
         for languageEntry in LanguageEntry:
-            googleVoicePreset = self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
+            googleVoicePreset = await self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
 
             if googleVoicePreset is not None:
                 languageEntries.append(languageEntry)
