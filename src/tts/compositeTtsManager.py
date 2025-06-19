@@ -1,3 +1,4 @@
+import random
 from typing import Final
 
 from frozendict import frozendict
@@ -68,38 +69,22 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface | None] = chatterPreferredTtsHelper
-        self.__commodoreSamTtsManager: Final[TtsManagerInterface | None] = commodoreSamTtsManager
-        self.__decTalkTtsManager: Final[TtsManagerInterface | None] = decTalkTtsManager
-        self.__googleTtsManager: Final[TtsManagerInterface | None] = googleTtsManager
-        self.__halfLifeTtsManager: Final[TtsManagerInterface | None] = halfLifeTtsManager
-        self.__microsoftTtsManager: Final[TtsManagerInterface | None] = microsoftTtsManager
-        self.__microsoftSamTtsManager: Final[TtsManagerInterface | None] = microsoftSamTtsManager
-        self.__singingDecTalkTtsManager: Final[TtsManagerInterface | None] = singingDecTalkTtsManager
-        self.__streamElementsTtsManager: Final[TtsManagerInterface | None] = streamElementsTtsManager
         self.__timber: Final[TimberInterface] = timber
-        self.__ttsMonsterTtsManager: Final[TtsManagerInterface | None] = ttsMonsterTtsManager
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
-        self.__ttsProviderToManagerMap: Final[frozendict[TtsProvider, TtsManagerInterface | None]] = self.__createTtsProviderToManagerMap()
+        self.__ttsProviderToManagerMap: Final[frozendict[TtsProvider, TtsManagerInterface | None]] = frozendict({
+            TtsProvider.COMMODORE_SAM: commodoreSamTtsManager,
+            TtsProvider.DEC_TALK: decTalkTtsManager,
+            TtsProvider.GOOGLE: googleTtsManager,
+            TtsProvider.HALF_LIFE: halfLifeTtsManager,
+            TtsProvider.MICROSOFT: microsoftTtsManager,
+            TtsProvider.MICROSOFT_SAM: microsoftSamTtsManager,
+            TtsProvider.SINGING_DEC_TALK: singingDecTalkTtsManager,
+            TtsProvider.STREAM_ELEMENTS: streamElementsTtsManager,
+            TtsProvider.TTS_MONSTER: ttsMonsterTtsManager,
+        })
+
         self.__currentTtsManager: TtsManagerInterface | None = None
-
-    def __createTtsProviderToManagerMap(self) -> frozendict[TtsProvider, TtsManagerInterface | None]:
-        ttsProviderToManagerMap: dict[TtsProvider, TtsManagerInterface | None] = {
-            TtsProvider.COMMODORE_SAM: self.__commodoreSamTtsManager,
-            TtsProvider.DEC_TALK: self.__decTalkTtsManager,
-            TtsProvider.GOOGLE: self.__googleTtsManager,
-            TtsProvider.HALF_LIFE: self.__halfLifeTtsManager,
-            TtsProvider.MICROSOFT: self.__microsoftTtsManager,
-            TtsProvider.MICROSOFT_SAM: self.__microsoftSamTtsManager,
-            TtsProvider.SINGING_DEC_TALK: self.__singingDecTalkTtsManager,
-            TtsProvider.STREAM_ELEMENTS: self.__streamElementsTtsManager,
-            TtsProvider.TTS_MONSTER: self.__ttsMonsterTtsManager
-        }
-
-        if len(ttsProviderToManagerMap.keys()) != len(TtsProvider):
-            raise RuntimeError(f'ttsProviderToManagerMap is missing some members of TtsProvider! ({ttsProviderToManagerMap=})')
-
-        return frozendict(ttsProviderToManagerMap)
 
     async def __determineTtsProvider(self, event: TtsEvent) -> TtsProvider:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
@@ -115,6 +100,18 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         if preferredTts is None:
             return event.provider
+
+        if preferredTts.properties.provider is TtsProvider.RANDO_TTS:
+            availableProviders: set[TtsProvider] = set()
+
+            for key, value in self.__ttsProviderToManagerMap.items():
+                if value is not None:
+                    availableProviders.add(key)
+
+            if len(availableProviders) >= 1:
+                ttsProvider = random.choice(list(availableProviders))
+                self.__timber.log('CompositeTtsManager', f'Chatter uses random preferred TTS ({ttsProvider=}) ({preferredTts=}) ({event=})')
+                return ttsProvider
 
         self.__timber.log('CompositeTtsManager', f'Chatter has a preferred TTS ({preferredTts=}) ({event=})')
         return preferredTts.properties.provider

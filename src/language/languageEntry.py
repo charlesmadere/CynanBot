@@ -144,7 +144,7 @@ class LanguageEntry(Enum):
                 commandNames = [ 'it', 'italian', 'italiano', 'italy' ]
 
             case LanguageEntry.JAPANESE:
-                commandNames = [ 'ja', 'japan', 'japanese', 'jp', '日本語', 'にほんご' ]
+                commandNames = [ 'ja', 'japan', 'japanese', 'jp', '日本', '日本語', 'にほんご' ]
 
             case LanguageEntry.KANNADA:
                 commandNames = [ 'kn', 'kannada', 'ಕನ್ನಡ' ]

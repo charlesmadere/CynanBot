@@ -78,6 +78,11 @@ class TestTtsJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_asyncParseProvider_withRandoTts(self):
+        result = await self.jsonMapper.asyncParseProvider('rando_tts')
+        assert result is TtsProvider.RANDO_TTS
+
+    @pytest.mark.asyncio
     async def test_asyncParseProvider_withSingingDecTalk(self):
         result = await self.jsonMapper.asyncParseProvider('singing_dec_talk')
         assert result is TtsProvider.SINGING_DEC_TALK
@@ -126,6 +131,11 @@ class TestTtsJsonMapper:
     async def test_asyncSerializeProvider_withMicrosoftSam(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
+
+    @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withRandoTts(self):
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.RANDO_TTS)
+        assert result == 'rando_tts'
 
     @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withSingingDecTalk(self):
@@ -178,6 +188,10 @@ class TestTtsJsonMapper:
     def test_parseProvider_withNone(self):
         result = self.jsonMapper.parseProvider(None)
         assert result is None
+
+    def test_parseProvider_withRandoTtsString(self):
+        result = self.jsonMapper.parseProvider('rando_tts')
+        assert result is TtsProvider.RANDO_TTS
 
     def test_parseProvider_withSingingDecTalkString(self):
         result = self.jsonMapper.parseProvider('singing_dec_talk')
@@ -235,6 +249,10 @@ class TestTtsJsonMapper:
 
         assert result is None
 
+    def test_requireProvider_withRandoTtsString(self):
+        result = self.jsonMapper.requireProvider('rando_tts')
+        assert result is TtsProvider.RANDO_TTS
+
     def test_requireProvider_withSingingDecTalkString(self):
         result = self.jsonMapper.requireProvider('singing_dec_talk')
         assert result is TtsProvider.SINGING_DEC_TALK
@@ -283,6 +301,10 @@ class TestTtsJsonMapper:
     def test_serializeProvider_withMicrosoftSam(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
+
+    def test_serializeProvider_withRandoTts(self):
+        result = self.jsonMapper.serializeProvider(TtsProvider.RANDO_TTS)
+        assert result == 'rando_tts'
 
     def test_serializeProvider_withSingingDecTalk(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.SINGING_DEC_TALK)

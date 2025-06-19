@@ -8,7 +8,7 @@ from ...tts.models.ttsProvider import TtsProvider
 class ChatterPreferredTtsJsonMapperInterface(ABC):
 
     @abstractmethod
-    async def parsePreferredTts(
+    async def parseTtsProperties(
         self,
         configurationJson: dict[str, Any],
         provider: TtsProvider
@@ -16,8 +16,8 @@ class ChatterPreferredTtsJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def serializePreferredTts(
+    async def serializeTtsProperties(
         self,
-        preferredTts: AbsTtsProperties
+        ttsProperties: AbsTtsProperties
     ) -> dict[str, Any]:
         pass

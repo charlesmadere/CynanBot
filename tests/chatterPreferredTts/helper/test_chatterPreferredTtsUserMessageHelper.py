@@ -9,6 +9,7 @@ from src.chatterPreferredTts.models.google.googleTtsProperties import GoogleTtsP
 from src.chatterPreferredTts.models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
 from src.chatterPreferredTts.models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
+from src.chatterPreferredTts.models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
 from src.chatterPreferredTts.models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from src.chatterPreferredTts.models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
 from src.decTalk.mapper.decTalkVoiceMapper import DecTalkVoiceMapper
@@ -63,6 +64,7 @@ class TestChatterPreferredTtsUserMessageHelper:
         microsoftSamJsonParser = microsoftSamJsonParser,
         microsoftTtsJsonParser = microsoftTtsJsonParser,
         streamElementsJsonParser = streamElementsJsonParser,
+        timber = timber,
         ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
     )
 
@@ -201,9 +203,21 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert result.voice is DecTalkVoice.WENDY
 
     @pytest.mark.asyncio
+    async def test_parseUserMessage_withDutch(self):
+        result = await self.helper.parseUserMessage('dutch')
+        assert isinstance(result, GoogleTtsProperties)
+        assert result.languageEntry is LanguageEntry.DUTCH
+
+    @pytest.mark.asyncio
     async def test_parseUserMessage_withEmptyString(self):
         result = await self.helper.parseUserMessage('')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withGerman(self):
+        result = await self.helper.parseUserMessage('german')
+        assert isinstance(result, GoogleTtsProperties)
+        assert result.languageEntry is LanguageEntry.GERMAN
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withGoogleStrings(self):
@@ -353,6 +367,10 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, MicrosoftTtsTtsProperties)
         assert result.voice is MicrosoftTtsVoice.HARUKA
 
+        result = await self.helper.parseUserMessage('ms haruka')
+        assert isinstance(result, MicrosoftTtsTtsProperties)
+        assert result.voice is MicrosoftTtsVoice.HARUKA
+
     @pytest.mark.asyncio
     async def test_parseUserMessage_withMicrosoftAndZira(self):
         result = await self.helper.parseUserMessage('microsoft zira')
@@ -420,6 +438,38 @@ class TestChatterPreferredTtsUserMessageHelper:
         result = await self.helper.parseUserMessage('microsoft sam mary space')
         assert isinstance(result, MicrosoftSamTtsProperties)
         assert result.voice is MicrosoftSamVoice.MARY_SPACE
+
+    @pytest.mark.asyncio
+    async def test_parseUserMessage_withRandoTtsStrings(self):
+        result = await self.helper.parseUserMessage('rando')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('random')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('rando_tts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('random_tts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('rando-tts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('random-tts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('rando tts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('random tts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('randotts')
+        assert isinstance(result, RandoTtsTtsProperties)
+
+        result = await self.helper.parseUserMessage('randomtts')
+        assert isinstance(result, RandoTtsTtsProperties)
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withStreamElementsStrings(self):

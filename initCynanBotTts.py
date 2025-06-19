@@ -1109,6 +1109,7 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     microsoftSamJsonParser = microsoftSamJsonParser,
     microsoftTtsJsonParser = microsoftTtsJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
+    timber = timber,
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 

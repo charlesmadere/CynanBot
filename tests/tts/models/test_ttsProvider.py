@@ -35,6 +35,10 @@ class TestTtsProvider:
         result = TtsProvider.MICROSOFT_SAM.humanName
         assert result == 'Microsoft Sam'
 
+    def test_humanName_withRandoTts(self):
+        result = TtsProvider.RANDO_TTS.humanName
+        assert result == 'Rando TTS'
+
     def test_humanName_withSingingDecTalk(self):
         result = TtsProvider.SINGING_DEC_TALK.humanName
         assert result == 'Singing DECtalk'
