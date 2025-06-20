@@ -1149,6 +1149,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
 )
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+    activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchApiService = twitchApiService,

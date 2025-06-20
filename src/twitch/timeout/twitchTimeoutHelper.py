@@ -4,6 +4,7 @@ from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsReposit
 from .twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutResult import TwitchTimeoutResult
+from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..api.models.twitchBanRequest import TwitchBanRequest
 from ..api.models.twitchModUser import TwitchModUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
@@ -19,6 +20,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
@@ -27,7 +29,9 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
@@ -42,6 +46,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__timber: TimberInterface = timber
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
@@ -202,6 +207,11 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
+
+        await self.__activeChattersRepository.remove(
+            chatterUserId = userIdToTimeout,
+            twitchChannelId = twitchChannelId
+        )
 
         if not await self.__timeout(
             durationSeconds = durationSeconds,
