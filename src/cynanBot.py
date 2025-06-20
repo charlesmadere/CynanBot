@@ -1636,7 +1636,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__voicemailsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'vulnerablechatters', aliases = [ 'vc' ])
+    @commands.command(name = 'vulnerablechatters', aliases = [ 'vulnerablechatter', 'vc', 'vcs', 'VC', 'VCS' ])
     async def command_vulnerablechatters(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__vulnerableChattersCommand.handleChatCommand(context)
