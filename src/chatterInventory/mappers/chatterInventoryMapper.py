@@ -28,6 +28,26 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             ChatterItemType.GRENADE: grenade,
         })
 
+    async def parseInventory(
+        self,
+        inventoryJson: dict[str, int | None] | frozendict[str, int | None] | Any | None
+    ) -> frozendict[ChatterItemType, int]:
+        if not isinstance(inventoryJson, dict):
+            inventoryJson = dict()
+
+        inventory: dict[ChatterItemType, int] = dict()
+
+        for itemType in ChatterItemType:
+            itemTypeString = await self.serializeItemType(itemType)
+            amount: int | None = inventoryJson.get(itemTypeString, 0)
+
+            if not utils.isValidInt(amount):
+                amount = 0
+
+            inventory[itemType] = amount
+
+        return frozendict(inventory)
+
     async def parseItemType(
         self,
         itemType: str | Any | None
@@ -52,6 +72,21 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             raise ValueError(f'Unable to parse \"{itemType}\" into ChatterItemType value!')
 
         return result
+
+    async def serializeInventory(
+        self,
+        inventory: dict[ChatterItemType, int] | frozendict[ChatterItemType, int]
+    ) -> dict[str, int]:
+        if not isinstance(inventory, dict):
+            raise TypeError(f'inventory argument is malformed: \"{inventory}\"')
+
+        inventoryJson: dict[str, int] = dict()
+
+        for itemType in ChatterItemType:
+            itemTypeString = await self.serializeItemType(itemType)
+            inventoryJson[itemTypeString] = inventory.get(itemType, 0)
+
+        return dict(inventoryJson)
 
     async def serializeItemType(
         self,

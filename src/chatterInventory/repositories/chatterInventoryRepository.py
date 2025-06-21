@@ -90,14 +90,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         if record is not None and len(record) >= 1:
             inventoryJson = json.loads(record[0])
 
-        if inventoryJson is None:
-            inventoryJson = dict()
-
-        inventory: dict[ChatterItemType, int] = dict()
-
-        for itemType in ChatterItemType:
-            itemTypeString = await self.__chatterInventoryMapper.serializeItemType(itemType)
-            inventory[itemType] = inventoryJson.get(itemTypeString, 0)
+        inventory = await self.__chatterInventoryMapper.parseInventory(inventoryJson)
 
         return ChatterInventoryData(
             inventory = frozendict(inventory),
@@ -174,12 +167,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         newInventory = dict(inventoryData.inventory)
         newInventory[itemType] = changeAmount + newInventory.get(itemType, 0)
 
-        inventoryJson: dict[str, int] = dict()
-
-        for itemType in ChatterItemType:
-            itemTypeString = await self.__chatterInventoryMapper.serializeItemType(itemType)
-            inventoryJson[itemTypeString] = newInventory.get(itemType, 0)
-
+        inventoryJson = await self.__chatterInventoryMapper.serializeInventory(newInventory)
         inventoryJsonString = json.dumps(inventoryJson, sort_keys = True)
 
         await connection.execute(

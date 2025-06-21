@@ -1,4 +1,5 @@
 import pytest
+from frozendict import frozendict
 
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
@@ -8,6 +9,30 @@ from src.chatterInventory.models.chatterItemType import ChatterItemType
 class TestChatterInventoryMapper:
 
     mapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+
+    @pytest.mark.asyncio
+    async def test_parseInventory_withEmptyDictionary(self):
+        result = await self.mapper.parseInventory(dict())
+        assert len(result) == len(ChatterItemType)
+
+        for itemType in ChatterItemType:
+            assert result[itemType] == 0
+
+    @pytest.mark.asyncio
+    async def test_parseInventory_withEmptyFrozenDictionary(self):
+        result = await self.mapper.parseInventory(frozendict())
+        assert len(result) == len(ChatterItemType)
+
+        for itemType in ChatterItemType:
+            assert result[itemType] == 0
+
+    @pytest.mark.asyncio
+    async def test_parseInventory_withNone(self):
+        result = await self.mapper.parseInventory(None)
+        assert len(result) == len(ChatterItemType)
+
+        for itemType in ChatterItemType:
+            assert result[itemType] == 0
 
     @pytest.mark.asyncio
     async def test_parseItemType_withAirStrike(self):
@@ -123,6 +148,68 @@ class TestChatterInventoryMapper:
         assert self.mapper is not None
         assert isinstance(self.mapper, ChatterInventoryMapper)
         assert isinstance(self.mapper, ChatterInventoryMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeInventory1(self):
+        airStrikes = 3
+
+        inventory: dict[ChatterItemType, int] = {
+            ChatterItemType.AIR_STRIKE: airStrikes
+        }
+
+        result = await self.mapper.serializeInventory(inventory)
+        assert len(result) == len(ChatterItemType)
+
+        assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
+        assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
+
+    @pytest.mark.asyncio
+    async def test_serializeInventory2(self):
+        grenades = 16
+
+        inventory: dict[ChatterItemType, int] = {
+            ChatterItemType.GRENADE: grenades
+        }
+
+        result = await self.mapper.serializeInventory(inventory)
+        assert len(result) == len(ChatterItemType)
+
+        assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
+        assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
+
+    @pytest.mark.asyncio
+    async def test_serializeInventory3(self):
+        airStrikes = 1
+        grenades = 99
+
+        inventory: dict[ChatterItemType, int] = {
+            ChatterItemType.AIR_STRIKE: airStrikes,
+            ChatterItemType.GRENADE: grenades
+        }
+
+        result = await self.mapper.serializeInventory(inventory)
+        assert len(result) == len(ChatterItemType)
+
+        assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
+        assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
+
+    @pytest.mark.asyncio
+    async def test_serializeInventory_withEmptyDictionary(self):
+        result = await self.mapper.serializeInventory(dict())
+        assert len(result) == len(ChatterItemType)
+
+        for itemType in ChatterItemType:
+            itemTypeString = await self.mapper.serializeItemType(itemType)
+            assert result[itemTypeString] == 0
+
+    @pytest.mark.asyncio
+    async def test_serializeInventory_withEmptyFrozenDictionary(self):
+        result = await self.mapper.serializeInventory(frozendict())
+        assert len(result) == len(ChatterItemType)
+
+        for itemType in ChatterItemType:
+            itemTypeString = await self.mapper.serializeItemType(itemType)
+            assert result[itemTypeString] == 0
 
     @pytest.mark.asyncio
     async def test_serializeItemType_withAll(self):
