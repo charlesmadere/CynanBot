@@ -165,7 +165,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         )
 
         newInventory = dict(inventoryData.inventory)
-        newInventory[itemType] = changeAmount + newInventory.get(itemType, 0)
+        newInventory[itemType] = max(0, newInventory.get(itemType, 0) + changeAmount)
 
         inventoryJson = await self.__chatterInventoryMapper.serializeInventory(newInventory)
         inventoryJsonString = json.dumps(inventoryJson, sort_keys = True)

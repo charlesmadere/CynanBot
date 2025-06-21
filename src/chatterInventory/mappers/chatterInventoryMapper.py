@@ -30,7 +30,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
     async def parseInventory(
         self,
-        inventoryJson: dict[str, int | None] | frozendict[str, int | None] | Any | None
+        inventoryJson: dict[str, int | Any | None] | frozendict[str, int | Any | None] | Any | None
     ) -> frozendict[ChatterItemType, int]:
         if not isinstance(inventoryJson, dict):
             inventoryJson = dict()
@@ -39,9 +39,9 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         for itemType in ChatterItemType:
             itemTypeString = await self.serializeItemType(itemType)
-            amount: int | None = inventoryJson.get(itemTypeString, 0)
+            amount: int | Any | None = inventoryJson.get(itemTypeString, 0)
 
-            if not utils.isValidInt(amount):
+            if not utils.isValidInt(amount) or amount < 0:
                 amount = 0
 
             inventory[itemType] = amount
@@ -84,7 +84,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         for itemType in ChatterItemType:
             itemTypeString = await self.serializeItemType(itemType)
-            inventoryJson[itemTypeString] = inventory.get(itemType, 0)
+            inventoryJson[itemTypeString] = max(0, inventory.get(itemType, 0))
 
         return dict(inventoryJson)
 

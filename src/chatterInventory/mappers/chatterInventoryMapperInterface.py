@@ -11,7 +11,7 @@ class ChatterInventoryMapperInterface(ABC):
     @abstractmethod
     async def parseInventory(
         self,
-        inventoryJson: dict[str, int | None] | frozendict[str, int | None] | Any | None
+        inventoryJson: dict[str, int | Any | None] | frozendict[str, int | Any | None] | Any | None
     ) -> frozendict[ChatterItemType, int]:
         pass
 
