@@ -13,10 +13,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self,
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
-            ChatterItemType.AIR_STRIKE,
-            ChatterItemType.GRENADE,
-        })
+        defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset(ChatterItemType),
     ):
         if not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')

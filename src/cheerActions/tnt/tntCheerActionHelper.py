@@ -168,7 +168,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         soundAlerts: list[SoundAlert] = [
             SoundAlert.GRENADE_1,
             SoundAlert.GRENADE_2,
-            SoundAlert.GRENADE_3
+            SoundAlert.GRENADE_3,
         ]
 
         return random.choice(soundAlerts)
