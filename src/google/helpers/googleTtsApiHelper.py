@@ -1,6 +1,7 @@
 import base64
 import binascii
 import traceback
+from typing import Final
 
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from ..apiService.googleApiServiceInterface import GoogleApiServiceInterface
@@ -22,8 +23,8 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__googleApiService: GoogleApiServiceInterface = googleApiService
-        self.__timber: TimberInterface = timber
+        self.__googleApiService: Final[GoogleApiServiceInterface] = googleApiService
+        self.__timber: Final[TimberInterface] = timber
 
     async def getSpeech(
         self,
