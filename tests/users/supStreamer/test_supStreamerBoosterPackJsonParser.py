@@ -64,7 +64,7 @@ class TestSupStreamerBoosterPackJsonParser:
             }
         ])
 
-        assert isinstance(result, frozendict)
+        assert isinstance(result, FrozenList)
         assert len(result) == 2
 
 
