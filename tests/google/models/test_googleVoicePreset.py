@@ -4,11 +4,12 @@ from src.google.models.googleVoicePreset import GoogleVoicePreset
 class TestGoogleVoicePreset:
 
     def test_fullName_withAll(self):
+        fullNames: set[str] = set()
+
         for voicePreset in GoogleVoicePreset:
-            fullName = voicePreset.fullName
-            assert isinstance(fullName, str)
-            assert len(fullName) >= 1
-            assert not fullName.isspace()
+            fullNames.add(voicePreset.fullName)
+
+        assert len(fullNames) == len(GoogleVoicePreset)
 
     def test_languageCode_withAll(self):
         for voicePreset in GoogleVoicePreset:
@@ -22,7 +23,7 @@ class TestGoogleVoicePreset:
             GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_A,
             GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_B,
             GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_C,
-            GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D
+            GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D,
         }
 
         languageCodes: set[str] = set()
