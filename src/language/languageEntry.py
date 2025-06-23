@@ -96,7 +96,7 @@ class LanguageEntry(Enum):
                 commandNames = [ 'nl', 'dutch', 'nederlands', 'netherlands', 'vlaams' ]
 
             case LanguageEntry.ENGLISH:
-                commandNames = [ 'en', 'eng', 'english', '英語' ]
+                commandNames = [ 'en', 'en-gb', 'en-us', 'eng', 'english', '英語' ]
 
             case LanguageEntry.ENGLISH_FOR_PORTUGUESE_SPEAKERS:
                 commandNames = [ 'en-pt' ]
