@@ -1,7 +1,9 @@
 from enum import Enum, auto
 
+from .absGoogleVoicePreset import AbsGoogleVoicePreset
 
-class GoogleVoicePreset(Enum):
+
+class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
 
     AFRIKAANS_SOUTH_AFRICA_STANDARD_A = auto()
     ARABIC_STANDARD_A = auto()

@@ -9,6 +9,7 @@ from src.glacialTtsStorage.mapper.glacialTtsDataMapper import GlacialTtsDataMapp
 from src.glacialTtsStorage.mapper.glacialTtsDataMapperInterface import GlacialTtsDataMapperInterface
 from src.glacialTtsStorage.repository.glacialTtsStorageRepository import GlacialTtsStorageRepository
 from src.glacialTtsStorage.repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
+from src.glacialTtsStorage.stub.stubGlacialTtsFileRetriever import StubGlacialTtsFileRetriever
 from src.google.accessToken.googleApiAccessTokenStorage import GoogleApiAccessTokenStorage
 from src.google.accessToken.googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
 from src.google.apiService.googleApiService import GoogleApiService
@@ -26,7 +27,6 @@ from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
 from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
-from src.google.models.googleVoicePreset import GoogleVoicePreset
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
@@ -86,8 +86,6 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     timber = timber
 )
 
-ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
-
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository
@@ -136,10 +134,17 @@ glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsSt
     timeZoneRepository = timeZoneRepository
 )
 
+ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
+
 glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
     eventLoop = eventLoop,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
     timber = timber,
+    ttsDirectoryProvider = ttsDirectoryProvider
+)
+
+stubGlacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = StubGlacialTtsFileRetriever(
+    timeZoneRepository = timeZoneRepository,
     ttsDirectoryProvider = ttsDirectoryProvider
 )
 
@@ -149,7 +154,7 @@ googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
 googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     eventLoop = eventLoop,
-    glacialTtsFileRetriever = glacialTtsFileRetriever,
+    glacialTtsFileRetriever = stubGlacialTtsFileRetriever,
     googleFileExtensionHelper = googleFileExtensionHelper,
     googleJsonMapper = googleJsonMapper,
     googleSettingsRepository = googleSettingsRepository,
@@ -198,7 +203,8 @@ async def main():
     message = 'lucentw sup'
 
     fileReference = await googleTtsHelper.generateTts(
-        voicePreset = GoogleVoicePreset.ITALIAN_ITALY_CHIRP_O,
+        voicePreset = None,
+        allowMultiSpeaker = True,
         donationPrefix = None,
         message = message,
         twitchChannel = twitchChannel,

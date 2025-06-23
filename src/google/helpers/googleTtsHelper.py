@@ -13,11 +13,11 @@ from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..exceptions import GoogleFailedToCreateDirectoriesException
 from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from ..models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -66,6 +66,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__sentencesRegEx: Final[Pattern] = re.compile(r'!+|\.+')
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -105,16 +106,30 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         else:
             return None
 
+    async def __determineVoicePreset(
+        self,
+        allowMultiSpeaker: bool,
+        fullMessage: str
+    ) -> AbsGoogleVoicePreset:
+        if allowMultiSpeaker:
+            # kinda temporary/test code just to try out Google multi speaker
+            sentences = self.__sentencesRegEx.search(fullMessage)
+
+        return await self.__googleTtsVoicesHelper.getEnglishVoice()
+
     async def generateTts(
         self,
-        voicePreset: GoogleVoicePreset | None,
+        voicePreset: AbsGoogleVoicePreset | None,
+        allowMultiSpeaker: bool,
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str
     ) -> GoogleTtsFileReference | None:
-        if voicePreset is not None and not isinstance(voicePreset, GoogleVoicePreset):
+        if voicePreset is not None and not isinstance(voicePreset, AbsGoogleVoicePreset):
             raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
+        elif not utils.isValidBool(allowMultiSpeaker):
+            raise TypeError(f'allowMultiSpeaker argument is malformed: \"{allowMultiSpeaker}\"')
         elif donationPrefix is not None and not isinstance(donationPrefix, str):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
         elif message is not None and not isinstance(message, str):
@@ -136,7 +151,10 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             return None
 
         if voicePreset is None:
-            voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
+            voicePreset = await self.__determineVoicePreset(
+                allowMultiSpeaker = allowMultiSpeaker,
+                fullMessage = fullMessage
+            )
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = fullMessage,

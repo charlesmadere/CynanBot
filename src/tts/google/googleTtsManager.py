@@ -12,6 +12,7 @@ from ...chatterPreferredTts.models.google.googleTtsProperties import GoogleTtsPr
 from ...google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
 from ...google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
 from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
+from ...google.models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ...google.models.googleTtsFileReference import GoogleTtsFileReference
 from ...google.models.googleVoicePreset import GoogleVoicePreset
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
@@ -64,7 +65,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __determineVoicePreset(self, event: TtsEvent) -> GoogleVoicePreset | None:
+    async def __determineVoicePreset(self, event: TtsEvent) -> AbsGoogleVoicePreset | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -142,6 +143,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
         return await self.__googleTtsHelper.generateTts(
             voicePreset = voicePreset,
+            allowMultiSpeaker = False,
             donationPrefix = donationPrefix,
             message = message,
             twitchChannel = event.twitchChannel,

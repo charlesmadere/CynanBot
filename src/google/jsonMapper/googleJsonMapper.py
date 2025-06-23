@@ -7,6 +7,7 @@ from frozenlist import FrozenList
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from ..accessToken.googleAccessToken import GoogleAccessToken
 from ..models.absGoogleTextSynthesisInput import AbsGoogleTextSynthesisInput
+from ..models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ..models.googleMultiSpeakerMarkup import GoogleMultiSpeakerMarkup
 from ..models.googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
 from ..models.googleMultiSpeakerTextSynthesisInput import GoogleMultiSpeakerTextSynthesisInput
@@ -237,11 +238,15 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
     async def parseVoicePreset(
         self,
         jsonString: str | Any | None
-    ) -> GoogleVoicePreset | None:
+    ) -> AbsGoogleVoicePreset | None:
         if not utils.isValidStr(jsonString):
             return None
 
         for voicePreset in GoogleVoicePreset:
+            if jsonString == voicePreset.fullName:
+                return voicePreset
+
+        for voicePreset in GoogleMultiSpeakerVoicePreset:
             if jsonString == voicePreset.fullName:
                 return voicePreset
 
@@ -261,7 +266,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
     async def requireVoicePreset(
         self,
         jsonString: str | Any | None
-    ) -> GoogleVoicePreset:
+    ) -> AbsGoogleVoicePreset:
         result = await self.parseVoicePreset(jsonString)
 
         if result is None:
@@ -309,18 +314,9 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'markupTurn argument is malformed: \"{markupTurn}\"')
 
         return {
-            'speaker': await self.serializeMultiSpeakerVoicePreset(markupTurn.speaker),
+            'speaker': markupTurn.speaker,
             'text': markupTurn.text,
         }
-
-    async def serializeMultiSpeakerVoicePreset(
-        self,
-        voicePreset: GoogleMultiSpeakerVoicePreset
-    ) -> str:
-        if not isinstance(voicePreset, GoogleMultiSpeakerVoicePreset):
-            raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
-
-        return voicePreset.speakerCharacter
 
     async def serializeScope(
         self,
@@ -508,9 +504,9 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeVoicePreset(
         self,
-        voicePreset: GoogleVoicePreset
+        voicePreset: AbsGoogleVoicePreset
     ) -> str:
-        if not isinstance(voicePreset, GoogleVoicePreset):
+        if not isinstance(voicePreset, AbsGoogleVoicePreset):
             raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
 
         return voicePreset.fullName

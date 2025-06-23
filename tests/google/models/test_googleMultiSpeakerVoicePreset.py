@@ -20,10 +20,10 @@ class TestGoogleMultiSpeakerVoicePreset:
 
         assert len(results) == 1
 
-    def test_speakerCharacter_withAll(self):
-        results: set[str] = set()
+    def test_speakerCharacters_withAll(self):
+        results: set[frozenset[str]] = set()
 
         for voicePreset in GoogleMultiSpeakerVoicePreset:
-            results.add(voicePreset.speakerCharacter)
+            results.add(voicePreset.speakerCharacters)
 
         assert len(results) == len(GoogleMultiSpeakerVoicePreset)
