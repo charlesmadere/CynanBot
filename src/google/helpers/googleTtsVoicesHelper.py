@@ -126,13 +126,13 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
             case LanguageEntry.ENGLISH:
                 voicePresets = {
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_D,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_F,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_O,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_A,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_B,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_C,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_D,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_D,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_F,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_O,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_A,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_B,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_C,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_D,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_D,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O,

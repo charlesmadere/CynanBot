@@ -48,13 +48,13 @@ class GoogleVoicePreset(Enum):
     DUTCH_NETHERLANDS_STANDARD_E = auto()
     DUTCH_NETHERLANDS_STANDARD_F = auto()
     DUTCH_NETHERLANDS_STANDARD_G = auto()
-    ENGLISH_AUSTRALIAN_CHIRP_D = auto()
-    ENGLISH_AUSTRALIAN_CHIRP_F = auto()
-    ENGLISH_AUSTRALIAN_CHIRP_O = auto()
-    ENGLISH_AUSTRALIAN_STANDARD_A = auto()
-    ENGLISH_AUSTRALIAN_STANDARD_B = auto()
-    ENGLISH_AUSTRALIAN_STANDARD_C = auto()
-    ENGLISH_AUSTRALIAN_STANDARD_D = auto()
+    ENGLISH_AUSTRALIA_CHIRP_D = auto()
+    ENGLISH_AUSTRALIA_CHIRP_F = auto()
+    ENGLISH_AUSTRALIA_CHIRP_O = auto()
+    ENGLISH_AUSTRALIA_STANDARD_A = auto()
+    ENGLISH_AUSTRALIA_STANDARD_B = auto()
+    ENGLISH_AUSTRALIA_STANDARD_C = auto()
+    ENGLISH_AUSTRALIA_STANDARD_D = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP_D = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP_F = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP_O = auto()
@@ -302,13 +302,13 @@ class GoogleVoicePreset(Enum):
             case GoogleVoicePreset.DUTCH_NETHERLANDS_STANDARD_E: return 'nl-NL-Standard-E'
             case GoogleVoicePreset.DUTCH_NETHERLANDS_STANDARD_F: return 'nl-NL-Standard-F'
             case GoogleVoicePreset.DUTCH_NETHERLANDS_STANDARD_G: return 'nl-NL-Standard-G'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_D: return 'en-AU-Chirp-HD-D'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_F: return 'en-AU-Chirp-HD-F'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_CHIRP_O: return 'en-AU-Chirp-HD-O'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_A: return 'en-AU-Standard-A'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_B: return 'en-AU-Standard-B'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_C: return 'en-AU-Standard-C'
-            case GoogleVoicePreset.ENGLISH_AUSTRALIAN_STANDARD_D: return 'en-AU-Standard-D'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_D: return 'en-AU-Chirp-HD-D'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_F: return 'en-AU-Chirp-HD-F'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_O: return 'en-AU-Chirp-HD-O'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_A: return 'en-AU-Standard-A'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_B: return 'en-AU-Standard-B'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_C: return 'en-AU-Standard-C'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_D: return 'en-AU-Standard-D'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_D: return 'en-GB-Chirp-HD-D'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F: return 'en-GB-Chirp-HD-F'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O: return 'en-GB-Chirp-HD-O'
