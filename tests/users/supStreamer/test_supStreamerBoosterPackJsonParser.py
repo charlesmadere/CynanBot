@@ -44,12 +44,12 @@ class TestSupStreamerBoosterPackJsonParser:
 
     def test_parseRedemptions(self):
         boosterPack1 = SupStreamerBoosterPack(
-            message = "test"
+            message = "test",
             reply = "ahoy"
         )
 
         boosterPack2 = SupStreamerBoosterPack(
-            message = "test2"
+            message = "test2",
             reply = "ahoy2"
         )
 
