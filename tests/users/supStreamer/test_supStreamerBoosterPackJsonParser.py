@@ -55,12 +55,12 @@ class TestSupStreamerBoosterPackJsonParser:
 
         result = self.supStreamerBoosterPackJsonParser.parseBoosterPack([
             {
-                message = "test",
-                reply = "ahoy"
+                'message' = "test",
+                'reply' = "ahoy"
             },
             {
-                message = "test2",
-                reply = "ahoy2"
+                'message' = "test2",
+                'reply' = "ahoy2"
             }
         ])
 
