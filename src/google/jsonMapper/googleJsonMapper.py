@@ -1,6 +1,6 @@
 import traceback
 from datetime import datetime, timedelta
-from typing import Any, Collection
+from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
 
@@ -42,8 +42,8 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def parseAccessToken(
         self,
@@ -330,12 +330,9 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'scope argument is malformed: \"{scope}\"')
 
         match scope:
-            case GoogleScope.CLOUD_TEXT_TO_SPEECH:
-                return 'https://www.googleapis.com/auth/cloud-platform'
-            case GoogleScope.CLOUD_TRANSLATION:
-                return 'https://www.googleapis.com/auth/cloud-translation'
-            case _:
-                raise ValueError(f'The given GoogleScope value is unknown: \"{scope}\"')
+            case GoogleScope.CLOUD_TEXT_TO_SPEECH: return 'https://www.googleapis.com/auth/cloud-platform'
+            case GoogleScope.CLOUD_TRANSLATION: return 'https://www.googleapis.com/auth/cloud-translation'
+            case _: raise ValueError(f'The given GoogleScope value is unknown: \"{scope}\"')
 
     async def serializeScopes(
         self,
@@ -507,8 +504,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             case GoogleVoiceGender.FEMALE: return 'FEMALE'
             case GoogleVoiceGender.MALE: return 'MALE'
             case GoogleVoiceGender.UNSPECIFIED: return 'SSML_VOICE_GENDER_UNSPECIFIED'
-            case _:
-                raise ValueError(f'The given GoogleVoiceGender value is unknown: \"{voiceGender}\"')
+            case _: raise ValueError(f'The given GoogleVoiceGender value is unknown: \"{voiceGender}\"')
 
     async def serializeVoicePreset(
         self,
