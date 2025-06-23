@@ -17,8 +17,8 @@ class TestSupStreamerBoosterPackJsonParser:
         )
 
         result = self.supStreamerBoosterPackJsonParser.parseBoosterPack({
-            'message': boosterPack.directoryPath,
-            'reply': boosterPack.isImmediate
+            'message': boosterPack.message,
+            'reply': boosterPack.reply
         })
 
         assert isinstance(result, SupStreamerBoosterPack)
