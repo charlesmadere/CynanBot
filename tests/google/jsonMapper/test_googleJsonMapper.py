@@ -175,7 +175,7 @@ class TestGoogleJsonMapper:
     @pytest.mark.asyncio
     async def test_serializeMultiSpeakerMarkupTurn(self):
         markupTurn = GoogleMultiSpeakerMarkupTurn(
-            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_R,
+            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_R,
             text = 'Hello, World!'
         )
 
@@ -186,23 +186,23 @@ class TestGoogleJsonMapper:
         assert result['text'] == markupTurn.text
 
     @pytest.mark.asyncio
-    async def test_serializeMultiSpeakerVoicePreset_withEnUsR(self):
-        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_R)
+    async def test_serializeMultiSpeakerVoicePreset_withR(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_R)
         assert result == 'R'
 
     @pytest.mark.asyncio
-    async def test_serializeMultiSpeakerVoicePreset_withEnUsS(self):
-        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_S)
+    async def test_serializeMultiSpeakerVoicePreset_withS(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_S)
         assert result == 'S'
 
     @pytest.mark.asyncio
-    async def test_serializeMultiSpeakerVoicePreset_withEnUsT(self):
-        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_T)
+    async def test_serializeMultiSpeakerVoicePreset_withT(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_T)
         assert result == 'T'
 
     @pytest.mark.asyncio
-    async def test_serializeMultiSpeakerVoicePreset_withEnUsU(self):
-        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_U)
+    async def test_serializeMultiSpeakerVoicePreset_withU(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_U)
         assert result == 'U'
 
     @pytest.mark.asyncio
@@ -261,12 +261,12 @@ class TestGoogleJsonMapper:
     @pytest.mark.asyncio
     async def test_serializeTextSynthesisInput_withMultiSpeaker(self):
         firstTurn = GoogleMultiSpeakerMarkupTurn(
-            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_R,
+            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_R,
             text = 'Hello everyone from Eddie\'s stream!'
         )
 
         secondTurn = GoogleMultiSpeakerMarkupTurn(
-            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_S,
+            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER_S,
             text = 'Thanks for the raid!'
         )
 
