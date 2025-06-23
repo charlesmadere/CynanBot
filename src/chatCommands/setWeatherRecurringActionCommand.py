@@ -45,9 +45,9 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def __beginWizardGuidance(self, ctx: TwitchContext, wizard: WeatherWizard):
-        if wizard.getSteps().getStep() is WeatherStep.ALERTS_ONLY:
+        if wizard.currentStep is WeatherStep.ALERTS_ONLY:
             await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify if weather reports should only show if your region has a critical alert or warning')
-        elif wizard.getSteps().getStep() is WeatherStep.MINUTES_BETWEEN:
+        elif wizard.currentStep is WeatherStep.MINUTES_BETWEEN:
             await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between each weather report')
         else:
             self.__timber.log('SetWeatherRecurringActionCommand', f'Received invalid wizard step ({wizard=}) ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({ctx.getTwitchChannelName()=})')

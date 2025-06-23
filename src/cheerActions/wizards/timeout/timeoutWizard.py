@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .timeoutStep import TimeoutStep
 from .timeoutSteps import TimeoutSteps
 from ..absWizard import AbsWizard
 from ...cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
@@ -20,7 +21,7 @@ class TimeoutWizard(AbsWizard):
             twitchChannelId = twitchChannelId
         )
 
-        self.__steps: TimeoutSteps = TimeoutSteps()
+        self.__steps: Final[TimeoutSteps] = TimeoutSteps()
         self.__randomChanceEnabled: bool | None = None
         self.__streamStatus: CheerActionStreamStatusRequirement | None = None
         self.__bits: int | None = None
@@ -31,8 +32,9 @@ class TimeoutWizard(AbsWizard):
     def cheerActionType(self) -> CheerActionType:
         return CheerActionType.TIMEOUT
 
-    def getSteps(self) -> TimeoutSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> TimeoutStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__randomChanceEnabled=}, {self.__streamStatus=}, {self.__bits=}, {self.__durationSeconds=}'
@@ -111,14 +113,19 @@ class TimeoutWizard(AbsWizard):
 
         self.__targetType = targetType
 
+    @property
+    def steps(self) -> TimeoutSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
+            'currentStep': self.currentStep,
             'durationSeconds': self.__durationSeconds,
             'randomChanceEnabled': self.__randomChanceEnabled,
             'steps': self.__steps,
             'streamStatus': self.__streamStatus,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

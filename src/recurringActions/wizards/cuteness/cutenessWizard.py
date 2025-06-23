@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .cutenessStep import CutenessStep
 from .cutenessSteps import CutenessSteps
 from ..absWizard import AbsWizard
 from ...actions.recurringActionType import RecurringActionType
@@ -11,18 +12,19 @@ class CutenessWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps = CutenessSteps()
+        self.__steps: Final[CutenessSteps] = CutenessSteps()
         self.__minutesBetween: int | None = None
 
-    def getSteps(self) -> CutenessSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> CutenessStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__minutesBetween=}'
@@ -49,11 +51,16 @@ class CutenessWizard(AbsWizard):
 
         self.__minutesBetween = minutesBetween
 
+    @property
+    def steps(self) -> CutenessSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
+            'currentStep': self.currentStep,
             'minutesBetween': self.__minutesBetween,
             'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

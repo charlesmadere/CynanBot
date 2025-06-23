@@ -1,6 +1,7 @@
 from .gameShuffleStep import GameShuffleStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...cheerActionType import CheerActionType
 
 
 class GameShuffleSteps(AbsSteps):
@@ -8,7 +9,12 @@ class GameShuffleSteps(AbsSteps):
     def __init__(self):
         self.__step = GameShuffleStep.BITS
 
-    def getStep(self) -> GameShuffleStep:
+    @property
+    def cheerActionType(self) -> CheerActionType:
+        return CheerActionType.GAME_SHUFFLE
+
+    @property
+    def currentStep(self) -> GameShuffleStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

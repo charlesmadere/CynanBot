@@ -1,6 +1,7 @@
 from .crowdControlStep import CrowdControlStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...cheerActionType import CheerActionType
 
 
 class CrowdControlSteps(AbsSteps):
@@ -8,7 +9,12 @@ class CrowdControlSteps(AbsSteps):
     def __init__(self):
         self.__step = CrowdControlStep.BITS
 
-    def getStep(self) -> CrowdControlStep:
+    @property
+    def cheerActionType(self) -> CheerActionType:
+        return CheerActionType.CROWD_CONTROL
+
+    @property
+    def currentStep(self) -> CrowdControlStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

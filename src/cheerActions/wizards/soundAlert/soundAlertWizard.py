@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .soundAlertStep import SoundAlertStep
 from .soundAlertSteps import SoundAlertSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
@@ -11,14 +12,14 @@ class SoundAlertWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps: SoundAlertSteps = SoundAlertSteps()
+        self.__steps: Final[SoundAlertSteps] = SoundAlertSteps()
         self.__bits: int | None = None
         self.__directory: str | None = None
 
@@ -26,8 +27,9 @@ class SoundAlertWizard(AbsWizard):
     def cheerActionType(self) -> CheerActionType:
         return CheerActionType.SOUND_ALERT
 
-    def getSteps(self) -> SoundAlertSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> SoundAlertStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__bits=}, {self.__directory=}'
@@ -62,12 +64,17 @@ class SoundAlertWizard(AbsWizard):
 
         self.__directory = directory
 
+    @property
+    def steps(self) -> SoundAlertSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
+            'currentStep': self.currentStep,
             'directory': self.__directory,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

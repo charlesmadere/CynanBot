@@ -2,8 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any, Collection
 
 from ..accessToken.googleAccessToken import GoogleAccessToken
+from ..models.absGoogleTextSynthesisInput import AbsGoogleTextSynthesisInput
+from ..models.googleMultiSpeakerMarkup import GoogleMultiSpeakerMarkup
+from ..models.googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
+from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleScope import GoogleScope
-from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
@@ -105,6 +108,27 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def serializeMultiSpeakerMarkup(
+        self,
+        markup: GoogleMultiSpeakerMarkup
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeMultiSpeakerMarkupTurn(
+        self,
+        markupTurn: GoogleMultiSpeakerMarkupTurn
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeMultiSpeakerVoicePreset(
+        self,
+        voicePreset: GoogleMultiSpeakerVoicePreset
+    ) -> str:
+        pass
+
+    @abstractmethod
     async def serializeSynthesizeRequest(
         self,
         synthesizeRequest: GoogleTextSynthesizeRequest
@@ -128,7 +152,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeTextSynthesisInput(
         self,
-        synthesisInput: GoogleTextSynthesisInput
+        synthesisInput: AbsGoogleTextSynthesisInput
     ) -> dict[str, Any]:
         pass
 

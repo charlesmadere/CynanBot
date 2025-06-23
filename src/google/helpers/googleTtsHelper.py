@@ -171,8 +171,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         request = GoogleTextSynthesizeRequest(
             synthesisInput = synthesisInput,
-            voice = voice,
-            audioConfig = audioConfig
+            audioConfig = audioConfig,
+            voice = voice
         )
 
         speechBytes = await self.__googleTtsApiHelper.getSpeech(

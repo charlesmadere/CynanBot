@@ -13,153 +13,179 @@ from src.cheerActions.crowdControl.crowdControlGameShuffleCheerAction import Cro
 from src.cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from src.cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
 from src.cheerActions.timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
-from src.cheerActions.tnt.tntCheerAction import TntCheerAction
+from src.cheerActions.airStrike.airStrikeCheerAction import AirStrikeCheerAction
 from src.cheerActions.voicemail.voicemailCheerAction import VoicemailCheerAction
-from src.timber.timberInterface import TimberInterface
-from src.timber.timberStub import TimberStub
 
 
 class TestCheerActionJsonMapper:
 
-    timber: TimberInterface = TimberStub()
-
-    jsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
-        timber = timber
-    )
+    mapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withAnyString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('any')
+        result = await self.mapper.parseCheerActionStreamStatusRequirement('any')
         assert result is CheerActionStreamStatusRequirement.ANY
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withEmptyString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('')
+        result = await self.mapper.parseCheerActionStreamStatusRequirement('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withNone(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(None)
+        result = await self.mapper.parseCheerActionStreamStatusRequirement(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withOfflineString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('offline')
+        result = await self.mapper.parseCheerActionStreamStatusRequirement('offline')
         assert result is CheerActionStreamStatusRequirement.OFFLINE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withOnlineString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement('online')
+        result = await self.mapper.parseCheerActionStreamStatusRequirement('online')
         assert result is CheerActionStreamStatusRequirement.ONLINE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withWhitespaceString(self):
-        result = await self.jsonMapper.parseCheerActionStreamStatusRequirement(' ')
+        result = await self.mapper.parseCheerActionStreamStatusRequirement(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withAdgeString(self):
-        result = await self.jsonMapper.parseCheerActionType('adge')
+        result = await self.mapper.parseCheerActionType('adge')
         assert result is CheerActionType.ADGE
 
     @pytest.mark.asyncio
+    async def test_parseCheerActionType_withAirStrikeStrings(self):
+        result = await self.mapper.parseCheerActionType('air_strike')
+        assert result is CheerActionType.AIR_STRIKE
+
+        result = await self.mapper.parseCheerActionType('air-strike')
+        assert result is CheerActionType.AIR_STRIKE
+
+        result = await self.mapper.parseCheerActionType('air strike')
+        assert result is CheerActionType.AIR_STRIKE
+
+        result = await self.mapper.parseCheerActionType('airstrike')
+        assert result is CheerActionType.AIR_STRIKE
+
+    @pytest.mark.asyncio
     async def test_parseCheerActionType_withBeanChanceString(self):
-        result = await self.jsonMapper.parseCheerActionType('bean_chance')
+        result = await self.mapper.parseCheerActionType('bean_chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+        result = await self.mapper.parseCheerActionType('bean-chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+        result = await self.mapper.parseCheerActionType('bean chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+        result = await self.mapper.parseCheerActionType('beanchance')
         assert result is CheerActionType.BEAN_CHANCE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withCrowdControlString(self):
-        result = await self.jsonMapper.parseCheerActionType('crowd_control')
+        result = await self.mapper.parseCheerActionType('crowd_control')
+        assert result is CheerActionType.CROWD_CONTROL
+
+        result = await self.mapper.parseCheerActionType('crowd-control')
+        assert result is CheerActionType.CROWD_CONTROL
+
+        result = await self.mapper.parseCheerActionType('crowd control')
+        assert result is CheerActionType.CROWD_CONTROL
+
+        result = await self.mapper.parseCheerActionType('crowdcontrol')
         assert result is CheerActionType.CROWD_CONTROL
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withEmptyString(self):
-        result = await self.jsonMapper.parseCheerActionType('')
+        result = await self.mapper.parseCheerActionType('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withGameShuffle(self):
-        result = await self.jsonMapper.parseCheerActionType('game_shuffle')
+        result = await self.mapper.parseCheerActionType('game_shuffle')
         assert result is CheerActionType.GAME_SHUFFLE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withNone(self):
-        result = await self.jsonMapper.parseCheerActionType(None)
+        result = await self.mapper.parseCheerActionType(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withSoundAlertString(self):
-        result = await self.jsonMapper.parseCheerActionType('sound_alert')
+        result = await self.mapper.parseCheerActionType('sound_alert')
         assert result is CheerActionType.SOUND_ALERT
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withTimeoutString(self):
-        result = await self.jsonMapper.parseCheerActionType('timeout')
+        result = await self.mapper.parseCheerActionType('timeout')
         assert result is CheerActionType.TIMEOUT
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withTntString(self):
-        result = await self.jsonMapper.parseCheerActionType('tnt')
-        assert result is CheerActionType.TNT
+        result = await self.mapper.parseCheerActionType('tnt')
+        assert result is CheerActionType.AIR_STRIKE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withVoicemailString(self):
-        result = await self.jsonMapper.parseCheerActionType('voicemail')
+        result = await self.mapper.parseCheerActionType('voicemail')
         assert result is CheerActionType.VOICEMAIL
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withWhitespaceString(self):
-        result = await self.jsonMapper.parseCheerActionType(' ')
+        result = await self.mapper.parseCheerActionType(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionTargetType_withAny(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('any')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('any')
         assert result is TimeoutCheerActionTargetType.ANY
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionTargetType_withEmptyString(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionTargetType_withNone(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType(None)
+        result = await self.mapper.parseTimeoutCheerActionTargetType(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionTargetType_withRandomOnly(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('random')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('random')
         assert result is TimeoutCheerActionTargetType.RANDOM_ONLY
 
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('random only')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('random only')
         assert result is TimeoutCheerActionTargetType.RANDOM_ONLY
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionTargetType_withSpecificTargetOnly(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('specific')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('specific')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('specific target')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('specific target')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('specific targets')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('specific targets')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('specific target only')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('specific target only')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType('specific targets only')
+        result = await self.mapper.parseTimeoutCheerActionTargetType('specific targets only')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
     @pytest.mark.asyncio
     async def test_parseTimeoutCheerActionTargetType_withWhitespaceString(self):
-        result = await self.jsonMapper.parseTimeoutCheerActionTargetType(' ')
+        result = await self.mapper.parseTimeoutCheerActionTargetType(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoicemailCheerAction(self):
-        result = await self.jsonMapper.parseVoicemailCheerAction(
+        result = await self.mapper.parseVoicemailCheerAction(
             isEnabled = True,
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 999,
@@ -175,7 +201,7 @@ class TestCheerActionJsonMapper:
 
     @pytest.mark.asyncio
     async def test_requireCheerActionStreamStatusRequirement_withAnyString(self):
-        result = await self.jsonMapper.requireCheerActionStreamStatusRequirement('any')
+        result = await self.mapper.requireCheerActionStreamStatusRequirement('any')
         assert result is CheerActionStreamStatusRequirement.ANY
 
     @pytest.mark.asyncio
@@ -183,7 +209,7 @@ class TestCheerActionJsonMapper:
         result: CheerActionStreamStatusRequirement | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireCheerActionStreamStatusRequirement('')
+            result = await self.mapper.requireCheerActionStreamStatusRequirement('')
 
         assert result is None
 
@@ -192,18 +218,18 @@ class TestCheerActionJsonMapper:
         result: CheerActionStreamStatusRequirement | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireCheerActionStreamStatusRequirement(None)
+            result = await self.mapper.requireCheerActionStreamStatusRequirement(None)
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireCheerActionStreamStatusRequirement_withOfflineString(self):
-        result = await self.jsonMapper.requireCheerActionStreamStatusRequirement('offline')
+        result = await self.mapper.requireCheerActionStreamStatusRequirement('offline')
         assert result is CheerActionStreamStatusRequirement.OFFLINE
 
     @pytest.mark.asyncio
     async def test_requireCheerActionStreamStatusRequirement_withOnlineString(self):
-        result = await self.jsonMapper.requireCheerActionStreamStatusRequirement('online')
+        result = await self.mapper.requireCheerActionStreamStatusRequirement('online')
         assert result is CheerActionStreamStatusRequirement.ONLINE
 
     @pytest.mark.asyncio
@@ -211,79 +237,118 @@ class TestCheerActionJsonMapper:
         result: CheerActionStreamStatusRequirement | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.requireCheerActionStreamStatusRequirement(' ')
+            result = await self.mapper.requireCheerActionStreamStatusRequirement(' ')
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withAdgeString(self):
-        result = await self.jsonMapper.requireCheerActionType('adge')
+        result = await self.mapper.requireCheerActionType('adge')
         assert result is CheerActionType.ADGE
 
     @pytest.mark.asyncio
+    async def test_requireCheerActionType_withAirStrikeStrings(self):
+        result = await self.mapper.requireCheerActionType('air_strike')
+        assert result is CheerActionType.AIR_STRIKE
+
+        result = await self.mapper.requireCheerActionType('air-strike')
+        assert result is CheerActionType.AIR_STRIKE
+
+        result = await self.mapper.requireCheerActionType('air strike')
+        assert result is CheerActionType.AIR_STRIKE
+
+        result = await self.mapper.requireCheerActionType('airstrike')
+        assert result is CheerActionType.AIR_STRIKE
+
+    @pytest.mark.asyncio
     async def test_requireCheerActionType_withBeanChanceString(self):
-        result = await self.jsonMapper.requireCheerActionType('bean_chance')
+        result = await self.mapper.requireCheerActionType('bean_chance')
         assert result is CheerActionType.BEAN_CHANCE
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withCrowdControlString(self):
-        result = await self.jsonMapper.requireCheerActionType('crowd_control')
+        result = await self.mapper.requireCheerActionType('crowd_control')
         assert result is CheerActionType.CROWD_CONTROL
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withSoundAlertString(self):
-        result = await self.jsonMapper.requireCheerActionType('sound_alert')
+        result = await self.mapper.requireCheerActionType('sound_alert')
         assert result is CheerActionType.SOUND_ALERT
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withTimeoutString(self):
-        result = await self.jsonMapper.requireCheerActionType('timeout')
+        result = await self.mapper.requireCheerActionType('timeout')
         assert result is CheerActionType.TIMEOUT
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withTntString(self):
-        result = await self.jsonMapper.requireCheerActionType('tnt')
-        assert result is CheerActionType.TNT
+        result = await self.mapper.requireCheerActionType('tnt')
+        assert result is CheerActionType.AIR_STRIKE
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withVoicemailString(self):
-        result = await self.jsonMapper.requireCheerActionType('voicemail')
+        result = await self.mapper.requireCheerActionType('voicemail')
         assert result is CheerActionType.VOICEMAIL
 
     @pytest.mark.asyncio
     async def test_requireTimeoutCheerActionTargetType_withAny(self):
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('any')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('any')
         assert result is TimeoutCheerActionTargetType.ANY
 
     @pytest.mark.asyncio
     async def test_requireTimeoutCheerActionTargetType_withRandomOnly(self):
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('random')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('random')
         assert result is TimeoutCheerActionTargetType.RANDOM_ONLY
 
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('random only')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('random only')
         assert result is TimeoutCheerActionTargetType.RANDOM_ONLY
 
     @pytest.mark.asyncio
     async def test_requireTimeoutCheerActionTargetType_withSpecificTargetOnly(self):
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('specific')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('specific')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('specific target')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('specific target')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('specific targets')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('specific targets')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('specific target only')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('specific target only')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
-        result = await self.jsonMapper.requireTimeoutCheerActionTargetType('specific targets only')
+        result = await self.mapper.requireTimeoutCheerActionTargetType('specific targets only')
         assert result is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
 
     def test_sanity(self):
-        assert self.jsonMapper is not None
-        assert isinstance(self.jsonMapper, CheerActionJsonMapper)
-        assert isinstance(self.jsonMapper, CheerActionJsonMapperInterface)
+        assert self.mapper is not None
+        assert isinstance(self.mapper, CheerActionJsonMapper)
+        assert isinstance(self.mapper, CheerActionJsonMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeAbsCheerAction_withAirStrikeCheerAction(self):
+        cheerAction = AirStrikeCheerAction(
+            isEnabled = True,
+            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
+            bits = 100,
+            maxDurationSeconds = 90,
+            minDurationSeconds = 55,
+            maxTimeoutChatters = 10,
+            minTimeoutChatters = 3,
+            twitchChannelId = 'abc123',
+        )
+
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
+        assert isinstance(result, str)
+
+        dictionary = json.loads(result)
+        assert isinstance(dictionary, dict)
+        assert len(dictionary) == 4
+
+        assert dictionary['maxDurationSeconds'] == cheerAction.maxDurationSeconds
+        assert dictionary['minDurationSeconds'] == cheerAction.minDurationSeconds
+        assert dictionary['maxTimeoutChatters'] == cheerAction.maxTimeoutChatters
+        assert dictionary['minTimeoutChatters'] == cheerAction.minTimeoutChatters
 
     @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withBeanChanceCheerAction(self):
@@ -295,7 +360,7 @@ class TestCheerActionJsonMapper:
             twitchChannelId = 'abc123',
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -313,7 +378,7 @@ class TestCheerActionJsonMapper:
             twitchChannelId = 'abc123',
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -330,7 +395,7 @@ class TestCheerActionJsonMapper:
             twitchChannelId = 'abc123',
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -349,7 +414,7 @@ class TestCheerActionJsonMapper:
             twitchChannelId = 'abc123',
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -366,7 +431,7 @@ class TestCheerActionJsonMapper:
             twitchChannelId = 'abc123',
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -387,7 +452,7 @@ class TestCheerActionJsonMapper:
             targetType = TimeoutCheerActionTargetType.ANY
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -396,7 +461,7 @@ class TestCheerActionJsonMapper:
 
         assert dictionary['durationSeconds'] == cheerAction.durationSeconds
         assert dictionary['randomChanceEnabled'] == cheerAction.isRandomChanceEnabled
-        assert dictionary['targetType'] == await self.jsonMapper.serializeTimeoutCheerActionTargetType(cheerAction.targetType)
+        assert dictionary['targetType'] == await self.mapper.serializeTimeoutCheerActionTargetType(cheerAction.targetType)
 
     @pytest.mark.asyncio
     async def test_serializeAbsCheerAction_withTimeoutCheerAction2(self):
@@ -410,7 +475,7 @@ class TestCheerActionJsonMapper:
             targetType = TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -419,32 +484,7 @@ class TestCheerActionJsonMapper:
 
         assert dictionary['durationSeconds'] == cheerAction.durationSeconds
         assert dictionary['randomChanceEnabled'] == cheerAction.isRandomChanceEnabled
-        assert dictionary['targetType'] == await self.jsonMapper.serializeTimeoutCheerActionTargetType(cheerAction.targetType)
-
-    @pytest.mark.asyncio
-    async def test_serializeAbsCheerAction_withTntCheerAction(self):
-        cheerAction = TntCheerAction(
-            isEnabled = True,
-            streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
-            bits = 100,
-            maxDurationSeconds = 90,
-            minDurationSeconds = 55,
-            maxTimeoutChatters = 10,
-            minTimeoutChatters = 3,
-            twitchChannelId = 'abc123',
-        )
-
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
-        assert isinstance(result, str)
-
-        dictionary = json.loads(result)
-        assert isinstance(dictionary, dict)
-        assert len(dictionary) == 4
-
-        assert dictionary['maxDurationSeconds'] == cheerAction.maxDurationSeconds
-        assert dictionary['minDurationSeconds'] == cheerAction.minDurationSeconds
-        assert dictionary['maxTimeoutChatters'] == cheerAction.maxTimeoutChatters
-        assert dictionary['minTimeoutChatters'] == cheerAction.minTimeoutChatters
+        assert dictionary['targetType'] == await self.mapper.serializeTimeoutCheerActionTargetType(cheerAction.targetType)
 
     @pytest.mark.asyncio
     async def test_serializeCheerAction_withVoicemailCheerAction(self):
@@ -455,7 +495,7 @@ class TestCheerActionJsonMapper:
             twitchChannelId = 'abc123'
         )
 
-        result = await self.jsonMapper.serializeAbsCheerAction(cheerAction)
+        result = await self.mapper.serializeAbsCheerAction(cheerAction)
         assert isinstance(result, str)
 
         dictionary = json.loads(result)
@@ -467,23 +507,23 @@ class TestCheerActionJsonMapper:
         results: set[str] = set()
 
         for streamStatusRequirement in CheerActionStreamStatusRequirement:
-            results.add(await self.jsonMapper.serializeCheerActionStreamStatusRequirement(streamStatusRequirement))
+            results.add(await self.mapper.serializeCheerActionStreamStatusRequirement(streamStatusRequirement))
 
         assert len(results) == len(CheerActionStreamStatusRequirement)
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withAny(self):
-        result = await self.jsonMapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ANY)
+        result = await self.mapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ANY)
         assert result == 'any'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withOffline(self):
-        result = await self.jsonMapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.OFFLINE)
+        result = await self.mapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.OFFLINE)
         assert result == 'offline'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionStreamStatusRequirement_withOnline(self):
-        result = await self.jsonMapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ONLINE)
+        result = await self.mapper.serializeCheerActionStreamStatusRequirement(CheerActionStreamStatusRequirement.ONLINE)
         assert result == 'online'
 
     @pytest.mark.asyncio
@@ -491,61 +531,61 @@ class TestCheerActionJsonMapper:
         results: set[str] = set()
 
         for cheerActionType in CheerActionType:
-            results.add(await self.jsonMapper.serializeCheerActionType(cheerActionType))
+            results.add(await self.mapper.serializeCheerActionType(cheerActionType))
 
         assert len(results) == len(CheerActionType)
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withAdge(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.ADGE)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.ADGE)
         assert result == 'adge'
 
     @pytest.mark.asyncio
+    async def test_serializeCheerActionType_withAirStrike(self):
+        result = await self.mapper.serializeCheerActionType(CheerActionType.AIR_STRIKE)
+        assert result == 'air_strike'
+
+    @pytest.mark.asyncio
     async def test_serializeCheerActionType_withBeanChance(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.BEAN_CHANCE)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.BEAN_CHANCE)
         assert result == 'bean_chance'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withCrowdControl(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.CROWD_CONTROL)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.CROWD_CONTROL)
         assert result == 'crowd_control'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withGameShuffle(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.GAME_SHUFFLE)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.GAME_SHUFFLE)
         assert result == 'game_shuffle'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withSoundAlert(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.SOUND_ALERT)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.SOUND_ALERT)
         assert result == 'sound_alert'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withTimeout(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.TIMEOUT)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.TIMEOUT)
         assert result == 'timeout'
 
     @pytest.mark.asyncio
-    async def test_serializeCheerActionType_withTnt(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.TNT)
-        assert result == 'tnt'
-
-    @pytest.mark.asyncio
     async def test_serializeCheerActionType_withVoicemail(self):
-        result = await self.jsonMapper.serializeCheerActionType(CheerActionType.VOICEMAIL)
+        result = await self.mapper.serializeCheerActionType(CheerActionType.VOICEMAIL)
         assert result == 'voicemail'
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionTargetType_withAny(self):
-        result = await self.jsonMapper.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.ANY)
+        result = await self.mapper.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.ANY)
         assert result == 'any'
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionTargetType_withRandomOnly(self):
-        result = await self.jsonMapper.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.RANDOM_ONLY)
+        result = await self.mapper.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.RANDOM_ONLY)
         assert result == 'random'
 
     @pytest.mark.asyncio
     async def test_serializeTimeoutCheerActionTargetType_withSpecificTargetOnly(self):
-        result = await self.jsonMapper.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY)
+        result = await self.mapper.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY)
         assert result == 'specific'

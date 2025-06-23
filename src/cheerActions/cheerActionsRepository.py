@@ -86,6 +86,15 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     twitchChannelId = twitchChannelId
                 )
 
+            case CheerActionType.AIR_STRIKE:
+                return await self.__cheerActionJsonMapper.requireAirStrikeCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId
+                )
+
             case CheerActionType.BEAN_CHANCE:
                 return await self.__cheerActionJsonMapper.requireBeanChanceCheerAction(
                     isEnabled = isEnabled,
@@ -124,15 +133,6 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
             case CheerActionType.TIMEOUT:
                 return await self.__cheerActionJsonMapper.requireTimeoutCheerAction(
-                    isEnabled = isEnabled,
-                    streamStatusRequirement = streamStatusRequirement,
-                    bits = bits,
-                    jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
-                )
-
-            case CheerActionType.TNT:
-                return await self.__cheerActionJsonMapper.requireTntCheerAction(
                     isEnabled = isEnabled,
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,

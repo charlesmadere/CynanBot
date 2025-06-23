@@ -288,7 +288,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 answer = action.answer,
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                gameId = state.getGameId(),
+                gameId = state.gameId,
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
@@ -316,7 +316,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 answer = action.answer,
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                gameId = state.getGameId(),
+                gameId = state.gameId,
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
                 twitchChatMessageId = action.twitchChatMessageId,
@@ -346,7 +346,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 answer = action.answer,
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                gameId = state.getGameId(),
+                gameId = state.gameId,
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
                 twitchChatMessageId = action.twitchChatMessageId,
@@ -398,7 +398,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             celebratoryTwitchEmote = celebratoryTwitchEmote,
             emote = state.emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            gameId = state.getGameId(),
+            gameId = state.gameId,
             twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId(),
             twitchChatMessageId = action.twitchChatMessageId,
@@ -455,7 +455,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 answer = action.requireAnswer(),
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                gameId = state.getGameId(),
+                gameId = state.gameId,
                 twitchChannel = action.twitchChannel,
                 twitchChannelId = action.twitchChannelId,
                 userId = action.userId,
@@ -525,7 +525,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             celebratoryTwitchEmote = celebratoryTwitchEmote,
             emote = state.emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            gameId = state.getGameId(),
+            gameId = state.gameId,
             twitchChannel = action.twitchChannel,
             twitchChannelId = action.twitchChannelId,
             twitchChatMessageId = action.twitchChatMessageId,
@@ -570,7 +570,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
         if state is not None and state.endTime >= now:
             await self.__submitEvent(GameAlreadyInProgressTriviaEvent(
-                gameId = state.getGameId(),
+                gameId = state.gameId,
                 actionId = action.actionId,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 twitchChannel = action.getTwitchChannel(),
@@ -644,7 +644,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             actionId = action.actionId,
             emote = emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            gameId = state.getGameId(),
+            gameId = state.gameId,
             twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
@@ -770,7 +770,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             actionId = action.actionId,
             emote = emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            gameId = state.getGameId(),
+            gameId = state.gameId,
             twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId()
         ))
@@ -794,7 +794,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             elif isinstance(state, SuperTriviaGameState):
                 await self.__removeDeadSuperTriviaGame(state)
             else:
-                raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType ({state=}) ({state.getGameId()=}) ({state.getTwitchChannel()=}) ({state.actionId=}): \"{state.triviaGameType}\"')
+                raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType ({state=}) ({state.gameId=}) ({state.getTwitchChannel()=}) ({state.actionId=}): \"{state.triviaGameType}\"')
 
     async def __removeDeadNormalTriviaGame(self, state: TriviaGameState):
         if not isinstance(state, TriviaGameState):
@@ -820,7 +820,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             actionId = state.actionId,
             emote = state.emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            gameId = state.getGameId(),
+            gameId = state.gameId,
             outOfTimeEmote = outOfTimeEmote,
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId(),
@@ -864,7 +864,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             actionId = state.actionId,
             emote = state.emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            gameId = state.getGameId(),
+            gameId = state.gameId,
             outOfTimeEmote = outOfTimeEmote,
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId()

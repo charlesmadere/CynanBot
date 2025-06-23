@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .voicemailStep import VoicemailStep
 from .voicemailSteps import VoicemailSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
@@ -18,15 +19,16 @@ class VoicemailWizard(AbsWizard):
             twitchChannelId = twitchChannelId
         )
 
-        self.__steps: VoicemailSteps = VoicemailSteps()
+        self.__steps: Final[VoicemailSteps] = VoicemailSteps()
         self.__bits: int | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
         return CheerActionType.VOICEMAIL
 
-    def getSteps(self) -> VoicemailSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> VoicemailStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__bits=}'
@@ -47,11 +49,16 @@ class VoicemailWizard(AbsWizard):
 
         self.__bits = bits
 
+    @property
+    def steps(self) -> VoicemailSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
+            'currentStep': self.currentStep,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

@@ -1,6 +1,8 @@
 import traceback
+from typing import Final
 
 from .absChatAction import AbsChatAction
+from ..cheerActions.airStrike.airStrikeCheerAction import AirStrikeCheerAction
 from ..cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from ..cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from ..cheerActions.cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
@@ -11,8 +13,9 @@ from ..cheerActions.crowdControl.crowdControlGameShuffleCheerAction import Crowd
 from ..cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
 from ..cheerActions.timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
-from ..cheerActions.tnt.tntCheerAction import TntCheerAction
 from ..cheerActions.voicemail.voicemailCheerAction import VoicemailCheerAction
+from ..cheerActions.wizards.airStrike.airStrikeStep import AirStrikeStep
+from ..cheerActions.wizards.airStrike.airStrikeWizard import AirStrikeWizard
 from ..cheerActions.wizards.beanChance.beanChanceStep import BeanChanceStep
 from ..cheerActions.wizards.beanChance.beanChanceWizard import BeanChanceWizard
 from ..cheerActions.wizards.crowdControl.crowdControlStep import CrowdControlStep
@@ -24,8 +27,6 @@ from ..cheerActions.wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from ..cheerActions.wizards.stepResult import StepResult
 from ..cheerActions.wizards.timeout.timeoutStep import TimeoutStep
 from ..cheerActions.wizards.timeout.timeoutWizard import TimeoutWizard
-from ..cheerActions.wizards.tnt.tntStep import TntStep
-from ..cheerActions.wizards.tnt.tntWizard import TntWizard
 from ..cheerActions.wizards.voicemail.voicemailStep import VoicemailStep
 from ..cheerActions.wizards.voicemail.voicemailWizard import VoicemailWizard
 from ..misc import utils as utils
@@ -57,11 +58,136 @@ class CheerActionsWizardChatAction(AbsChatAction):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__cheerActionJsonMapper: CheerActionJsonMapperInterface = cheerActionJsonMapper
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
-        self.__cheerActionsWizard: CheerActionsWizardInterface = cheerActionsWizard
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__cheerActionJsonMapper: Final[CheerActionJsonMapperInterface] = cheerActionJsonMapper
+        self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
+        self.__cheerActionsWizard: Final[CheerActionsWizardInterface] = cheerActionsWizard
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+
+    async def __configureAirStrikeWizard(
+        self,
+        content: str,
+        wizard: AirStrikeWizard,
+        message: TwitchMessage
+    ) -> bool:
+        steps = wizard.steps
+
+        match steps.currentStep:
+            case AirStrikeStep.BITS:
+                try:
+                    bits = int(content)
+                    wizard.setBits(bits)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case AirStrikeStep.MAXIMUM_DURATION_SECONDS:
+                try:
+                    maxDurationSeconds = int(content)
+                    wizard.setMaxDurationSeconds(maxDurationSeconds)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maxDurationSeconds value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case AirStrikeStep.MAXIMUM_CHATTERS:
+                try:
+                    maximumChatters = int(content)
+                    wizard.setMaxTimeoutChatters(maximumChatters)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case AirStrikeStep.MINIMUM_DURATION_SECONDS:
+                try:
+                    minDurationSeconds = int(content)
+                    wizard.setMinDurationSeconds(minDurationSeconds)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minDurationSeconds value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case AirStrikeStep.MINIMUM_CHATTERS:
+                try:
+                    minimumChatters = int(content)
+                    wizard.setMinTimeoutChatters(minimumChatters)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minimumChatters value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Air Strike wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Air Strike wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__cheerActionsRepository.setAction(AirStrikeCheerAction(
+                    isEnabled = True,
+                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
+                    bits = wizard.requireBits(),
+                    maxDurationSeconds = wizard.requireMaxDurationSeconds(),
+                    minDurationSeconds = wizard.requireMinDurationSeconds(),
+                    maxTimeoutChatters = wizard.requireMaxTimeoutChatters(),
+                    minTimeoutChatters = wizard.requireMinTimeoutChatters(),
+                    twitchChannelId = wizard.twitchChannelId
+                ))
+
+                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Air Strike wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__send(message, f'ⓘ Finished configuring Air Strike ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                # this is intentionally empty
+                pass
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Air Strike wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Air Strike wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        match steps.currentStep:
+            case AirStrikeStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Air Strike wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Air Strike wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case AirStrikeStep.MAXIMUM_DURATION_SECONDS:
+                await self.__send(message, f'ⓘ Next, please specify the Air Strike\'s maximum timeout duration (in seconds)')
+                return True
+
+            case AirStrikeStep.MAXIMUM_CHATTERS:
+                await self.__send(message, f'ⓘ Next, please specify the Air Strike\'s maximum number of chatters that should be timed out')
+                return True
+
+            case AirStrikeStep.MINIMUM_DURATION_SECONDS:
+                await self.__send(message, f'ⓘ Next, please specify the Air Strike\'s minimum timeout duration (in seconds)')
+                return True
+
+            case AirStrikeStep.MINIMUM_CHATTERS:
+                await self.__send(message, f'ⓘ Next, please specify the Air Strike\'s minimum number of chatters that should be timed out')
+                return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Air Strike wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Air Strike wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
 
     async def __configureBeanChanceWizard(
         self,
@@ -69,10 +195,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: BeanChanceWizard,
         message: TwitchMessage
     ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
+        steps = wizard.steps
 
-        match step:
+        match steps.currentStep:
             case BeanChanceStep.BITS:
                 try:
                     bits = int(content)
@@ -127,7 +252,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-        match steps.getStep():
+        match steps.currentStep:
             case BeanChanceStep.BITS:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Bean Chance wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Bean Chance wizard is in an invalid state, please try again')
@@ -149,10 +274,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: CrowdControlWizard,
         message: TwitchMessage
     ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
+        steps = wizard.steps
 
-        match step:
+        match steps.currentStep:
             case CrowdControlStep.BITS:
                 try:
                     bits = int(content)
@@ -196,7 +320,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-        match steps.getStep():
+        match steps.currentStep:
             case CrowdControlStep.BITS:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Crowd Control wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Crowd Control wizard is in an invalid state, please try again')
@@ -215,10 +339,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: GameShuffleWizard,
         message: TwitchMessage
     ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
+        steps = wizard.steps
 
-        match step:
+        match steps.currentStep:
             case GameShuffleStep.BITS:
                 try:
                     bits = int(content)
@@ -273,7 +396,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-        match steps.getStep():
+        match steps.currentStep:
             case GameShuffleStep.BITS:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Game Shuffle wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Game Shuffle wizard is in an invalid state, please try again')
@@ -296,10 +419,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: SoundAlertWizard,
         message: TwitchMessage
     ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
+        steps = wizard.steps
 
-        match step:
+        match steps.currentStep:
             case SoundAlertStep.BITS:
                 try:
                     bits = int(content)
@@ -353,7 +475,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-        match steps.getStep():
+        match steps.currentStep:
             case SoundAlertStep.BITS:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Sound Alert wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Sound Alert wizard is in an invalid state, please try again')
@@ -376,10 +498,9 @@ class CheerActionsWizardChatAction(AbsChatAction):
         wizard: TimeoutWizard,
         message: TwitchMessage
     ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
+        steps = wizard.steps
 
-        match step:
+        match steps.currentStep:
             case TimeoutStep.BITS:
                 try:
                     bits = int(content)
@@ -466,7 +587,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-        match steps.getStep():
+        match steps.currentStep:
             case TimeoutStep.BITS:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Timeout wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Timeout wizard is in an invalid state, please try again')
@@ -509,142 +630,15 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-    async def __configureTntWizard(
-        self,
-        content: str,
-        wizard: TntWizard,
-        message: TwitchMessage
-    ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
-
-        match step:
-            case TntStep.BITS:
-                try:
-                    bits = int(content)
-                    wizard.setBits(bits)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
-            case TntStep.MAXIMUM_DURATION_SECONDS:
-                try:
-                    maxDurationSeconds = int(content)
-                    wizard.setMaxDurationSeconds(maxDurationSeconds)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maxDurationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
-            case TntStep.MAXIMUM_CHATTERS:
-                try:
-                    maximumChatters = int(content)
-                    wizard.setMaxTimeoutChatters(maximumChatters)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
-            case TntStep.MINIMUM_DURATION_SECONDS:
-                try:
-                    minDurationSeconds = int(content)
-                    wizard.setMinDurationSeconds(minDurationSeconds)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minDurationSeconds value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
-            case TntStep.MINIMUM_CHATTERS:
-                try:
-                    minimumChatters = int(content)
-                    wizard.setMinTimeoutChatters(minimumChatters)
-                except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minimumChatters value for TNT wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(message, f'⚠ The TNT wizard encountered an error, please try again')
-                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                    return True
-
-            case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
-                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                return True
-
-        stepResult = steps.stepForward()
-
-        match stepResult:
-            case StepResult.DONE:
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-
-                await self.__cheerActionsRepository.setAction(TntCheerAction(
-                    isEnabled = True,
-                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
-                    bits = wizard.requireBits(),
-                    maxDurationSeconds = wizard.requireMaxDurationSeconds(),
-                    minDurationSeconds = wizard.requireMinDurationSeconds(),
-                    maxTimeoutChatters = wizard.requireMaxTimeoutChatters(),
-                    minTimeoutChatters = wizard.requireMinTimeoutChatters(),
-                    twitchChannelId = wizard.twitchChannelId
-                ))
-
-                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring TNT wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-                await self.__send(message, f'ⓘ Finished configuring TNT ({wizard.printOut()})')
-                return True
-
-            case StepResult.NEXT:
-                # this is intentionally empty
-                pass
-
-            case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
-                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                return True
-
-        match steps.getStep():
-            case TntStep.BITS:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
-                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                return True
-
-            case TntStep.MAXIMUM_DURATION_SECONDS:
-                await self.__send(message, f'ⓘ Next, please specify the TNT\'s maximum timeout duration (in seconds)')
-                return True
-
-            case TntStep.MAXIMUM_CHATTERS:
-                await self.__send(message, f'ⓘ Next, please specify the TNT\'s maximum number of chatters that should be timed out')
-                return True
-
-            case TntStep.MINIMUM_DURATION_SECONDS:
-                await self.__send(message, f'ⓘ Next, please specify the TNT\'s minimum timeout duration (in seconds)')
-                return True
-
-            case TntStep.MINIMUM_CHATTERS:
-                await self.__send(message, f'ⓘ Next, please specify the TNT\'s minimum number of chatters that should be timed out')
-                return True
-
-            case _:
-                self.__timber.log('CheerActionsWizardChatAction', f'The TNT wizard is in an invalid state ({wizard=}) ({content=})')
-                await self.__send(message, f'⚠ The TNT wizard is in an invalid state, please try again')
-                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
-                return True
-
     async def __configureVoicemailWizard(
         self,
         content: str,
         wizard: VoicemailWizard,
         message: TwitchMessage
     ) -> bool:
-        steps = wizard.getSteps()
-        step = steps.getStep()
+        steps = wizard.steps
 
-        match step:
+        match steps.currentStep:
             case VoicemailStep.BITS:
                 try:
                     bits = int(content)
@@ -688,7 +682,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
-        match steps.getStep():
+        match steps.currentStep:
             case VoicemailStep.BITS:
                 self.__timber.log('CheerActionsWizardChatAction', f'The Voicemail wizard is in an invalid state ({wizard=}) ({content=})')
                 await self.__send(message, f'⚠ The Voicemail wizard is in an invalid state, please try again')
@@ -714,7 +708,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
         if not utils.isValidStr(content) or twitchChannelId != message.getAuthorId() or wizard is None:
             return False
 
-        if isinstance(wizard, BeanChanceWizard):
+        elif isinstance(wizard, AirStrikeWizard):
+            return await self.__configureAirStrikeWizard(
+                content = content,
+                wizard = wizard,
+                message = message
+            )
+
+        elif isinstance(wizard, BeanChanceWizard):
             return await self.__configureBeanChanceWizard(
                 content = content,
                 wizard = wizard,
@@ -744,13 +745,6 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
         elif isinstance(wizard, TimeoutWizard):
             return await self.__configureTimeoutWizard(
-                content = content,
-                wizard = wizard,
-                message = message
-            )
-
-        elif isinstance(wizard, TntWizard):
-            return await self.__configureTntWizard(
                 content = content,
                 wizard = wizard,
                 message = message

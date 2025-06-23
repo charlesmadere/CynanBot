@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .beanChanceStep import BeanChanceStep
 from .beanChanceSteps import BeanChanceSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
@@ -11,14 +12,14 @@ class BeanChanceWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps = BeanChanceSteps()
+        self.__steps: Final[BeanChanceSteps] = BeanChanceSteps()
         self.__bits: int | None = None
         self.__maximumPerDay: int | None = None
         self.__randomChance: int | None = None
@@ -27,8 +28,9 @@ class BeanChanceWizard(AbsWizard):
     def cheerActionType(self) -> CheerActionType:
         return CheerActionType.BEAN_CHANCE
 
-    def getSteps(self) -> BeanChanceSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> BeanChanceStep:
+        return self.__steps.currentStep
 
     @property
     def maximumPerDay(self) -> int | None:
@@ -81,12 +83,17 @@ class BeanChanceWizard(AbsWizard):
 
         self.__randomChance = randomChance
 
+    @property
+    def steps(self) -> BeanChanceSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'currentStep': self.currentStep,
             'maximumPerDay': self.__maximumPerDay,
             'randomChance': self.__randomChance,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

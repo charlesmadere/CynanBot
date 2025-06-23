@@ -56,7 +56,7 @@ class AddVoicemailCheerActionCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not VoicemailStep.BITS:
             raise RuntimeError(f'unknown VoicemailStep: \"{step}\"')

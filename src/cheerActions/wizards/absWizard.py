@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Final
 
+from .absStep import AbsStep
 from .absSteps import AbsSteps
 from ..cheerActionType import CheerActionType
 from ...misc import utils as utils
@@ -18,16 +19,17 @@ class AbsWizard(ABC):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     @abstractmethod
     def cheerActionType(self) -> CheerActionType:
         pass
 
+    @property
     @abstractmethod
-    def getSteps(self) -> AbsSteps:
+    def currentStep(self) -> AbsStep:
         pass
 
     @abstractmethod
@@ -37,6 +39,11 @@ class AbsWizard(ABC):
     def __repr__(self):
         dictionary = self.toDictionary()
         return str(dictionary)
+
+    @property
+    @abstractmethod
+    def steps(self) -> AbsSteps:
+        pass
 
     @abstractmethod
     def toDictionary(self) -> dict[str, Any]:

@@ -1,12 +1,13 @@
 from typing import Any
 
-from .tntSteps import TntSteps
+from .airStrikeStep import AirStrikeStep
+from .airStrikeSteps import AirStrikeSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
 from ....misc import utils as utils
 
 
-class TntWizard(AbsWizard):
+class AirStrikeWizard(AbsWizard):
 
     def __init__(
         self,
@@ -18,7 +19,7 @@ class TntWizard(AbsWizard):
             twitchChannelId = twitchChannelId
         )
 
-        self.__steps: TntSteps = TntSteps()
+        self.__steps: AirStrikeSteps = AirStrikeSteps()
         self.__bits: int | None = None
         self.__maxDurationSeconds: int | None = None
         self.__minDurationSeconds: int | None = None
@@ -27,10 +28,11 @@ class TntWizard(AbsWizard):
 
     @property
     def cheerActionType(self) -> CheerActionType:
-        return CheerActionType.TNT
+        return CheerActionType.AIR_STRIKE
 
-    def getSteps(self) -> TntSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> AirStrikeStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__bits=}, {self.__maxDurationSeconds=}, {self.__minDurationSeconds=}, {self.__maxTimeoutChatters=}, {self.__minTimeoutChatters=}'
@@ -115,15 +117,20 @@ class TntWizard(AbsWizard):
 
         self.__minTimeoutChatters = minTimeoutChatters
 
+    @property
+    def steps(self) -> AirStrikeSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'cheerActionType': self.cheerActionType,
+            'currentStep': self.currentStep,
             'maxDurationSeconds': self.__maxDurationSeconds,
             'minDurationSeconds': self.__minDurationSeconds,
             'maxTimeoutChatters': self.__maxTimeoutChatters,
             'minTimeoutChatters': self.__minTimeoutChatters,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

@@ -1,3 +1,5 @@
+from typing import Final
+
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
@@ -26,7 +28,7 @@ class AdgeCheerAction(AbsCheerAction):
         elif adgeLengthSeconds < 1 or adgeLengthSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'adgeLengthSeconds argument is out of bounds: {adgeLengthSeconds}')
 
-        self.__adgeLengthSeconds: int = adgeLengthSeconds
+        self.__adgeLengthSeconds: Final[int] = adgeLengthSeconds
 
     @property
     def actionType(self) -> CheerActionType:

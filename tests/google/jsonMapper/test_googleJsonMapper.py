@@ -1,7 +1,12 @@
 import pytest
+from frozenlist import FrozenList
 
 from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from src.google.models.googleMultiSpeakerMarkup import GoogleMultiSpeakerMarkup
+from src.google.models.googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
+from src.google.models.googleMultiSpeakerTextSynthesisInput import GoogleMultiSpeakerTextSynthesisInput
+from src.google.models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from src.google.models.googleScope import GoogleScope
 from src.google.models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from src.google.models.googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
@@ -20,99 +25,99 @@ class TestGoogleJsonMapper:
 
     timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
-    jsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+    mapper: GoogleJsonMapperInterface = GoogleJsonMapper(
         timber = timber,
         timeZoneRepository = timeZoneRepository
     )
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withAlaw(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('ALAW')
+        result = await self.mapper.parseVoiceAudioEncoding('ALAW')
         assert result is GoogleVoiceAudioEncoding.ALAW
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withAudioEncodingUnspecified(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('AUDIO_ENCODING_UNSPECIFIED')
+        result = await self.mapper.parseVoiceAudioEncoding('AUDIO_ENCODING_UNSPECIFIED')
         assert result is GoogleVoiceAudioEncoding.UNSPECIFIED
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withEmptyString(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('')
+        result = await self.mapper.parseVoiceAudioEncoding('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withLinear16(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('LINEAR16')
+        result = await self.mapper.parseVoiceAudioEncoding('LINEAR16')
         assert result is GoogleVoiceAudioEncoding.LINEAR_16
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withMp3(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('MP3')
+        result = await self.mapper.parseVoiceAudioEncoding('MP3')
         assert result is GoogleVoiceAudioEncoding.MP3
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withMulaw(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('MULAW')
+        result = await self.mapper.parseVoiceAudioEncoding('MULAW')
         assert result is GoogleVoiceAudioEncoding.MULAW
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withNone(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding(None)
+        result = await self.mapper.parseVoiceAudioEncoding(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withOggOpus(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding('OGG_OPUS')
+        result = await self.mapper.parseVoiceAudioEncoding('OGG_OPUS')
         assert result is GoogleVoiceAudioEncoding.OGG_OPUS
 
     @pytest.mark.asyncio
     async def test_parseVoiceAudioEncoding_withWhitespace(self):
-        result = await self.jsonMapper.parseVoiceAudioEncoding(' ')
+        result = await self.mapper.parseVoiceAudioEncoding(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withEmptyString(self):
-        result = await self.jsonMapper.parseVoiceGender('')
+        result = await self.mapper.parseVoiceGender('')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withFemale(self):
-        result = await self.jsonMapper.parseVoiceGender('FEMALE')
+        result = await self.mapper.parseVoiceGender('FEMALE')
         assert result is GoogleVoiceGender.FEMALE
 
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withMale(self):
-        result = await self.jsonMapper.parseVoiceGender('MALE')
+        result = await self.mapper.parseVoiceGender('MALE')
         assert result is GoogleVoiceGender.MALE
 
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withNone(self):
-        result = await self.jsonMapper.parseVoiceGender(None)
+        result = await self.mapper.parseVoiceGender(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withSsmlVoiceGenderUnspecified(self):
-        result = await self.jsonMapper.parseVoiceGender('SSML_VOICE_GENDER_UNSPECIFIED')
+        result = await self.mapper.parseVoiceGender('SSML_VOICE_GENDER_UNSPECIFIED')
         assert result is GoogleVoiceGender.UNSPECIFIED
 
     @pytest.mark.asyncio
     async def test_parseVoiceGender_withWhitespace(self):
-        result = await self.jsonMapper.parseVoiceGender(' ')
+        result = await self.mapper.parseVoiceGender(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseVoicePreset_withJapaneseJpStandardA(self):
-        result = await self.jsonMapper.parseVoicePreset('ja-JP-Standard-A')
+        result = await self.mapper.parseVoicePreset('ja-JP-Standard-A')
         assert result is GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_A
 
     @pytest.mark.asyncio
     async def test_parseVoicePreset_withNone(self):
-        result = await self.jsonMapper.parseVoicePreset(None)
+        result = await self.mapper.parseVoicePreset(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireVoiceAudioEncoding_withAlaw(self):
-        result = await self.jsonMapper.requireVoiceAudioEncoding('ALAW')
+        result = await self.mapper.requireVoiceAudioEncoding('ALAW')
         assert result is GoogleVoiceAudioEncoding.ALAW
 
     @pytest.mark.asyncio
@@ -120,23 +125,23 @@ class TestGoogleJsonMapper:
         result: GoogleVoiceAudioEncoding | None = None
 
         with pytest.raises(Exception):
-            result = await self.jsonMapper.requireVoiceAudioEncoding('')
+            result = await self.mapper.requireVoiceAudioEncoding('')
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireVoiceAudioEncoding_withLinear16(self):
-        result = await self.jsonMapper.requireVoiceAudioEncoding('LINEAR16')
+        result = await self.mapper.requireVoiceAudioEncoding('LINEAR16')
         assert result is GoogleVoiceAudioEncoding.LINEAR_16
 
     @pytest.mark.asyncio
     async def test_requireVoiceAudioEncoding_withMp3(self):
-        result = await self.jsonMapper.requireVoiceAudioEncoding('MP3')
+        result = await self.mapper.requireVoiceAudioEncoding('MP3')
         assert result is GoogleVoiceAudioEncoding.MP3
 
     @pytest.mark.asyncio
     async def test_requireVoiceAudioEncoding_withMulaw(self):
-        result = await self.jsonMapper.requireVoiceAudioEncoding('MULAW')
+        result = await self.mapper.requireVoiceAudioEncoding('MULAW')
         assert result is GoogleVoiceAudioEncoding.MULAW
 
     @pytest.mark.asyncio
@@ -144,13 +149,13 @@ class TestGoogleJsonMapper:
         result: GoogleVoiceAudioEncoding | None = None
 
         with pytest.raises(Exception):
-            result = await self.jsonMapper.requireVoiceAudioEncoding(None)
+            result = await self.mapper.requireVoiceAudioEncoding(None)
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_requireVoiceAudioEncoding_withOggOpus(self):
-        result = await self.jsonMapper.requireVoiceAudioEncoding('OGG_OPUS')
+        result = await self.mapper.requireVoiceAudioEncoding('OGG_OPUS')
         assert result is GoogleVoiceAudioEncoding.OGG_OPUS
 
     @pytest.mark.asyncio
@@ -158,23 +163,56 @@ class TestGoogleJsonMapper:
         result: GoogleVoiceAudioEncoding | None = None
 
         with pytest.raises(Exception):
-            result = await self.jsonMapper.requireVoiceAudioEncoding(' ')
+            result = await self.mapper.requireVoiceAudioEncoding(' ')
 
         assert result is None
 
     def test_sanity(self):
-        assert self.jsonMapper is not None
-        assert isinstance(self.jsonMapper, GoogleJsonMapper)
-        assert isinstance(self.jsonMapper, GoogleJsonMapperInterface)
+        assert self.mapper is not None
+        assert isinstance(self.mapper, GoogleJsonMapper)
+        assert isinstance(self.mapper, GoogleJsonMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeMultiSpeakerMarkupTurn(self):
+        markupTurn = GoogleMultiSpeakerMarkupTurn(
+            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_R,
+            text = 'Hello, World!'
+        )
+
+        result = await self.mapper.serializeMultiSpeakerMarkupTurn(markupTurn)
+        assert len(result) == 2
+
+        assert result['speaker'] == markupTurn.speaker.speakerCharacter
+        assert result['text'] == markupTurn.text
+
+    @pytest.mark.asyncio
+    async def test_serializeMultiSpeakerVoicePreset_withEnUsR(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_R)
+        assert result == 'R'
+
+    @pytest.mark.asyncio
+    async def test_serializeMultiSpeakerVoicePreset_withEnUsS(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_S)
+        assert result == 'S'
+
+    @pytest.mark.asyncio
+    async def test_serializeMultiSpeakerVoicePreset_withEnUsT(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_T)
+        assert result == 'T'
+
+    @pytest.mark.asyncio
+    async def test_serializeMultiSpeakerVoicePreset_withEnUsU(self):
+        result = await self.mapper.serializeMultiSpeakerVoicePreset(GoogleMultiSpeakerVoicePreset.ENGLISH_US_U)
+        assert result == 'U'
 
     @pytest.mark.asyncio
     async def test_serializeScope_withCloudTextToSpeech(self):
-        result = await self.jsonMapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
+        result = await self.mapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
         assert result == 'https://www.googleapis.com/auth/cloud-platform'
 
     @pytest.mark.asyncio
     async def test_serializeScope_withCloudTranslation(self):
-        result = await self.jsonMapper.serializeScope(GoogleScope.CLOUD_TRANSLATION)
+        result = await self.mapper.serializeScope(GoogleScope.CLOUD_TRANSLATION)
         assert result == 'https://www.googleapis.com/auth/cloud-translation'
 
     @pytest.mark.asyncio
@@ -182,41 +220,91 @@ class TestGoogleJsonMapper:
         result: str | None = None
 
         with pytest.raises(ValueError):
-            result = await self.jsonMapper.serializeScopes(list())
+            result = await self.mapper.serializeScopes(list())
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_serializeScopes_withCloudTextToSpeech(self):
         scope = GoogleScope.CLOUD_TEXT_TO_SPEECH
-        result = await self.jsonMapper.serializeScopes([ scope ])
-        assert result == await self.jsonMapper.serializeScope(scope)
+        result = await self.mapper.serializeScopes([scope])
+        assert result == await self.mapper.serializeScope(scope)
 
     @pytest.mark.asyncio
     async def test_serializeScopes_withCloudTextToSpeechAndCloudTranslation(self):
-        result = await self.jsonMapper.serializeScopes([
+        result = await self.mapper.serializeScopes([
             GoogleScope.CLOUD_TEXT_TO_SPEECH,
             GoogleScope.CLOUD_TRANSLATION
         ])
 
-        textToSpeech = await self.jsonMapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
-        translation = await self.jsonMapper.serializeScope(GoogleScope.CLOUD_TRANSLATION)
+        textToSpeech = await self.mapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
+        translation = await self.mapper.serializeScope(GoogleScope.CLOUD_TRANSLATION)
         assert result == f'{textToSpeech} {translation}'
 
     @pytest.mark.asyncio
     async def test_serializeScopes_withCloudTranslation(self):
         scope = GoogleScope.CLOUD_TRANSLATION
-        result = await self.jsonMapper.serializeScopes([ scope ])
-        assert result == await self.jsonMapper.serializeScope(scope)
+        result = await self.mapper.serializeScopes([scope])
+        assert result == await self.mapper.serializeScope(scope)
 
     @pytest.mark.asyncio
     async def test_serializeTextSynthesisInput(self):
-        input = GoogleTextSynthesisInput(
+        synthesisInput = GoogleTextSynthesisInput(
             text = 'Hello, World!'
         )
 
-        result = await self.jsonMapper.serializeTextSynthesisInput(input)
-        assert result['text'] == input.text
+        result = await self.mapper.serializeTextSynthesisInput(synthesisInput)
+        assert len(result) == 1
+
+        assert result['text'] == synthesisInput.text
+
+    @pytest.mark.asyncio
+    async def test_serializeTextSynthesisInput_withMultiSpeaker(self):
+        firstTurn = GoogleMultiSpeakerMarkupTurn(
+            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_R,
+            text = 'Hello everyone from Eddie\'s stream!'
+        )
+
+        secondTurn = GoogleMultiSpeakerMarkupTurn(
+            speaker = GoogleMultiSpeakerVoicePreset.ENGLISH_US_S,
+            text = 'Thanks for the raid!'
+        )
+
+        turns: FrozenList[GoogleMultiSpeakerMarkupTurn] = FrozenList()
+        turns.append(firstTurn)
+        turns.append(secondTurn)
+        turns.freeze()
+
+        multiSpeakerMarkup = GoogleMultiSpeakerMarkup(
+            turns = turns
+        )
+
+        synthesisInput = GoogleMultiSpeakerTextSynthesisInput(
+            multiSpeakerMarkup = multiSpeakerMarkup
+        )
+
+        result = await self.mapper.serializeTextSynthesisInput(synthesisInput)
+        assert len(result) == 1
+
+        multiSpeakerMarkupResult = result['multi_speaker_markup']
+        assert isinstance(multiSpeakerMarkupResult, dict)
+        assert len(multiSpeakerMarkupResult) == 1
+
+        turnsResult = multiSpeakerMarkupResult['turns']
+        assert isinstance(turnsResult, list)
+        assert len(turnsResult) == 2
+
+        turnResult = turnsResult[0]
+        assert isinstance(turnResult, dict)
+        assert len(turnResult) == 2
+        assert turnResult['speaker'] == firstTurn.speaker.speakerCharacter
+        assert turnResult['text'] == firstTurn.text
+
+        turnResult = turnsResult[1]
+        assert isinstance(turnResult, dict)
+        assert len(turnResult) == 2
+        assert turnResult['speaker'] == secondTurn.speaker.speakerCharacter
+        assert turnResult['text'] == secondTurn.text
 
     @pytest.mark.asyncio
     async def test_serializeTransliterationConfig_withFalse(self):
@@ -224,7 +312,7 @@ class TestGoogleJsonMapper:
             enableTransliteration = False
         )
 
-        result = await self.jsonMapper.serializeTransliterationConfig(config)
+        result = await self.mapper.serializeTransliterationConfig(config)
         assert result['enableTransliteration'] == config.enableTransliteration
 
     @pytest.mark.asyncio
@@ -233,28 +321,28 @@ class TestGoogleJsonMapper:
             enableTransliteration = True
         )
 
-        result = await self.jsonMapper.serializeTransliterationConfig(config)
+        result = await self.mapper.serializeTransliterationConfig(config)
         assert result['enableTransliteration'] == config.enableTransliteration
 
     @pytest.mark.asyncio
     async def test_serializeVoiceGender_withFemale(self):
         voiceGender = GoogleVoiceGender.FEMALE
-        result = await self.jsonMapper.serializeVoiceGender(voiceGender)
+        result = await self.mapper.serializeVoiceGender(voiceGender)
         assert result == 'FEMALE'
 
     @pytest.mark.asyncio
     async def test_serializeVoiceGender_withMale(self):
         voiceGender = GoogleVoiceGender.MALE
-        result = await self.jsonMapper.serializeVoiceGender(voiceGender)
+        result = await self.mapper.serializeVoiceGender(voiceGender)
         assert result == 'MALE'
 
     @pytest.mark.asyncio
     async def test_serializeVoiceGender_withUnspecified(self):
         voiceGender = GoogleVoiceGender.UNSPECIFIED
-        result = await self.jsonMapper.serializeVoiceGender(voiceGender)
+        result = await self.mapper.serializeVoiceGender(voiceGender)
         assert result == 'SSML_VOICE_GENDER_UNSPECIFIED'
 
     @pytest.mark.asyncio
     async def test_serializeVoicePreset_withEnglishUsStandardA(self):
-        result = await self.jsonMapper.serializeVoicePreset(GoogleVoicePreset.ENGLISH_US_STANDARD_A)
+        result = await self.mapper.serializeVoicePreset(GoogleVoicePreset.ENGLISH_US_STANDARD_A)
         assert result == 'en-US-Standard-A'

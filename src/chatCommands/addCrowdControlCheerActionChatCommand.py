@@ -55,7 +55,7 @@ class AddCrowdControlCheerActionChatCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not CrowdControlStep.BITS:
             raise RuntimeError(f'unknown CrowdControlStep: \"{step}\"')

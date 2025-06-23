@@ -3,7 +3,7 @@ from enum import auto
 from ..absStep import AbsStep
 
 
-class TntStep(AbsStep):
+class AirStrikeStep(AbsStep):
 
     BITS = auto()
     MAXIMUM_CHATTERS = auto()

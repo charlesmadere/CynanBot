@@ -1,3 +1,5 @@
+from typing import Final
+
 from .officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ...misc import utils as utils
 
@@ -19,7 +21,8 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         theRunBotUserId: str | None = '795719761',
         twitchAccountUserId: str = '12826',
         twitchAnonymousGifterUserId: str = '274598607',
-        valorantUserId: str | None = '490592527'
+        valorantUserId: str | None = '490592527',
+        zeldoBotUserId: str | None = '54866013',
     ):
         if frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
             raise TypeError(f'frostyToolsDotComUserId argument is malformed: \"{frostyToolsDotComUserId}\"')
@@ -49,21 +52,24 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             raise TypeError(f'twitchAnonymousGifterUserId argument is malformed: \"{twitchAnonymousGifterUserId}\"')
         elif valorantUserId is not None and not isinstance(valorantUserId, str):
             raise TypeError(f'valorantUserId argument is malformed: \"{valorantUserId}\"')
+        elif zeldoBotUserId is not None and not isinstance(zeldoBotUserId, str):
+            raise TypeError(f'zeldoBotUserId argument is malformed: \"{zeldoBotUserId}\"')
 
-        self.__frostyToolsDotComUserId: str | None = frostyToolsDotComUserId
-        self.__moobotUserId: str | None = moobotUserId
-        self.__nightBotUserId: str | None = nightBotUserId
-        self.__puptimeUserId: str | None = puptimeUserId
-        self.__seryBotUserId: str | None = seryBotUserId
-        self.__soundAlertsUserId: str | None = soundAlertsUserId
-        self.__streamElementsUserId: str | None = streamElementsUserId
-        self.__streamLabsUserId: str | None = streamLabsUserId
-        self.__streamStickersUserId: str | None = streamStickersUserId
-        self.__tangiaBotUserId: str | None = tangiaBotUserId
-        self.__theRunBotUserId: str | None = theRunBotUserId
-        self.__twitchAccountUserId: str = twitchAccountUserId
-        self.__twitchAnonymousGifterUserId: str = twitchAnonymousGifterUserId
-        self.__valorantUserId: str | None = valorantUserId
+        self.__frostyToolsDotComUserId: Final[str | None] = frostyToolsDotComUserId
+        self.__moobotUserId: Final[str | None] = moobotUserId
+        self.__nightBotUserId: Final[str | None] = nightBotUserId
+        self.__puptimeUserId: Final[str | None] = puptimeUserId
+        self.__seryBotUserId: Final[str | None] = seryBotUserId
+        self.__soundAlertsUserId: Final[str | None] = soundAlertsUserId
+        self.__streamElementsUserId: Final[str | None] = streamElementsUserId
+        self.__streamLabsUserId: Final[str | None] = streamLabsUserId
+        self.__streamStickersUserId: Final[str | None] = streamStickersUserId
+        self.__tangiaBotUserId: Final[str | None] = tangiaBotUserId
+        self.__theRunBotUserId: Final[str | None] = theRunBotUserId
+        self.__twitchAccountUserId: Final[str] = twitchAccountUserId
+        self.__twitchAnonymousGifterUserId: Final[str] = twitchAnonymousGifterUserId
+        self.__valorantUserId: Final[str | None] = valorantUserId
+        self.__zeldoBotUserId: Final[str | None] = zeldoBotUserId
 
     async def getAllUserIds(self) -> frozenset[str]:
         allUserIds: set[str] = set()
@@ -122,6 +128,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         if utils.isValidStr(valorantUserId):
             allUserIds.add(valorantUserId)
 
+        zeldoBotUserId = await self.getZeldoBotUserId()
+        if utils.isValidStr(zeldoBotUserId):
+            allUserIds.add(zeldoBotUserId)
+
         return frozenset(allUserIds)
 
     async def getFrostyToolsDotComUserId(self) -> str | None:
@@ -165,3 +175,6 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getValorantUserId(self) -> str | None:
         return self.__valorantUserId
+
+    async def getZeldoBotUserId(self) -> str | None:
+        return self.__zeldoBotUserId

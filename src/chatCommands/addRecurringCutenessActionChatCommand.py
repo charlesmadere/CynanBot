@@ -53,7 +53,7 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not CutenessStep.MINUTES_BETWEEN:
             raise RuntimeError(f'unknown CutenessStep: \"{step}\"')
@@ -66,4 +66,4 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('AddRecurringCutenessActionChatCommand', f'Handled !addrecurringcutenessaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('AddRecurringCutenessActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

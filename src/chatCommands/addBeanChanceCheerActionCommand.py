@@ -55,7 +55,7 @@ class AddBeanChanceCheerActionCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not BeanChanceStep.BITS:
             raise RuntimeError(f'unknown BeanChanceStep: \"{step}\"')

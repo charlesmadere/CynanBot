@@ -55,7 +55,7 @@ class AddTimeoutCheerActionCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not TimeoutStep.BITS:
             raise RuntimeError(f'unknown TimeoutStep: \"{step}\"')

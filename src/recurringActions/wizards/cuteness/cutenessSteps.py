@@ -1,6 +1,7 @@
 from .cutenessStep import CutenessStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...actions.recurringActionType import RecurringActionType
 
 
 class CutenessSteps(AbsSteps):
@@ -8,8 +9,13 @@ class CutenessSteps(AbsSteps):
     def __init__(self):
         self.__step = CutenessStep.MINUTES_BETWEEN
 
-    def getStep(self) -> CutenessStep:
+    @property
+    def currentStep(self) -> CutenessStep:
         return self.__step
+
+    @property
+    def recurringActionType(self) -> RecurringActionType:
+        return RecurringActionType.CUTENESS
 
     def stepForward(self) -> StepResult:
         currentStep = self.__step

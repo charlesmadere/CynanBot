@@ -8,5 +8,5 @@ from .googleVoiceSelectionParams import GoogleVoiceSelectionParams
 @dataclass(frozen = True)
 class GoogleTextSynthesizeRequest:
     synthesisInput: GoogleTextSynthesisInput
-    voice: GoogleVoiceSelectionParams
     audioConfig: GoogleVoiceAudioConfig
+    voice: GoogleVoiceSelectionParams

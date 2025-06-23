@@ -1,6 +1,7 @@
 from .soundAlertStep import SoundAlertStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...cheerActionType import CheerActionType
 
 
 class SoundAlertSteps(AbsSteps):
@@ -8,7 +9,12 @@ class SoundAlertSteps(AbsSteps):
     def __init__(self):
         self.__step = SoundAlertStep.BITS
 
-    def getStep(self) -> SoundAlertStep:
+    @property
+    def cheerActionType(self) -> CheerActionType:
+        return CheerActionType.SOUND_ALERT
+
+    @property
+    def currentStep(self) -> SoundAlertStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

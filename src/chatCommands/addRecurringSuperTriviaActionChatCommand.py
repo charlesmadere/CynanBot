@@ -53,7 +53,7 @@ class AddRecurringSuperTriviaActionChatCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not SuperTriviaStep.MINUTES_BETWEEN:
             raise RuntimeError(f'unknown SuperTriviaStep: \"{step}\"')

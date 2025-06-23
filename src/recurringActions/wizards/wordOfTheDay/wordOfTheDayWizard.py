@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .wordOfTheDayStep import WordOfTheDayStep
 from .wordOfTheDaySteps import WordOfTheDaySteps
 from ..absWizard import AbsWizard
 from ...actions.recurringActionType import RecurringActionType
@@ -11,21 +12,22 @@ class WordOfTheDayWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps = WordOfTheDaySteps()
+        self.__steps: Final[WordOfTheDaySteps] = WordOfTheDaySteps()
         self.__minutesBetween: int | None = None
+
+    @property
+    def currentStep(self) -> WordOfTheDayStep:
+        return self.__steps.currentStep
 
     def getMinutesBetween(self) -> int | None:
         return self.__minutesBetween
-
-    def getSteps(self) -> WordOfTheDaySteps:
-        return self.__steps
 
     def printOut(self) -> str:
         return f'{self.__minutesBetween=}'
@@ -44,11 +46,16 @@ class WordOfTheDayWizard(AbsWizard):
 
         self.__minutesBetween = minutesBetween
 
+    @property
+    def steps(self) -> WordOfTheDaySteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
+            'currentStep': self.currentStep,
             'minutesBetween': self.__minutesBetween,
             'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

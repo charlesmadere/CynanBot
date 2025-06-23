@@ -19,6 +19,7 @@ from .beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from .beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from .chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatCommands.absChatCommand import AbsChatCommand
+from .chatCommands.addAirStrikeCheerActionWizard import AddAirStrikeCheerActionCommand
 from .chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from .chatCommands.addCrowdControlCheerActionChatCommand import AddCrowdControlCheerActionChatCommand
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
@@ -30,7 +31,6 @@ from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeath
 from .chatCommands.addRecurringWordOfTheDayActionChatCommand import AddRecurringWordOfTheDayActionChatCommand
 from .chatCommands.addSoundAlertCheerActionCommand import AddSoundAlertCheerActionCommand
 from .chatCommands.addTimeoutCheerActionCommand import AddTimeoutCheerActionCommand
-from .chatCommands.addTntCheerActionWizard import AddTntCheerActionCommand
 from .chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from .chatCommands.addUserChatCommand import AddUserChatCommand
@@ -107,13 +107,13 @@ from .chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface impo
     ChatterPreferredTtsRepositoryInterface
 from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
+from .cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from .cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from .cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from .commands import (AbsCommand, ConfirmCommand, PbsCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
                        StubCommand, SwQuoteCommand)
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
@@ -366,7 +366,7 @@ class CynanBot(
         timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface | None,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        tntCheerActionHelper: TntCheerActionHelperInterface | None,
+        airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelperInterface | None,
         triviaBanHelper: TriviaBanHelperInterface | None,
@@ -619,8 +619,8 @@ class CynanBot(
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
-        elif tntCheerActionHelper is not None and not isinstance(tntCheerActionHelper, TntCheerActionHelperInterface):
-            raise TypeError(f'tntCheerActionHelper argument is malformed: \"{tntCheerActionHelper}\"')
+        elif airStrikeCheerActionHelper is not None and not isinstance(airStrikeCheerActionHelper, AirStrikeCheerActionHelperInterface):
+            raise TypeError(f'airStrikeCheerActionHelper argument is malformed: \"{airStrikeCheerActionHelper}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelperInterface):
             raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif triviaBanHelper is not None and not isinstance(triviaBanHelper, TriviaBanHelperInterface):
@@ -748,7 +748,7 @@ class CynanBot(
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface | None = timeoutActionHelper
-        self.__tntCheerActionHelper: TntCheerActionHelperInterface | None = tntCheerActionHelper
+        self.__airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None = airStrikeCheerActionHelper
         self.__triviaEventHandler: AbsTriviaEventHandler | None = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
@@ -793,11 +793,11 @@ class CynanBot(
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
+            self.__addAirStrikeCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
-            self.__addTntCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addVoicemailCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__beanInstructionsCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -805,11 +805,11 @@ class CynanBot(
             self.__enableCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
         else:
+            self.__addAirStrikeCheerActionCommand: AbsChatCommand = AddAirStrikeCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = AddCrowdControlCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = AddGameShuffleCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
-            self.__addTntCheerActionCommand: AbsChatCommand = AddTntCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addVoicemailCheerActionCommand: AbsChatCommand = AddVoicemailCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__beanInstructionsCommand: AbsChatCommand = BeanInstructionsChatCommand(cheerActionsRepository, timber, twitchUtils, usersRepository)
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
@@ -1174,8 +1174,8 @@ class CynanBot(
             self.__timeoutActionHelper.setTwitchChannelProvider(self)
             self.__timeoutActionHelper.start()
 
-        if self.__tntCheerActionHelper is not None:
-            self.__tntCheerActionHelper.setTwitchChannelProvider(self)
+        if self.__airStrikeCheerActionHelper is not None:
+            self.__airStrikeCheerActionHelper.setTwitchChannelProvider(self)
 
         if self.__mostRecentAnivMessageTimeoutHelper is not None:
             self.__mostRecentAnivMessageTimeoutHelper.setTwitchChannelProvider(self)
@@ -1231,6 +1231,11 @@ class CynanBot(
     async def waitForReady(self):
         await self.wait_for_ready()
 
+    @commands.command(name = 'addairstrikecheeraction')
+    async def command_addairstrikecheeraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addAirStrikeCheerActionCommand.handleChatCommand(context)
+
     @commands.command(name = 'addbannedtriviacontroller')
     async def command_addbannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1285,11 +1290,6 @@ class CynanBot(
     async def command_addtimeoutcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addTimeoutCheerActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'addtntcheeraction')
-    async def command_addtntcheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addTntCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtriviaanswer')
     async def command_addtriviaanswer(self, ctx: Context):

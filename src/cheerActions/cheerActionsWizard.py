@@ -3,12 +3,12 @@ from datetime import timedelta
 from .cheerActionType import CheerActionType
 from .cheerActionsWizardInterface import CheerActionsWizardInterface
 from .wizards.absWizard import AbsWizard
+from .wizards.airStrike.airStrikeWizard import AirStrikeWizard
 from .wizards.beanChance.beanChanceWizard import BeanChanceWizard
 from .wizards.crowdControl.crowdControlWizard import CrowdControlWizard
 from .wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
 from .wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from .wizards.timeout.timeoutWizard import TimeoutWizard
-from .wizards.tnt.tntWizard import TntWizard
 from .wizards.voicemail.voicemailWizard import VoicemailWizard
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
@@ -64,6 +64,12 @@ class CheerActionsWizard(CheerActionsWizardInterface):
             case CheerActionType.ADGE:
                 raise RuntimeError('Not implemented')
 
+            case CheerActionType.AIR_STRIKE:
+                return await self.__startNewAirStrikeWizard(
+                    twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId
+                )
+
             case CheerActionType.BEAN_CHANCE:
                 return await self.__startNewBeanChanceWizard(
                     twitchChannel = twitchChannel,
@@ -90,12 +96,6 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
             case CheerActionType.TIMEOUT:
                 return await self.__startNewTimeoutWizard(
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
-                )
-
-            case CheerActionType.TNT:
-                return await self.__startNewTntWizard(
                     twitchChannel = twitchChannel,
                     twitchChannelId = twitchChannelId
                 )
@@ -209,23 +209,23 @@ class CheerActionsWizard(CheerActionsWizardInterface):
 
         return wizard
 
-    async def __startNewTntWizard(
+    async def __startNewAirStrikeWizard(
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ) -> TntWizard:
+    ) -> AirStrikeWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        wizard = TntWizard(
+        wizard = AirStrikeWizard(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         self.__wizards[twitchChannelId] = wizard
-        self.__timber.log('CheerActionsWizard', f'Started new TNT wizard for {twitchChannel}:{twitchChannelId}')
+        self.__timber.log('CheerActionsWizard', f'Started new Air Strike wizard for {twitchChannel}:{twitchChannelId}')
 
         return wizard
 

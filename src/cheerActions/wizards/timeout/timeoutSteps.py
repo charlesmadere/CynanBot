@@ -1,6 +1,7 @@
 from .timeoutStep import TimeoutStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...cheerActionType import CheerActionType
 
 
 class TimeoutSteps(AbsSteps):
@@ -8,7 +9,12 @@ class TimeoutSteps(AbsSteps):
     def __init__(self):
         self.__step = TimeoutStep.BITS
 
-    def getStep(self) -> TimeoutStep:
+    @property
+    def cheerActionType(self) -> CheerActionType:
+        return CheerActionType.TIMEOUT
+
+    @property
+    def currentStep(self) -> TimeoutStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

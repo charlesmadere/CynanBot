@@ -1,6 +1,7 @@
 from .superTriviaStep import SuperTriviaStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...actions.recurringActionType import RecurringActionType
 
 
 class SuperTriviaSteps(AbsSteps):
@@ -8,8 +9,13 @@ class SuperTriviaSteps(AbsSteps):
     def __init__(self):
         self.__step = SuperTriviaStep.MINUTES_BETWEEN
 
-    def getStep(self) -> SuperTriviaStep:
+    @property
+    def currentStep(self) -> SuperTriviaStep:
         return self.__step
+
+    @property
+    def recurringActionType(self) -> RecurringActionType:
+        return RecurringActionType.SUPER_TRIVIA
 
     def stepForward(self) -> StepResult:
         currentStep = self.__step

@@ -7,10 +7,10 @@ from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
 
 
-class TntCheerActionHelperInterface(ABC):
+class AirStrikeCheerActionHelperInterface(ABC):
 
     @abstractmethod
-    async def handleTntCheerAction(
+    async def handleAirStrikeCheerAction(
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,

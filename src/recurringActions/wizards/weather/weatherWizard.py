@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .weatherStep import WeatherStep
 from .weatherSteps import WeatherSteps
 from ..absWizard import AbsWizard
 from ...actions.recurringActionType import RecurringActionType
@@ -11,19 +12,20 @@ class WeatherWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps = WeatherSteps()
+        self.__steps: Final[WeatherSteps] = WeatherSteps()
         self.__minutesBetween: int | None = None
         self.__alertsOnly: bool | None = None
 
-    def getSteps(self) -> WeatherSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> WeatherStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__minutesBetween=},{self.__alertsOnly=}'
@@ -64,12 +66,17 @@ class WeatherWizard(AbsWizard):
 
         self.__minutesBetween = minutesBetween
 
+    @property
+    def steps(self) -> WeatherSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'minutesBetween': self.__minutesBetween,
             'alertsOnly': self.__alertsOnly,
+            'currentStep': self.currentStep,
+            'minutesBetween': self.__minutesBetween,
             'recurringActionType': self.recurringActionType,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

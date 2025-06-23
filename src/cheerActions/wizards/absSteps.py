@@ -3,12 +3,19 @@ from typing import Any
 
 from .absStep import AbsStep
 from .stepResult import StepResult
+from ..cheerActionType import CheerActionType
 
 
 class AbsSteps(ABC):
 
+    @property
     @abstractmethod
-    def getStep(self) -> AbsStep:
+    def cheerActionType(self) -> CheerActionType:
+        pass
+
+    @property
+    @abstractmethod
+    def currentStep(self) -> AbsStep:
         pass
 
     @abstractmethod
@@ -21,5 +28,6 @@ class AbsSteps(ABC):
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'step': self.getStep()
+            'cheerActionType': self.cheerActionType,
+            'currentStep': self.currentStep,
         }

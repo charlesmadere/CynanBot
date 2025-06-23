@@ -6,6 +6,11 @@ from frozenlist import FrozenList
 
 from .googleJsonMapperInterface import GoogleJsonMapperInterface
 from ..accessToken.googleAccessToken import GoogleAccessToken
+from ..models.absGoogleTextSynthesisInput import AbsGoogleTextSynthesisInput
+from ..models.googleMultiSpeakerMarkup import GoogleMultiSpeakerMarkup
+from ..models.googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
+from ..models.googleMultiSpeakerTextSynthesisInput import GoogleMultiSpeakerTextSynthesisInput
+from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleScope import GoogleScope
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesisResponse import GoogleTextSynthesisResponse
@@ -280,6 +285,43 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         return dictionary
 
+    async def serializeMultiSpeakerMarkup(
+        self,
+        markup: GoogleMultiSpeakerMarkup
+    ) -> dict[str, Any]:
+        if not isinstance(markup, GoogleMultiSpeakerMarkup):
+            raise TypeError(f'markup argument is malformed: \"{markup}\"')
+
+        turns: list[dict[str, str]] = list()
+
+        for markupTurn in markup.turns:
+            turns.append(await self.serializeMultiSpeakerMarkupTurn(markupTurn))
+
+        return {
+            'turns': turns
+        }
+
+    async def serializeMultiSpeakerMarkupTurn(
+        self,
+        markupTurn: GoogleMultiSpeakerMarkupTurn
+    ) -> dict[str, Any]:
+        if not isinstance(markupTurn, GoogleMultiSpeakerMarkupTurn):
+            raise TypeError(f'markupTurn argument is malformed: \"{markupTurn}\"')
+
+        return {
+            'speaker': await self.serializeMultiSpeakerVoicePreset(markupTurn.speaker),
+            'text': markupTurn.text,
+        }
+
+    async def serializeMultiSpeakerVoicePreset(
+        self,
+        voicePreset: GoogleMultiSpeakerVoicePreset
+    ) -> str:
+        if not isinstance(voicePreset, GoogleMultiSpeakerVoicePreset):
+            raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
+
+        return voicePreset.speakerCharacter
+
     async def serializeScope(
         self,
         scope: GoogleScope
@@ -323,13 +365,44 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(synthesizeRequest, GoogleTextSynthesizeRequest):
             raise TypeError(f'synthesizeRequest argument is malformed: \"{synthesizeRequest}\"')
 
+        audioConfig = await self.serializeVoiceAudioConfig(synthesizeRequest.audioConfig)
+        synthesisInput = await self.serializeTextSynthesisInput(synthesizeRequest.synthesisInput)
+        voice = await self.serializeVoiceSelectionParams(synthesizeRequest.voice)
+
         return {
-            'audioConfig': await self.serializeVoiceAudioConfig(synthesizeRequest.audioConfig),
-            'input': await self.serializeTextSynthesisInput(synthesizeRequest.synthesisInput),
-            'voice': await self.serializeVoiceSelectionParams(synthesizeRequest.voice)
+            'audioConfig': audioConfig,
+            'input': synthesisInput,
+            'voice': voice,
         }
 
     async def serializeTextSynthesisInput(
+        self,
+        synthesisInput: AbsGoogleTextSynthesisInput
+    ) -> dict[str, Any]:
+        if not isinstance(synthesisInput, AbsGoogleTextSynthesisInput):
+            raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
+
+        if isinstance(synthesisInput, GoogleMultiSpeakerTextSynthesisInput):
+            return await self.__serializeMultiSpeakerTextSynthesisInput(synthesisInput)
+        elif isinstance(synthesisInput, GoogleTextSynthesisInput):
+            return await self.__serializeTextSynthesisInput(synthesisInput)
+        else:
+            raise ValueError(f'The given AbsGoogleTextSynthesisInput type is unknown: \"{synthesisInput}\"')
+
+    async def __serializeMultiSpeakerTextSynthesisInput(
+        self,
+        synthesisInput: GoogleMultiSpeakerTextSynthesisInput
+    ) -> dict[str, Any]:
+        if not isinstance(synthesisInput, GoogleMultiSpeakerTextSynthesisInput):
+            raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
+
+        multiSpeakerMarkup = await self.serializeMultiSpeakerMarkup(synthesisInput.multiSpeakerMarkup)
+
+        return {
+            'multi_speaker_markup': multiSpeakerMarkup
+        }
+
+    async def __serializeTextSynthesisInput(
         self,
         synthesisInput: GoogleTextSynthesisInput
     ) -> dict[str, Any]:

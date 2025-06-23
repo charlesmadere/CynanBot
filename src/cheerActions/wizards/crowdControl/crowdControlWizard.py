@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .crowdControlStep import CrowdControlStep
 from .crowdControlSteps import CrowdControlSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
@@ -11,22 +12,23 @@ class CrowdControlWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps = CrowdControlSteps()
+        self.__steps: Final[CrowdControlSteps] = CrowdControlSteps()
         self.__bits: int | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
         return CheerActionType.CROWD_CONTROL
 
-    def getSteps(self) -> CrowdControlSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> CrowdControlStep:
+        return self.__steps.currentStep
 
     def printOut(self) -> str:
         return f'{self.__bits=}'
@@ -51,10 +53,15 @@ class CrowdControlWizard(AbsWizard):
 
         self.__bits = bits
 
+    @property
+    def steps(self) -> CrowdControlSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'currentStep': self.currentStep,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

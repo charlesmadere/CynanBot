@@ -6,8 +6,8 @@ from typing import Any
 
 from frozendict import frozendict
 
-from .tntCheerAction import TntCheerAction
-from .tntCheerActionHelperInterface import TntCheerActionHelperInterface
+from .airStrikeCheerAction import AirStrikeCheerAction
+from .airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ..timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ...misc import utils as utils
@@ -30,15 +30,15 @@ from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userInterface import UserInterface
 
 
-class TntCheerActionHelper(TntCheerActionHelperInterface):
+class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
 
     @dataclass(frozen = True)
-    class TntTarget:
+    class AirStrikeTarget:
         userId: str
         userName: str
 
         def __eq__(self, value: Any) -> bool:
-            if isinstance(value, TntCheerActionHelper.TntTarget):
+            if isinstance(value, AirStrikeCheerActionHelper.AirStrikeTarget):
                 return self.userId == value.userId
             else:
                 return False
@@ -61,8 +61,8 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         grenadeAlertSleepTimeSeconds: float = 0.60,
-        launchTntAlertSleepTimeSeconds: float = 2.00,
-        tntAlertSleepTimeSeconds: float = 0.50
+        launchAirStrikeAlertSleepTimeSeconds: float = 2.00,
+        airStrikeAlertSleepTimeSeconds: float = 0.50
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -92,14 +92,14 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             raise TypeError(f'grenadeAlertSleepTimeSeconds argument is malformed: \"{grenadeAlertSleepTimeSeconds}\"')
         elif grenadeAlertSleepTimeSeconds < 0.125 or grenadeAlertSleepTimeSeconds > 8:
             raise ValueError(f'soundAlertSleepTimeSeconds argument is out of bounds: {grenadeAlertSleepTimeSeconds}')
-        elif not utils.isValidNum(launchTntAlertSleepTimeSeconds):
-            raise TypeError(f'launchTntAlertSleepTimeSeconds argument is malformed: \"{launchTntAlertSleepTimeSeconds}\"')
-        elif launchTntAlertSleepTimeSeconds < 0.125 or launchTntAlertSleepTimeSeconds > 8:
-            raise ValueError(f'launchTntAlertSleepTimeSeconds argument is out of bounds: {launchTntAlertSleepTimeSeconds}')
-        elif not utils.isValidNum(tntAlertSleepTimeSeconds):
-            raise TypeError(f'tntAlertSleepTimeSeconds argument is malformed: \"{tntAlertSleepTimeSeconds}\"')
-        elif tntAlertSleepTimeSeconds < 0.125 or tntAlertSleepTimeSeconds > 8:
-            raise ValueError(f'tntAlertSleepTimeSeconds argument is out of bounds: {tntAlertSleepTimeSeconds}')
+        elif not utils.isValidNum(launchAirStrikeAlertSleepTimeSeconds):
+            raise TypeError(f'launchAirStrikeAlertSleepTimeSeconds argument is malformed: \"{launchAirStrikeAlertSleepTimeSeconds}\"')
+        elif launchAirStrikeAlertSleepTimeSeconds < 0.125 or launchAirStrikeAlertSleepTimeSeconds > 8:
+            raise ValueError(f'launchAirStrikeAlertSleepTimeSeconds argument is out of bounds: {launchAirStrikeAlertSleepTimeSeconds}')
+        elif not utils.isValidNum(airStrikeAlertSleepTimeSeconds):
+            raise TypeError(f'airStrikeAlertSleepTimeSeconds argument is malformed: \"{airStrikeAlertSleepTimeSeconds}\"')
+        elif airStrikeAlertSleepTimeSeconds < 0.125 or airStrikeAlertSleepTimeSeconds > 8:
+            raise ValueError(f'airStrikeAlertSleepTimeSeconds argument is out of bounds: {airStrikeAlertSleepTimeSeconds}')
 
         self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
@@ -113,14 +113,14 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__grenadeAlertSleepTimeSeconds: float = grenadeAlertSleepTimeSeconds
-        self.__launchTntAlertSleepTimeSeconds: float = launchTntAlertSleepTimeSeconds
-        self.__tntAlertSleepTimeSeconds: float = tntAlertSleepTimeSeconds
+        self.__launchAirStrikeAlertSleepTimeSeconds: float = launchAirStrikeAlertSleepTimeSeconds
+        self.__airStrikeAlertSleepTimeSeconds: float = airStrikeAlertSleepTimeSeconds
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __alertViaTwitchChat(
         self,
-        tntTargets: frozenset[TntTarget],
+        airStrikeTargets: frozenset[AirStrikeTarget],
         durationSeconds: int,
         broadcasterUserId: str,
         cheerUserId: str,
@@ -128,7 +128,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         twitchChatMessageId: str | None,
         user: UserInterface
     ):
-        if len(tntTargets) == 0:
+        if len(airStrikeTargets) == 0:
             return
 
         twitchChannelProvider = self.__twitchChannelProvider
@@ -138,14 +138,14 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         userNames: list[str] = list()
 
-        for tntTarget in tntTargets:
-            userNames.append(f'@{tntTarget.userName}')
+        for airStrikeTarget in airStrikeTargets:
+            userNames.append(f'@{airStrikeTarget.userName}')
 
         durationSecondsString = locale.format_string("%d", durationSeconds, grouping = True)
-        peopleCountString = locale.format_string("%d", len(tntTargets), grouping = True)
+        peopleCountString = locale.format_string("%d", len(airStrikeTargets), grouping = True)
 
         peoplePluralityString: str
-        if len(tntTargets) == 1:
+        if len(airStrikeTargets) == 1:
             peoplePluralityString = f'{peopleCountString} chatter was hit'
         else:
             peoplePluralityString = f'{peopleCountString} chatters hit'
@@ -173,20 +173,20 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         return random.choice(soundAlerts)
 
-    async def __determineTntTargets(
+    async def __determineAirStrikeTargets(
         self,
+        airStrikeAction: AirStrikeCheerAction,
         broadcasterUserId: str,
         cheerUserId: str,
-        cheerUserName: str,
-        tntAction: TntCheerAction
-    ) -> frozenset[TntTarget]:
-        tntTargets: set[TntCheerActionHelper.TntTarget] = set()
+        cheerUserName: str
+    ) -> frozenset[AirStrikeTarget]:
+        airStrikeTargets: set[AirStrikeCheerActionHelper.AirStrikeTarget] = set()
 
         additionalReverseProbability = await self.__timeoutActionSettingsRepository.getGrenadeAdditionalReverseProbability()
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:
-            tntTargets.add(TntCheerActionHelper.TntTarget(
+            airStrikeTargets.add(AirStrikeCheerActionHelper.AirStrikeTarget(
                 userId = cheerUserId,
                 userName = cheerUserName
             ))
@@ -203,32 +203,32 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         for immuneUserId in allImmuneUserIds:
             vulnerableChatters.pop(immuneUserId, None)
 
-        tntTargetCount = random.randint(tntAction.minTimeoutChatters, tntAction.maxTimeoutChatters)
+        airStrikeTargetCount = random.randint(airStrikeAction.minTimeoutChatters, airStrikeAction.maxTimeoutChatters)
         vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
-        while len(tntTargets) < tntTargetCount and len(vulnerableChattersList) >= 1:
+        while len(airStrikeTargets) < airStrikeTargetCount and len(vulnerableChattersList) >= 1:
             randomChatterIndex = random.randint(0, len(vulnerableChattersList) - 1)
             randomChatter = vulnerableChattersList[randomChatterIndex]
             del vulnerableChattersList[randomChatterIndex]
 
-            tntTargets.add(TntCheerActionHelper.TntTarget(
+            airStrikeTargets.add(AirStrikeCheerActionHelper.AirStrikeTarget(
                 userId = randomChatter.chatterUserId,
                 userName = randomChatter.chatterUserName
             ))
 
-        frozenTntTargets: frozenset[TntCheerActionHelper.TntTarget] = frozenset(tntTargets)
+        frozenAirStrikeTargets: frozenset[AirStrikeCheerActionHelper.AirStrikeTarget] = frozenset(airStrikeTargets)
 
-        for tntTarget in frozenTntTargets:
+        for airStrikeTarget in frozenAirStrikeTargets:
             await self.__activeChattersRepository.remove(
-                chatterUserId = tntTarget.userId,
+                chatterUserId = airStrikeTarget.userId,
                 twitchChannelId = broadcasterUserId
             )
 
-        self.__timber.log('TntCheerActionHelper', f'Selected TNT target(s) ({tntAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({tntTargetCount=}) ({frozenTntTargets=})')
+        self.__timber.log('AirStrikeCheerActionHelper', f'Selected target(s) ({airStrikeAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({airStrikeTargetCount=}) ({frozenAirStrikeTargets=})')
 
-        return frozenTntTargets
+        return frozenAirStrikeTargets
 
-    async def handleTntCheerAction(
+    async def handleAirStrikeCheerAction(
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
@@ -269,29 +269,29 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
         action = actions.get(bits, None)
 
-        if not isinstance(action, TntCheerAction) or not action.isEnabled:
+        if not isinstance(action, AirStrikeCheerAction) or not action.isEnabled:
             return False
         elif not await self.__recentGrenadeAttacksHelper.canThrowGrenade(
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId
         ):
-            self.__timber.log('TntCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
+            self.__timber.log('AirStrikeCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
             return False
 
-        tntTargets = await self.__determineTntTargets(
+        airStrikeTargets = await self.__determineAirStrikeTargets(
+            airStrikeAction = action,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            tntAction = action
+            cheerUserName = cheerUserName
         )
 
-        if len(tntTargets) == 0:
-            self.__timber.log('TntCheerActionHelper', f'Unable to find any vulnerable TNT targets ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=}) ({tntTargets=})')
+        if len(airStrikeTargets) == 0:
+            self.__timber.log('AirStrikeCheerActionHelper', f'Unable to find any vulnerable targets ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=}) ({airStrikeTargets=})')
             return False
 
         remainingGrenades = await self.__noteGrenadeThrow(
-            tntTargets = tntTargets,
+            airStrikeTargets = airStrikeTargets,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             user = user
@@ -302,14 +302,14 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
         )
 
         self.__backgroundTaskHelper.createTask(self.__playSoundAlerts(
-            tntTargets = tntTargets,
+            airStrikeTargets = airStrikeTargets,
             user = user
         ))
 
         durationSeconds = random.randint(action.minDurationSeconds, action.maxDurationSeconds)
 
         self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
-            tntTargets = tntTargets,
+            airStrikeTargets= airStrikeTargets,
             durationSeconds = durationSeconds,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
@@ -318,7 +318,7 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
             user = user
         ))
 
-        for tntTarget in tntTargets:
+        for airStrikeTarget in airStrikeTargets:
             self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
                 isRandomChanceEnabled = False,
                 bits = bits,
@@ -332,12 +332,12 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
                 pointRedemptionEventId = None,
                 pointRedemptionMessage = None,
                 pointRedemptionRewardId = None,
-                timeoutTargetUserId = tntTarget.userId,
-                timeoutTargetUserName = tntTarget.userName,
+                timeoutTargetUserId = airStrikeTarget.userId,
+                timeoutTargetUserName = airStrikeTarget.userName,
                 twitchChannelId = broadcasterUserId,
                 twitchChatMessageId = twitchChatMessageId,
                 userTwitchAccessToken = userTwitchAccessToken,
-                actionType = TimeoutActionType.TNT,
+                actionType = TimeoutActionType.AIR_STRIKE,
                 streamStatusRequirement = streamStatusRequirement,
                 user = user
             ))
@@ -346,15 +346,15 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
     async def __noteGrenadeThrow(
         self,
-        tntTargets: frozenset[TntTarget],
+        airStrikeTargets: frozenset[AirStrikeTarget],
         broadcasterUserId: str,
         cheerUserId: str,
         user: UserInterface
     ) -> int | None:
-        randomTntTarget = random.choice(list(tntTargets))
+        randomTarget = random.choice(list(airStrikeTargets))
 
         return await self.__recentGrenadeAttacksHelper.throwGrenade(
-            attackedUserId = randomTntTarget.userId,
+            attackedUserId = randomTarget.userId,
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
             twitchChannelId = broadcasterUserId
@@ -362,24 +362,24 @@ class TntCheerActionHelper(TntCheerActionHelperInterface):
 
     async def __playSoundAlerts(
         self,
-        tntTargets: frozenset[TntTarget],
+        airStrikeTargets: frozenset[AirStrikeTarget],
         user: UserInterface
     ):
         if not user.areSoundAlertsEnabled:
             return
-        elif len(tntTargets) == 0:
+        elif len(airStrikeTargets) == 0:
             return
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_TNT))
-        await asyncio.sleep(self.__launchTntAlertSleepTimeSeconds)
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_AIR_STRIKE))
+        await asyncio.sleep(self.__launchAirStrikeAlertSleepTimeSeconds)
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.TNT))
-        await asyncio.sleep(self.__tntAlertSleepTimeSeconds)
+        await asyncio.sleep(self.__airStrikeAlertSleepTimeSeconds)
 
         index = 0
-        numberOfSounds = len(tntTargets)
+        numberOfSounds = len(airStrikeTargets)
 
         while index < numberOfSounds:
             soundAlert = await self.__chooseRandomGrenadeSoundAlert()

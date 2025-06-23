@@ -55,7 +55,7 @@ class AddGameShuffleCheerActionChatCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not GameShuffleStep.BITS:
             raise RuntimeError(f'unknown GameShuffleStep: \"{step}\"')

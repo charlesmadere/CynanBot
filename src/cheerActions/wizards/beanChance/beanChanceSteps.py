@@ -1,6 +1,7 @@
 from .beanChanceStep import BeanChanceStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...cheerActionType import CheerActionType
 
 
 class BeanChanceSteps(AbsSteps):
@@ -8,7 +9,12 @@ class BeanChanceSteps(AbsSteps):
     def __init__(self):
         self.__step = BeanChanceStep.BITS
 
-    def getStep(self) -> BeanChanceStep:
+    @property
+    def cheerActionType(self) -> CheerActionType:
+        return CheerActionType.BEAN_CHANCE
+
+    @property
+    def currentStep(self) -> BeanChanceStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

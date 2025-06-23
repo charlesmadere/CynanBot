@@ -80,7 +80,8 @@ class AbsTriviaGameState(ABC):
     def emote(self) -> str:
         return self.__emote
 
-    def getGameId(self) -> str:
+    @property
+    def gameId(self) -> str:
         return self.__gameId
 
     def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:

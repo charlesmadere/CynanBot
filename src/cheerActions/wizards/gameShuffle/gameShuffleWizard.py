@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, Final
 
+from .gameShuffleStep import GameShuffleStep
 from .gameShuffleSteps import GameShuffleSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
@@ -11,14 +12,14 @@ class GameShuffleWizard(AbsWizard):
     def __init__(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        self.__steps = GameShuffleSteps()
+        self.__steps: Final[GameShuffleSteps] = GameShuffleSteps()
         self.__bits: int | None = None
         self.__gigaShuffleChance: int | None = None
 
@@ -26,8 +27,9 @@ class GameShuffleWizard(AbsWizard):
     def cheerActionType(self) -> CheerActionType:
         return CheerActionType.GAME_SHUFFLE
 
-    def getSteps(self) -> GameShuffleSteps:
-        return self.__steps
+    @property
+    def currentStep(self) -> GameShuffleStep:
+        return self.__steps.currentStep
 
     @property
     def gigaShuffleChance(self) -> int | None:
@@ -64,11 +66,16 @@ class GameShuffleWizard(AbsWizard):
 
         self.__gigaShuffleChance = gigaShuffleChance
 
+    @property
+    def steps(self) -> GameShuffleSteps:
+        return self.__steps
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
+            'currentStep': self.currentStep,
             'gigaShuffleChance': self.__gigaShuffleChance,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

@@ -55,7 +55,7 @@ class AddSoundAlertCheerActionCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
 
         if step is not SoundAlertStep.BITS:
             raise RuntimeError(f'unknown SoundAlertStep: \"{step}\"')

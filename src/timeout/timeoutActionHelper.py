@@ -147,6 +147,10 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutData: TimeoutActionData
     ):
         match timeoutData.actionType:
+            case TimeoutActionType.AIR_STRIKE:
+                # Air Strike actions don't play alerts here
+                pass
+
             case TimeoutActionType.GRENADE:
                 await self.__alertViaSoundAndTextToSpeechForGrenade(
                     timeoutData = timeoutData
@@ -158,10 +162,6 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                     timeoutTargetUserName = timeoutTargetUserName,
                     timeoutData = timeoutData
                 )
-
-            case TimeoutActionType.TNT:
-                # TNT actions don't play alerts here
-                pass
 
             case _:
                 raise ValueError(f'Unknown TimeoutActionType: \"{timeoutData}\"')
@@ -232,8 +232,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutData: TimeoutActionData,
         twitchChannel: TwitchChannel
     ):
-        if timeoutData.actionType is TimeoutActionType.TNT:
-            # TNT actions don't send Twitch chats within this class
+        if timeoutData.actionType is TimeoutActionType.AIR_STRIKE:
+            # Air Strike actions don't send Twitch chats within this class
             return
 
         message: str

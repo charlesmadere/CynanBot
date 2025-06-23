@@ -3,12 +3,19 @@ from typing import Any
 
 from .absStep import AbsStep
 from .stepResult import StepResult
+from ..actions.recurringActionType import RecurringActionType
 
 
 class AbsSteps(ABC):
 
+    @property
     @abstractmethod
-    def getStep(self) -> AbsStep:
+    def currentStep(self) -> AbsStep:
+        pass
+
+    @property
+    @abstractmethod
+    def recurringActionType(self) -> RecurringActionType:
         pass
 
     @abstractmethod
@@ -21,5 +28,6 @@ class AbsSteps(ABC):
 
     def toDictionary(self) -> dict[str, Any]:
         return {
-            'step': self.getStep()
+            'currentStep': self.currentStep,
+            'recurringActionType': self.recurringActionType,
         }

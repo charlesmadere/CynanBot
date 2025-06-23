@@ -1,6 +1,7 @@
 from .voicemailStep import VoicemailStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...cheerActionType import CheerActionType
 
 
 class VoicemailSteps(AbsSteps):
@@ -8,7 +9,12 @@ class VoicemailSteps(AbsSteps):
     def __init__(self):
         self.__step = VoicemailStep.BITS
 
-    def getStep(self) -> VoicemailStep:
+    @property
+    def cheerActionType(self) -> CheerActionType:
+        return CheerActionType.VOICEMAIL
+
+    @property
+    def currentStep(self) -> VoicemailStep:
         return self.__step
 
     def stepForward(self) -> StepResult:

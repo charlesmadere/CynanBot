@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
@@ -6,7 +7,7 @@ from ..cheerActionType import CheerActionType
 from ...misc import utils as utils
 
 
-class TntCheerAction(AbsCheerAction):
+class AirStrikeCheerAction(AbsCheerAction):
 
     def __init__(
         self,
@@ -43,14 +44,14 @@ class TntCheerAction(AbsCheerAction):
         elif minTimeoutChatters < 1 or minTimeoutChatters > utils.getIntMaxSafeSize():
             raise ValueError(f'minTimeoutChatters argument is out of bounds: {minTimeoutChatters}')
 
-        self.__maxDurationSeconds: int = maxDurationSeconds
-        self.__minDurationSeconds: int = minDurationSeconds
-        self.__maxTimeoutChatters: int = maxTimeoutChatters
-        self.__minTimeoutChatters: int = minTimeoutChatters
+        self.__maxDurationSeconds: Final[int] = maxDurationSeconds
+        self.__minDurationSeconds: Final[int] = minDurationSeconds
+        self.__maxTimeoutChatters: Final[int] = maxTimeoutChatters
+        self.__minTimeoutChatters: Final[int] = minTimeoutChatters
 
     @property
     def actionType(self) -> CheerActionType:
-        return CheerActionType.TNT
+        return CheerActionType.AIR_STRIKE
 
     @property
     def maxDurationSeconds(self) -> int:

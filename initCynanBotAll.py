@@ -73,6 +73,8 @@ from src.chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface i
 from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepository import ChatterPreferredTtsSettingsRepository
 from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
+from src.cheerActions.airStrike.airStrikeCheerActionHelper import AirStrikeCheerActionHelper
+from src.cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
 from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
@@ -92,8 +94,6 @@ from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import Sou
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
-from src.cheerActions.tnt.tntCheerActionHelper import TntCheerActionHelper
-from src.cheerActions.tnt.tntCheerActionHelperInterface import TntCheerActionHelperInterface
 from src.cheerActions.voicemail.voicemailCheerActionHelper import VoicemailCheerActionHelper
 from src.cheerActions.voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from src.commodoreSam.apiService.commodoreSamApiService import CommodoreSamApiService
@@ -2631,9 +2631,7 @@ voicemailPointRedemption = VoicemailPointRedemption(
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
-    timber = timber
-)
+cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
@@ -2678,7 +2676,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
     userIdsRepository = userIdsRepository
 )
 
-tntCheerActionHelper: TntCheerActionHelperInterface = TntCheerActionHelper(
+airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
     activeChattersRepository = activeChattersRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
@@ -2694,12 +2692,12 @@ tntCheerActionHelper: TntCheerActionHelperInterface = TntCheerActionHelper(
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
-    tntCheerActionHelper = tntCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -3219,7 +3217,7 @@ cynanBot = CynanBot(
     timeoutActionSettingsRepository = timeoutActionSettingsRepository,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
-    tntCheerActionHelper = tntCheerActionHelper,
+    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,
     triviaBanHelper = triviaBanHelper,

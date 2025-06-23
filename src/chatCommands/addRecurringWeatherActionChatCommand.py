@@ -53,7 +53,8 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
             twitchChannelId = userId
         )
 
-        step = wizard.getSteps().getStep()
+        step = wizard.currentStep
+
         if step is not WeatherStep.MINUTES_BETWEEN:
             raise RuntimeError(f'unknown WeatherStep: \"{step}\"')
 
@@ -65,4 +66,4 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId()
         )
 
-        self.__timber.log('AddRecurringWeatherActionChatCommand', f'Handled !addrecurringweatheraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('AddRecurringWeatherActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

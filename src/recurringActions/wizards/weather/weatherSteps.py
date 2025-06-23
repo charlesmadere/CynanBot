@@ -1,6 +1,7 @@
 from .weatherStep import WeatherStep
 from ..absSteps import AbsSteps
 from ..stepResult import StepResult
+from ...actions.recurringActionType import RecurringActionType
 
 
 class WeatherSteps(AbsSteps):
@@ -8,8 +9,13 @@ class WeatherSteps(AbsSteps):
     def __init__(self):
         self.__step = WeatherStep.MINUTES_BETWEEN
 
-    def getStep(self) -> WeatherStep:
+    @property
+    def currentStep(self) -> WeatherStep:
         return self.__step
+
+    @property
+    def recurringActionType(self) -> RecurringActionType:
+        return RecurringActionType.WEATHER
 
     def stepForward(self) -> StepResult:
         currentStep = self.__step

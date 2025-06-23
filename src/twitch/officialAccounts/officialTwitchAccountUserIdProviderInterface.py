@@ -62,3 +62,7 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
     @abstractmethod
     async def getValorantUserId(self) -> str | None:
         pass
+
+    @abstractmethod
+    async def getZeldoBotUserId(self) -> str | None:
+        pass

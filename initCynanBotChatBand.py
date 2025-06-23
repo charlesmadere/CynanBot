@@ -772,9 +772,7 @@ streamAlertsManager: StreamAlertsManagerInterface = StubStreamAlertsManager()
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
-    timber = timber
-)
+cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
@@ -798,12 +796,12 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None = Sound
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    airStrikeCheerActionHelper = None,
     beanChanceCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timeoutCheerActionHelper = None,
-    tntCheerActionHelper = None,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -1007,7 +1005,7 @@ cynanBot = CynanBot(
     timeoutActionSettingsRepository = None,
     timeoutImmuneUserIdsRepository = None,
     timeZoneRepository = timeZoneRepository,
-    tntCheerActionHelper = None,
+    airStrikeCheerActionHelper = None,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,
     triviaBanHelper = None,
