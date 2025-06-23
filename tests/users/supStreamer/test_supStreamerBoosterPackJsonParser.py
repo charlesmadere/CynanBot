@@ -12,7 +12,7 @@ class TestSupStreamerBoosterPackJsonParser:
 
     def test_parseBoosterPack(self):
         boosterPack = SupStreamerBoosterPack(
-            message = "test"
+            message = "test",
             reply = "ahoy"
         )
 
