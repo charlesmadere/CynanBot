@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
@@ -22,9 +22,9 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         elif not isinstance(defaultVoiceAudioEncoding, GoogleVoiceAudioEncoding):
             raise TypeError(f'defaultVoiceAudioEncoding argument is malformed: \"{defaultVoiceAudioEncoding}\"')
 
-        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = defaultVoiceAudioEncoding
+        self.__googleJsonMapper: Final[GoogleJsonMapperInterface] = googleJsonMapper
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultVoiceAudioEncoding: Final[GoogleVoiceAudioEncoding] = defaultVoiceAudioEncoding
 
         self.__cache: dict[str, Any] | None = None
 
@@ -33,7 +33,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 10)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 10)
 
     async def getVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
         jsonContents = await self.__readJson()
@@ -56,10 +56,14 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
 
         volumeGainDb: float | None = None
-        if 'volume_gain_db' in jsonContents and utils.isValidNum(jsonContents.get('volume_gain_db')):
-            volumeGainDb = utils.getFloatFromDict(jsonContents, 'volume_gain_db')
+        if 'volumeGainDb' in jsonContents and utils.isValidNum(jsonContents.get('volumeGainDb')):
+            volumeGainDb = utils.getFloatFromDict(jsonContents, 'volumeGainDb')
 
         return volumeGainDb
+
+    async def isMultiSpeakerEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'multiSpeakerEnabled', fallback = False)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
@@ -80,4 +84,4 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def useDonationPrefix(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'use_donation_prefix', fallback = True)
+        return utils.getBoolFromDict(jsonContents, 'useDonationPrefix', fallback = True)
