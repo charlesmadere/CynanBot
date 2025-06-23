@@ -1,6 +1,6 @@
 import pytest
 
-from frozendict import frozendict
+from frozenlist import FrozenList
 
 from src.users.supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
