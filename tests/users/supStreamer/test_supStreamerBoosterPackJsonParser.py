@@ -35,7 +35,7 @@ class TestSupStreamerBoosterPackJsonParser:
         assert result is None
 
     def test_parseRedemption_withNone(self):
-        result: SoundAlertRedemption | None = None
+        result: SupStreamerBoosterPack | None = None
 
         with pytest.raises(Exception):
             self.supStreamerBoosterPackJsonParser.parseBoosterPack(None) # type: ignore
