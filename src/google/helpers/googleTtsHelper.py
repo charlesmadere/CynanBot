@@ -1,7 +1,7 @@
 import re
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -56,16 +56,16 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
-        self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
-        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
-        self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
-        self.__googleTtsApiHelper: GoogleTtsApiHelperInterface = googleTtsApiHelper
-        self.__googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = googleTtsVoicesHelper
-        self.__timber: TimberInterface = timber
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = glacialTtsFileRetriever
+        self.__googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = googleFileExtensionHelper
+        self.__googleJsonMapper: Final[GoogleJsonMapperInterface] = googleJsonMapper
+        self.__googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = googleSettingsRepository
+        self.__googleTtsApiHelper: Final[GoogleTtsApiHelperInterface] = googleTtsApiHelper
+        self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -87,7 +87,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             loop = self.__eventLoop
         )
 
-        self.__timber.log('GoogleTtsHelper', f'Created new directories ({filePath=})')
+        self.__timber.log('GoogleTtsHelper', f'Created new directories ({filePath=}) ({directory=})')
 
     async def __createFullMessage(
         self,

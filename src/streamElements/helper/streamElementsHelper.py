@@ -78,7 +78,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             loop = self.__eventLoop
         )
 
-        self.__timber.log('StreamElementsHelper', f'Created new directories ({directory=})')
+        self.__timber.log('StreamElementsHelper', f'Created new directories ({filePath=}) ({directory=})')
 
     async def __createFullMessage(
         self,

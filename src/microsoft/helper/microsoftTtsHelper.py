@@ -78,7 +78,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
             loop = self.__eventLoop
         )
 
-        self.__timber.log('MicrosoftTtsHelper', f'Created new directories ({directory=})')
+        self.__timber.log('MicrosoftTtsHelper', f'Created new directories ({filePath=}) ({directory=})')
 
     async def __createFullMessage(
         self,
