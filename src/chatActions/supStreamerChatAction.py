@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from frozenlist import FrozenList
 
 from .absChatAction import AbsChatAction
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -71,8 +72,28 @@ class SupStreamerChatAction(AbsChatAction):
             return False
 
         chatMessage = message.getContent()
-        supStreamerMessage = user.supStreamerMessage
+        supStreamerMessages = user.supStreamerMessages
 
+        if isinstance(supStreamerMessages, FrozenList):
+            for supStreamerMsg in supStreamerMessages:
+                success = await self._checkSupMessage(chatMessage, message, now, supStreamerMsg.message, supStreamerMsg.reply, user)
+                if success:
+                    return success
+
+        if utils.isValidStr(user.supStreamerMessage):
+            return await self._checkSupMessage(chatMessage, message, now, user.supStreamerMessage, "sup", user)
+
+        return False
+
+    async def _checkSupMessage(
+        self,
+        chatMessage: str | None,
+        message: TwitchMessage,
+        now: datetime,
+        supStreamerMessage: str,
+        reply: str,
+        user: UserInterface
+    ) -> bool:
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
         elif not await self.__supStreamerHelper.isSupStreamerMessage(
@@ -112,7 +133,7 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                message = f'{message.getAuthorName()} sup',
+                message = f'{message.getAuthorName()} {reply}',
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),

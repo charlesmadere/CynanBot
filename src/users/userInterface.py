@@ -12,6 +12,7 @@ from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
+from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from ..language.languageEntry import LanguageEntry
@@ -248,6 +249,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def supStreamerMessage(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
+    def supStreamerMessages(self) -> FrozenList[SupStreamerBoosterPack] | None:
         pass
 
     @property

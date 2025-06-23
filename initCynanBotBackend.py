@@ -469,6 +469,8 @@ from src.users.redemptionCounter.redemptionCounterBoosterPackParserInterface imp
     RedemptionCounterBoosterPackParserInterface
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.soundAlert.stub.stubSoundAlertRedemptionJsonParser import StubSoundAlertRedemptionJsonParser
+from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
+from src.users.supStreamer.supStreamerBoosterPackJsonParser import SupStreamerBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
@@ -687,6 +689,8 @@ redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface 
 
 soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = StubSoundAlertRedemptionJsonParser()
 
+supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface = SupStreamerBoosterPackJsonParser()
+
 timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
 
 ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
@@ -705,6 +709,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     redemptionCounterBoosterPackParser = redemptionCounterBoosterPackParser,
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
+    supStreamerBoosterPackJsonParser = supStreamerBoosterPackJsonParser,
     timber = timber,
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,

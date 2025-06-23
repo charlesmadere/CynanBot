@@ -11,6 +11,7 @@ from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
+from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .userInterface import UserInterface
@@ -115,6 +116,7 @@ class User(UserInterface):
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
         supStreamerMessage: str | None,
+        supStreamerMessages: FrozenList[SupStreamerBoosterPack] | None,
         triviaGameRewardId: str | None,
         ttsChatterRewardId: str | None,
         voicemailRewardId: str | None,
@@ -312,6 +314,8 @@ class User(UserInterface):
             raise TypeError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif supStreamerMessage is not None and not isinstance(supStreamerMessage, str):
             raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
+        elif supStreamerMessages is not None and not isinstance(supStreamerMessages, FrozenList):
+            raise TypeError(f'supStreamerMessages argument is malformed: \"{supStreamerMessages}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif ttsChatterRewardId is not None and not isinstance(ttsChatterRewardId, str):
@@ -437,6 +441,7 @@ class User(UserInterface):
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
         self.__supStreamerMessage: str | None = supStreamerMessage
+        self.__supStreamerMessages: FrozenList[SupStreamerBoosterPack] | None = supStreamerMessages
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__ttsChatterRewardId: str | None = ttsChatterRewardId
         self.__voicemailRewardId: str | None = voicemailRewardId
@@ -641,6 +646,10 @@ class User(UserInterface):
     @property
     def supStreamerMessage(self) -> str | None:
         return self.__supStreamerMessage
+
+    @property
+    def supStreamerMessages(self) -> FrozenList[SupStreamerBoosterPack] | None:
+        return self.__supStreamerMessages
 
     @property
     def triviaGamePoints(self) -> int | None:

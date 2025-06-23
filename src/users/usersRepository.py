@@ -25,6 +25,7 @@ from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoo
 from .redemptionCounter.redemptionCounterBoosterPackParserInterface import RedemptionCounterBoosterPackParserInterface
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
+from .supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
@@ -53,6 +54,7 @@ class UsersRepository(UsersRepositoryInterface):
         pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface,
         redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface,
         soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface,
+        supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface,
         timber: TimberInterface,
         timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -78,6 +80,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'redemptionCounterBoosterPackParser argument is malformed: \"{redemptionCounterBoosterPackParser}\"')
         elif not isinstance(soundAlertRedemptionJsonParser, SoundAlertRedemptionJsonParserInterface):
             raise TypeError(f'soundAlertRedemptionJsonParser argument is malformed: \"{soundAlertRedemptionJsonParser}\"')
+        elif not isinstance(supStreamerBoosterPackJsonParser, SupStreamerBoosterPackJsonParserInterface):
+            raise TypeError(f'supStreamerBoosterPackJsonParser argument is malformed: \"{supStreamerBoosterPackJsonParser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutBoosterPackJsonParser, TimeoutBoosterPackJsonParserInterface):
@@ -100,6 +104,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = pkmnBoosterPackJsonParser
         self.__redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface = redemptionCounterBoosterPackParser
         self.__soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = soundAlertRedemptionJsonParser
+        self.__supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface = supStreamerBoosterPackJsonParser
         self.__timber: TimberInterface = timber
         self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -339,6 +344,9 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__soundAlertRedemptionJsonParser.parseRedemptions(soundAlertRedemptionsJson)
 
+        supStreamerMessagesJson: list[str] | Any | None = userJson.get('supStreamerMessages', None)
+        supStreamerMessages = self.__supStreamerBoosterPackJsonParser.parseBoosterPacks(supStreamerMessagesJson)
+
         timeoutActionFollowShieldDays: int | None = None
         if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
             timeoutActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutActionFollowShieldDays')
@@ -478,6 +486,7 @@ class UsersRepository(UsersRepositoryInterface):
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,
+            supStreamerMessages = supStreamerMessages,
             triviaGameRewardId = triviaGameRewardId,
             defaultTtsProvider = defaultTtsProvider,
             whichAnivUser = whichAnivUser,
