@@ -200,7 +200,7 @@ async def main():
 
     # print(f'translation result: {translationResult}')
 
-    message = 'lucentw sup'
+    message = f'Welcome in everyone from Eddie\'s stream!! Thanks for the raid.'
 
     fileReference = await googleTtsHelper.generateTts(
         voicePreset = None,

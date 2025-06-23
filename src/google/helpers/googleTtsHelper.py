@@ -66,7 +66,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
-        self.__sentencesRegEx: Final[Pattern] = re.compile(r'!+|\.+')
+        self.__sentencesRegEx: Final[Pattern] = re.compile(r'[!\.\?]+')
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
