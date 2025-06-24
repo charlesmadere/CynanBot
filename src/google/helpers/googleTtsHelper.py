@@ -260,7 +260,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> GoogleTtsFileReference | None:
         if voicePreset is not None and not isinstance(voicePreset, AbsGoogleVoicePreset):
             raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
@@ -280,7 +280,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         fullMessage = await self.__createFullMessage(
             donationPrefix = donationPrefix,
-            message = message
+            message = message,
         )
 
         if not utils.isValidStr(fullMessage):
