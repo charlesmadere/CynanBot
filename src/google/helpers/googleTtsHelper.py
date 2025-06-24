@@ -1,11 +1,14 @@
+import random
 import re
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Final, Pattern
+from dataclasses import dataclass
+from typing import Collection, Final, Pattern
 
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
+from frozenlist import FrozenList
 
 from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
@@ -14,10 +17,15 @@ from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..exceptions import GoogleFailedToCreateDirectoriesException
 from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from ..models.absGoogleVoicePreset import AbsGoogleVoicePreset
+from ..models.googleMultiSpeakerMarkup import GoogleMultiSpeakerMarkup
+from ..models.googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
+from ..models.googleMultiSpeakerTextSynthesisInput import GoogleMultiSpeakerTextSynthesisInput
+from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -27,6 +35,13 @@ from ...tts.models.ttsProvider import TtsProvider
 
 
 class GoogleTtsHelper(GoogleTtsHelperInterface):
+
+    @dataclass(frozen = True)
+    class GoogleSpeechRequestData:
+        voicePreset: AbsGoogleVoicePreset
+        messageSentences: FrozenList[str]
+        synthesizeRequest: GoogleTextSynthesizeRequest
+        fullMessage: str
 
     def __init__(
         self,
@@ -66,7 +81,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
-        self.__sentencesRegEx: Final[Pattern] = re.compile(r'[!\.\?]+')
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -106,16 +120,138 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         else:
             return None
 
-    async def __determineVoicePreset(
+    async def __createGoogleMultiSpeakerRequestData(
         self,
-        allowMultiSpeaker: bool,
-        fullMessage: str
-    ) -> AbsGoogleVoicePreset:
-        if allowMultiSpeaker:
-            # kinda temporary/test code just to try out Google multi speaker
-            sentences = self.__sentencesRegEx.search(fullMessage)
+        sentences: Collection[str],
+        fullMessage: str,
+    ) -> GoogleSpeechRequestData:
+        frozenSentences: FrozenList[str] = FrozenList(sentences)
+        frozenSentences.freeze()
 
-        return await self.__googleTtsVoicesHelper.getEnglishVoice()
+        voicePreset = GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER
+
+        speakerCharacters = await self.__determineMultiSpeakerCharacters(
+            voicePreset = voicePreset,
+        )
+
+        markupTurns: FrozenList[GoogleMultiSpeakerMarkupTurn] = FrozenList()
+
+        for index, sentence in enumerate(frozenSentences):
+            markupTurns.append(GoogleMultiSpeakerMarkupTurn(
+                speaker = speakerCharacters[index % len(speakerCharacters)],
+                text = sentence,
+            ))
+
+        markupTurns.freeze()
+
+        multiSpeakerMarkup = GoogleMultiSpeakerMarkup(
+            turns = markupTurns,
+        )
+
+        synthesisInput = GoogleMultiSpeakerTextSynthesisInput(
+            multiSpeakerMarkup = multiSpeakerMarkup,
+        )
+
+        voiceAudioConfig = await self.__createGoogleVoiceAudioConfig()
+
+        voiceSelectionParams = await self.__createGoogleVoiceSelectionParams(
+            voicePreset = voicePreset,
+        )
+
+        synthesizeRequest = GoogleTextSynthesizeRequest(
+            synthesisInput = synthesisInput,
+            audioConfig = voiceAudioConfig,
+            voice = voiceSelectionParams,
+        )
+
+        return GoogleTtsHelper.GoogleSpeechRequestData(
+            voicePreset = voicePreset,
+            messageSentences = frozenSentences,
+            synthesizeRequest = synthesizeRequest,
+            fullMessage = fullMessage,
+        )
+
+    async def __createGoogleSpeechRequestData(
+        self,
+        voicePreset: AbsGoogleVoicePreset | None,
+        allowMultiSpeaker: bool,
+        fullMessage: str,
+    ) -> GoogleSpeechRequestData:
+        if (voicePreset is None or isinstance(voicePreset, GoogleMultiSpeakerVoicePreset)) and allowMultiSpeaker and await self.__googleSettingsRepository.isMultiSpeakerEnabled():
+            sentences = utils.splitStringIntoSentences(fullMessage)
+
+            if len(sentences) >= 2:
+                return await self.__createGoogleMultiSpeakerRequestData(
+                    sentences = sentences,
+                    fullMessage = fullMessage,
+                )
+
+        if voicePreset is None or not isinstance(voicePreset, GoogleVoicePreset):
+            voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
+
+        messageSentences: FrozenList[str] = FrozenList()
+        messageSentences.freeze()
+
+        synthesisInput = GoogleTextSynthesisInput(
+            text = fullMessage,
+        )
+
+        voiceAudioConfig = await self.__createGoogleVoiceAudioConfig()
+
+        voiceSelectionParams = await self.__createGoogleVoiceSelectionParams(
+            voicePreset = voicePreset,
+        )
+
+        synthesizeRequest = GoogleTextSynthesizeRequest(
+            synthesisInput = synthesisInput,
+            audioConfig = voiceAudioConfig,
+            voice = voiceSelectionParams,
+        )
+
+        return GoogleTtsHelper.GoogleSpeechRequestData(
+            voicePreset = voicePreset,
+            messageSentences = messageSentences,
+            synthesizeRequest = synthesizeRequest,
+            fullMessage = fullMessage,
+        )
+
+    async def __createGoogleVoiceAudioConfig(self) -> GoogleVoiceAudioConfig:
+        return GoogleVoiceAudioConfig(
+            pitch = None,
+            speakingRate = None,
+            volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb(),
+            sampleRateHertz = None,
+            audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding(),
+        )
+
+    async def __createGoogleVoiceSelectionParams(
+        self,
+        voicePreset: AbsGoogleVoicePreset,
+    ) -> GoogleVoiceSelectionParams:
+        return GoogleVoiceSelectionParams(
+            gender = None,
+            languageCode = voicePreset.languageCode,
+            name = voicePreset.fullName,
+        )
+
+    async def __determineMultiSpeakerCharacters(
+        self,
+        voicePreset: GoogleMultiSpeakerVoicePreset,
+    ) -> FrozenList[str]:
+        allSpeakerCharacters: FrozenList[str] = FrozenList(voicePreset.speakerCharacters)
+        allSpeakerCharacters.freeze()
+
+        chosenSpeakerCharacters: FrozenList[str] = FrozenList()
+
+        # multi speaker characters are limited to 2
+        while len(chosenSpeakerCharacters) < 2:
+            randomSpeakerCharacter = random.choice(allSpeakerCharacters)
+
+            if randomSpeakerCharacter not in chosenSpeakerCharacters:
+                chosenSpeakerCharacters.append(randomSpeakerCharacter)
+
+        chosenSpeakerCharacters.freeze()
+        return chosenSpeakerCharacters
 
     async def generateTts(
         self,
@@ -150,51 +286,27 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if not utils.isValidStr(fullMessage):
             return None
 
-        if voicePreset is None:
-            voicePreset = await self.__determineVoicePreset(
-                allowMultiSpeaker = allowMultiSpeaker,
-                fullMessage = fullMessage
-            )
+        googleSpeechRequest = await self.__createGoogleSpeechRequestData(
+            voicePreset = voicePreset,
+            allowMultiSpeaker = allowMultiSpeaker,
+            fullMessage = fullMessage,
+        )
 
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = fullMessage,
-            voice = voicePreset.fullName,
-            provider = TtsProvider.GOOGLE
+            voice = googleSpeechRequest.voicePreset.fullName,
+            provider = TtsProvider.GOOGLE,
         )
 
         if glacialFile is not None:
             return GoogleTtsFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 filePath = glacialFile.filePath,
-                voicePreset = await self.__googleJsonMapper.requireVoicePreset(glacialFile.voice)
+                voicePreset = await self.__googleJsonMapper.requireVoicePreset(glacialFile.voice),
             )
 
-        synthesisInput = GoogleTextSynthesisInput(
-            text = fullMessage
-        )
-
-        voice = GoogleVoiceSelectionParams(
-            gender = None,
-            languageCode = voicePreset.languageCode,
-            name = voicePreset.fullName
-        )
-
-        audioConfig = GoogleVoiceAudioConfig(
-            pitch = None,
-            speakingRate = None,
-            volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb(),
-            sampleRateHertz = None,
-            audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
-        )
-
-        request = GoogleTextSynthesizeRequest(
-            synthesisInput = synthesisInput,
-            audioConfig = audioConfig,
-            voice = voice
-        )
-
         speechBytes = await self.__googleTtsApiHelper.getSpeech(
-            request = request
+            request = googleSpeechRequest.synthesizeRequest,
         )
 
         if speechBytes is None:
@@ -206,22 +318,22 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         glacialFile = await self.__glacialTtsFileRetriever.saveFile(
             fileExtension = fileExtension,
             message = fullMessage,
-            voice = await self.__googleJsonMapper.serializeVoicePreset(voicePreset),
-            provider = TtsProvider.GOOGLE
+            voice = await self.__googleJsonMapper.serializeVoicePreset(googleSpeechRequest.voicePreset),
+            provider = TtsProvider.GOOGLE,
         )
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
             fileName = glacialFile.fileName,
-            filePath = glacialFile.filePath
+            filePath = glacialFile.filePath,
         ):
             return GoogleTtsFileReference(
                 storeDateTime = glacialFile.storeDateTime,
-                voicePreset = voicePreset,
-                filePath = glacialFile.filePath
+                voicePreset = googleSpeechRequest.voicePreset,
+                filePath = glacialFile.filePath,
             )
         else:
-            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({fullMessage=}) ({request=})')
+            self.__timber.log('GoogleTtsHelper', f'Failed to write Google TTS speechBytes to file ({googleSpeechRequest=})')
             return None
 
     async def __saveSpeechBytes(

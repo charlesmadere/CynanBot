@@ -794,6 +794,33 @@ class TestUtils:
         assert isinstance(result, list)
         assert len(result) == 0
 
+    def test_splitStringIntoSentences1(self):
+        result = utils.splitStringIntoSentences('Welcome in everyone from Eddie\'s stream. Thanks for the raid!!')
+        assert len(result) == 2
+        assert result[0] == 'Welcome in everyone from Eddie\'s stream.'
+        assert result[1] == 'Thanks for the raid!!'
+
+    def test_splitStringIntoSentences2(self):
+        result = utils.splitStringIntoSentences('uh oh...?')
+        assert len(result) == 1
+        assert result[0] == 'uh oh...?'
+
+    def test_splitStringIntoSentences3(self):
+        result = utils.splitStringIntoSentences('oh no……! will this work? Even with weird punctuation?!!? 🤔')
+        assert len(result) == 4
+        assert result[0] == 'oh no……!'
+        assert result[1] == 'will this work?'
+        assert result[2] == 'Even with weird punctuation?!!?'
+        assert result[3] == '🤔'
+
+    def test_splitStringIntoSentences_withEmptyString(self):
+        result = utils.splitStringIntoSentences('')
+        assert len(result) == 0
+
+    def test_splitStringIntoSentences_withWhitespaceString(self):
+        result = utils.splitStringIntoSentences(' ')
+        assert len(result) == 0
+
     def test_strContainsAlphanumericCharacters_withAtJrp2234(self):
         result = utils.strContainsAlphanumericCharacters('@JRP2234')
         assert result is True

@@ -1,14 +1,14 @@
 import pytest
-
 from frozenlist import FrozenList
 
 from src.users.supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
-from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
 from src.users.supStreamer.supStreamerBoosterPackJsonParser import SupStreamerBoosterPackJsonParser
+from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
+
 
 class TestSupStreamerBoosterPackJsonParser:
 
-    supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface = SupStreamerBoosterPackJsonParser()
+    parser: SupStreamerBoosterPackJsonParserInterface = SupStreamerBoosterPackJsonParser()
 
     def test_parseBoosterPack(self):
         boosterPack = SupStreamerBoosterPack(
@@ -16,7 +16,7 @@ class TestSupStreamerBoosterPackJsonParser:
             reply = "ahoy"
         )
 
-        result = self.supStreamerBoosterPackJsonParser.parseBoosterPack({
+        result = self.parser.parseBoosterPack({
             'message': boosterPack.message,
             'reply': boosterPack.reply
         })
@@ -30,7 +30,7 @@ class TestSupStreamerBoosterPackJsonParser:
         result: SupStreamerBoosterPack | None = None
 
         with pytest.raises(Exception):
-            self.supStreamerBoosterPackJsonParser.parseBoosterPack(dict())
+            self.parser.parseBoosterPack(dict())
 
         assert result is None
 
@@ -38,7 +38,7 @@ class TestSupStreamerBoosterPackJsonParser:
         result: SupStreamerBoosterPack | None = None
 
         with pytest.raises(Exception):
-            self.supStreamerBoosterPackJsonParser.parseBoosterPack(None) # type: ignore
+            self.parser.parseBoosterPack(None) # type: ignore
 
         assert result is None
 
@@ -53,7 +53,7 @@ class TestSupStreamerBoosterPackJsonParser:
             reply = "ahoy2"
         )
 
-        result = self.supStreamerBoosterPackJsonParser.parseBoosterPacks([
+        result = self.parser.parseBoosterPacks([
             {
                 'message': "test",
                 'reply': "ahoy"
@@ -79,3 +79,8 @@ class TestSupStreamerBoosterPackJsonParser:
         assert redemption == boosterPack2
         assert redemption.message == boosterPack2.message
         assert redemption.reply == boosterPack2.reply
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, SupStreamerBoosterPackJsonParser)
+        assert isinstance(self.parser, SupStreamerBoosterPackJsonParserInterface)

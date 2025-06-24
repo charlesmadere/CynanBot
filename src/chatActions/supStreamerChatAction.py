@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from frozenlist import FrozenList
 
 from .absChatAction import AbsChatAction
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -74,18 +73,18 @@ class SupStreamerChatAction(AbsChatAction):
         chatMessage = message.getContent()
         supStreamerMessages = user.supStreamerMessages
 
-        if isinstance(supStreamerMessages, FrozenList):
+        if supStreamerMessages is not None and len(supStreamerMessages) >= 1:
             for supStreamerMsg in supStreamerMessages:
-                success = await self._checkSupMessage(chatMessage, message, now, supStreamerMsg.message, supStreamerMsg.reply, user)
+                success = await self.__checkSupMessage(chatMessage, message, now, supStreamerMsg.message, supStreamerMsg.reply, user)
                 if success:
                     return success
 
         if utils.isValidStr(user.supStreamerMessage):
-            return await self._checkSupMessage(chatMessage, message, now, user.supStreamerMessage, "sup", user)
+            return await self.__checkSupMessage(chatMessage, message, now, user.supStreamerMessage, "sup", user)
 
         return False
 
-    async def _checkSupMessage(
+    async def __checkSupMessage(
         self,
         chatMessage: str | None,
         message: TwitchMessage,

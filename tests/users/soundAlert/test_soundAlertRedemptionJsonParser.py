@@ -1,5 +1,4 @@
 import pytest
-
 from frozendict import frozendict
 
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper

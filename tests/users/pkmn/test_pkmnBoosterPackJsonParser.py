@@ -1,5 +1,4 @@
 import pytest
-
 from frozendict import frozendict
 
 from src.timber.timberInterface import TimberInterface

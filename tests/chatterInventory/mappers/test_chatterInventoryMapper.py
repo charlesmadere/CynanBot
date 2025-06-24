@@ -276,8 +276,8 @@ class TestChatterInventoryMapper:
 
     @pytest.mark.asyncio
     async def test_serializeInventory_withNegativeNumbers(self):
-        airStrikes = round(random.uniform(-1.00, 0.01) * 100)
-        grenades = round(random.uniform(-1.00, 0.01) * 100)
+        airStrikes = round(random.uniform(-1.00, -0.01) * 100)
+        grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,

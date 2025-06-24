@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .supStreamerBoosterPack import SupStreamerBoosterPack
 
+
 class SupStreamerBoosterPackJsonParserInterface(ABC):
 
     @abstractmethod

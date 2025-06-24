@@ -574,6 +574,30 @@ def splitLongStringIntoMessages(
 
     return messages
 
+SENTENCES_REG_EX: Final[Pattern] = re.compile(r'(?<=[.!?…])\s+', re.IGNORECASE)
+
+def splitStringIntoSentences(message: str) -> list[str]:
+    if not isinstance(message, str):
+        raise TypeError(f'message argument is malformed: \"{message}\"')
+
+    sentences: list[str] = list()
+
+    if not isValidStr(message):
+        return sentences
+
+    searchResult = SENTENCES_REG_EX.split(message)
+
+    if searchResult is None or len(searchResult) == 0:
+        return sentences
+
+    for sentence in searchResult:
+        cleanedSentence = cleanStr(sentence)
+
+        if isValidStr(cleanedSentence):
+            sentences.append(cleanedSentence)
+
+    return sentences
+
 ALPHANUMERIC_REG_EX: Final[Pattern] = re.compile(r'.*[a-z0-9]+.*', re.IGNORECASE)
 
 def strContainsAlphanumericCharacters(s: str | None) -> TypeGuard[str]:
