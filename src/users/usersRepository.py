@@ -25,6 +25,7 @@ from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoo
 from .redemptionCounter.redemptionCounterBoosterPackParserInterface import RedemptionCounterBoosterPackParserInterface
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
+from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
 from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
@@ -344,9 +345,6 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__soundAlertRedemptionJsonParser.parseRedemptions(soundAlertRedemptionsJson)
 
-        supStreamerMessagesJson: list[str] | Any | None = userJson.get('supStreamerMessages', None)
-        supStreamerMessages = self.__supStreamerBoosterPackJsonParser.parseBoosterPacks(supStreamerMessagesJson)
-
         timeoutActionFollowShieldDays: int | None = None
         if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
             timeoutActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutActionFollowShieldDays')
@@ -362,6 +360,11 @@ class UsersRepository(UsersRepositoryInterface):
             crowdControlGameShuffleRewardId = userJson.get('crowdControlGameShuffleRewardId')
             crowdControlBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('crowdControlBoosterPacks')
             crowdControlBoosterPacks = self.__crowdControlJsonParser.parseBoosterPacks(crowdControlBoosterPacksJson)
+
+        supStreamerBoosterPacks: FrozenList[SupStreamerBoosterPack] | None = None
+        if isSupStreamerEnabled:
+            supStreamerBoosterPacksJson: list[dict[str, Any]] | Any | None = userJson.get('supStreamerMessages', None)
+            supStreamerBoosterPacks = self.__supStreamerBoosterPackJsonParser.parseBoosterPacks(supStreamerBoosterPacksJson)
 
         defaultTtsProvider = TtsProvider.DEC_TALK
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = None
@@ -486,7 +489,6 @@ class UsersRepository(UsersRepositoryInterface):
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,
-            supStreamerMessages = supStreamerMessages,
             triviaGameRewardId = triviaGameRewardId,
             defaultTtsProvider = defaultTtsProvider,
             whichAnivUser = whichAnivUser,
@@ -499,6 +501,7 @@ class UsersRepository(UsersRepositoryInterface):
             timeoutBoosterPacks = timeoutBoosterPacks,
             chatSoundAlerts = chatSoundAlerts,
             chatBackMessages = chatBackMessages,
+            supStreamerBoosterPacks = supStreamerBoosterPacks,
             ttsBoosterPacks = ttsBoosterPacks,
             timeZones = timeZones,
         )

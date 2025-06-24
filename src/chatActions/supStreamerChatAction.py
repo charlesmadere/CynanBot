@@ -71,11 +71,11 @@ class SupStreamerChatAction(AbsChatAction):
             return False
 
         chatMessage = message.getContent()
-        supStreamerMessages = user.supStreamerMessages
+        supStreamerBoosterPacks = user.supStreamerBoosterPacks
 
-        if supStreamerMessages is not None and len(supStreamerMessages) >= 1:
-            for supStreamerMsg in supStreamerMessages:
-                success = await self.__checkSupMessage(chatMessage, message, now, supStreamerMsg.message, supStreamerMsg.reply, user)
+        if supStreamerBoosterPacks is not None and len(supStreamerBoosterPacks) >= 1:
+            for supStreamerBoosterPack in supStreamerBoosterPacks:
+                success = await self.__checkSupMessage(chatMessage, message, now, supStreamerBoosterPack.message, supStreamerBoosterPack.reply, user)
                 if success:
                     return success
 

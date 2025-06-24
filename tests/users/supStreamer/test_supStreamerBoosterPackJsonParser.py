@@ -26,23 +26,23 @@ class TestSupStreamerBoosterPackJsonParser:
         assert result.message == boosterPack.message
         assert result.reply == boosterPack.reply
 
-    def test_parseRedemption_withEmptyDictionary(self):
+    def test_parseBoosterPack_withEmptyDictionary(self):
         result: SupStreamerBoosterPack | None = None
 
         with pytest.raises(Exception):
-            self.parser.parseBoosterPack(dict())
+            result = self.parser.parseBoosterPack(dict())
 
         assert result is None
 
-    def test_parseRedemption_withNone(self):
+    def test_parseBoosterPack_withNone(self):
         result: SupStreamerBoosterPack | None = None
 
         with pytest.raises(Exception):
-            self.parser.parseBoosterPack(None) # type: ignore
+            result = self.parser.parseBoosterPack(None) # type: ignore
 
         assert result is None
 
-    def test_parseRedemptions(self):
+    def test_parseBoosterPacks(self):
         boosterPack1 = SupStreamerBoosterPack(
             message = "test",
             reply = "ahoy"
@@ -79,6 +79,14 @@ class TestSupStreamerBoosterPackJsonParser:
         assert redemption == boosterPack2
         assert redemption.message == boosterPack2.message
         assert redemption.reply == boosterPack2.reply
+
+    def test_parseBoosterPacks_withEmptyList(self):
+        result = self.parser.parseBoosterPacks(list())
+        assert result is None
+
+    def test_parseBoosterPacks_withNone(self):
+        result = self.parser.parseBoosterPacks(None)
+        assert result is None
 
     def test_sanity(self):
         assert self.parser is not None

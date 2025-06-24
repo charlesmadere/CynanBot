@@ -253,7 +253,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def supStreamerMessages(self) -> FrozenList[SupStreamerBoosterPack] | None:
+    def supStreamerBoosterPacks(self) -> FrozenList[SupStreamerBoosterPack] | None:
         pass
 
     @property
