@@ -1,3 +1,5 @@
+from typing import Final
+
 import aiofiles.ospath
 from frozenlist import FrozenList
 
@@ -16,9 +18,9 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__cache: dict[str, str | None] = dict()
+        self.__cache: Final[dict[str, str | None]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()

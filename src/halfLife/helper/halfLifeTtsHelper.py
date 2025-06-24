@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
@@ -12,20 +14,20 @@ class HalfLifeTtsHelper(HalfLifeTtsHelperInterface):
 
     def __init__(
         self,
-        halfLifeTtsService: HalfLifeTtsServiceInterface,
         halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface,
-        halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface
+        halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
+        halfLifeTtsService: HalfLifeTtsServiceInterface
     ):
-        if not isinstance(halfLifeTtsService, HalfLifeTtsServiceInterface):
-            raise TypeError(f'halfLifeTtsService argument is malformed: \"{halfLifeTtsService}\"')
-        elif not isinstance(halfLifeMessageVoiceParser, HalfLifeMessageVoiceParserInterface):
+        if not isinstance(halfLifeMessageVoiceParser, HalfLifeMessageVoiceParserInterface):
             raise TypeError(f'halfLifeMessageVoiceParser argument is malformed: \"{halfLifeMessageVoiceParser}\"')
         elif not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
+        elif not isinstance(halfLifeTtsService, HalfLifeTtsServiceInterface):
+            raise TypeError(f'halfLifeTtsService argument is malformed: \"{halfLifeTtsService}\"')
 
-        self.__halfLifeTtsService: HalfLifeTtsServiceInterface = halfLifeTtsService
-        self.__halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = halfLifeMessageVoiceParser
-        self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
+        self.__halfLifeMessageVoiceParser: Final[HalfLifeMessageVoiceParserInterface] = halfLifeMessageVoiceParser
+        self.__halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = halfLifeSettingsRepository
+        self.__halfLifeTtsService: Final[HalfLifeTtsServiceInterface] = halfLifeTtsService
 
     async def generateTts(
         self,

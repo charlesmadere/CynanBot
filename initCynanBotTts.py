@@ -1320,9 +1320,9 @@ halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessag
 )
 
 halfLifeTtsHelper: HalfLifeTtsHelperInterface = HalfLifeTtsHelper(
-    halfLifeTtsService = halfLifeTtsService,
     halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
-    halfLifeSettingsRepository = halfLifeSettingsRepository
+    halfLifeSettingsRepository = halfLifeSettingsRepository,
+    halfLifeTtsService = halfLifeTtsService
 )
 
 halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
