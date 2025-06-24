@@ -128,7 +128,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         frozenSentences: FrozenList[str] = FrozenList(sentences)
         frozenSentences.freeze()
 
-        voicePreset = GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER
+        voicePreset = await self.__googleTtsVoicesHelper.getEnglishMultiSpeakerVoice()
 
         speakerCharacters = await self.__determineMultiSpeakerCharacters(
             voicePreset = voicePreset,

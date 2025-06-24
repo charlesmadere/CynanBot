@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
 
+from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleVoicePreset import GoogleVoicePreset
 from ...language.languageEntry import LanguageEntry
 
 
 class GoogleTtsVoicesHelperInterface(ABC):
+
+    @abstractmethod
+    async def getEnglishMultiSpeakerVoice(self) -> GoogleMultiSpeakerVoicePreset:
+        pass
 
     @abstractmethod
     async def getEnglishVoice(self) -> GoogleVoicePreset:
