@@ -29,6 +29,8 @@ from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
+from ..models.twitchConduitRequest import TwitchConduitRequest
+from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -759,6 +761,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName
+        )
+
+    async def parseConduitShard(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchConduitShard | None:
+        if not isinstance(jsonResponse, dict):
+            return None
+
+        conduitId = utils.getStrFromDict(jsonResponse, 'conduit_id')
+        shard = utils.getStrFromDict(jsonResponse, 'shard')
+
+        return TwitchConduitShard(
+            conduitId = conduitId,
+            shard = shard,
         )
 
     async def parseConnectionStatus(
@@ -1535,6 +1552,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if 'disconnected_at' in jsonResponse and utils.isValidStr(jsonResponse.get('disconnected_at')):
             disconnectedAt = utils.getDateTimeFromDict(jsonResponse, 'disconnected_at')
 
+        callbackUrl: str | None = None
+        if 'callback' in jsonResponse and utils.isValidUrl(jsonResponse.get('callback')):
+            callbackUrl = utils.getStrFromDict(jsonResponse, 'callback')
+
         conduitId: str | None = None
         if 'conduit_id' in jsonResponse and utils.isValidStr(jsonResponse.get('conduit_id')):
             conduitId = utils.getStrFromDict(jsonResponse, 'conduit_id')
@@ -1552,6 +1573,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchWebsocketTransport(
             connectedAt = connectedAt,
             disconnectedAt = disconnectedAt,
+            callbackUrl = callbackUrl,
             conduitId = conduitId,
             secret = secret,
             sessionId = sessionId,
@@ -1845,6 +1867,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return result
 
+    async def requireWebsocketMessageType(
+        self,
+        messageType: str | Any | None
+    ) -> TwitchWebsocketMessageType:
+        result = await self.parseWebsocketMessageType(messageType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{messageType}\" into TwitchWebsocketMessageType value!')
+
+        return result
+
     async def serializeBanRequest(
         self,
         banRequest: TwitchBanRequest
@@ -1913,6 +1946,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return dictionary
 
+    async def serializeConduitRequest(
+        self,
+        conduitRequest: TwitchConduitRequest
+    ) -> dict[str, Any]:
+        if not isinstance(conduitRequest, TwitchConduitRequest):
+            raise TypeError(f'conduitRequest argument is malformed: \"{conduitRequest}\"')
+
+        return {
+            'shard_count': conduitRequest.shardCount,
+        }
+
     async def serializeEventSubRequest(
         self,
         eventSubRequest: TwitchEventSubRequest
@@ -1921,14 +1965,15 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             raise TypeError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')
 
         condition = await self.serializeCondition(eventSubRequest.condition)
-        eventSubType = await self.serializeSubscriptionType(eventSubRequest.subscriptionType)
         transport = await self.serializeTransport(eventSubRequest.transport)
+        eventSubType = await self.serializeSubscriptionType(eventSubRequest.subscriptionType)
+        version = eventSubRequest.subscriptionType.version
 
         return {
             'condition': condition,
             'transport': transport,
             'type': eventSubType,
-            'version': eventSubRequest.subscriptionType.version
+            'version': version,
         }
 
     async def serializeSendChatAnnouncementRequest(
@@ -2023,21 +2068,34 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             raise TypeError(f'transport argument is malformed: \"{transport}\"')
 
         dictionary: dict[str, Any] = {
-            'method': transport.method.toStr()
+            'method': await self.serializeTransportMethod(transport.method)
         }
 
-        if utils.isValidStr(transport.sessionId):
-            dictionary['session_id'] = transport.sessionId
+        match transport.method:
+            case TwitchWebsocketTransportMethod.CONDUIT:
+                dictionary['conduit_id'] = transport.requireConduitId()
+
+            case TwitchWebsocketTransportMethod.WEBHOOK:
+                dictionary['callback'] = transport.requireCallbackUrl()
+                dictionary['secret'] = transport.requireSecret()
+
+            case TwitchWebsocketTransportMethod.WEBSOCKET:
+                dictionary['session_id'] = transport.requireSessionId()
+
+            case _:
+                raise ValueError(f'Unknown TwitchWebsocketTransportMethod value: \"{transport}\"')
 
         return dictionary
 
-    async def requireWebsocketMessageType(
+    async def serializeTransportMethod(
         self,
-        messageType: str | Any | None
-    ) -> TwitchWebsocketMessageType:
-        result = await self.parseWebsocketMessageType(messageType)
+        transportMethod: TwitchWebsocketTransportMethod
+    ) -> str:
+        if not isinstance(transportMethod, TwitchWebsocketTransportMethod):
+            raise TypeError(f'transportMethod argument is malformed: \"{transportMethod}\"')
 
-        if result is None:
-            raise ValueError(f'Unable to parse \"{messageType}\" into TwitchWebsocketMessageType value!')
-
-        return result
+        match transportMethod:
+            case TwitchWebsocketTransportMethod.CONDUIT: return 'conduit'
+            case TwitchWebsocketTransportMethod.WEBHOOK: return 'webhook'
+            case TwitchWebsocketTransportMethod.WEBSOCKET: return 'websocket'
+            case _: raise ValueError(f'Unknown TwitchWebsocketTransportMethod value: \"{transportMethod}\"')

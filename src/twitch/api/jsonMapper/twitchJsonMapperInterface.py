@@ -24,6 +24,8 @@ from ..models.twitchChatter import TwitchChatter
 from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
+from ..models.twitchConduitRequest import TwitchConduitRequest
+from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -223,6 +225,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchWebsocketCondition | None:
+        pass
+
+    @abstractmethod
+    async def parseConduitShard(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchConduitShard | None:
         pass
 
     @abstractmethod
@@ -590,6 +599,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def serializeConduitRequest(
+        self,
+        conduitRequest: TwitchConduitRequest
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
     async def serializeEventSubRequest(
         self,
         eventSubRequest: TwitchEventSubRequest
@@ -622,4 +638,11 @@ class TwitchJsonMapperInterface(ABC):
         self,
         transport: TwitchWebsocketTransport
     ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTransportMethod(
+        self,
+        transportMethod: TwitchWebsocketTransportMethod
+    ) -> str:
         pass

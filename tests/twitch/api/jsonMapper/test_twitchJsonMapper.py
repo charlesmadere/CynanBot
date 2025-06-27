@@ -19,6 +19,8 @@ from src.twitch.api.models.twitchChatMessageFragmentType import TwitchChatMessag
 from src.twitch.api.models.twitchChatMessageType import TwitchChatMessageType
 from src.twitch.api.models.twitchChatter import TwitchChatter
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata
+from src.twitch.api.models.twitchConduitRequest import TwitchConduitRequest
+from src.twitch.api.models.twitchConduitShard import TwitchConduitShard
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
@@ -592,6 +594,28 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseCondition_withNone(self):
         result = await self.jsonMapper.parseCondition(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConduitShard(self):
+        conduitShard = TwitchConduitShard(
+            conduitId = "abc123",
+            shard = "42",
+        )
+
+        result = await self.jsonMapper.parseConduitShard({
+            'conduit_id': conduitShard.conduitId,
+            'shard': conduitShard.shard,
+        })
+
+        assert isinstance(result, TwitchConduitShard)
+        assert result == conduitShard
+        assert result.conduitId == conduitShard.conduitId
+        assert result.shard == conduitShard.shard
+
+    @pytest.mark.asyncio
+    async def test_parseConduitShard_withNone(self):
+        result = await self.jsonMapper.parseConduitShard(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -1707,6 +1731,11 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireTransportMethod_withConduit(self):
+        result = await self.jsonMapper.requireTransportMethod('conduit')
+        assert result is TwitchWebsocketTransportMethod.CONDUIT
+
+    @pytest.mark.asyncio
     async def test_requireTransportMethod_withEmptyString(self):
         result: TwitchWebsocketTransportMethod | None = None
 
@@ -1723,11 +1752,6 @@ class TestTwitchJsonMapper:
             result = await self.jsonMapper.requireTransportMethod(None)
 
         assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireTransportMethod_withConduit(self):
-        result = await self.jsonMapper.requireTransportMethod('conduit')
-        assert result is TwitchWebsocketTransportMethod.CONDUIT
 
     @pytest.mark.asyncio
     async def test_requireTransportMethod_withWebhook(self):
@@ -1799,6 +1823,11 @@ class TestTwitchJsonMapper:
             result = await self.jsonMapper.requireWebsocketMessageType(' ')
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, TwitchJsonMapper)
+        assert isinstance(self.jsonMapper, TwitchJsonMapperInterface)
 
     @pytest.mark.asyncio
     async def test_serializeBanRequest(self):
@@ -1906,9 +1935,17 @@ class TestTwitchJsonMapper:
         assert result == 'purple'
 
     @pytest.mark.asyncio
+    async def test_serializeConduitRequest(self):
+        conduitRequest = TwitchConduitRequest(shardCount = 5)
+        result = await self.jsonMapper.serializeConduitRequest(conduitRequest)
+        assert isinstance(result, dict)
+        assert len(result) == 1
+        assert result['shard_count'] == 5
+
+    @pytest.mark.asyncio
     async def test_serializeEventSubRequest1(self):
         condition = TwitchWebsocketCondition(
-            broadcasterUserId = 'abc123'
+            broadcasterUserId = 'abc123',
         )
 
         subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
@@ -1916,10 +1953,11 @@ class TestTwitchJsonMapper:
         transport = TwitchWebsocketTransport(
             connectedAt = None,
             disconnectedAt = None,
+            callbackUrl = 'https://twitch.tv/',
             conduitId = None,
             secret = None,
-            sessionId = 'qwerty',
-            method = TwitchWebsocketTransportMethod.WEBSOCKET
+            sessionId = 'sessionId',
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
         )
 
         request = TwitchEventSubRequest(
@@ -1927,7 +1965,7 @@ class TestTwitchJsonMapper:
             twitchChannelId = condition.requireBroadcasterUserId(),
             condition = condition,
             subscriptionType = subscriptionType,
-            transport = transport
+            transport = transport,
         )
 
         dictionary = await self.jsonMapper.serializeEventSubRequest(request)
@@ -1945,7 +1983,7 @@ class TestTwitchJsonMapper:
 
         assert 'transport' in dictionary
         assert 'method' in dictionary['transport']
-        assert dictionary['transport']['method'] == transport.method.toStr()
+        assert dictionary['transport']['method'] == await self.jsonMapper.serializeTransportMethod(transport.method)
         assert 'session_id' in dictionary['transport']
         assert dictionary['transport']['session_id'] == transport.sessionId
 
@@ -1966,9 +2004,10 @@ class TestTwitchJsonMapper:
         transport = TwitchWebsocketTransport(
             connectedAt = None,
             disconnectedAt = None,
+            callbackUrl = None,
             conduitId = None,
             secret = None,
-            sessionId = 'qwerty',
+            sessionId = 'def456',
             method = TwitchWebsocketTransportMethod.WEBSOCKET
         )
 
@@ -1995,7 +2034,7 @@ class TestTwitchJsonMapper:
 
         assert 'transport' in dictionary
         assert 'method' in dictionary['transport']
-        assert dictionary['transport']['method'] == transport.method.toStr()
+        assert dictionary['transport']['method'] == await self.jsonMapper.serializeTransportMethod(transport.method)
         assert 'session_id' in dictionary['transport']
         assert dictionary['transport']['session_id'] == transport.sessionId
 
@@ -2017,6 +2056,7 @@ class TestTwitchJsonMapper:
         transport = TwitchWebsocketTransport(
             connectedAt = None,
             disconnectedAt = None,
+            callbackUrl = None,
             conduitId = None,
             secret = None,
             sessionId = 'qwerty',
@@ -2047,7 +2087,7 @@ class TestTwitchJsonMapper:
 
         assert 'transport' in dictionary
         assert 'method' in dictionary['transport']
-        assert dictionary['transport']['method'] == transport.method.toStr()
+        assert dictionary['transport']['method'] == await self.jsonMapper.serializeTransportMethod(transport.method)
         assert 'session_id' in dictionary['transport']
         assert dictionary['transport']['session_id'] == transport.sessionId
 
@@ -2214,7 +2254,84 @@ class TestTwitchJsonMapper:
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.USER_UPDATE)
         assert string == 'user.update'
 
-    def test_sanity(self):
-        assert self.jsonMapper is not None
-        assert isinstance(self.jsonMapper, TwitchJsonMapper)
-        assert isinstance(self.jsonMapper, TwitchJsonMapperInterface)
+    @pytest.mark.asyncio
+    async def test_serializeTransport_withConduitTransportMethod(self):
+        transport = TwitchWebsocketTransport(
+            connectedAt = None,
+            disconnectedAt = None,
+            callbackUrl = None,
+            conduitId = 'abc123',
+            secret = None,
+            sessionId = None,
+            method = TwitchWebsocketTransportMethod.CONDUIT,
+        )
+
+        result = await self.jsonMapper.serializeTransport(transport)
+        assert isinstance(result, dict)
+        assert len(result) == 2
+
+        assert result['conduit_id'] == transport.requireConduitId()
+        assert result['method'] == await self.jsonMapper.serializeTransportMethod(transport.method)
+
+    @pytest.mark.asyncio
+    async def test_serializeTransport_withWebhookTransportMethod(self):
+        transport = TwitchWebsocketTransport(
+            connectedAt = None,
+            disconnectedAt = None,
+            callbackUrl = 'https://www.google.com/',
+            conduitId = None,
+            secret = 'def456',
+            sessionId = None,
+            method = TwitchWebsocketTransportMethod.WEBHOOK,
+        )
+
+        result = await self.jsonMapper.serializeTransport(transport)
+        assert isinstance(result, dict)
+        assert len(result) == 3
+
+        assert result['callback'] == transport.requireCallbackUrl()
+        assert result['method'] == await self.jsonMapper.serializeTransportMethod(transport.method)
+        assert result['secret'] == transport.requireSecret()
+
+    @pytest.mark.asyncio
+    async def test_serializeTransport_withWebsocketTransportMethod(self):
+        transport = TwitchWebsocketTransport(
+            connectedAt = None,
+            disconnectedAt = None,
+            callbackUrl = None,
+            conduitId = None,
+            secret = None,
+            sessionId = 'xyz789',
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
+        )
+
+        result = await self.jsonMapper.serializeTransport(transport)
+        assert isinstance(result, dict)
+        assert len(result) == 2
+
+        assert result['method'] == await self.jsonMapper.serializeTransportMethod(transport.method)
+        assert result['session_id'] == transport.requireSessionId()
+
+    @pytest.mark.asyncio
+    async def test_serializeTransportMethod_withAll(self):
+        strings: set[str] = set()
+
+        for transportMethod in TwitchWebsocketTransportMethod:
+            strings.add(await self.jsonMapper.serializeTransportMethod(transportMethod))
+
+        assert len(strings) == len(TwitchWebsocketTransportMethod)
+
+    @pytest.mark.asyncio
+    async def test_serializeTransportMethod_withConduit(self):
+        string = await self.jsonMapper.serializeTransportMethod(TwitchWebsocketTransportMethod.CONDUIT)
+        assert string == 'conduit'
+
+    @pytest.mark.asyncio
+    async def test_serializeTransportMethod_withWebhook(self):
+        string = await self.jsonMapper.serializeTransportMethod(TwitchWebsocketTransportMethod.WEBHOOK)
+        assert string == 'webhook'
+
+    @pytest.mark.asyncio
+    async def test_serializeTransportMethod_withWebsocket(self):
+        string = await self.jsonMapper.serializeTransportMethod(TwitchWebsocketTransportMethod.WEBSOCKET)
+        assert string == 'websocket'

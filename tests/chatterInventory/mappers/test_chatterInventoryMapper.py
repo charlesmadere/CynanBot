@@ -142,6 +142,14 @@ class TestChatterInventoryMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withTnt(self):
+        result = await self.mapper.parseItemType('tnt')
+        assert result is ChatterItemType.AIR_STRIKE
+
+        result = await self.mapper.parseItemType('tnts')
+        assert result is ChatterItemType.AIR_STRIKE
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withWhitespaceString(self):
         result = await self.mapper.parseItemType(' ')
         assert result is None
@@ -197,6 +205,14 @@ class TestChatterInventoryMapper:
             result = await self.mapper.requireItemType(None)
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withTnt(self):
+        result = await self.mapper.requireItemType('tnt')
+        assert result is ChatterItemType.AIR_STRIKE
+
+        result = await self.mapper.requireItemType('tnts')
+        assert result is ChatterItemType.AIR_STRIKE
 
     @pytest.mark.asyncio
     async def test_requireItemType_withWhitespaceString(self):

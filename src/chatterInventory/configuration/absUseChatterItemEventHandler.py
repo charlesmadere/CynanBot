@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
-from ..triviaEventListener import TriviaEventListener
+from ..listeners.useChatterItemEventListener import UseChatterItemEventListener
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 
 
-class AbsTriviaEventHandler(TriviaEventListener, ABC):
+class AbsUseChatterItemEventHandler(UseChatterItemEventListener, ABC):
 
     @abstractmethod
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

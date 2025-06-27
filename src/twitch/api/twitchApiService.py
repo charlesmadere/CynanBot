@@ -203,9 +203,9 @@ class TwitchApiService(TwitchApiServiceInterface):
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                json = await self.__twitchJsonMapper.serializeEventSubRequest(eventSubRequest)
+                json = await self.__twitchJsonMapper.serializeEventSubRequest(eventSubRequest),
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=})): {e}', e, traceback.format_exc())
