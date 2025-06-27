@@ -179,15 +179,12 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         transport = TwitchWebsocketTransport(
             connectedAt = None,
             disconnectedAt = None,
+            callbackUrl = None,
             conduitId = None,
             secret = None,
             sessionId = sessionId,
-            method = TwitchWebsocketTransportMethod.WEBSOCKET
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
         )
-
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(twitchId)
 
         createEventSubScriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
 
