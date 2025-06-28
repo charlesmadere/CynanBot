@@ -25,6 +25,7 @@ from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..models.twitchConduitRequest import TwitchConduitRequest
+from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -225,6 +226,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchWebsocketCondition | None:
+        pass
+
+    @abstractmethod
+    async def parseConduitResponseEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchConduitResponseEntry | None:
         pass
 
     @abstractmethod

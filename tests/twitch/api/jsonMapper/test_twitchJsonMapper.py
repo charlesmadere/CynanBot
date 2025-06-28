@@ -20,6 +20,7 @@ from src.twitch.api.models.twitchChatMessageType import TwitchChatMessageType
 from src.twitch.api.models.twitchChatter import TwitchChatter
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata
 from src.twitch.api.models.twitchConduitRequest import TwitchConduitRequest
+from src.twitch.api.models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from src.twitch.api.models.twitchConduitShard import TwitchConduitShard
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -594,6 +595,28 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseCondition_withNone(self):
         result = await self.jsonMapper.parseCondition(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConduitResponseEntry(self):
+        entry = TwitchConduitResponseEntry(
+            shardCount = 5,
+            shardId = 'abc123',
+        )
+
+        result = await self.jsonMapper.parseConduitResponseEntry({
+            'shard_count': entry.shardCount,
+            'id': entry.shardId,
+        })
+
+        assert isinstance(result, TwitchConduitResponseEntry)
+        assert result == entry
+        assert result.shardCount == entry.shardCount
+        assert result.shardId == entry.shardId
+
+    @pytest.mark.asyncio
+    async def test_parseConduitResponseEntry_withNone(self):
+        result = await self.jsonMapper.parseConduitResponseEntry(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -1940,7 +1963,7 @@ class TestTwitchJsonMapper:
         result = await self.jsonMapper.serializeConduitRequest(conduitRequest)
         assert isinstance(result, dict)
         assert len(result) == 1
-        assert result['shard_count'] == 5
+        assert result['shard_count'] == conduitRequest.shardCount
 
     @pytest.mark.asyncio
     async def test_serializeEventSubRequest1(self):

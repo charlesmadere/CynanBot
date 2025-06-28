@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Final
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -30,6 +30,7 @@ from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..models.twitchConduitRequest import TwitchConduitRequest
+from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -91,8 +92,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def __calculateExpirationTime(self, expiresInSeconds: int | None) -> datetime:
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -761,6 +762,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName
+        )
+
+    async def parseConduitResponseEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchConduitResponseEntry | None:
+        if not isinstance(jsonResponse, dict):
+            return None
+
+        shardCount = utils.getIntFromDict(jsonResponse, 'shard_count')
+        shardId = utils.getStrFromDict(jsonResponse, 'id')
+
+        return TwitchConduitResponseEntry(
+            shardCount = shardCount,
+            shardId = shardId,
         )
 
     async def parseConduitShard(
