@@ -107,6 +107,23 @@ class TestTtsJsonMapper:
         assert result is TtsProvider.RANDO_TTS
 
     @pytest.mark.asyncio
+    async def test_asyncParseProvider_withShotgunTtsStrings(self):
+        result = await self.jsonMapper.asyncParseProvider('shotgun_tts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('shotgun-tts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('shotgun tts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('shotguntts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('shotgun')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+    @pytest.mark.asyncio
     async def test_asyncParseProvider_withSingingDecTalk(self):
         result = await self.jsonMapper.asyncParseProvider('singing_dec_talk')
         assert result is TtsProvider.SINGING_DEC_TALK
@@ -277,6 +294,10 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.requireProvider('rando_tts')
         assert result is TtsProvider.RANDO_TTS
 
+    def test_requireProvider_withShotgunTtsString(self):
+        result = self.jsonMapper.requireProvider('shotgun_tts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
     def test_requireProvider_withSingingDecTalkString(self):
         result = self.jsonMapper.requireProvider('singing_dec_talk')
         assert result is TtsProvider.SINGING_DEC_TALK
@@ -329,6 +350,10 @@ class TestTtsJsonMapper:
     def test_serializeProvider_withRandoTts(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.RANDO_TTS)
         assert result == 'rando_tts'
+
+    def test_serializeProvider_withShotgunTts(self):
+        result = self.jsonMapper.serializeProvider(TtsProvider.SHOTGUN_TTS)
+        assert result == 'shotgun_tts'
 
     def test_serializeProvider_withSingingDecTalk(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.SINGING_DEC_TALK)

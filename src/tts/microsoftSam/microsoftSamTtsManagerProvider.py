@@ -4,7 +4,6 @@ from .microsoftSamTtsManager import MicrosoftSamTtsManager
 from .microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from .microsoftSamTtsManagerProviderInterface import MicrosoftSamTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelperInterface
@@ -90,7 +89,3 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.MICROSOFT_SAM

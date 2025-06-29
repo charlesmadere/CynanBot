@@ -4,7 +4,6 @@ from .googleTtsManager import GoogleTtsManager
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from .googleTtsManagerProviderInterface import GoogleTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...google.googleTtsMessageCleanerInterface import GoogleTtsMessageCleanerInterface
@@ -96,7 +95,3 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.GOOGLE

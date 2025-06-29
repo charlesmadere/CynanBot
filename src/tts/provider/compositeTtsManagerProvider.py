@@ -10,6 +10,7 @@ from ..halfLife.halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerPro
 from ..microsoft.microsoftTtsManagerProviderInterface import MicrosoftTtsManagerProviderInterface
 from ..microsoftSam.microsoftSamTtsManagerProviderInterface import MicrosoftSamTtsManagerProviderInterface
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..shotgun.shotgunTtsManagerProviderInterface import ShotgunTtsManagerProviderInterface
 from ..streamElements.streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
 from ..ttsMonster.ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsManagerProviderInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -30,11 +31,12 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface,
         microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface,
         microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface,
+        shotgunTtsManagerProvider: ShotgunTtsManagerProviderInterface,
         singingDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface,
         streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface,
         timber: TimberInterface,
         ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -52,6 +54,8 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             raise TypeError(f'microsoftTtsManagerProvider argument is malformed: \"{microsoftTtsManagerProvider}\"')
         elif not isinstance(microsoftSamTtsManagerProvider, MicrosoftSamTtsManagerProviderInterface):
             raise TypeError(f'microsoftSamTtsManagerProvider argument is malformed: \"{microsoftSamTtsManagerProvider}\"')
+        elif not isinstance(shotgunTtsManagerProvider, ShotgunTtsManagerProviderInterface):
+            raise TypeError(f'shotgunTtsManagerProvider argument is malformed: \"{shotgunTtsManagerProvider}\"')
         elif not isinstance(singingDecTalkTtsManagerProvider, DecTalkTtsManagerProviderInterface):
             raise TypeError(f'singingDecTalkTtsManagerProvider argument is malformed: \"{singingDecTalkTtsManagerProvider}\"')
         elif not isinstance(streamElementsTtsManagerProvider, StreamElementsTtsManagerProviderInterface):
@@ -71,6 +75,7 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         self.__halfLifeTtsManagerProvider: Final[HalfLifeTtsManagerProviderInterface] = halfLifeTtsManagerProvider
         self.__microsoftTtsManagerProvider: Final[MicrosoftTtsManagerProviderInterface] = microsoftTtsManagerProvider
         self.__microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] = microsoftSamTtsManagerProvider
+        self.__shotgunTtsManagerProvider: Final[ShotgunTtsManagerProviderInterface] = shotgunTtsManagerProvider
         self.__singingDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = singingDecTalkTtsManagerProvider
         self.__streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = streamElementsTtsManagerProvider
         self.__timber: Final[TimberInterface] = timber
@@ -110,6 +115,10 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             useSharedSoundPlayerManager = useSharedSoundPlayerManager
         )
 
+        shotgunTtsManager = self.__shotgunTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
         singingDecTalkTtsManager = self.__singingDecTalkTtsManagerProvider.constructNewInstance(
             useSharedSoundPlayerManager = useSharedSoundPlayerManager
         )
@@ -131,11 +140,12 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             halfLifeTtsManager = halfLifeTtsManager,
             microsoftTtsManager = microsoftTtsManager,
             microsoftSamTtsManager = microsoftSamTtsManager,
+            shotgunTtsManager = shotgunTtsManager,
             singingDecTalkTtsManager = singingDecTalkTtsManager,
             streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
             ttsMonsterTtsManager = ttsMonsterTtsManager,
-            ttsSettingsRepository = self.__ttsSettingsRepository
+            ttsSettingsRepository = self.__ttsSettingsRepository,
         )
 
     def getSharedInstance(self) -> CompositeTtsManagerInterface:
@@ -150,6 +160,7 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         halfLifeTtsManager = self.__halfLifeTtsManagerProvider.getSharedInstance()
         microsoftTtsManager = self.__microsoftTtsManagerProvider.getSharedInstance()
         microsoftSamTtsManager = self.__microsoftSamTtsManagerProvider.getSharedInstance()
+        shotgunTtsManager = self.__shotgunTtsManagerProvider.getSharedInstance()
         singingDecTalkTtsManager = self.__singingDecTalkTtsManagerProvider.getSharedInstance()
         streamElementsTtsManager = self.__streamElementsTtsManagerProvider.getSharedInstance()
         ttsMonsterTtsManager = self.__ttsMonsterTtsManagerProvider.getSharedInstance()
@@ -163,11 +174,12 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             halfLifeTtsManager = halfLifeTtsManager,
             microsoftTtsManager = microsoftTtsManager,
             microsoftSamTtsManager = microsoftSamTtsManager,
+            shotgunTtsManager = shotgunTtsManager,
             singingDecTalkTtsManager = singingDecTalkTtsManager,
             streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
             ttsMonsterTtsManager = ttsMonsterTtsManager,
-            ttsSettingsRepository = self.__ttsSettingsRepository
+            ttsSettingsRepository = self.__ttsSettingsRepository,
         )
 
         self.__sharedInstance = sharedInstance

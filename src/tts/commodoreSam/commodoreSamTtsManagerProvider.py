@@ -4,7 +4,6 @@ from .commodoreSamTtsManager import CommodoreSamTtsManager
 from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from .commodoreSamTtsManagerProviderInterface import CommodoreSamTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
@@ -73,7 +72,7 @@ class CommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface):
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,
-            ttsSettingsRepository = self.__ttsSettingsRepository
+            ttsSettingsRepository = self.__ttsSettingsRepository,
         )
 
     def getSharedInstance(self) -> CommodoreSamTtsManagerInterface | None:
@@ -84,7 +83,3 @@ class CommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.COMMODORE_SAM

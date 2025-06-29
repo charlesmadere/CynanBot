@@ -1,6 +1,5 @@
 from ..commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from ..commodoreSamTtsManagerProviderInterface import CommodoreSamTtsManagerProviderInterface
-from ...models.ttsProvider import TtsProvider
 
 
 class StubCommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface):
@@ -13,7 +12,3 @@ class StubCommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface
 
     def getSharedInstance(self) -> CommodoreSamTtsManagerInterface | None:
         return None
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.COMMODORE_SAM

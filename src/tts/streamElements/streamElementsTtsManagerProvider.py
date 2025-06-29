@@ -4,7 +4,6 @@ from .streamElementsTtsManager import StreamElementsTtsManager
 from .streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from .streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...misc import utils as utils
@@ -91,7 +90,3 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.STREAM_ELEMENTS

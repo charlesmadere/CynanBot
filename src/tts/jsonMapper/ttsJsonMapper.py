@@ -73,6 +73,10 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         randoTts.append(re.compile(r'^\s*random?(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE))
         randoTts.freeze()
 
+        shotgunTts: FrozenList[Pattern] = FrozenList()
+        shotgunTts.append(re.compile(r'^\s*shotgun(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE))
+        shotgunTts.freeze()
+
         singingDecTalk: FrozenList[Pattern] = FrozenList()
         singingDecTalk.append(re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE))
         singingDecTalk.freeze()
@@ -93,6 +97,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             TtsProvider.MICROSOFT: microsoft,
             TtsProvider.MICROSOFT_SAM: microsoftSam,
             TtsProvider.RANDO_TTS: randoTts,
+            TtsProvider.SHOTGUN_TTS: shotgunTts,
             TtsProvider.SINGING_DEC_TALK: singingDecTalk,
             TtsProvider.STREAM_ELEMENTS: streamElements,
             TtsProvider.TTS_MONSTER: ttsMonster,
@@ -138,6 +143,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
+            case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
             case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'

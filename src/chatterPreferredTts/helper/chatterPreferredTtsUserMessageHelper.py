@@ -10,6 +10,7 @@ from ..models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
 from ..models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from ..models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from ..models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
+from ..models.shotgunTts.shotgunTtsTtsProperties import ShotgunTtsTtsProperties
 from ..models.singingDecTalk.singingDecTalkTtsProperties import SingingDecTalkTtsProperties
 from ..models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from ..models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
@@ -77,6 +78,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__microsoftSamRegEx: Final[Pattern] = re.compile(r'^\s*(?:microsoft|ms)(?:\s|_|-)*sam:?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
         self.__microsoftTtsRegEx: Final[Pattern] = re.compile(r'^\s*(?:microsoft|ms):?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
         self.__randoTtsRegEx: Final[Pattern] = re.compile(r'^\s*random?(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE)
+        self.__shotgunTtsRegEx: Final[Pattern] = re.compile(r'^\s*shotgun?(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE)
         self.__singingDecTalkRegEx: Final[Pattern] = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__streamElementsRegEx: Final[Pattern] = re.compile(r'^\s*stream(?:\s+|_|-)?elements:?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
         self.__ttsMonsterRegEx: Final[Pattern] = re.compile(r'^\s*tts(?:\s+|_|-)?monster:?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
@@ -194,6 +196,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         return RandoTtsTtsProperties()
 
+    async def __createShotgunTtsTtsProperties(
+        self,
+        match: Match[str]
+    ) -> AbsTtsProperties | None:
+        if not isinstance(match, Match):
+            raise TypeError(f'match argument is malformed: \"{match}\"')
+
+        return ShotgunTtsTtsProperties()
+
     async def __createSingingDecTalkTtsProperties(
         self,
         match: Match[str]
@@ -257,6 +268,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         microsoftSamMatch = self.__microsoftSamRegEx.fullmatch(userMessage)
         microsoftTtsMatch = self.__microsoftTtsRegEx.fullmatch(userMessage)
         randoTtsMatch = self.__randoTtsRegEx.fullmatch(userMessage)
+        shotgunTtsMatch = self.__shotgunTtsRegEx.fullmatch(userMessage)
         singingDecTalkMatch = self.__singingDecTalkRegEx.fullmatch(userMessage)
         streamElementsMatch = self.__streamElementsRegEx.fullmatch(userMessage)
         ttsMonsterMatch = self.__ttsMonsterRegEx.fullmatch(userMessage)
@@ -281,6 +293,9 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         elif randoTtsMatch is not None:
             return await self.__createRandoTtsTtsProperties(randoTtsMatch)
+
+        elif shotgunTtsMatch is not None:
+            return await self.__createShotgunTtsTtsProperties(shotgunTtsMatch)
 
         elif singingDecTalkMatch is not None:
             return await self.__createSingingDecTalkTtsProperties(singingDecTalkMatch)

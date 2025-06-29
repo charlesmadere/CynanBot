@@ -10,6 +10,7 @@ class TtsProvider(Enum):
     MICROSOFT = auto()
     MICROSOFT_SAM = auto()
     RANDO_TTS = auto()
+    SHOTGUN_TTS = auto()
     SINGING_DEC_TALK = auto()
     STREAM_ELEMENTS = auto()
     TTS_MONSTER = auto()
@@ -24,6 +25,7 @@ class TtsProvider(Enum):
             case TtsProvider.MICROSOFT: return 'Microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'Microsoft Sam'
             case TtsProvider.RANDO_TTS: return 'Rando TTS'
+            case TtsProvider.SHOTGUN_TTS: return 'Shotgun TTS'
             case TtsProvider.SINGING_DEC_TALK: return 'Singing DECtalk'
             case TtsProvider.STREAM_ELEMENTS: return 'Stream Elements'
             case TtsProvider.TTS_MONSTER: return 'TTS Monster'

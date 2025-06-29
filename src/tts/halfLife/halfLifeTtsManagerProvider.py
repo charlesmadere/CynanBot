@@ -3,7 +3,6 @@ from typing import Final
 from .halfLifeTtsManager import HalfLifeTtsManager
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from .halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerProviderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerInterface
@@ -84,7 +83,3 @@ class HalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.HALF_LIFE

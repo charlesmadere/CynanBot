@@ -4,7 +4,6 @@ from .microsoftTtsManager import MicrosoftTtsManager
 from .microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from .microsoftTtsManagerProviderInterface import MicrosoftTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...microsoft.helper.microsoftTtsHelperInterface import MicrosoftTtsHelperInterface
@@ -90,7 +89,3 @@ class MicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.MICROSOFT

@@ -105,6 +105,9 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             case TtsProvider.RANDO_TTS:
                 properties = None
 
+            case TtsProvider.SHOTGUN_TTS:
+                properties = None
+
             case TtsProvider.SINGING_DEC_TALK:
                 properties = None
 

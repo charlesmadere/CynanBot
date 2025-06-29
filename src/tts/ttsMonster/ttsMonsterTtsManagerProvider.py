@@ -4,7 +4,6 @@ from .ttsMonsterTtsManager import TtsMonsterTtsManager
 from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from .ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...misc import utils as utils
@@ -90,7 +89,3 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.TTS_MONSTER

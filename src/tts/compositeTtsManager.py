@@ -14,6 +14,7 @@ from .models.ttsEvent import TtsEvent
 from .models.ttsProvider import TtsProvider
 from .models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from .settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from .shotgun.shotgunTtsManagerInterface import ShotgunTtsManagerInterface
 from .streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
@@ -34,11 +35,12 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
         microsoftTtsManager: MicrosoftTtsManagerInterface | None,
         microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
+        shotgunTtsManager: ShotgunTtsManagerInterface | None,
         singingDecTalkTtsManager: DecTalkTtsManagerInterface | None,
         streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
         timber: TimberInterface,
         ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -56,6 +58,8 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'microsoftTtsManager argument is malformed: \"{microsoftTtsManager}\"')
         elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
             raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
+        elif shotgunTtsManager is not None and not isinstance(shotgunTtsManager, ShotgunTtsManagerInterface):
+            raise TypeError(f'shotgunTtsManager argument is malformed: \"{shotgunTtsManager}\"')
         elif singingDecTalkTtsManager is not None and not isinstance(singingDecTalkTtsManager, DecTalkTtsManagerInterface):
             raise TypeError(f'singingDecTalkTtsManager argument is malformed: \"{singingDecTalkTtsManager}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
@@ -79,6 +83,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             TtsProvider.HALF_LIFE: halfLifeTtsManager,
             TtsProvider.MICROSOFT: microsoftTtsManager,
             TtsProvider.MICROSOFT_SAM: microsoftSamTtsManager,
+            TtsProvider.SHOTGUN_TTS: shotgunTtsManager,
             TtsProvider.SINGING_DEC_TALK: singingDecTalkTtsManager,
             TtsProvider.STREAM_ELEMENTS: streamElementsTtsManager,
             TtsProvider.TTS_MONSTER: ttsMonsterTtsManager,
@@ -89,8 +94,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
     async def __determineTtsProvider(self, event: TtsEvent) -> TtsProvider:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return event.provider
-
-        if self.__chatterPreferredTtsHelper is None:
+        elif self.__chatterPreferredTtsHelper is None:
             return event.provider
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(

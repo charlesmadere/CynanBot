@@ -9,6 +9,7 @@ from ..models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
 from ..models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from ..models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from ..models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
+from ..models.shotgunTts.shotgunTtsTtsProperties import ShotgunTtsTtsProperties
 from ..models.singingDecTalk.singingDecTalkTtsProperties import SingingDecTalkTtsProperties
 from ..models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from ..models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
@@ -159,6 +160,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> RandoTtsTtsProperties:
         return RandoTtsTtsProperties()
 
+    async def __parseShotgunTtsTtsProperties(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> ShotgunTtsTtsProperties:
+        return ShotgunTtsTtsProperties()
+
     async def __parseSingingDecTalkTtsProperties(
         self,
         configurationJson: dict[str, Any]
@@ -244,6 +251,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
             case TtsProvider.RANDO_TTS:
                 return await self.__parseRandoTtsTtsProperties(
+                    configurationJson = configurationJson
+                )
+
+            case TtsProvider.SHOTGUN_TTS:
+                return await self.__parseShotgunTtsTtsProperties(
                     configurationJson = configurationJson
                 )
 
@@ -336,6 +348,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> dict[str, Any]:
         return dict()
 
+    async def __serializeShotgunTtsTtsProperties(
+        self,
+        ttsProperties: ShotgunTtsTtsProperties
+    ) -> dict[str, Any]:
+        return dict()
+
     async def __serializeSingingDecTalkTtsProperties(
         self,
         ttsProperties: SingingDecTalkTtsProperties
@@ -407,6 +425,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
         elif isinstance(ttsProperties, RandoTtsTtsProperties):
             return await self.__serializeRandoTtsTtsProperties(
+                ttsProperties = ttsProperties
+            )
+
+        elif isinstance(ttsProperties, ShotgunTtsTtsProperties):
+            return await self.__serializeShotgunTtsTtsProperties(
                 ttsProperties = ttsProperties
             )
 

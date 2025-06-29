@@ -1,6 +1,5 @@
 from ..halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerProviderInterface
-from ...models.ttsProvider import TtsProvider
 
 
 class StubHalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
@@ -13,7 +12,3 @@ class StubHalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
 
     def getSharedInstance(self) -> HalfLifeTtsManagerInterface | None:
         return None
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.HALF_LIFE

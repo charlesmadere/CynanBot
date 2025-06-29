@@ -4,7 +4,6 @@ from .decTalkTtsManager import DecTalkTtsManager
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from .decTalkTtsManagerProviderInterface import DecTalkTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
@@ -90,7 +89,3 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.DEC_TALK
