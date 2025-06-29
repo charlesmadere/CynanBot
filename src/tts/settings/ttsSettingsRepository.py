@@ -1,6 +1,9 @@
 from typing import Any, Final
 
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from ..jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
+from ..models.shotgun.shotgunProviderUseParameters import ShotgunProviderUseParameters
+from ..models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -9,12 +12,22 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
     def __init__(
         self,
-        settingsJsonReader: JsonReaderInterface
+        settingsJsonReader: JsonReaderInterface,
+        ttsJsonMapper: TtsJsonMapperInterface,
+        defaultShotgunProviderUseParameters: ShotgunProviderUseParameters = UseExactAmountShotgunParameters(
+            amount = 3,
+        ),
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
+            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
+        elif not isinstance(defaultShotgunProviderUseParameters, ShotgunProviderUseParameters):
+            raise TypeError(f'defaultShotgunProviderUseParameters argument is malformed: \"{defaultShotgunProviderUseParameters}\"')
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
+        self.__defaultShotgunProviderUseParameters: Final[ShotgunProviderUseParameters] = defaultShotgunProviderUseParameters
 
         self.__settingsCache: dict[str, Any] | None = None
 
@@ -34,6 +47,10 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
             raise ValueError(f'maxMessageSize is out of bounds: \"{maxMessageSize}\"')
 
         return maxMessageSize
+
+    async def getShotgunProviderUseParameters(self) -> ShotgunProviderUseParameters:
+        # TODO
+        return self.__defaultShotgunProviderUseParameters
 
     async def getTtsTimeoutSeconds(self) -> float:
         jsonContents = await self.__readJson()

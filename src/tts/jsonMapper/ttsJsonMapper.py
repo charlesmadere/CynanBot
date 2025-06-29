@@ -5,6 +5,7 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .ttsJsonMapperInterface import TtsJsonMapperInterface
+from ..models.shotgun.shotgunProviderUseParameters import ShotgunProviderUseParameters
 from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -115,6 +116,16 @@ class TtsJsonMapper(TtsJsonMapperInterface):
                 if providerRegEx.fullmatch(ttsProvider) is not None:
                     return ttsProviderEnum
 
+        return None
+
+    def parseShotgunProviderUseParameters(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> ShotgunProviderUseParameters | None:
+        if not isinstance(jsonContents, dict):
+            return None
+
+        # TODO
         return None
 
     def requireProvider(

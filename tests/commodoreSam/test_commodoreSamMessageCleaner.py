@@ -3,6 +3,10 @@ import pytest
 from src.commodoreSam.commodoreSamMessageCleaner import CommodoreSamMessageCleaner
 from src.commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from src.storage.jsonStaticReader import JsonStaticReader
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
@@ -11,8 +15,15 @@ from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtil
 
 class TestCommodoreSamMessageCleaner:
 
+    timber: TimberInterface = TimberStub()
+
+    ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+        timber = timber,
+    )
+
     ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-        settingsJsonReader = JsonStaticReader(dict())
+        settingsJsonReader = JsonStaticReader(dict()),
+        ttsJsonMapper = ttsJsonMapper,
     )
 
     twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()

@@ -14,7 +14,6 @@ from .models.ttsEvent import TtsEvent
 from .models.ttsProvider import TtsProvider
 from .models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from .settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from .shotgun.shotgunTtsManagerInterface import ShotgunTtsManagerInterface
 from .streamElements.streamElementsTtsManagerInterface import StreamElementsTtsManagerInterface
 from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
@@ -35,7 +34,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
         microsoftTtsManager: MicrosoftTtsManagerInterface | None,
         microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
-        shotgunTtsManager: ShotgunTtsManagerInterface | None,
         singingDecTalkTtsManager: DecTalkTtsManagerInterface | None,
         streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
         timber: TimberInterface,
@@ -58,8 +56,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'microsoftTtsManager argument is malformed: \"{microsoftTtsManager}\"')
         elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
             raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
-        elif shotgunTtsManager is not None and not isinstance(shotgunTtsManager, ShotgunTtsManagerInterface):
-            raise TypeError(f'shotgunTtsManager argument is malformed: \"{shotgunTtsManager}\"')
         elif singingDecTalkTtsManager is not None and not isinstance(singingDecTalkTtsManager, DecTalkTtsManagerInterface):
             raise TypeError(f'singingDecTalkTtsManager argument is malformed: \"{singingDecTalkTtsManager}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
@@ -83,7 +79,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             TtsProvider.HALF_LIFE: halfLifeTtsManager,
             TtsProvider.MICROSOFT: microsoftTtsManager,
             TtsProvider.MICROSOFT_SAM: microsoftSamTtsManager,
-            TtsProvider.SHOTGUN_TTS: shotgunTtsManager,
             TtsProvider.SINGING_DEC_TALK: singingDecTalkTtsManager,
             TtsProvider.STREAM_ELEMENTS: streamElementsTtsManager,
             TtsProvider.TTS_MONSTER: ttsMonsterTtsManager,
@@ -125,6 +120,10 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         self.__timber.log('CompositeTtsManager', f'Chatter has a preferred TTS ({preferredTts=}) ({event=})')
         return preferredTts.properties.provider
 
+    async def __handleShotgunTtsEvent(self, event: TtsEvent) -> bool:
+        # TODO
+        return True
+
     @property
     def isLoadingOrPlaying(self) -> bool:
         currentTtsManager = self.__currentTtsManager
@@ -146,6 +145,9 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         elif self.isLoadingOrPlaying:
             self.__timber.log('CompositeTtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
+
+        if event.provider is TtsProvider.SHOTGUN_TTS:
+            return await self.__handleShotgunTtsEvent(event)
 
         ttsProvider = await self.__determineTtsProvider(event)
         ttsManager = self.__ttsProviderToManagerMap.get(ttsProvider, None)

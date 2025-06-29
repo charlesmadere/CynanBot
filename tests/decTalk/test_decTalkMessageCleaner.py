@@ -9,6 +9,8 @@ from src.emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
@@ -61,8 +63,13 @@ class TestDecTalkMessageCleaner:
         emojiRepository = emojiRepository
     )
 
+    ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+        timber = timber,
+    )
+
     ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-        settingsJsonReader = JsonStaticReader(dict())
+        settingsJsonReader = JsonStaticReader(dict()),
+        ttsJsonMapper = ttsJsonMapper,
     )
 
     twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
@@ -198,7 +205,8 @@ class TestDecTalkMessageCleaner:
         ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
             settingsJsonReader = JsonStaticReader({
                 'maxMessageSize': 11
-            })
+            }),
+            ttsJsonMapper = self.ttsJsonMapper,
         )
 
         cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(

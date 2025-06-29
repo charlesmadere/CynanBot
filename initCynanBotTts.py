@@ -340,8 +340,6 @@ from src.tts.provider.compositeTtsManagerProvider import CompositeTtsManagerProv
 from src.tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from src.tts.shotgun.shotgunTtsManagerProviderInterface import ShotgunTtsManagerProviderInterface
-from src.tts.shotgun.stub.stubShotgunTtsManagerProvider import StubShotgunTtsManagerProvider
 from src.tts.streamElements.streamElementsTtsManagerProvider import StreamElementsTtsManagerProvider
 from src.tts.streamElements.streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
 from src.tts.ttsMonster.ttsMonsterTtsManagerProvider import TtsMonsterTtsManagerProvider
@@ -1142,7 +1140,8 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/ttsSettingsRepository.json'
-    )
+    ),
+    ttsJsonMapper = ttsJsonMapper,
 )
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
@@ -1438,8 +1437,6 @@ microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface = Micros
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-shotgunTtsManagerProvider: ShotgunTtsManagerProviderInterface = StubShotgunTtsManagerProvider()
-
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
     timber = timber
@@ -1565,7 +1562,6 @@ compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTts
     halfLifeTtsManagerProvider = halfLifeTtsManagerProvider,
     microsoftSamTtsManagerProvider = microsoftSamTtsManagerProvider,
     microsoftTtsManagerProvider = microsoftTtsManagerProvider,
-    shotgunTtsManagerProvider = shotgunTtsManagerProvider,
     singingDecTalkTtsManagerProvider = singingDecTalkTtsManagerProvider,
     streamElementsTtsManagerProvider = streamElementsTtsManagerProvider,
     timber = timber,
