@@ -72,9 +72,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         enabledTtsProviders: FrozenList[TtsProvider] = FrozenList()
 
         for ttsProvider in TtsProvider:
-            if await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
-                provider = ttsProvider
-            ):
+            if ttsProvider in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
                 enabledTtsProviders.append(ttsProvider)
 
         enabledTtsProviders.freeze()
@@ -104,6 +102,9 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             case TtsProvider.MICROSOFT_SAM:
                 properties = await self.__chooseRandomMicrosoftSamProperties()
 
+            case TtsProvider.RANDO_TTS:
+                properties = None
+
             case TtsProvider.SINGING_DEC_TALK:
                 properties = None
 
@@ -116,9 +117,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             case _:
                 raise ValueError(f'The given TTS Provider is unknown ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
-        if properties is None or not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
-            provider = properties.provider
-        ):
+        if properties is None or properties.provider not in enabledTtsProviders:
             raise FailedToChooseRandomTtsException(f'Failed to choose a random preferred TTS ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
         preferredTts = ChatterPreferredTts(
@@ -148,24 +147,22 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             raise TypeError(f'userMessage argument is malformed: \"{userMessage}\"')
 
         properties = await self.__chatterPreferredTtsUserMessageHelper.parseUserMessage(
-            userMessage = userMessage
+            userMessage = userMessage,
         )
 
         if properties is None:
             raise UnableToParseUserMessageIntoTtsException(f'Failed to parse user message into TTS ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
-        elif not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
-            provider = properties.provider
-        ):
+        elif properties.provider not in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
             raise TtsProviderIsNotEnabledException(f'The TtsProvider specified in the given user message is not enabled ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
 
         preferredTts = ChatterPreferredTts(
             properties = properties,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         await self.__chatterPreferredTtsRepository.set(
-            preferredTts = preferredTts
+            preferredTts = preferredTts,
         )
 
         self.__timber.log('ChatterPreferredTtsHelper', f'Assigned TTS from user message ({preferredTts=}) ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
@@ -260,9 +257,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
         if preferredTts is None:
             return None
-        elif not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
-            provider = preferredTts.provider
-        ):
+        elif preferredTts.provider not in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
             return None
         else:
             return preferredTts
