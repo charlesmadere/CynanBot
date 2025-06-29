@@ -1,6 +1,5 @@
 from ..ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsManagerProviderInterface
-from ...models.ttsProvider import TtsProvider
 
 
 class StubTtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
@@ -13,7 +12,3 @@ class StubTtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
 
     def getSharedInstance(self) -> TtsMonsterTtsManagerInterface | None:
         return None
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.TTS_MONSTER

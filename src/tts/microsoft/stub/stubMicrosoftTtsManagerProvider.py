@@ -1,6 +1,5 @@
 from ..microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from ..microsoftTtsManagerProviderInterface import MicrosoftTtsManagerProviderInterface
-from ...models.ttsProvider import TtsProvider
 
 
 class StubMicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
@@ -13,7 +12,3 @@ class StubMicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
 
     def getSharedInstance(self) -> MicrosoftTtsManagerInterface | None:
         return None
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.MICROSOFT
