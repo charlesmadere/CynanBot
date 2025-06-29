@@ -7,6 +7,7 @@ from src.timber.timberStub import TimberStub
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.models.ttsProvider import TtsProvider
+from src.users.tts.ttsBoosterPack import TtsBoosterPack
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 
@@ -29,6 +30,7 @@ class TestTtsBoosterPackParser:
             'ttsProvider': self.ttsJsonMapper.serializeProvider(TtsProvider.DEC_TALK)
         })
 
+        assert isinstance(result, TtsBoosterPack)
         assert result.cheerAmount == 100
         assert result.ttsProvider is TtsProvider.DEC_TALK
 

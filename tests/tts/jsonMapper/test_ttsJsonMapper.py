@@ -62,6 +62,18 @@ class TestTtsJsonMapper:
         result = await self.jsonMapper.asyncParseProvider('half_life')
         assert result is TtsProvider.HALF_LIFE
 
+        result = await self.jsonMapper.asyncParseProvider('half-life')
+        assert result is TtsProvider.HALF_LIFE
+
+        result = await self.jsonMapper.asyncParseProvider('half life')
+        assert result is TtsProvider.HALF_LIFE
+
+        result = await self.jsonMapper.asyncParseProvider('halflife')
+        assert result is TtsProvider.HALF_LIFE
+
+        result = await self.jsonMapper.asyncParseProvider('hl')
+        assert result is TtsProvider.HALF_LIFE
+
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withMicrosoftString(self):
         result = await self.jsonMapper.asyncParseProvider('microsoft')
@@ -80,6 +92,18 @@ class TestTtsJsonMapper:
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withRandoTts(self):
         result = await self.jsonMapper.asyncParseProvider('rando_tts')
+        assert result is TtsProvider.RANDO_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('rando-tts')
+        assert result is TtsProvider.RANDO_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('rando tts')
+        assert result is TtsProvider.RANDO_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('randotts')
+        assert result is TtsProvider.RANDO_TTS
+
+        result = await self.jsonMapper.asyncParseProvider('rando')
         assert result is TtsProvider.RANDO_TTS
 
     @pytest.mark.asyncio
