@@ -201,7 +201,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         )
 
     async def __chooseRandomHalfLifeProperties(self) -> HalfLifeTtsProperties:
-        voices: list[HalfLifeVoice] = list()
+        voices: list[HalfLifeVoice] = list(HalfLifeVoice)
         voice = random.choice(voices)
 
         return HalfLifeTtsProperties(
