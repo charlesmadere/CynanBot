@@ -4,6 +4,6 @@ from .shotgunProviderUseParameters import ShotgunProviderUseParameters
 
 
 @dataclass(frozen = True)
-class UseExactAmountShotgunParameters(ShotgunProviderUseParameters):
+class UseRandomAmountShotgunParameters(ShotgunProviderUseParameters):
     maxAmount: int
     minAmount: int

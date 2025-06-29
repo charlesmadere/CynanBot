@@ -6,6 +6,9 @@ from frozenlist import FrozenList
 
 from .ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..models.shotgun.shotgunProviderUseParameters import ShotgunProviderUseParameters
+from ..models.shotgun.useAllShotgunParameters import UseAllShotgunParameters
+from ..models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
+from ..models.shotgun.useRandomAmountShotgunParameters import UseRandomAmountShotgunParameters
 from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -125,7 +128,23 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         if not isinstance(jsonContents, dict):
             return None
 
-        # TODO
+        if 'useAll' in jsonContents and utils.getBoolFromDict(jsonContents, 'useAll', fallback = False):
+            return UseAllShotgunParameters()
+
+        elif 'amount' in jsonContents and utils.isValidInt(jsonContents.get('amount', None)):
+            return UseExactAmountShotgunParameters(
+                amount = utils.getIntFromDict(jsonContents, 'amount'),
+            )
+
+        maxAmount: int | None = jsonContents.get('maxAmount', None)
+        minAmount: int | None = jsonContents.get('minAmount', None)
+
+        if utils.isValidInt(maxAmount) and utils.isValidInt(minAmount):
+            return UseRandomAmountShotgunParameters(
+                maxAmount = maxAmount,
+                minAmount = minAmount,
+            )
+
         return None
 
     def requireProvider(

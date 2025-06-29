@@ -49,8 +49,19 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         return maxMessageSize
 
     async def getShotgunProviderUseParameters(self) -> ShotgunProviderUseParameters:
-        # TODO
-        return self.__defaultShotgunProviderUseParameters
+        jsonContents = await self.__readJson()
+        shotgunParametersJson: dict[str, Any] | Any | None = jsonContents.get('shotgunParameters', None)
+        shotgunParameters: ShotgunProviderUseParameters | None = None
+
+        if isinstance(shotgunParametersJson, dict):
+            shotgunParameters = self.__ttsJsonMapper.parseShotgunProviderUseParameters(
+                jsonContents = shotgunParametersJson
+            )
+
+        if shotgunParameters is None:
+            return self.__defaultShotgunProviderUseParameters
+        else:
+            return shotgunParameters
 
     async def getTtsTimeoutSeconds(self) -> float:
         jsonContents = await self.__readJson()

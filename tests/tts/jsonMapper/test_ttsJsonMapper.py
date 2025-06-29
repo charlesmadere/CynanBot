@@ -234,6 +234,10 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.parseProvider('rando_tts')
         assert result is TtsProvider.RANDO_TTS
 
+    def test_parseProvider_withShotgunTtsString(self):
+        result = self.jsonMapper.parseProvider('shotgun_tts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
     def test_parseProvider_withSingingDecTalkString(self):
         result = self.jsonMapper.parseProvider('singing_dec_talk')
         assert result is TtsProvider.SINGING_DEC_TALK
